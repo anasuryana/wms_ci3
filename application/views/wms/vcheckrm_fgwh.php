@@ -1938,7 +1938,7 @@
             data: {inunique: reffno, inunique_qty: qty,inunique_job: job },
             dataType: "JSON",
             success: function (response) {
-                document.getElementById('checksbb_txtemer_msg').value = response
+                document.getElementById('checksbb_txtemer_msg').value = JSON.stringify(response)
             }, error:function(xhr,ajaxOptions, throwError) {
                 alert(throwError);
             }
@@ -1959,7 +1959,7 @@
                 success: function (response) {
                     btnRemove.disabled = false
                     btnRemove.innerText = 'Remove Calculation'                
-                    document.getElementById('checksbb_txtemer_msg').value = response
+                    document.getElementById('checksbb_txtemer_msg').value = JSON.stringify(response)
                 }, error:function(xhr,ajaxOptions, throwError) {
                     alert(throwError)
                     btnRemove.disabled = false
