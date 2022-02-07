@@ -511,7 +511,7 @@
 </div>
 
 <div class="modal fade" id="checksbb_Emergency">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">      
         <!-- Modal Header -->
         <div class="modal-header">
