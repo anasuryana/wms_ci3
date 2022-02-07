@@ -1946,7 +1946,7 @@
     }
 
     function checksbb_btnemer_remove_calculation_eCK(){
-        const btnRemove = document.getElementById('checksbb_btnemer_remove_calculation_eCK')
+        const btnRemove = document.getElementById('checksbb_btnemer_remove_calculation')
         const id = document.getElementById("checksbb_txtemer_ID").value
         btnRemove.disabled = true
         btnRemove.innerText = 'Please wait...'
