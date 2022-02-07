@@ -1950,20 +1950,22 @@
         const id = document.getElementById("checksbb_txtemer_ID").value
         btnRemove.disabled = true
         btnRemove.innerText = 'Please wait...'
-        
-        $.ajax({            
-            url: "<?=base_url('SER/removecalculation_byid')?>",
-            data: {id: id},
-            dataType: "json",
-            success: function (response) {
-                btnRemove.disabled = false
-                btnRemove.innerText = 'Remove Calculation'                
-                document.getElementById('checksbb_txtemer_msg').value = response
-            }, error:function(xhr,ajaxOptions, throwError) {
-                alert(throwError)
-                btnRemove.disabled = false
-                btnRemove.innerText = 'Remove Calculation'
-            }
-        })
+        const mpin = prompt("PIN")
+        if(confirm("Are you sure ?")){
+            $.ajax({            
+                url: "<?=base_url('SER/removecalculation_byid')?>",
+                data: {id: id,pin : mpin},
+                dataType: "json",
+                success: function (response) {
+                    btnRemove.disabled = false
+                    btnRemove.innerText = 'Remove Calculation'                
+                    document.getElementById('checksbb_txtemer_msg').value = response
+                }, error:function(xhr,ajaxOptions, throwError) {
+                    alert(throwError)
+                    btnRemove.disabled = false
+                    btnRemove.innerText = 'Remove Calculation'
+                }
+            })
+        }
     }
 </script>

@@ -5689,10 +5689,15 @@ class SER extends CI_Controller {
 
 	public function removecalculation_byid(){
 		header('Content-Type: application/json');
+		$pin = $this->input->get('pin');
 		$id = $this->input->get('id');
-		$ret = $this->SERD_mod->deletebyID_label($id);
 		$myar = [];
-		$myar[] = $ret>0 ? ['cd' => 1, 'msg' => 'deleted'] : ['cd' => 0, 'msg' => 'could not delete'];
+		if($pin==='WEAGREE_TOREMOVE'){
+			$ret = $this->SERD_mod->deletebyID_label($id);
+			$myar[] = $ret>0 ? ['cd' => 1, 'msg' => 'deleted'] : ['cd' => 0, 'msg' => 'could not delete'];
+		} else {
+			$myar[] = ['cd' => 0, 'msg' => 'pin is not valid'];
+		}
 		die(json_encode(['data' => $myar]));
 	}
 
