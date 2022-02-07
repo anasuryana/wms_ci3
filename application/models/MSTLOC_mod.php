@@ -1,0 +1,61 @@
+<?php
+
+class MSTLOC_mod extends CI_Model {
+	private $TABLENAME = "MSTLOC_TBL";
+	public function __construct()
+    {
+        $this->load->database();
+    }
+	public function selectAll()
+	{
+		$this->db->from($this->TABLENAME.' a');
+		$this->db->join('MSTLOCG_TBL b', 'a.MSTLOC_GRP=b.MSTLOCG_ID');
+		$query = $this->db->get();
+		return $query->result_array();
+	}
+
+	public function selectnamebyid($pid){
+		$this->db->select("MITM_SPTNO");
+		$this->db->where('MITM_ITMCD', $pid);
+		$query = $this->db->get($this->TABLENAME);
+		return $query->result_array();
+	}
+
+	public function selectwithparent_byid($parentid){
+		$this->db->from($this->TABLENAME.' a');
+		$this->db->join('MSTLOCG_TBL b', 'a.MSTLOC_GRP=b.MSTLOCG_ID');
+		$this->db->where('MSTLOC_GRP', $parentid);
+		$query = $this->db->get();
+		return $query->result_array();
+	}
+
+
+	public function insert($data)
+    {        
+        $this->db->insert($this->TABLENAME,$data);
+        return $this->db->affected_rows();
+    }
+	public function check_Primary($data)
+    {        
+        return $this->db->get_where($this->TABLENAME,$data)->num_rows();
+	}
+	
+	public function updatebyId($pdata, $pkeys)
+    {        
+        $this->db->where($pkeys);
+        $this->db->update($this->TABLENAME, $pdata);
+        return $this->db->affected_rows();
+	}
+	public function updatebyUnique($pdata, $pkeys)
+    {        
+        $this->db->where($pkeys);
+        $this->db->update($this->TABLENAME, $pdata);
+        return $this->db->affected_rows();
+	}
+	public function selectLastOne()
+    {
+		$query = $this->db->get('v_locdltsid');
+		$ret = $query->row();
+        return $ret->lastid;
+    }
+}

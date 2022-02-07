@@ -1,0 +1,44 @@
+/* .smttablesticky tr th { */
+    /* position: sticky; */
+    /* higher than z-index for td below */
+    /* z-index: 2; */
+    /* bg color is important; just specify one */
+    /* background: #c1f4cd */
+/* } */
+/* this will be the loading indicator */
+/* .smttablesticky thead tr:last-child th { */
+    /* height of all previous header rows */
+    /* top: 48px; */
+    /* highest z-index */
+    /* z-index: 3 */
+/* } */
+/* .smttablesticky thead tr:nth-child(1) th {
+    top: 0px;
+    z-index: 2
+} */
+
+
+/* .smttablesticky tr:nth-child(1) th:nth-child(1) {
+    z-index: 3
+}
+.smttablesticky td:nth-child(1){
+    z-index: 1
+} */
+/* .smttablesticky td:nth-child(1), .smttablesticky th:nth-child(1) {
+    position: sticky;
+    left: 0
+} */
+/* .smttablesticky thead tr:nth-child(2) th {
+    top: 0;
+    z-index: 1
+}
+.smttablesticky tr:nth-child(2) th:nth-child(2) {    
+    z-index: 1
+}
+.smttablesticky td:nth-child(2) {
+    z-index: 1
+} */
+/* .smttablesticky td:nth-child(2), .smttablesticky th:nth-child(2) {
+    position: sticky;
+    left: 30px
+} */

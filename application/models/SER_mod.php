@@ -1,0 +1,349 @@
+<?php
+
+class SER_mod extends CI_Model {
+	private $TABLENAME = "SER_TBL";
+	public function __construct()
+    {
+        $this->load->database();
+    }
+		
+	public function insert($data)
+    {        
+        $this->db->insert($this->TABLENAME,$data);
+        return $this->db->affected_rows();
+    }
+
+    public function insertb($data)
+    {        
+        $this->db->insert_batch($this->TABLENAME,$data);
+        return $this->db->affected_rows();
+    }
+    
+    public function deletebyID($parr){        
+        $this->db->where($parr);
+        $this->db->delete($this->TABLENAME);
+        return $this->db->affected_rows();
+    }
+	public function check_Primary($data)
+    {        
+        return $this->db->get_where($this->TABLENAME,$data)->num_rows();
+    }
+    
+    public function lastserialid($modeltype, $prodt){
+        $qry = "exec sp_lastser @typemodel=".$modeltype.", @prodt='".$prodt."'";
+        $query =  $this->db->query($qry);        
+        if ($query->num_rows()>0){
+            $ret = $query->row();
+            return $ret->lser;
+        } else {
+            return '0';
+        }
+    }
+    public function lastserialid_ihour($modeltype, $prodt){
+        $qry = "exec sp_lastser_ihour @typemodel=".$modeltype.", @prodt='".$prodt."'";
+        $query =  $this->db->query($qry);        
+        if ($query->num_rows()>0){
+            $ret = $query->row();
+            return $ret->lser;
+        } else {
+            return '0';
+        }
+    }
+
+    public function selectbyVARg($pwhere)
+	{
+        $this->db->select('SER_DOC,UPPER(SER_ITMID) SER_ITMID,MITM_LBLCLR');
+        $this->db->from($this->TABLENAME);
+        $this->db->join('MITM_TBL', 'SER_ITMID=MITM_ITMCD');
+        $this->db->like($pwhere);
+        $this->db->group_by('SER_DOC,SER_ITMID,MITM_LBLCLR');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
+    public function selectDOCbyVARg($pwhere)
+	{
+        $this->db->select('SER_DOC');
+        $this->db->from($this->TABLENAME);
+        $this->db->like($pwhere);
+        $this->db->group_by('SER_DOC');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+    
+    public function selectbyVAR($pwhere)
+	{        
+        $this->db->from($this->TABLENAME);
+        $this->db->like($pwhere);
+		$query = $this->db->get();
+		return $query->result_array();
+    } 
+    public function selectbyVAR_with_cols($pwhere, $pcols)
+	{   
+        $this->db->select($pcols);
+        $this->db->from($this->TABLENAME);                
+        $this->db->like($pwhere);
+		$query = $this->db->get();
+		return $query->result_array();
+    } 
+    
+    public function select_checklistprintstatus_label($pjob, $pitem){
+        // $qry = "select SER_TBL.*, convert(int,SER_QTY+isnull(ITH_QTY,0)) BALQTY from SER_TBL 
+        // left join
+		// (SELECT * FROM ITH_TBL WHERE isnull(ITH_WH,'')='AWIP1' and isnull(ITH_FORM,'')='OUT-USE') V1 on SER_ID=ITH_SER
+        // where SUBSTRING(SER_ID,1,1)='3' AND SER_DOC=? and SER_ITMID=? ORDER BY SER_ID";
+        // $qry = "select SER_TBL.*, convert(int,SER_QTY-isnull(ITH_QTY,0)) BALQTY from SER_TBL 
+        // left join
+		// (SELECT ITH_SER,ITH_QTY FROM ITH_TBL WHERE isnull(ITH_WH,'')='AWIP1' and isnull(ITH_QTY,0)>0 ) V1 on SER_ID=ITH_SER
+        // where SUBSTRING(SER_ID,1,1)='3' AND SER_DOC=? and SER_ITMID=? ORDER BY SER_ID";
+
+        $qry = "select SER_TBL.*, convert(int,SER_QTY-isnull(v1.ITH_QTY,0)) BALQTY, convert(int,SER_QTY+isnull(v2.ITH_QTY,0)) BALJNTQTY,VLOC.ITH_WH from SER_TBL 
+        left join
+		(SELECT ITH_SER,ITH_QTY FROM ITH_TBL WHERE isnull(ITH_WH,'')='AWIP1' and isnull(ITH_QTY,0)>0 ) V1 on SER_ID=v1.ITH_SER
+		left join
+		(SELECT * FROM ITH_TBL WHERE isnull(ITH_WH,'')='AWIP1' and isnull(ITH_FORM,'')='OUT-USE') V2 on SER_ID=v2.ITH_SER
+        LEFT JOIN 
+		(
+		select ITH_SER,ITH_WH,sum(ITH_QTY) STKQT from ith_tbl where ITH_SER is not null		
+		group by ITH_SER,ITH_WH
+		having sum(ITH_QTY)>0
+		) VLOC ON SER_ID=VLOC.ITH_SER
+        where SUBSTRING(SER_ID,1,1)='3' AND SER_DOC=? and SER_ITMID=? ORDER BY SER_ID";
+		$query = $this->db->query($qry, [$pjob, $pitem]);
+		return $query->result_array();
+    }
+
+    public function selectbyVAR_where($pwhere)
+	{        
+        $this->db->from($this->TABLENAME);        
+        $this->db->where($pwhere);
+		$query = $this->db->get();
+		return $query->result_array();
+    }    
+
+    public function select_exact_byVAR($pwhere)
+	{
+        $this->db->select("a.*,ISNULL(MITM_SPQ,0) MITM_SPQ,ISNULL(MITM_SHTQTY,0) MITM_SHTQTY
+        ,MITM_ITMD1,PDPP_BSGRP, ISNULL(SER_DOCTYPE,'') DOCTYPE");
+        $this->db->from($this->TABLENAME . " a");
+        $this->db->join('MITM_TBL', 'SER_ITMID=MITM_ITMCD','LEFT');
+        $this->db->join('XWO', 'SER_DOC=PDPP_WONO', 'LEFT');
+        $this->db->where($pwhere);
+		$query = $this->db->get();
+		return $query->result_array();
+    }    
+    public function select_master_delivery($pser)
+	{
+        $this->db->select("SER_DOC,DLV_ID");
+        $this->db->from($this->TABLENAME . " a");
+        $this->db->join('MITM_TBL', 'SER_ITMID=MITM_ITMCD','LEFT');        
+        $this->db->join('DLV_TBL', 'SER_ID=DLV_SER','LEFT');        
+        $this->db->where("SER_ID", $pser);
+		$query = $this->db->get();
+		return $query->result_array();
+    }    
+
+    public function select_SER_byVAR($pwhere)
+	{
+        $this->db->select("a.*,ISNULL(MITM_SPQ,0) MITM_SPQ,ISNULL(MITM_SHTQTY,0) MITM_SHTQTY
+        ,MITM_ITMD1,ISNULL(SER_DOCTYPE,'') DOCTYPE");
+        $this->db->from($this->TABLENAME . " a");
+        $this->db->join('MITM_TBL', 'SER_ITMID=MITM_ITMCD','LEFT');
+        $this->db->where($pwhere);
+		$query = $this->db->get();
+		return $query->result_array();
+    }    
+    
+    public function selectBCField_in($pser){
+        $this->db->select("SER_ID,SER_ITMID,MITM_ITMD1,SER_PRDDT,SER_DOC,SER_PRDLINE,SER_PRDSHFT,SER_QTY,SER_SHEET,MCUS_CUSNM,MITM_STKUOM,SER_GRADE MBOM_GRADE,PDPP_BSGRP,SER_RMRK");
+        $this->db->from($this->TABLENAME.' a');
+        $this->db->join('MITM_TBL b', 'a.SER_ITMID=b.MITM_ITMCD', 'LEFT');        
+        $this->db->join('XWO c', 'a.SER_DOC=c.PDPP_WONO', 'LEFT');
+        $this->db->join('MCUS_TBL d', 'c.PDPP_CUSCD=d.MCUS_CUSCD', 'LEFT');        
+        $this->db->where_in('SER_ID', $pser);
+		$query = $this->db->get();
+		return $query->result();
+    }    
+    public function selectBC_RTN_Field_in($pdoc, $pid ){
+        $this->db->select("SER_ID,SER_ITMID,MITM_ITMD1,SER_PRDDT,SER_DOC,SER_PRDLINE,SER_PRDSHFT,SER_QTY,SER_SHEET,MITM_STKUOM,SER_RMRK, RETFG_STRDT,RETFG_RMRK");
+        $this->db->from($this->TABLENAME.' a');
+        $this->db->join('MITM_TBL b', 'a.SER_ITMID=b.MITM_ITMCD', 'LEFT');         
+        $this->db->join('RETFG_TBL', 'SER_DOC=RETFG_DOCNO AND SER_PRDLINE=RETFG_LINE');         
+        $this->db->where('SER_DOC', $pdoc)->where_in("SER_PRDLINE", $pid);
+		$query = $this->db->get();
+		return $query->result();
+    }    
+    public function selectBC_RTN_Field_byid_in($pser){
+        $this->db->select("SER_ID,SER_ITMID,MITM_ITMD1,SER_PRDDT,SER_DOC,SER_PRDLINE,SER_PRDSHFT,SER_QTY,SER_SHEET,MITM_STKUOM,SER_RMRK, RETFG_STRDT,RETFG_RMRK");
+        $this->db->from($this->TABLENAME.' a');
+        $this->db->join('MITM_TBL b', 'a.SER_ITMID=b.MITM_ITMCD', 'LEFT');         
+        $this->db->join('RETFG_TBL', 'SER_DOC=RETFG_DOCNO AND SER_PRDLINE=RETFG_LINE');         
+        $this->db->where_in('SER_ID',$pser);
+		$query = $this->db->get();
+		return $query->result();
+    }    
+    public function selectBCField_in_nomega($pser){
+        $this->db->select("SER_ID,SER_ITMID,MITM_ITMD1,SER_PRDDT,SER_DOC,SER_PRDLINE,SER_PRDSHFT,SER_QTY,SER_SHEET,'' MCUS_CUSNM,MITM_STKUOM,SER_GRADE MBOM_GRADE, '' PDPP_BSGRP");
+        $this->db->from($this->TABLENAME.' a');
+        $this->db->join('MITM_TBL b', 'a.SER_ITMID=b.MITM_ITMCD', 'LEFT');        
+        $this->db->where_in('SER_ID', $pser);
+		$query = $this->db->get();
+		return $query->result();
+    }    
+    public function selectBCFieldRM_in($pser){
+        $this->db->select("SER_ID,SER_ITMID,MITM_ITMD1,SER_PRDDT,SER_DOC,SER_QTY,MITM_STKUOM,SER_LOTNO,MITM_SPTNO,SER_USRID,MSTEMP_FNM,SER_ROHS,MMADE_NM");
+        $this->db->from($this->TABLENAME.' a');
+        $this->db->join('MITM_TBL b', 'a.SER_ITMID=b.MITM_ITMCD', 'inner');        
+        $this->db->join('MSTEMP_TBL c', 'a.SER_USRID=c.MSTEMP_ID', 'inner');
+        $this->db->join('MMADE_TBL d', 'a.SER_CNTRYID=d.MMADE_CD', 'left');
+        $this->db->where_in('SER_ID', $pser);
+		$query = $this->db->get();
+		return $query->result();
+    }    
+
+    public function select_joblbl_ost(){
+        $qry = "exec sp_joblbl_ost";
+		$query = $this->db->query($qry);
+		return $query->result_array();
+    }
+    public function select_joblbl_ost_pitem($pitem){
+        $qry = "exec sp_joblbl_ost_byitem ?";
+		$query = $this->db->query($qry, array($pitem));
+		return $query->result_array();
+    }
+
+    public function select_sususan_bahan_baku(){
+        $qry = "sp_check_sususan_bahan_baku";
+		$query = $this->db->query($qry);
+		return $query->result_array();
+    }
+    public function select_sususan_bahan_baku_by_job($pdoc){
+        $qry = "sp_check_sususan_bahan_baku_by_job ?";
+		$query = $this->db->query($qry, [$pdoc]);
+		return $query->result_array();
+    }
+    public function select_sususan_bahan_baku_by_txid($pdoc){
+        $qry = "sp_check_sususan_bahan_baku_by_txid ?";
+		$query = $this->db->query($qry, [$pdoc]);
+		return $query->result_array();
+    }
+    public function select_sususan_bahan_baku_filter_items($pwhere){
+        $this->db->from('vcheck_sususan_bahan_baku');
+        $this->db->where_in('SER_ITMID', $pwhere);
+        $this->db->order_by('SER_DOC');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+    public function select_sususan_bahan_baku_filter_jobsitems($pjobs, $pitems){
+        $this->db->from('vcheck_sususan_bahan_baku');
+        $this->db->where_in('SER_DOC', $pjobs)->where_in('SER_ITMID', $pitems);
+        $this->db->order_by('SER_DOC');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+    public function select_sususan_bahan_baku_filter_jobs($pwhere){
+        $this->db->from('vcheck_sususan_bahan_baku');
+        $this->db->where_in('SER_DOC', $pwhere);
+        $this->db->order_by('SER_DOC');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
+    public function updatebyId($pdata, $pkey)
+    {        
+        $this->db->where('SER_ID',$pkey);
+        $this->db->update($this->TABLENAME, $pdata);
+        return $this->db->affected_rows();
+    }
+
+    public function updatebySER($pdata,$pSer){
+        $this->db->where_in('SER_ID', $pSer);
+        $this->db->update($this->TABLENAME, $pdata);
+        return $this->db->affected_rows();
+    }
+    
+    public function selectsync(){
+        $qry = "select RTRIM(PDPP_MDLCD) PDPP_MDLCD,RTRIM(PDPP_WONO) PDPP_WONO,PDPP_WORQT,PDPP_GRNQT,TTLCARD,CONVERT(BIGINT,(PDPP_GRNQT-isnull(TTLCARD,0))) ADDQTY from XWO 
+        left join
+        ( select SER_DOC,sum(SER_QTYLOT) TTLCARD from SER_TBL
+        group by SER_DOC
+        ) v1 on PDPP_WONO=SER_DOC         
+        where PDPP_COMFG='0' 
+        AND PDPP_BSGRP='PSI1PPZIEP' 
+        AND PDPP_GRNQT > ISNULL(TTLCARD,0)";
+		$query = $this->db->query($qry);
+		return $query->result_array();
+    }
+
+    public function select_whcd_rtn($pser){
+        $qry = "SELECT TOP 1 STKTRND1_LOCCDFR,A.SER_ITMID,A.SER_QTY,B.SER_DOC FROM SER_TBL A
+            LEFT JOIN SER_TBL B ON A.SER_REFNO=B.SER_ID
+            LEFT JOIN XVU_RTN ON  B.SER_DOC=STKTRND1_DOCNO
+            WHERE A.SER_ID=?";
+		$query = $this->db->query($qry, [$pser]);
+		return $query->result_array();
+    }
+
+    public function select_qcunconform($pbg){
+        $this->db->from('vqc_unconform');
+        $this->db->where('PDPP_BSGRP', $pbg);
+        $this->db->order_by('SER_LUPDT ASC');
+		$query = $this->db->get();
+		return $query->result();
+    }
+
+    public function todel(){
+        //top 1000 vx.*,REF
+        $qry = "SELECT TOP 1000 ITH_SER FROM
+        (select v1.*,ITH_LOC from
+        (select ITH_ITMCD,ITH_WH,ITH_SER,SUM(ITH_QTY) ITH_QTY, MAX(ITH_LUPDT) LTIME,isnull(max(ITH_LINE),'') MXLINE from ITH_TBL where  ITH_WH='AFWH3'
+        group by ITH_WH,ITH_SER,ITH_ITMCD
+        having sum(ITH_QTY) >0) v1
+        inner join ITH_TBL b on v1.ITH_SER=b.ITH_SER and LTIME=ITH_LUPDT 
+        where b.ith_qty>0 ) vx
+        left join 
+         st062020 on vx.ITH_SER=REF
+         WHERE REF IS NULL AND SUBSTRING(ITH_sER,1,1)!='1'";
+		$query = $this->db->query($qry);
+		return $query->result_array();
+    }
+
+    public function select_balance_ref_rad($pdoc, $pitem){
+        $qry = "SELECT SER_ID,SER_DOC,SER_QTY,ISNULL(USEQTY,0) USEQTY, (SER_QTY+ISNULL(USEQTY,0)) BALQTY FROM
+        (SELECT * FROM SER_TBL WHERE SUBSTRING(SER_ID,1,1) ='4') V1
+        LEFT JOIN 
+        (
+        SELECT ITH_SER,SUM(ITH_QTY) USEQTY FROM ITH_TBL WHERE ITH_WH='AFQART' AND ITH_QTY<0 GROUP BY ITH_SER 
+        ) V2 ON V1.SER_ID=V2.ITH_SER
+        WHERE (SER_QTY+ISNULL(USEQTY,0)) >0 AND SER_DOC=? AND SER_ITMID=?";
+        $query = $this->db->query($qry, [$pdoc, $pitem]);
+		return $query->result_array();
+    }
+    public function select_dummy_ser(){
+        $qry = "SELECT * FROM MIGSCR_TBL";
+        $query = $this->db->query($qry);
+		return $query->result_array();
+    }
+
+    public function select_jm($preffno){
+        $this->db->select("WMS_ChkPcb.*, CONCAT(MSTEMP_FNM, ' ', MSTEMP_LNM) FULLNM");
+        $this->db->from('WMS_ChkPcb');
+        $this->db->join('MSTEMP_TBL',"cPic=MSTEMP_ID","left");
+        $this->db->where('Box_id', $preffno);
+        $this->db->order_by('cdate ASC');
+		$query = $this->db->get();
+		return $query->result();
+    }
+
+    public function select_combine($preffno){
+        $this->db->select("SERC_TBL.*, CONCAT(MSTEMP_FNM, ' ', MSTEMP_LNM) FULLNM,SERD2_SER");
+        $this->db->from("SERC_TBL");
+        $this->db->join('MSTEMP_TBL',"SERC_USRID=MSTEMP_ID","left");
+        $this->db->join('(SELECT SERD2_SER FROM SERD2_TBL GROUP BY SERD2_SER) VSERD',"SERC_COMID=SERD2_SER","left");
+        $this->db->where('SERC_NEWID', $preffno);
+        $this->db->order_by('SERC_LUPDT ASC');
+		$query = $this->db->get();
+		return $query->result();
+    }
+		
+}
