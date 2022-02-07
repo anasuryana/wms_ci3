@@ -5609,6 +5609,13 @@ class SER extends CI_Controller {
 		}
 		die('{"status":'.json_encode($myar).',"data":'.json_encode($printdata).'}');
 	}
+
+	public function validate_emergency(){
+		header('Content-Type: application/json');
+		$id = $this->input->get('id');
+		$rs = $this->SER_mod->select_validate_emergency($id);
+		die(json_encode(['data' => $rs]));
+	}
 	
 	public function updatecalculation(){
 		$this->checkSession();
@@ -5678,6 +5685,15 @@ class SER extends CI_Controller {
 		$itemLOT = $this->input->post('itemLOT');
 		$rs = $this->ITH_mod->select_rm_in_fg($itemCD, $itemLOT);
 		die('{"data":'.json_encode($rs).'}');
+	}
+
+	public function removecalculation_byid(){
+		header('Content-Type: application/json');
+		$id = $this->input->get('id');
+		$ret = $this->SERD_mod->deletebyID_label($id);
+		$myar = [];
+		$myar[] = $ret>0 ? ['cd' => 1, 'msg' => 'deleted'] : ['cd' => 0, 'msg' => 'could not delete'];
+		die(json_encode(['data' => $myar]));
 	}
 
 	public function addserd2(){

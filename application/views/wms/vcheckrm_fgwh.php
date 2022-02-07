@@ -541,6 +541,11 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-12 mb-1 p-1">
+                <textarea class="form-control" id="checksbb_txtemer_msg" readonly></textarea>
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-primary btn-sm" id="checksbb_btnemer_calculate" onclick="checksbb_btnemer_calculate_eCK()">Calculate RM</button>
@@ -1741,11 +1746,31 @@
                     newcell = newrow.insertCell(3);
                     newcell.style.cssText = "text-align:center";
                     newcell.innerHTML = response.data[i].ITH_SER
-                    newcell.ondblclick = () => {
-                        $("#checksbb_Emergency").modal('show')
+                    newcell.ondblclick = () => {                        
                         document.getElementById('checksbb_txtemer_ID').value = response.data[i].ITH_SER
                         document.getElementById('checksbb_txtemer_JOB').value = response.data[i].SER_DOC
                         document.getElementById('checksbb_txtemer_QTY').value = numeral(response.data[i].SER_QTY).format(',')
+                        $.ajax({
+                            url: "<?=base_url('SER/validate_emergency')?>",
+                            data: {id : response.data[i].ITH_SER},
+                            dataType: "json",
+                            success: function (response) {
+                                if(response.data.length>0){
+                                    if(response.data[0].DLVSER){
+                                        alertify.message('the ID is already delivered')
+                                    } else {
+                                        if(!response.data[0].SERD2_SER){
+                                            document.getElementById('checksbb_btnemer_calculate').disabled = false
+                                            document.getElementById('checksbb_btnemer_remove_calculation').disabled = true
+                                        } else {
+                                            document.getElementById('checksbb_btnemer_calculate').disabled = true
+                                            document.getElementById('checksbb_btnemer_remove_calculation').disabled = false
+                                        }
+                                        $("#checksbb_Emergency").modal('show')
+                                    }
+                                }
+                            }
+                        })
                     }
                     newcell = newrow.insertCell(4);                    
                     newcell.style.cssText = "text-align:right";
@@ -1898,5 +1923,47 @@
         } else {
             $("#checksbb_MODEDITQTYCAL").modal('hide')
         }
+    }
+
+    function checksbb_btnemer_calculate_eCK(){        
+        let reffno = []
+        let job = []
+        let qty = []
+        reffno.push(document.getElementById('checksbb_txtemer_ID').value)
+        job.push(document.getElementById('checksbb_txtemer_JOB').value)
+        qty.push(document.getElementById('checksbb_txtemer_QTY').value)
+        $.ajax({
+            type: "POST",
+            url: "<?=base_url('DELV/calculate_raw_material_resume')?>",
+            data: {inunique: reffno, inunique_qty: qty,inunique_job: job },
+            dataType: "JSON",
+            success: function (response) {
+                document.getElementById('checksbb_txtemer_msg').value = response
+            }, error:function(xhr,ajaxOptions, throwError) {
+                alert(throwError);
+            }
+        });
+    }
+
+    function checksbb_btnemer_remove_calculation_eCK(){
+        const btnRemove = document.getElementById('checksbb_btnemer_remove_calculation_eCK')
+        const id = document.getElementById("checksbb_txtemer_ID").value
+        btnRemove.disabled = true
+        btnRemove.innerText = 'Please wait...'
+        
+        $.ajax({            
+            url: "<?=base_url('SER/removecalculation_byid')?>",
+            data: {id: id},
+            dataType: "json",
+            success: function (response) {
+                btnRemove.disabled = false
+                btnRemove.innerText = 'Remove Calculation'                
+                document.getElementById('checksbb_txtemer_msg').value = response
+            }, error:function(xhr,ajaxOptions, throwError) {
+                alert(throwError)
+                btnRemove.disabled = false
+                btnRemove.innerText = 'Remove Calculation'
+            }
+        })
     }
 </script>

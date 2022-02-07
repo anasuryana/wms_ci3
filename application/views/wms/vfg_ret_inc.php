@@ -286,8 +286,7 @@
                 data: {indoc: rano, incat: newcat.value, inline: savedid },
                 dataType: "json",
                 success: function (response) {
-                    alertify.message(response.status[0].msg);
-                                        
+                    alertify.message(response.status[0].msg)                                        
                 }, error:function(xhr,ajaxOptions, throwError) {
                     alert(throwError);
                 }

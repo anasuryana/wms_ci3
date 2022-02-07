@@ -345,5 +345,15 @@ class SER_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result();
     }
+
+    public function select_validate_emergency($preffno){
+        $this->db->select("SER_ID,VITHDLV.ITH_SER DLVSER,SERD2_SER");
+        $this->db->from($this->TABLENAME);
+        $this->db->join("(SELECT * FROM ITH_TBL WHERE ITH_SER='".$preffno."' AND ITH_FORM like '%OUT-SHP%') VITHDLV","SER_ID=ITH_SER","left");        
+        $this->db->join('(SELECT SERD2_SER FROM SERD2_TBL GROUP BY SERD2_SER) VSERD',"SER_ID=SERD2_SER","left");
+        $this->db->where('SER_ID', $preffno);        
+		$query = $this->db->get();
+		return $query->result();
+    }
 		
 }
