@@ -690,6 +690,9 @@ class INCFG extends CI_Controller {
 		foreach($rsith as $r){
 			if(trim($r['ITH_WH']) == 'QAFG'){
 				$whok = false; break;
+			} elseif(trim($r['ITH_WH']) == 'AFQART'){
+				$myar[] = ['cd' => 0, 'msg' => 'denied, because the serial should not be here'];
+				die('{"status":'.json_encode($myar).'}');
 			}
 		}
 		if(!$whok){
