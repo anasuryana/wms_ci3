@@ -1750,6 +1750,7 @@
                         document.getElementById('checksbb_txtemer_ID').value = response.data[i].ITH_SER
                         document.getElementById('checksbb_txtemer_JOB').value = response.data[i].SER_DOC
                         document.getElementById('checksbb_txtemer_QTY').value = numeral(response.data[i].SER_QTY).format(',')
+                        document.getElementById('checksbb_txtemer_msg').value = ''
                         $.ajax({
                             url: "<?=base_url('SER/validate_emergency')?>",
                             data: {id : response.data[i].ITH_SER},
