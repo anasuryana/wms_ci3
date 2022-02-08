@@ -4214,38 +4214,41 @@
         let aDONUM = []
         let aDODT = []
         let aPrice = []
+        let aBCTYPE = []
         let bctype = ''
         let wh = ''
-        for(let i=0; i<ttlrows; i++){
-            
+        for(let i=0; i<ttlrows; i++){            
             let balqty = numeral(tableku2.rows[i].cells[2].innerText).value()
             let actqty = numeral(tableku2.rows[i].cells[3].innerText).value()
-            if(balqty<actqty){
-                tableku2.rows[i].cells[3].focus()
-                alertify.warning(`ReturnQTY > BalanceQTY !`)
-                return
-            }
-            let isfound =false
-            for(let s=0;s<aItem.length;s++){
-                if(aItem[s]==tableku2.rows[i].cells[0].innerText){
-                    aItemQTY[s]+=actqty
-                    isfound = true
-                    break
+            if(actqty>0){
+                if(balqty<actqty){
+                    tableku2.rows[i].cells[3].focus()
+                    alertify.warning(`ReturnQTY > BalanceQTY !`)
+                    return
                 }
+                let isfound =false
+                for(let s=0;s<aItem.length;s++){
+                    if(aItem[s]==tableku2.rows[i].cells[0].innerText){
+                        aItemQTY[s]+=actqty
+                        isfound = true
+                        break
+                    }
+                }
+                if(!isfound){
+                    aItem.push(tableku2.rows[i].cells[0].innerText)
+                    aItemQTY.push(actqty)
+                }
+                aItem_d.push(tableku2.rows[i].cells[0].innerText)
+                aItemQTY_d.push(actqty)
+                aAJU.push(tableku2.rows[i].cells[4].innerText)
+                aNOPEN.push(tableku2.rows[i].cells[5].innerText)
+                aDONUM.push(tableku2.rows[i].cells[6].innerText)
+                aDODT.push(tableku2.rows[i].cells[7].innerText)
+                aPrice.push(tableku2.rows[i].cells[8].innerText)
+                aBCTYPE.push(tableku2.rows[i].cells[9].innerText)
+                bctype = tableku2.rows[i].cells[9].innerText == '40' ? '41' : tableku2.rows[i].cells[9].innerText
+                wh = tableku2.rows[i].cells[10].innerText 
             }
-            if(!isfound){
-                aItem.push(tableku2.rows[i].cells[0].innerText)
-                aItemQTY.push(actqty)
-            }
-            aItem_d.push(tableku2.rows[i].cells[0].innerText)
-            aItemQTY_d.push(actqty)
-            aAJU.push(tableku2.rows[i].cells[4].innerText)
-            aNOPEN.push(tableku2.rows[i].cells[5].innerText)
-            aDONUM.push(tableku2.rows[i].cells[6].innerText)
-            aDODT.push(tableku2.rows[i].cells[7].innerText)
-            aPrice.push(tableku2.rows[i].cells[8].innerText)
-            bctype = tableku2.rows[i].cells[9].innerText == '40' ? '41' : tableku2.rows[i].cells[9].innerText
-            wh = tableku2.rows[i].cells[10].innerText 
         }
         document.getElementById('retrm_out_cmb_bcdoc').value = bctype
         document.getElementById('retrm_out_cmb_locfrom').value = wh
@@ -4283,8 +4286,9 @@
         tableku2 = tabell.getElementsByTagName("tbody")[0];
         
         tableku2.innerHTML=''
+        ttlrows = aItem_d.length
         for(let i=0;i<ttlrows;i++){
-            newrow = tableku2.insertRow(-1)                        
+            newrow = tableku2.insertRow(-1)
             newcell = newrow.insertCell(0)
             newrow.onclick = (event) => {retrm_out_doprc_tbody_tr_eC(event)}
             newcell.classList.add('d-none')
@@ -4306,6 +4310,9 @@
             newcell.classList.add('text-end')
             newcell.innerHTML = aPrice[i]
             newcell = newrow.insertCell(8)
+            newcell.classList.add('text-end')
+            newcell.innerHTML = aBCTYPE[i]
+            newcell = newrow.insertCell(9)
             newcell.onclick = function(event) {
                 if(event.srcElement.tagName==='SPAN') {
                     retrm_out_inc_selected_row = event.srcElement.parentElement.parentElement.rowIndex
