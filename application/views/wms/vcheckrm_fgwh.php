@@ -1759,6 +1759,7 @@
                                     if(response.data[0].DLVSER){
                                         alertify.message('the ID is already delivered')
                                     } else {
+										document.getElementById('checksbb_txtemer_QTY').value = response.data[0].TQTY
                                         if(!response.data[0].SERD2_SER){
                                             document.getElementById('checksbb_btnemer_calculate').disabled = false
                                             document.getElementById('checksbb_btnemer_remove_calculation').disabled = true
