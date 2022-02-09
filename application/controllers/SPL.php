@@ -520,7 +520,7 @@ class SPL extends CI_Controller {
 		$cwh_out = $_COOKIE["CKPSI_WH"];
 		$rsbg = $this->SPL_mod->select_bg_partreq([$cpsn]);
 		foreach($rsbg as $r){
-			switch($r['SPL_BG']){
+			switch($r['PPSN1_BSGRP']){
 				case 'PSI1PPZIEP':
 					$cwh_inc = 'ARWH1';
 					$cwh_out = 'PLANT1';
