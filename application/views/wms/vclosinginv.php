@@ -29,6 +29,7 @@
                     <button class="btn btn-primary" type="button" id="clsinv_btn_gen">Generate</button>
                     <button class="btn btn-outline-primary" type="button" id="clsinv_btn_adj" onclick="clsinv_btn_adj_eC()">Adjust</button>
                     <button class="btn btn-outline-primary" type="button" id="clsinv_btn_save" onclick="clsinv_btn_save_eC()">Save</button>
+                    <button class="btn btn-outline-primary" type="button" id="clsinv_btn_copy" title="copy the table below" onclick="clsinv_btn_copy_eC()"><i class="fas fa-copy"></i></button>
                 </div>
             </div>
             <div class="col-md-6 mb-1">
@@ -269,4 +270,10 @@
             }
         });
     });
+
+    function clsinv_btn_copy_eC(){
+        cmpr_selectElementContents(document.getElementById('clsinv_tbl'))
+        document.execCommand("copy")
+        alertify.message("Copied")
+    }
 </script>
