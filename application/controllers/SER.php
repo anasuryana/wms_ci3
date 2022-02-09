@@ -1039,10 +1039,12 @@ class SER extends CI_Controller {
 		$cshift		= $this->input->post('inshift');
 		$crank		= $this->input->post('inrank');
 		$cmdl		= 1;
+		$bisgrup = '';
 		$myar = [];
 
 		$rsjob		= $this->SPL_mod->selectWO($cjob);
 		foreach($rsjob as $r){
+			$bisgrup = $r['PDPP_BSGRP'];
 			if( ((int)$r['LBLTTL']+$cqty) > (int)$r['PDPP_WORQT']){
 				$myar[] = ["cd" => 0, "msg" => "Over"];
 				exit(json_encode($myar));
@@ -1065,6 +1067,7 @@ class SER extends CI_Controller {
 			'SER_PRDDT' => $cproddt,
 			'SER_PRDLINE' => $cline,
 			'SER_PRDSHFT' => $cshift,
+			'SER_BSGRP' => $bisgrup,
 			'SER_GRADE' => $crank,
 			'SER_LUPDT' => $currrtime,
 			'SER_USRID' => $this->session->userdata('nama')
