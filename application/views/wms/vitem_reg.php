@@ -36,6 +36,7 @@
                         <option value="CAN">CAN</option>
                         <option value="BOTOL">BOTOL</option>
                         <option value="SHEET">SHEET</option>
+                        <option value="EA">EA</option>
                     </select>
                 </div>
             </div>
