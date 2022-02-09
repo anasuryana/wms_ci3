@@ -1130,7 +1130,7 @@ class SPL extends CI_Controller {
 			$flag_update+=$toret;
 			if($toret >0 ){				
 				$datas = [
-						'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' =>  $cwh_out , 
+						'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' =>  $cwh_inc , 
 						'ITH_DOC' 	=> $cdoc, 'ITH_DATE' => $currdate,
 						'ITH_FORM' 	=> 'OUT-WH-RM', 'ITH_QTY' => -$r['SPLSCN_QTY'], 
 						'ITH_REMARK' => $r['SPLSCN_LOTNO'],
@@ -1139,7 +1139,7 @@ class SPL extends CI_Controller {
 				$tor = $this->ITH_mod->insert_spl($datas);				
 				
 				$datas 	= [
-					'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' =>  $cwh_inc , 
+					'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' =>  $cwh_out , 
 					'ITH_DOC' 	=> $cdoc, 'ITH_DATE' => $currdate,
 					'ITH_FORM' 	=> 'INC-PRD-RM', 'ITH_QTY' => $r['SPLSCN_QTY'], 
 					'ITH_REMARK' => $r['SPLSCN_LOTNO'],
