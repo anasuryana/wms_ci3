@@ -4,20 +4,20 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-1.11.2/fc-3.3.3/fh-3.1.9/kt-2.6.4/r-2.2.9/rr-1.2.8/sc-2.0.5/sl-1.3.3
+ *   https://datatables.net/download/#bs5/dt-1.11.3/fc-4.0.1/fh-3.2.1/kt-2.6.4/r-2.2.9/rr-1.2.8/sc-2.0.5/sl-1.3.4
  *
  * Included libraries:
- *   DataTables 1.11.2, FixedColumns 3.3.3, FixedHeader 3.1.9, KeyTable 2.6.4, Responsive 2.2.9, RowReorder 1.2.8, Scroller 2.0.5, Select 1.3.3
+ *   DataTables 1.11.3, FixedColumns 4.0.1, FixedHeader 3.2.1, KeyTable 2.6.4, Responsive 2.2.9, RowReorder 1.2.8, Scroller 2.0.5, Select 1.3.4
  */
 
-/*! DataTables 1.11.2
+/*! DataTables 1.11.3
  * ©2008-2021 SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     1.11.2
+ * @version     1.11.3
  * @file        jquery.dataTables.js
  * @author      SpryMedia Ltd
  * @contact     www.datatables.net
@@ -1626,6 +1626,14 @@
 		return out;
 	}
 	
+	var _includes = function (search, start) {
+		if (start === undefined) {
+			start = 0;
+		}
+	
+		return this.indexOf(search, start) !== -1;	
+	};
+	
 	// Array.isArray polyfill.
 	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray
 	if (! Array.isArray) {
@@ -1634,12 +1642,20 @@
 	    };
 	}
 	
+	if (! Array.prototype.includes) {
+		Array.prototype.includes = _includes;
+	}
+	
 	// .trim() polyfill
 	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/trim
 	if (!String.prototype.trim) {
 	  String.prototype.trim = function () {
 	    return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
 	  };
+	}
+	
+	if (! String.prototype.includes) {
+		String.prototype.includes = _includes;
 	}
 	
 	/**
@@ -2808,9 +2824,18 @@
 			return cellData.call( rowData );
 		}
 	
-		if ( cellData === null && type == 'display' ) {
+		if ( cellData === null && type === 'display' ) {
 			return '';
 		}
+	
+		if ( type === 'filter' ) {
+			var fomatters = DataTable.ext.type.search;
+	
+			if ( fomatters[ col.sType ] ) {
+				cellData = fomatters[ col.sType ]( cellData );
+			}
+		}
+	
 		return cellData;
 	}
 	
@@ -4565,7 +4590,6 @@
 		var columns = settings.aoColumns;
 		var column;
 		var i, j, ien, jen, filterData, cellData, row;
-		var fomatters = DataTable.ext.type.search;
 		var wasInvalidated = false;
 	
 		for ( i=0, ien=settings.aoData.length ; i<ien ; i++ ) {
@@ -4579,10 +4603,6 @@
 	
 					if ( column.bSearchable ) {
 						cellData = _fnGetCellData( settings, i, j, 'filter' );
-	
-						if ( fomatters[ column.sType ] ) {
-							cellData = fomatters[ column.sType ]( cellData );
-						}
 	
 						// Search in DataTables 1.10 is string based. In 1.11 this
 						// should be altered to also allow strict type checking.
@@ -6374,6 +6394,10 @@
 	 */
 	function _fnSaveState ( settings )
 	{
+		if (settings._bLoadingState) {
+			return;
+		}
+	
 		/* Store the interesting variables */
 		var state = {
 			time:    +new Date(),
@@ -6408,98 +6432,128 @@
 	 */
 	function _fnLoadState ( settings, oInit, callback )
 	{
-		var i, ien;
-		var columns = settings.aoColumns;
-		var loaded = function ( s ) {
-			if ( ! s || ! s.time ) {
-				callback();
-				return;
-			}
-	
-			// Allow custom and plug-in manipulation functions to alter the saved data set and
-			// cancelling of loading by returning false
-			var abStateLoad = _fnCallbackFire( settings, 'aoStateLoadParams', 'stateLoadParams', [settings, s] );
-			if ( $.inArray( false, abStateLoad ) !== -1 ) {
-				callback();
-				return;
-			}
-	
-			// Reject old data
-			var duration = settings.iStateDuration;
-			if ( duration > 0 && s.time < +new Date() - (duration*1000) ) {
-				callback();
-				return;
-			}
-	
-			// Number of columns have changed - all bets are off, no restore of settings
-			if ( s.columns && columns.length !== s.columns.length ) {
-				callback();
-				return;
-			}
-	
-			// Store the saved state so it might be accessed at any time
-			settings.oLoadedState = $.extend( true, {}, s );
-	
-			// Restore key features - todo - for 1.11 this needs to be done by
-			// subscribed events
-			if ( s.start !== undefined ) {
-				settings._iDisplayStart    = s.start;
-				settings.iInitDisplayStart = s.start;
-			}
-			if ( s.length !== undefined ) {
-				settings._iDisplayLength   = s.length;
-			}
-	
-			// Order
-			if ( s.order !== undefined ) {
-				settings.aaSorting = [];
-				$.each( s.order, function ( i, col ) {
-					settings.aaSorting.push( col[0] >= columns.length ?
-						[ 0, col[1] ] :
-						col
-					);
-				} );
-			}
-	
-			// Search
-			if ( s.search !== undefined ) {
-				$.extend( settings.oPreviousSearch, _fnSearchToHung( s.search ) );
-			}
-	
-			// Columns
-			//
-			if ( s.columns ) {
-				for ( i=0, ien=s.columns.length ; i<ien ; i++ ) {
-					var col = s.columns[i];
-	
-					// Visibility
-					if ( col.visible !== undefined ) {
-						columns[i].bVisible = col.visible;
-					}
-	
-					// Search
-					if ( col.search !== undefined ) {
-						$.extend( settings.aoPreSearchCols[i], _fnSearchToHung( col.search ) );
-					}
-				}
-			}
-	
-			_fnCallbackFire( settings, 'aoStateLoaded', 'stateLoaded', [settings, s] );
-			callback();
-		};
-	
 		if ( ! settings.oFeatures.bStateSave ) {
 			callback();
 			return;
 		}
 	
+		var loaded = function(state) {
+			_fnImplementState(settings, state, callback);
+		}
+	
 		var state = settings.fnStateLoadCallback.call( settings.oInstance, settings, loaded );
 	
 		if ( state !== undefined ) {
-			loaded( state );
+			_fnImplementState( settings, state, callback );
 		}
 		// otherwise, wait for the loaded callback to be executed
+	
+		return true;
 	}
+	
+	function _fnImplementState ( settings, s, callback) {
+		var i, ien;
+		var columns = settings.aoColumns;
+		settings._bLoadingState = true;
+	
+		// When StateRestore was introduced the state could now be implemented at any time
+		// Not just initialisation. To do this an api instance is required in some places
+		var api = settings._bInitComplete ? new DataTable.Api(settings) : null;
+	
+		if ( ! s || ! s.time ) {
+			settings._bLoadingState = false;
+			callback();
+			return;
+		}
+	
+		// Allow custom and plug-in manipulation functions to alter the saved data set and
+		// cancelling of loading by returning false
+		var abStateLoad = _fnCallbackFire( settings, 'aoStateLoadParams', 'stateLoadParams', [settings, s] );
+		if ( $.inArray( false, abStateLoad ) !== -1 ) {
+			settings._bLoadingState = false;
+			callback();
+			return;
+		}
+	
+		// Reject old data
+		var duration = settings.iStateDuration;
+		if ( duration > 0 && s.time < +new Date() - (duration*1000) ) {
+			settings._bLoadingState = false;
+			callback();
+			return;
+		}
+	
+		// Number of columns have changed - all bets are off, no restore of settings
+		if ( s.columns && columns.length !== s.columns.length ) {
+			settings._bLoadingState = false;
+			callback();
+			return;
+		}
+	
+		// Store the saved state so it might be accessed at any time
+		settings.oLoadedState = $.extend( true, {}, s );
+	
+		// Restore key features - todo - for 1.11 this needs to be done by
+		// subscribed events
+		if ( s.start !== undefined ) {
+			settings._iDisplayStart    = s.start;
+			if(api === null) {
+				settings.iInitDisplayStart = s.start;
+			}
+		}
+		if ( s.length !== undefined ) {
+			settings._iDisplayLength   = s.length;
+		}
+	
+		// Order
+		if ( s.order !== undefined ) {
+			settings.aaSorting = [];
+			$.each( s.order, function ( i, col ) {
+				settings.aaSorting.push( col[0] >= columns.length ?
+					[ 0, col[1] ] :
+					col
+				);
+			} );
+		}
+	
+		// Search
+		if ( s.search !== undefined ) {
+			$.extend( settings.oPreviousSearch, _fnSearchToHung( s.search ) );
+		}
+	
+		// Columns
+		if ( s.columns ) {
+			for ( i=0, ien=s.columns.length ; i<ien ; i++ ) {
+				var col = s.columns[i];
+	
+				// Visibility
+				if ( col.visible !== undefined ) {
+					// If the api is defined, the table has been initialised so we need to use it rather than internal settings
+					if (api) {
+						// Don't redraw the columns on every iteration of this loop, we will do this at the end instead
+						api.column(i).visible(col.visible, false);
+					}
+					else {
+						columns[i].bVisible = col.visible;
+					}
+				}
+	
+				// Search
+				if ( col.search !== undefined ) {
+					$.extend( settings.aoPreSearchCols[i], _fnSearchToHung( col.search ) );
+				}
+			}
+			
+			// If the api is defined then we need to adjust the columns once the visibility has been changed
+			if (api) {
+				api.columns.adjust();
+			}
+		}
+	
+		settings._bLoadingState = false;
+		_fnCallbackFire( settings, 'aoStateLoaded', 'stateLoaded', [settings, s] );
+		callback();
+	};
 	
 	
 	/**
@@ -9590,7 +9644,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "1.11.2";
+	DataTable.version = "1.11.3";
 
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -14015,7 +14069,7 @@
 		 *
 		 *  @type string
 		 */
-		build:"bs5/dt-1.11.2/fc-3.3.3/fh-3.1.9/kt-2.6.4/r-2.2.9/rr-1.2.8/sc-2.0.5/sl-1.3.3",
+		build:"bs5/dt-1.11.3/fc-4.0.1/fh-3.2.1/kt-2.6.4/r-2.2.9/rr-1.2.8/sc-2.0.5/sl-1.3.4",
 	
 	
 		/**
@@ -15048,6 +15102,10 @@
 	 */
 	
 	var __htmlEscapeEntities = function ( d ) {
+		if (Array.isArray(d)) {
+			d = d.join(',');
+		}
+	
 		return typeof d === 'string' ?
 			d
 				.replace(/&/g, '&amp;')
@@ -15242,6 +15300,7 @@
 		_fnSortData: _fnSortData,
 		_fnSaveState: _fnSaveState,
 		_fnLoadState: _fnLoadState,
+		_fnImplementState: _fnImplementState,
 		_fnSettingsFromNode: _fnSettingsFromNode,
 		_fnLog: _fnLog,
 		_fnMap: _fnMap,
@@ -15471,1697 +15530,621 @@ return DataTable;
 }));
 
 
-/*! FixedColumns 3.3.3
- * ©2010-2021 SpryMedia Ltd - datatables.net/license
+/*! FixedColumns 4.0.1
+ * 2019-2021 SpryMedia Ltd - datatables.net/license
  */
-
-/**
- * @summary     FixedColumns
- * @description Freeze columns in place on a scrolling DataTable
- * @version     3.3.3
- * @file        dataTables.fixedColumns.js
- * @author      SpryMedia Ltd (www.sprymedia.co.uk)
- * @contact     www.sprymedia.co.uk/contact
- * @copyright   Copyright 2010-2021 SpryMedia Ltd.
- *
- * This source file is free software, available under the following license:
- *   MIT license - http://datatables.net/license/mit
- *
- * This source file is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
- *
- * For details please refer to: http://www.datatables.net
- */
-(function( factory ){
-	if ( typeof define === 'function' && define.amd ) {
-		// AMD
-		define( ['jquery', 'datatables.net'], function ( $ ) {
-			return factory( $, window, document );
-		} );
-	}
-	else if ( typeof exports === 'object' ) {
-		// CommonJS
-		module.exports = function (root, $) {
-			if ( ! root ) {
-				root = window;
-			}
-
-			if ( ! $ || ! $.fn.dataTable ) {
-				$ = require('datatables.net')(root, $).$;
-			}
-
-			return factory( $, root, root.document );
-		};
-	}
-	else {
-		// Browser
-		factory( jQuery, window, document );
-	}
-}(function( $, window, document, undefined ) {
-'use strict';
-var DataTable = $.fn.dataTable;
-var _firefoxScroll;
-
-/**
- * When making use of DataTables' x-axis scrolling feature, you may wish to
- * fix the left most column in place. This plug-in for DataTables provides
- * exactly this option (note for non-scrolling tables, please use the
- * FixedHeader plug-in, which can fix headers and footers). Key
- * features include:
- *
- * * Freezes the left or right most columns to the side of the table
- * * Option to freeze two or more columns
- * * Full integration with DataTables' scrolling options
- * * Speed - FixedColumns is fast in its operation
- *
- *  @class
- *  @constructor
- *  @global
- *  @param {object} dt DataTables instance. With DataTables 1.10 this can also
- *    be a jQuery collection, a jQuery selector, DataTables API instance or
- *    settings object.
- *  @param {object} [init={}] Configuration object for FixedColumns. Options are
- *    defined by {@link FixedColumns.defaults}
- *
- *  @requires jQuery 1.7+
- *  @requires DataTables 1.8.0+
- *
- *  @example
- *      var table = $('#example').dataTable( {
- *        "scrollX": "100%"
- *      } );
- *      new $.fn.dataTable.fixedColumns( table );
- */
-var FixedColumns = function ( dt, init ) {
-	var that = this;
-
-	/* Sanity check - you just know it will happen */
-	if ( ! ( this instanceof FixedColumns ) ) {
-		alert( "FixedColumns warning: FixedColumns must be initialised with the 'new' keyword." );
-		return;
-	}
-
-	if ( init === undefined || init === true ) {
-		init = {};
-	}
-
-	// Use the DataTables Hungarian notation mapping method, if it exists to
-	// provide forwards compatibility for camel case variables
-	var camelToHungarian = $.fn.dataTable.camelToHungarian;
-	if ( camelToHungarian ) {
-		camelToHungarian( FixedColumns.defaults, FixedColumns.defaults, true );
-		camelToHungarian( FixedColumns.defaults, init );
-	}
-
-	// v1.10 allows the settings object to be got form a number of sources
-	var dtSettings = new $.fn.dataTable.Api( dt ).settings()[0];
-
-	/**
-	 * Settings object which contains customisable information for FixedColumns instance
-	 * @namespace
-	 * @extends FixedColumns.defaults
-	 * @private
-	 */
-	this.s = {
-		/**
-		 * DataTables settings objects
-		 *  @type     object
-		 *  @default  Obtained from DataTables instance
-		 */
-		"dt": dtSettings,
-
-		/**
-		 * Number of columns in the DataTable - stored for quick access
-		 *  @type     int
-		 *  @default  Obtained from DataTables instance
-		 */
-		"iTableColumns": dtSettings.aoColumns.length,
-
-		/**
-		 * Original outer widths of the columns as rendered by DataTables - used to calculate
-		 * the FixedColumns grid bounding box
-		 *  @type     array.<int>
-		 *  @default  []
-		 */
-		"aiOuterWidths": [],
-
-		/**
-		 * Original inner widths of the columns as rendered by DataTables - used to apply widths
-		 * to the columns
-		 *  @type     array.<int>
-		 *  @default  []
-		 */
-		"aiInnerWidths": [],
-
-
-		/**
-		 * Is the document layout right-to-left
-		 * @type boolean
-		 */
-		rtl: $(dtSettings.nTable).css('direction') === 'rtl'
-	};
-
-
-	/**
-	 * DOM elements used by the class instance
-	 * @namespace
-	 * @private
-	 *
-	 */
-	this.dom = {
-		/**
-		 * DataTables scrolling element
-		 *  @type     node
-		 *  @default  null
-		 */
-		"scroller": null,
-
-		/**
-		 * DataTables header table
-		 *  @type     node
-		 *  @default  null
-		 */
-		"header": null,
-
-		/**
-		 * DataTables body table
-		 *  @type     node
-		 *  @default  null
-		 */
-		"body": null,
-
-		/**
-		 * DataTables footer table
-		 *  @type     node
-		 *  @default  null
-		 */
-		"footer": null,
-
-		/**
-		 * Display grid elements
-		 * @namespace
-		 */
-		"grid": {
-			/**
-			 * Grid wrapper. This is the container element for the 3x3 grid
-			 *  @type     node
-			 *  @default  null
-			 */
-			"wrapper": null,
-
-			/**
-			 * DataTables scrolling element. This element is the DataTables
-			 * component in the display grid (making up the main table - i.e.
-			 * not the fixed columns).
-			 *  @type     node
-			 *  @default  null
-			 */
-			"dt": null,
-
-			/**
-			 * Left fixed column grid components
-			 * @namespace
-			 */
-			"left": {
-				"wrapper": null,
-				"head": null,
-				"body": null,
-				"foot": null
-			},
-
-			/**
-			 * Right fixed column grid components
-			 * @namespace
-			 */
-			"right": {
-				"wrapper": null,
-				"head": null,
-				"body": null,
-				"foot": null
-			}
-		},
-
-		/**
-		 * Cloned table nodes
-		 * @namespace
-		 */
-		"clone": {
-			/**
-			 * Left column cloned table nodes
-			 * @namespace
-			 */
-			"left": {
-				/**
-				 * Cloned header table
-				 *  @type     node
-				 *  @default  null
-				 */
-				"header": null,
-
-				/**
-				 * Cloned body table
-				 *  @type     node
-				 *  @default  null
-				 */
-				"body": null,
-
-				/**
-				 * Cloned footer table
-				 *  @type     node
-				 *  @default  null
-				 */
-				"footer": null
-			},
-
-			/**
-			 * Right column cloned table nodes
-			 * @namespace
-			 */
-			"right": {
-				/**
-				 * Cloned header table
-				 *  @type     node
-				 *  @default  null
-				 */
-				"header": null,
-
-				/**
-				 * Cloned body table
-				 *  @type     node
-				 *  @default  null
-				 */
-				"body": null,
-
-				/**
-				 * Cloned footer table
-				 *  @type     node
-				 *  @default  null
-				 */
-				"footer": null
-			}
-		}
-	};
-
-	if ( dtSettings._oFixedColumns ) {
-		throw 'FixedColumns already initialised on this table';
-	}
-
-	/* Attach the instance to the DataTables instance so it can be accessed easily */
-	dtSettings._oFixedColumns = this;
-
-	/* Let's do it */
-	if ( ! dtSettings._bInitComplete )
-	{
-		dtSettings.oApi._fnCallbackReg( dtSettings, 'aoInitComplete', function () {
-			that._fnConstruct( init );
-		}, 'FixedColumns' );
-	}
-	else
-	{
-		this._fnConstruct( init );
-	}
-};
-
-
-
-$.extend( FixedColumns.prototype , {
-	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 * Public methods
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-	/**
-	 * Update the fixed columns - including headers and footers. Note that FixedColumns will
-	 * automatically update the display whenever the host DataTable redraws.
-	 *  @returns {void}
-	 *  @example
-	 *      var table = $('#example').dataTable( {
-	 *          "scrollX": "100%"
-	 *      } );
-	 *      var fc = new $.fn.dataTable.fixedColumns( table );
-	 *
-	 *      // at some later point when the table has been manipulated....
-	 *      fc.fnUpdate();
-	 */
-	"fnUpdate": function ()
-	{
-		this._fnDraw( true );
-	},
-
-
-	/**
-	 * Recalculate the resizes of the 3x3 grid that FixedColumns uses for display of the table.
-	 * This is useful if you update the width of the table container. Note that FixedColumns will
-	 * perform this function automatically when the window.resize event is fired.
-	 *  @returns {void}
-	 *  @example
-	 *      var table = $('#example').dataTable( {
-	 *          "scrollX": "100%"
-	 *      } );
-	 *      var fc = new $.fn.dataTable.fixedColumns( table );
-	 *
-	 *      // Resize the table container and then have FixedColumns adjust its layout....
-	 *      $('#content').width( 1200 );
-	 *      fc.fnRedrawLayout();
-	 */
-	"fnRedrawLayout": function ()
-	{
-		this._fnColCalc();
-		this._fnGridLayout();
-		this.fnUpdate();
-	},
-
-
-	/**
-	 * Mark a row such that it's height should be recalculated when using 'semiauto' row
-	 * height matching. This function will have no effect when 'none' or 'auto' row height
-	 * matching is used.
-	 *  @param   {Node} nTr TR element that should have it's height recalculated
-	 *  @returns {void}
-	 *  @example
-	 *      var table = $('#example').dataTable( {
-	 *          "scrollX": "100%"
-	 *      } );
-	 *      var fc = new $.fn.dataTable.fixedColumns( table );
-	 *
-	 *      // manipulate the table - mark the row as needing an update then update the table
-	 *      // this allows the redraw performed by DataTables fnUpdate to recalculate the row
-	 *      // height
-	 *      fc.fnRecalculateHeight();
-	 *      table.fnUpdate( $('#example tbody tr:eq(0)')[0], ["insert date", 1, 2, 3 ... ]);
-	 */
-	"fnRecalculateHeight": function ( nTr )
-	{
-		delete nTr._DTTC_iHeight;
-		nTr.style.height = 'auto';
-	},
-
-
-	/**
-	 * Set the height of a given row - provides cross browser compatibility
-	 *  @param   {Node} nTarget TR element that should have it's height recalculated
-	 *  @param   {int} iHeight Height in pixels to set
-	 *  @returns {void}
-	 *  @example
-	 *      var table = $('#example').dataTable( {
-	 *          "scrollX": "100%"
-	 *      } );
-	 *      var fc = new $.fn.dataTable.fixedColumns( table );
-	 *
-	 *      // You may want to do this after manipulating a row in the fixed column
-	 *      fc.fnSetRowHeight( $('#example tbody tr:eq(0)')[0], 50 );
-	 */
-	"fnSetRowHeight": function ( nTarget, iHeight )
-	{
-		nTarget.style.height = iHeight+"px";
-	},
-
-
-	/**
-	 * Get data index information about a row or cell in the table body.
-	 * This function is functionally identical to fnGetPosition in DataTables,
-	 * taking the same parameter (TH, TD or TR node) and returning exactly the
-	 * the same information (data index information). THe difference between
-	 * the two is that this method takes into account the fixed columns in the
-	 * table, so you can pass in nodes from the master table, or the cloned
-	 * tables and get the index position for the data in the main table.
-	 *  @param {node} node TR, TH or TD element to get the information about
-	 *  @returns {int} If nNode is given as a TR, then a single index is 
-	 *    returned, or if given as a cell, an array of [row index, column index
-	 *    (visible), column index (all)] is given.
-	 */
-	"fnGetPosition": function ( node )
-	{
-		var idx;
-		var inst = this.s.dt.oInstance;
-
-		if ( ! $(node).parents('.DTFC_Cloned').length )
-		{
-			// Not in a cloned table
-			return inst.fnGetPosition( node );
-		}
-		else
-		{
-			// Its in the cloned table, so need to look up position
-			if ( node.nodeName.toLowerCase() === 'tr' ) {
-				idx = $(node).index();
-				return inst.fnGetPosition( $('tr', this.s.dt.nTBody)[ idx ] );
-			}
-			else
-			{
-				var colIdx = $(node).index();
-				idx = $(node.parentNode).index();
-				var row = inst.fnGetPosition( $('tr', this.s.dt.nTBody)[ idx ] );
-
-				return [
-					row,
-					colIdx,
-					inst.oApi._fnVisibleToColumnIndex( this.s.dt, colIdx )
-				];
-			}
-		}
-	},
-
-	fnToFixedNode: function ( rowIdx, colIdx )
-	{
-		var found;
-
-		if ( colIdx < this.s.iLeftColumns ) {
-			found = $(this.dom.clone.left.body).find('[data-dt-row='+rowIdx+'][data-dt-column='+colIdx+']');
-		}
-		else if ( colIdx >= this.s.iRightColumns ) {
-			found = $(this.dom.clone.right.body).find('[data-dt-row='+rowIdx+'][data-dt-column='+colIdx+']');
-		}
-
-		if ( found && found.length ) {
-			return found[0];
-		}
-
-		// Fallback - non-fixed node
-		var table = new $.fn.dataTable.Api(this.s.dt);
-		return table.cell(rowIdx, colIdx).node();
-	},
-
-
-	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 * Private methods (they are of course public in JS, but recommended as private)
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-	/**
-	 * Initialisation for FixedColumns
-	 *  @param   {Object} oInit User settings for initialisation
-	 *  @returns {void}
-	 *  @private
-	 */
-	"_fnConstruct": function ( oInit )
-	{
-		var i, iLen, iWidth,
-			that = this;
-
-		/* Sanity checking */
-		if ( typeof this.s.dt.oInstance.fnVersionCheck != 'function' ||
-		     this.s.dt.oInstance.fnVersionCheck( '1.8.0' ) !== true )
-		{
-			alert( "FixedColumns "+FixedColumns.VERSION+" required DataTables 1.8.0 or later. "+
-				"Please upgrade your DataTables installation" );
-			return;
-		}
-
-		if ( this.s.dt.oScroll.sX === "" )
-		{
-			this.s.dt.oInstance.oApi._fnLog( this.s.dt, 1, "FixedColumns is not needed (no "+
-				"x-scrolling in DataTables enabled), so no action will be taken. Use 'FixedHeader' for "+
-				"column fixing when scrolling is not enabled" );
-			return;
-		}
-
-		/* Apply the settings from the user / defaults */
-		this.s = $.extend( true, this.s, FixedColumns.defaults, oInit );
-
-		/* Set up the DOM as we need it and cache nodes */
-		var classes = this.s.dt.oClasses;
-		this.dom.grid.dt = $(this.s.dt.nTable).parents('div.'+classes.sScrollWrapper)[0];
-		this.dom.scroller = $('div.'+classes.sScrollBody, this.dom.grid.dt )[0];
-
-		/* Set up the DOM that we want for the fixed column layout grid */
-		this._fnColCalc();
-		this._fnGridSetup();
-
-		/* Event handlers */
-		var mouseController;
-		var mouseDown = false;
-
-		// When the mouse is down (drag scroll) the mouse controller cannot
-		// change, as the browser keeps the original element as the scrolling one
-		$(this.s.dt.nTableWrapper).on( 'mousedown.DTFC', function (e) {
-			if ( e.button === 0 ) {
-				mouseDown = true;
-
-				$(document).one( 'mouseup', function () {
-					mouseDown = false;
-				} );
-			}
-		} );
-
-		// When the body is scrolled - scroll the left and right columns
-		$(this.dom.scroller)
-			.on( 'mouseover.DTFC touchstart.DTFC', function () {
-				if ( ! mouseDown ) {
-					mouseController = 'main';
-				}
-			} )
-			.on( 'scroll.DTFC', function (e) {
-				if ( ! mouseController && e.originalEvent ) {
-					mouseController = 'main';
-				}
-
-				if ( mouseController === 'main' || mouseController === 'key' ) {
-					if ( that.s.iLeftColumns > 0 ) {
-						that.dom.grid.left.liner.scrollTop = that.dom.scroller.scrollTop;
-					}
-					if ( that.s.iRightColumns > 0 ) {
-						that.dom.grid.right.liner.scrollTop = that.dom.scroller.scrollTop;
-					}
-				}
-			} );
-
-		var wheelType = 'onwheel' in document.createElement('div') ?
-			'wheel.DTFC' :
-			'mousewheel.DTFC';
-
-		if ( that.s.iLeftColumns > 0 ) {
-			// When scrolling the left column, scroll the body and right column
-			$(that.dom.grid.left.liner)
-				.on( 'mouseover.DTFC touchstart.DTFC', function () {
-					if ( ! mouseDown && mouseController !== 'key' ) {
-						mouseController = 'left';
-					}
-				} )
-				.on( 'scroll.DTFC', function ( e ) {
-					if ( ! mouseController && e.originalEvent ) {
-						mouseController = 'left';
-					}
-
-					if ( mouseController === 'left' ) {
-						that.dom.scroller.scrollTop = that.dom.grid.left.liner.scrollTop;
-						if ( that.s.iRightColumns > 0 ) {
-							that.dom.grid.right.liner.scrollTop = that.dom.grid.left.liner.scrollTop;
-						}
-					}
-				} )
-				.on( wheelType, function(e) {
-					mouseController = 'left';
-
-					// Pass horizontal scrolling through
-					var xDelta = e.type === 'wheel' ?
-						-e.originalEvent.deltaX :
-						e.originalEvent.wheelDeltaX;
-					that.dom.scroller.scrollLeft -= xDelta;
-				} );
-
-			// Header will not trigger scroll on left column, but might on `main` (sorting)
-			$(that.dom.grid.left.head).on( 'mouseover.DTFC touchstart.DTFC', function () {
-				mouseController = 'main';
-			});
-		}
-
-		if ( that.s.iRightColumns > 0 ) {
-			// When scrolling the right column, scroll the body and the left column
-			$(that.dom.grid.right.liner)
-				.on( 'mouseover.DTFC touchstart.DTFC', function () {
-					if ( ! mouseDown && mouseController !== 'key' ) {
-						mouseController = 'right';
-					}
-				} )
-				.on( 'scroll.DTFC', function ( e ) {
-					if ( ! mouseController && e.originalEvent ) {
-						mouseController = 'right';
-					}
-
-					if ( mouseController === 'right' ) {
-						that.dom.scroller.scrollTop = that.dom.grid.right.liner.scrollTop;
-						if ( that.s.iLeftColumns > 0 ) {
-							that.dom.grid.left.liner.scrollTop = that.dom.grid.right.liner.scrollTop;
-						}
-					}
-				} )
-				.on( wheelType, function(e) {
-					mouseController = 'right';
-
-					// Pass horizontal scrolling through
-					var xDelta = e.type === 'wheel' ?
-						-e.originalEvent.deltaX :
-						e.originalEvent.wheelDeltaX;
-					that.dom.scroller.scrollLeft -= xDelta;
-				} );
-
-			$(that.dom.grid.right.head).on( 'mouseover.DTFC touchstart.DTFC', function () {
-				mouseController = 'main';
-			});
-		}
-
-		$(window).on( 'resize.DTFC', function () {
-			that._fnGridLayout.call( that );
-		} );
-
-		var bFirstDraw = true;
-		var jqTable = $(this.s.dt.nTable);
-
-		jqTable
-			.on( 'draw.dt.DTFC', function () {
-				that._fnColCalc();
-				that._fnDraw.call( that, bFirstDraw );
-				bFirstDraw = false;
-			} )
-			.on('key-focus.dt.DTFC', function () {
-				// KeyTable navigation needs to be main focused
-				mouseController = 'key';
-			})
-			.on( 'column-sizing.dt.DTFC', function () {
-				that._fnColCalc();
-				that._fnGridLayout( that );
-			} )
-			.on( 'column-visibility.dt.DTFC', function ( e, settings, column, vis, recalc ) {
-				if ( recalc === undefined || recalc ) {
-					that._fnColCalc();
-					that._fnGridLayout( that );
-					that._fnDraw( true );
-				}
-			} )
-			.on( 'select.dt.DTFC deselect.dt.DTFC', function ( e, dt, type, indexes ) {
-				if ( e.namespace === 'dt' ) {
-					that._fnDraw( false );
-				}
-			} )
-			.on( 'position.dts.dt.DTFC', function (e, tableTop) {
-				// Sync up with Scroller
-				if (that.dom.grid.left.body) {
-					$(that.dom.grid.left.body).find('table').eq(0).css('top', tableTop);
-				}
-
-				if (that.dom.grid.right.body) {
-					$(that.dom.grid.right.body).find('table').eq(0).css('top', tableTop);
-				}
-			} )
-			.on( 'destroy.dt.DTFC', function () {
-				jqTable.off( '.DTFC' );
-
-				$(that.dom.scroller).off( '.DTFC' );
-				$(window).off( '.DTFC' );
-				$(that.s.dt.nTableWrapper).off( '.DTFC' );
-
-				$(that.dom.grid.left.liner).off( '.DTFC '+wheelType );
-				$(that.dom.grid.left.wrapper).remove();
-
-				$(that.dom.grid.right.liner).off( '.DTFC '+wheelType );
-				$(that.dom.grid.right.wrapper).remove();
-			} );
-
-		/* Get things right to start with - note that due to adjusting the columns, there must be
-		 * another redraw of the main table. It doesn't need to be a full redraw however.
-		 */
-		this._fnGridLayout();
-		this.s.dt.oInstance.fnDraw(false);
-	},
-
-
-	/**
-	 * Calculate the column widths for the grid layout
-	 *  @returns {void}
-	 *  @private
-	 */
-	"_fnColCalc": function ()
-	{
-		var that = this;
-		var iLeftWidth = 0;
-		var iRightWidth = 0;
-
-		this.s.aiInnerWidths = [];
-		this.s.aiOuterWidths = [];
-
-		$.each( this.s.dt.aoColumns, function (i, col) {
-			var th = $(col.nTh);
-			var border;
-
-			if ( ! th.filter(':visible').length ) {
-				that.s.aiInnerWidths.push( 0 );
-				that.s.aiOuterWidths.push( 0 );
-			}
-			else
-			{
-				// Inner width is used to assign widths to cells
-				// Outer width is used to calculate the container
-				var iWidth = th.outerWidth();
-
-				// When working with the left most-cell, need to add on the
-				// table's border to the outerWidth, since we need to take
-				// account of it, but it isn't in any cell
-				if ( that.s.aiOuterWidths.length === 0 ) {
-					border = $(that.s.dt.nTable).css('border-left-width');
-					iWidth += typeof border === 'string' && border.indexOf('px') === -1 ?
-						1 :
-						parseInt( border, 10 );
-				}
-
-				// Likewise with the final column on the right
-				if ( that.s.aiOuterWidths.length === that.s.dt.aoColumns.length-1 ) {
-					border = $(that.s.dt.nTable).css('border-right-width');
-					iWidth += typeof border === 'string' && border.indexOf('px') === -1 ?
-						1 :
-						parseInt( border, 10 );
-				}
-
-				that.s.aiOuterWidths.push( iWidth );
-				that.s.aiInnerWidths.push( th.width() );
-
-				if ( i < that.s.iLeftColumns )
-				{
-					iLeftWidth += iWidth;
-				}
-
-				if ( that.s.iTableColumns-that.s.iRightColumns <= i )
-				{
-					iRightWidth += iWidth;
-				}
-			}
-		} );
-
-		this.s.iLeftWidth = iLeftWidth;
-		this.s.iRightWidth = iRightWidth;
-	},
-
-
-	/**
-	 * Set up the DOM for the fixed column. The way the layout works is to create a 1x3 grid
-	 * for the left column, the DataTable (for which we just reuse the scrolling element DataTable
-	 * puts into the DOM) and the right column. In each of he two fixed column elements there is a
-	 * grouping wrapper element and then a head, body and footer wrapper. In each of these we then
-	 * place the cloned header, body or footer tables. This effectively gives as 3x3 grid structure.
-	 *  @returns {void}
-	 *  @private
-	 */
-	"_fnGridSetup": function ()
-	{
-		var that = this;
-		var oOverflow = this._fnDTOverflow();
-		var block;
-
-		this.dom.body = this.s.dt.nTable;
-		this.dom.header = this.s.dt.nTHead.parentNode;
-		this.dom.header.parentNode.parentNode.style.position = "relative";
-
-		var nSWrapper =
-			$('<div class="DTFC_ScrollWrapper" style="position:relative; clear:both;">'+
-				'<div class="DTFC_LeftWrapper" style="position:absolute; top:0; left:0;" aria-hidden="true">'+
-					'<div class="DTFC_LeftHeadWrapper" style="position:relative; top:0; left:0; overflow:hidden;"></div>'+
-					'<div class="DTFC_LeftBodyWrapper" style="position:relative; top:0; left:0; height:0; overflow:hidden;">'+
-						'<div class="DTFC_LeftBodyLiner" style="position:relative; top:0; left:0; overflow-y:scroll;"></div>'+
-					'</div>'+
-					'<div class="DTFC_LeftFootWrapper" style="position:relative; top:0; left:0; overflow:hidden;"></div>'+
-				'</div>'+
-				'<div class="DTFC_RightWrapper" style="position:absolute; top:0; right:0;" aria-hidden="true">'+
-					'<div class="DTFC_RightHeadWrapper" style="position:relative; top:0; left:0;">'+
-						'<div class="DTFC_RightHeadBlocker DTFC_Blocker" style="position:absolute; top:0; bottom:0;"></div>'+
-					'</div>'+
-					'<div class="DTFC_RightBodyWrapper" style="position:relative; top:0; left:0; height:0; overflow:hidden;">'+
-						'<div class="DTFC_RightBodyLiner" style="position:relative; top:0; left:0; overflow-y:scroll;"></div>'+
-					'</div>'+
-					'<div class="DTFC_RightFootWrapper" style="position:relative; top:0; left:0;">'+
-						'<div class="DTFC_RightFootBlocker DTFC_Blocker" style="position:absolute; top:0; bottom:0;"></div>'+
-					'</div>'+
-				'</div>'+
-			'</div>')[0];
-		var nLeft = nSWrapper.childNodes[0];
-		var nRight = nSWrapper.childNodes[1];
-
-		this.dom.grid.dt.parentNode.insertBefore( nSWrapper, this.dom.grid.dt );
-		nSWrapper.appendChild( this.dom.grid.dt );
-
-		this.dom.grid.wrapper = nSWrapper;
-
-		if ( this.s.iLeftColumns > 0 )
-		{
-			this.dom.grid.left.wrapper = nLeft;
-			this.dom.grid.left.head = nLeft.childNodes[0];
-			this.dom.grid.left.body = nLeft.childNodes[1];
-			this.dom.grid.left.liner = $('div.DTFC_LeftBodyLiner', nSWrapper)[0];
-
-			nSWrapper.appendChild( nLeft );
-		}
-
-		if ( this.s.iRightColumns > 0 )
-		{
-			this.dom.grid.right.wrapper = nRight;
-			this.dom.grid.right.head = nRight.childNodes[0];
-			this.dom.grid.right.body = nRight.childNodes[1];
-			this.dom.grid.right.liner = $('div.DTFC_RightBodyLiner', nSWrapper)[0];
-
-			nRight.style.right = oOverflow.bar+"px";
-
-			block = $('div.DTFC_RightHeadBlocker', nSWrapper)[0];
-			block.style.width = oOverflow.bar+"px";
-			block.style.right = -oOverflow.bar+"px";
-			this.dom.grid.right.headBlock = block;
-
-			block = $('div.DTFC_RightFootBlocker', nSWrapper)[0];
-			block.style.width = oOverflow.bar+"px";
-			block.style.right = -oOverflow.bar+"px";
-			this.dom.grid.right.footBlock = block;
-
-			nSWrapper.appendChild( nRight );
-		}
-
-		if ( this.s.dt.nTFoot )
-		{
-			this.dom.footer = this.s.dt.nTFoot.parentNode;
-			if ( this.s.iLeftColumns > 0 )
-			{
-				this.dom.grid.left.foot = nLeft.childNodes[2];
-			}
-			if ( this.s.iRightColumns > 0 )
-			{
-				this.dom.grid.right.foot = nRight.childNodes[2];
-			}
-		}
-
-		// RTL support - swap the position of the left and right columns (#48)
-		if ( this.s.rtl ) {
-			$('div.DTFC_RightHeadBlocker', nSWrapper).css( {
-				left: -oOverflow.bar+'px',
-				right: ''
-			} );
-		}
-	},
-
-
-	/**
-	 * Style and position the grid used for the FixedColumns layout
-	 *  @returns {void}
-	 *  @private
-	 */
-	"_fnGridLayout": function ()
-	{
-		var that = this;
-		var oGrid = this.dom.grid;
-		var iWidth = $(oGrid.wrapper).width();
-		var iBodyHeight = this.s.dt.nTable.parentNode.offsetHeight;
-		var iFullHeight = this.s.dt.nTable.parentNode.parentNode.offsetHeight;
-		var oOverflow = this._fnDTOverflow();
-		var iLeftWidth = this.s.iLeftWidth;
-		var iRightWidth = this.s.iRightWidth;
-		var rtl = $(this.dom.body).css('direction') === 'rtl';
-		var wrapper;
-		var scrollbarAdjust = function ( node, width ) {
-			if ( ! oOverflow.bar ) {
-				// If there is no scrollbar (Macs) we need to hide the auto scrollbar
-				node.style.width = (width+20)+"px";
-				node.style.paddingRight = "20px";
-				node.style.boxSizing = "border-box";
-			}
-			else if ( that._firefoxScrollError() ) {
-				// See the above function for why this is required
-				if ( $(node).height() > 34 ) {
-					node.style.width = (width+oOverflow.bar)+"px";
-				}
-			}
-			else {
-				// Otherwise just overflow by the scrollbar
-				node.style.width = (width+oOverflow.bar)+"px";
-			}
-		};
-
-		// When x scrolling - don't paint the fixed columns over the x scrollbar
-		if ( oOverflow.x )
-		{
-			iBodyHeight -= oOverflow.bar;
-		}
-
-		oGrid.wrapper.style.height = iFullHeight+"px";
-
-		if ( this.s.iLeftColumns > 0 )
-		{
-			wrapper = oGrid.left.wrapper;
-			wrapper.style.width = iLeftWidth+'px';
-			wrapper.style.height = '1px';
-
-			// Swap the position of the left and right columns for rtl (#48)
-			// This is always up against the edge, scrollbar on the far side
-			if ( rtl ) {
-				wrapper.style.left = '';
-				wrapper.style.right = 0;
-			}
-			else {
-				wrapper.style.left = 0;
-				wrapper.style.right = '';
-			}
-
-			oGrid.left.body.style.height = iBodyHeight+"px";
-			if ( oGrid.left.foot ) {
-				oGrid.left.foot.style.top = (oOverflow.x ? oOverflow.bar : 0)+"px"; // shift footer for scrollbar
-			}
-
-			scrollbarAdjust( oGrid.left.liner, iLeftWidth );
-			oGrid.left.liner.style.height = iBodyHeight+"px";
-			oGrid.left.liner.style.maxHeight = iBodyHeight+"px";
-		}
-
-		if ( this.s.iRightColumns > 0 )
-		{
-			wrapper = oGrid.right.wrapper;
-			wrapper.style.width = iRightWidth+'px';
-			wrapper.style.height = '1px';
-
-			// Need to take account of the vertical scrollbar
-			if ( this.s.rtl ) {
-				wrapper.style.left = oOverflow.y ? oOverflow.bar+'px' : 0;
-				wrapper.style.right = '';
-			}
-			else {
-				wrapper.style.left = '';
-				wrapper.style.right = oOverflow.y ? oOverflow.bar+'px' : 0;
-			}
-
-			oGrid.right.body.style.height = iBodyHeight+"px";
-			if ( oGrid.right.foot ) {
-				oGrid.right.foot.style.top = (oOverflow.x ? oOverflow.bar : 0)+"px";
-			}
-
-			scrollbarAdjust( oGrid.right.liner, iRightWidth );
-			oGrid.right.liner.style.height = iBodyHeight+"px";
-			oGrid.right.liner.style.maxHeight = iBodyHeight+"px";
-
-			oGrid.right.headBlock.style.display = oOverflow.y ? 'block' : 'none';
-			oGrid.right.footBlock.style.display = oOverflow.y ? 'block' : 'none';
-		}
-	},
-
-
-	/**
-	 * Get information about the DataTable's scrolling state - specifically if the table is scrolling
-	 * on either the x or y axis, and also the scrollbar width.
-	 *  @returns {object} Information about the DataTables scrolling state with the properties:
-	 *    'x', 'y' and 'bar'
-	 *  @private
-	 */
-	"_fnDTOverflow": function ()
-	{
-		var nTable = this.s.dt.nTable;
-		var nTableScrollBody = nTable.parentNode;
-		var out = {
-			"x": false,
-			"y": false,
-			"bar": this.s.dt.oScroll.iBarWidth
-		};
-
-		if ( nTable.offsetWidth > nTableScrollBody.clientWidth )
-		{
-			out.x = true;
-		}
-
-		if ( nTable.offsetHeight > nTableScrollBody.clientHeight )
-		{
-			out.y = true;
-		}
-
-		return out;
-	},
-
-
-	/**
-	 * Clone and position the fixed columns
-	 *  @returns {void}
-	 *  @param   {Boolean} bAll Indicate if the header and footer should be updated as well (true)
-	 *  @private
-	 */
-	"_fnDraw": function ( bAll )
-	{
-		this._fnGridLayout();
-		this._fnCloneLeft( bAll );
-		this._fnCloneRight( bAll );
-
-		$(this.dom.scroller).trigger('scroll');
-
-		/* Draw callback function */
-		if ( this.s.fnDrawCallback !== null )
-		{
-			this.s.fnDrawCallback.call( this, this.dom.clone.left, this.dom.clone.right );
-		}
-
-		/* Event triggering */
-		$(this).trigger( 'draw.dtfc', {
-			"leftClone": this.dom.clone.left,
-			"rightClone": this.dom.clone.right
-		} );
-	},
-
-
-	/**
-	 * Clone the right columns
-	 *  @returns {void}
-	 *  @param   {Boolean} bAll Indicate if the header and footer should be updated as well (true)
-	 *  @private
-	 */
-	"_fnCloneRight": function ( bAll )
-	{
-		if ( this.s.iRightColumns <= 0 ) {
-			return;
-		}
-
-		var that = this,
-			i, jq,
-			aiColumns = [];
-
-		for ( i=this.s.iTableColumns-this.s.iRightColumns ; i<this.s.iTableColumns ; i++ ) {
-			if ( this.s.dt.aoColumns[i].bVisible ) {
-				aiColumns.push( i );
-			}
-		}
-
-		this._fnClone( this.dom.clone.right, this.dom.grid.right, aiColumns, bAll );
-	},
-
-
-	/**
-	 * Clone the left columns
-	 *  @returns {void}
-	 *  @param   {Boolean} bAll Indicate if the header and footer should be updated as well (true)
-	 *  @private
-	 */
-	"_fnCloneLeft": function ( bAll )
-	{
-		if ( this.s.iLeftColumns <= 0 ) {
-			return;
-		}
-
-		var that = this,
-			i, jq,
-			aiColumns = [];
-
-		for ( i=0 ; i<this.s.iLeftColumns ; i++ ) {
-			if ( this.s.dt.aoColumns[i].bVisible ) {
-				aiColumns.push( i );
-			}
-		}
-
-		this._fnClone( this.dom.clone.left, this.dom.grid.left, aiColumns, bAll );
-	},
-
-
-	/**
-	 * Make a copy of the layout object for a header or footer element from DataTables. Note that
-	 * this method will clone the nodes in the layout object.
-	 *  @returns {Array} Copy of the layout array
-	 *  @param   {Object} aoOriginal Layout array from DataTables (aoHeader or aoFooter)
-	 *  @param   {Object} aiColumns Columns to copy
-	 *  @param   {boolean} events Copy cell events or not
-	 *  @private
-	 */
-	"_fnCopyLayout": function ( aoOriginal, aiColumns, events )
-	{
-		var aReturn = [];
-		var aClones = [];
-		var aCloned = [];
-
-		for ( var i=0, iLen=aoOriginal.length ; i<iLen ; i++ )
-		{
-			var aRow = [];
-			aRow.nTr = $(aoOriginal[i].nTr).clone(events, false)[0];
-
-			for ( var j=0, jLen=this.s.iTableColumns ; j<jLen ; j++ )
-			{
-				if ( $.inArray( j, aiColumns ) === -1 )
-				{
-					continue;
-				}
-
-				var iCloned = $.inArray( aoOriginal[i][j].cell, aCloned );
-				if ( iCloned === -1 )
-				{
-					var nClone = $(aoOriginal[i][j].cell).clone(events, false)[0];
-					aClones.push( nClone );
-					aCloned.push( aoOriginal[i][j].cell );
-
-					aRow.push( {
-						"cell": nClone,
-						"unique": aoOriginal[i][j].unique
-					} );
-				}
-				else
-				{
-					aRow.push( {
-						"cell": aClones[ iCloned ],
-						"unique": aoOriginal[i][j].unique
-					} );
-				}
-			}
-
-			aReturn.push( aRow );
-		}
-
-		return aReturn;
-	},
-
-
-	/**
-	 * Clone the DataTable nodes and place them in the DOM (sized correctly)
-	 *  @returns {void}
-	 *  @param   {Object} oClone Object containing the header, footer and body cloned DOM elements
-	 *  @param   {Object} oGrid Grid object containing the display grid elements for the cloned
-	 *                    column (left or right)
-	 *  @param   {Array} aiColumns Column indexes which should be operated on from the DataTable
-	 *  @param   {Boolean} bAll Indicate if the header and footer should be updated as well (true)
-	 *  @private
-	 */
-	"_fnClone": function ( oClone, oGrid, aiColumns, bAll )
-	{
-		var that = this,
-			i, iLen, j, jLen, jq, nTarget, iColumn, nClone, iIndex, aoCloneLayout,
-			jqCloneThead, aoFixedHeader,
-			dt = this.s.dt;
-
-		/*
-		 * Header
-		 */
-		if ( bAll )
-		{
-			$(oClone.header).remove();
-
-			oClone.header = $(this.dom.header).clone(true, false)[0];
-			oClone.header.className += " DTFC_Cloned";
-			oClone.header.style.width = "100%";
-			oGrid.head.appendChild( oClone.header );
-
-			/* Copy the DataTables layout cache for the header for our floating column */
-			aoCloneLayout = this._fnCopyLayout( dt.aoHeader, aiColumns, true );
-			jqCloneThead = $('>thead', oClone.header);
-			jqCloneThead.empty();
-
-			/* Add the created cloned TR elements to the table */
-			for ( i=0, iLen=aoCloneLayout.length ; i<iLen ; i++ )
-			{
-				jqCloneThead[0].appendChild( aoCloneLayout[i].nTr );
-			}
-
-			/* Use the handy _fnDrawHead function in DataTables to do the rowspan/colspan
-			 * calculations for us
-			 */
-			dt.oApi._fnDrawHead( dt, aoCloneLayout, true );
-		}
-		else
-		{
-			/* To ensure that we copy cell classes exactly, regardless of colspan, multiple rows
-			 * etc, we make a copy of the header from the DataTable again, but don't insert the
-			 * cloned cells, just copy the classes across. To get the matching layout for the
-			 * fixed component, we use the DataTables _fnDetectHeader method, allowing 1:1 mapping
-			 */
-			aoCloneLayout = this._fnCopyLayout( dt.aoHeader, aiColumns, false );
-			aoFixedHeader=[];
-
-			dt.oApi._fnDetectHeader( aoFixedHeader, $('>thead', oClone.header)[0] );
-
-			for ( i=0, iLen=aoCloneLayout.length ; i<iLen ; i++ )
-			{
-				for ( j=0, jLen=aoCloneLayout[i].length ; j<jLen ; j++ )
-				{
-					aoFixedHeader[i][j].cell.className = aoCloneLayout[i][j].cell.className;
-
-					// If jQuery UI theming is used we need to copy those elements as well
-					$('span.DataTables_sort_icon', aoFixedHeader[i][j].cell).each( function () {
-						this.className = $('span.DataTables_sort_icon', aoCloneLayout[i][j].cell)[0].className;
-					} );
-				}
-			}
-		}
-		this._fnEqualiseHeights( 'thead', this.dom.header, oClone.header );
-
-		/*
-		 * Body
-		 */
-		if ( this.s.sHeightMatch == 'auto' )
-		{
-			/* Remove any heights which have been applied already and let the browser figure it out */
-			$('>tbody>tr', that.dom.body).css('height', 'auto');
-		}
-
-		if ( oClone.body !== null )
-		{
-			$(oClone.body).remove();
-			oClone.body = null;
-		}
-
-		oClone.body = $(this.dom.body).clone(true)[0];
-		oClone.body.className += " DTFC_Cloned";
-		oClone.body.style.paddingBottom = dt.oScroll.iBarWidth+"px";
-		oClone.body.style.marginBottom = (dt.oScroll.iBarWidth*2)+"px"; /* For IE */
-		if ( oClone.body.getAttribute('id') !== null )
-		{
-			oClone.body.removeAttribute('id');
-		}
-
-		$('>thead>tr', oClone.body).empty();
-		$('>tfoot', oClone.body).remove();
-
-		var nBody = $('tbody', oClone.body)[0];
-		$(nBody).empty();
-		if ( dt.aiDisplay.length > 0 )
-		{
-			/* Copy the DataTables' header elements to force the column width in exactly the
-			 * same way that DataTables does it - have the header element, apply the width and
-			 * colapse it down
-			 */
-			var nInnerThead = $('>thead>tr', oClone.body)[0];
-			for ( iIndex=0 ; iIndex<aiColumns.length ; iIndex++ )
-			{
-				iColumn = aiColumns[iIndex];
-
-				nClone = $(dt.aoColumns[iColumn].nTh).clone(true)[0];
-				nClone.innerHTML = "";
-
-				var oStyle = nClone.style;
-				oStyle.paddingTop = "0";
-				oStyle.paddingBottom = "0";
-				oStyle.borderTopWidth = "0";
-				oStyle.borderBottomWidth = "0";
-				oStyle.height = 0;
-				oStyle.width = that.s.aiInnerWidths[iColumn]+"px";
-
-				nInnerThead.appendChild( nClone );
-			}
-
-			/* Add in the tbody elements, cloning form the master table */
-			$('>tbody>tr', that.dom.body).each( function (z) {
-				var i = that.s.dt.oFeatures.bServerSide===false ?
-					that.s.dt.aiDisplay[ that.s.dt._iDisplayStart+z ] : z;
-				var aTds = that.s.dt.aoData[ i ].anCells || $(this).children('td, th');
-
-				var n = this.cloneNode(false);
-				n.removeAttribute('id');
-				n.setAttribute( 'data-dt-row', i );
-
-				for ( iIndex=0 ; iIndex<aiColumns.length ; iIndex++ )
-				{
-					iColumn = aiColumns[iIndex];
-
-					if ( aTds.length > 0 )
-					{
-						nClone = $( aTds[iColumn] ).clone(true, true)[0];
-						nClone.removeAttribute( 'id' );
-						nClone.setAttribute( 'data-dt-row', i );
-						nClone.setAttribute( 'data-dt-column', iColumn );
-						n.appendChild( nClone );
-					}
-				}
-				nBody.appendChild( n );
-			} );
-		}
-		else
-		{
-			$('>tbody>tr', that.dom.body).each( function (z) {
-				nClone = this.cloneNode(true);
-				nClone.className += ' DTFC_NoData';
-				$('td', nClone).html('');
-				nBody.appendChild( nClone );
-			} );
-		}
-
-		oClone.body.style.width = "100%";
-		oClone.body.style.margin = "0";
-		oClone.body.style.padding = "0";
-
-		// Interop with Scroller - need to use a height forcing element in the
-		// scrolling area in the same way that Scroller does in the body scroll.
-		if ( dt.oScroller !== undefined )
-		{
-			var scrollerForcer = dt.oScroller.dom.force;
-
-			if ( ! oGrid.forcer ) {
-				oGrid.forcer = scrollerForcer.cloneNode( true );
-				oGrid.liner.appendChild( oGrid.forcer );
-			}
-			else {
-				oGrid.forcer.style.height = scrollerForcer.style.height;
-			}
-		}
-
-		oGrid.liner.appendChild( oClone.body );
-
-		this._fnEqualiseHeights( 'tbody', that.dom.body, oClone.body );
-
-		/*
-		 * Footer
-		 */
-		if ( dt.nTFoot !== null )
-		{
-			if ( bAll )
-			{
-				if ( oClone.footer !== null )
-				{
-					oClone.footer.parentNode.removeChild( oClone.footer );
-				}
-				oClone.footer = $(this.dom.footer).clone(true, true)[0];
-				oClone.footer.className += " DTFC_Cloned";
-				oClone.footer.style.width = "100%";
-				oGrid.foot.appendChild( oClone.footer );
-
-				/* Copy the footer just like we do for the header */
-				aoCloneLayout = this._fnCopyLayout( dt.aoFooter, aiColumns, true );
-				var jqCloneTfoot = $('>tfoot', oClone.footer);
-				jqCloneTfoot.empty();
-
-				for ( i=0, iLen=aoCloneLayout.length ; i<iLen ; i++ )
-				{
-					jqCloneTfoot[0].appendChild( aoCloneLayout[i].nTr );
-				}
-				dt.oApi._fnDrawHead( dt, aoCloneLayout, true );
-			}
-			else
-			{
-				aoCloneLayout = this._fnCopyLayout( dt.aoFooter, aiColumns, false );
-				var aoCurrFooter=[];
-
-				dt.oApi._fnDetectHeader( aoCurrFooter, $('>tfoot', oClone.footer)[0] );
-
-				for ( i=0, iLen=aoCloneLayout.length ; i<iLen ; i++ )
-				{
-					for ( j=0, jLen=aoCloneLayout[i].length ; j<jLen ; j++ )
-					{
-						aoCurrFooter[i][j].cell.className = aoCloneLayout[i][j].cell.className;
-					}
-				}
-			}
-			this._fnEqualiseHeights( 'tfoot', this.dom.footer, oClone.footer );
-		}
-
-		/* Equalise the column widths between the header footer and body - body get's priority */
-		var anUnique = dt.oApi._fnGetUniqueThs( dt, $('>thead', oClone.header)[0] );
-		$(anUnique).each( function (i) {
-			iColumn = aiColumns[i];
-			this.style.width = that.s.aiInnerWidths[iColumn]+"px";
-		} );
-
-		if ( that.s.dt.nTFoot !== null )
-		{
-			anUnique = dt.oApi._fnGetUniqueThs( dt, $('>tfoot', oClone.footer)[0] );
-			$(anUnique).each( function (i) {
-				iColumn = aiColumns[i];
-				this.style.width = that.s.aiInnerWidths[iColumn]+"px";
-			} );
-		}
-	},
-
-
-	/**
-	 * From a given table node (THEAD etc), get a list of TR direct child elements
-	 *  @param   {Node} nIn Table element to search for TR elements (THEAD, TBODY or TFOOT element)
-	 *  @returns {Array} List of TR elements found
-	 *  @private
-	 */
-	"_fnGetTrNodes": function ( nIn )
-	{
-		var aOut = [];
-		for ( var i=0, iLen=nIn.childNodes.length ; i<iLen ; i++ )
-		{
-			if ( nIn.childNodes[i].nodeName.toUpperCase() == "TR" )
-			{
-				aOut.push( nIn.childNodes[i] );
-			}
-		}
-		return aOut;
-	},
-
-
-	/**
-	 * Equalise the heights of the rows in a given table node in a cross browser way
-	 *  @returns {void}
-	 *  @param   {String} nodeName Node type - thead, tbody or tfoot
-	 *  @param   {Node} original Original node to take the heights from
-	 *  @param   {Node} clone Copy the heights to
-	 *  @private
-	 */
-	"_fnEqualiseHeights": function ( nodeName, original, clone )
-	{
-		if ( this.s.sHeightMatch == 'none' && nodeName !== 'thead' && nodeName !== 'tfoot' )
-		{
-			return;
-		}
-
-		var that = this,
-			i, iLen, iHeight, iHeight2, iHeightOriginal, iHeightClone,
-			rootOriginal = original.getElementsByTagName(nodeName)[0],
-			rootClone    = clone.getElementsByTagName(nodeName)[0],
-			jqBoxHack    = $('>'+nodeName+'>tr:eq(0)', original).children(':first'),
-			iBoxHack     = jqBoxHack.outerHeight() - jqBoxHack.height(),
-			anOriginal   = this._fnGetTrNodes( rootOriginal ),
-			anClone      = this._fnGetTrNodes( rootClone ),
-			heights      = [];
-
-		for ( i=0, iLen=anClone.length ; i<iLen ; i++ )
-		{
-			iHeightOriginal = anOriginal[i].offsetHeight;
-			iHeightClone = anClone[i].offsetHeight;
-			iHeight = iHeightClone > iHeightOriginal ? iHeightClone : iHeightOriginal;
-
-			if ( this.s.sHeightMatch == 'semiauto' )
-			{
-				anOriginal[i]._DTTC_iHeight = iHeight;
-			}
-
-			heights.push( iHeight );
-		}
-
-		for ( i=0, iLen=anClone.length ; i<iLen ; i++ )
-		{
-			anClone[i].style.height = heights[i]+"px";
-			anOriginal[i].style.height = heights[i]+"px";
-		}
-	},
-
-	/**
-	 * Determine if the UA suffers from Firefox's overflow:scroll scrollbars
-	 * not being shown bug.
-	 *
-	 * Firefox doesn't draw scrollbars, even if it is told to using
-	 * overflow:scroll, if the div is less than 34px height. See bugs 292284 and
-	 * 781885. Using UA detection here since this is particularly hard to detect
-	 * using objects - its a straight up rendering error in Firefox.
-	 *
-	 * @return {boolean} True if Firefox error is present, false otherwise
-	 */
-	_firefoxScrollError: function () {
-		if ( _firefoxScroll === undefined ) {
-			var test = $('<div/>')
-				.css( {
-					position: 'absolute',
-					top: 0,
-					left: 0,
-					height: 10,
-					width: 50,
-					overflow: 'scroll'
-				} )
-				.appendTo( 'body' );
-
-			// Make sure this doesn't apply on Macs with 0 width scrollbars
-			_firefoxScroll = (
-				test[0].clientWidth === test[0].offsetWidth && this._fnDTOverflow().bar !== 0
-			);
-
-			test.remove();
-		}
-
-		return _firefoxScroll;
-	}
-} );
-
-
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Statics
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/**
- * FixedColumns default settings for initialisation
- *  @name FixedColumns.defaults
- *  @namespace
- *  @static
- */
-FixedColumns.defaults = /** @lends FixedColumns.defaults */{
-	/**
-	 * Number of left hand columns to fix in position
-	 *  @type     int
-	 *  @default  1
-	 *  @static
-	 *  @example
-	 *      var  = $('#example').dataTable( {
-	 *          "scrollX": "100%"
-	 *      } );
-	 *      new $.fn.dataTable.fixedColumns( table, {
-	 *          "leftColumns": 2
-	 *      } );
-	 */
-	"iLeftColumns": 1,
-
-	/**
-	 * Number of right hand columns to fix in position
-	 *  @type     int
-	 *  @default  0
-	 *  @static
-	 *  @example
-	 *      var table = $('#example').dataTable( {
-	 *          "scrollX": "100%"
-	 *      } );
-	 *      new $.fn.dataTable.fixedColumns( table, {
-	 *          "rightColumns": 1
-	 *      } );
-	 */
-	"iRightColumns": 0,
-
-	/**
-	 * Draw callback function which is called when FixedColumns has redrawn the fixed assets
-	 *  @type     function(object, object):void
-	 *  @default  null
-	 *  @static
-	 *  @example
-	 *      var table = $('#example').dataTable( {
-	 *          "scrollX": "100%"
-	 *      } );
-	 *      new $.fn.dataTable.fixedColumns( table, {
-	 *          "drawCallback": function () {
-	 *	            alert( "FixedColumns redraw" );
-	 *	        }
-	 *      } );
-	 */
-	"fnDrawCallback": null,
-
-	/**
-	 * Height matching algorthim to use. This can be "none" which will result in no height
-	 * matching being applied by FixedColumns (height matching could be forced by CSS in this
-	 * case), "semiauto" whereby the height calculation will be performed once, and the result
-	 * cached to be used again (fnRecalculateHeight can be used to force recalculation), or
-	 * "auto" when height matching is performed on every draw (slowest but must accurate)
-	 *  @type     string
-	 *  @default  semiauto
-	 *  @static
-	 *  @example
-	 *      var table = $('#example').dataTable( {
-	 *          "scrollX": "100%"
-	 *      } );
-	 *      new $.fn.dataTable.fixedColumns( table, {
-	 *          "heightMatch": "auto"
-	 *      } );
-	 */
-	"sHeightMatch": "semiauto"
-};
-
-
-
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Constants
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/**
- * FixedColumns version
- *  @name      FixedColumns.version
- *  @type      String
- *  @default   See code
- *  @static
- */
-FixedColumns.version = "3.3.3";
-
-
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * DataTables API integration
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-DataTable.Api.register( 'fixedColumns()', function () {
-	return this;
-} );
-
-DataTable.Api.register( 'fixedColumns().update()', function () {
-	return this.iterator( 'table', function ( ctx ) {
-		if ( ctx._oFixedColumns ) {
-			ctx._oFixedColumns.fnUpdate();
-		}
-	} );
-} );
-
-DataTable.Api.register( 'fixedColumns().relayout()', function () {
-	return this.iterator( 'table', function ( ctx ) {
-		if ( ctx._oFixedColumns ) {
-			ctx._oFixedColumns.fnRedrawLayout();
-		}
-	} );
-} );
-
-DataTable.Api.register( 'rows().recalcHeight()', function () {
-	return this.iterator( 'row', function ( ctx, idx ) {
-		if ( ctx._oFixedColumns ) {
-			ctx._oFixedColumns.fnRecalculateHeight( this.row(idx).node() );
-		}
-	} );
-} );
-
-DataTable.Api.register( 'fixedColumns().rowIndex()', function ( row ) {
-	row = $(row);
-
-	return row.parents('.DTFC_Cloned').length ?
-		this.rows( { page: 'current' } ).indexes()[ row.index() ] :
-		this.row( row ).index();
-} );
-
-DataTable.Api.register( 'fixedColumns().cellIndex()', function ( cell ) {
-	cell = $(cell);
-
-	if ( cell.parents('.DTFC_Cloned').length ) {
-		var rowClonedIdx = cell.parent().index();
-		var rowIdx = this.rows( { page: 'current' } ).indexes()[ rowClonedIdx ];
-		var columnIdx;
-
-		if ( cell.parents('.DTFC_LeftWrapper').length ) {
-			columnIdx = cell.index();
-		}
-		else {
-			var columns = this.columns().flatten().length;
-			columnIdx = columns - this.context[0]._oFixedColumns.s.iRightColumns + cell.index();
-		}
-
-		return {
-			row: rowIdx,
-			column: this.column.index( 'toData', columnIdx ),
-			columnVisible: columnIdx
-		};
-	}
-	else {
-		return this.cell( cell ).index();
-	}
-} );
-
-DataTable.Api.registerPlural( 'cells().fixedNodes()', 'cell().fixedNode()', function () {
-	return this.iterator( 'cell', function ( settings, row, column ) {
-		return settings._oFixedColumns
-			? settings._oFixedColumns.fnToFixedNode( row, column )
-			: this.cell(row, column).node();
-	}, 1 );
-} );
-
-
-
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Initialisation
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-// Attach a listener to the document which listens for DataTables initialisation
-// events so we can automatically initialise
-$(document).on( 'init.dt.fixedColumns', function (e, settings) {
-	if ( e.namespace !== 'dt' ) {
-		return;
-	}
-
-	var init = settings.oInit.fixedColumns;
-	var defaults = DataTable.defaults.fixedColumns;
-
-	if ( init || defaults ) {
-		var opts = $.extend( {}, init, defaults );
-
-		if ( init !== false ) {
-			new FixedColumns( settings, opts );
-		}
-	}
-} );
-
-
-
-// Make FixedColumns accessible from the DataTables instance
-$.fn.dataTable.FixedColumns = FixedColumns;
-$.fn.DataTable.FixedColumns = FixedColumns;
-
-return FixedColumns;
-}));
-
-
-/*! FixedHeader 3.1.9
+(function () {
+    'use strict';
+
+    var $;
+    var dataTable;
+    function setJQuery(jq) {
+        $ = jq;
+        dataTable = $.fn.dataTable;
+    }
+    var FixedColumns = /** @class */ (function () {
+        function FixedColumns(settings, opts) {
+            var _this = this;
+            // Check that the required version of DataTables is included
+            if (!dataTable || !dataTable.versionCheck || !dataTable.versionCheck('1.10.0')) {
+                throw new Error('StateRestore requires DataTables 1.10 or newer');
+            }
+            var table = new dataTable.Api(settings);
+            this.classes = $.extend(true, {}, FixedColumns.classes);
+            // Get options from user
+            this.c = $.extend(true, {}, FixedColumns.defaults, opts);
+            // Backwards compatibility for deprecated leftColumns
+            if (opts.left === undefined && this.c.leftColumns !== undefined) {
+                this.c.left = this.c.leftColumns;
+            }
+            // Backwards compatibility for deprecated rightColumns
+            if (opts.right === undefined && this.c.rightColumns !== undefined) {
+                this.c.right = this.c.rightColumns;
+            }
+            this.s = {
+                barWidth: 0,
+                dt: table,
+                rtl: $(table.table().node()).css('direction') === 'rtl'
+            };
+            // Common CSS for all blockers
+            var blockerCSS = {
+                'background-color': 'white',
+                'bottom': '0px',
+                'display': 'block',
+                'position': 'absolute',
+                'width': this.s.barWidth + 1 + 'px'
+            };
+            this.dom = {
+                leftBottomBlocker: $('<div>')
+                    .css(blockerCSS)
+                    .css('left', 0)
+                    .addClass(this.classes.leftBottomBlocker),
+                leftTopBlocker: $('<div>')
+                    .css(blockerCSS)
+                    .css({
+                    left: 0,
+                    top: 0
+                })
+                    .addClass(this.classes.leftTopBlocker),
+                rightBottomBlocker: $('<div>')
+                    .css(blockerCSS)
+                    .css('right', 0)
+                    .addClass(this.classes.rightBottomBlocker),
+                rightTopBlocker: $('<div>')
+                    .css(blockerCSS)
+                    .css({
+                    right: 0,
+                    top: 0
+                })
+                    .addClass(this.classes.rightTopBlocker)
+            };
+            if (this.s.dt.settings()[0]._bInitComplete) {
+                // Fixed Columns Initialisation
+                this._addStyles();
+                this._setKeyTableListener();
+            }
+            else {
+                table.one('preInit.dt', function () {
+                    // Fixed Columns Initialisation
+                    _this._addStyles();
+                    _this._setKeyTableListener();
+                });
+            }
+            // Make class available through dt object
+            table.settings()[0]._fixedColumns = this;
+            return this;
+        }
+        /**
+         * Getter/Setter for the `fixedColumns.left` property
+         *
+         * @param newVal Optional. If present this will be the new value for the number of left fixed columns
+         * @returns The number of left fixed columns
+         */
+        FixedColumns.prototype.left = function (newVal) {
+            // If the value is to change
+            if (newVal !== undefined) {
+                // Set the new values and redraw the columns
+                this.c.left = newVal;
+                this._addStyles();
+            }
+            return this.c.left;
+        };
+        /**
+         * Getter/Setter for the `fixedColumns.left` property
+         *
+         * @param newVal Optional. If present this will be the new value for the number of right fixed columns
+         * @returns The number of right fixed columns
+         */
+        FixedColumns.prototype.right = function (newVal) {
+            // If the value is to change
+            if (newVal !== undefined) {
+                // Set the new values and redraw the columns
+                this.c.right = newVal;
+                this._addStyles();
+            }
+            return this.c.right;
+        };
+        /**
+         * Iterates over the columns, fixing the appropriate ones to the left and right
+         */
+        FixedColumns.prototype._addStyles = function () {
+            // Set the bar width if vertical scrolling is enabled
+            if (this.s.dt.settings()[0].oScroll.sY) {
+                var scroll_1 = $(this.s.dt.table().node()).closest('div.dataTables_scrollBody')[0];
+                var barWidth = this.s.dt.settings()[0].oBrowser.barWidth;
+                if (scroll_1.offsetWidth - scroll_1.clientWidth >= barWidth) {
+                    this.s.barWidth = barWidth;
+                }
+                else {
+                    this.s.barWidth = 0;
+                }
+                this.dom.rightTopBlocker.css('width', this.s.barWidth + 1);
+                this.dom.leftTopBlocker.css('width', this.s.barWidth + 1);
+                this.dom.rightBottomBlocker.css('width', this.s.barWidth + 1);
+                this.dom.leftBottomBlocker.css('width', this.s.barWidth + 1);
+            }
+            var parentDiv = null;
+            // Get the header and it's height
+            var header = this.s.dt.column(0).header();
+            var headerHeight = null;
+            if (header !== null) {
+                header = $(header);
+                headerHeight = header.outerHeight() + 1;
+                parentDiv = $(header.closest('div.dataTables_scroll')).css('position', 'relative');
+            }
+            // Get the footer and it's height
+            var footer = this.s.dt.column(0).footer();
+            var footerHeight = null;
+            if (footer !== null) {
+                footer = $(footer);
+                footerHeight = footer.outerHeight();
+                // Only attempt to retrieve the parentDiv if it has not been retrieved already
+                if (parentDiv === null) {
+                    parentDiv = $(footer.closest('div.dataTables_scroll')).css('position', 'relative');
+                }
+            }
+            // Get the number of columns in the table - this is used often so better to only make 1 api call
+            var numCols = this.s.dt.columns().data().toArray().length;
+            // Tracker for the number of pixels should be left to the left of the table
+            var distLeft = 0;
+            // Sometimes the headers have slightly different widths so need to track them individually
+            var headLeft = 0;
+            // Get all of the row elements in the table
+            var rows = $(this.s.dt.table().node()).children('tbody').children('tr');
+            var invisibles = 0;
+            // When working from right to left we need to know how many are invisible before a point,
+            // without including those that are invisible after
+            var prevInvisible = new Map();
+            // Iterate over all of the columns
+            for (var i = 0; i < numCols; i++) {
+                var column = this.s.dt.column(i);
+                // Set the map for the previous column
+                if (i > 0) {
+                    prevInvisible.set(i - 1, invisibles);
+                }
+                if (!column.visible()) {
+                    invisibles++;
+                    continue;
+                }
+                // Get the columns header and footer element
+                var colHeader = $(column.header());
+                var colFooter = $(column.footer());
+                // If i is less than the value of left then this column should be fixed left
+                if (i - invisibles < this.c.left) {
+                    $(this.s.dt.table().node()).addClass(this.classes.tableFixedLeft);
+                    parentDiv.addClass(this.classes.tableFixedLeft);
+                    // Add the width of the previous node - only if we are on atleast the second column
+                    if (i - invisibles > 0) {
+                        var prevIdx = i;
+                        // Simply using the number of hidden columns doesn't work here,
+                        // if the first is hidden then this would be thrown off
+                        while (prevIdx + 1 < numCols) {
+                            var prevCol = this.s.dt.column(prevIdx - 1, { page: 'current' });
+                            if (prevCol.visible()) {
+                                distLeft += $(prevCol.nodes()[0]).outerWidth();
+                                headLeft += prevCol.header() ?
+                                    $(prevCol.header()).outerWidth() :
+                                    prevCol.footer() ?
+                                        $(prevCol.header()).outerWidth() :
+                                        0;
+                                break;
+                            }
+                            prevIdx--;
+                        }
+                    }
+                    // Iterate over all of the rows, fixing the cell to the left
+                    for (var _i = 0, rows_1 = rows; _i < rows_1.length; _i++) {
+                        var row = rows_1[_i];
+                        $($(row).children()[i - invisibles])
+                            .css(this._getCellCSS(false, distLeft, 'left'))
+                            .addClass(this.classes.fixedLeft);
+                    }
+                    // Add the css for the header and the footer
+                    colHeader
+                        .css(this._getCellCSS(true, headLeft, 'left'))
+                        .addClass(this.classes.fixedLeft);
+                    colFooter
+                        .css(this._getCellCSS(true, headLeft, 'left'))
+                        .addClass(this.classes.fixedLeft);
+                }
+                else {
+                    // Iteriate through all of the rows, making sure they aren't currently trying to fix left
+                    for (var _a = 0, rows_2 = rows; _a < rows_2.length; _a++) {
+                        var row = rows_2[_a];
+                        var cell = $($(row).children()[i - invisibles]);
+                        // If the cell is trying to fix to the left, remove the class and the css
+                        if (cell.hasClass(this.classes.fixedLeft)) {
+                            cell
+                                .css(this._clearCellCSS('left'))
+                                .removeClass(this.classes.fixedLeft);
+                        }
+                    }
+                    // Make sure the header for this column isn't fixed left
+                    if (colHeader.hasClass(this.classes.fixedLeft)) {
+                        colHeader
+                            .css(this._clearCellCSS('left'))
+                            .removeClass(this.classes.fixedLeft);
+                    }
+                    // Make sure the footer for this column isn't fixed left
+                    if (colFooter.hasClass(this.classes.fixedLeft)) {
+                        colFooter
+                            .css(this._clearCellCSS('left'))
+                            .removeClass(this.classes.fixedLeft);
+                    }
+                }
+            }
+            // If there is a header with the index class and reading rtl then add left top blocker
+            if (header !== null && !header.hasClass('index')) {
+                if (this.s.rtl) {
+                    this.dom.leftTopBlocker.outerHeight(headerHeight);
+                    parentDiv.append(this.dom.leftTopBlocker);
+                }
+                else {
+                    this.dom.rightTopBlocker.outerHeight(headerHeight);
+                    parentDiv.append(this.dom.rightTopBlocker);
+                }
+            }
+            // If there is a footer with the index class and reading rtl then add left bottom blocker
+            if (footer !== null && !footer.hasClass('index')) {
+                if (this.s.rtl) {
+                    this.dom.leftBottomBlocker.outerHeight(footerHeight);
+                    parentDiv.append(this.dom.leftBottomBlocker);
+                }
+                else {
+                    this.dom.rightBottomBlocker.outerHeight(footerHeight);
+                    parentDiv.append(this.dom.rightBottomBlocker);
+                }
+            }
+            var distRight = 0;
+            var headRight = 0;
+            // Counter for the number of invisible columns so far
+            var rightInvisibles = 0;
+            for (var i = numCols - 1; i >= 0; i--) {
+                var column = this.s.dt.column(i);
+                // If a column is invisible just skip it
+                if (!column.visible()) {
+                    rightInvisibles++;
+                    continue;
+                }
+                // Get the columns header and footer element
+                var colHeader = $(column.header());
+                var colFooter = $(column.footer());
+                // Get the number of visible columns that came before this one
+                var prev = prevInvisible.get(i);
+                if (prev === undefined) {
+                    // If it wasn't set then it was the last column so just use the final value
+                    prev = invisibles;
+                }
+                if (i + rightInvisibles >= numCols - this.c.right) {
+                    $(this.s.dt.table().node()).addClass(this.classes.tableFixedRight);
+                    parentDiv.addClass(this.classes.tableFixedRight);
+                    // Add the widht of the previous node, only if we are on atleast the second column
+                    if (i + 1 + rightInvisibles < numCols) {
+                        var prevIdx = i;
+                        // Simply using the number of hidden columns doesn't work here,
+                        // if the first is hidden then this would be thrown off
+                        while (prevIdx + 1 < numCols) {
+                            var prevCol = this.s.dt.column(prevIdx + 1, { page: 'current' });
+                            if (prevCol.visible()) {
+                                distRight += $(prevCol.nodes()[0]).outerWidth();
+                                headRight += prevCol.header() ?
+                                    $(prevCol.header()).outerWidth() :
+                                    prevCol.footer() ?
+                                        $(prevCol.header()).outerWidth() :
+                                        0;
+                                break;
+                            }
+                            prevIdx++;
+                        }
+                    }
+                    // Iterate over all of the rows, fixing the cell to the right
+                    for (var _b = 0, rows_3 = rows; _b < rows_3.length; _b++) {
+                        var row = rows_3[_b];
+                        $($(row).children()[i - prev])
+                            .css(this._getCellCSS(false, distRight, 'right'))
+                            .addClass(this.classes.fixedRight);
+                    }
+                    // Add the css for the header and the footer
+                    colHeader
+                        .css(this._getCellCSS(true, headRight, 'right'))
+                        .addClass(this.classes.fixedRight);
+                    colFooter
+                        .css(this._getCellCSS(true, headRight, 'right'))
+                        .addClass(this.classes.fixedRight);
+                }
+                else {
+                    // Iteriate through all of the rows, making sure they aren't currently trying to fix right
+                    for (var _c = 0, rows_4 = rows; _c < rows_4.length; _c++) {
+                        var row = rows_4[_c];
+                        var cell = $($(row).children()[i - prev]);
+                        // If the cell is trying to fix to the right, remove the class and the css
+                        if (cell.hasClass(this.classes.fixedRight)) {
+                            cell
+                                .css(this._clearCellCSS('right'))
+                                .removeClass(this.classes.fixedRight);
+                        }
+                    }
+                    // Make sure the header for this column isn't fixed right
+                    if (colHeader.hasClass(this.classes.fixedRight)) {
+                        colHeader
+                            .css(this._clearCellCSS('right'))
+                            .removeClass(this.classes.fixedRight);
+                    }
+                    // Make sure the footer for this column isn't fixed right
+                    if (colFooter.hasClass(this.classes.fixedRight)) {
+                        colFooter
+                            .css(this._clearCellCSS('right'))
+                            .removeClass(this.classes.fixedRight);
+                    }
+                }
+            }
+            // If there is a header with the index class and reading rtl then add right top blocker
+            if (header) {
+                if (!this.s.rtl) {
+                    this.dom.rightTopBlocker.outerHeight(headerHeight);
+                    parentDiv.append(this.dom.rightTopBlocker);
+                }
+                else {
+                    this.dom.leftTopBlocker.outerHeight(headerHeight);
+                    parentDiv.append(this.dom.leftTopBlocker);
+                }
+            }
+            // If there is a footer with the index class and reading rtl then add right bottom blocker
+            if (footer) {
+                if (!this.s.rtl) {
+                    this.dom.rightBottomBlocker.outerHeight(footerHeight);
+                    parentDiv.append(this.dom.rightBottomBlocker);
+                }
+                else {
+                    this.dom.leftBottomBlocker.outerHeight(footerHeight);
+                    parentDiv.append(this.dom.leftBottomBlocker);
+                }
+            }
+        };
+        /**
+         * Gets the correct CSS for the cell, header or footer based on options provided
+         *
+         * @param header Whether this cell is a header or a footer
+         * @param dist The distance that the cell should be moved away from the edge
+         * @param lr Indicator of fixing to the left or the right
+         * @returns An object containing the correct css
+         */
+        FixedColumns.prototype._getCellCSS = function (header, dist, lr) {
+            if (lr === 'left') {
+                return !this.s.rtl ?
+                    {
+                        left: dist + 'px',
+                        position: 'sticky'
+                    } :
+                    {
+                        position: 'sticky',
+                        right: dist + (header ? this.s.barWidth : 0) + 'px'
+                    };
+            }
+            else {
+                return !this.s.rtl ?
+                    {
+                        position: 'sticky',
+                        right: dist + (header ? this.s.barWidth : 0) + 'px'
+                    } :
+                    {
+                        left: dist + 'px',
+                        position: 'sticky'
+                    };
+            }
+        };
+        /**
+         * Gets the css that is required to clear the fixing to a side
+         *
+         * @param lr Indicator of fixing to the left or the right
+         * @returns An object containing the correct css
+         */
+        FixedColumns.prototype._clearCellCSS = function (lr) {
+            if (lr === 'left') {
+                return !this.s.rtl ?
+                    {
+                        left: '',
+                        position: ''
+                    } :
+                    {
+                        position: '',
+                        right: ''
+                    };
+            }
+            else {
+                return !this.s.rtl ?
+                    {
+                        position: '',
+                        right: ''
+                    } :
+                    {
+                        left: '',
+                        position: ''
+                    };
+            }
+        };
+        FixedColumns.prototype._setKeyTableListener = function () {
+            var _this = this;
+            this.s.dt.on('key-focus', function (e, dt, cell) {
+                var cellPos = $(cell.node()).offset();
+                var scroll = $($(_this.s.dt.table().node()).closest('div.dataTables_scrollBody'));
+                // If there are fixed columns to the left
+                if (_this.c.left > 0) {
+                    // Get the rightmost left fixed column header, it's position and it's width
+                    var rightMost = $(_this.s.dt.column(_this.c.left - 1).header());
+                    var rightMostPos = rightMost.offset();
+                    var rightMostWidth = rightMost.outerWidth();
+                    // If the current highlighted cell is left of the rightmost cell on the screen
+                    if (cellPos.left < rightMostPos.left + rightMostWidth) {
+                        // Scroll it into view
+                        var currScroll = scroll.scrollLeft();
+                        scroll.scrollLeft(currScroll - (rightMostPos.left + rightMostWidth - cellPos.left));
+                    }
+                }
+                // If there are fixed columns to the right
+                if (_this.c.right > 0) {
+                    // Get the number of columns and the width of the cell as doing right side calc
+                    var numCols = _this.s.dt.columns().data().toArray().length;
+                    var cellWidth = $(cell.node()).outerWidth();
+                    // Get the leftmost right fixed column header and it's position
+                    var leftMost = $(_this.s.dt.column(numCols - _this.c.right).header());
+                    var leftMostPos = leftMost.offset();
+                    // If the current highlighted cell is right of the leftmost cell on the screen
+                    if (cellPos.left + cellWidth > leftMostPos.left) {
+                        // Scroll it into view
+                        var currScroll = scroll.scrollLeft();
+                        scroll.scrollLeft(currScroll - (leftMostPos.left - (cellPos.left + cellWidth)));
+                    }
+                }
+            });
+            // Whenever a draw occurs there is potential for the data to have changed and therefore also the column widths
+            // Therefore it is necessary to recalculate the values for the fixed columns
+            this.s.dt.on('draw', function () {
+                _this._addStyles();
+            });
+            this.s.dt.on('column-reorder', function () {
+                _this._addStyles();
+            });
+            this.s.dt.on('column-visibility', function () {
+                setTimeout(function () {
+                    _this._addStyles();
+                }, 50);
+            });
+        };
+        FixedColumns.version = '4.0.1';
+        FixedColumns.classes = {
+            fixedLeft: 'dtfc-fixed-left',
+            fixedRight: 'dtfc-fixed-right',
+            leftBottomBlocker: 'dtfc-left-bottom-blocker',
+            leftTopBlocker: 'dtfc-left-top-blocker',
+            rightBottomBlocker: 'dtfc-right-bottom-blocker',
+            rightTopBlocker: 'dtfc-right-top-blocker',
+            tableFixedLeft: 'dtfc-has-left',
+            tableFixedRight: 'dtfc-has-right'
+        };
+        FixedColumns.defaults = {
+            i18n: {
+                button: 'FixedColumns'
+            },
+            left: 1,
+            right: 0
+        };
+        return FixedColumns;
+    }());
+
+    /*! FixedColumns 4.0.1
+     * 2019-2021 SpryMedia Ltd - datatables.net/license
+     */
+    // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
+    // (with window and jQuery being allowed as parameters to the returned
+    // function) or just default browser loading.
+    (function (factory) {
+        if (typeof define === 'function' && define.amd) {
+            // AMD
+            define(['jquery', 'datatables.net'], function ($) {
+                return factory($, window, document);
+            });
+        }
+        else if (typeof exports === 'object') {
+            // CommonJS
+            module.exports = function (root, $) {
+                if (!root) {
+                    root = window;
+                }
+                if (!$ || !$.fn.dataTable) {
+                    // eslint-disable-next-line @typescript-eslint/no-var-requires
+                    $ = require('datatables.net')(root, $).$;
+                }
+                return factory($, root, root.document);
+            };
+        }
+        else {
+            // Browser - assume jQuery has already been loaded
+            factory(window.jQuery, window, document);
+        }
+    }(function ($, window, document) {
+        setJQuery($);
+        var dataTable = $.fn.dataTable;
+        $.fn.dataTable.FixedColumns = FixedColumns;
+        $.fn.DataTable.FixedColumns = FixedColumns;
+        var apiRegister = $.fn.dataTable.Api.register;
+        apiRegister('fixedColumns()', function () {
+            return this;
+        });
+        apiRegister('fixedColumns().left()', function (newVal) {
+            var ctx = this.context[0];
+            if (newVal !== undefined) {
+                ctx._fixedColumns.left(newVal);
+                return this;
+            }
+            else {
+                return ctx._fixedColumns.left();
+            }
+        });
+        apiRegister('fixedColumns().right()', function (newVal) {
+            var ctx = this.context[0];
+            if (newVal !== undefined) {
+                ctx._fixedColumns.right(newVal);
+                return this;
+            }
+            else {
+                return ctx._fixedColumns.right();
+            }
+        });
+        $.fn.dataTable.ext.buttons.fixedColumns = {
+            action: function (e, dt, node, config) {
+                if ($(node).attr('active')) {
+                    $(node).removeAttr('active').removeClass('active');
+                    dt.fixedColumns().left(0);
+                    dt.fixedColumns().right(0);
+                }
+                else {
+                    $(node).attr('active', true).addClass('active');
+                    dt.fixedColumns().left(config.config.left);
+                    dt.fixedColumns().right(config.config.right);
+                }
+            },
+            config: {
+                left: 1,
+                right: 0
+            },
+            init: function (dt, node, config) {
+                if (dt.settings()[0]._fixedColumns === undefined) {
+                    _init(dt.settings(), config);
+                }
+                $(node).attr('active', true).addClass('active');
+                dt.button(node).text(config.text || dt.i18n('buttons.fixedColumns', dt.settings()[0]._fixedColumns.c.i18n.button));
+            },
+            text: null
+        };
+        function _init(settings, options) {
+            if (options === void 0) { options = null; }
+            var api = new dataTable.Api(settings);
+            var opts = options
+                ? options
+                : api.init().fixedColumns || dataTable.defaults.fixedColumns;
+            var fixedColumns = new FixedColumns(api, opts);
+            return fixedColumns;
+        }
+        // Attach a listener to the document which listens for DataTables initialisation
+        // events so we can automatically initialise
+        $(document).on('init.dt.dtfc', function (e, settings) {
+            if (e.namespace !== 'dt') {
+                return;
+            }
+            if (settings.oInit.fixedColumns ||
+                dataTable.defaults.fixedColumns) {
+                if (!settings._fixedColumns) {
+                    _init(settings, null);
+                }
+            }
+        });
+    }));
+
+}());
+
+
+/*! FixedHeader 3.2.1
  * ©2009-2021 SpryMedia Ltd - datatables.net/license
  */
 
@@ -17169,7 +16152,7 @@ return FixedColumns;
  * @summary     FixedHeader
  * @description Fix a table's header or footer, so it is always visible while
  *              scrolling
- * @version     3.1.9
+ * @version     3.2.1
  * @file        dataTables.fixedHeader.js
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     www.sprymedia.co.uk/contact
@@ -17265,11 +16248,13 @@ var FixedHeader = function ( dt, config ) {
 		header: {
 			host: null,
 			floating: null,
+			floatingParent: $('<div class="dtfh-floatingparent">'),
 			placeholder: null
 		},
 		footer: {
 			host: null,
 			floating: null,
+			floatingParent: $('<div class="dtfh-floatingparent">'),
 			placeholder: null
 		}
 	};
@@ -17371,7 +16356,7 @@ $.extend( FixedHeader.prototype, {
 	/**
 	 * Recalculate the position of the fixed elements and force them into place
 	 */
-	update: function ()
+	update: function (force)
 	{
 		var table = this.s.dt.table().node();
 
@@ -17382,8 +16367,14 @@ $.extend( FixedHeader.prototype, {
 			this.enable( false, false );
 		}
 
+		// Don't update if header is not in the document atm (due to
+		// async events)
+		if ($(table).children('thead').length === 0) {
+			return;
+		}
+
 		this._positions();
-		this._scroll( true );
+		this._scroll( force !== undefined ? force : true );
 	},
 
 
@@ -17421,9 +16412,14 @@ $.extend( FixedHeader.prototype, {
 			this.c.footerOffset = autoFooter.outerHeight();
 		}
 
-		dt.on( 'column-reorder.dt.dtfc column-visibility.dt.dtfc draw.dt.dtfc column-sizing.dt.dtfc responsive-display.dt.dtfc', function () {
-			that.update();
-		} );
+		dt
+			.on( 'column-reorder.dt.dtfc column-visibility.dt.dtfc column-sizing.dt.dtfc responsive-display.dt.dtfc', function (e, ctx) {
+				that.update();
+			} )
+			.on( 'draw.dt.dtfc', function (e, ctx) {
+				// For updates from our own table, don't reclone, but for all others, do
+				that.update(ctx === dt.settings()[0] ? false : true);
+			} );
 
 		dt.on( 'destroy.dtfc', function () {
 			that.destroy();
@@ -17456,24 +16452,73 @@ $.extend( FixedHeader.prototype, {
 			this.dom.thead :
 			this.dom.tfoot;
 
+		// If footer and scrolling is enabled then we don't clone
+		// Instead the table's height is decreased accordingly - see `_scroll()`
+		if (item === 'footer' && this._scrollEnabled()) {
+			return;
+		}	
+
 		if ( ! force && itemDom.floating ) {
 			// existing floating element - reuse it
 			itemDom.floating.removeClass( 'fixedHeader-floating fixedHeader-locked' );
 		}
 		else {
 			if ( itemDom.floating ) {
-				itemDom.placeholder.remove();
+				if(itemDom.placeholder !== null) {
+					itemDom.placeholder.remove();
+				}
 				this._unsize( item );
 				itemDom.floating.children().detach();
 				itemDom.floating.remove();
 			}
 
+			var tableNode = $(dt.table().node()); 
+			var scrollBody = $(tableNode.parent());
+			var scrollEnabled = this._scrollEnabled();
+
 			itemDom.floating = $( dt.table().node().cloneNode( false ) )
-				.css( 'table-layout', 'fixed' )
 				.attr( 'aria-hidden', 'true' )
+				.css({
+					'table-layout': 'fixed',
+					top: 0,
+					left: 0
+				})
 				.removeAttr( 'id' )
-				.append( itemElement )
+				.append( itemElement );
+
+			itemDom.floatingParent
+				.css({
+					width: scrollBody.width(),
+					overflow: 'hidden',
+					height: 'fit-content',
+					position: 'fixed',
+					left: scrollEnabled ? tableNode.offset().left + scrollBody.scrollLeft() : 0
+				})
+				.css(
+					item === 'header' ?
+						{
+							top: this.c.headerOffset,
+							bottom: ''
+						} :
+						{
+							top: '',
+							bottom: this.c.footerOffset
+						}
+				)
+				.addClass(item === 'footer' ? 'dtfh-floatingparentfoot' : 'dtfh-floatingparenthead')
+				.append(itemDom.floating)
 				.appendTo( 'body' );
+
+			this._stickyPosition(itemDom.floating, '-');
+
+			var scrollLeftUpdate = () => {
+				var scrollLeft = scrollBody.scrollLeft()
+				this.s.scrollLeft = {footer: scrollLeft, header: scrollLeft};
+				itemDom.floatingParent.scrollLeft(this.s.scrollLeft.header);
+			}
+
+			scrollLeftUpdate();
+			scrollBody.scroll(scrollLeftUpdate)
 
 			// Insert a fake thead/tfoot into the DataTable to stop it jumping around
 			itemDom.placeholder = itemElement.clone( false );
@@ -17485,6 +16530,35 @@ $.extend( FixedHeader.prototype, {
 
 			// Clone widths
 			this._matchWidths( itemDom.placeholder, itemDom.floating );
+		}
+	},
+
+	/**
+	 * This method sets the sticky position of the header elements to match fixed columns
+	 * @param {JQuery<HTMLElement>} el 
+	 * @param {string} sign 
+	 */
+	_stickyPosition(el, sign) {
+		if (this._scrollEnabled()) {
+			var that = this
+			var rtl = $(that.s.dt.table().node()).css('direction') === 'rtl';
+
+			el.find('th').each(function() {
+				// Find out if fixed header has previously set this column
+				if ($(this).css('position') === 'sticky') {
+					var right = $(this).css('right');
+					var left = $(this).css('left');
+					if (right !== 'auto' && !rtl) {
+						// New position either adds or dismisses the barWidth
+						var potential = +right.replace(/px/g, '') + (sign === '-' ? -1 : 1) * that.s.dt.settings()[0].oBrowser.barWidth;
+						$(this).css('right', potential > 0 ? potential : 0);
+					}
+					else if(left !== 'auto' && rtl) {
+						var potential = +left.replace(/px/g, '') + (sign === '-' ? -1 : 1) * that.s.dt.settings()[0].oBrowser.barWidth;
+						$(this).css('left', potential > 0 ? potential : 0);
+					}
+				}
+			});
 		}
 	},
 
@@ -17561,7 +16635,12 @@ $.extend( FixedHeader.prototype, {
 		var lastScrollLeft = this.s.scrollLeft;
 
 		if ( itemDom.floating && lastScrollLeft[ item ] !== scrollLeft ) {
-			itemDom.floating.css( 'left', position.left - scrollLeft );
+			// If scrolling is enabled we need to match the floating header to the body
+			if (this._scrollEnabled()) {
+				var newScrollLeft = $($(this.s.dt.table().node()).parent()).scrollLeft()
+				itemDom.floating.scrollLeft(newScrollLeft);
+				itemDom.floatingParent.scrollLeft(newScrollLeft);
+			}
 
 			lastScrollLeft[ item ] = scrollLeft;
 		}
@@ -17588,11 +16667,27 @@ $.extend( FixedHeader.prototype, {
 		var itemDom = this.dom[ item ];
 		var position = this.s.position;
 
+		// Just determine if scroll is enabled once
+		var scrollEnabled = this._scrollEnabled();
+
+		// If footer and scrolling is enabled then we don't clone
+		// Instead the table's height is decreased accordingly - see `_scroll()`
+		if (item === 'footer' && scrollEnabled) {
+			return;
+		}		
+
 		// It isn't trivial to add a !important css attribute...
 		var importantWidth = function (w) {
 			itemDom.floating.attr('style', function(i,s) {
 				return (s || '') + 'width: '+w+'px !important;';
 			});
+
+			// If not scrolling also have to update the floatingParent
+			if (!scrollEnabled) {
+				itemDom.floatingParent.attr('style', function(i,s) {
+					return (s || '') + 'width: '+w+'px !important;';
+				});
+			}
 		};
 
 		// Record focus. Browser's will cause input elements to loose focus if
@@ -17601,10 +16696,7 @@ $.extend( FixedHeader.prototype, {
 		var focus = $.contains( tablePart[0], document.activeElement ) ?
 			document.activeElement :
 			null;
-		
-		if ( focus ) {
-			focus.blur();
-		}
+		var scrollBody = $($(this.s.dt.table().node()).parent());
 
 		if ( mode === 'in-place' ) {
 			// Insert the header back into the table's real header
@@ -17625,17 +16717,53 @@ $.extend( FixedHeader.prototype, {
 			if ( itemDom.floating ) {
 				itemDom.floating.remove();
 				itemDom.floating = null;
+				this._stickyPosition(itemDom.host, '+');
 			}
+
+			if ( itemDom.floatingParent ) {
+				itemDom.floatingParent.remove();
+			}
+
+			$($(itemDom.host.parent()).parent()).scrollLeft(scrollBody.scrollLeft())
 		}
 		else if ( mode === 'in' ) {
 			// Remove the header from the read header and insert into a fixed
 			// positioned floating table clone
 			this._clone( item, forceChange );
 
-			itemDom.floating
-				.addClass( 'fixedHeader-floating' )
-				.css( item === 'header' ? 'top' : 'bottom', this.c[item+'Offset'] )
-				.css( 'left', position.left+'px' );
+			// Get useful position values
+			var scrollOffset = scrollBody.offset();
+			var windowTop = $(document).scrollTop();
+			var windowHeight = $(window).height();
+			var windowBottom = windowTop + windowHeight;
+			var bodyTop = scrollEnabled ? scrollOffset.top : position.tbodyTop;
+			var bodyBottom = scrollEnabled ? scrollOffset.top + scrollBody.outerHeight() : position.tfootTop
+
+			// Calculate the amount that the footer or header needs to be shuffled
+			var shuffle = item === 'footer' ?
+				// footer and top of body isn't on screen
+				bodyTop > windowBottom ?
+					// Yes - push the footer below
+					position.tfootHeight :
+					// No - bottom set to the gap between the top of the body and the bottom of the window
+					bodyTop + position.tfootHeight - windowBottom :
+				// Otherwise must be a header so get the difference from the bottom of the
+				//  desired floating header and the bottom of the table body
+				windowTop + this.c.headerOffset + position.theadHeight - bodyBottom
+				
+			// Set the top or bottom based off of the offset and the shuffle value
+			var prop = item === 'header' ? 'top' : 'bottom';
+			var val = this.c[item+'Offset'] - (shuffle > 0 ? shuffle : 0);
+
+			itemDom.floating.addClass( 'fixedHeader-floating' );
+			itemDom.floatingParent
+				.css(prop, val)
+				.css( {
+					'left': position.left,
+					'height': item === 'header' ? position.theadHeight : position.tfootHeight,
+					'z-index': 2
+				})
+				.append(itemDom.floating);
 
 			importantWidth(position.width);
 
@@ -17647,10 +16775,12 @@ $.extend( FixedHeader.prototype, {
 			// Fix the position of the floating header at base of the table body
 			this._clone( item, forceChange );
 
-			itemDom.floating
-				.addClass( 'fixedHeader-locked' )
-				.css( 'top', position.tfootTop - position.theadHeight )
-				.css( 'left', position.left+'px' );
+			itemDom.floating.addClass( 'fixedHeader-locked' );
+			itemDom.floatingParent.css({
+				position: 'absolute',
+				top: position.tfootTop - position.theadHeight,
+				left: position.left+'px'
+			});
 
 			importantWidth(position.width);
 		}
@@ -17658,10 +16788,12 @@ $.extend( FixedHeader.prototype, {
 			// Fix the position of the floating footer at top of the table body
 			this._clone( item, forceChange );
 
-			itemDom.floating
-				.addClass( 'fixedHeader-locked' )
-				.css( 'top', position.tbodyTop )
-				.css( 'left', position.left+'px' );
+			itemDom.floating.addClass( 'fixedHeader-locked' );
+			itemDom.floatingParent.css({
+				position: 'absolute',
+				top: position.tbodyTop,
+				left: position.left+'px'
+			});
 
 			importantWidth(position.width);
 		}
@@ -17691,26 +16823,29 @@ $.extend( FixedHeader.prototype, {
 		var position = this.s.position;
 		var dom = this.dom;
 		var tableNode = $(table.node());
+		var scrollEnabled = this._scrollEnabled();
 
 		// Need to use the header and footer that are in the main table,
 		// regardless of if they are clones, since they hold the positions we
 		// want to measure from
-		var thead = tableNode.children('thead');
-		var tfoot = tableNode.children('tfoot');
+		var thead = $(dt.table().header());
+		var tfoot = $(dt.table().footer());
 		var tbody = dom.tbody;
+		var scrollBody = tableNode.parent();
 
 		position.visible = tableNode.is(':visible');
 		position.width = tableNode.outerWidth();
 		position.left = tableNode.offset().left;
 		position.theadTop = thead.offset().top;
-		position.tbodyTop = tbody.offset().top;
-		position.tbodyHeight = tbody.outerHeight();
-		position.theadHeight = position.tbodyTop - position.theadTop;
+		position.tbodyTop = scrollEnabled ? scrollBody.offset().top : tbody.offset().top;
+		position.tbodyHeight = scrollEnabled ? scrollBody.outerHeight() : tbody.outerHeight();
+		position.theadHeight = thead.outerHeight();
+		position.theadBottom = position.theadTop + position.theadHeight;
 
 		if ( tfoot.length ) {
-			position.tfootTop = tfoot.offset().top;
+			position.tfootTop = position.tbodyTop + position.tbodyHeight; //tfoot.offset().top;
 			position.tfootBottom = position.tfootTop + tfoot.outerHeight();
-			position.tfootHeight = position.tfootBottom - position.tfootTop;
+			position.tfootHeight = tfoot.outerHeight();
 		}
 		else {
 			position.tfootTop = position.tbodyTop + tbody.outerHeight();
@@ -17730,21 +16865,64 @@ $.extend( FixedHeader.prototype, {
 	 */
 	_scroll: function ( forceChange )
 	{
-		var windowTop = $(document).scrollTop();
+		// ScrollBody details
+		var scrollEnabled = this._scrollEnabled();
+		var scrollBody = $(this.s.dt.table().node()).parent();
+		var scrollOffset =  scrollBody.offset();
+		var scrollHeight =  scrollBody.outerHeight();
+
+		// Window details
 		var windowLeft = $(document).scrollLeft();
+		var windowTop = $(document).scrollTop();
+		var windowHeight = $(window).height();
+		var windowBottom = windowHeight + windowTop
+
+
 		var position = this.s.position;
 		var headerMode, footerMode;
+
+		// Body Details
+		var bodyTop = (scrollEnabled ? scrollOffset.top : position.tbodyTop);
+		var bodyLeft = (scrollEnabled ? scrollOffset.left : position.left);
+		var bodyBottom = (scrollEnabled ? scrollOffset.top + scrollHeight : position.tfootTop);
+		var bodyWidth = (scrollEnabled ? scrollBody.outerWidth() : position.tbodyWidth);
+
+		var windowBottom = windowTop + windowHeight;
 
 		if ( this.c.header ) {
 			if ( ! this.s.enable ) {
 				headerMode = 'in-place';
 			}
-			else if ( ! position.visible || windowTop <= position.theadTop - this.c.headerOffset ) {
+			// The header is in it's normal place if the body top is lower than
+			//  the scroll of the window plus the headerOffset and the height of the header
+			else if ( ! position.visible || windowTop + this.c.headerOffset + position.theadHeight <= bodyTop) {
 				headerMode = 'in-place';
 			}
-			else if ( windowTop <= position.tfootTop - position.theadHeight - this.c.headerOffset ) {
+			// The header should be floated if
+			else if (
+				// The scrolling plus the header offset plus the height of the header is lower than the top of the body
+				windowTop + this.c.headerOffset + position.theadHeight > bodyTop &&
+				// And the scrolling at the top plus the header offset is above the bottom of the body
+				windowTop + this.c.headerOffset < bodyBottom
+			) {
 				headerMode = 'in';
+				var scrollBody = $($(this.s.dt.table().node()).parent());
+
+				// Further to the above, If the scrolling plus the header offset plus the header height is lower
+				// than the bottom of the table a shuffle is required so have to force the calculation
+				if(windowTop + this.c.headerOffset + position.theadHeight > bodyBottom || this.dom.header.floatingParent === undefined){
+					forceChange = true;
+				}
+				else {
+					this.dom.header.floatingParent
+						.css({
+							'top': this.c.headerOffset,
+							'position': 'fixed'
+						})
+						.append(this.dom.header.floating);
+				}
 			}
+			// Anything else and the view is below the table
 			else {
 				headerMode = 'below';
 			}
@@ -17756,26 +16934,136 @@ $.extend( FixedHeader.prototype, {
 			this._horizontal( 'header', windowLeft );
 		}
 
+		var header = {
+			offset: {top: 0, left: 0},
+			height: 0
+		}
+		var footer = {
+			offset: {top: 0, left: 0},
+			height: 0
+		}
+
 		if ( this.c.footer && this.dom.tfoot.length ) {
 			if ( ! this.s.enable ) {
 				footerMode = 'in-place';
 			}
-			else if ( ! position.visible || windowTop + position.windowHeight >= position.tfootBottom + this.c.footerOffset ) {
+			else if ( ! position.visible || position.tfootBottom + this.c.footerOffset <= windowBottom ) {
 				footerMode = 'in-place';
 			}
-			else if ( position.windowHeight + windowTop > position.tbodyTop + position.tfootHeight + this.c.footerOffset ) {
+			else if (
+				bodyBottom + position.tfootHeight + this.c.footerOffset > windowBottom &&
+				bodyTop + this.c.footerOffset < windowBottom
+			) {
 				footerMode = 'in';
+				forceChange = true;
 			}
 			else {
 				footerMode = 'above';
 			}
-
+			
 			if ( forceChange || footerMode !== this.s.footerMode ) {
 				this._modeChange( footerMode, 'footer', forceChange );
 			}
 
 			this._horizontal( 'footer', windowLeft );
+			
+			var getOffsetHeight = (el) => {
+				return {
+					offset: el.offset(),
+					height: el.outerHeight()
+				}
+			}
+		
+			header = this.dom.header.floating ? getOffsetHeight(this.dom.header.floating) : getOffsetHeight(this.dom.thead);
+			footer = this.dom.footer.floating ? getOffsetHeight(this.dom.footer.floating) : getOffsetHeight(this.dom.tfoot);
+
+			// If scrolling is enabled and the footer is off the screen
+			if (scrollEnabled && footer.offset.top > windowTop){// && footer.offset.top >= windowBottom) {
+				// Calculate the gap between the top of the scrollBody and the top of the window
+				var overlap = windowTop - scrollOffset.top;
+				// The new height is the bottom of the window
+				var newHeight = windowBottom +
+					// If the gap between the top of the scrollbody and the window is more than
+					//  the height of the header then the top of the table is still visible so add that gap
+					// Doing this has effectively calculated the height from the top of the table to the bottom of the current page
+					(overlap > -header.height ? overlap : 0) -
+					// Take from that
+					(
+						// The top of the header plus
+						header.offset.top +
+						// The header height if the standard header is present
+						(overlap < -header.height ? header.height : 0) +
+						// And the height of the footer
+						footer.height
+					)
+
+					// Don't want a negative height
+				if (newHeight < 0) {
+					newHeight = 0;
+				}
+
+				// At the end of the above calculation the space between the header (top of the page if floating)
+				// and the point just above the footer should be the new value for the height of the table.
+				scrollBody.outerHeight(newHeight);
+				
+				// Need some rounding here as sometimes very small decimal places are encountered
+				// If the actual height is bigger or equal to the height we just applied then the footer is "Floating"
+				if(Math.round(scrollBody.outerHeight()) >= Math.round(newHeight)) {
+					$(this.dom.tfoot.parent()).addClass("fixedHeader-floating");
+				}
+				// Otherwise max-width has kicked in so it is not floating
+				else {
+					$(this.dom.tfoot.parent()).removeClass("fixedHeader-floating");
+				}
+			}
 		}
+
+		if(this.dom.header.floating){
+			this.dom.header.floatingParent.css('left', bodyLeft-windowLeft);
+		}
+		if(this.dom.footer.floating){
+			this.dom.footer.floatingParent.css('left', bodyLeft-windowLeft);
+		}
+
+		// If fixed columns is being used on this table then the blockers need to be copied across
+		// Cloning these is cleaner than creating as our own as it will keep consistency with fixedColumns automatically
+		// ASSUMING that the class remains the same
+		if (this.s.dt.settings()[0]._fixedColumns !== undefined) {
+			var adjustBlocker = (side, end, el) => {
+				if (el === undefined) {
+					let blocker = $('div.dtfc-'+side+'-'+end+'-blocker');
+					el = blocker.length === 0 ?
+						null :
+						blocker.clone().appendTo('body').css('z-index', 1);
+				}
+				if(el !== null) {
+					el.css({
+						top: end === 'top' ? header.offset.top : footer.offset.top,
+						left: side === 'right' ? bodyLeft + bodyWidth - el.width() : bodyLeft
+					});
+				}
+
+				return el;
+			}
+
+			// Adjust all blockers
+			this.dom.header.rightBlocker = adjustBlocker('right', 'top', this.dom.header.rightBlocker);
+			this.dom.header.leftBlocker = adjustBlocker('left', 'top', this.dom.header.leftBlocker);
+			this.dom.footer.rightBlocker = adjustBlocker('right', 'bottom', this.dom.footer.rightBlocker);
+			this.dom.footer.leftBlocker = adjustBlocker('left', 'bottom', this.dom.footer.leftBlocker);
+		}
+	},
+
+	/**
+	 * Function to check if scrolling is enabled on the table or not
+	 * @returns Boolean value indicating if scrolling on the table is enabled or not
+	 */
+	_scrollEnabled: function() {
+		var oScroll = this.s.dt.settings()[0].oScroll;
+		if(oScroll.sY !== "" || oScroll.sX !== "") {
+			return true;
+		}
+		return false
 	}
 } );
 
@@ -17785,7 +17073,7 @@ $.extend( FixedHeader.prototype, {
  * @type {String}
  * @static
  */
-FixedHeader.version = "3.1.9";
+FixedHeader.version = "3.2.1";
 
 /**
  * Defaults
@@ -22954,7 +22242,7 @@ return Scroller;
 }));
 
 
-/*! Select for DataTables 1.3.3
+/*! Select for DataTables 1.3.4
  * 2015-2021 SpryMedia Ltd - datatables.net/license/mit
  */
 
@@ -22962,7 +22250,7 @@ return Scroller;
  * @summary     Select for DataTables
  * @description A collection of API methods, events and buttons for DataTables
  *   that provides selection options of the items in a DataTable
- * @version     1.3.3
+ * @version     1.3.4
  * @file        dataTables.select.js
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     datatables.net/forums
@@ -23010,10 +22298,52 @@ var DataTable = $.fn.dataTable;
 // Version information for debugger
 DataTable.select = {};
 
-DataTable.select.version = '1.3.3';
+DataTable.select.version = '1.3.4';
 
 DataTable.select.init = function ( dt ) {
 	var ctx = dt.settings()[0];
+
+	if (ctx._select) {
+		return;
+	}
+
+	var savedSelected = dt.state.loaded();
+
+	var selectAndSave = function(e, settings, data) {
+		if(data === null || data.select === undefined) {
+			return;
+		}
+		dt.rows().deselect();
+		dt.columns().deselect();
+		dt.cells().deselect();
+		if (data.select.rows !== undefined) {
+			dt.rows(data.select.rows).select();
+		}
+		if (data.select.columns !== undefined) {
+			dt.columns(data.select.columns).select();
+		}
+		if (data.select.cells !== undefined) {
+			for(var i = 0; i < data.select.cells.length; i++) {
+				dt.cell(data.select.cells[i].row, data.select.cells[i].column).select();
+			}
+		}
+		dt.state.save();
+	}
+	
+	dt.one('init', function() {
+		dt.on('stateSaveParams', function(e, settings, data) {
+			data.select = {};
+			data.select.rows = dt.rows({selected:true}).ids(true).toArray();
+			data.select.columns = dt.columns({selected:true})[0];
+			data.select.cells = dt.cells({selected:true})[0].map(function(coords) {
+				return {row: dt.row(coords.row).id(true), column: coords.column}
+			});
+		})
+		
+		selectAndSave(undefined, undefined, savedSelected)
+		dt.on('stateLoaded stateLoadParams', selectAndSave)
+	})
+
 	var init = ctx.oInit.select;
 	var defaults = DataTable.defaults.select;
 	var opts = init === undefined ?
@@ -23485,6 +22815,7 @@ function info ( api )
  */
 function init ( ctx ) {
 	var api = new DataTable.Api( ctx );
+	ctx._select_init = true;
 
 	// Row callback so that classes can be added to rows and cells if the item
 	// was selected before the element was created. This will happen with the
@@ -23553,6 +22884,7 @@ function init ( ctx ) {
 	// Update the table information element with selected item summary
 	api.on( 'draw.dtSelect.dt select.dtSelect.dt deselect.dtSelect.dt info.dt', function () {
 		info( api );
+		api.state.save();
 	} );
 
 	// Clean up and release
@@ -23561,6 +22893,7 @@ function init ( ctx ) {
 
 		disableMouseSelection( api );
 		api.off( '.dtSelect' );
+		$('body').off('.dtSelect' + _safeId(api.table().node()));
 	} );
 }
 
@@ -23829,11 +23162,15 @@ apiRegister( 'select.style()', function ( style ) {
 	}
 
 	return this.iterator( 'table', function ( ctx ) {
-		ctx._select.style = style;
+		if ( ! ctx._select ) {
+			DataTable.select.init( new DataTable.Api(ctx) );
+		}
 
 		if ( ! ctx._select_init ) {
-			init( ctx );
+			init(ctx);
 		}
+
+		ctx._select.style = style;
 
 		// Add / remove mouse event handlers. They aren't required when only
 		// API selection is available
@@ -23999,7 +23336,9 @@ apiRegisterPlural( 'cells().deselect()', 'cell().deselect()', function () {
 	this.iterator( 'cell', function ( ctx, rowIdx, colIdx ) {
 		var data = ctx.aoData[ rowIdx ];
 
-		data._selected_cells[ colIdx ] = false;
+		if(data._selected_cells !== undefined) {
+			data._selected_cells[ colIdx ] = false;
+		}
 
 		// Remove class only if the cells exist, and the cell is not column
 		// selected, in which case the class should remain (since it is selected
