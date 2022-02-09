@@ -1869,7 +1869,11 @@
         console.log("trclick:"+rcvcustoms_selected_row)
         
         if(rcvcustoms_selected_row!=e.srcElement.parentElement.rowIndex - 1){
-            e.srcElement.parentElement.parentElement.rows[rcvcustoms_selected_row].classList.remove('table-active')
+            if(typeof e.srcElement.parentElement.parentElement.rows[rcvcustoms_selected_row] !== 'undefined'){
+                e.srcElement.parentElement.parentElement.rows[rcvcustoms_selected_row].classList.remove('table-active')
+            } else {
+                rcvcustoms_selected_row--;                
+            }
         }
         rcvcustoms_selected_row = e.srcElement.parentElement.rowIndex - 1
         if(isNaN(rcvcustoms_selected_row)){
