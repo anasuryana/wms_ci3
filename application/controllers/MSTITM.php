@@ -686,4 +686,38 @@ class MSTITM extends CI_Controller {
 		$data['ldeliverycode'] = $this->DELV_mod->select_delv_code();
 		$this->load->view('wms/vitem_reg', $data);
 	}
+
+	public function updatencat(){
+		$json_str = '[
+			{
+				"ASSY_CODE": "05370662490A200",
+				"CATEGORY": "INS"
+			},
+			{
+				"ASSY_CODE": "05370687990P300",
+				"CATEGORY": "INS"
+			},
+			{
+				"ASSY_CODE": "05370748190A200",
+				"CATEGORY": "INS"
+			},
+			{
+				"ASSY_CODE": "05370780890A100",
+				"CATEGORY": "INS"
+			},
+			{
+				"ASSY_CODE": "05370785290A105",
+				"CATEGORY": "INS"
+			},
+			{
+				"ASSY_CODE": "05370785290A200",
+				"CATEGORY": "INS"
+			}
+		]';
+		$rs = json_decode($json_str,true);
+		foreach($rs as $r){
+			$this->MSTITM_mod->updatebyId(['MITM_NCAT' => $r['CATEGORY']], $r['ASSY_CODE']);
+		}
+		die(json_encode(['data' => $rs]));
+	}
 }
