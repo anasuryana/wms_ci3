@@ -78,8 +78,8 @@ class MSTSUP extends CI_Controller {
 		$cnm = $this->input->post('innm');
 		$cabbr = $this->input->post('inabbr');
 		$caddr = $this->input->post('inaddr');
-		$mphone = $this->input->post('mphone');
-		$mfax = $this->input->post('mfax');
+		$mphone = str_replace(" ", "", $this->input->post('mphone'));
+		$mfax = str_replace(" ", "",$this->input->post('mfax'));
 		$datac = array('MSUP_SUPCD'=> $ccd);
 		if($this->MSTSUP_mod->check_Primary($datac)==0){
 			$datas = array(
