@@ -33,7 +33,7 @@ function rm_ua_btnsync_eCK() {
     $.ajax({
         type: "GET",
         url: "<?=base_url('User/getUserActivity')?>",
-        data: {year: 2021},
+        data: {year: 2022},
         dataType: "json",
         success: function (response) {
             myChart.data.labels = response.labels
