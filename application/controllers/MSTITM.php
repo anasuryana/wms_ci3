@@ -288,7 +288,7 @@ class MSTITM extends CI_Controller {
 				'MITM_NCAT' => $incategory,
 				'MITM_ITMCDCUS' => $mitmcd_Ext
 			];
-			if($this->session->userdata('gid')==='ROOT' || $this->session->userdata('gid')==='ADMIN') {
+			if($this->session->userdata('gid')==='ROOT' || $this->session->userdata('gid')==='ADMIN' || $ctype=='6') {
 				$datau['MITM_ITMD1'] = $cnm1;
 			}
 			$toret = $this->MSTITM_mod->updatebyId($datau, $cid);
