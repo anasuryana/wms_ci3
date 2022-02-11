@@ -785,7 +785,7 @@ class PO extends CI_Controller {
 			#footermain
 			$ppn_price = $total_amount*$ppn/100;
 			$pph_price = $total_amount*$pph/100;
-			$netpayment = $total_amount+$pph_price+$ppn_price;
+			$netpayment = $total_amount-$pph_price+$ppn_price;
 
 			$sdata_section = '';
 			foreach($adata_section as $r){
