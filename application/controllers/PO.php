@@ -71,7 +71,7 @@ class PO extends CI_Controller {
 			$pph = $r['PO_PPH']*1;
 			$required_date = date_create($r['PO_REQDT']);
 			$required_date = date_format($required_date,'d/m/Y');
-			$trans_date = date_create($r['PO_DLVDT']);
+			$trans_date = date_create($r['PO_ISSUDT']);
 			$trans_date = date_format($trans_date,'d/m/Y');
 			$shipping_cost = $r['PO_SHPCOST'];
 			break;
@@ -978,7 +978,7 @@ class PO extends CI_Controller {
 		$h_request_by = $this->input->post('h_request_by');
 		$h_payterm = $this->input->post('h_payterm');
 		$h_req_date = $this->input->post('h_req_date');
-		$h_dlv_date = $this->input->post('h_dlv_date');
+		$h_issu_date = $this->input->post('h_issu_date');
 		$h_shp = $this->input->post('h_shp');
 		$h_shp_cost = $this->input->post('h_shp_cost');		
 		$h_supplier = $this->input->post('h_supplier');
@@ -1025,7 +1025,7 @@ class PO extends CI_Controller {
 						'PO_NO' => $h_po,
 						'PO_REV' => 0,
 						'PO_REQDT' => $h_req_date,
-						'PO_DLVDT' => $h_dlv_date,
+						'PO_ISSUDT' => $h_issu_date,
 						'PO_SUPCD' => $h_supplier,
 						'PO_ITMCD' => $di_item[$i],
 						'PO_QTY' => abs($di_qty[$i]),
@@ -1048,7 +1048,7 @@ class PO extends CI_Controller {
 				} else {
 					$colupdate = [
 						'PO_REQDT' => $h_req_date,
-						'PO_DLVDT' => $h_dlv_date,
+						'PO_ISSUDT' => $h_issu_date,
 						'PO_SUPCD' => $h_supplier,
 						'PO_ITMCD' => $di_item[$i],
 						'PO_QTY' => abs($di_qty[$i]),
@@ -1082,7 +1082,7 @@ class PO extends CI_Controller {
 						'PO_NO' => $h_po,
 						'PO_REV' => 0,
 						'PO_REQDT' => $h_req_date,
-						'PO_DLVDT' => $h_dlv_date,
+						'PO_ISSUDT' => $h_issu_date,
 						'PO_SUPCD' => $h_supplier,
 						'PO_ITMNM' => $dni_item[$i],						
 						'PO_UM' => $dni_measure[$i],
@@ -1106,7 +1106,7 @@ class PO extends CI_Controller {
 				} else {
 					$colupdate = [
 						'PO_REQDT' => $h_req_date,
-						'PO_DLVDT' => $h_dlv_date,
+						'PO_ISSUDT' => $h_issu_date,
 						'PO_SUPCD' => $h_supplier,
 						'PO_ITMNM' => $dni_item[$i],						
 						'PO_UM' => $dni_measure[$i],
@@ -1156,11 +1156,11 @@ class PO extends CI_Controller {
 			die(json_encode(['status' => $myar]));
 		} else {
 			$ttlsaved = 0;
-			$adate = explode("-", $h_req_date);
+			$adate = explode("-", $h_issu_date);
 			$mmonth = $adate[1];
 			$myear = $adate[0];
 			$display_year = substr($myear,-2);
-			$numbr = $this->PO_mod->select_docnum_patterned($mmonth, $myear)+1;
+			$numbr = $this->PO_mod->select_docnum_patterned($myear)+1;
 			$gen_po_num = $display_year.$mmonth.substr('0000'.$numbr,-4);
 			$saveItem = [];
 			$saveItemDiscount = [];
@@ -1169,7 +1169,7 @@ class PO extends CI_Controller {
 					'PO_NO' => $gen_po_num,
 					'PO_REV' => 0,
 					'PO_REQDT' => $h_req_date,
-					'PO_DLVDT' => $h_dlv_date,
+					'PO_ISSUDT' => $h_issu_date,
 					'PO_SUPCD' => $h_supplier,
 					'PO_ITMCD' => $di_item[$i],
 					'PO_QTY' => abs($di_qty[$i]),
@@ -1199,7 +1199,7 @@ class PO extends CI_Controller {
 					'PO_NO' => $gen_po_num,
 					'PO_REV' => 0,
 					'PO_REQDT' => $h_req_date,
-					'PO_DLVDT' => $h_dlv_date,
+					'PO_ISSUDT' => $h_issu_date,
 					'PO_SUPCD' => $h_supplier,
 					'PO_ITMNM' => $dni_item[$i],					
 					'PO_UM' => $dni_measure[$i],

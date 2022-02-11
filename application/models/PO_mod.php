@@ -55,10 +55,10 @@ class PO_mod extends CI_Model {
         return $this->db->affected_rows();        
     }
 
-    public function select_docnum_patterned($pmonth, $pyear){
+    public function select_docnum_patterned($pyear){
         $qry = "select ISNULL(MAX(CONVERT(INT,SUBSTRING(PO_NO,5,4))),0) lser 
-        from ".$this->TABLENAME." where MONTH(PO_REQDT) =? and YEAR(PO_REQDT)=?";
-        $query =  $this->db->query($qry, [$pmonth, $pyear]);
+        from ".$this->TABLENAME." where YEAR(PO_ISSUDT)=?";
+        $query =  $this->db->query($qry, [$pyear]);
         if ($query->num_rows()>0){
             $ret = $query->row();
             return $ret->lser;
