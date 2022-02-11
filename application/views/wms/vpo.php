@@ -73,14 +73,14 @@
             </div>
             <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm mb-1">
-                    <label class="input-group-text">Req. Date</label>
-                    <input type="text" class="form-control" id="mpuror_txt_reqdate" readonly>
+                    <label class="input-group-text">Delivery Req. Date</label>
+                    <input type="text" class="form-control" id="mpuror_txt_dlvreqdate" readonly>
                 </div>
             </div>
             <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm mb-1">
-                    <label class="input-group-text">Trans. Date</label>
-                    <input type="text" class="form-control" id="mpuror_txt_dlvdate" readonly>
+                    <label class="input-group-text" title="issue date">Created Date</label>
+                    <input type="text" class="form-control" id="mpuror_txt_issue" readonly>
                 </div>
             </div>
         </div>
@@ -501,8 +501,8 @@
         document.getElementById('mpuror_vendname').value = ''
         document.getElementById('mpuror_curr').value = ''
         document.getElementById('mpuror_reqstby').value = ''
-        $("#mpuror_txt_reqdate").datepicker('update', new Date())
-        $("#mpuror_txt_dlvdate").datepicker('update', new Date())
+        $("#mpuror_txt_dlvreqdate").datepicker('update', new Date())
+        $("#mpuror_txt_issue").datepicker('update', new Date())
         document.getElementById('mpuror_txt_shipdoc').value = ''
         document.getElementById('mpuror_txt_shpcost').value = ''
         document.getElementById('mpuror_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
@@ -510,11 +510,11 @@
         document.getElementById('mpuror_tbl_special').getElementsByTagName('tbody')[0].innerHTML = ''
         mpuror_vencd = ''
     }
-    $("#mpuror_txt_reqdate").datepicker({
+    $("#mpuror_txt_dlvreqdate").datepicker({
         format: 'yyyy-mm-dd',
         autoclose:true
     })
-    $("#mpuror_txt_dlvdate").datepicker({
+    $("#mpuror_txt_issue").datepicker({
         format: 'yyyy-mm-dd',
         autoclose:true
     })
@@ -526,8 +526,8 @@
         format: 'yyyy-mm-dd',
         autoclose:true
     })
-    $("#mpuror_txt_reqdate").datepicker('update', new Date())
-    $("#mpuror_txt_dlvdate").datepicker('update', new Date())
+    $("#mpuror_txt_dlvreqdate").datepicker('update', new Date())
+    $("#mpuror_txt_issue").datepicker('update', new Date())
     $("#mpuror_saved_date_1").datepicker('update', new Date())
     $("#mpuror_saved_date_2").datepicker('update', new Date())
     function mpuror_tbl_tbody_tr_eC(e){
@@ -916,8 +916,8 @@
         const txt_vat = document.getElementById('mpuror_txt_VAT')
         const txt_reqby = document.getElementById('mpuror_reqstby')
         const cmb_payterm = document.getElementById('mpuror_cmb_payterm')
-        const txt_reqdate = document.getElementById('mpuror_txt_reqdate').value
-        const txt_dlvdate = document.getElementById('mpuror_txt_dlvdate').value
+        const txt_reqdate = document.getElementById('mpuror_txt_dlvreqdate').value
+        const txt_issudate = document.getElementById('mpuror_txt_issue').value
         const txt_shp = document.getElementById('mpuror_txt_shipdoc')
         const txt_shp_cost = document.getElementById('mpuror_txt_shpcost')        
 
@@ -1009,7 +1009,7 @@
                     h_request_by : txt_reqby.value,
                     h_payterm : cmb_payterm.value,
                     h_req_date : txt_reqdate,
-                    h_dlv_date : txt_dlvdate,
+                    h_issu_date : txt_issudate,
                     h_shp : txt_shp.value,
                     h_shp_cost : txt_shp_cost.value,                    
                     h_supplier : mpuror_vencd,
@@ -1097,8 +1097,8 @@
                             document.getElementById('mpuror_curr').value = response.data[i].MSUP_SUPCR
                             document.getElementById('mpuror_reqstby').value = response.data[i].PO_RQSTBY
                             document.getElementById('mpuror_cmb_payterm').value = response.data[i].PO_PAYTERM
-                            document.getElementById('mpuror_txt_reqdate').value = response.data[i].PO_REQDT
-                            document.getElementById('mpuror_txt_dlvdate').value = response.data[i].PO_DLVDT
+                            document.getElementById('mpuror_txt_dlvreqdate').value = response.data[i].PO_REQDT
+                            document.getElementById('mpuror_txt_issue').value = response.data[i].PO_ISSUDT
                             document.getElementById('mpuror_txt_shipdoc').value = response.data[i].PO_SHPDLV
                             document.getElementById('mpuror_txt_shpcost').value = response.data[i].PO_SHPCOST*1                            
                             document.getElementById('mpuror_txt_doc').value = response.data[i].PO_NO
@@ -1113,7 +1113,7 @@
                         newcell = newrow.insertCell(2)
                         newcell.innerHTML = response.data[i].PO_REQDT
                         newcell = newrow.insertCell(3)
-                        newcell.innerHTML = response.data[i].PO_DLVDT
+                        newcell.innerHTML = response.data[i].PO_ISSUDT
                     }
                     mydes.innerHTML=''
                     mydes.appendChild(myfrag)

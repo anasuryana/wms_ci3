@@ -236,7 +236,7 @@
                         newcell = newrow.insertCell(2)
                         newcell.innerHTML = response.data[i].PO_REQDT
                         newcell = newrow.insertCell(3)
-                        newcell.innerHTML = response.data[i].PO_DLVDT                      
+                        newcell.innerHTML = response.data[i].PO_ISSUDT                      
                         newcell = newrow.insertCell(4)
                         newcell.innerHTML = response.data[i].MITM_ITMD1
                         newcell = newrow.insertCell(5)
