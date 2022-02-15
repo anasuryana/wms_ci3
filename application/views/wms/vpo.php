@@ -154,36 +154,10 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="mpuror_tabFG" role="tabpanel" aria-labelledby="contact-tab">
-                        <div class="container-fluid">
-                            <div class="row mt-1">
-                                <div class="col-md-12 mb-1">
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-primary" id="mpuror_btnplus2" onclick="mpuror_btnplus2_eC()"><i class="fas fa-plus"></i></button>
-                                        <button class="btn btn-warning" id="mpuror_btnmins2" onclick="mpuror_ni_minusrow()"><i class="fas fa-minus"></i></button>
-                                    </div>
-                                </div> 
-                            </div>
+                        <div class="container-fluid">                            
                             <div class="row">
-                                <div class="col-md-12 mb-1" onclick="mpuror_tbl_nonitem_div_eCK(event)">
-                                    <div class="table-responsive" id="mpuror_tbl_nonitem_div" onpaste="mpuror_e_pastecol1(event)">
-                                        <table id="mpuror_tbl_nonitem" class="table table-sm table-striped table-hover table-bordered caption-top" style="width:100%;font-size:0.9em">                                            
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th class="d-none">idLine</th> <!-- 0 -->
-                                                    <th>Item Name</th> <!-- 1 -->                                                    
-                                                    <th title="Unit Measurement">UM</th> <!-- 2 -->
-                                                    <th class="text-end">QTY</th> <!-- 3 -->
-                                                    <th class="text-end">Price</th> <!-- 4 -->
-                                                    <th class="text-end">Disc (%)</th> <!-- 5 -->
-                                                    <th>Department</th> <!-- 6 -->
-                                                    <th>Section</th> <!-- 7 -->
-                                                    <th>Subject</th> <!-- 8 -->
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                <div class="col-md-12 mb-1 table-responsive">
+                                    <div id="mpuror_ss_nonitem"></div>
                                 </div>
                             </div>
                         </div>
@@ -218,6 +192,12 @@
                         </div>
                     </div>                    
                 </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 mb-1 table-responsive">
+                
             </div>
         </div>
     </div>
@@ -418,6 +398,101 @@
     </div>
 </div>
 <script>
+
+    var mpurordata = [
+       [''],
+       [''],
+       [''],
+];
+ 
+var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem'), {
+    data:mpurordata,
+    columns: [
+        {
+            type: 'text',
+            title:'line',
+            width:'2',
+            readOnly: true
+        },
+        {
+            type: 'text',
+            title:'Item Name',
+            width:120,
+            align: 'left'
+        },        
+        {
+            type: 'text',
+            title:'Unit Measure',
+            width:120
+        },        
+        {
+            type: 'numeric',
+            title:'QTY',
+            mask:'#,##.00',
+            width:100,
+            align: 'right'
+        },
+        {
+            type: 'numeric',
+            title:'Unit Price',
+            mask:'#,##.00',
+            width:90,
+            align: 'right'
+        },
+        {
+            type: 'numeric',
+            title:'Discount (%)',
+            mask:'#,##.00',
+            width:80,
+            align: 'right',
+            decimal:'.'
+        },
+        {
+            type: 'text',
+            title:'Department',            
+            width:80,            
+        },
+        {
+            type: 'text',
+            title:'Section',            
+            width:80,            
+        },
+        {
+            type: 'text',
+            title:'Subject',            
+            width:80,            
+        },
+        
+     ],
+    ondeleterow : function(instance,y1,xnumrow,xdom,xrowdata) {
+        console.log('ketika delete')
+        console.log(instance)
+        console.log(xrowdata)
+
+        let mylineid = mpuror_sso_nonitem.getValueFromCoords(0,y1)
+        const docnum = document.getElementById('mpuror_txt_doc').value
+        // $.ajax({
+        //     type: "post",
+        //     url: "<?//=base_url('PO/remove')?>",
+        //     data: {lineId: mylineid, docNum: docnum },
+        //     dataType: "json",
+        //     success: function (response) {
+        //         if (response.status[0].cd==='1') {
+        //             alertify.success(response.status[0].msg)                    
+        //         } else {
+        //             alertify.message(response.status[0].msg)
+        //         }
+        //     }, error:function(xhr,xopt,xthrow){
+        //         alertify.error(xthrow)
+        //     }
+        // })
+    },
+    onbeforedeleterow: function(instance,y1) {
+        console.log('ketika sebelum delete')
+        let datanyax = mpuror_sso_nonitem.getValueFromCoords(0,y1)
+        console.log('ayo hapus' + datanyax)
+    },    
+});
     var mpuror_vencd = ''
     var mpuror_selected_row = ''
     var mpuror_selected_col = ''
@@ -505,8 +580,7 @@
         $("#mpuror_txt_issue").datepicker('update', new Date())
         document.getElementById('mpuror_txt_shipdoc').value = ''
         document.getElementById('mpuror_txt_shpcost').value = ''
-        document.getElementById('mpuror_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
-        document.getElementById('mpuror_tbl_nonitem').getElementsByTagName('tbody')[0].innerHTML = ''
+        document.getElementById('mpuror_tbl').getElementsByTagName('tbody')[0].innerHTML = ''        
         document.getElementById('mpuror_tbl_special').getElementsByTagName('tbody')[0].innerHTML = ''
         mpuror_vencd = ''
     }
@@ -908,7 +982,7 @@
         event.preventDefault()
     }
 
-    function mpuror_btn_save_eC(){
+    function mpuror_btn_save_eC(){        
         const btnsave = document.getElementById('mpuror_btn_save')
         const txt_po = document.getElementById('mpuror_txt_doc')
         const txt_remark = document.getElementById('mpuror_txt_remark')
@@ -947,11 +1021,8 @@
                 asubject.push(tableku2.rows[i].cells[8].innerText)
             }
         }
-
-        mtbl = document.getElementById('mpuror_tbl_nonitem')
-        tableku2 = mtbl.getElementsByTagName("tbody")[0]
-        mtbltr = tableku2.getElementsByTagName('tr')
-        ttlrows = mtbltr.length
+        let datanya_nonitem = mpuror_sso_nonitem.getData()
+        ttlrows = datanya_nonitem.length
 
         let an_rowid = []
         let an_itemnm = []        
@@ -964,15 +1035,17 @@
         let an_subject = []
 
         for(let i=0; i<ttlrows; i++){
-            an_rowid.push(tableku2.rows[i].cells[0].innerText)
-            an_itemnm.push(tableku2.rows[i].cells[1].innerText)
-            an_umeasure.push(tableku2.rows[i].cells[2].innerText)
-            an_qty.push(numeral(tableku2.rows[i].cells[3].innerText).value())
-            an_price.push(numeral(tableku2.rows[i].cells[4].innerText).value())
-            an_disc.push(tableku2.rows[i].cells[5].innerText)
-            an_dept.push(tableku2.rows[i].cells[6].innerText)
-            an_section.push(tableku2.rows[i].cells[7].innerText)
-            an_subject.push(tableku2.rows[i].cells[8].innerText)
+            if(datanya_nonitem[i][1].length>2){
+                an_rowid.push(datanya_nonitem[i][0])
+                an_itemnm.push(datanya_nonitem[i][1])
+                an_umeasure.push(datanya_nonitem[i][2])
+                an_qty.push(numeral(datanya_nonitem[i][3]).value())
+                an_price.push(numeral(datanya_nonitem[i][4]).value())
+                an_disc.push(datanya_nonitem[i][5])
+                an_dept.push(datanya_nonitem[i][6])
+                an_section.push(datanya_nonitem[i][7])
+                an_subject.push(datanya_nonitem[i][8])
+            }
         }
 
         mtbl = document.getElementById('mpuror_tbl_special')
@@ -1102,8 +1175,7 @@
                             document.getElementById('mpuror_txt_shipdoc').value = response.data[i].PO_SHPDLV
                             document.getElementById('mpuror_txt_shpcost').value = response.data[i].PO_SHPCOST*1                            
                             document.getElementById('mpuror_txt_doc').value = response.data[i].PO_NO
-                            document.getElementById('mpuror_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
-                            document.getElementById('mpuror_tbl_nonitem').getElementsByTagName('tbody')[0].innerHTML = ''
+                            document.getElementById('mpuror_tbl').getElementsByTagName('tbody')[0].innerHTML = ''                            
                             mpuror_get_detail(response.data[i].PO_NO)
                         }
                         newcell = newrow.insertCell(0)
@@ -1142,17 +1214,18 @@
                     }
                 }
                 
-                let mydes = document.getElementById(tableuse.divid)
-                let myfrag = document.createDocumentFragment()
-                let mtabel = document.getElementById(tableuse.tableid)
-                let cln = mtabel.cloneNode(true);
-                myfrag.appendChild(cln)
-                let tabell = myfrag.getElementById(tableuse.tableid)
-                let tableku2 = tabell.getElementsByTagName("tbody")[0]
-                let newrow, newcell, newText                    
-                tableku2.innerHTML=''
+                
 
                 if(tableuse.tableid=='mpuror_tbl'){
+                    let mydes = document.getElementById(tableuse.divid)
+                    let myfrag = document.createDocumentFragment()
+                    let mtabel = document.getElementById(tableuse.tableid)
+                    let cln = mtabel.cloneNode(true);
+                    myfrag.appendChild(cln)
+                    let tabell = myfrag.getElementById(tableuse.tableid)
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0]
+                    let newrow, newcell, newText                    
+                    tableku2.innerHTML=''
                     for (let i = 0; i<ttlrows; i++){
                         newrow = tableku2.insertRow(-1)
                         newrow.onclick = (event) => {mpuror_tbl_tbody_tr_eC(event)}
@@ -1193,47 +1266,29 @@
                     let firstTabEl = document.querySelector('#myTab button[data-bs-target="#mpuror_tabRM"]')
                     let thetab = new bootstrap.Tab(firstTabEl)
                     thetab.show()
+                    mydes.innerHTML=''
+                    mydes.appendChild(myfrag)
                 } else {
+                    let datanya =  []
                     for (let i = 0; i<ttlrows; i++){
-                        newrow = tableku2.insertRow(-1)
-                        newrow.onclick = (event) => {mpuror_tbl_tbody_tr_eC(event)}
-                        newcell = newrow.insertCell(0)
-                        newcell.classList.add('d-none')                        
-                        newcell.innerHTML = response.data[i].PO_LINE
-                        newcell = newrow.insertCell(1)
-                        newcell.contentEditable = true
-                        newcell.innerHTML = response.data[i].PO_ITMNM                        
-                        newcell = newrow.insertCell(2)
-                        newcell.contentEditable = true
-                        newcell.innerHTML = response.data[i].PO_UM
-                        newcell = newrow.insertCell(3)                        
-                        newcell.contentEditable = true
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = response.data[i].PO_QTY
-                        newcell = newrow.insertCell(4)
-                        newcell.contentEditable = true
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = response.data[i].PO_PRICE
-                        newcell = newrow.insertCell(5)
-                        newcell.contentEditable = true
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = response.data[i].PO_DISC
-                        newcell = newrow.insertCell(6)
-                        newcell.contentEditable = true
-                        newcell.innerHTML = response.data[i].PO_DEPT
-                        newcell = newrow.insertCell(7)
-                        newcell.contentEditable = true
-                        newcell.innerHTML = response.data[i].PO_SECTION
-                        newcell = newrow.insertCell(8)
-                        newcell.contentEditable = true
-                        newcell.innerHTML = response.data[i].PO_SUBJECT
+                        datanya.push( [
+                            response.data[i].PO_LINE,
+                            response.data[i].PO_ITMNM,
+                            response.data[i].PO_UM,
+                            response.data[i].PO_QTY,
+                            response.data[i].PO_PRICE,
+                            response.data[i].PO_DISC,
+                            response.data[i].PO_DEPT,
+                            response.data[i].PO_SECTION,
+                            response.data[i].PO_SUBJECT
+                        ])                  
                     }
+                    mpuror_sso_nonitem.setData(datanya)
                     let firstTabEl = document.querySelector('#myTab button[data-bs-target="#mpuror_tabFG"]')
                     let thetab = new bootstrap.Tab(firstTabEl)
                     thetab.show()
                 }
-                mydes.innerHTML=''
-                mydes.appendChild(myfrag)
+
 
                 //load discount
                 ttlrows = response.data_discount.length
