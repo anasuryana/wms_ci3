@@ -193,13 +193,7 @@
                     </div>                    
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12 mb-1 table-responsive">
-                
-            </div>
-        </div>
+        </div>        
     </div>
 </div>
 <div class="modal fade" id="mpuror_SUPPLIER">
