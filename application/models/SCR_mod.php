@@ -200,7 +200,7 @@ class SCR_mod extends CI_Model {
         $this->db->join("(select v1.ITH_SER,ITH_LOC FROM
         (SELECT ITH_SER, MAX(ITH_LUPDT) LUPDT FROM ITH_TBL WHERE ITH_SER IS NOT NULL 
         GROUP BY ITH_SER) v1 INNER JOIN ITH_TBL a on v1.ITH_SER=a.ITH_SER AND LUPDT=ITH_LUPDT
-        WHERE  ITH_FORM NOT IN ('OUT-QA-FG','INC-SHP-FG') and ITH_QTY>0) v1", 'SCRSER_SER=ITH_SER');
+        WHERE  ITH_FORM NOT IN ('OUT-QA-FG','INC-SHP-FG') and ITH_QTY>0) v1", 'SCRSER_SER=ITH_SER',"LEFT");
         $this->db->where($pwhere);
 		$query = $this->db->get();
 		return $query->result_array();
