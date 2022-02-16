@@ -397,7 +397,7 @@
        [''],
        [''],
        [''],
-];
+    ];
  
 var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem'), {
     data:mpurordata,
@@ -577,6 +577,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
         document.getElementById('mpuror_tbl').getElementsByTagName('tbody')[0].innerHTML = ''        
         document.getElementById('mpuror_tbl_special').getElementsByTagName('tbody')[0].innerHTML = ''
         mpuror_vencd = ''
+        mpuror_sso_nonitem.setData([[],[],[]])
     }
     $("#mpuror_txt_dlvreqdate").datepicker({
         format: 'yyyy-mm-dd',
@@ -1030,12 +1031,16 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
 
         for(let i=0; i<ttlrows; i++){
             if(datanya_nonitem[i][1].length>2){
+                if(datanya_nonitem[i][6].trim().length==0 || datanya_nonitem[i][7].trim().length==0){
+                    alertify.warning("Department or Section should not be empty")
+                    return
+                }
                 an_rowid.push(datanya_nonitem[i][0])
                 an_itemnm.push(datanya_nonitem[i][1])
                 an_umeasure.push(datanya_nonitem[i][2])
                 an_qty.push(numeral(datanya_nonitem[i][3]).value())
                 an_price.push(numeral(datanya_nonitem[i][4]).value())
-                an_disc.push(datanya_nonitem[i][5])
+                an_disc.push(numeral(datanya_nonitem[i][5]).value())
                 an_dept.push(datanya_nonitem[i][6])
                 an_section.push(datanya_nonitem[i][7])
                 an_subject.push(datanya_nonitem[i][8])
