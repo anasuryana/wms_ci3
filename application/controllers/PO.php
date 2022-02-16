@@ -57,7 +57,7 @@ class PO extends CI_Controller {
 		$required_date = '';
 		$shipping_cost = 0;
 		$netpayment = 0;
-		
+		$poremark = '';
 		foreach($rs as $r){
 			$requsted_by = $r['PO_RQSTBY'];
 			$shipment = $r['PO_SHPDLV'];
@@ -74,6 +74,7 @@ class PO extends CI_Controller {
 			$trans_date = date_create($r['PO_ISSUDT']);
 			$trans_date = date_format($trans_date,'d/m/Y');
 			$shipping_cost = $r['PO_SHPCOST'];
+			$poremark = $r['PO_RMRK'];
 			break;
 		}
 		$pdf = new PDF_Code39e128('P','mm','A4');
@@ -583,6 +584,8 @@ class PO extends CI_Controller {
 			$pdf->Line(5,281-$Yremark_adj,105,281-$Yremark_adj);
 			$pdf->Line(5,288-$Yremark_adj,105,288-$Yremark_adj);
 			$pdf->Line(5,295-$Yremark_adj,105,295-$Yremark_adj);
+			$pdf->SetXY(6,260-$Yremark_adj);
+			$pdf->MultiCell(98,4,$poremark,0,'L');
 
 			$pdf->SetXY(140,263-$_y);
 			$pdf->Cell(60,5,'Please Confirm & Return a Copy',0,0,'C');
@@ -926,7 +929,9 @@ class PO extends CI_Controller {
 			$pdf->Line(5,281-$Yremark_adj,105,281-$Yremark_adj);
 			$pdf->Line(5,281-$Yremark_adj,105,281-$Yremark_adj);
 			$pdf->Line(5,288-$Yremark_adj,105,288-$Yremark_adj);
-			$pdf->Line(5,295-$Yremark_adj,105,295-$Yremark_adj);
+			$pdf->Line(5,295-$Yremark_adj,105,295-$Yremark_adj);			
+			$pdf->SetXY(6,260-$Yremark_adj);
+			$pdf->MultiCell(98,4,$poremark,0,'L');
 
 			$pdf->SetXY(140,263-$_y);
 			$pdf->Cell(60,5,'Please Confirm & Return a Copy',0,0,'C');
@@ -1038,7 +1043,7 @@ class PO extends CI_Controller {
 						'PO_SECTION' => $di_section[$i],
 						'PO_DEPT' => $di_dept[$i],
 						'PO_SHPDLV' => $h_shp,
-						'PO_DISC' => $di_disc[$i],
+						'PO_DISC' => strlen($di_disc[$i])==0?0:$di_disc[$i],
 						'PO_RQSTBY' => $h_request_by,
 						'PO_PAYTERM' => $h_payterm,
 						'PO_RMRK' => $h_remark,
@@ -1060,7 +1065,7 @@ class PO extends CI_Controller {
 						'PO_SECTION' => $di_section[$i],
 						'PO_DEPT' => $di_dept[$i],
 						'PO_SHPDLV' => $h_shp,
-						'PO_DISC' => $di_disc[$i],
+						'PO_DISC' => strlen($di_disc[$i])==0?0:$di_disc[$i],
 						'PO_RQSTBY' => $h_request_by,
 						'PO_PAYTERM' => $h_payterm,
 						'PO_RMRK' => $h_remark,
@@ -1096,7 +1101,7 @@ class PO extends CI_Controller {
 						'PO_SECTION' => $dni_section[$i],
 						'PO_DEPT' => $dni_dept[$i],
 						'PO_SHPDLV' => $h_shp,
-						'PO_DISC' => $dni_disc[$i],
+						'PO_DISC' => strlen($dni_disc[$i])==0?0:$dni_disc[$i],
 						'PO_RQSTBY' => $h_request_by,
 						'PO_PAYTERM' => $h_payterm,
 						'PO_RMRK' => $h_remark,
@@ -1117,7 +1122,7 @@ class PO extends CI_Controller {
 						'PO_VAT' => $h_vat,
 						'PO_SUBJECT' => $dni_subject[$i],
 						'PO_SECTION' => $dni_section[$i],
-						'PO_DEPT' => $dni_dept[$i],
+						'PO_DEPT' => strlen($dni_dept[$i])==0?0:$dni_disc[$i],
 						'PO_SHPDLV' => $h_shp,
 						'PO_DISC' => $dni_disc[$i],
 						'PO_RQSTBY' => $h_request_by,
@@ -1182,7 +1187,7 @@ class PO extends CI_Controller {
 					'PO_SECTION' => $di_section[$i],
 					'PO_DEPT' => $di_dept[$i],
 					'PO_SHPDLV' => $h_shp,
-					'PO_DISC' => $di_disc[$i],
+					'PO_DISC' => strlen($di_disc[$i])==0? 0: $di_disc[$i],
 					'PO_RQSTBY' => $h_request_by,
 					'PO_PAYTERM' => $h_payterm,
 					'PO_RMRK' => $h_remark,
@@ -1213,7 +1218,7 @@ class PO extends CI_Controller {
 					'PO_SECTION' => $dni_section[$i],
 					'PO_DEPT' => $dni_dept[$i],
 					'PO_SHPDLV' => $h_shp,
-					'PO_DISC' => $dni_disc[$i],
+					'PO_DISC' => strlen($dni_disc[$i])==0 ?0:$dni_disc[$i],
 					'PO_RQSTBY' => $h_request_by,
 					'PO_PAYTERM' => $h_payterm,
 					'PO_RMRK' => $h_remark,
@@ -1362,5 +1367,9 @@ class PO extends CI_Controller {
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
 		header('Cache-Control: max-age=0');
 		$writer->save('php://output');
+	}
+
+	public function form_po(){
+		$this->load->view('wms/vpo_new');
 	}
 }
