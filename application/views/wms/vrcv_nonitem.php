@@ -369,6 +369,7 @@
                     success: function (response) {
                         if(response.status[0].cd=='1'){
                             alertify.success(response.status[0].msg)
+                            rcvnonitem_getdetail(donum.value)
                         } else {
                             alertify.warning(response.status[0].msg)
                         }
@@ -411,8 +412,7 @@
                     let newrow, newcell
                     let myitmttl = 0;
                     tableku2.innerHTML=''
-                    for (let i = 0; i<ttlrows; i++){
-                        console.log(i)
+                    for (let i = 0; i<ttlrows; i++){                        
                         newrow = tableku2.insertRow(-1)
                         newcell = newrow.insertCell(0)
                         newcell.style.cssText = 'cursor:pointer'
@@ -443,7 +443,50 @@
             data: {doc: pdo},
             dataType: "json",
             success: function (response) {
-                
+                const ttlrows = response.data.length
+                let mydes = document.getElementById("rcvnonitem_divku_1")
+                let myfrag = document.createDocumentFragment()
+                let mtabel = document.getElementById("rcvnonitem_tbl_1")
+                let cln = mtabel.cloneNode(true);
+                myfrag.appendChild(cln)
+                let tabell = myfrag.getElementById("rcvnonitem_tbl_1")
+                let tableku2 = tabell.getElementsByTagName("tbody")[0]
+                let newrow, newcell
+                let myitmttl = 0;
+                tableku2.innerHTML=''
+                for (let i = 0; i<ttlrows; i++){                    
+                    newrow = tableku2.insertRow(-1)
+                    newcell = newrow.insertCell(0)
+                    newcell.classList.add('d-none')
+                    newcell.innerHTML = response.data[i].RCVNI_LINE
+                    newcell = newrow.insertCell(1)
+                    newcell.classList.add('table-info') 
+                    newcell.innerHTML = response.data[i].RCVNI_PO
+                    newcell = newrow.insertCell(2)
+                    newcell.classList.add('table-info')
+                    newcell.innerHTML = response.data[i].RCVNI_ITMNM
+                    newcell = newrow.insertCell(3)
+                    newcell.classList.add('text-end')
+                    newcell.contentEditable = true
+                    newcell.onkeypress = function(e){
+                        if(e.key==='Enter'){                            
+                            e.preventDefault()
+                            return
+                        }
+                    }
+                    newcell.innerHTML = numeral(response.data[i].RCVNI_QTY).value()
+                    newcell = newrow.insertCell(4)
+                    newcell.classList.add('table-info')
+                    newcell.innerHTML = response.data[i].PO_UM
+                    newcell = newrow.insertCell(5)
+                    newcell.innerHTML = numeral(response.data[i].PO_PRICE).value()
+                    newcell.classList.add('text-end','table-info')                    
+                    newcell = newrow.insertCell(6)
+                    newcell.classList.add('text-end','table-info')
+                    newcell.innerHTML = numeral(response.data[i].RCVNI_QTY*response.data[i].PO_PRICE).format('0,0.00')
+                }
+                mydes.innerHTML=''
+                mydes.appendChild(myfrag)
             }, error: function (xhr,ajaxOptions, throwError) {
                 alertify.error(xthrow)                
             }

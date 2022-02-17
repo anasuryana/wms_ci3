@@ -3077,8 +3077,8 @@ class RCV extends CI_Controller {
 
 	public function del_vs_nextdel(){
 		header('Content-Type: application/json');
-		$rsbooked = $this->RCV_mod->select_balanceEXBC_fromSCRBook_detail(['0121Z0758','0121Z0777']);
-		$rsstk = $this->DELV_mod->select_aftersales('0121Z0758', '219487102');
+		$rsbooked = $this->RCV_mod->select_balanceEXBC_fromSCRBook_detail(['0121Z0777']);
+		$rsstk = $this->DELV_mod->select_aftersales('0121Z0777', '219487102');
 		$rsFIX = [];
 		foreach($rsstk as &$s){
 			$s['STKF'] = 0;
@@ -3120,7 +3120,7 @@ class RCV extends CI_Controller {
 	}
 
 	public function tes(){
-		$ret  = $this->RCVNI_mod->select_maxline('D')+1;
+		$ret  = $this->RCVNI_mod->select_maxline('00016/KI/02/2022')+1;
 		echo $ret;
 	}
 	
@@ -3142,10 +3142,11 @@ class RCV extends CI_Controller {
 			$ttlsaved = 0;
 			$datalength = count($apo);
 			$save = [] ;
+			$lastline  = $this->RCVNI_mod->select_maxline($donum)+1;
 			for($i=0;$i<$datalength; $i++){
 				if($arowid[$i]===''){
 					$save[] = [
-						'RCVNI_LINE' => $i,
+						'RCVNI_LINE' => $lastline++,
 						'RCVNI_PO' => $apo[$i],
 						'RCVNI_DO' => $donum,
 						'RCVNI_ITMNM' => $aitem[$i],
@@ -3171,6 +3172,21 @@ class RCV extends CI_Controller {
 			$myar[] = ['cd' => '0', 'msg' => 'sorry we could not process'];
 		}
 		die(json_encode(['status' => $myar]));
+	}
+
+	public function search_doni(){
+		header('Content-Type: application/json');
+		$search = $this->input->get('search');
+		$searchBY = $this->input->get('searchBY');
+		$rs =  $this->RCVNI_mod->select_header($searchBY === '0' ? ['RCVNI_DO' => $search] : ['MSUP_SUPNM' => $search]);
+		die(json_encode(['data' => $rs]));
+	}
+	
+	public function doni(){
+		header('Content-Type: application/json');
+		$doc = $this->input->get('doc');
+		$rs = $this->RCVNI_mod->select_where(['RCVNI_DO' => $doc]);
+		die(json_encode(['data' => $rs]));
 	}
 
 	public function gotoque($pdo){
