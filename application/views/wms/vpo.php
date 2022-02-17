@@ -274,7 +274,7 @@
     </div>
 </div>
 <div class="modal fade" id="mpuror_SavedDataMod">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content"> 
         <!-- Modal Header -->
         <div class="modal-header">
@@ -330,8 +330,8 @@
                                     <th colspan="2" class="text-center">Date</th>                                 
                                 </tr>
                                 <tr>
+                                    <th>Created</th>
                                     <th>Required</th>
-                                    <th>Delivery</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1177,9 +1177,9 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
                         newcell = newrow.insertCell(1)
                         newcell.innerHTML = response.data[i].MSUP_SUPNM
                         newcell = newrow.insertCell(2)
-                        newcell.innerHTML = response.data[i].PO_REQDT
-                        newcell = newrow.insertCell(3)
                         newcell.innerHTML = response.data[i].PO_ISSUDT
+                        newcell = newrow.insertCell(3)
+                        newcell.innerHTML = response.data[i].PO_REQDT
                     }
                     mydes.innerHTML=''
                     mydes.appendChild(myfrag)
