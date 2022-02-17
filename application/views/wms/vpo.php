@@ -466,6 +466,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
             data: {lineId: mpuror_selected_row, docNum: docnum },
             dataType: "json",
             success: function (response) {
+                mpuror_get_detail(docnum)
                 if (response.status[0].cd==='1') {
                     alertify.success(response.status[0].msg)                    
                 } else {
