@@ -459,32 +459,26 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
         
      ],
     ondeleterow : function(instance,y1,xnumrow,xdom,xrowdata) {
-        console.log('ketika delete')
-        console.log(instance)
-        console.log(xrowdata)
-
-        let mylineid = mpuror_sso_nonitem.getValueFromCoords(0,y1)
         const docnum = document.getElementById('mpuror_txt_doc').value
-        // $.ajax({
-        //     type: "post",
-        //     url: "<?//=base_url('PO/remove')?>",
-        //     data: {lineId: mylineid, docNum: docnum },
-        //     dataType: "json",
-        //     success: function (response) {
-        //         if (response.status[0].cd==='1') {
-        //             alertify.success(response.status[0].msg)                    
-        //         } else {
-        //             alertify.message(response.status[0].msg)
-        //         }
-        //     }, error:function(xhr,xopt,xthrow){
-        //         alertify.error(xthrow)
-        //     }
-        // })
+        $.ajax({
+            type: "post",
+            url: "<?=base_url('PO/remove')?>",
+            data: {lineId: mpuror_selected_row, docNum: docnum },
+            dataType: "json",
+            success: function (response) {
+                if (response.status[0].cd==='1') {
+                    alertify.success(response.status[0].msg)                    
+                } else {
+                    alertify.message(response.status[0].msg)
+                }
+            }, error:function(xhr,xopt,xthrow){
+                alertify.error(xthrow)
+            }
+        })
     },
-    onbeforedeleterow: function(instance,y1) {
-        console.log('ketika sebelum delete')
-        let datanyax = mpuror_sso_nonitem.getValueFromCoords(0,y1)
-        console.log('ayo hapus' + datanyax)
+    onbeforedeleterow: function(instance,y1) {        
+        let lineID = mpuror_sso_nonitem.getValueFromCoords(0,y1)        
+        mpuror_selected_row = lineID
     },    
 });
     var mpuror_vencd = ''

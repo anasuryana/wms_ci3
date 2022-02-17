@@ -959,8 +959,22 @@ class PO extends CI_Controller {
 		header('Content-Type: application/json');
 		$doc = $this->input->post('docNum');
 		$line = $this->input->post('lineId');
-		$ret = $this->PO_mod->delete(['PO_NO' => $doc, 'PO_LINE' => $line]);
-		$myar[] = ['cd' => '1', 'msg' => 'OK','affected' => $ret];
+		if($line===''){
+			$myar[] = ['cd' => '1', 'msg' => 'OK..'];
+		} else {
+			$rspo = $this->PO_mod->select_all(['PO_NO' => $doc, 'PO_LINE' => $line]);						
+			$received_items = 0;
+			foreach($rspo as $r){
+				if($r['PO_ITMNM']){
+					$received_items = $this->RCVNI_mod->check_Primary(['RCVNI_PO' => $doc, 'RCVNI_ITMNM' => $r['PO_ITMNM']]);
+				} else {
+					$received_items = $this->RCV_mod->check_Primary(['RCV_PO' => $doc, 'RCV_ITMCD' => $r['PO_ITMCD']]);
+				}
+				break;
+			}
+			$ret = $this->PO_mod->delete(['PO_NO' => $doc, 'PO_LINE' => $line]);
+			$myar[] = $received_items > 0 ? ['cd' => '0', 'msg' => 'could not delete received item'] : ['cd' => '1', 'msg' => 'OK','affected' => $ret];
+		}
 		die(json_encode(['status' => $myar]));
 	}
 	public function remove_discount(){
