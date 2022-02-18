@@ -397,6 +397,8 @@
        [''],
        [''],
        [''],
+       [''],
+       [''],
     ];
  
 var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem'), {
@@ -411,7 +413,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
         {
             type: 'text',
             title:'Item Name',
-            width:120,
+            width:150,
             align: 'left'
         },        
         {
@@ -442,19 +444,20 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
             decimal:'.'
         },
         {
-            type: 'text',
+            type: 'autocomplete',
             title:'Department',            
-            width:80,            
+            width:100,
+            source: [<?=$deptl_1?>]
         },
         {
             type: 'text',
             title:'Section',            
-            width:80,            
+            width:100,            
         },
         {
             type: 'text',
             title:'Subject',            
-            width:80,            
+            width:100,            
         },
         
      ],
@@ -572,7 +575,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
         document.getElementById('mpuror_tbl').getElementsByTagName('tbody')[0].innerHTML = ''        
         document.getElementById('mpuror_tbl_special').getElementsByTagName('tbody')[0].innerHTML = ''
         mpuror_vencd = ''
-        mpuror_sso_nonitem.setData([[],[],[]])
+        mpuror_sso_nonitem.setData([[],[],[],[],[]])
     }
     $("#mpuror_txt_dlvreqdate").datepicker({
         format: 'yyyy-mm-dd',

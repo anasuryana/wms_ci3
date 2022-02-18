@@ -20,13 +20,16 @@ class PO extends CI_Controller {
     public function form(){
 		$rsdept = $this->MDEPT_mod->select_all();
 		$strdept = '';
+		$strdept1 = '';
 		// foreach($rsdept as $r){
 		// 	$strdept .= '<option value="'.$r['MDEPT_CD'].'">'.$r['MDEPT_NM'].'</option>';
 		// }
 		foreach($rsdept as $r){
 			$strdept .= '<tr><td>'.$r['MDEPT_CD'].'</td><td>'.$r['MDEPT_NM'].'</td></tr>';
+			$strdept1 .= "'".$r['MDEPT_CD']."',";
 		}
 		$data['deptl'] = $strdept;
+		$data['deptl_1'] = $strdept1;
         $this->load->view('wms/vpo', $data);
     }
 
@@ -1346,7 +1349,7 @@ class PO extends CI_Controller {
 		$i=7;
 		foreach($rs as $r){
 			$sheet->setCellValueByColumnAndRow(1,$i, $r['PO_NO']);
-			$sheet->setCellValueByColumnAndRow(2,$i, $r['PO_CRTDT']);
+			$sheet->setCellValueByColumnAndRow(2,$i, $r['PO_ISSUDT']);
 			$sheet->setCellValueByColumnAndRow(3,$i, $r['PO_SUPCD']);
 			$sheet->setCellValueByColumnAndRow(4,$i, $r['SUPNM']);
 			$sheet->setCellValueByColumnAndRow(5,$i, $r['CURRENCY']);
