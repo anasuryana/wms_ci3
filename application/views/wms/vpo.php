@@ -391,6 +391,7 @@
       </div>
     </div>
 </div>
+<div id="mpurorcontextmenu"></div>
 <script>
 
     var mpurordata = [
@@ -400,7 +401,20 @@
        [''],
        [''],
     ];
- 
+    var mpurorcontextMenu = jSuites.contextmenu(document.getElementById('mpurorcontextmenu'), {
+    items:[
+        {
+            title:'Delete',            
+            onclick:function(e) {
+                mpuror_minusrow()
+            },
+            tooltip: 'Method to delete the row',
+        }
+    ],
+    onclick:function() {
+        mpurorcontextMenu.close(false);
+    }
+});
 var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem'), {
     data:mpurordata,
     columns: [
@@ -606,6 +620,11 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
         let newrow , newcell        
         newrow = mytbody.insertRow(-1)
         newrow.onclick = (event) => {mpuror_tbl_tbody_tr_eC(event)}
+        newrow.oncontextmenu = (e) => {
+            mpuror_selected_row = e.srcElement.parentElement.rowIndex - 1            
+            mpurorcontextMenu.open(e)
+            e.preventDefault()
+        }
         
         newcell = newrow.insertCell(0)
         newcell.classList.add('d-none')
@@ -1081,7 +1100,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
                     h_req_date : txt_reqdate,
                     h_issu_date : txt_issudate,
                     h_shp : txt_shp.value,
-                    h_shp_cost : txt_shp_cost.value,                    
+                    h_shp_cost : numeral(txt_shp_cost.value).value(),
                     h_supplier : mpuror_vencd,
                     di_rowid : arowid,
                     di_item : aitem,
