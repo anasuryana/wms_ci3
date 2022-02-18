@@ -1172,7 +1172,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
                             document.getElementById('mpuror_txt_shipdoc').value = response.data[i].PO_SHPDLV
                             document.getElementById('mpuror_txt_shpcost').value = response.data[i].PO_SHPCOST*1                            
                             document.getElementById('mpuror_txt_doc').value = response.data[i].PO_NO
-                            document.getElementById('mpuror_tbl').getElementsByTagName('tbody')[0].innerHTML = ''                            
+                            document.getElementById('mpuror_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
                             mpuror_get_detail(response.data[i].PO_NO)
                         }
                         newcell = newrow.insertCell(0)
@@ -1214,6 +1214,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
                 
 
                 if(tableuse.tableid=='mpuror_tbl'){
+                    mpuror_sso_nonitem.setData([[],[],[],[],[]])
                     let mydes = document.getElementById(tableuse.divid)
                     let myfrag = document.createDocumentFragment()
                     let mtabel = document.getElementById(tableuse.tableid)
