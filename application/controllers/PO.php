@@ -775,7 +775,7 @@ class PO extends CI_Controller {
 				if($ttlwidth > 30){	
 					$ukuranfont = 8.5;
 					while($ttlwidth>30){
-						$pdf->SetFont('Arial','',$ukuranfont);
+						$pdf->SetFont('Times','',$ukuranfont);
 						$ttlwidth=$pdf->GetStringWidth(trim($itemcd));
 						$ukuranfont = $ukuranfont - 0.5;
 					}
