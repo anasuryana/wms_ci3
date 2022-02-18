@@ -1344,6 +1344,7 @@
                                     <th colspan="2" class="align-middle text-center">Qty</th>
                                     <th rowspan="2" class="align-middle text-center">Price</th>
                                     <th rowspan="2" class="align-middle text-center d-none">SUPPLIERCODE</th>
+                                    <th rowspan="2" class="align-middle text-center d-none">stkuom</th>
                                 </tr>
                                 <tr>
                                     <th class="text-center">Required</th>
@@ -3476,6 +3477,9 @@
                         newcell = newrow.insertCell(9)
                         newcell.classList.add('d-none')
                         newcell.innerHTML = response.data[i].PO_SUPCD
+                        newcell = newrow.insertCell(10)
+                        newcell.classList.add('d-none')
+                        newcell.innerHTML = response.data[i].MITM_STKUOM
                     }
                     mydes.innerHTML=''
                     mydes.appendChild(myfrag)
@@ -3497,6 +3501,7 @@
         let aItemName = []
         let aqty = []
         let aprice = []
+        let aUM = []
         let isexist = false
         let supplierName = ''
         for(let i=0; i<ttlrows; i++){
@@ -3508,6 +3513,7 @@
             aItemName.push(tableku2.rows[i].cells[5].innerText)
             aqty.push(numeral(tableku2.rows[i].cells[7].innerText).value())
             aprice.push(numeral(tableku2.rows[i].cells[8].innerText).value())
+            aUM.push(tableku2.rows[i].cells[10].innerText)
         }
         if(isexist) {            
             document.getElementById('rcvcustoms_supplier_1').value = supplierName
@@ -3550,7 +3556,7 @@
 
                 newcell = newrow.insertCell(6)
                 newcell.classList.add('table-info')
-                newcell.innerHTML = '-'
+                newcell.innerHTML = aUM[i]
 
                 newcell = newrow.insertCell(7)
                 newcell.classList.add('text-end')
