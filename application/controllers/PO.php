@@ -771,7 +771,18 @@ class PO extends CI_Controller {
 				$finalamount = $amount-$discount_price;
 				$pdf->SetXY(6,$YStart);
 				$pdf->Cell(10,5,$nomor_urut++,0,0,'C');
+				$ttlwidth = $pdf->GetStringWidth(trim($itemcd));
+				if($ttlwidth > 30){	
+					$ukuranfont = 8.5;
+					while($ttlwidth>30){
+						$pdf->SetFont('Arial','',$ukuranfont);
+						$ttlwidth=$pdf->GetStringWidth(trim($itemcd));
+						$ukuranfont = $ukuranfont - 0.5;
+					}
+				}
 				$pdf->Cell(30,5,$itemcd,0,0,'L');
+				$pdf->SetFont('Times','',9);
+				$pdf->SetXY(6,104-$_y);
 				$pdf->SetXY(46,$YStart);
 				$pdf->MultiCell(60,5,$itemname,0,'L');
 				$YExtra_candidate = $pdf->GetY();
@@ -1002,7 +1013,7 @@ class PO extends CI_Controller {
 		$h_req_date = $this->input->post('h_req_date');
 		$h_issu_date = $this->input->post('h_issu_date');
 		$h_shp = $this->input->post('h_shp');
-		$h_shp_cost = $this->input->post('h_shp_cost');		
+		$h_shp_cost = str_replace(',','',$this->input->post('h_shp_cost'));
 		$h_supplier = $this->input->post('h_supplier');
 		$di_rowid = $this->input->post('di_rowid');
 		$di_item = $this->input->post('di_item');
