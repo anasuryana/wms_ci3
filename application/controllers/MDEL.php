@@ -34,10 +34,33 @@ class MDEL extends CI_Controller {
                         , 'MDEL_ZSKEP' => $tpbno
                         ,'MDEL_TXCD' => $txcode]
                         ,['MDEL_DELCD' => $dlvCD]) 
-            ) {
-                $myar[] = ['cd' => 1, 'msg' => 'Updated successfully'];
+                        ) {
+                            $myar[] = ['cd' => 1, 'msg' => 'Updated successfully'];
         } else {
             $myar[] = ['cd' => 0, 'msg' => 'Could not be updated'];
+        }
+        die(json_encode(['status' => $myar]));
+    }
+    function set(){
+        header('Content-Type: application/json');
+        $delcode = $this->input->post('delcode');
+        $delname = $this->input->post('delname');
+        $deladdr = $this->input->post('deladdr');
+        $myar = [];
+        $data = [];
+        if($this->DELV_mod->check_Primary_address(['MDEL_DELCD' => $delcode])){
+            $myar[] = ['cd' => '0', 'msg' => 'It is already exist'];
+        } else {
+            $lastnum = $this->DELV_mod->select_lastno_address()+1;
+            $lastnum = substr('0'.$lastnum,-2);
+            $data = [
+                "MDEL_DELCD" => $delcode,
+                "MDEL_TXCD" => $lastnum,
+                "MDEL_ZNAMA" => $delname,
+                "MDEL_ADDRCUSTOMS" => $deladdr,
+            ];
+            $this->DELV_mod->insert_address($data);
+            $myar[] = ['cd' => '1', 'msg' => 'Saved'];
         }
         die(json_encode(['status' => $myar]));
     }

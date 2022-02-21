@@ -20,7 +20,12 @@
         <div class="row" id="mst_dlvcode_stack0">
             <div class="col-md-6 mb-1"> 
                 <div class="btn-group btn-group-sm">
-                    <button class="btn btn-primary" type="button" id="mst_dlvcode_btn_save" onclick="mst_dlvcode_btn_save_e_click()"><i class="fas fa-save"></i></button>                    
+                    <button class="btn btn-primary" type="button" id="mst_dlvcode_btn_save" onclick="mst_dlvcode_btn_save_e_click()"><i class="fas fa-save"></i></button>                                        
+                </div>
+            </div>
+            <div class="col-md-6 mb-1 text-end"> 
+                <div class="btn-group btn-group-sm">                    
+                    <button class="btn btn-outline-primary" type="button" id="mst_dlvcode_btn_plus" onclick="mst_dlvcode_btn_plus_e_click()" title="add new"><i class="fas fa-plus"></i></button>                    
                 </div>
             </div>
             <div class="col-md-6 mb-1">
@@ -47,6 +52,48 @@
                 </div>
             </div>
         </div>        
+    </div>
+</div>
+<div class="modal fade" id="mst_dlvcode_modplus">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">      
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Add new data</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Delivery Code</span>                        
+                        <input type="text" class="form-control" id="mst_dlvcode_plus_txt_dlvcode"  maxlength="11" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Customer Name</span>                        
+                        <input type="text" class="form-control" id="mst_dlvcode_plus_txt_custname"  maxlength="100" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Address</span>                        
+                        <input type="text" class="form-control" id="mst_dlvcode_plus_txt_addr"  maxlength="150" required>
+                    </div>
+                </div>
+            </div>            
+        </div>
+        <div class="modal-footer">            
+            <button type="button" class="btn btn-primary" id="mst_dlvcode_plus_btn_save" onclick="mst_dlvcode_plus_btn_save_eCK()">Save changes</button>
+        </div>
+      </div>
     </div>
 </div>
 <script>
@@ -106,8 +153,7 @@
                     newrow.onclick = (event) => {mst_dlvcode_tbl_tbody_tr_eC(event)}
                     newcell = newrow.insertCell(0);
                     newcell.innerHTML = response.data[i].MDEL_DELCD
-                    newcell = newrow.insertCell(1);
-                    newcell.contentEditable = true
+                    newcell = newrow.insertCell(1)                    
                     newcell.innerHTML = response.data[i].MDEL_TXCD
                     newcell = newrow.insertCell(2);
                     newcell.contentEditable = true
@@ -133,5 +179,46 @@
                 document.getElementById('mst_dlvcode_lblinfo').innerHTML = ''
             }
         })
+    }
+    function mst_dlvcode_btn_plus_e_click(){
+        $("#mst_dlvcode_modplus").modal('show')
+    }
+
+    $("#mst_dlvcode_modplus").on('shown.bs.modal', function(){
+        document.getElementById('mst_dlvcode_plus_txt_dlvcode').focus()
+    })
+
+    function mst_dlvcode_plus_btn_save_eCK(){
+        const delcode = document.getElementById('mst_dlvcode_plus_txt_dlvcode')
+        const delname = document.getElementById('mst_dlvcode_plus_txt_custname')
+        const deladdr = document.getElementById('mst_dlvcode_plus_txt_addr')
+        if(delcode.value.includes(" ")){
+            alertify.message('it should not contain space')
+            delcode.focus()
+            return
+        }
+        if(delname.value.trim().length<=3){
+            alertify.message('name is required')
+            return
+        }
+        if(confirm("Are you sure ?")) {
+            $.ajax({
+                type: "POST",
+                url: "<?=base_url('MDEL/set')?>",
+                data: {delcode: delcode.value.trim(), delname: delname.value, deladdr: deladdr.value},
+                dataType: "json",
+                success: function (response) {
+                    if(response.status[0].cd==='1'){
+                        alertify.success(response.status[0].msg)
+                        $("#mst_dlvcode_modplus").modal('hide')
+                        mst_dlvcode_initData()
+                    } else {
+                        alertify.warning(response.status[0].msg)
+                    }
+                }, error: function(xhr, xopt, xthrow){
+                    alertify.error(xthrow)                
+                }
+            })
+        }
     }
 </script>

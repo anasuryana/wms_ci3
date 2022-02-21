@@ -24,10 +24,19 @@ class DELV_mod extends CI_Model {
         $this->db->insert_batch('DLV_PKG_TBL',$data);
         return $this->db->affected_rows();
     }
+    public function insert_address($data)
+    {        
+        $this->db->insert('MDEL_TBL',$data);
+        return $this->db->affected_rows();
+    }
 
     public function check_Primary($data)
     {
         return $this->db->get_where($this->TABLENAME,$data)->num_rows();
+    }
+    public function check_Primary_address($data)
+    {
+        return $this->db->get_where("MDEL_TBL",$data)->num_rows();
     }
 
     public function updatebyVAR($pdata, $pwhere)
@@ -398,6 +407,16 @@ class DELV_mod extends CI_Model {
             return $ret->lser;
         } else {
             return '0';
+        }
+    }
+    public function select_lastno_address(){
+        $qry = "select ISNULL(MAX(CONVERT(INT,MDEL_TXCD)),1) lser from MDEL_TBL";
+        $query =  $this->db->query($qry);
+        if ($query->num_rows()>0){
+            $ret = $query->row();
+            return $ret->lser;
+        } else {
+            return '1';
         }
     }
     public function select_lastnodo_patterned_V2($pmonth, $pyear, $flagmonth){
@@ -1093,7 +1112,7 @@ class DELV_mod extends CI_Model {
     }
 
     public function select_aftersales($pdoc, $pfg){
-        $qry = "select vdet.*,DELQT, RMQT/DELQT*319 STKQTY,MITMGRP_ITMCD from
+        $qry = "select vdet.*,DELQT, RMQT/DELQT*2 STKQTY,MITMGRP_ITMCD from
         (select DLV_ID,SER_ITMID,SERD2_ITMCD ITH_ITMCD,sum(SERD2_QTY) RMQT FROM DLV_TBL LEFT JOIN SER_TBL ON DLV_SER=SER_ID
         left join SERD2_TBL on DLV_SER=SERD2_SER
         WHERE DLV_ID IN (?) AND SER_ITMID=?
