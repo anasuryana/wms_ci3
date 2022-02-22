@@ -12,6 +12,7 @@ class PO extends CI_Controller {
 		$this->load->library('Code39e128');
 		$this->load->model('MDEPT_mod');
 		$this->load->model('PO_mod');
+		$this->load->model('RCVNI_mod');
 	}
 	public function index()
 	{
@@ -428,7 +429,17 @@ class PO extends CI_Controller {
 				$finalamount = $amount-$discount_price;
 				$pdf->SetXY(6,$YStart);
 				$pdf->Cell(10,5,$nomor_urut++,0,0,'C');
+				$ttlwidth = $pdf->GetStringWidth(trim($itemcd));
+				if($ttlwidth > 30){	
+					$ukuranfont = 8.5;
+					while($ttlwidth>30){
+						$pdf->SetFont('Times','',$ukuranfont);
+						$ttlwidth=$pdf->GetStringWidth(trim($itemcd));
+						$ukuranfont = $ukuranfont - 0.5;
+					}
+				}
 				$pdf->Cell(30,5,$itemcd,0,0,'L');
+				$pdf->SetFont('Times','',9);
 				$pdf->SetXY(46,$YStart);
 				$pdf->MultiCell(60,5,$itemname,0,'L');
 				$YExtra_candidate = $pdf->GetY();
@@ -744,26 +755,26 @@ class PO extends CI_Controller {
 				}
 				if($r['PO_SECTION']){
 					if(trim($r['PO_SECTION'])!=''){
-						if(!in_array($r['PO_SECTION'], $adata_section)){
-							$adata_section[] = $r['PO_SECTION'];
+						if(!in_array(trim($r['PO_SECTION']), $adata_section)){
+							$adata_section[] = trim($r['PO_SECTION']);
 						}
 					}
 				}
 				if($r['PO_DEPT']){
 					if(trim($r['PO_DEPT'])!=''){
-						if(!in_array($r['PO_DEPT'], $adata_department)){
-							$adata_department[] = $r['PO_DEPT'];
+						if(!in_array(trim($r['PO_DEPT']), $adata_department)){
+							$adata_department[] = trim($r['PO_DEPT']);
 						}
 					}
 				}
 				if($r['PO_SUBJECT']){
 					if(trim($r['PO_SUBJECT'])!=''){
-						if(!in_array($r['PO_SUBJECT'], $adata_subject)){
-							$adata_subject[] = $r['PO_SUBJECT'];
+						if(!in_array(trim($r['PO_SUBJECT']), $adata_subject)){
+							$adata_subject[] = trim($r['PO_SUBJECT']);
 						}
 					}
 				}
-				$itemcd = $r['PO_ITMCD'] ? $r['PO_ITMCD'] : "NON ITEM";
+				$itemcd = $r['PO_ITMCD'] ? trim($r['PO_ITMCD']) : "NON ITEM";
 				$itemname = $r['PO_ITMNM'] ? $r['PO_ITMNM'] : $r['MITM_ITMD1'];
 				$itemum = $r['PO_UM'] ? $r['PO_UM'] : $r['MITM_STKUOM'];
 				$amount = $r['PO_PRICE']*$r['PO_QTY'];
@@ -771,18 +782,23 @@ class PO extends CI_Controller {
 				$finalamount = $amount-$discount_price;
 				$pdf->SetXY(6,$YStart);
 				$pdf->Cell(10,5,$nomor_urut++,0,0,'C');
-				$ttlwidth = $pdf->GetStringWidth(trim($itemcd));
-				if($ttlwidth > 30){	
-					$ukuranfont = 8.5;
-					while($ttlwidth>30){
-						$pdf->SetFont('Times','',$ukuranfont);
-						$ttlwidth=$pdf->GetStringWidth(trim($itemcd));
-						$ukuranfont = $ukuranfont - 0.5;
+				if(strpos($itemcd, " ")!==false){
+					$pdf->MultiCell(30,5,$itemcd,0,'L');
+					$YExtra_candidate = $pdf->GetY();
+					$YExtra = $YExtra_candidate!=$YStart ? $YExtra=$YExtra_candidate-$YStart-5 : 0;
+				} else {
+					$ttlwidth = $pdf->GetStringWidth($itemcd);
+					if($ttlwidth > 30){	
+						$ukuranfont = 8.5;
+						while($ttlwidth>30){
+							$pdf->SetFont('Times','',$ukuranfont);
+							$ttlwidth=$pdf->GetStringWidth(trim($itemcd));
+							$ukuranfont = $ukuranfont - 0.5;
+						}
 					}
+					$pdf->Cell(30,5,$itemcd,0,0,'L');
 				}
-				$pdf->Cell(30,5,$itemcd,0,0,'L');
-				$pdf->SetFont('Times','',9);
-				$pdf->SetXY(6,104-$_y);
+				$pdf->SetFont('Times','',9);				
 				$pdf->SetXY(46,$YStart);
 				$pdf->MultiCell(60,5,$itemname,0,'L');
 				$YExtra_candidate = $pdf->GetY();

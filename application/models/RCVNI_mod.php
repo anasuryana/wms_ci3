@@ -35,6 +35,13 @@ class RCVNI_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+    public function select_where($pwhere) {
+        $this->db->from($this->TABLENAME); 
+        $this->db->join("(SELECT PO_NO,PO_ITMNM,PO_UM,PO_PRICE FROM PO_TBL GROUP BY PO_NO,PO_ITMNM,PO_UM,PO_PRICE) VPO", "RCVNI_PO=PO_NO AND RCVNI_ITMNM=PO_ITMNM");
+        $this->db->where($pwhere);
+		$query = $this->db->get();
+		return $query->result_array();
+    }
     public function check_Primary($data)
     {        
         return $this->db->get_where($this->TABLENAME,$data)->num_rows();
@@ -51,5 +58,18 @@ class RCVNI_mod extends CI_Model {
         $this->db->from($this->TABLENAME);
         $this->db->where("RCVNI_DO", $pdoc);
 		return $this->db->get()->row()->LLINE;
+    }
+
+    public function select_header($plike){        
+        $this->db->from($this->TABLENAME);
+        $this->db->join("(SELECT PO_NO,MSUP_SUPCD,MSUP_SUPNM FROM PO_TBL LEFT JOIN
+                            (select MSUP_SUPCD,rtrim(MAX(MSUP_SUPNM)) MSUP_SUPNM,MAX(MSUP_SUPCR) MSUP_SUPCR FROM v_supplier_customer_union GROUP BY MSUP_SUPCD) V1 ON PO_SUPCD=MSUP_SUPCD
+                        GROUP BY PO_NO,MSUP_SUPCD,MSUP_SUPNM) VPO
+        ","RCVNI_PO=PO_NO");        
+        $this->db->group_by("RCVNI_DO,MSUP_SUPNM,MSUP_SUPCD");
+        $this->db->select("RCVNI_DO,MSUP_SUPNM,MSUP_SUPCD,max(RCVNI_RCVDATE) RCVDT");
+        $this->db->like($plike);
+		$query = $this->db->get();
+		return $query->result_array();
     }
 }
