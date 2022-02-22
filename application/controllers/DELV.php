@@ -3878,8 +3878,9 @@ class DELV extends CI_Controller {
 			}
 			$pdf->AddPage();
 			$pdf->Text(155,59+8,$hinv_date);
-			$pdf->Text(16,70+10,$h_delnm);
-			$pdf->Text(16,70+4+10,$h_deladdress);
+			$pdf->Text(16,70+10,$h_delnm);			
+			$pdf->SetXY(15,71+10);
+			$pdf->MultiCell(121,4,$h_deladdress,0,'L');
 			$pdf->Text(140,91+8,$h_invno);
 			$curY = 110+15;
 			$TTLQTY=0;
@@ -3889,7 +3890,8 @@ class DELV extends CI_Controller {
 					$pdf->AddPage();
 					$pdf->Text(155,59+10,$hinv_date);
 					$pdf->Text(16,70+10,$h_delnm);
-					$pdf->Text(16,70+4+10,$h_deladdress);
+					$pdf->MultiCell(121,4,$h_deladdress,0,'L');
+					$pdf->Text(140,91+8,$h_invno);
 					$pdf->Text(140,91+10,$h_invno);
 					$curY = 110+15;
 				}
