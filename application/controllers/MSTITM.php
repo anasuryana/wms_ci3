@@ -13,6 +13,7 @@ class MSTITM extends CI_Controller {
 		$this->load->model('SER_mod');
 		$this->load->model('RCV_mod');
 		$this->load->model('DELV_mod');
+		$this->load->model('MUM_mod');
 		$this->load->helper('url');
 		$this->load->helper('download');
 		$this->load->library('session');
@@ -63,11 +64,17 @@ class MSTITM extends CI_Controller {
 
 	public function create(){
 		$rs = $this->MMDL_mod->select_all(['MMDL_CD', 'MMDL_NM']);
+		$rsUM = $this->MUM_mod->selectAll();
 		$strmdl = '';
 		foreach($rs as $r){
 			$strmdl .= "<option value='".$r['MMDL_CD']."'>".$r['MMDL_NM']."</option>";
 		}
+		$strmdl = '';
 		$data['modell'] = $strmdl;
+		foreach($rsUM as $r){
+			$strmdl .= "<option value='".$r['MUM_CD']."'>".$r['MUM_NM']."</option>";
+		}
+		$data['UMl'] = $strmdl;
 		$this->load->view('wms/vitemcd', $data);
 	}
 
@@ -252,6 +259,7 @@ class MSTITM extends CI_Controller {
 		$ccolor = $this->input->post('incolor');
 		$cshtqty = $this->input->post('inshtqty');
 		$incategory = $this->input->post('incategory');
+		$mstkuom = $this->input->post('mstkuom');
 		$datac = ['MITM_ITMCD'=> $cid];
 		$myar = [];
 		if($this->MSTITM_mod->check_Primary($datac)==0){
@@ -286,10 +294,11 @@ class MSTITM extends CI_Controller {
 				'MITM_LBLCLR' => $ccolor,
 				'MITM_SHTQTY' => $cshtqty,
 				'MITM_NCAT' => $incategory,
-				'MITM_ITMCDCUS' => $mitmcd_Ext
+				'MITM_ITMCDCUS' => $mitmcd_Ext,
 			];
 			if($this->session->userdata('gid')==='ROOT' || $this->session->userdata('gid')==='ADMIN' || $ctype=='6') {
 				$datau['MITM_ITMD1'] = $cnm1;
+				$datau['MITM_STKUOM'] = $mstkuom;
 			}
 			$toret = $this->MSTITM_mod->updatebyId($datau, $cid);
 			$myar[] = $toret > 0 ? ['cd' => 1, 'msg' => 'Updated successfully'] : ['cd' => 0, 'msg' => 'Could not updated'];
@@ -683,6 +692,13 @@ class MSTITM extends CI_Controller {
 		
 
 	public function form_new_item(){
+		$rsUM = $this->MUM_mod->selectAll();
+		$strmdl = '';
+		$data['modell'] = $strmdl;
+		foreach($rsUM as $r){
+			$strmdl .= "<option value='".$r['MUM_CD']."'>".$r['MUM_NM']."</option>";
+		}
+		$data['UMl'] = $strmdl;
 		$data['ldeliverycode'] = $this->DELV_mod->select_delv_code();
 		$this->load->view('wms/vitem_reg', $data);
 	}

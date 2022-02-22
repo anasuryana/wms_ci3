@@ -25,18 +25,7 @@
                 <div class="input-group input-group-sm">                    
                     <label class="input-group-text">Unit Measurement</label>
                     <select class="form-select" id="itmreg_cmbunitmeasure">
-                        <option value="SET">SET</option>
-                        <option value="UNIT">UNIT</option>
-                        <option value="PCS">PCS</option>
-                        <option value="PCE">PCE</option>
-                        <option value="PAIR">PAIR</option>
-                        <option value="KG">KG</option>
-                        <option value="BOX">BOX</option>
-                        <option value="ROLL">ROLL</option>
-                        <option value="CAN">CAN</option>
-                        <option value="BOTOL">BOTOL</option>
-                        <option value="SHEET">SHEET</option>
-                        <option value="EA">EA</option>
+                        <?=$UMl?>
                     </select>
                 </div>
             </div>

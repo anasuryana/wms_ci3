@@ -131,6 +131,16 @@
         </div>
         <div class="row">
             <div class="col-md-12 mb-2">
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text">Unit Measurement</label>
+                    <select class="form-select" id="itm_cmb_um" >
+                        <?=$UMl?>
+                    </select>
+                </div>
+            </div>            
+        </div>
+        <div class="row">
+            <div class="col-md-12 mb-2">
                 <div class="btn-group btn-group-sm">
                     <button title="New" id="itm_btnnew" class="btn btn-primary" ><i class="fas fa-file"></i></button>
                     <button title="Save" id="itm_btnsave" class="btn btn-primary" ><i class="fas fa-save"></i></button>
@@ -226,7 +236,7 @@
                                     <th >Color</th>
                                     <th >QTY / Sheet</th>
                                     <th >Category</th>
-                                    <th >External Code</th>
+                                    <th >External Code</th>                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -338,6 +348,7 @@
             let mshtqty = document.getElementById('itm_txt_shtqty').value;
             let mcategory = document.getElementById('itm_txt_category').value;
             let mitmcd_Ext = document.getElementById('itm_txt_externalcode').value;
+            let mstkuom = document.getElementById('itm_cmb_um').value
             if(mitmcd.trim()==''){
                 $("#itm_txtitmcd").focus(); return;
             }
@@ -347,7 +358,7 @@
                 data: {initmcd: mitmcd, initmnm1: mitmnm1, initmnm2: mitmnm2, inspt: mitmspt, intype: mitmtyp,
                 inhscode: mhscode, inhscodet: mhscodet,inisdirect : misdirect, innetwg: mnet, ingrswg: mgrs ,
                 inbox: mbox, inspq: mspq, inheight: mheight, inlength: mlength, incolor: mcolor, inshtqty: mshtqty,
-                    incategory: mcategory, mitmcd_Ext: mitmcd_Ext
+                    incategory: mcategory, mitmcd_Ext: mitmcd_Ext, mstkuom: mstkuom
                 },
                 dataType: "JSON",
                 success: function (response) {
@@ -472,6 +483,7 @@
         document.getElementById('itm_txt_color').value=pdata.MITM_LBLCLR
         document.getElementById('itm_txt_shtqty').value=pdata.MITM_SHTQTY
         document.getElementById('itm_txt_category').value=pdata.MITM_NCAT
+        document.getElementById('itm_cmb_um').value=pdata.MITM_STKUOM
 
         $("#ITM_MODITM").modal('hide');
         document.getElementById('itm_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
@@ -559,6 +571,7 @@
                                 ,MITM_SHTQTY : response[i].MITM_SHTQTY
                                 ,MITM_NCAT : response[i].MITM_NCAT
                                 ,MITM_ITMCDCUS : response[i].MITM_ITMCDCUS
+                                ,MITM_STKUOM : response[i].MITM_STKUOM
                             })
                         }
                         newcell.innerHTML = response[i].MITM_ITMCD.trim()
