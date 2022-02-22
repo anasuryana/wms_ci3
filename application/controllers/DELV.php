@@ -2453,7 +2453,7 @@ class DELV extends CI_Controller {
 					$qty = str_replace(',','',$qty);
 					$where = ['DLV_ID' => $doNum, 'DLV_LINE' => $aItemRowID[$i]];
 					// if( is_numeric($aItemRowID[$i]) ) {
-					if( $this->DELV_mod->check_Primary($where) ) {						
+					if(strlen($aItemRowID[$i])>=1 && $this->DELV_mod->check_Primary($where) ) {						
 						$ttlUpdated += $this->DELV_mod->updatebyVAR(
 							[						
 							'DLV_CUSTCD' => $customerCode,
@@ -2508,7 +2508,8 @@ class DELV extends CI_Controller {
 							'DLV_LOCFR' => $inlocfrom,
 							'DLV_RPRDOC' => $inrprdoc,
 							'DLV_CUSTDO' => $incustDO,
-							'DLV_PARENTDOC' => $megadoc
+							'DLV_PARENTDOC' => $megadoc,
+							'DLV_CONA' => $cona,
 						];
 						$newLine++;
 					}
@@ -2516,7 +2517,7 @@ class DELV extends CI_Controller {
 				if(count($saveRows)){
 					$ttlSaved += $this->DELV_mod->insertb($saveRows);				
 				}
-			} else {				
+			} else {
 				for ($i=0; $i<$itemCount; $i++) {
 					$qty = $aItemQty[$i];
 					$qty = str_replace(',','',$qty);
@@ -16441,7 +16442,7 @@ class DELV extends CI_Controller {
 						}
 						break;
 					}
-				}
+				}				
 				$tpb_barang[] = [
 					'KODE_BARANG' => $r['KODE_BARANG']
 					,'POS_TARIF' => $r['POS_TARIF']
@@ -16451,7 +16452,7 @@ class DELV extends CI_Controller {
 					,'KODE_SATUAN' => $r['JENIS_SATUAN']
 					,'NETTO' => $no==1 ? $netweight_represent : 0
 					,'CIF' => $r['CIF']
-					,'HARGA_PENYERAHAN' => $r['CIF']*$czharga_matauang
+					,'HARGA_PENYERAHAN' => str_replace(",","",$r['CIF'])*$czharga_matauang
 					,'SERI_BARANG' => $SERI_BARANG
 					,'KODE_STATUS' => '02'
 					,'JUMLAH_BAHAN_BAKU' => 1
@@ -16483,7 +16484,7 @@ class DELV extends CI_Controller {
 		}
 		$cz_h_JUMLAH_BARANG = count($tpb_barang);
 		foreach($tpb_barang as $r){
-			$cz_h_CIF_FG += $r['CIF'];
+			$cz_h_CIF_FG += str_replace(",","",$r['CIF']);
 			$cz_h_HARGA_PENYERAHAN_FG+=$r['HARGA_PENYERAHAN'];
 		}
 
@@ -16601,7 +16602,7 @@ class DELV extends CI_Controller {
 							,'SPESIFIKASI_LAIN' => $b['SPESIFIKASI_LAIN']
 
 							
-							,'HARGA_PENYERAHAN' => ($b['CIF']*$czharga_matauang)
+							,'HARGA_PENYERAHAN' => (str_replace(",","",$b['CIF'])*$czharga_matauang)
 							
 							// ,'KODE_BARANG' => substr($b['KODE_BARANG'],0,2) == 'PM' ? '-' : $b['KODE_BARANG']
 							,'KODE_BARANG' => $b['KODE_BARANG']!= $b['ITMCDCUS']?  $b['ITMCDCUS'] : $b['KODE_BARANG']
