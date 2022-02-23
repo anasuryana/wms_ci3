@@ -4803,8 +4803,7 @@ class DELV extends CI_Controller {
 	}
 	public function change25(){
 		date_default_timezone_set('Asia/Jakarta');		
-		$crnt_dt = date('Y-m-d H:i:s');
-		$crnt_year = date('Y');
+		$crnt_dt = date('Y-m-d H:i:s');		
 		$cid = $this->input->get('inid');		
 		$cnoaju = $this->input->get('inaju');
 		$cnopen = $this->input->get('innopen');
@@ -4814,9 +4813,7 @@ class DELV extends CI_Controller {
 		$cskb = $this->input->get('inskb');
 		$cskb_tgl = $this->input->get('inskb_tgl');
 		$sppbdoc = $this->input->get('sppbdoc');
-		$cjenis_sarana_pengangkut = $this->input->get('injenis_sarana');
-		$ttlPostedRows = $this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_POSTTM IS NOT NULL' => null]);
-		$ttlPostedAndHasbc = $this->DELV_mod->check_Primary(['DLV_ID' => $cid, "ISNULL(DLV_NOPEN,'')" => '']);
+		$cjenis_sarana_pengangkut = $this->input->get('injenis_sarana');		
 		$rs_head_dlv = $this->DELV_mod->select_header_bydo($cid);
 		$customsyear = '';
 		foreach($rs_head_dlv as $r){
@@ -6436,9 +6433,9 @@ class DELV extends CI_Controller {
 			die('{"status" : '.json_encode($myar).',"data":'.json_encode($rs_head_dlv).'}');
 		}
 
-		if($cztujuanpengiriman=='5'){
+		if($cztujuanpengiriman=='5' || $cztujuanpengiriman=='3'){
 			
-		} else {
+		} else {			
 			$myar[] = ['cd' => 0 ,'msg' => 'please set TUJUAN PENGIRIMAN correctly'];
 			die('{"status" : '.json_encode($myar).',"data":'.json_encode($rs_head_dlv).'}');
 		}
