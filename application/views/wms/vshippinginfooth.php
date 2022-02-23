@@ -958,13 +958,15 @@
         let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
         let ttlrows_PLOT = tabel_PLOT_body0.getElementsByTagName("tr").length;
-
-        if(ttlrows_PLOT==0){
-            alertify.warning('please add SO');
-            return;
-        } else {
-            //check editqty
-            shpfgoth_e_checkeditedqty_plot()
+        let whcode = document.getElementById('shpfgoth_cmb_wh').value;
+        if(whcode=='AFWH3'){
+            if(ttlrows_PLOT==0){
+                alertify.warning('please add SO');
+                return;
+            } else {
+                //check editqty
+                shpfgoth_e_checkeditedqty_plot()
+            }
         }
         let mbg = document.getElementById('shpfgoth_sel_bg').value;
         let mcus = document.getElementById('shpfgoth_sel_cus').value;
@@ -1015,7 +1017,7 @@
                     return;
                 }
                 mstatus_so= mtbl.rows[i].cells[10].innerText;
-                if (mstatus_so.trim()!=='ok' && mbg.trim()!='PSI1PPZIEP'){
+                if (mstatus_so.trim()!=='ok' && mbg.trim()!='PSI1PPZIEP' && whcode=='AFWH3'){
                     alertify.message('please check "not ok" row');
                     return;
                 }
@@ -1035,8 +1037,7 @@
                 if(document.getElementById('shpfgoth_isedit').value=='y'){
                     let msi = document.getElementById('shpfgoth_txt_doc').value;
                     let konf = confirm('Are you sure want to save changes?');
-                    if(konf){
-                        let whcode = document.getElementById('shpfgoth_cmb_wh').value;
+                    if(konf){                        
                         let pl_so = [];
                         let pl_soline = [];
                         let pl_soqty = [];

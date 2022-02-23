@@ -286,7 +286,7 @@ class SI extends CI_Controller {
 		$cp_soline = $this->input->post('inp_soline');
 		$cp_soqty = $this->input->post('inp_soqty');
 		$cp_idx = $this->input->post('inp_idx');
-		$ttlplot = count($cp_so);
+		$ttlplot = is_array($cp_so) ? count($cp_so) : 0;
 
 		if($ttlitem>0){
 			//validate master item
