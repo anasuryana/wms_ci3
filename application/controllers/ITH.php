@@ -44,6 +44,16 @@ class ITH extends CI_Controller {
 		$data['lwh'] = $todiswh;
 		$this->load->view('wms/vith', $data);
 	}
+	
+	public function form_fg_slow_moving(){
+		$this->load->view('wms_report/vfg_slowmoving');
+	}
+
+	public function fg_slow_moving(){
+		header('Content-Type: application/json');
+		$rs = $this->ITH_mod->select_slow_moving_fg();
+		die(json_encode(['data' => $rs]));
+	}
 
 	public function form_report_internal() {
 		$this->load->view('wms_report/vrpt_internal');
@@ -2289,6 +2299,12 @@ class ITH extends CI_Controller {
 		$search = $this->input->get('search');
 		$date0 = $this->input->get('date0');
 		$rs = $this->ITH_mod->select_fordispose(['MITM_ITMD1' => $search], $date0);
+		die(json_encode(['data' => $rs]));
+	}
+
+	public function balanceRA(){
+		header('Content-Type: application/json');
+		$rs = $this->ITH_mod->select_balanceRA();
 		die(json_encode(['data' => $rs]));
 	}
 }

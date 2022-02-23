@@ -1321,4 +1321,23 @@ class ITH_mod extends CI_Model {
 		$query = $this->db->query($qry, [$pdate0]);
         return $query->result_array();
 	}
+
+	public function select_balanceRA(){
+        $this->db->select("ITH_SER,ITH_DOC,MAX(ITH_ITMCD) ITMCD,SUM(ITH_QTY) BALQT,SUM(CASE WHEN ITH_QTY>0 THEN ITH_QTY ELSE 0 END) INCQT ");
+        $this->db->from($this->TABLENAME);
+        $this->db->where("ITH_WH", "AFQART");
+        $this->db->group_by("ITH_SER,ITH_DOC");
+        $this->db->having("SUM(ITH_QTY) > ",0);
+		$this->db->order_by("ITH_DOC");
+        $query = $this->db->get();
+		return $query->result();
+    }
+	public function select_slow_moving_fg(){
+        $this->db->select("wms_v_fg_slow_moving.*,RTRIM(MITM_ITMD1) MITM_ITMD1");
+        $this->db->from("wms_v_fg_slow_moving");
+		$this->db->join("MITM_TBL","ITH_ITMCD=MITM_ITMCD","LEFT");
+		$this->db->order_by("ITH_ITMCD");
+        $query = $this->db->get();
+		return $query->result();
+    }
 }
