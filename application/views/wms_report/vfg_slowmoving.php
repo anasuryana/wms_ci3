@@ -15,6 +15,7 @@
             <div class="col-md-12 mb-1 text-center">                       
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-primary" type="button" id="fgslowmoving_btn_gen" onclick="fgslowmoving_btn_gen_eCK()"><i class="fas fa-sync"></i></button>                    
+                    <button class="btn btn-outline-primary" title="copy the data below" type="button" id="fgslowmoving_btn_copy" onclick="fgslowmoving_btn_copy_eCK()"><i class="fas fa-copy"></i></button>                    
                 </div>                
             </div>
         </div>
@@ -50,6 +51,11 @@
     </div>
 </div>
 <script>
+    function fgslowmoving_btn_copy_eCK(){
+        cmpr_selectElementContents(document.getElementById('fgslowmoving_tbl'))
+        document.execCommand("copy");
+        alertify.message("Copied")
+    }
     $("#fgslowmoving_divku").css('height', $(window).height()   
     -document.getElementById('fgslowmoving_stack1').offsetHeight 
     -document.getElementById('fgslowmoving_stack3').offsetHeight     
