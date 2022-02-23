@@ -1336,6 +1336,17 @@ class ITH_mod extends CI_Model {
         $this->db->select("wms_v_fg_slow_moving.*,RTRIM(MITM_ITMD1) MITM_ITMD1");
         $this->db->from("wms_v_fg_slow_moving");
 		$this->db->join("MITM_TBL","ITH_ITMCD=MITM_ITMCD","LEFT");
+		$this->db->join("v_mitm_bsgroup","ITH_ITMCD=PDPP_MDLCD","LEFT");
+		$this->db->order_by("ITH_ITMCD");
+        $query = $this->db->get();
+		return $query->result();
+    }
+	public function select_slow_moving_fg_bg($pbg){
+        $this->db->select("wms_v_fg_slow_moving.*,RTRIM(MITM_ITMD1) MITM_ITMD1");
+        $this->db->from("wms_v_fg_slow_moving");
+		$this->db->join("MITM_TBL","ITH_ITMCD=MITM_ITMCD","LEFT");
+		$this->db->join("v_mitm_bsgroup","ITH_ITMCD=PDPP_MDLCD","LEFT");
+		$this->db->where_in("PDPP_BSGRP",$pbg);
 		$this->db->order_by("ITH_ITMCD");
         $query = $this->db->get();
 		return $query->result();

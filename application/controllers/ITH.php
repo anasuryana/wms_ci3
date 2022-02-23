@@ -51,7 +51,22 @@ class ITH extends CI_Controller {
 
 	public function fg_slow_moving(){
 		header('Content-Type: application/json');
-		$rs = $this->ITH_mod->select_slow_moving_fg();
+		$cbgroup = $this->input->get('bsgrp');	
+		$sbgroup ="";
+		$absgrp = [];
+		if(is_array($cbgroup)){
+			for($i=0;$i<count($cbgroup);$i++){
+				$sbgroup .= "'$cbgroup[$i]',";
+				$absgrp[] = $cbgroup[$i];
+			}
+			$sbgroup = substr($sbgroup,0,strlen($sbgroup)-1);
+			if($sbgroup==''){
+				$sbgroup ="''";
+			}
+		} else {
+			$sbgroup = "''";
+		}
+		$rs = count($absgrp) ? $this->ITH_mod->select_slow_moving_fg_bg($absgrp) : $this->ITH_mod->select_slow_moving_fg();
 		die(json_encode(['data' => $rs]));
 	}
 
