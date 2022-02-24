@@ -956,11 +956,16 @@ class SPL extends CI_Controller {
 		$ttlrows = $this->SPL_mod->check_Primary($datac);
 		if($ttlrows>0){
 			$rsitem = $this->MSTITM_mod->selectbyid($citemcd);
+			$rsrack = $this->SPL_mod->select_where(["SPL_RACKNO"],$datac);
 			$csptno = '';
+			$crackno = '';
 			foreach($rsitem as $r){
 				$csptno = $r->MITM_SPTNO;
 			}
-			$myar[] = ["cd" => $ttlrows, "msg" => "Go ahead" , "ref" => $csptno];
+			foreach($rsrack as $r){
+				$crackno = $r['SPL_RACKNO'];break;
+			}
+			$myar[] = ["cd" => $ttlrows, "msg" => "Go ahead" , "ref" => $csptno, "rackno" => $crackno];
 			echo '{"data":'
 			.json_encode($myar)
 			.'}';

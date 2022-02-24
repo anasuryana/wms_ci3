@@ -37,10 +37,11 @@ class SPLRET_mod extends CI_Model {
     }   
 
     public function selectby_filter($pwhere){
-        $this->db->select("a.*,b.*, RTRIM(MITM_SPTNO) MITM_SPTNO, RTRIM(ISNULL(RETSCN_HOLD,'0'))  FLG_HOLD");
+        $this->db->select("a.*,b.*, RTRIM(MITM_SPTNO) MITM_SPTNO, RTRIM(ISNULL(RETSCN_HOLD,'0'))  FLG_HOLD,ISNULL(SPL_RACKNO,'') SPL_RACKNO");
         $this->db->from($this->TABLENAME." a");
         $this->db->join("MMADE_TBL b", "a.RETSCN_CNTRYID=b.MMADE_CD");
         $this->db->join("MITM_TBL", "RETSCN_ITMCD=MITM_ITMCD");
+        $this->db->join("(SELECT SPL_DOC,SPL_ITMCD,MAX(SPL_RACKNO) SPL_RACKNO FROM SPL_TBL GROUP BY SPL_DOC,SPL_ITMCD) VRACK", "RETSCN_ITMCD=SPL_ITMCD AND RETSCN_SPLDOC=SPL_DOC","LEFT");
         $this->db->where($pwhere);
         $this->db->order_by('RETSCN_LUPDT DESC');
 		$query = $this->db->get();

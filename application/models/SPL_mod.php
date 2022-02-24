@@ -288,7 +288,9 @@ class SPL_mod extends CI_Model {
 		return $query->result_array();
     }
     public function select_z_getpsn_byjob($pjob){     
-        $qry  ="select RTRIM(PPSN1_PSNNO) PPSN1_PSNNO,RTRIM(PPSN1_DOCNO) PPSN1_DOCNO,RTRIM(PPSN1_MDLCD) PPSN1_MDLCD,RTRIM(MAX(PPSN1_BSGRP)) PPSN1_BSGRP FROM XPPSN1 WHERE PPSN1_WONO IN ($pjob) GROUP BY PPSN1_PSNNO,PPSN1_DOCNO,PPSN1_MDLCD";
+        $qry  ="select RTRIM(PPSN1_PSNNO) PPSN1_PSNNO,RTRIM(PPSN1_DOCNO) PPSN1_DOCNO,RTRIM(PPSN1_MDLCD) PPSN1_MDLCD,RTRIM(MAX(PPSN1_BSGRP)) PPSN1_BSGRP FROM XPPSN1 WHERE PPSN1_WONO IN ($pjob) 
+                AND PPSN1_PSNNO NOT IN ('SP-IEI-2022-02-0590')
+                GROUP BY PPSN1_PSNNO,PPSN1_DOCNO,PPSN1_MDLCD";
         $query = $this->db->query($qry);
         return $query->result_array();
     }
@@ -804,6 +806,13 @@ class SPL_mod extends CI_Model {
         $this->db->join('XMITM_V', "PPSN2_SUBPN=MITM_ITMCD");
         $this->db->where($pwhere);
         $this->db->order_by("PPSN2_MCZ, PPSN2_MC, PPSN2_SUBPN");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+    public function select_where($pcols,$pwhere){
+        $this->db->select($pcols);
+        $this->db->from($this->TABLENAME);
+        $this->db->where($pwhere);        
         $query = $this->db->get();
         return $query->result_array();
     }
