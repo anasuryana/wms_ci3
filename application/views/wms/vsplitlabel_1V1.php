@@ -329,10 +329,12 @@
 
                 ///#1 check item code
                 if( newitem!=olditem.substr(0,9) ){
-                    alertify.warning('New Item is not same with old item, please compare the label !');
-                    $(this).val('');
-                    return;
-                }                
+                    if( newitem!=olditem.substr(0,10) ){
+                        alertify.warning('New Item is not same with old item, please compare the label !');                        
+                        $(this).val('');
+                        return;
+                    }
+                }
                 
 
                 ///# check job
@@ -595,6 +597,7 @@
                 ///#1 check item code
                 if( newitem!=olditem.substr(0,9) ){
                     alertify.warning('New Item is not same with old item, please compare the label !');
+                    console.log(newitem+"!="+olditem.substr(0,9))
                     document.getElementById('splitlabel1V1_txt_itemcode').value='';
                     return;
                 }                
