@@ -2646,6 +2646,7 @@ class DELV extends CI_Controller {
 						,'DLVRMDOC_AJU' =>  $armdoc_itmNOAJU[$i]
 						,'DLVRMDOC_NOPEN' =>  $armdoc_itmNOPEN[$i]
 						,'DLVRMDOC_PRPRC' =>  $armdoc_itmPRC[$i]
+						,'DLVRMDOC_ZPRPRC' =>  $armdoc_itmPRC[$i]
 						,'DLVRMDOC_LINE' =>  $newLine_rmFromDO
 					];
 					$newLine_rmFromDO++;
@@ -2788,6 +2789,7 @@ class DELV extends CI_Controller {
 					,'DLVRMDOC_AJU' =>  $armdoc_itmNOAJU[$i]
 					,'DLVRMDOC_NOPEN' =>  $armdoc_itmNOPEN[$i]
 					,'DLVRMDOC_PRPRC' =>  $armdoc_itmPRC[$i]
+					,'DLVRMDOC_ZPRPRC' =>  $armdoc_itmPRC[$i]
 					,'DLVRMDOC_LINE' =>  $i
 				];
 			}
@@ -4972,6 +4974,9 @@ class DELV extends CI_Controller {
 			$cnopen = '';
 		}
 		if($ttlPostedRows>0 && $ttlPostedAndHasbc===0) {
+			if(!empty($cnopen)){
+				$this->gotoque($cid);
+			}
 			$myar[] = ["cd" => '00', "msg" => "could not update, because the data is already posted"];
 			die(json_encode($myar));
 		}
