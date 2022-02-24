@@ -38,6 +38,7 @@ class DELV extends CI_Controller {
 		$this->load->model('refceisa/MTPB_mod');
 		$this->load->model('refceisa/MPurposeDLV_imod');
 		$this->load->model('XBGROUP_mod');
+		$this->load->model('BGROUP_mod');
 		$this->load->model('SI_mod');
 		$this->load->model('PTTRN_mod');
 		$this->load->model('XSO_mod');
@@ -380,7 +381,7 @@ class DELV extends CI_Controller {
 	}
 
 	public function vreturn_rm(){
-		$data['lbg'] = $this->XBGROUP_mod->selectall();
+		$data['lbg'] = $this->BGROUP_mod->selectall();
 		$data['lplatno'] = $this->Trans_mod->selectall();
 		$data['ldeliverycode'] = $this->DELV_mod->select_delv_code();
 		$data['ldestoffice'] = $this->ZOffice_mod->selectAll();
