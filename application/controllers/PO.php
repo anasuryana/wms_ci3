@@ -13,6 +13,7 @@ class PO extends CI_Controller {
 		$this->load->model('MDEPT_mod');
 		$this->load->model('PO_mod');
 		$this->load->model('RCVNI_mod');
+		$this->load->model('MSTITM_mod');
 	}
 	public function index()
 	{
@@ -843,7 +844,7 @@ class PO extends CI_Controller {
 				$pdf->SetXY(6,(180-$_y)-6);
 				$pdf->Cell(10,5,'',0,0,'C');
 				$pdf->Cell(30,5,'',0,0,'L');
-				$pdf->Cell(60,5,'Discount',0,0,'L');
+				$pdf->Cell(60,5,'Discount ('.$discount_msg.')',0,0,'L');
 				$pdf->Cell(15,5,'',0,0,'C');
 				$pdf->Cell(25,5,'',0,0,'R');
 				$pdf->Cell(27.5,5, "(".number_format($ttldiscount_price,2).")" ,0,0,'R');
@@ -1213,6 +1214,16 @@ class PO extends CI_Controller {
 			$gen_po_num = $display_year.$mmonth.substr('0000'.$numbr,-4);
 			$saveItem = [];
 			$saveItemDiscount = [];
+			#check is item already registered
+			for($i=0;$i<$ttlrows_item; $i++){
+				if(!$this->MSTITM_mod->check_Primary(['MITM_ITMCD' => $di_item[$i]])){
+					$myar[] = ['cd' => '0', 'msg' => 'item '.$di_item[$i].' is not registered'];
+					die(json_encode(['status' => $myar]));
+					break;
+				} 
+			}
+			#end
+
 			for($i=0;$i<$ttlrows_item; $i++){
 				$saveItem[] = [
 					'PO_NO' => $gen_po_num,
