@@ -132,13 +132,7 @@
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Business Group</span>                                        				
                         <select class="form-select" id="rcvcustoms_businessgroup"  required disabled>
-                        <?php
-                        foreach($lbg as $r){
-                            ?>
-                            <option value="<?=trim($r->MBSG_BSGRP)?>"><?=$r->MBSG_DESC?></option>
-                            <?php
-                        }
-                        ?>
+                        <?=$lbg?>
                         </select>
                     </div>
                 </div>
@@ -313,13 +307,7 @@
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Business Group</span>                                        				
                         <select class="form-select" id="rcvcustoms_businessgroup_1"  required>
-                        <?php
-                        foreach($lbg as $r){
-                            ?>
-                            <option value="<?=trim($r->MBSG_BSGRP)?>"><?=$r->MBSG_DESC?></option>
-                            <?php
-                        }
-                        ?>
+                        <?=$lbg?>
                         </select>
                     </div>
                 </div>
@@ -499,7 +487,24 @@
                         <input type="text" class="form-control" id="rcvcustoms_fg_GW">
                     </div>
                 </div>
-            </div>        
+            </div>
+            <div class="row" id="rcvcustoms_fg_stack5">
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Contract</label>                    
+                        <input type="text" class="form-control" id="rcvcustoms_fg_contractnum" list="rcvcustoms_fg_contractnum_dl">
+                        <datalist id="rcvcustoms_fg_contractnum_dl">                           
+                        </datalist>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Customer</label>
+                        <input type="text" class="form-control" id="rcvcustoms_fg_supplier_2" readonly>
+                        <button class="btn btn-primary" id="rcvcustoms_fg_btn_find_supplier_2" onclick="rcvcustoms_th_sup_eC(this)"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
             <div class="row" id="rcvcustoms_fg_stack4">
                 <div class="col-md-6 mb-3">
                     <div class="btn-group btn-group-sm">
@@ -651,13 +656,7 @@
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Business Group</span>                                        				
                         <select class="form-select" id="rcvcustoms_businessgroup_2"  required>
-                        <?php
-                        foreach($lbg as $r){
-                            ?>
-                            <option value="<?=trim($r->MBSG_BSGRP)?>"><?=$r->MBSG_DESC?></option>
-                            <?php
-                        }
-                        ?>
+                        <?=$lbg?>
                         </select>
                     </div>
                 </div>
@@ -1220,9 +1219,9 @@
             <div class="row">
                 <div class="col-md-12 mb-1">                    
                     <div class="input-group input-group-sm mb-1">                        
-                        <label class="input-group-text">Business Group</label>
+                        <label class="input-group-text">Business</label>
                         <select id="rcvcustoms_fg_supfilter" class="form-select">
-                            <?=$lsupplier?>
+                            <?=$lbg?>
                         </select>                        
                     </div>
                 </div>
@@ -1264,17 +1263,20 @@
             </div>
             <div class="row">
                 <div class="col" id="rcvcustoms_fg_divku_search">
-                    <table id="rcvcustoms_fg_tbldono" class="table table-hover table-sm table-bordered" style="width:100%;cursor:pointer;font-size:75%">
+                    <table id="rcvcustoms_fg_tbldono" class="table table-hover table-sm table-bordered" style="width:100%;font-size:75%">
                         <thead class="table-light">
                             <tr>
                                 <th>DO No</th>
                                 <th>Date</th>
-                                <th>Customer</th>
+                                <th>Business</th>
                                 <th class="text-end">Status</th>
                                 <th class="text-center">HSCODE</th>
                                 <th class="text-end">BM</th>
                                 <th class="text-end">PPN</th>
                                 <th class="text-end">PPH</th>
+                                <th class="d-none">BISGRUP</th>
+                                <th>Customer</th>
+                                <th class="d-none">CustomerID</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1921,9 +1923,11 @@
                                 rcvcustoms_suppliercode = response.data[i].MSUP_SUPCD
                                 if(rcvcustoms_triggerfrom=='rcvcustoms_btn_find_supplier_2'){
                                     document.getElementById('rcvcustoms_supplier_2').value = response.data[i].MSUP_SUPNM 
+                                } else if(rcvcustoms_triggerfrom=='rcvcustoms_fg_btn_find_supplier_2') {
+                                    document.getElementById('rcvcustoms_fg_supplier_2').value = response.data[i].MSUP_SUPNM 
                                 } else {
-                                    document.getElementById('rcvcustoms_supplier_1').value = response.data[i].MSUP_SUPNM 
-                                }                                
+                                    document.getElementById('rcvcustoms_supplier_1').value = response.data[i].MSUP_SUPNM
+                                }
                             }
                             newcell = newrow.insertCell(1)
                             newcell.innerHTML = response.data[i].MSUP_SUPNM 
@@ -2783,7 +2787,7 @@
     -document.getElementById('rcvcustoms_stack3').offsetHeight
     -document.getElementById('rcvcustoms_stack4').offsetHeight
     -document.getElementById('rcvcustoms_stack5').offsetHeight      
-    -110);
+    -150);
     
     var rcvcustoms_fg_selcol='0';
 
@@ -2853,12 +2857,12 @@
         let ar_ppn = [];
         let ar_pph = [];
         
-        var tables      = $("#rcvcustoms_fg_tbl tbody");
+        let tables      = $("#rcvcustoms_fg_tbl tbody");
         tables.find('tr').each(function (i) {
             let $tds = $(this).find('td'),
                 rnourut =  $tds.eq(1).text(),
                 rpo =  $tds.eq(3).text(),                
-                rsup =  $tds.eq(5).text(),
+                rsup =  rcvcustoms_suppliercode,
                 rcurr =  $tds.eq(7).text(),
                 ritem =  $tds.eq(8).text(),
                 rqty =  $tds.eq(10).text(),
@@ -2993,40 +2997,61 @@
                 dataType: "json",
                 success: function (response) {
                     let ttlrows = response.length;
-                    let tohtml = '';                    
-                    for(let i=0;i<ttlrows;i++){
-                        tohtml += "<tr style='cursor:pointer'>"+
-                        "<td>"+response[i].STKTRND1_DOCNO+"</td>"+
-                        "<td>"+response[i].ISUDT+"</td>"+
-                        "<td>"+response[i].MBSG_DESC+"</td>"+
-                        "<td class='text-end'>"+numeral(response[i].TTLITEMIN/response[i].TTLITEM*100).format(',')+"% synchronized</td>"+
-                        "<td>"+response[i].RCV_HSCD+"</td>"+
-                        "<td>"+response[i].RCV_BM+"</td>"+
-                        "<td>"+response[i].RCV_PPN+"</td>"+
-                        "<td>"+response[i].RCV_PPH+"</td>"+
-                        "</tr>";
+                    let mydes = document.getElementById("rcvcustoms_fg_divku_search")
+                    let myfrag = document.createDocumentFragment()
+                    let mtabel = document.getElementById("rcvcustoms_fg_tbldono")
+                    let cln = mtabel.cloneNode(true);
+                    myfrag.appendChild(cln)
+                    let tabell = myfrag.getElementById("rcvcustoms_fg_tbldono")
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0]
+                    let newrow, newcell, newText
+                    let myitmttl = 0;
+                    tableku2.innerHTML=''
+                    for (let i = 0; i<ttlrows; i++){                        
+                        newrow = tableku2.insertRow(-1)
+                        newcell = newrow.insertCell(0)
+                        newcell.innerHTML = response[i].STKTRND1_DOCNO
+                        newcell.style.cssText = `cursor:pointer`
+                        newcell.onclick = () => {
+                            rcvcustoms_suppliercode = response[i].RCV_SUPCD
+                            $("#rcvcustoms_fg_docnoorigin").val(response[i].STKTRND1_DOCNO);
+                            $("#rcvcustoms_fg_supplier_2").val(response[i].MSUP_SUPNM);
+                            MGGetDODetail_FGRET(response[i].STKTRND1_DOCNO);        
+                            $("#rcvcustoms_fg_DTLMOD").modal('hide');
+                            WMSGetDODetail_FGRET(response[i].STKTRND1_DOCNO);
+                        }
+                        newcell = newrow.insertCell(1)
+                        newcell.innerHTML = response[i].ISUDT
+                        newcell = newrow.insertCell(2)
+                        newcell.innerHTML = response[i].MBSG_DESC
+                        newcell = newrow.insertCell(3)
+                        newcell.innerHTML = numeral(response[i].TTLITEMIN/response[i].TTLITEM*100).format(',')+"% synchronized"
+                        newcell = newrow.insertCell(4)
+                        newcell.innerHTML = response[i].RCV_HSCD
+                        newcell = newrow.insertCell(5)
+                        newcell.innerHTML = response[i].RCV_BM
+                        newcell = newrow.insertCell(6)
+                        newcell.innerHTML = response[i].RCV_PPN
+                        newcell = newrow.insertCell(7)
+                        newcell.innerHTML = response[i].RCV_PPH
+                        newcell = newrow.insertCell(8)
+                        newcell.classList.add('d-none')
+                        newcell.innerHTML = response[i].MBSG_BSGRP
+                        newcell = newrow.insertCell(9)
+                        newcell.innerHTML = response[i].MSUP_SUPNM
+                        newcell = newrow.insertCell(10)
+                        newcell.classList.add('d-none')
+                        newcell.innerHTML = response[i].RCV_SUPCD
                     }
-                    $("#rcvcustoms_fg_tbldono tbody").html(tohtml);
+                    mydes.innerHTML=''
+                    mydes.appendChild(myfrag)                    
                     $("#lblinfo_rcvcustoms_fg_tbldono").text("");
                 }, error: function(xhr, xopt, xthrow){
                     alertify.error(xthrow);
                 }
             })
         }
-    })
-    $('#rcvcustoms_fg_tbldono tbody').on( 'click', 'tr', function () { 
-        if ( $(this).hasClass('table-active') ) {
-            $(this).removeClass('table-active');
-        } else {
-            $('#rcvcustoms_fg_tbldono tbody tr.table-active').removeClass('table-active');
-            $(this).addClass('table-active');
-        }
-        var mitem       = $(this).closest("tr").find('td:eq(0)').text();
-        $("#rcvcustoms_fg_docnoorigin").val(mitem.trim());
-        MGGetDODetail_FGRET(mitem.trim());        
-        $("#rcvcustoms_fg_DTLMOD").modal('hide');
-        WMSGetDODetail_FGRET(mitem.trim());
-    });
+    })    
 
     function vrcv_fg_e_getstsrcv(mid, pval){        
         $.ajax({

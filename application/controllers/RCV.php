@@ -96,12 +96,18 @@ class RCV extends CI_Controller {
 	public function customs(){
 		$data['ltpb_type'] = $this->MTPB_mod->selectAll();
 		$data['officelist'] = $this->ZOffice_mod->selectAll();
-		$data['lbg'] = $this->XBGROUP_mod->selectall();
+		$rsbg = $this->XBGROUP_mod->selectall();
+		
 		$rssupplier = $this->MSTSUP_mod->selectAll();
 		$supdis = '<option value="-">ALL</option>';
+		$bgdis = '<option value="-">ALL</option>';
 		foreach($rssupplier as $r){
 			$supdis .= '<option value="'.trim($r->MSUP_SUPCD).'">['.trim($r->MSUP_SUPCR).'] '.$r->MSUP_SUPNM.'</option>';
 		}
+		foreach($rsbg as $r){
+			$bgdis .= '<option value="'.trim($r->MBSG_BSGRP).'">'.$r->MBSG_DESC.'</option>';
+		}
+		$data['lbg'] = $bgdis;
 		$data['lsupplier'] = $supdis;
 		$data['sapaDia'] = $this->session->userdata('sfname');
 		$rslocfrom = $this->MSTLOCG_mod->selectall_where_CODE_in(['ARWH1','ARWH2','NRWH2']);
@@ -1738,7 +1744,7 @@ class RCV extends CI_Controller {
 			if($cpermonth == 'y'){
 				if($csup!='-'){ 
 					$rs = $this->RCV_mod->MGSelectDO_dateSup_return_fg($ckey, $cdate1, $cdate2, $csup);
-				} else {
+				} else {						
 					$rs = $this->RCV_mod->MGSelectDO_date_return_fg($ckey, $cdate1, $cdate2);
 				}
 			} else {
