@@ -756,8 +756,8 @@ class PO extends CI_Controller {
 				}
 				if($r['PO_SECTION']){
 					if(trim($r['PO_SECTION'])!=''){
-						if(!in_array(trim($r['PO_SECTION']), $adata_section)){
-							$adata_section[] = trim($r['PO_SECTION']);
+						if(!in_array(strtoupper(trim($r['PO_SECTION'])), $adata_section)){
+							$adata_section[] = strtoupper(trim($r['PO_SECTION']));
 						}
 					}
 				}
@@ -770,8 +770,8 @@ class PO extends CI_Controller {
 				}
 				if($r['PO_SUBJECT']){
 					if(trim($r['PO_SUBJECT'])!=''){
-						if(!in_array(trim($r['PO_SUBJECT']), $adata_subject)){
-							$adata_subject[] = trim($r['PO_SUBJECT']);
+						if(!in_array(strtoupper(trim($r['PO_SUBJECT'])), $adata_subject)){
+							$adata_subject[] = strtoupper(trim($r['PO_SUBJECT']));
 						}
 					}
 				}
