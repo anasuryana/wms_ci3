@@ -4836,15 +4836,10 @@ class DELV extends CI_Controller {
 		
 		$rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
 		$rs_head_dlv = $this->DELV_mod->select_header_bydo($cid);
-		$czidmodul ='';
-		
-		foreach($rs_head_dlv as $r){
-			$czdocbctype = $r['DLV_BCTYPE'];
-			$ccustdate = $r['DLV_BCDATE'];
-		}
+		$czidmodul ='';				
 		foreach($rsaktivasi as $r){
 			$czkantorasal = $r['KPPBC'];
-			$czidmodul = substr('00000'.$r['ID_MODUL'],-6);			
+			$czidmodul = substr('00000'.$r['ID_MODUL'],-6);
 		}
 		if($czidmodul==''){
 			$myar[] = ["cd" => '00', "msg" => "Please check Aktivasi CEISA Data" ];
@@ -4865,6 +4860,16 @@ class DELV extends CI_Controller {
 			$ret = $this->DELV_mod->updatebyVAR($vals, $keys);						
 			$myar[] = $ret>0 ?  ["cd" => '11', "msg" => "Updated successfully", 'info' => $customsyear] : ["cd" => '00', "msg" => "No data to be updated" ];
 			if(!empty($cnopen)){
+				if($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => ''])){
+					$rs_head_dlv = $this->DELV_mod->select_for_rm_h($cid);
+					foreach($rs_head_dlv as $r){
+						if(trim($r['MCUS_CURCD'])==='RPH'){
+							$myar[] = ['xmsg' => 'update price ok'];
+							$this->DELV_mod->update_zprice($cid,$ccustdate);
+						}
+						break;
+					}
+				}
 				$this->gotoque($cid);
 			}
 		}

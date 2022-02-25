@@ -1127,4 +1127,12 @@ class DELV_mod extends CI_Model {
         $query = $this->db->query($qry, [$pdoc,$pfg,$pdoc,$pfg ]);
         return $query->result_array();
     }
+
+    public function update_zprice($ptxid,$pdate){
+        $qry = "UPDATE DLVRMDOC_TBL
+        SET DLVRMDOC_ZPRPRC=isnull((select TOP 1 MEXRATE_VAL from MEXRATE_TBL where MEXRATE_DT=?)*DLVRMDOC_PRPRC,DLVRMDOC_ZPRPRC)
+        WHERE DLVRMDOC_TXID=?";
+		$this->db->query($qry , [$pdate, $ptxid] );
+        return $this->db->affected_rows();
+    }
 }
