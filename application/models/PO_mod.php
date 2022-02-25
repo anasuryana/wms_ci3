@@ -83,7 +83,7 @@ class PO_mod extends CI_Model {
         $this->db->like($plike);
         $this->db->join("(select MSUP_SUPCD,rtrim(MAX(MSUP_SUPNM)) MSUP_SUPNM,MAX(MSUP_SUPCR) MSUP_SUPCR FROM v_supplier_customer_union GROUP BY MSUP_SUPCD) V1", "PO_SUPCD=MSUP_SUPCD", "left");
         $this->db->group_by("PO_NO,PO_RMRK,PO_PPH,PO_VAT,PO_SUPCD,MSUP_SUPNM,MSUP_SUPCR,PO_RQSTBY,PO_PAYTERM,PO_REQDT,PO_ISSUDT,PO_SHPDLV,PO_SHPCOST");
-        $this->db->order_by("PO_REQDT");
+        $this->db->order_by("PO_ISSUDT");
 		$query = $this->db->get();
 		return $query->result_array();
     }
@@ -93,7 +93,7 @@ class PO_mod extends CI_Model {
         $this->db->like($plike)->where("PO_ISSUDT>=", $pdate0 )->where("PO_ISSUDT<=", $pdate1);
         $this->db->join("(select MSUP_SUPCD,rtrim(MAX(MSUP_SUPNM)) MSUP_SUPNM,MAX(MSUP_SUPCR) MSUP_SUPCR FROM v_supplier_customer_union GROUP BY MSUP_SUPCD) V1", "PO_SUPCD=MSUP_SUPCD", "left");
         $this->db->group_by("PO_NO,PO_RMRK,PO_PPH,PO_VAT,PO_SUPCD,MSUP_SUPNM,MSUP_SUPCR,PO_RQSTBY,PO_PAYTERM,PO_REQDT,PO_ISSUDT,PO_SHPDLV,PO_SHPCOST");
-        $this->db->order_by("PO_REQDT");
+        $this->db->order_by("PO_ISSUDT");
 		$query = $this->db->get();
 		return $query->result_array();
     }
