@@ -1345,6 +1345,7 @@ class PO extends CI_Controller {
 		if(!isset($_COOKIE["PO_DATE1"]) || !isset($_COOKIE["PO_DATE2"])){
 			exit('no data to be found');
 		}
+		date_default_timezone_set('Asia/Jakarta');
 		$cdtfrom = $_COOKIE["PO_DATE1"];
 		$cdtto = $_COOKIE["PO_DATE2"];
 		$rs = $this->PO_mod->select_report($cdtfrom, $cdtto);
