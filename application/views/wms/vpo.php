@@ -63,12 +63,13 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">Payment Term</label>
-                    <select class="form-select form-select-sm" id="mpuror_cmb_payterm">
-                        <option value="EOM 10">EOM 10</option>
-                        <option value="EOM 15">EOM 15</option>
-                        <option value="EOM 30">EOM 30</option>
-                        <option value="Cash">Cash</option>
-                    </select>                    
+                    <input type="text" class="form-control" id="mpuror_cmb_payterm" list="mpuror_cmb_payterm_dl">
+                    <datalist id="mpuror_cmb_payterm_dl">
+                        <option value="EOM 10">
+                        <option value="EOM 15">
+                        <option value="EOM 30">
+                        <option value="Cash">
+                    </datalist>                    
                 </div>
             </div>
             <div class="col-md-3 mb-1">
@@ -130,7 +131,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-1">
-                                    <div class="table-responsive" id="mpuror_divku" onpaste="mpuror_e_pastecol1(event)">
+                                    <div class="table-responsive" id="mpuror_divku" >
                                         <table id="mpuror_tbl" class="table table-sm table-hover table-bordered caption-top" style="width:100%;font-size:0.9em">                                            
                                             <thead class="table-light">
                                                 <tr>
@@ -393,7 +394,48 @@
 </div>
 <div id="mpurorcontextmenu"></div>
 <script>
-
+    mpuror_initadditional_data()
+    function mpuror_initadditional_data(){
+        const dl = document.getElementById('mpuror_cmb_payterm_dl')
+        const dl_length = dl.options.length
+        const dl2 = document.getElementById('mpuror_txt_shipdocl')
+        const dl2_length = dl2.options.length
+        let opt = document.createElement('option')                
+        $.ajax({            
+            url: "<?=base_url('PO/additional')?>",            
+            dataType: "json",
+            success: function (response) {
+                const pay_length = response.payment_term.length
+                const shp_length = response.shipment.length
+                for(let r=0; r<pay_length; r++){
+                    let isfound = false                    
+                    for(let i=0;i<dl_length; i++){
+                        if(response.payment_term[r].PO_PAYTERM==dl.options[i].value){
+                            isfound = true;break
+                        }                        
+                    }
+                    if(!isfound){
+                        opt = document.createElement('option')
+                        opt.value = response.payment_term[r].PO_PAYTERM
+                        dl.appendChild(opt)
+                    }
+                }
+                for(let r=0; r<shp_length; r++){
+                    let isfound = false                    
+                    for(let i=0;i<dl2_length; i++){
+                        if(response.shipment[r].PO_SHPDLV==dl2.options[i].value){
+                            isfound = true;break
+                        }                        
+                    }
+                    if(!isfound){
+                        opt = document.createElement('option')
+                        opt.value = response.shipment[r].PO_SHPDLV
+                        dl2.appendChild(opt)
+                    }
+                }
+            }
+        })
+    }
     var mpurordata = [
        [''],
        [''],
@@ -497,7 +539,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
     onbeforedeleterow: function(instance,y1) {        
         let lineID = mpuror_sso_nonitem.getValueFromCoords(0,y1)        
         mpuror_selected_row = lineID
-    },    
+    }
 });
     var mpuror_vencd = ''
     var mpuror_selected_row = ''
@@ -835,43 +877,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
                 e.preventDefault()
             }
         }
-    }
-
-    function mpuror_btnplus2_eC(){
-        mpuror_ni_addrow()
-        let mytbody = document.getElementById('mpuror_tbl_nonitem').getElementsByTagName('tbody')[0]
-        mpuror_selected_row = mytbody.rows.length - 1
-        mpuror_selected_col = 1
-    }
-
-    function mpuror_ni_minusrow() {
-        let mytable = document.getElementById('mpuror_tbl_nonitem').getElementsByTagName('tbody')[0]
-        const mtr = mytable.getElementsByTagName('tr')[mpuror_selected_row]
-        const mylineid = mtr.getElementsByTagName('td')[0].innerText.trim()
-        if(mylineid!==''){
-            if(confirm("Are you sure ?")){
-                const docnum = document.getElementById('mpuror_txt_doc').value
-                $.ajax({
-                    type: "post",
-                    url: "<?=base_url('PO/remove')?>",
-                    data: {lineId: mylineid, docNum: docnum },
-                    dataType: "json",
-                    success: function (response) {
-                        if (response.status[0].cd==='1') {
-                            alertify.success(response.status[0].msg)
-                            mtr.remove()
-                        } else {
-                            alertify.message(response.status[0].msg)
-                        }
-                    }, error:function(xhr,xopt,xthrow){
-                        alertify.error(xthrow)
-                    }
-                })
-            }
-        } else {
-            mtr.remove()
-        }
-    }
+    }    
 
     function mpuror_disc_addrow(){
         let mytbody = document.getElementById('mpuror_tbl_special').getElementsByTagName('tbody')[0]
@@ -929,69 +935,6 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
         } else {
             mtr.remove()
         }
-    }
-
-    function mpuror_e_pastecol1(event){
-        let datapas = event.clipboardData.getData('text/html')
-        const mpuror_tbllength = document.getElementById('mpuror_tbl_nonitem').getElementsByTagName('tbody')[0].rows.length;
-        if(datapas===""){
-            datapas = event.clipboardData.getData('text')
-            let adatapas = datapas.split('\n')
-            let ttlrowspasted = 0;
-            for(let c=0;c<adatapas.length;c++){
-                if(adatapas[c].trim()!=''){
-                    ttlrowspasted++
-                }
-            }
-            let table = $(`#mpuror_tbl_nonitem tbody`)
-            let incr = 0
-            if ((mpuror_tbllength-mpuror_selected_row)<ttlrowspasted) {       
-                const needRows = ttlrowspasted - (mpuror_tbllength-mpuror_selected_row)
-                for (let i = 0;i<needRows;i++) {
-                    retrm_out_inc_addrow()
-                }
-            }
-            for(let i=0;i<ttlrowspasted;i++){
-                const mcol = adatapas[i].split('\t')
-                const ttlcol = mcol.length
-                for(let k=0;(k<ttlcol) && (k<4);k++){
-                    table.find('tr').eq((i+mpuror_selected_row)).find('td').eq((k+mpuror_selected_col)).text(mcol[k].trim())
-                }                
-            }
-        } else {
-            let tmpdom = document.createElement('html')
-            tmpdom.innerHTML = datapas
-            let myhead = tmpdom.getElementsByTagName('head')[0]
-            let myscript = myhead.getElementsByTagName('script')[0]
-            let mybody = tmpdom.getElementsByTagName('body')[0]
-            let mytable = mybody.getElementsByTagName('table')[0]
-            let mytbody = mytable.getElementsByTagName('tbody')[0]
-            let mytrlength = mytbody.getElementsByTagName('tr').length
-            let table = $(`#mpuror_tbl_nonitem tbody`)
-            let incr = 0
-            let startin = 0
-            
-            if(typeof(myscript) != 'undefined'){ //check if clipboard from IE
-                startin = 3
-            }
-            if((mpuror_tbllength-mpuror_selected_row)<(mytrlength-startin)){
-                let needRows = (mytrlength-startin) - (mpuror_tbllength-mpuror_selected_row);                
-                for(let i = 0;i<needRows;i++){
-                    mpuror_ni_addrow()
-                }
-            }
-            
-            let b = 0
-            for(let i=startin;i<(mytrlength);i++){
-                let ttlcol = mytbody.getElementsByTagName('tr')[i].getElementsByTagName('td').length
-                for(let k=0;(k<ttlcol) && (k<8);k++){
-                    let dkol = mytbody.getElementsByTagName('tr')[i].getElementsByTagName('td')[k].innerText
-                    table.find('tr').eq((b+mpuror_selected_row)).find('td').eq((k+mpuror_selected_col)).text(dkol.trim())
-                } 
-                b++
-            }
-        }
-        event.preventDefault()
     }
 
     function mpuror_btn_save_eC(){        
@@ -1158,12 +1101,14 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
             const date0 = document.getElementById("mpuror_saved_date_1").value
             const date1 = document.getElementById("mpuror_saved_date_2").value
             const useperiod = document.getElementById('mpuror_ck_1').checked ? '1' : '0'
+            e.target.readOnly = true
             $.ajax({
                 type: "GET",
                 url: "<?=base_url('PO/search')?>",
                 data: {search : search, searchby: searchby, date0: date0, date1: date1, useperiod: useperiod},
                 dataType: "json",
                 success: function (response) {
+                    e.target.readOnly = false
                     const ttlrows = response.data.length                    
                     let mydes = document.getElementById("mpuror_saved_div")
                     let myfrag = document.createDocumentFragment()
@@ -1207,6 +1152,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
                     mydes.appendChild(myfrag)
                 }, error:function(xhr,xopt,xthrow){
                     alertify.error(xthrow)
+                    e.target.readOnly = false
                 }
             })
         }        
@@ -1228,10 +1174,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
                         tableuse.tableid = 'mpuror_tbl_nonitem'
                         tableuse.divid = 'mpuror_tbl_nonitem_div'
                     }
-                }
-                
-                
-
+                }                                
                 if(tableuse.tableid=='mpuror_tbl'){
                     mpuror_sso_nonitem.setData([[],[],[],[],[]])
                     let mydes = document.getElementById(tableuse.divid)

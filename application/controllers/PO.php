@@ -1427,4 +1427,11 @@ class PO extends CI_Controller {
 	public function form_po(){
 		$this->load->view('wms/vpo_new');
 	}
+
+	public function additional(){
+		header('Content-Type: application/json');
+		$rspayment = $this->PO_mod->select_column_history(['PO_PAYTERM']);
+		$rsSHP = $this->PO_mod->select_column_history(['PO_SHPDLV']);
+		die(json_encode(['payment_term' => $rspayment, 'shipment' => $rsSHP]));
+	}
 }

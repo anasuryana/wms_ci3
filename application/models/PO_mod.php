@@ -187,4 +187,13 @@ class PO_mod extends CI_Model {
         $query = $this->db->query($qry, [$pdate0,$pdate1,$pdate0,$pdate1]);
         return $query->result_array();
     }
+
+    public function select_column_history($pcols){
+        $this->db->select($pcols);
+        $this->db->from($this->TABLENAME);
+        $this->db->where("PO_SHPDLV !=", "");
+        $this->db->group_by($pcols);
+		$query = $this->db->get();
+		return $query->result_array();
+    }
 }
