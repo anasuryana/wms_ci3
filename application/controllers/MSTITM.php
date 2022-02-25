@@ -69,8 +69,8 @@ class MSTITM extends CI_Controller {
 		foreach($rs as $r){
 			$strmdl .= "<option value='".$r['MMDL_CD']."'>".$r['MMDL_NM']."</option>";
 		}
-		$strmdl = '';
 		$data['modell'] = $strmdl;
+		$strmdl = '';
 		foreach($rsUM as $r){
 			$strmdl .= "<option value='".$r['MUM_CD']."'>".$r['MUM_NM']."</option>";
 		}
