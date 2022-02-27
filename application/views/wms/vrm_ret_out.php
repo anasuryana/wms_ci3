@@ -61,7 +61,7 @@
                             <option value="<?=trim($r->MBSG_BSGRP)?>"><?=$r->MBSG_DESC?></option>
                             <?php
                         }
-                        ?>
+                        ?>                        
                     </select>                                        
                 </div>
             </div>
@@ -77,8 +77,7 @@
                     <span class="input-group-text">Currency</span>                                        					
                     <input type="text" readonly class="form-control" id="retrm_out_inc_curr">
                 </div>
-            </div>
-            
+            </div>            
         </div> 
         <div class="row">
             <div class="col-md-4 mb-1">
@@ -2245,6 +2244,7 @@
             if(mytbody.rows[i].cells[1].innerText === pdata.NOAJU
             && mytbody.rows[i].cells[2].innerText === pdata.NOPEN
             && mytbody.rows[i].cells[5].innerText === pdata.ITEMCD
+            && mytbody.rows[i].cells[3].innerText === pdata.DO
             ) {
                 alertify.warning('It is already added')
                 return
@@ -3017,8 +3017,7 @@
                         alertify.warning('Transaction is not found')
                     }
                 }, error: function(xhr,xopt,xthrow){
-                    alertify.error(xthrow);
-                    document.getElementById("txfg_lbl_wait_saved_tx").innerText ="";
+                    alertify.error(xthrow);                    
                 }
             });
         }
