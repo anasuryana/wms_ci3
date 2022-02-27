@@ -2,6 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class SER extends CI_Controller {
+	private $AROMAWI = ['I','II','III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI' , 'XII'];
 	public function __construct()
 	{
 		parent::__construct();
@@ -167,11 +168,49 @@ class SER extends CI_Controller {
 		die('{"data":'.json_encode($rsret).'}');
 	}
 
-	public function set_rc_bom(){
+	public function set_rc_scrap(){
 		header('Content-Type: application/json');
 		date_default_timezone_set('Asia/Jakarta');
 		$current_time = date('Y-m-d H:i:s');
-		$aromawi = ['I','II','III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI' , 'XII'];
+		$cdate = '2021-10-31';
+		$adate = explode("-", $cdate);
+		$mmonth = intval($adate[1]);
+		$myear = $adate[0];
+		$lastno = $this->SERRC_mod->select_lastnodo_patterned($mmonth, $myear)+1;		
+		$monthroma = $this->AROMAWI[$mmonth-1];		
+		$dok = substr('000'.$lastno,-3)."/".$monthroma."/".$myear." RTN";
+		$serx = strtoupper('421D221300000002');
+
+		if($this->SERRC_mod->check_Primary(['SERRC_SERX' => $serx, 'SERRC_SERXRAWTXT' => ''])){
+			$data = ['already exist'];
+		} else {
+			$lastline = $this->SERRC_mod->lastserialid($serx);
+			$data = ['SERRC_SER' => $serx
+				,'SERRC_JM' => ''
+				,'SERRC_BOMPN' => ''
+				,'SERRC_BOMPNQTY' => 0
+				,'SERRC_LOTNO' => ''
+				,'SERRC_LINE' => $lastline
+				,'SERRC_LOC' => ''
+				,'SERRC_DOCST' => $dok
+				,'SERRC_DOCSTDT' => $cdate
+				,'SERRC_JMOPT' => 'NOJM'
+				,'SERRC_USRID' => $this->session->userdata('nama')
+				,'SERRC_LUPDT' => $current_time,
+				'SERRC_NASSYCD' => '162563007'
+				,'SERRC_SERX' => $serx
+				,'SERRC_SERXRAWTXT' => ''
+				,'SERRC_SERXQTY' => 1
+			];
+			$this->SERRC_mod->insert($data);
+		}
+		die(json_encode(['data' => $data]));
+	}
+
+	public function set_rc_bom(){
+		header('Content-Type: application/json');
+		date_default_timezone_set('Asia/Jakarta');
+		$current_time = date('Y-m-d H:i:s');		
 		$jm_opt = $this->input->post('jmopt');
 		$qalabel = $this->input->post('qalabel');
 		$jmcode = $this->input->post('jmcode');
@@ -204,13 +243,7 @@ class SER extends CI_Controller {
 			$mmonth = intval($adate[1]);
 			$myear = $adate[0];
 			$lastno = $this->SERRC_mod->select_lastnodo_patterned($mmonth, $myear)+1;
-			$monthroma = '';
-			for($i=0;$i<count($aromawi); $i++){
-				if(($i+1) == $mmonth){
-					$monthroma = $aromawi[$i];
-					break;
-				}
-			}
+			$monthroma = $this->AROMAWI[$mmonth-1];			
 			$dok = substr('000'.$lastno,-3)."/".$monthroma."/".$myear." RTN";
 		} 
 
@@ -2709,6 +2742,11 @@ class SER extends CI_Controller {
 			exit('{"status":'.json_encode($myar).'}');
 		} else {
 			$rsactive = $this->ITH_mod->select_active_ser($coldreff);
+			$rsser = $this->SER_mod->selectbyVAR(['SER_ID' => $coldreff]);
+			$bsgrp = '';
+			foreach($rsser as $r){
+				$bsgrp = $r['SER_BSGRP'];break;
+			}
 			$rsactive_wh =  $rsactive_loc = $rsactive_time = $rsactive_form = $rsactive_date =''  ;
 			foreach($rsactive as $r){
 				$rsactive_wh = trim($r['ITH_WH']);
@@ -2735,6 +2773,7 @@ class SER extends CI_Controller {
 						"SER_RAWTXT" => $ca_rawtxt[$i],
 						"SER_GORNG" => $ca_ok[$i],
 						"SER_LUPDT" => $currrtime,
+						"SER_BSGRP" => ($rsactive_wh=='AFWH3') ?  NULL: $bsgrp,
 						"SER_USRID" => $this->session->userdata('nama')
 					]);
 				}
