@@ -79,8 +79,8 @@
                     <label class="form-check-label" for="cvtlabel_typeasp">ASP</label>
                 </div>  
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="cvtlabel_typefg" id="cvtlabel_typekdasp" value="KDASP" >
-                    <label class="form-check-label" for="cvtlabel_typekdasp">KDASP</label>
+                    <input class="form-check-input" type="radio" name="cvtlabel_typefg" id="cvtlabel_typekdasp" value="KDES" >
+                    <label class="form-check-label" for="cvtlabel_typekdasp">KDES</label>
                 </div>             
             </div>
         </div>      
@@ -224,7 +224,7 @@
     $("input[name='cvtlabel_typefg']").change(function(){        
         let curv = $(this).val();
         cvtlabel_e_clearinput_to();
-        if(curv=='KD' || curv=='ASP' || curv=='KDASP'){
+        if(curv=='KD' || curv=='ASP' || curv=='KDES'){
             $("#cvtlabel_div_ka").removeClass("d-none");
             $("#cvtlabel_div_rnm").addClass("d-none");
             document.getElementById("cvtlabel_txt_itemcode").focus();

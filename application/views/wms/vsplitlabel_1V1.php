@@ -72,8 +72,8 @@
                     <label class="form-check-label" for="splitlabel1V1_typeasp">ASP</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="splitlabel1V1_typefg" id="splitlabel1V1_typekdasp" value="KDASP" >
-                    <label class="form-check-label" for="splitlabel1V1_typekdasp">KDASP</label>
+                    <input class="form-check-input" type="radio" name="splitlabel1V1_typefg" id="splitlabel1V1_typekdasp" value="KDES" >
+                    <label class="form-check-label" for="splitlabel1V1_typekdasp">KDES</label>
                 </div>
             </div>
         </div>
@@ -443,7 +443,7 @@
     $("input[name='splitlabel1V1_typefg']").change(function(){        
         let curv = $(this).val();
         splitlabel1V1_e_clearinput_to();
-        if(curv=='KD' || curv=='ASP' || curv=='KDASP'){
+        if(curv=='KD' || curv=='ASP' || curv=='KDES'){
             $("#splitlabel1V1_div_ka").removeClass("d-none");
             $("#splitlabel1V1_div_rnm").addClass("d-none");
             document.getElementById("splitlabel1V1_txt_code").focus();
