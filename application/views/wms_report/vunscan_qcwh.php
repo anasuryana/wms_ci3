@@ -1,5 +1,5 @@
 <div style="padding: 10px">
-    <div class="container-xxl">                     
+    <div class="container-fluid">                     
         <div class="row">            
             <div class="col-md-12 mb-1 text-center">                                       
                 <button class="btn btn-sm btn-primary" type="button" id="runscan_qcwh_btn_gen"><i class="fas fa-sync"></i></button>                                    
