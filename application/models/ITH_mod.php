@@ -1353,7 +1353,8 @@ class ITH_mod extends CI_Model {
     }
 	public function select_discrepancy_prd_qc(){		
         $this->db->from("wms_v_discrepancy_prd_qc");
-		$this->db->order_by("SER_ITMID");
+		$this->db->where("YEAR(LUPDT)>", 2021);
+		$this->db->order_by("LUPDT");
         $query = $this->db->get();
 		return $query->result();
 	}
