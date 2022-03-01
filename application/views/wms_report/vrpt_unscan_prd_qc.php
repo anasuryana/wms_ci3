@@ -1,3 +1,14 @@
+<style type="text/css">	
+    thead tr.first th, thead tr.first td {
+        position: sticky;
+        top: 0;        
+    }
+
+    thead tr.second th, thead tr.second td {
+        position: sticky;
+        top: 26px;
+    }    
+</style>
 <div style="padding: 10px">
     <div class="container-fluid">                     
         <div class="row">            
@@ -13,7 +24,7 @@
                 <div class="table-responsive" id="runscan_prdqc_divku">
                     <table id="runscan_prdqc_tbl" class="table table-striped table-bordered table-sm table-hover" style="font-size:85%">
                         <thead class="table-light">
-                            <tr>
+                            <tr class="first">
                                 <th  class="align-middle">Assy Number</th>
                                 <th  class="align-middle">Model</th>
                                 <th  class="align-middle">Lot</th>
