@@ -4,10 +4,10 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-1.11.4/fc-4.0.1/fh-3.2.1/kt-2.6.4/r-2.2.9/rr-1.2.8/sc-2.0.5/sl-1.3.4
+ *   https://datatables.net/download/#bs5/dt-1.11.5/fc-4.0.2/fh-3.2.2/kt-2.6.4/r-2.2.9/rr-1.2.8/sc-2.0.5/sl-1.3.4
  *
  * Included libraries:
- *   DataTables 1.11.4, FixedColumns 4.0.1, FixedHeader 3.2.1, KeyTable 2.6.4, Responsive 2.2.9, RowReorder 1.2.8, Scroller 2.0.5, Select 1.3.4
+ *   DataTables 1.11.5, FixedColumns 4.0.2, FixedHeader 3.2.2, KeyTable 2.6.4, Responsive 2.2.9, RowReorder 1.2.8, Scroller 2.0.5, Select 1.3.4
  */
 
 @charset "UTF-8";
@@ -340,30 +340,19 @@ table.dataTable.table-striped > tbody > tr.odd {
 }
 
 
-tr.even td {
+table.dataTable thead th, table.dataTable thead td, table.dataTable tfoot th, table.dataTable tfoot td {
+  background-color: white;
+}
+table.dataTable tbody tr td {
   background-color: #ffffff;
 }
-
-tr.odd td {
+table.dataTable.table-striped tbody tr.odd td {
   background-color: #f9f9f9;
 }
-
-tr.selected td {
-  background-color: #0088cc;
-}
-
-thead th {
-  background-color: white;
-}
-
-tfoot th {
-  background-color: white;
-}
-
-th.dtfc-fixed-left,
-th.dtfc-fixed-right,
-td.dtfc-fixed-left,
-td.dtfc-fixed-right {
+table.dataTable th.dtfc-fixed-left,
+table.dataTable th.dtfc-fixed-right,
+table.dataTable td.dtfc-fixed-left,
+table.dataTable td.dtfc-fixed-right {
   z-index: 1;
 }
 

@@ -1,5 +1,5 @@
-/*! FixedColumns 4.0.1
- * 2019-2021 SpryMedia Ltd - datatables.net/license
+/*! FixedColumns 4.0.2
+ * 2019-2022 SpryMedia Ltd - datatables.net/license
  */
 (function () {
     'use strict';
@@ -22,11 +22,11 @@
             // Get options from user
             this.c = $.extend(true, {}, FixedColumns.defaults, opts);
             // Backwards compatibility for deprecated leftColumns
-            if (opts.left === undefined && this.c.leftColumns !== undefined) {
+            if ((!opts || opts.left === undefined) && this.c.leftColumns !== undefined) {
                 this.c.left = this.c.leftColumns;
             }
             // Backwards compatibility for deprecated rightColumns
-            if (opts.right === undefined && this.c.rightColumns !== undefined) {
+            if ((!opts || opts.right === undefined) && this.c.rightColumns !== undefined) {
                 this.c.right = this.c.rightColumns;
             }
             this.s = {
@@ -72,12 +72,13 @@
                 this._setKeyTableListener();
             }
             else {
-                table.one('preInit.dt', function () {
+                table.one('init.dt', function () {
                     // Fixed Columns Initialisation
                     _this._addStyles();
                     _this._setKeyTableListener();
                 });
             }
+            table.on('column-sizing.dt', function () { return _this._addStyles(); });
             // Make class available through dt object
             table.settings()[0]._fixedColumns = this;
             return this;
@@ -473,13 +474,15 @@
             this.s.dt.on('column-reorder', function () {
                 _this._addStyles();
             });
-            this.s.dt.on('column-visibility', function () {
-                setTimeout(function () {
-                    _this._addStyles();
-                }, 50);
+            this.s.dt.on('column-visibility', function (e, s) {
+                if (!s.bDestroying) {
+                    setTimeout(function () {
+                        _this._addStyles();
+                    }, 50);
+                }
             });
         };
-        FixedColumns.version = '4.0.1';
+        FixedColumns.version = '4.0.2';
         FixedColumns.classes = {
             fixedLeft: 'dtfc-fixed-left',
             fixedRight: 'dtfc-fixed-right',
@@ -500,8 +503,8 @@
         return FixedColumns;
     }());
 
-    /*! FixedColumns 4.0.1
-     * 2019-2021 SpryMedia Ltd - datatables.net/license
+    /*! FixedColumns 4.0.2
+     * 2019-2022 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
     // (with window and jQuery being allowed as parameters to the returned
@@ -596,7 +599,7 @@
         }
         // Attach a listener to the document which listens for DataTables initialisation
         // events so we can automatically initialise
-        $(document).on('init.dt.dtfc', function (e, settings) {
+        $(document).on('plugin-init.dt', function (e, settings) {
             if (e.namespace !== 'dt') {
                 return;
             }
@@ -609,4 +612,4 @@
         });
     }));
 
-}());
+})();
