@@ -2322,4 +2322,14 @@ class ITH extends CI_Controller {
 		$rs = $this->ITH_mod->select_balanceRA();
 		die(json_encode(['data' => $rs]));
 	}
+	
+	public function form_unscan_prd_qc(){
+		$this->load->view('wms_report/vrpt_unscan_prd_qc');
+	}
+	
+	public function get_prdqc_unscan(){
+		header('Content-Type: application/json');
+		$rs = $this->ITH_mod->select_discrepancy_prd_qc();
+		die(json_encode(['data' => $rs]));
+	}
 }

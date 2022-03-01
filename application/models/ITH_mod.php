@@ -1351,4 +1351,10 @@ class ITH_mod extends CI_Model {
         $query = $this->db->get();
 		return $query->result();
     }
+	public function select_discrepancy_prd_qc(){		
+        $this->db->from("wms_v_discrepancy_prd_qc");
+		$this->db->order_by("SER_ITMID");
+        $query = $this->db->get();
+		return $query->result();
+	}
 }
