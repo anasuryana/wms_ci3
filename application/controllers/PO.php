@@ -776,7 +776,11 @@ class PO extends CI_Controller {
 					}
 				}
 				$itemcd = $r['PO_ITMCD'] ? trim($r['PO_ITMCD']) : "NON ITEM";
+				$itemcd = stripslashes($itemcd);
+				$itemcd = iconv('UTF-8', 'windows-1252', $itemcd);
 				$itemname = $r['PO_ITMNM'] ? $r['PO_ITMNM'] : $r['MITM_ITMD1'];
+				$itemname = stripslashes($itemname);
+				$itemname = iconv('UTF-8', 'windows-1252', $itemname);
 				$itemum = $r['PO_UM'] ? $r['PO_UM'] : $r['MITM_STKUOM'];
 				$amount = $r['PO_PRICE']*$r['PO_QTY'];
 				$discount_price = $amount*($r['PO_DISC']/100);
