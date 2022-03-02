@@ -243,9 +243,9 @@ function ith_getstock(){
                 newcell = newrow.insertCell(1);
                 newText = document.createTextNode(response.data[i].ITH_ITMCD);
                 newcell.appendChild(newText);
-                newcell = newrow.insertCell(2);
-                newText = document.createTextNode(response.data[i].MITM_SPTNO);
-                newcell.appendChild(newText);
+                newcell = newrow.insertCell(2)
+                newcell.classList.add('font-monospace')
+                newcell.innerHTML = response.data[i].MITM_SPTNO
                 newcell = newrow.insertCell(3);
                 newText = document.createTextNode(response.data[i].MITM_ITMD1);                
                 newcell.appendChild(newText);
