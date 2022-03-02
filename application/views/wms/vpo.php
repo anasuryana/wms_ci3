@@ -519,22 +519,24 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
      ],
     ondeleterow : function(instance,y1,xnumrow,xdom,xrowdata) {
         const docnum = document.getElementById('mpuror_txt_doc').value
-        $.ajax({
-            type: "post",
-            url: "<?=base_url('PO/remove')?>",
-            data: {lineId: mpuror_selected_row, docNum: docnum },
-            dataType: "json",
-            success: function (response) {
-                mpuror_get_detail(docnum)
-                if (response.status[0].cd==='1') {
-                    alertify.success(response.status[0].msg)                    
-                } else {
-                    alertify.message(response.status[0].msg)
+        if(mpuror_selected_row.length>0 && docnum.length>0){
+            $.ajax({
+                type: "post",
+                url: "<?=base_url('PO/remove')?>",
+                data: {lineId: mpuror_selected_row, docNum: docnum },
+                dataType: "json",
+                success: function (response) {
+                    mpuror_get_detail(docnum)
+                    if (response.status[0].cd==='1') {
+                        alertify.success(response.status[0].msg)                    
+                    } else {
+                        alertify.message(response.status[0].msg)
+                    }
+                }, error:function(xhr,xopt,xthrow){
+                    alertify.error(xthrow)
                 }
-            }, error:function(xhr,xopt,xthrow){
-                alertify.error(xthrow)
-            }
-        })
+            })
+        }
     },
     onbeforedeleterow: function(instance,y1) {        
         let lineID = mpuror_sso_nonitem.getValueFromCoords(0,y1)        
