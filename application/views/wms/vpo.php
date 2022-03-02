@@ -519,7 +519,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
      ],
     ondeleterow : function(instance,y1,xnumrow,xdom,xrowdata) {
         const docnum = document.getElementById('mpuror_txt_doc').value
-        if(mpuror_selected_row.length>0 && docnum.length>0){
+        if(mpuror_selected_row.toString().length>0 && docnum.length>0){
             $.ajax({
                 type: "post",
                 url: "<?=base_url('PO/remove')?>",
