@@ -220,12 +220,50 @@ class PO extends CI_Controller {
 			$ttldiscount_price+=$discount_price;
 		}
 		#additional row for discount
-		if($ttldiscount_price>0){
-			if(count($discountlist_distinct)==1){					
+		if($ttldiscount_price>0){			
+			if(count($discountlist_distinct)==1){
 				foreach($discountlist_distinct as $a){
 					if($a['COUNT']== count($rs)){
 						$discount_msg = '1 lot @ '.($a['PO_DISC']*1).'%';
 					}
+				}
+				if($discount_msg==''){
+					$discountlist_distinct_row = 1;
+					$discountlist_distinct_row_b4 = '';
+					foreach($discountlist_distinct as &$b){
+						$rs_row = 1;
+						$minR = 0;
+						$maxR = 0;
+						foreach($rs as $a){
+							if($b['PO_DISC']==$a['PO_DISC']){
+								if($discountlist_distinct_row_b4!=$discountlist_distinct_row){
+									$discountlist_distinct_row_b4=$discountlist_distinct_row;
+									$minR = $rs_row;
+									$maxR = $rs_row;
+								} else {
+									$maxR = $rs_row;
+								}
+							}
+							$rs_row++;
+						}
+						$b['MIN_Y'] = $minR;
+						$b['MAX_Y'] = $maxR;
+						$discountlist_distinct_row++;
+					}
+					unset($b);
+					$sort = array();
+					foreach($discountlist_distinct as $k=>$v) {
+						$sort['MIN_Y'][$k] = $v['MIN_Y'];
+					}
+					array_multisort($sort['MIN_Y'],SORT_ASC, $discountlist_distinct);
+					foreach($discountlist_distinct as $n){
+						if($n['MAX_Y']-$n['MIN_Y']==0){
+							$discount_msg .= $n['MAX_Y']." @".($n['PO_DISC']*1)."%, ";
+						} else {
+							$discount_msg .= $n['MIN_Y'] . "-".$n['MAX_Y']." @".($n['PO_DISC']*1)."%, ";
+						}
+					}
+					$discount_msg = substr($discount_msg,0,strlen($discount_msg)-2);
 				}
 			} else {
 				$discountlist_distinct_row = 1;
@@ -264,7 +302,7 @@ class PO extends CI_Controller {
 					}
 				}
 				$discount_msg = substr($discount_msg,0,strlen($discount_msg)-2);
-			}
+			}			
 			// die(json_encode(['data' => $discountlist_distinct]));						
 		}
 		#end
