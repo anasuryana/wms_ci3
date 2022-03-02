@@ -1129,8 +1129,14 @@ class DELV_mod extends CI_Model {
     }
 
     public function update_zprice($ptxid,$pdate){
-        $qry = "UPDATE DLVRMDOC_TBL
-        SET DLVRMDOC_ZPRPRC=isnull((select TOP 1 MEXRATE_VAL from MEXRATE_TBL where MEXRATE_DT=?)*DLVRMDOC_PRPRC,DLVRMDOC_ZPRPRC)
+        $qry = "UPDATE R SET
+        DLVRMDOC_ZPRPRC = isnull((select TOP 1 MEXRATE_VAL from MEXRATE_TBL where MEXRATE_DT=? and MEXRATE_CURR=MSUP_SUPCR)*DLVRMDOC_PRPRC,DLVRMDOC_ZPRPRC)
+        from DLVRMDOC_TBL R
+        left join ( select RCV_DONO,RCV_ITMCD,RCV_RPNO,RCV_BCNO,RCV_SUPCD,MSUP_SUPCR from RCV_TBL 
+                        left join (select MSUP_SUPCD,max(MSUP_SUPCR) MSUP_SUPCR from v_supplier_customer_union group by MSUP_SUPCD) vsup on RCV_SUPCD=MSUP_SUPCD
+                    group by RCV_DONO,RCV_ITMCD,RCV_RPNO,RCV_BCNO,RCV_SUPCD,MSUP_SUPCR
+                ) vrcv on
+        DLVRMDOC_DO=RCV_DONO and DLVRMDOC_ITMID=RCV_ITMCD and DLVRMDOC_AJU=RCV_RPNO and DLVRMDOC_NOPEN=RCV_BCNO
         WHERE DLVRMDOC_TXID=?";
 		$this->db->query($qry , [$pdate, $ptxid] );
         return $this->db->affected_rows();
