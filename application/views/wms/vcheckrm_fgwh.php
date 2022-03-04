@@ -1904,7 +1904,7 @@
     }
 
     function checksbb_e_concfirm_edit_qtycal(){
-        const itemcode = document.getElementById('checksbb_caltbl_rm_edit_itemcode').innerText
+        const itemcode = document.getElementById('checksbb_caltbl_rm_edit').getElementsByTagName('tbody')[0].rows[0].cells[6].innerText
         const oldqty = numeral(document.getElementById('checksbb_caltbl_rm_edit_qty').innerText).value()
         const newqty = numeral(document.getElementById('checksbb_newqty').value).value()        
         if(confirm("Are you sure ?")){
