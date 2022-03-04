@@ -22,10 +22,7 @@ class PO extends CI_Controller {
     public function form(){
 		$rsdept = $this->MDEPT_mod->select_all();
 		$strdept = '';
-		$strdept1 = '';
-		// foreach($rsdept as $r){
-		// 	$strdept .= '<option value="'.$r['MDEPT_CD'].'">'.$r['MDEPT_NM'].'</option>';
-		// }
+		$strdept1 = '';		
 		foreach($rsdept as $r){
 			$strdept .= '<tr><td>'.$r['MDEPT_CD'].'</td><td>'.$r['MDEPT_NM'].'</td></tr>';
 			$strdept1 .= "'".$r['MDEPT_CD']."',";
@@ -83,13 +80,17 @@ class PO extends CI_Controller {
 			break;
 		}
 		$pdf = new PDF_Code39e128('P','mm','A4');
+		$pdf->AliasNbPages();
 		$pdf->AddPage();
 		$pdf->SetAutoPageBreak(true,1);
 		$pdf->SetMargins(0,0);
 		#company
+		$pdf->SetFont('Arial','B',7);
+		$pdf->SetXY(90,15-$_y);
+		$pdf->Cell(15,4,'Page '.$pdf->PageNo().' / {nb}',0,0,'C');
 		$pdf->SetFont('Arial','B',10);
-		$pdf->SetXY(6,22-$_y);
 		$pdf->SetTextColor(0, 0, 240);
+		$pdf->SetXY(6,22-$_y);
 		$pdf->Cell(50,4,'PT. SMT INDONESIA',0,0,'L');
 		$pdf->SetTextColor(0,0,0);
 		$pdf->SetFont('Times','IB',9);
@@ -307,7 +308,32 @@ class PO extends CI_Controller {
 		}
 		#end
 
-		if(count($rs)>13){			
+		#analyze required sheets before generate PDF
+		$_num = 0;
+		foreach($rs as $r){
+			$itemcd = $r['PO_ITMCD'] ? trim($r['PO_ITMCD']) : "NON ITEM";
+			$itemcd = stripslashes($itemcd);
+			$itemcd = iconv('UTF-8', 'windows-1252', $itemcd);
+			$itemname = $r['PO_ITMNM'] ? $r['PO_ITMNM'] : $r['MITM_ITMD1'];
+			$itemname = stripslashes($itemname);
+			$itemname = iconv('UTF-8', 'windows-1252', $itemname);
+			$YExtra1 = 1;
+			$YExtra2 = 1;
+			if(strpos($itemcd, " ")!==false){
+				if($pdf->GetStringWidth($itemcd)>30){
+					$YExtra1 =2;
+				}
+			}
+			if($pdf->GetStringWidth($itemname)>60){
+				$YExtra2 = 2;
+			}
+
+			$rowsneeded = $YExtra1>$YExtra2? $YExtra1: $YExtra2;
+			$_num+=$rowsneeded;
+		}
+		#end	
+
+		if($_num>13){
 			$MAXLENGTH_LINE_TO_BOTTOM = 190;
 			$pdf->SetFont('Times','',9);
 			$pdf->SetXY(6,104-$_y);
@@ -324,6 +350,9 @@ class PO extends CI_Controller {
 				if($pdf->GetY()>=180) {
 					$pdf->AddPage();
 					#company
+					$pdf->SetFont('Arial','B',7);
+					$pdf->SetXY(90,15-$_y);
+					$pdf->Cell(15,4,'Page '.$pdf->PageNo().' / {nb}',0,0,'C');
 					$pdf->SetFont('Arial','B',10);
 					$pdf->SetXY(6,22-$_y);
 					$pdf->SetTextColor(0, 0, 240);
@@ -526,6 +555,123 @@ class PO extends CI_Controller {
 				$pdf->Cell(27.5,5, "(".number_format($ttldiscount_price,2).")",0,0,'R');
 			}
 			$pdf->AddPage();
+			#company
+			$pdf->SetFont('Arial','B',7);
+			$pdf->SetXY(90,15-$_y);
+			$pdf->Cell(15,4,'Page '.$pdf->PageNo().' / {nb}',0,0,'C');
+			$pdf->SetFont('Arial','B',10);
+			$pdf->SetXY(6,22-$_y);
+			$pdf->SetTextColor(0, 0, 240);
+			$pdf->Cell(50,4,'PT. SMT INDONESIA',0,0,'L');
+			$pdf->SetTextColor(0,0,0);
+			$pdf->SetFont('Times','IB',9);
+			$pdf->SetXY(6,26-$_y);
+			$pdf->Cell(50,4,'EJIP Industrial Park Plot 5C - 2',0,0,'L');
+			$pdf->SetXY(6,30-$_y);
+			$pdf->Cell(80,4,'Cikarang Selatan, Bekasi 17550 INDONESIA',0,0,'L');
+			$pdf->SetXY(6,34-$_y);
+			$pdf->Cell(80,4,'Tel.    : +62-21-8970-567 (Hunting), 468,469,470',0,0,'L');		
+			$pdf->SetFont('Times','IB',8);
+			$pdf->SetXY(6,38-$_y);
+			$pdf->Cell(98,4,'Fax.    : +62-21-8970-577 (Purchasing Department / Accounting & Financial Dept)',0,0,'L');
+			$pdf->SetFont('Times','IB',9);
+			$pdf->SetXY(6,42-$_y);
+			$pdf->Cell(80,4,'Fax.   : +62-21-8975-333 (Manufacturing Department)',0,0,'L');
+			#end company
+			$pdf->SetFont('Times','B',7);
+			$pdf->SetXY(160,18-$_y);
+			$pdf->Cell(21,4,'FORM-FPI-04-01',0,0,'L');
+			$pdf->SetXY(160,22-$_y);
+			$pdf->Cell(21,4,'REV.02',0,0,'R');
+			$pdf->SetFont('Times','IB',9);
+			$pdf->SetXY(146,30-$_y);
+			$pdf->Cell(35,4,'Copy : Accounting Dept.',0,0,'R');
+			$pdf->SetFont('Times','B',9);
+			$pdf->SetXY(115,45-$_y);
+			$pdf->Cell(85,7,'   P / O No. : '.$pser,1,0,'L');
+			$pdf->SetFont('Times','B',9);
+			$pdf->SetXY(115,52-$_y);
+			$pdf->Cell(85,4,'DATE / Tanggal : '.$trans_date,0,0,'C');
+
+			$pdf->SetFont('Times','BU',13);
+			$pdf->SetXY(80,60-$_y);
+			$pdf->Cell(40,4,'PURCHASE ORDER',0,0,'L');
+
+			$pdf->SetFont('Times','B',9);
+			$pdf->SetXY(6,68-$_y);
+			$pdf->setFillColor($Rcolor,$Gcolor,$Bcolor);
+			$pdf->Cell(40,5,'Requested By : ( Name )',1,0,'C',1);
+			$pdf->Cell(60,5,'Ship / Delivery Via',1,0,'C',1);
+			$pdf->Cell(40,5,'Currency',1,0,'C',1);
+			$pdf->Cell(55,5,'Payment Terms',1,0,'C',1);
+			$pdf->SetFont('Times','',9);
+			$pdf->SetXY(6,73-$_y);
+			$pdf->Cell(40,5,$requsted_by,1,0,'C');
+			$pdf->Cell(60,5,$shipment,1,0,'C');
+			$pdf->Cell(40,5,$currency,1,0,'C');
+			$pdf->Cell(55,5,$payment_term,1,0,'C');
+			$pdf->SetFont('Times','B',9);
+			$pdf->SetXY(6,78-$_y);
+			$pdf->Cell(40,5,'Supplier Name',1,0,'C',1);
+			$pdf->Cell(100,5,'Address',1,0,'C',1);
+			$pdf->Cell(27.5,5,'Phone No.',1,0,'C',1);
+			$pdf->Cell(27.5,5,'Fax. No.',1,0,'C',1);
+			$pdf->SetXY(6,83-$_y);
+			$pdf->Cell(40,10,'',1,0,'C');
+			$pdf->Cell(100,10,'',1,0,'C');
+			$pdf->Cell(27.5,10,'',1,0,'C');
+			$pdf->Cell(27.5,10,'',1,0,'C');
+			$pdf->SetFont('Times','',9);
+			$pdf->SetXY(6,83-$_y);
+			$pdf->MultiCell(40,4,$supplier,0,'L');
+			// $pdf->MultiCell(40,4,"tes",1,'L');
+			$Yitu = $pdf->GetY();
+			$pdf->SetXY(46,83-$_y);
+			$pdf->MultiCell(100,4,$supplier_address,0,"L");
+			$pdf->SetXY(146,83-$_y);
+			$pdf->MultiCell(27.5,4,$supplier_telno,0);
+			$pdf->SetXY(173.5,83-$_y);
+			$pdf->MultiCell(27.5,4,$supplier_faxno,0);
+
+			$pdf->SetFont('Times','B',9);
+			$pdf->SetXY(6,94-$_y);
+			$pdf->setFillColor($Rcolor,$Gcolor,$Bcolor);
+			$pdf->Cell(10,10,'',1,0,'C',1); #item
+			$pdf->Cell(30,10,'',1,0,'C',1); #part number
+			$pdf->Cell(60,10,'',1,0,'C',1); #part name
+			$pdf->Cell(15,10,'',1,0,'C',1); #unit measure
+			$pdf->Cell(25,10,'',1,0,'C',1); #qty
+			$pdf->Cell(27.5,10,'',1,0,'C',1); #unit price
+			$pdf->Cell(27.5,10,'',1,0,'C',1); #amount
+			
+			$pdf->SetXY(6,94-$_y);
+			$pdf->Cell(10,5,'Item',0,0,'C');
+			$pdf->Cell(30,5,'Part Number',0,0,'C');
+			$pdf->Cell(60,5,'Part Name / Description',0,0,'C'); #part name
+			$pdf->Cell(15,5,'Unit',0,0,'C'); #unit measure
+			$pdf->Cell(25,5,'Qty',0,0,'C'); #qty
+			$pdf->Cell(27.5,5,'Unit Price',0,0,'C'); #unit price
+			$pdf->Cell(27.5,5,'Amount',0,0,'C'); #amount
+
+			$pdf->SetFont('Times','BI',9);
+			$pdf->SetXY(6,98-$_y);
+			$pdf->Cell(10,5,'No',0,0,'C');
+			$pdf->Cell(30,5,'Nomor Barang',0,0,'C');
+			$pdf->Cell(60,5,'Nama Barang / Keterangan',0,0,'C'); #part name
+			$pdf->Cell(15,5,'Satuan',0,0,'C'); #unit measure
+			$pdf->Cell(25,5,'Jumlah',0,0,'C'); #qty
+			$pdf->Cell(27.5,5,'Harga per satuan',0,0,'C'); #unit price
+			$pdf->Cell(27.5,5,'Jumlah',0,0,'C'); #amount
+			$MAXLENGTH_LINE_TO_BOTTOM = 75;
+			$pdf->SetFont('Times','',9);
+			$pdf->SetXY(6,104-$_y);
+			$pdf->Cell(10,$MAXLENGTH_LINE_TO_BOTTOM,'',1,0,'C');
+			$pdf->Cell(30,$MAXLENGTH_LINE_TO_BOTTOM,'',1,0,'C');
+			$pdf->Cell(60,$MAXLENGTH_LINE_TO_BOTTOM,'',1,0,'C'); #part name
+			$pdf->Cell(15,$MAXLENGTH_LINE_TO_BOTTOM,'',1,0,'C'); #unit measure
+			$pdf->Cell(25,$MAXLENGTH_LINE_TO_BOTTOM,'',1,0,'C'); #qty
+			$pdf->Cell(27.5,$MAXLENGTH_LINE_TO_BOTTOM,'',1,0,'C'); #unit price
+			$pdf->Cell(27.5,$MAXLENGTH_LINE_TO_BOTTOM,'',1,0,'C'); #amount
 			#footer
 			$pdf->SetXY(6,180-$_y);
 			$pdf->Cell(10,5,'',0,0,'C');
