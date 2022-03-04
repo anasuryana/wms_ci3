@@ -1947,6 +1947,7 @@ class RCV extends CI_Controller {
 	}
 
 	public function sync_rank(){
+		$this->checkSession();
 		header('Content-Type: application/json');
 		date_default_timezone_set('Asia/Jakarta');
 		$currrtime = date('Y-m-d H:i:s');
