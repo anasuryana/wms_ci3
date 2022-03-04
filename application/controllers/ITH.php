@@ -2242,7 +2242,7 @@ class ITH extends CI_Controller {
 		foreach($rs as $r) {
 			$balance = $r['STOCKQTY']-$r['MGAQTY'];
 			if( $balance != 0 ) {
-				if($cwh=='AFSMT' || $cwh=='AFWH3') {
+				if($cwh=='AFSMT' || $cwh=='AFWH3' || $cwh=='PSIEQUIP') {
 
 				} else {
 					$res = $this->RPSAL_INVENTORY_mod->check_Primary($WHERE);
