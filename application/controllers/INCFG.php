@@ -474,7 +474,7 @@ class INCFG extends CI_Controller {
 					}
 					$ajob = explode('-',$cjob);
 					if($myjob!=$ajob[1]){
-						$myar[] = ["cd" => "0", "msg" => "Job and Lot don't match (New Model)"];
+						$myar[] = ["cd" => "0", "msg" => "Job and Lot don't match (New Model) [$myjob!=".$ajob[1]."]"];
 						exit(json_encode($myar));
 					}
 					$cqty = str_replace(" ", "", $astr[3]);
@@ -1307,6 +1307,10 @@ class INCFG extends CI_Controller {
 		$olddate = $this->input->post('old_date');
 		$newdate = $this->input->post('new_date');
 
+	}
+
+	public function form_fgrtn_to_scr(){
+		$this->load->view('wms/vfgrtn_scrap');
 	}
 
 	public function vchg_inc_date(){
