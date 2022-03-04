@@ -1964,6 +1964,7 @@ class RCV extends CI_Controller {
 		$formatyear = '';
 		$formatmonth = '';
 		$formatdate = '';
+		$nourut = 1;
 		foreach($rs as $r){
 			$thewh = $r['RCV_WH'];
 			$bcdate = $r['RCV_BCDATE'];
@@ -1991,7 +1992,7 @@ class RCV extends CI_Controller {
 				"RCV_LUPDT" => $currrtime,
 				"RCV_USRID" => $this->session->userdata('nama')
 			];
-			$myar[] = $rw;
+			$myar[] = $rw;		
 			$rsminusmain[] = [
 				'ITH_ITMCD' => $r['RCV_ITMCD'],
 				'ITH_QTY' => -$r['PGRELED_GRDQT'],
@@ -1999,10 +2000,11 @@ class RCV extends CI_Controller {
 				'ITH_WH' => $thewh,
 				'ITH_DATE' => $r['RCV_BCDATE'],
 				'ITH_LUPDT' => $r['RCV_BCDATE']." 08:00:00",
-				'ITH_LINE' => 'ITH'.$formatyear.$formatmonth.$formatdate.'1',
+				'ITH_LINE' => 'ITH'.$formatyear.$formatmonth.$formatdate.$nourut,
 				'ITH_FORM' => 'ADJ-OUT'
 			];
-		}
+			$nourut++;			
+		}		
 		$res = $this->RCV_mod->insertb($myar);		
 		$this->toITH(['DOC' => $cdon, 'WH' => $thewh
 		, 'DATE' => $bcdate , 'LUPDT' => $bcdate.' 07:01:00'
