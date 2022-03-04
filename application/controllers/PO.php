@@ -86,7 +86,7 @@ class PO extends CI_Controller {
 		$pdf->SetMargins(0,0);
 		#company
 		$pdf->SetFont('Arial','B',7);
-		$pdf->SetXY(90,15-$_y);
+		$pdf->SetXY(160,299-$_y);
 		$pdf->Cell(15,4,'Page '.$pdf->PageNo().' / {nb}',0,0,'C');
 		$pdf->SetFont('Arial','B',10);
 		$pdf->SetTextColor(0, 0, 240);
@@ -557,7 +557,7 @@ class PO extends CI_Controller {
 			$pdf->AddPage();
 			#company
 			$pdf->SetFont('Arial','B',7);
-			$pdf->SetXY(90,15-$_y);
+			$pdf->SetXY(160,299-$_y);
 			$pdf->Cell(15,4,'Page '.$pdf->PageNo().' / {nb}',0,0,'C');
 			$pdf->SetFont('Arial','B',10);
 			$pdf->SetXY(6,22-$_y);
