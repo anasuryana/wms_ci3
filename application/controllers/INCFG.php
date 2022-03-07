@@ -179,8 +179,13 @@ class INCFG extends CI_Controller {
 						exit(json_encode($myar));
 					}
 					if($this->MSTITM_mod->check_Primary(["MITM_ITMCD" => trim($citem)])==0 ){
-						$myar[] = ["cd" => "0", "msg" => "Item is not registered in WMS Master Data"];						
-						exit(json_encode($myar));
+						if(strpos(strtoupper($citem), "WS") !== false){
+							$citem = str_replace("_"," ",$citem);
+							$cjob = str_replace("_"," ",$cjob);
+						} else {
+							$myar[] = ["cd" => "0", "msg" => "Item is not registered in WMS Master Data ($citem)"];						
+							exit(json_encode($myar));
+						}
 					}					
 					$rsser = $this->SER_mod->selectbyVAR(["SER_ID" => $creffcd]);
 					if(count($rsser)>0){
@@ -452,7 +457,7 @@ class INCFG extends CI_Controller {
 							}						
 						}
 					} else {
-						$datar = ["cd" => "0", "msg" => "WO and Item don't match (regular)"];
+						$datar = ["cd" => "0", "msg" => "WO and Item don't match (regular)" , "job" => $cjob, "item" => $citem];
 					}								
 				} else { // handle new model
 					//HANDLE ADDITIONAL VALIDATION FOR EPSON QR						
