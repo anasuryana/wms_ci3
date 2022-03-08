@@ -7,6 +7,15 @@
         from {background: #7FDBFF;}
         to {background: #01FF70;}
     }
+    thead tr.first th, thead tr.first td {
+        position: sticky;
+        top: 0;        
+    }
+
+    thead tr.second th, thead tr.second td {
+        position: sticky;
+        top: 26px;
+    }    
 </style>
 <div style="padding: 5px">
     <div class="container-fluid">        
@@ -50,7 +59,7 @@
                 <div class="table-responsive" id="rincfg_divku">
                     <table id="rincfg_tbl" class="table table-striped table-bordered table-sm table-hover" style="font-size:75%">
                         <thead class="table-light">
-                            <tr>                                
+                            <tr class="first">                                
                                 <th rowspan="2" class="align-middle">Business Group</th>
                                 <th rowspan="2" class="align-middle">Doc No</th>
                                 <th rowspan="2" class="align-middle">Item Id</th>
@@ -58,13 +67,13 @@
                                 <th rowspan="2" class="align-middle">FL Rev</th>
                                 <th colspan="7" class="text-center">Qty</th>                                
                             </tr>
-                            <tr>
+                            <tr class="second">
                                 <th class="text-center">Lot Size</th>
                                 <th class="text-center">GRN'</th>
                                 <th class="text-center">PRD</th>
+                                <th class="text-center">NG</th>
                                 <th class="text-center">QC</th>
                                 <th class="text-center">WH</th>
-                                <th class="text-center">NG</th>
                                 <th class="text-center">Scrap</th>
                             </tr>
                         </thead>
@@ -210,48 +219,37 @@
                     bomrv = response.data[i].PDPP_BOMRV.substr(0,1) === '.' ? '0'+response.data[i].PDPP_BOMRV : response.data[i].PDPP_BOMRV
                     newrow = tableku2.insertRow(-1);
                     newcell = newrow.insertCell(0);
-                    newText = document.createTextNode(response.data[i].PDPP_BSGRP);
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].PDPP_BSGRP                    
                     newcell = newrow.insertCell(1);
-                    newText = document.createTextNode(response.data[i].SER_DOC);
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SER_DOC                    
                     newcell = newrow.insertCell(2);
-                    newText = document.createTextNode(response.data[i].SER_ITMID);
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SER_ITMID                    
                     newcell = newrow.insertCell(3);
-                    newText = document.createTextNode(response.data[i].MITM_ITMD1);
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].MITM_ITMD1
                     newcell = newrow.insertCell(4)
                     newcell.classList.add('text-center')
                     newcell.innerHTML = bomrv
                     newcell = newrow.insertCell(5);
-                    newText = document.createTextNode(qtylot);
-                    newcell.style.cssText = 'text-align: right';
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(6);
-                    newText = document.createTextNode(qtygrnaks);
-                    newcell.style.cssText = 'text-align: right';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = qtylot                    
+                    newcell.style.cssText = 'text-align: right';                    
+                    newcell = newrow.insertCell(6)
+                    newcell.innerHTML = qtygrnaks                    
+                    newcell.style.cssText = 'text-align: right';                    
                     newcell = newrow.insertCell(7);
-                    newText = document.createTextNode(qtyprd);
-                    newcell.style.cssText = 'text-align: right';
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(8);
-                    newText = document.createTextNode(qtyqc);
-                    newcell.style.cssText = 'text-align: right';
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(9);
-                    newText = document.createTextNode(qtywh);
-                    newcell.style.cssText = 'text-align: right';
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(10);
-                    newText = document.createTextNode(qtyng);
-                    newcell.style.cssText = 'text-align: right';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = qtyprd
+                    newcell.style.cssText = 'text-align: right';                    
+                    newcell = newrow.insertCell(8)
+                    newcell.innerHTML = qtyng                    
+                    newcell.style.cssText = 'text-align: right';                    
+                    newcell = newrow.insertCell(9)
+                    newcell.innerHTML = qtyqc                    
+                    newcell.style.cssText = 'text-align: right';                    
+                    newcell = newrow.insertCell(10)
+                    newcell.innerHTML = qtywh                    
+                    newcell.style.cssText = 'text-align: right';                    
                     newcell = newrow.insertCell(11);
-                    newText = document.createTextNode(numeral(response.data[i].SCRQTY).format(','));
-                    newcell.style.cssText = 'text-align: right';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = numeral(response.data[i].SCRQTY).format(',')
+                    newcell.style.cssText = 'text-align: right'                    
                 }
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
