@@ -153,7 +153,7 @@ class SO extends CI_Controller {
                     'SO_NO' => $cdoc
                     ,'SO_ORDRDT' => $ca_ord_dt[$i]
                     ,'SO_ORDRQT' => str_replace(',','',$ca_ord_qt[$i])
-                    ,'SO_ITEMCD' => str_replace(' ', '',$ca_item[$i])
+                    ,'SO_ITEMCD' => $ca_item[$i]
                     ,'SO_BG' => $cbg
                     ,'SO_CUSCD' => $ccust
                     ,'SO_DELCD' => $cconsig
