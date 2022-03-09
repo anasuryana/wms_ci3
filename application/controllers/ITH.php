@@ -2332,4 +2332,17 @@ class ITH extends CI_Controller {
 		$rs = $this->ITH_mod->select_discrepancy_prd_qc();
 		die(json_encode(['data' => $rs]));
 	}
+
+	public function calculate_WO_today(){
+		header('Content-Type: application/json');
+		$rsWO = $this->ITH_mod->select_WO_PRD_uncalculated();
+		$Calc_lib = new RMCalculator();
+		$myar = [];
+		$libresponses = [];
+		foreach($rsWO as $r){
+			$libresponses[] = $Calc_lib->get_usage_rm_perjob($r->ITH_DOC);
+		}
+		$myar[] = ['cd' => 1, 'msg' => 'done', 'reff' => $libresponses];
+		die(json_encode(['data' => $myar]));
+	}
 }

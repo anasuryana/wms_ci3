@@ -1358,4 +1358,9 @@ class ITH_mod extends CI_Model {
         $query = $this->db->get();
 		return $query->result();
 	}
+	public function select_WO_PRD_uncalculated(){
+        $this->db->from("WMS_V_WOPRD_UNCALCULATED");	
+        $query = $this->db->get();
+		return $query->result();
+	}
 }
