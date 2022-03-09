@@ -1992,8 +1992,8 @@ class RCV extends CI_Controller {
 				"RCV_LUPDT" => $currrtime,
 				"RCV_USRID" => $this->session->userdata('nama')
 			];
-			$myar[] = $rw;		
-			$rsminusmain[] = [
+			$myar[] = $rw;
+			$key =[
 				'ITH_ITMCD' => $r['RCV_ITMCD'],
 				'ITH_QTY' => -$r['PGRELED_GRDQT'],
 				'ITH_DOC' => $cdo,
@@ -2003,6 +2003,9 @@ class RCV extends CI_Controller {
 				'ITH_LINE' => 'ITH'.$formatyear.$formatmonth.$formatdate.$nourut,
 				'ITH_FORM' => 'ADJ-OUT'
 			];
+			if(!$this->ITH_mod->check_Primary($key)){
+				$rsminusmain[] = $key;
+			}
 			$nourut++;			
 		}		
 		$res = $this->RCV_mod->insertb($myar);		
@@ -3086,8 +3089,8 @@ class RCV extends CI_Controller {
 
 	public function del_vs_nextdel(){
 		header('Content-Type: application/json');
-		$rsbooked = $this->RCV_mod->select_balanceEXBC_fromSCRBook_detail(['0121Z0777']);
-		$rsstk = $this->DELV_mod->select_aftersales('0121Z0777', '219487102');
+		$rsbooked = $this->RCV_mod->select_balanceEXBC_fromSCRBook_detail(['0121Z0105']);
+		$rsstk = $this->DELV_mod->select_aftersales('0121Z0105', '219487102');
 		$rsFIX = [];
 		foreach($rsstk as &$s){
 			$s['STKF'] = 0;
