@@ -2342,7 +2342,8 @@ class ITH extends CI_Controller {
 		foreach($rsWO as $r){
 			$libresponses[] = $Calc_lib->get_usage_rm_perjob($r->ITH_DOC);
 		}
-		$myar[] = ['cd' => 1, 'msg' => 'done', 'reff' => $libresponses];
+		$myar[] = ['cd' => 1, 'msg' => 'done', 'reff' => $libresponses];	
+		log_message('error', "TODAY WO-PRD Calculation occur [".count($libresponses)."]");
 		die(json_encode(['data' => $myar]));
 	}
 }
