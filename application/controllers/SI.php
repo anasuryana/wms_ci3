@@ -516,8 +516,7 @@ class SI extends CI_Controller {
 		$pdf->Cell(15,5,'QTY',1,0,'C');
 		$pdf->Cell(15,5,'Stock',1,0,'C');
 		// $pdf->Cell(15,5,'Box',1,0,'C');
-		$pdf->Cell(35,5,'Location',1,0,'C');
-		$pdf->Cell(31,5,'SO',1,0,'C');
+		$pdf->Cell(35,5,'Location',1,0,'C');		
 		$clebar = $pdf->GetStringWidth($pser)+13;
 		//$pdf->Code39(12,4,$pser);		
 		$pdf->Code128(12, 4,trim($pser),$clebar,4);
@@ -551,8 +550,7 @@ class SI extends CI_Controller {
 				$pdf->Cell(15,5,'QTY',1,0,'C');
 				$pdf->Cell(15,5,'Stock',1,0,'C');
 				// $pdf->Cell(15,5,'Box',1,0,'C');
-				$pdf->Cell(35,5,'Location',1,0,'C');	
-				$pdf->Cell(31,5,'SO',1,0,'C');			
+				$pdf->Cell(35,5,'Location',1,0,'C');					
 				$clebar = $pdf->GetStringWidth($pser)+13;
 				//$pdf->Code39(12,4,$pser);
 				$pdf->Code128(12, 4,trim($pser),$clebar,4);
@@ -606,8 +604,7 @@ class SI extends CI_Controller {
 					$ukuranfont = $ukuranfont - 0.5;
 				}
 			}
-			$pdf->Cell(35,$h_content,$thelok,1,0,'C');
-			$pdf->Cell(31,$h_content,'',1,0,'C');
+			$pdf->Cell(35,$h_content,$thelok,1,0,'C');			
 			$pdf->SetFont('Arial','',8);											
 			$cury += $h_content;$no++;			
 		}		
