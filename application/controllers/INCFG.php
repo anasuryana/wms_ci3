@@ -73,7 +73,7 @@ class INCFG extends CI_Controller {
 			$myar[] = ["cd" => "0", "msg" => "Session is expired please reload page"];
 			exit(json_encode($myar));
         }
-	}		
+	}	
 	
 	public function setprd(){
 		$this->checkSession();
@@ -94,6 +94,7 @@ class INCFG extends CI_Controller {
 		$cremark = trim($this->input->post("inremark"));
 		$cremark_ka = trim($this->input->post("inremark_ka"));
 		$cismanual = trim($this->input->post("inismanual"));
+		$creason = $this->input->post("inreason");
 		$ckeys = trim($ckeys);
 		$ckeys = str_replace(' ', '_', $ckeys);
 		$datalogser = [
@@ -197,8 +198,7 @@ class INCFG extends CI_Controller {
 					$rsostku0 =$rsostqty;
 					if(count($rsostqty) > 0){
 				
-					} else {
-						$cstate = "sono";
+					} else {						
 						$newjob = substr($cjob, 2, 100);
 						$cjob = $nextYear.$newjob;
 						$rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
@@ -207,8 +207,7 @@ class INCFG extends CI_Controller {
 						} else {
 							$newjob = substr($cjob, 2, 100);
 							$cjob = $prevYear.$newjob;
-							$rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
-							$rsostku1 = $rsostqty;
+							$rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);							
 						}
 					}
 					if(count($rsostqty) > 0){
@@ -266,8 +265,7 @@ class INCFG extends CI_Controller {
 							#START REPEAT
 							$newjob = substr($cjob, 2, 100);
 							$cjob = $nextYear.$newjob;
-							$rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);							
-							$rsostku = $this->SPL_mod->selectWOITEM($cjob, $citem);							
+							$rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
 							foreach($rsostqty as $r){
 								$ostqty = $r['OSTQTY'] < $r['OSTQTYMG'] ? $r['OSTQTY'] : $r['OSTQTYMG'];
 								$lotsizeqty = $r['PDPP_WORQT'];
@@ -433,6 +431,10 @@ class INCFG extends CI_Controller {
 									"SER_ID" => $creffcd, "SER_DOC" => $cjob,"SER_REFNO" => $creffcd, "SER_ITMID" => $citem,"SER_LOTNO" => $clot ,"SER_QTY" => $cqty, "SER_QTYLOT" => $cqty ,"SER_RAWTXT" => $ckeys,
 									"SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd , "SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama')
 								];
+								if(strlen($creason)!=0){
+									$datas['SER_CAT'] = '2';
+									$datas['SER_RMRK'] = $creason;
+								}
 								$retser = $this->SER_mod->insert($datas);
 								if($retser>0){					
 									$datac = ['ITH_FORM' => 'INC-PRD-FG', 'ITH_SER' => $creffcd];
@@ -444,6 +446,19 @@ class INCFG extends CI_Controller {
 										];
 										$retITH = $this->ITH_mod->insert($datas);
 										if($retITH>0){
+											if($creason=='SCRAP'){
+												$datas_scr[] = [
+													'ITH_ITMCD' => $citem, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
+													'ITH_DOC' => $cjob, 'ITH_QTY' => -$cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
+													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+												];
+												$datas_scr[] = [
+													'ITH_ITMCD' => $citem, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
+													'ITH_DOC' => $cjob, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'AFWH9SC',
+													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+												];
+												$retITH = $this->ITH_mod->insertb($datas_scr);
+											}
 											$datar = ["cd" => "11", "msg" => "Saved","typefg" => $cfgtype];
 										} else {
 											$datar = ["cd" => "0", "msg" => "Could not add stock"];
@@ -549,6 +564,10 @@ class INCFG extends CI_Controller {
 									"SER_ID" => $creffcd, "SER_DOC" => $cjob.$cremark,"SER_REFNO" => $creffcd, "SER_ITMID" => $citem.$cremark,"SER_LOTNO" => $clot ,"SER_QTY" => $cqty, "SER_QTYLOT" => $cqty ,"SER_RAWTXT" => $ckeys,
 									"SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd , "SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama')
 								];
+								if(strlen($creason)!=0){
+									$datas['SER_CAT'] = '2';
+									$datas['SER_RMRK'] = $creason;
+								}
 								$retser = $this->SER_mod->insert($datas);
 								if($retser>0){					
 									$datac = ['ITH_FORM' => 'INC-PRD-FG', 'ITH_SER' => $creffcd];
@@ -560,6 +579,19 @@ class INCFG extends CI_Controller {
 										];
 										$retITH = $this->ITH_mod->insert($datas);
 										if($retITH>0){
+											if($creason=='SCRAP'){
+												$datas_scr[] = [
+													'ITH_ITMCD' => $citem.$cremark, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
+													'ITH_DOC' => $cjob.$cremark, 'ITH_QTY' => -$cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
+													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+												];
+												$datas_scr[] = [
+													'ITH_ITMCD' => $citem.$cremark, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
+													'ITH_DOC' => $cjob.$cremark, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'AFWH9SC',
+													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+												];
+												$retITH = $this->ITH_mod->insertb($datas_scr);
+											}
 											$datar = ["cd" => "11", "msg" => "Saved (New Model)","typefg" => $cfgtype];											
 										} else {
 											$datar = ["cd" => "0", "msg" => "Could not add stock (New Model)"];
@@ -646,6 +678,10 @@ class INCFG extends CI_Controller {
 									"SER_ID" => $ckeys, "SER_DOC" => $cjob,"SER_REFNO" => $ckeys, "SER_ITMID" => $citemcd.$cfgtype.$cremark_ka ,"SER_LOTNO" => $cinlot ,"SER_QTY" => $cinqty,"SER_QTYLOT" => $cinqty ,
 									"SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd ,"SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama')
 								];
+								if(strlen($creason)!=0){
+									$datas['SER_CAT'] = '2';
+									$datas['SER_RMRK'] = $creason;
+								}
 								$retser = $this->SER_mod->insert($datas);
 								if($retser>0){					
 									$datac = ['ITH_FORM' => 'INC-PRD-FG', 'ITH_SER' => $ckeys];
@@ -657,6 +693,19 @@ class INCFG extends CI_Controller {
 										];
 										$retITH = $this->ITH_mod->insert($datas);
 										if($retITH>0){
+											if($creason=='SCRAP'){
+												$datas_scr[] = [
+													'ITH_ITMCD' => $citemcd.$cfgtype.$cremark_ka, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
+													'ITH_DOC' => $cjob, 'ITH_QTY' => -$cinqty, 'ITH_SER' => $ckeys, 'ITH_WH' => 'ARPRD1',
+													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+												];
+												$datas_scr[] = [
+													'ITH_ITMCD' => $citemcd.$cfgtype.$cremark_ka, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
+													'ITH_DOC' => $cjob, 'ITH_QTY' => $cinqty, 'ITH_SER' => $ckeys, 'ITH_WH' => 'AFWH9SC',
+													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+												];
+												$retITH = $this->ITH_mod->insertb($datas_scr);
+											}
 											$datar = ["cd" => "11", "msg" => "Saved", "typefg" => $cfgtype];	
 										} else {
 											$datar = ["cd" => "0", "msg" => "Could not add stock"];
@@ -1323,5 +1372,9 @@ class INCFG extends CI_Controller {
 	}
 	public function vfgtowip(){
 		$this->load->view('wms/vfgtowip');
+	}
+	public function form_scanprd_ng(){
+		$data['rsjob'] = $this->SER_mod->select_joblbl_ost();
+		$this->load->view('wms/vincomingfg_prd_ng', $data);
 	}
 }
