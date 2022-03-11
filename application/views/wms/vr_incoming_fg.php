@@ -216,6 +216,8 @@
                         qtyng = 0;
                     }
                     qtygrnaks =  (numeral(qtyprd).value()>numeral(qtygrn).value()) ?  qtyprd : qtygrn
+                    qtygrnaks = numeral(qtygrnaks).value()+response.data[i].NG*1+response.data[i].QTY_SCR*1
+                    qtygrnaks = numeral(qtygrnaks).format(',')
                     bomrv = response.data[i].PDPP_BOMRV.substr(0,1) === '.' ? '0'+response.data[i].PDPP_BOMRV : response.data[i].PDPP_BOMRV
                     newrow = tableku2.insertRow(-1);
                     newcell = newrow.insertCell(0);
@@ -233,7 +235,7 @@
                     newcell.innerHTML = qtylot                    
                     newcell.style.cssText = 'text-align: right';                    
                     newcell = newrow.insertCell(6)
-                    newcell.innerHTML = qtygrnaks                    
+                    newcell.innerHTML = qtygrnaks               
                     newcell.style.cssText = 'text-align: right';                    
                     newcell = newrow.insertCell(7);
                     newcell.innerHTML = qtyprd
@@ -248,7 +250,7 @@
                     newcell.innerHTML = qtywh                    
                     newcell.style.cssText = 'text-align: right';                    
                     newcell = newrow.insertCell(11);
-                    newcell.innerHTML = numeral(response.data[i].SCRQTY).format(',')
+                    newcell.innerHTML = numeral(response.data[i].QTY_SCR).format(',')
                     newcell.style.cssText = 'text-align: right'                    
                 }
                 mydes.innerHTML='';
