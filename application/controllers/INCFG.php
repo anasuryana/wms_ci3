@@ -446,19 +446,19 @@ class INCFG extends CI_Controller {
 										];
 										$retITH = $this->ITH_mod->insert($datas);
 										if($retITH>0){
-											if($creason=='SCRAP'){
-												$datas_scr[] = [
-													'ITH_ITMCD' => $citem, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
-													'ITH_DOC' => $cjob, 'ITH_QTY' => -$cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
-													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-												];
-												$datas_scr[] = [
-													'ITH_ITMCD' => $citem, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
-													'ITH_DOC' => $cjob, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'AFWH9SC',
-													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-												];
-												$retITH = $this->ITH_mod->insertb($datas_scr);
-											}
+											// if($creason=='SCRAP'){
+											// 	$datas_scr[] = [
+											// 		'ITH_ITMCD' => $citem, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
+											// 		'ITH_DOC' => $cjob, 'ITH_QTY' => -$cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
+											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+											// 	];
+											// 	$datas_scr[] = [
+											// 		'ITH_ITMCD' => $citem, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
+											// 		'ITH_DOC' => $cjob, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'AFWH9SC',
+											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+											// 	];
+											// 	$retITH = $this->ITH_mod->insertb($datas_scr);
+											// }
 											$datar = ["cd" => "11", "msg" => "Saved","typefg" => $cfgtype];
 										} else {
 											$datar = ["cd" => "0", "msg" => "Could not add stock"];
@@ -579,19 +579,19 @@ class INCFG extends CI_Controller {
 										];
 										$retITH = $this->ITH_mod->insert($datas);
 										if($retITH>0){
-											if($creason=='SCRAP'){
-												$datas_scr[] = [
-													'ITH_ITMCD' => $citem.$cremark, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
-													'ITH_DOC' => $cjob.$cremark, 'ITH_QTY' => -$cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
-													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-												];
-												$datas_scr[] = [
-													'ITH_ITMCD' => $citem.$cremark, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
-													'ITH_DOC' => $cjob.$cremark, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'AFWH9SC',
-													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-												];
-												$retITH = $this->ITH_mod->insertb($datas_scr);
-											}
+											// if($creason=='SCRAP'){
+											// 	$datas_scr[] = [
+											// 		'ITH_ITMCD' => $citem.$cremark, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
+											// 		'ITH_DOC' => $cjob.$cremark, 'ITH_QTY' => -$cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
+											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+											// 	];
+											// 	$datas_scr[] = [
+											// 		'ITH_ITMCD' => $citem.$cremark, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
+											// 		'ITH_DOC' => $cjob.$cremark, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'AFWH9SC',
+											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+											// 	];
+											// 	$retITH = $this->ITH_mod->insertb($datas_scr);
+											// }
 											$datar = ["cd" => "11", "msg" => "Saved (New Model)","typefg" => $cfgtype];											
 										} else {
 											$datar = ["cd" => "0", "msg" => "Could not add stock (New Model)"];
@@ -693,19 +693,19 @@ class INCFG extends CI_Controller {
 										];
 										$retITH = $this->ITH_mod->insert($datas);
 										if($retITH>0){
-											if($creason=='SCRAP'){
-												$datas_scr[] = [
-													'ITH_ITMCD' => $citemcd.$cfgtype.$cremark_ka, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
-													'ITH_DOC' => $cjob, 'ITH_QTY' => -$cinqty, 'ITH_SER' => $ckeys, 'ITH_WH' => 'ARPRD1',
-													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-												];
-												$datas_scr[] = [
-													'ITH_ITMCD' => $citemcd.$cfgtype.$cremark_ka, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
-													'ITH_DOC' => $cjob, 'ITH_QTY' => $cinqty, 'ITH_SER' => $ckeys, 'ITH_WH' => 'AFWH9SC',
-													'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-												];
-												$retITH = $this->ITH_mod->insertb($datas_scr);
-											}
+											// if($creason=='SCRAP'){
+											// 	$datas_scr[] = [
+											// 		'ITH_ITMCD' => $citemcd.$cfgtype.$cremark_ka, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
+											// 		'ITH_DOC' => $cjob, 'ITH_QTY' => -$cinqty, 'ITH_SER' => $ckeys, 'ITH_WH' => 'ARPRD1',
+											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+											// 	];
+											// 	$datas_scr[] = [
+											// 		'ITH_ITMCD' => $citemcd.$cfgtype.$cremark_ka, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
+											// 		'ITH_DOC' => $cjob, 'ITH_QTY' => $cinqty, 'ITH_SER' => $ckeys, 'ITH_WH' => 'AFWH9SC',
+											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
+											// 	];
+											// 	$retITH = $this->ITH_mod->insertb($datas_scr);
+											// }
 											$datar = ["cd" => "11", "msg" => "Saved", "typefg" => $cfgtype];	
 										} else {
 											$datar = ["cd" => "0", "msg" => "Could not add stock"];
