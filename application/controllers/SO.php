@@ -399,6 +399,7 @@ class SO extends CI_Controller {
         $docplot = $this->input->get('doc');
         $sono = $this->input->get('so_no');
         $soitem = $this->input->get('so_item');
+        $soline = $this->input->get('so_line');
         $plottedqty = $this->input->get('plotqty');
         $rs = $this->DELV_mod->select_reqPlot_SIBase_withItem($docplot, $soitem);
         $bg = '';
@@ -412,7 +413,7 @@ class SO extends CI_Controller {
             // }
         }
         $columns = ['RTRIM(SSO2_CPONO) SSO2_CPONO' , 'SSO2_ORDQT','SSO2_DELQT', 'SSO2_DELCD', 'RTRIM(SSO2_MDLCD) SSO2_MDLCD', 'SSO2_SLPRC','SSO2_SOLNO','(SSO2_ORDQT-SSO2_DELQT) BALQT'];
-		$where = ['SSO2_BSGRP' => $bg, 'SSO2_CUSCD' => $cuscd, 'SSO2_CPOTYPE' => 'CPO' , 'SSO2_COMFG' => '0', 'SSO2_CPONO' => $sono];
+		$where = ['SSO2_BSGRP' => $bg, 'SSO2_CUSCD' => $cuscd, 'SSO2_CPOTYPE' => 'CPO' , 'SSO2_COMFG' => '0', 'SSO2_CPONO' => $sono, 'SSO2_SOLNO' => $soline];
         $rsos = $this->XSO_mod->selectbyVAR_inmodel($columns,$where, $items);
         $rsplot = [];
         $SOFocus = '';
