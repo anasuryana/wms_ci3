@@ -864,6 +864,7 @@ class INCFG extends CI_Controller {
 						} else {
 							$myar[] = ['cd' => 0, 'msg' => 'Could not scan splitted Label'];							
 						}
+						$this->SER_mod->updatebyId(['SER_CAT' => NULL], $ccode);
 					} else {
 						$myar[] = ['cd' => 0, 'msg' => 'Serial not found'];						
 					}
