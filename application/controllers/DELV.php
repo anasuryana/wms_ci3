@@ -5636,7 +5636,25 @@ class DELV extends CI_Controller {
 		$czsj = $csj;
 		$rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
 		$rs_head_dlv = $this->DELV_mod->select_header_bydo($csj);
-
+		$cz_KODE_JENIS_TPB='';
+		$czkantortujuan='';
+		$cz_KODE_TUJUAN_TPB='';
+		$czidpenerima='';
+		$cznmpenerima='';
+		$czalamatpenerima='';
+		$czizinpenerima='';
+		$czcurrency='';
+		$cznamapengangkut='';
+		$cznomorpolisi='';
+		$ccustdate='';
+		$czdocbctype='';
+		$czinvoice='';
+		$czinvoicedt='';
+		$cztujuanpengiriman='';
+		$consignee='-';
+		$nomoraju='';
+		$cbusiness_group='';
+		$ccustomer_do='';
 		foreach($rs_head_dlv as $r){
 			if($r['DLV_BCDATE']){
 				$consignee = $r['DLV_CONSIGN'];
@@ -5938,187 +5956,7 @@ class DELV extends CI_Controller {
 				}
 			}
 		}
-		#END
-		// $responseResume = [];
-		// die(json_encode(['rsallitem_cd' => $rsallitem_cd, 'rsallitem_qty' => $rsallitem_qty]));
-		// $rstemp = $this->inventory_getstockbc_v2($czdocbctype,'1', $csj, $rsallitem_cd, $rsallitem_qty,[],$ccustdate);
-		// $rsbc = json_decode($rstemp);
-		// if(!is_null($rsbc)){
-		// 	if( count($rsbc)>0 ){
-		// 		$isResponseIterable = true;	
-		// 		foreach($rsbc as &$o){
-		// 			foreach($o->data as &$v){
-		// 				#resume respone
-		// 				$isfound = false;
-		// 				foreach($responseResume as &$n){
-		// 					if($n['ITEM'] == $v->BC_ITEM){									
-		// 						$n['BALRES'] += $v->BC_QTY;
-		// 						$isfound = true;
-		// 					}
-		// 				}
-		// 				unset($n);
-		// 				if(!$isfound){
-		// 					$responseResume[] = ['ITEM' => $v->BC_ITEM, 'BALRES' => $v->BC_QTY];
-		// 				}
-		// 				#end
-		// 			}
-		// 		}
-		// 	} else {
-		// 		$myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !", "api_respon" => $rstemp];
-		// 		$this->inventory_cancelDO($csj);
-		// 		die('{"status":'.json_encode($myar).'}');
-		// 	}
-		// } else {
-		// 	$this->inventory_cancelDO($csj);
-		// 	$myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin", "api_respon" => $rstemp];
-		// 	die('{"status":'.json_encode($myar).'}');
-		// }
-
-		// #CHECK IS REQ!=RES
-		// $listNeedExBC = []; #outstanding list
-		// for($i=0;$i<$count_rsallitem; $i++){
-		// 	foreach($responseResume as &$r) {
-		// 		if($rsallitem_cd[$i]===$r['ITEM']) {
-		// 			$bal = $rsallitem_qty[$i]-$rsallitem_qtyplot[$i];
-		// 			if($bal>$r['BALRES']) {
-		// 				$rsallitem_qtyplot[$i] += $r['BALRES'];
-		// 				$r['BALRES'] = 0;
-		// 			} else {
-		// 				$rsallitem_qtyplot[$i]+=$bal;
-		// 				$r['BALRES']-= $bal;
-		// 			}
-		// 			if($rsallitem_qty[$i]==$rsallitem_qtyplot[$i]) {
-		// 				break;
-		// 			}
-		// 		}
-		// 	}
-		// 	unset($r);
-		// 	$bal = $rsallitem_qty[$i]-$rsallitem_qtyplot[$i];
-		// 	if($bal) {
-		// 		$listNeedExBC[] = ['ITMCD' => $rsallitem_cd[$i], 'QTY' => $bal, 'LOTNO' => '?' ];
-		// 	}
-		// }
-		// if(count($listNeedExBC)>0){
-		// 	$this->inventory_cancelDO($csj);
-		// 	$myar[] = ['cd' => 110 ,'msg' => 'EX-BC for '.count($listNeedExBC). ' item(s) is not found. ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman ];
-		// 	die('{"status" : '.json_encode($myar).', "data":'.json_encode($listNeedExBC)
-		// 		.',"rawdata":'.json_encode($rstemp).',"itemsend":'.json_encode($rsallitem_cd)
-		// 		.',"itemqtysend":'.json_encode($rsallitem_qty)
-		// 		.',"responresume":'.json_encode($responseResume).'}');
-		// }
-
-		#PLOT FROM RESPONSE TO REQUEST
-		// foreach($rsitemchanges as &$k){
-		// 	foreach($tpb_barang_temp as $b){
-		// 		if($k['SERRC_NASSYCD'] == $b['KODE_BARANG']) {
-		// 			$k['RPRICEGROUP'] = $b['CIF'];
-		// 			break;
-		// 		}
-		// 	}
-		// }
-		// unset($k);
-
-		// foreach($rsitemchanges as &$r){
-		// 	$r['PLOTRQTY'] = 0;
-		// 	if($isResponseIterable) {
-		// 		foreach($rsbc as &$o){
-		// 			foreach($o->data as &$v){												
-		// 				if($r['ITMGR']===$v->BC_ITEM || $r['SERRC_BOMPN']===$v->BC_ITEM && $v->BC_QTY>0) {
-		// 					#_plot
-		// 					$balreq = $r['BOMPNQT']-$r['PLOTRQTY'];
-		// 					$theqty = 0;
-
-		// 					if($balreq==0) {
-		// 						break;
-		// 					}
-							
-		// 					if($balreq>$v->BC_QTY){
-		// 						$theqty = $v->BC_QTY;
-		// 						$r['PLOTRQTY'] += $v->BC_QTY;
-		// 						$v->BC_QTY = 0;
-		// 					} else {
-		// 						$theqty = $balreq;
-		// 						$r['PLOTRQTY'] += $balreq;
-		// 						$v->BC_QTY -= $balreq;
-		// 					}
-		// 					$thehscode = '';
-
-		// 					if(!$v->RCV_HSCD || rtrim($v->RCV_HSCD)==='') {
-		// 						for($h=0;$h<$count_rsallitem; $h++){ 
-		// 							if($v->BC_ITEM==$rsallitem_cd[$h]) {
-		// 								$thehscode = $rsallitem_hscd[$h];
-		// 								break;
-		// 							}
-		// 						}								
-		// 					} else {
-		// 						$thehscode = $v->RCV_HSCD;
-		// 					}
-							
-		// 					if($v->RCV_KPPBC!='-'){
-		// 						$tpb_bahan_baku[] = [
-		// 							'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE
-		// 							,'NOMOR_DAFTAR_DOK_ASAL' => $v->BC_NUM
-		// 							,'TANGGAL_DAFTAR_DOK_ASAL' => $v->BC_DATE
-		// 							,'KODE_KANTOR' => $v->RCV_KPPBC
-		// 							,'NOMOR_AJU_DOK_ASAL' => strlen($v->BC_AJU) == 6 ? substr('000000000000000000000000',0,26) : $v->BC_AJU
-		// 							,'SERI_BARANG_DOK_ASAL' => empty($v->RCV_ZNOURUT) ? 0 : $v->RCV_ZNOURUT
-		// 							,'SPESIFIKASI_LAIN' => NULL
-			
-		// 							,'CIF' => substr($v->RCV_PRPRC,0,1)=='.' ? ('0'.$v->RCV_PRPRC* $theqty) : ($v->RCV_PRPRC * $theqty)
-		// 							,'HARGA_PENYERAHAN' => 0
-			
-		// 							,'KODE_BARANG' => $v->BC_ITEM 
-		// 							,'KODE_STATUS' => "03"
-		// 							,'POS_TARIF' => $thehscode
-		// 							,'URAIAN' => $v->MITM_ITMD1
-		// 							,'TIPE' => $v->MITM_SPTNO
-									
-		// 							,'JUMLAH_SATUAN' => $theqty
-		// 							,'JENIS_SATUAN' => ($v->MITM_STKUOM=='PCS') ? 'PCE' : $v->MITM_STKUOM						
-		// 							,'KODE_ASAL_BAHAN_BAKU' => ($v->BC_TYPE == '27' || $v->BC_TYPE == '23' ) ? '0' : '1'
-			
-		// 							,'RASSYCODE' => $r['SERRC_NASSYCD']
-		// 							,'RPRICEGROUP' => $r['RPRICEGROUP']
-		// 							,'RBM' => substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM)											
-		// 						];
-		// 					} else {
-		// 						$tpb_bahan_baku[] = [
-		// 							'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE
-		// 							,'NOMOR_DAFTAR_DOK_ASAL' => $v->BC_NUM
-		// 							,'TANGGAL_DAFTAR_DOK_ASAL' => $v->BC_DATE
-		// 							,'KODE_KANTOR' => NULL
-		// 							,'NOMOR_AJU_DOK_ASAL' => strlen($v->BC_AJU) == 6 ? substr('000000000000000000000000',0,26) : $v->BC_AJU
-		// 							,'SERI_BARANG_DOK_ASAL' => empty($v->RCV_ZNOURUT) ? 0 : $v->RCV_ZNOURUT
-		// 							,'SPESIFIKASI_LAIN' => NULL
-				
-		// 							,'CIF' => 0
-		// 							,'HARGA_PENYERAHAN' => 0
-				
-		// 							,'KODE_BARANG' => trim($v->BC_ITEM)
-		// 							,'KODE_STATUS' => "02"
-		// 							,'POS_TARIF' => $thehscode
-		// 							,'URAIAN' => $v->MITM_ITMD1
-		// 							,'TIPE' => $v->MITM_SPTNO
-									
-		// 							,'JUMLAH_SATUAN' => $theqty
-		// 							,'JENIS_SATUAN' => 'PCE'						
-		// 							,'KODE_ASAL_BAHAN_BAKU' => 0
-				
-		// 							,'RASSYCODE' => $r['SERRC_NASSYCD']
-		// 							,'RPRICEGROUP' => $r['RPRICEGROUP']
-		// 							,'RBM' => 0										
-		// 						];
-		// 					}
-		// 					#end								
-		// 				}						
-		// 			}
-		// 			unset($v);
-		// 		}
-		// 		unset($o);
-		// 	}
-		// }	
-		// unset($r);
-		#END
+		
 		if($rswhSI==='AFWH3RT') {
 			foreach($tpb_barang_temp as $n){
 				$cz_h_CIF_FG += $n['CIF'];
@@ -6413,7 +6251,25 @@ class DELV extends CI_Controller {
 		$czsj = $csj;
 		$rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
 		$rs_head_dlv = $this->DELV_mod->select_header_bydo($csj);
-
+		$cztujuanpengiriman ='-';
+		$consignee='-';
+		$czinvoice='';
+		$ccustdate='';
+		$nomoraju='';
+		$czdocbctype='-';
+		$cbusiness_group='';
+		$ccustomer_do='';
+		$czcurrency='';
+		$cz_KODE_JENIS_TPB='';
+		$czkantortujuan='';
+		$cz_KODE_TUJUAN_TPB='';
+		$cznmpenerima='';
+		$czidpenerima='';
+		$czalamatpenerima='';
+		$czizinpenerima='';
+		$cznomorpolisi='';
+		$cznamapengangkut='';
+		$czinvoicedt='';
 		foreach($rs_head_dlv as $r){
 			if($r['DLV_BCDATE']){
 				$consignee = $r['DLV_CONSIGN'];
@@ -11716,6 +11572,7 @@ class DELV extends CI_Controller {
 		$cznmpengusaha = '';
 		$czalamatpengusaha = '';
 		$czizinpengusaha = '';
+		$czharga_matauang = '';
 
 		foreach($rsaktivasi as $r){
 			$czkantorasal = $r['KPPBC'];
@@ -15116,6 +14973,7 @@ class DELV extends CI_Controller {
 		$flg_sell = strpos($deliveryDescription, 'DIKEMBALIKAN') !== false ?  false : true;
 		$cz_h_NDPBM = 0;
 		$rscurr = $this->MEXRATE_mod->selectfor_posting_in([$ccustdate],[$czcurrency]);
+		$czharga_matauang = 0;
 		if($flg_sell) {
 			if(count($rscurr)==0){
 				$myar[] = ["cd" => "0", "msg" => "Please fill exchange rate data !,"];
@@ -15288,8 +15146,37 @@ class DELV extends CI_Controller {
 				$no++;
 				$SERI_BARANG++;
 			}		
-		} else {			
+		} else {
+			$rscurr = $this->MEXRATE_mod->selectfor_posting_in($IncDateList,$IncCRList);
+			$listcount = count($IncDateCR_FLGList);
+			foreach($rscurr as $r){
+				for($i=0; $i< $listcount; $i++){
+					if($r->MEXRATE_CURR==$IncCRList[$i] && $r->MEXRATE_DT==$IncDateList[$i]){
+						$IncDateCR_FLGList[$i] = 1;
+					}
+				}
+			}
+
+			#validate exchange rate for incoming date
+			for($i=0; $i< $listcount; $i++){
+				if($IncDateCR_FLGList[$i]==0){
+					$dar = ["cd" => "0", "msg" => "Please fill exchange rate data for ".$IncCRList[$i]." on ".$IncDateList[$i]." !"];
+					$myar[] = $dar;
+					die('{"status":'.json_encode($myar).'}');
+				}
+			}
+			#end			
 			foreach($tpb_bahan_baku as $r){
+				foreach($rscurr as $c){					
+					if($r['CURRENCY']== $c->MEXRATE_CURR && $r['TANGGAL_DAFTAR_DOK_ASAL'] == $c->MEXRATE_DT) {
+						if($c->MEXRATE_CURR=='RPH'){
+							$czharga_matauang = 1;
+						} else {
+							$czharga_matauang = $c->MEXRATE_VAL;							
+						}
+						break;
+					}
+				}
 				$tpb_barang[] = [
 					'KODE_BARANG' => $r['KODE_BARANG']
 					,'POS_TARIF' => $r['POS_TARIF']
@@ -15418,7 +15305,8 @@ class DELV extends CI_Controller {
 		$tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "640", "NOMOR_DOKUMEN" => $csj ,  "TANGGAL_DOKUMEN" =>  $ccustdate , "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => 3 ]; //surat jalan
 		$seridokumen = 4;
 		foreach($resumeXBCDoc as $n){
-			$tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => $n['BCTYPE'], "NOMOR_DOKUMEN" => $n['NOPEN'] ,  "TANGGAL_DOKUMEN" =>  $n['TGLPEN'] , "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => $seridokumen ];
+			$tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => $n['BCTYPE'], "NOMOR_DOKUMEN" => $n['NOPEN'] ,  "TANGGAL_DOKUMEN" =>  $n['TGLPEN'] , "TIPE_DOKUMEN" => "02"
+			, "SERI_DOKUMEN" => $seridokumen ];
 			$seridokumen++;
 		}
 
@@ -17209,6 +17097,8 @@ class DELV extends CI_Controller {
 						,'URAIAN' => rtrim($r['MITM_ITMD1'])
 						,'JUMLAH_SATUAN' => $useqt												
 						,'INCDOCQTY' => $x['DOCQTY']
+						,'PRICE' => $x['RCV_PRPRC']
+						,'BCTYPE' => $x['RCV_BCTYPE']
 					];
 					if($r['DLVRMDOC_ITMQT']==$r['PLOTQT']){
 						break;
@@ -17222,45 +17112,52 @@ class DELV extends CI_Controller {
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->setTitle('RESUME');
 		$sheet->setCellValueByColumnAndRow(1,1, 'DAFTAR BARANG YANG AKAN '.$delv_description);
-		$sheet->mergeCells('A1:I1');
+		$sheet->mergeCells('A1:K1');
 		$sheet->getStyle('A1')->getFont()->setSize(18);
 		$sheet->getStyle('A1')->getFont()->setBold(true);
-		$sheet->setCellValueByColumnAndRow(1,2, 'NO URUT');
-		$sheet->setCellValueByColumnAndRow(2,2, 'URAIAN Barang Material / Bahan Baku');
-		$sheet->setCellValueByColumnAndRow(3,2, 'Kode Barang');
-		$sheet->setCellValueByColumnAndRow(4,2, 'Qty');
-		$sheet->setCellValueByColumnAndRow(5,2, 'NO Urut dokumen');
-		$sheet->setCellValueByColumnAndRow(6,2, 'Qty Dokumen');
-		$sheet->setCellValueByColumnAndRow(7,2, 'EX.NOPEN');
-		$sheet->setCellValueByColumnAndRow(8,2, 'TGL EX.BC');
-		$sheet->setCellValueByColumnAndRow(9,2, 'NO SURAT JALAN');
+		$sheet->setCellValueByColumnAndRow(3,2,$txid );
+		$sheet->setCellValueByColumnAndRow(1,3, 'NO URUT');
+		$sheet->setCellValueByColumnAndRow(2,3, 'URAIAN Barang Material / Bahan Baku');
+		$sheet->setCellValueByColumnAndRow(3,3, 'Kode Barang');
+		$sheet->setCellValueByColumnAndRow(4,3, 'Qty');
+		$sheet->setCellValueByColumnAndRow(5,3, 'Unit Price');
+		$sheet->setCellValueByColumnAndRow(6,3, 'Amount');
+		$sheet->setCellValueByColumnAndRow(7,3, 'NO Urut dokumen');
+		$sheet->setCellValueByColumnAndRow(8,3, 'Qty Dokumen');
+		$sheet->setCellValueByColumnAndRow(9,3, 'Jenis BC');
+		$sheet->setCellValueByColumnAndRow(10,3, 'EX.NOPEN');
+		$sheet->setCellValueByColumnAndRow(11,3, 'TGL EX.BC');
+		$sheet->setCellValueByColumnAndRow(12,3, 'NO SURAT JALAN');
 		$sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 		$sheet->getStyle('G:G')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 		$nourut = 1;
-		$i=3;
+		$i=4;
 		foreach($rs as $r){
 			$sheet->setCellValueByColumnAndRow(1,$i, $nourut);
 			$sheet->setCellValueByColumnAndRow(2,$i, $r['URAIAN']);
 			$sheet->setCellValueByColumnAndRow(3,$i, $r['KODE_BARANG']);
 			$sheet->setCellValueByColumnAndRow(4,$i, $r['JUMLAH_SATUAN']);
-			$sheet->setCellValueByColumnAndRow(5,$i, $r['SERI_BARANG_DOK_ASAL']);
-			$sheet->setCellValueByColumnAndRow(6,$i, $r['INCDOCQTY']);
-			$sheet->setCellValueByColumnAndRow(7,$i, $r['NOMOR_DAFTAR_DOK_ASAL']);
-			$sheet->setCellValueByColumnAndRow(8,$i, $r['TANGGAL_DAFTAR_DOK_ASAL']);
-			$sheet->setCellValueByColumnAndRow(9,$i, $r['DONO']);
+			$sheet->setCellValueByColumnAndRow(5,$i, $r['PRICE']);
+			$sheet->setCellValueByColumnAndRow(6,$i, $r['PRICE']*$r['JUMLAH_SATUAN']);
+			$sheet->setCellValueByColumnAndRow(7,$i, $r['SERI_BARANG_DOK_ASAL']);
+			$sheet->setCellValueByColumnAndRow(8,$i, $r['INCDOCQTY']);
+			$sheet->setCellValueByColumnAndRow(9,$i, $r['BCTYPE']);
+			$sheet->setCellValueByColumnAndRow(10,$i, $r['NOMOR_DAFTAR_DOK_ASAL']);
+			$sheet->setCellValueByColumnAndRow(11,$i, $r['TANGGAL_DAFTAR_DOK_ASAL']);
+			$sheet->setCellValueByColumnAndRow(12,$i, $r['DONO']);
 			$nourut++;
 			$i++;
 		}
-		$sheet->getStyle('A2:I'.($i-1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+		$sheet->getStyle('A3:L'.($i-1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 		$i++;
-		$sheet->setCellValueByColumnAndRow(7,$i, 'Approved By');
-		$sheet->setCellValueByColumnAndRow(8,$i, 'Checked By');
-		$sheet->setCellValueByColumnAndRow(9,$i, 'Prepared By');
+		$sheet->setCellValueByColumnAndRow(8,$i, 'Approved By');
+		$sheet->setCellValueByColumnAndRow(9,$i, 'Checked By');
+		$sheet->setCellValueByColumnAndRow(10,$i, 'Prepared By');
 		$i+=3;
-		$sheet->setCellValueByColumnAndRow(7,$i, 'Indra Andesa');
-		$sheet->setCellValueByColumnAndRow(8,$i, 'Sri Wahyu');
-		$sheet->setCellValueByColumnAndRow(9,$i, 'Gusti Ayu');
-		foreach(range('A','I') as $r){
+		$sheet->setCellValueByColumnAndRow(8,$i, 'Indra Andesa');
+		$sheet->setCellValueByColumnAndRow(9,$i, 'Sri Wahyu');
+		$sheet->setCellValueByColumnAndRow(10,$i, 'Gusti Ayu');
+		foreach(range('A','L') as $r){
 			$sheet->getColumnDimension($r)->setAutoSize(true);
 		}		
 		$dodis = $txid;
