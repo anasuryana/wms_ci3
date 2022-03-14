@@ -2988,6 +2988,9 @@ function txfg_e_searchSI(){
                     newText = document.createElement('input');
                     newText.setAttribute("type", "checkbox");
                     newText.disabled = (numeral(response.data[i].SI_DOCREFFPRC).value()==0) ? true:false;
+                    if(response.data[i].SER_DOC.includes('RTN')){                        
+                        newText.disabled = false
+                    }
                     if(surat_jalan_cc>3){
                         newText.onclick = function(event){txfg_cksi_e_click(event,this,response.data[i].SER_ITMID.trim(),txfg_g_string )};
                     } else {
