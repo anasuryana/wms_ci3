@@ -43,6 +43,21 @@ class SPLSCN_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+    public function select_ready_book($plike){	        
+        $this->db->from("wms_v_ready_to_book_spl_base");        
+        $this->db->like($plike);
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+    public function select_ready_book_bywo($pjob){
+        $this->db->from("wms_v_ready_to_book_spl_base");
+        $this->db->join("(
+            SELECT PPSN1_PSNNO FROM XPPSN1 WHERE PPSN1_WONO LIKE '%".$pjob."%'
+            GROUP BY PPSN1_PSNNO
+            ) VJOB","SPL_DOC=PPSN1_PSNNO");
+		$query = $this->db->get();
+		return $query->result_array();
+    }
     public function selectby_filter_like_wjob($pwhere){	
         $this->db->limit(2500);
         $this->db->select($this->TABLENAME.".*, PPSN1_WONO");
@@ -92,17 +107,17 @@ class SPLSCN_mod extends CI_Model {
     public function select_spl_vs_splscn_null($ppsn){
 
         $qry = "SELECT V1.*,SPLSCN_ITMCD FROM
-        (SELECT SPL_DOC,SPL_LINE,SPL_ORDERNO,SPL_CAT,SPL_ITMCD,SUM(SPL_QTYREQ) REQQT 
+        (SELECT SPL_DOC,SPL_ORDERNO,SPL_CAT,SPL_ITMCD,SUM(SPL_QTYREQ) REQQT 
             FROM SPL_TBL WHERE SPL_QTYREQ>0 and SPL_DOC IN ($ppsn) AND SPL_ITMCD NOT IN (SELECT MITM_ITMCD FROM  MITM_TBL WHERE MITM_ITMD1 LIKE '%SHIELD PLATE%')
 			and SPL_CAT!='SP'
-        GROUP BY SPL_DOC,SPL_LINE,SPL_ORDERNO,SPL_CAT,SPL_ITMCD
+        GROUP BY SPL_DOC,SPL_ORDERNO,SPL_CAT,SPL_ITMCD
         ) V1
         LEFT JOIN 
         (
         SELECT SPLSCN_DOC,SPLSCN_LINE,SPLSCN_ORDERNO,SPLSCN_CAT,SPLSCN_ITMCD,SUM(SPLSCN_QTY) SUPQT FROM SPLSCN_TBL
         WHERE SPLSCN_DOC IN ($ppsn)
         GROUP BY SPLSCN_DOC,SPLSCN_LINE,SPLSCN_FEDR,SPLSCN_ORDERNO,SPLSCN_CAT,SPLSCN_ITMCD
-        ) V2 ON SPL_DOC=SPLSCN_DOC AND SPL_LINE=SPLSCN_LINE AND SPL_CAT=SPLSCN_CAT AND SPL_ITMCD=SPLSCN_ITMCD
+        ) V2 ON SPL_DOC=SPLSCN_DOC  AND SPL_CAT=SPLSCN_CAT AND SPL_ITMCD=SPLSCN_ITMCD
         WHERE SPLSCN_ITMCD IS  NULL
         ORDER BY SPL_ORDERNO";
         $query = $this->db->query($qry);

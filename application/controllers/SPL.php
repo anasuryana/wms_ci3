@@ -3,12 +3,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 class SPL extends CI_Controller {
+	private $AMONTHPATRN = ['1','2','3', '4', '5', '6', '7', '8', '9', 'X', 'Y' , 'Z'];
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->helper('url');
 		$this->load->library('session');
-		$this->load->library('Code39e128');
+		$this->load->library('Code39e128');		
 		$this->load->model('SPL_mod');
 		$this->load->model('SPLREFF_mod');
 		$this->load->model('SPLSCN_mod');
@@ -23,7 +24,8 @@ class SPL extends CI_Controller {
 		$this->load->model('STKTRN_mod');
 		$this->load->model('ITMLOC_mod');
 		$this->load->model('RQSRMRK_mod');
-		$this->load->model('LOGSER_mod');		
+		$this->load->model('LOGSER_mod');
+		$this->load->model('SPLBOOK_mod');
 	}
 	public function index()
 	{
@@ -41,6 +43,9 @@ class SPL extends CI_Controller {
 
 	public function create(){		
 		$this->load->view('wms/vspl');
+	}
+	public function form_report_kitting_result(){
+		$this->load->view('wms_report/vrpt_kitting_result');
 	}
 
 	public function form_reference(){
@@ -98,6 +103,9 @@ class SPL extends CI_Controller {
 
 	public function v_sim_vs_stock(){
 		$this->load->view('wms/vsimvsstock');
+	}
+	public function form_book(){
+		$this->load->view('wms/vspl_book');
 	}
 
 	public function simulate_sim_vs_stock(){
@@ -794,7 +802,7 @@ class SPL extends CI_Controller {
 								while($think2){
 									if($r['TTLREQ'] > $r['TTLSCN']){
 										if($d['USED']==false){
-											$r['TTLSCN'] += $d['SPLSCN_QTY'];																
+											$r['TTLSCN'] += $d['SPLSCN_QTY'];
 											$d['USED'] = true;
 										} else {
 											$think2=false;
@@ -1621,8 +1629,7 @@ class SPL extends CI_Controller {
 				$cline = trim($rh['SPL_LINE']);
 				$cfedr = trim($rh['SPL_FEDR']);
 				$rshead = $this->SPL_mod->selecthead($cpsn, $cline, $cfedr);
-				$rsdiff_mch = $this->SPL_mod->select_but_diff_machine($cpsn, $ccat, $cline, $cfedr);
-				$rsmachine = $this->SPL_mod->select_machine(['SPL_DOC' => $cpsn, 'SPL_CAT' => $ccat, 'SPL_LINE' => $cline, 'SPL_FEDR' => $cfedr]);
+				$rsdiff_mch = $this->SPL_mod->select_but_diff_machine($cpsn, $ccat, $cline, $cfedr);				
 				$cwos = [];
 				$cmodels = [];
 				$clotsize = [];
@@ -5488,5 +5495,94 @@ class SPL extends CI_Controller {
 		$rs = $this->SPL_mod->select_userinfo_group(['MSTEMP_FNM', 'MSTEMP_LNM','MSTEMP_ID'], ['SPL_DOC' => $psnno], 'SPL_USRID');
 		$rsApproved = $this->SPL_mod->select_userinfo_group(['MSTEMP_FNM', 'MSTEMP_LNM','MSTEMP_ID'], ['SPL_DOC' => $psnno], 'SPL_APPRV_BY');
 		die('{"createdBy":'.json_encode($rs).',"approvedBy":'.json_encode($rsApproved).'}');
+	}
+
+	public function search_ready_to_book(){
+		header('Content-Type: application/json');
+		$search = $this->input->get('search');
+		$searchby = $this->input->get('searchby');
+		$rs = $searchby=='PSN' ? $this->SPLSCN_mod->select_ready_book(['SPL_DOC' => $search]) : $this->SPLSCN_mod->select_ready_book_bywo($search);
+		die(json_encode(['data' => $rs]));
+	}
+
+	public function book(){
+		date_default_timezone_set('Asia/Jakarta');
+		header('Content-Type: application/json');
+		$currrtime 	= date('Y-m-d H:i:s');
+		$bookid = $this->input->post('hbookid');
+		$bookdate = $this->input->post('hbookdate');
+		$bookdate_a = explode('-',$bookdate);
+		$_year = substr($bookdate_a[0],-2);
+		$_month = $bookdate_a[1]*1;
+		$_date = $bookdate_a[2];
+		$inid = $this->input->post('dinid');
+		$inpsn = $this->input->post('dinpsn');
+		$incat = $this->input->post('dincat');
+		$inpc = $this->input->post('dinpc');
+		$inqt = $this->input->post('dinqt');
+		$ttlrows = is_array($inpc) ? count($inpc) : 0;
+		$myar = [];
+		if($this->SPLBOOK_mod->check_Primary(['SPLBOOK_DOC' => $bookid])){
+			$lastline = $this->SPLBOOK_mod->select_maxline($bookid)+1;
+			for($i=0;$i<$ttlrows; $i++){
+				if(strlen($inid[$i])>0){
+					$this->SPLBOOK_mod->updatebyVars(['SPLBOOK_QTY' => $inqt[$i]], ['SPLBOOK_DOC' => $bookid,'SPLBOOK_LINE' => $inid[$i]]);
+				} else {
+					$datas[] = [
+						'SPLBOOK_DOC' => $bookid,
+						'SPLBOOK_SPLDOC' => $inpsn[$i],
+						'SPLBOOK_CAT' => $incat[$i],
+						'SPLBOOK_ITMCD' => $inpc[$i],
+						'SPLBOOK_QTY' => $inqt[$i],
+						'SPLBOOK_DATE' => $bookdate,
+						'SPLBOOK_LINE' => $lastline++,
+						'SPLBOOK_LUPDTD' => $currrtime,
+						'SPLBOOK_USRID' => $this->session->userdata('nama')
+					];
+				}
+			}
+			if(count($datas)){
+				$this->SPLBOOK_mod->insertb($datas);
+			}
+			$myar[] = ['cd' => 1, 'msg' => 'Updated', 'doc' => $bookid];
+		} else {
+			$datas = [];
+			$lastbookid = $this->SPLBOOK_mod->lastserialid($bookdate)+1;
+			$newdoc = 'B'.$_year.$this->AMONTHPATRN[($_month-1)].$_date.$lastbookid;
+			for($i=0;$i<$ttlrows; $i++){
+				$datas[] = [
+					'SPLBOOK_DOC' => $newdoc,
+					'SPLBOOK_SPLDOC' => $inpsn[$i],
+					'SPLBOOK_CAT' => $incat[$i],
+					'SPLBOOK_ITMCD' => $inpc[$i],
+					'SPLBOOK_QTY' => $inqt[$i],
+					'SPLBOOK_DATE' => $bookdate,
+					'SPLBOOK_LINE' => ($i+1),
+					'SPLBOOK_LUPDTD' => $currrtime,
+					'SPLBOOK_USRID' => $this->session->userdata('nama')
+				];
+			}
+			if(count($datas)){
+				$this->SPLBOOK_mod->insertb($datas);
+			}
+			$myar[] = ['cd' => 1, 'msg' => 'Saved', 'doc' => $newdoc];
+		}
+		die(json_encode(['status' => $myar]));
+	}
+
+	public function book_header(){
+		header('Content-Type: application/json');
+		$search = $this->input->get('search');
+		$searchby = $this->input->get('searchby');
+		$like = $searchby=='PSN' ? ['SPLBOOK_SPLDOC' => $search] : ['SPLBOOK_DOC' => $search];
+		$rs = $this->SPLBOOK_mod->select_book_like($like);
+		die(json_encode(['data' => $rs]));
+	}
+
+	public function book_detail(){
+		header('Content-Type: application/json');
+		$doc = $this->input->get('doc');
+		$rs = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_DOC' => $doc]);
+		die(json_encode(['data' => $rs]));
 	}
 }
