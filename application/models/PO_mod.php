@@ -32,7 +32,7 @@ class PO_mod extends CI_Model {
         return $this->db->affected_rows();
     }
     public function select_all() {        
-        $this->db->from($this->TABLENAME);        
+        $this->db->from($this->TABLENAME);
 		$query = $this->db->get();
 		return $query->result_array();
     }
@@ -52,7 +52,7 @@ class PO_mod extends CI_Model {
     {
         $this->db->where($pwhere);
         $this->db->update($this->TABLENAME_DISCOUNT, $pdata);
-        return $this->db->affected_rows();        
+        return $this->db->affected_rows();
     }
 
     public function select_docnum_patterned($pyear){
