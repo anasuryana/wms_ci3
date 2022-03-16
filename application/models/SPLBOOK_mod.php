@@ -67,4 +67,11 @@ class SPLBOOK_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
 	}
+
+    public function deleteby_filter($pwhere)
+    {          
+        $this->db->where($pwhere);
+        $this->db->delete($this->TABLENAME);
+        return $this->db->affected_rows();
+    }
 }

@@ -4,7 +4,7 @@
             <div class="col-md-2 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" id="splbook_btn_new" onclick="splbook_btn_new_eC()"><i class="fas fa-file"></i></button>
-                    <button class="btn btn-outline-primary" id="splbook_btn_save" onclick="splbook_btn_save_eC()"><i class="fas fa-save"></i></button>
+                    <button class="btn btn-outline-primary" id="splbook_btn_save" onclick="splbook_btn_save_eC(this)"><i class="fas fa-save"></i></button>
                 </div>
             </div>
         </div>
@@ -36,7 +36,7 @@
                     <table id="splbook_tbl_1" class="table table-sm table-hover table-bordered" style="width:100%;font-size:80%">
                         <thead class="table-light">
                             <tr class="first">
-                                <th class="d-none">id</th> <!-- 0 -->                                
+                                <th class="d-none">id</th> <!-- 0 -->
                                 <th>PSN</th> <!-- 1 -->
                                 <th>Category</th> <!-- 2 -->
                                 <th>Part Code</th> <!-- 3 -->
@@ -147,6 +147,7 @@
       </div>
     </div>
 </div>
+<div id='splbook_contextmenu'></div>
 <script>
     $("#splbook_txt_date").datepicker({
         format: 'yyyy-mm-dd',
@@ -239,6 +240,13 @@
         let newrow, newcell;
         for(let c in data){
             newrow = tableku2.insertRow(-1)
+            newrow.addEventListener("contextmenu", function(e){
+                splbook_rowsObj.ridx = e.target.parentNode.rowIndex
+                splbook_rowsObj.ids = e.target.parentNode.cells[0].innerText
+                splbook_rowsObj.description = e.target.parentNode.cells[1].innerText
+                splbook_contextMenu.open(e)
+                e.preventDefault()
+            })
             newcell = newrow.insertCell(0)
             newcell.classList.add('d-none')            
             newcell = newrow.insertCell(1)
@@ -258,7 +266,7 @@
         tbl.innerHTML = ''
     }
 
-    function splbook_btn_save_eC(){
+    function splbook_btn_save_eC(p){    
         const tbl = document.getElementById('splbook_tbl_1').getElementsByTagName('tbody')[0]
         const ttlrows = tbl.getElementsByTagName('tr').length
         const bookid = document.getElementById('splbook_txt_doc')
@@ -279,6 +287,7 @@
             if(!confirm("Are you sure ?")){
                 return                
             }
+            p.disabled = true
             $.ajax({
                 type: "POST",
                 url: "<?=base_url('SPL/book')?>",
@@ -286,6 +295,7 @@
                 hbookid: bookid.value, hbookdate: bookdate},
                 dataType: "json",
                 success: function (response) {
+                    p.disabled = false
                     if(response.status[0].cd==1){
                         alertify.success(response.status[0].msg)
                         bookid.value = response.status[0].doc
@@ -294,7 +304,8 @@
                         alertify.warning(response.status[0].msg)
                     }
                 }, error(xhr, xopt, xthrow){
-                    alertify.error(xthrow);
+                    alertify.error(xthrow)
+                    p.disabled = false
                 }
             })
         }
@@ -315,9 +326,16 @@
                 let tabell = myfrag.getElementById("splbook_tbl_1");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];                                    
                 let newrow, newcell, newText;
-                tableku2.innerHTML=''                                        
+                tableku2.innerHTML=''
                 for (let i = 0; i<ttlrows; i++){
                     newrow = tableku2.insertRow(-1)
+                    newrow.addEventListener("contextmenu", function(e){
+                        splbook_rowsObj.ridx = e.target.parentNode.rowIndex
+                        splbook_rowsObj.ids = e.target.parentNode.cells[0].innerText
+                        splbook_rowsObj.description = e.target.parentNode.cells[1].innerText
+                        splbook_contextMenu.open(e)
+                        e.preventDefault()
+                    })
                     newcell = newrow.insertCell(0)
                     newcell.classList.add('d-none')
                     newcell.innerHTML = response.data[i].SPLBOOK_LINE
@@ -356,7 +374,7 @@
                 data: {search: e.target.value, searchby: searchby},
                 dataType: "json",
                 success: function (response) {
-                    e.target.readOnly = true
+                    e.target.readOnly = false
                     let ttlrows = response.data.length;
                     let mydes = document.getElementById("splbook_svd_tbl_div");
                     let myfrag = document.createDocumentFragment();
@@ -372,8 +390,11 @@
                         newcell = newrow.insertCell(0)
                         newcell.style.cssText = 'cursor:pointer'
                         newcell.onclick = () => {
+                            document.getElementById('splbook_txt_doc').value = response.data[i].SPLBOOK_DOC
+                            document.getElementById('splbook_txt_date').value = response.data[i].SPLBOOK_DATE
                             splbook_load(response.data[i].SPLBOOK_DOC)
                             $("#splbookSaved_Mod").modal('hide')
+                            document.getElementById('splbook_svd_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
                         }
                         newcell.innerHTML = response.data[i].SPLBOOK_DOC
                         newcell = newrow.insertCell(1)
@@ -391,5 +412,49 @@
                 }
             })
         }
+    }
+    var splbook_rowsObj = {}
+    var splbook_contextMenu = jSuites.contextmenu(document.getElementById('splbook_contextmenu'), {
+        items:[
+            {
+                title:'<span class="fas fa-trash text-warning"></span> Delete',                
+                onclick:function() { 
+                    if(splbook_rowsObj.ids.length>0){
+                        if(!confirm("Are you sure ?")){
+                            return
+                        }
+                        document.getElementById('splbook_tbl_1').rows[splbook_rowsObj.ridx].remove()
+                        const txtdoc = document.getElementById('splbook_txt_doc')
+                        $.ajax({
+                            type: "POST",
+                            url: "<?=base_url('SPL/remove_booked')?>",
+                            data: {doc: txtdoc.value, rowid: splbook_rowsObj.ids},
+                            dataType: "json",
+                            success: function (response) {
+                                if(response.status[0].cd==1){
+                                    alertify.success(response.status[0].msg)
+                                } else {
+                                    alertify.message(response.status[0].msg)
+                                }
+                            }, error: function(xhr, xopt, xthrow){
+                                alertify.error(xthrow)                                
+                            }
+                        })
+                    } else {
+                        document.getElementById('splbook_tbl_1').rows[splbook_rowsObj.ridx].remove()
+                    }
+                },
+                tooltip: 'Delete selected item',
+            }       
+        ],
+        onclick:function() {
+            splbook_contextMenu.close(false);
+        }
+    })
+
+    function splbook_btn_new_eC(){
+        document.getElementById('splbook_txt_doc').value = ''
+        document.getElementById('splbook_tbl_1').getElementsByTagName('tbody')[0].innerHTML = ''
+        $("#splbook_txt_date").datepicker('update', new Date())
     }
 </script>

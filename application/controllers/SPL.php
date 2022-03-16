@@ -5585,4 +5585,13 @@ class SPL extends CI_Controller {
 		$rs = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_DOC' => $doc]);
 		die(json_encode(['data' => $rs]));
 	}
+
+	public function remove_booked(){
+		header('Content-Type: application/json');
+		$doc = $this->input->post('doc');
+		$rowid = $this->input->post('rowid');
+		$returned = $this->SPLBOOK_mod->deleteby_filter(['SPLBOOK_DOC' => $doc, 'SPLBOOK_LINE' => $rowid]);
+		$myar=[$returned ? ['cd' => 1, 'msg' => 'Deleted'] : ['cd' => 0, 'msg' => 'not found']];
+		die(json_encode(['status' => $myar]));
+	}
 }
