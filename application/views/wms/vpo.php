@@ -392,7 +392,6 @@
       </div>
     </div>
 </div>
-<div id="mpurorcontextmenu"></div>
 <script>
     mpuror_initadditional_data()
     function mpuror_initadditional_data(){
@@ -442,21 +441,8 @@
        [''],
        [''],
        [''],
-    ];
-    var mpurorcontextMenu = jSuites.contextmenu(document.getElementById('mpurorcontextmenu'), {
-    items:[
-        {
-            title:'Delete',            
-            onclick:function(e) {
-                mpuror_minusrow()
-            },
-            tooltip: 'Method to delete the row',
-        }
-    ],
-    onclick:function() {
-        mpurorcontextMenu.close(false);
-    }
-});
+    ];    
+
 var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem'), {
     data:mpurordata,
     columns: [
@@ -666,7 +652,6 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
         newrow.onclick = (event) => {mpuror_tbl_tbody_tr_eC(event)}
         newrow.oncontextmenu = (e) => {
             mpuror_selected_row = e.srcElement.parentElement.rowIndex - 1            
-            mpurorcontextMenu.open(e)
             e.preventDefault()
         }
         
@@ -1140,6 +1125,7 @@ var mpuror_sso_nonitem = jspreadsheet(document.getElementById('mpuror_ss_nonitem
                             document.getElementById('mpuror_txt_doc').value = response.data[i].PO_NO
                             document.getElementById('mpuror_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
                             mpuror_get_detail(response.data[i].PO_NO)
+                            document.getElementById('mpuror_saved_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
                         }
                         newcell = newrow.insertCell(0)
                         newcell.innerHTML = response.data[i].PO_NO
