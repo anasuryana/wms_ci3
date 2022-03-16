@@ -1413,6 +1413,19 @@ class PO extends CI_Controller {
 			#end
 
 			for($i=0;$i<$ttlrows_item; $i++){
+				if($di_price[$i]===''){
+					$myar[] = ['cd' => '0', 'msg' => 'price is invalid'];
+					die(json_encode(['status' => $myar]));break;
+				}
+			}
+			for($i=0;$i<$ttlrows_Nonitem; $i++){
+				if($dni_price[$i]===''){
+					$myar[] = ['cd' => '0', 'msg' => 'price is invalid'];
+					die(json_encode(['status' => $myar]));break;
+				}
+			}
+
+			for($i=0;$i<$ttlrows_item; $i++){
 				$saveItem[] = [
 					'PO_NO' => $gen_po_num,
 					'PO_REV' => 0,
