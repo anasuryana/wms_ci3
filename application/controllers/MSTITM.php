@@ -240,6 +240,7 @@ class MSTITM extends CI_Controller {
 		date_default_timezone_set('Asia/Jakarta');
         $currrtime = date('Y-m-d H:i:s');
 		$cid = $this->input->post('initmcd');
+		$cid_old = $this->input->post('initmcd_old');
 		$mitmcd_Ext = $this->input->post('mitmcd_Ext');
 		$cnm1 = $this->input->post('initmnm1');
 		$cnm2 = $this->input->post('initmnm2');
@@ -299,8 +300,9 @@ class MSTITM extends CI_Controller {
 			if($this->session->userdata('gid')==='ROOT' || $this->session->userdata('gid')==='ADMIN' || $ctype=='6') {
 				$datau['MITM_ITMD1'] = $cnm1;
 				$datau['MITM_STKUOM'] = $mstkuom;
+				$datau['MITM_ITMCD'] = $cid;
 			}
-			$toret = $this->MSTITM_mod->updatebyId($datau, $cid);
+			$toret = $this->MSTITM_mod->updatebyId($datau, $cid_old);
 			$myar[] = $toret > 0 ? ['cd' => 1, 'msg' => 'Updated successfully'] : ['cd' => 0, 'msg' => 'Could not updated'];
 		}
 		die(json_encode(['status' => $myar]));
@@ -397,9 +399,9 @@ class MSTITM extends CI_Controller {
 			if(strlen($itmconsignee)==0){
 				$myar[] = ['cd' => 0, 'msg' => 'Consignee is required'];
 			} else {
-				if($this->MSTITM_mod->check_Primary(['MITM_ITMD1' => $itmnm])) {
-					$myar[] = ['cd' => 0, 'msg' => 'the item name is already registered'];
-				} else {
+				// if($this->MSTITM_mod->check_Primary(['MITM_ITMD1' => $itmnm])) {
+				// 	$myar[] = ['cd' => 0, 'msg' => 'the item name is already registered'];
+				// } else {
 					$lastno = $this->MSTITM_mod->select_lastnopm($itmconsignee);
 					$newitem = 'PM'.$itmconsignee.date('Y').'-'.substr('000000'.$lastno,-6);
 					$insert = $this->MSTITM_mod->insert([
@@ -408,7 +410,7 @@ class MSTITM extends CI_Controller {
 						,'MITM_ITMCDCUS' => $itmcd_ext, 'MITM_PMREGDT' => $current_Date, 'MITM_PMCONSIGN' => $itmconsignee
 					]);
 					$myar[] = ['cd' => 1, 'msg' => 'registered successfully', 'newcd' =>  $newitem];
-				}
+				// }
 			}
 		} else {
 			if($this->MSTITM_mod->check_Primary(['MITM_ITMCD' => $itemcd])){

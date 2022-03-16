@@ -328,18 +328,19 @@
 <script>    
     var itm_ttlxls = 0;
     var itm_ttlxls_savd = 0;
-    $("#itm_btnsave").click(function(){        
+    var itm_old_itmcd = ''
+    $("#itm_btnsave").click(function(){
         if(confirm("Are you sure ?")){
-            var mitmcd      = $("#itm_txtitmcd").val();
-            var mitmnm1     = $("#itm_txtitmnm1").val();
-            var mitmnm2     = $("#itm_txtitmnm2").val();
-            var mitmspt     = $("#itm_txtspt").val();
-            var mitmtyp     = $("#itm_cmbtype").val();
-            var misdirect   = $("#itm_isdirect").val();
-            var mhscode     = $("#itm_txt_hscode").val();
-            var mhscodet    = $("#itm_txt_hscode10").val();
-            var mnet    = $("#itm_txt_netwg").val();
-            var mgrs    = $("#itm_txt_grosswg").val();
+            const mitmcd      = $("#itm_txtitmcd").val();
+            const mitmnm1     = $("#itm_txtitmnm1").val();
+            const mitmnm2     = $("#itm_txtitmnm2").val();
+            const mitmspt     = $("#itm_txtspt").val();
+            const mitmtyp     = $("#itm_cmbtype").val();
+            const misdirect   = $("#itm_isdirect").val();
+            const mhscode     = $("#itm_txt_hscode").val();
+            const mhscodet    = $("#itm_txt_hscode10").val();
+            const mnet    = $("#itm_txt_netwg").val();
+            const mgrs    = $("#itm_txt_grosswg").val();
             let mcolor = document.getElementById('itm_txt_color').value;
             let mbox  = document.getElementById('itm_txtitmbox').value;
             let mspq  = document.getElementById('itm_txt_spq').value;
@@ -350,7 +351,9 @@
             let mitmcd_Ext = document.getElementById('itm_txt_externalcode').value;
             let mstkuom = document.getElementById('itm_cmb_um').value
             if(mitmcd.trim()==''){
-                $("#itm_txtitmcd").focus(); return;
+                alertify.warning('Item code is required')
+                $("#itm_txtitmcd").focus()
+                return
             }
             $.ajax({
                 type: "post",
@@ -358,7 +361,7 @@
                 data: {initmcd: mitmcd, initmnm1: mitmnm1, initmnm2: mitmnm2, inspt: mitmspt, intype: mitmtyp,
                 inhscode: mhscode, inhscodet: mhscodet,inisdirect : misdirect, innetwg: mnet, ingrswg: mgrs ,
                 inbox: mbox, inspq: mspq, inheight: mheight, inlength: mlength, incolor: mcolor, inshtqty: mshtqty,
-                    incategory: mcategory, mitmcd_Ext: mitmcd_Ext, mstkuom: mstkuom
+                    incategory: mcategory, mitmcd_Ext: mitmcd_Ext, mstkuom: mstkuom, initmcd_old: itm_old_itmcd
                 },
                 dataType: "JSON",
                 success: function (response) {
@@ -464,11 +467,12 @@
     });
 
     function itm_getdetail(pdata) {
-        $("#itm_isdirect").val(pdata.MITM_INDIRMT)        
-        $("#itm_txtitmcd").prop('readonly', true)
+        itm_old_itmcd = pdata.MITM_ITMCD
+        $("#itm_isdirect").val(pdata.MITM_INDIRMT)
+        $("#itm_txtitmcd").prop('readonly', (pdata.MITM_MODEL=='6' ? false : true))
         $("#itm_txtitmcd").val(pdata.MITM_ITMCD)
         $("#itm_txt_externalcode").val(pdata.MITM_ITMCDCUS)
-        $("#itm_txtitmnm1").val(pdata.MITM_ITMD1);
+        $("#itm_txtitmnm1").val(pdata.MITM_ITMD1)
         $("#itm_txtitmnm2").val(pdata.MITM_ITMD2)
         $("#itm_txtspt").val(pdata.MITM_SPTNO)
         $("#itm_txt_hscode").val(pdata.MITM_HSCD)
