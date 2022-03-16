@@ -1,3 +1,14 @@
+<style type="text/css">	
+    thead tr.first th, thead tr.first td {
+        position: sticky;
+        top: 0;        
+    }
+
+    thead tr.second th, thead tr.second td {
+        position: sticky;
+        top: 26px;
+    }    
+</style>
 <div style="padding: 5px" >
 	<div class="container-fluid">
         <div class="row" id="splbook_stack0">
