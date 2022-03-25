@@ -42,9 +42,19 @@
         </div>
        
         <div class="row" id="rsumsupinv_stack2">
-            <div class="col-md-12 mb-1">                       
-                <div class="btn-group btn-group-sm">
+            <div class="col-md-6 mb-1">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" >Search by</span>
+                    <select class="form-select" id="rsumsupinv_searchby">
+                        <option value="DO">DO Number</option>
+                        <option value="INV">Invoice Number</option>
+                    </select>
+                    <input type="text" class="form-control" id="rsumsupinv_txt_search">
                     <button class="btn btn-primary" type="button" id="rsumsupinv_btn_gen" onclick="rsumsupinv_btn_gen_eCK()">Search</button>    
+                </div>
+            </div>
+            <div class="col-md-6 mb-1 text-end">
+                <div class="btn-group btn-group-sm">
                     <div class="btn-group btn-group-sm" role="group">
                         <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Export to
@@ -54,9 +64,6 @@
                         </ul>
                     </div>                   
                 </div>
-            </div>
-            <div class="col-md-4 mb-1 text-end">
-                <span id="rsumsupinv_lblinfo" class="badge bg-info"></span>               
             </div>
         </div>        
         <div class="row">
@@ -151,14 +158,15 @@ function rsumsupinv_btn_gen_eCK() {
     const date1 = document.getElementById('rsumsupinv_txt_dt').value
     const date2 = document.getElementById('rsumsupinv_txt_dt2').value
     let bgroup = rsumsupinv_a_BG
-    console.log(bgroup)
+    const searchby = document.getElementById('rsumsupinv_searchby').value
+    const search = document.getElementById('rsumsupinv_txt_search').value
     const btnprc = document.getElementById('rsumsupinv_btn_gen')
     btnprc.disabled = true
     btnprc.innerHTML = 'Please wait'
     $.ajax({
         type: "GET",
         url: "<?=base_url('RCV/report_summary_inv')?>",
-        data: {date1: date1, date2: date2, bsgrp: bgroup },
+        data: {date1: date1, date2: date2, bsgrp: bgroup, searchby: searchby, search : search},
         dataType: "json",
         success: function (response) {
             btnprc.disabled = false

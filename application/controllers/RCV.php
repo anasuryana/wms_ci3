@@ -1117,7 +1117,9 @@ class RCV extends CI_Controller {
 		header('Content-Type: application/json');
 		$pdate1 = $this->input->get('date1');
 		$pdate2 = $this->input->get('date2');
-		$cbgroup = $this->input->get('bsgrp');	
+		$cbgroup = $this->input->get('bsgrp');
+		$searchby = $this->input->get('searchby');
+		$search = $this->input->get('search');
 		$sbgroup ="";
 		if(is_array($cbgroup)){
 			for($i=0;$i<count($cbgroup);$i++){
@@ -1129,8 +1131,9 @@ class RCV extends CI_Controller {
 			}
 		} else {
 			$sbgroup = "''";
-		}		
-		$rs = $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup);
+		}
+		$rs = $searchby =='DO' ? $this->RCV_mod->select_deliv_invo_byDO($pdate1, $pdate2, $sbgroup, $search) 
+		: $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup, $search);
 		die(json_encode(['data' => $rs]));
 	}
 
