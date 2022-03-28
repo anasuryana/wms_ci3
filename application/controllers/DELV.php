@@ -13596,10 +13596,21 @@ class DELV extends CI_Controller {
 		$rsPriceItemSer = [];	
 		$bsgrp = '';		
 		$cuscd = '';
+		$rsser_calc = [];
 		foreach($rs as &$k){
 			$k['PLOTPRCQTY'] = 0;	
 			$bsgrp= $k['SI_BSGRP'];
 			$cuscd= $k['SI_CUSCD'];
+			$isfound = false;
+			foreach($rsser_calc as $r){
+				if($k['SISCN_SER']==$r['SER']){
+					$isfound = true;
+					break;
+				}
+			}
+			if(!$isfound){
+				$rsser_calc[] = ['SER' => $k['SISCN_SER'], 'QTY' => $k['SCNQTY'], 'QTYPLOT' => 0 ];
+			}
 		}
 		unset($k);
 		$rsitem_iprice = []; //resume item|price|count
@@ -13676,50 +13687,58 @@ class DELV extends CI_Controller {
 		}
 		unset($k);
 
-
-		// die(json_encode($rscurrentPrice_plot));
+		
 		$line = 1;	
 		$isready = false;	
 		foreach($rs as &$k){
 			$isfound = false;
 			foreach($rscurrentPrice_plot as &$s){
-				$bal = $k['SCNQTY'] - $k['PLOTPRCQTY'];
+				$bal = $k['SCNQTY'] - $k['PLOTPRCQTY'];				
 				if($k['SISCN_LINENO'] === $s['SISO_HLINE'] && $bal>0 && $s['PLOTQTY'] >0) {
-					$isready = true;
-					$qtyuse = 0;
-					if($bal>$s['PLOTQTY']) {
-						$qtyuse = $s['PLOTQTY'];
-						$k['PLOTPRCQTY'] += $s['PLOTQTY'];
-						// $rsPriceItemSer[] = ['DLVPRC_TXID' => $doc
-						// 						,'DLVPRC_SILINE' => $k['SISCN_LINENO']
-						// 						, 'DLVPRC_SER' => $k['SISCN_SER']
-						// 						, 'DLVPRC_QTY' => $s['PLOTQTY']
-						// 						, 'DLVPRC_PRC' => $s['SSO2_SLPRC']
-						// 						, 'DLVPRC_LINENO' => $line++
-						// 						, 'DLVPRC_CPO' => $s['SISO_CPONO']
-						// 						, 'DLVPRC_CPOLINE' => $s['SISO_SOLINE']
-						// 						, 'DLVPRC_CREATEDAT' => $createdAT
-						// 						, 'DLVPRC_CREATEDBY' => $this->session->userdata('nama')
-						// 					]; 
-						
-						$s['PLOTQTY'] = 0;						
-					} else {
-						$qtyuse = $bal;
-						$s['PLOTQTY'] -= $bal;
-						$k['PLOTPRCQTY'] += $bal;
+					$shouldContinue = false;
+					foreach($rsser_calc as $c){						
+						if($c['SER']==$k['SISCN_SER']){														
+							$balser = $c['QTY']-$c['QTYPLOT'];
+							if($balser>0){								
+								$bal=$balser;
+								$shouldContinue = true; break;
+							}
+						}
 					}
-					$rsPriceItemSer[] = ['DLVPRC_TXID' => $doc
-											,'DLVPRC_SILINE' => $k['SISCN_LINENO']
-											, 'DLVPRC_SER' => $k['SISCN_SER']
-											, 'DLVPRC_QTY' => $qtyuse
-											, 'DLVPRC_PRC' => $s['SSO2_SLPRC']
-											, 'DLVPRC_LINENO' => $line++
-											,'DLVPRC_CPO' => $s['SISO_CPONO']
-											, 'DLVPRC_CPOLINE' => $s['SISO_SOLINE']
-											, 'DLVPRC_CREATEDAT' => $createdAT
-											, 'DLVPRC_CREATEDBY' => $this->session->userdata('nama')];
-					if($k['SCNQTY'] === $k['PLOTPRCQTY']) {
-						break;
+					unset($c);
+					if($shouldContinue){
+						$isready = true;
+						$qtyuse = 0;
+						if($bal>$s['PLOTQTY']) {
+							$qtyuse = $s['PLOTQTY'];
+							$k['PLOTPRCQTY'] += $s['PLOTQTY'];												
+							$s['PLOTQTY'] = 0;						
+						} else {
+							$qtyuse = $bal;
+							$s['PLOTQTY'] -= $bal;
+							$k['PLOTPRCQTY'] += $bal;
+						}					
+						$rsPriceItemSer[] = ['DLVPRC_TXID' => $doc
+												,'DLVPRC_SILINE' => $k['SISCN_LINENO']
+												, 'DLVPRC_SER' => $k['SISCN_SER']
+												, 'DLVPRC_QTY' => $qtyuse
+												, 'DLVPRC_PRC' => $s['SSO2_SLPRC']
+												, 'DLVPRC_LINENO' => $line++
+												,'DLVPRC_CPO' => $s['SISO_CPONO']
+												, 'DLVPRC_CPOLINE' => $s['SISO_SOLINE']
+												, 'DLVPRC_CREATEDAT' => $createdAT
+												, 'DLVPRC_CREATEDBY' => $this->session->userdata('nama')];
+						foreach($rsser_calc as &$c){
+							if($c['SER']==$k['SISCN_SER']){
+								$c['QTYPLOT']+=$qtyuse;
+								break;
+							}
+						}
+						unset($c);
+
+						if($k['SCNQTY'] === $k['PLOTPRCQTY']) {
+							break;
+						}
 					}
 				}
 			}
@@ -13733,6 +13752,7 @@ class DELV extends CI_Controller {
 		// , 'data' => $rs, 'base' => $rscurrentPrice_plot
 		// , 'dataplot' => $rsPriceItemSer
 		// , 'rsitem_iprice_unique' => $rsitem_iprice_unique
+		// , 'rsser' => $rsser_calc
 		// ]));
 	}
 
@@ -17099,6 +17119,8 @@ class DELV extends CI_Controller {
 						,'INCDOCQTY' => $x['DOCQTY']
 						,'PRICE' => $x['RCV_PRPRC']
 						,'BCTYPE' => $x['RCV_BCTYPE']
+						,'HSCD' => $x['RCV_HSCD']
+						,'INVOICE' => $x['RCV_INVNO']
 					];
 					if($r['DLVRMDOC_ITMQT']==$r['PLOTQT']){
 						break;
@@ -17117,38 +17139,44 @@ class DELV extends CI_Controller {
 		$sheet->getStyle('A1')->getFont()->setBold(true);
 		$sheet->setCellValueByColumnAndRow(3,2,$txid );
 		$sheet->setCellValueByColumnAndRow(1,3, 'NO URUT');
-		$sheet->setCellValueByColumnAndRow(2,3, 'URAIAN Barang Material / Bahan Baku');
-		$sheet->setCellValueByColumnAndRow(3,3, 'Kode Barang');
-		$sheet->setCellValueByColumnAndRow(4,3, 'Qty');
-		$sheet->setCellValueByColumnAndRow(5,3, 'Unit Price');
-		$sheet->setCellValueByColumnAndRow(6,3, 'Amount');
-		$sheet->setCellValueByColumnAndRow(7,3, 'NO Urut dokumen');
-		$sheet->setCellValueByColumnAndRow(8,3, 'Qty Dokumen');
-		$sheet->setCellValueByColumnAndRow(9,3, 'Jenis BC');
-		$sheet->setCellValueByColumnAndRow(10,3, 'EX.NOPEN');
-		$sheet->setCellValueByColumnAndRow(11,3, 'TGL EX.BC');
-		$sheet->setCellValueByColumnAndRow(12,3, 'NO SURAT JALAN');
+		$sheet->setCellValueByColumnAndRow(2,3, 'HS CODE');
+		$sheet->setCellValueByColumnAndRow(3,3, 'URAIAN Barang Material / Bahan Baku');
+		$sheet->setCellValueByColumnAndRow(4,3, 'Kode Barang');
+		$sheet->setCellValueByColumnAndRow(5,3, 'Qty');
+		$sheet->setCellValueByColumnAndRow(6,3, 'Unit Price');
+		$sheet->setCellValueByColumnAndRow(7,3, 'Amount');
+		$sheet->setCellValueByColumnAndRow(8,3, 'AJU');
+		$sheet->setCellValueByColumnAndRow(9,3, 'NO Urut dokumen');
+		$sheet->setCellValueByColumnAndRow(10,3, 'Qty Dokumen');
+		$sheet->setCellValueByColumnAndRow(11,3, 'Jenis BC');
+		$sheet->setCellValueByColumnAndRow(12,3, 'EX.NOPEN');
+		$sheet->setCellValueByColumnAndRow(13,3, 'TGL EX.BC');
+		$sheet->setCellValueByColumnAndRow(14,3, 'NO SURAT JALAN');
+		$sheet->setCellValueByColumnAndRow(15,3, 'INVOICE');
 		$sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 		$sheet->getStyle('G:G')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 		$nourut = 1;
 		$i=4;
 		foreach($rs as $r){
 			$sheet->setCellValueByColumnAndRow(1,$i, $nourut);
-			$sheet->setCellValueByColumnAndRow(2,$i, $r['URAIAN']);
-			$sheet->setCellValueByColumnAndRow(3,$i, $r['KODE_BARANG']);
-			$sheet->setCellValueByColumnAndRow(4,$i, $r['JUMLAH_SATUAN']);
-			$sheet->setCellValueByColumnAndRow(5,$i, $r['PRICE']);
-			$sheet->setCellValueByColumnAndRow(6,$i, $r['PRICE']*$r['JUMLAH_SATUAN']);
-			$sheet->setCellValueByColumnAndRow(7,$i, $r['SERI_BARANG_DOK_ASAL']);
-			$sheet->setCellValueByColumnAndRow(8,$i, $r['INCDOCQTY']);
-			$sheet->setCellValueByColumnAndRow(9,$i, $r['BCTYPE']);
-			$sheet->setCellValueByColumnAndRow(10,$i, $r['NOMOR_DAFTAR_DOK_ASAL']);
-			$sheet->setCellValueByColumnAndRow(11,$i, $r['TANGGAL_DAFTAR_DOK_ASAL']);
-			$sheet->setCellValueByColumnAndRow(12,$i, $r['DONO']);
+			$sheet->setCellValueByColumnAndRow(2,$i, $r['HSCD']);
+			$sheet->setCellValueByColumnAndRow(3,$i, $r['URAIAN']);
+			$sheet->setCellValueByColumnAndRow(4,$i, $r['KODE_BARANG']);
+			$sheet->setCellValueByColumnAndRow(5,$i, $r['JUMLAH_SATUAN']);
+			$sheet->setCellValueByColumnAndRow(6,$i, $r['PRICE']);
+			$sheet->setCellValueByColumnAndRow(7,$i, $r['PRICE']*$r['JUMLAH_SATUAN']);
+			$sheet->setCellValueByColumnAndRow(8,$i, $r['NOMOR_AJU_DOK_ASAL']);
+			$sheet->setCellValueByColumnAndRow(9,$i, $r['SERI_BARANG_DOK_ASAL']);
+			$sheet->setCellValueByColumnAndRow(10,$i, $r['INCDOCQTY']);
+			$sheet->setCellValueByColumnAndRow(11,$i, $r['BCTYPE']);
+			$sheet->setCellValueByColumnAndRow(12,$i, $r['NOMOR_DAFTAR_DOK_ASAL']);
+			$sheet->setCellValueByColumnAndRow(13,$i, $r['TANGGAL_DAFTAR_DOK_ASAL']);
+			$sheet->setCellValueByColumnAndRow(14,$i, $r['DONO']);
+			$sheet->setCellValueByColumnAndRow(15,$i, $r['INVOICE']);
 			$nourut++;
 			$i++;
 		}
-		$sheet->getStyle('A3:L'.($i-1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+		$sheet->getStyle('A3:O'.($i-1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 		$i++;
 		$sheet->setCellValueByColumnAndRow(8,$i, 'Approved By');
 		$sheet->setCellValueByColumnAndRow(9,$i, 'Checked By');
@@ -17157,7 +17185,7 @@ class DELV extends CI_Controller {
 		$sheet->setCellValueByColumnAndRow(8,$i, 'Indra Andesa');
 		$sheet->setCellValueByColumnAndRow(9,$i, 'Sri Wahyu');
 		$sheet->setCellValueByColumnAndRow(10,$i, 'Gusti Ayu');
-		foreach(range('A','L') as $r){
+		foreach(range('A','O') as $r){
 			$sheet->getColumnDimension($r)->setAutoSize(true);
 		}		
 		$dodis = $txid;
