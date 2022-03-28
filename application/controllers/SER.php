@@ -2714,8 +2714,7 @@ class SER extends CI_Controller {
 		$coldqty = intval(str_replace(',','',$coldqty));
 		$coldjob = $this->input->post('inoldjob');
 
-		$ca_reff = $this->input->post('ina_reff');
-		$ca_fgtype = $this->input->post('ina_fgtype');
+		$ca_reff = $this->input->post('ina_reff');		
 		$ca_itmcd = $this->input->post('ina_itmcd');
 		$ca_lot = $this->input->post('ina_lot');
 		$ca_qty = $this->input->post('ina_qty');
@@ -2763,7 +2762,7 @@ class SER extends CI_Controller {
 				$this->SERD_mod->deletebyID_label(['SERD2_SER' => $coldreff]);
 				$ser_insert_ok = 0;
 				for($i=0; $i<$ca_count ; $i++){
-					$ser_insert_ok += $this->SER_mod->insert([
+					$preparedStatement = [
 						"SER_ID" => $ca_reff[$i],
 						"SER_DOC" => $coldjob,
 						"SER_ITMID" => strtoupper($ca_itmcd[$i]),
@@ -2775,7 +2774,12 @@ class SER extends CI_Controller {
 						"SER_LUPDT" => $currrtime,
 						"SER_BSGRP" => ($rsactive_wh=='AFWH3') ?  NULL: $bsgrp,
 						"SER_USRID" => $this->session->userdata('nama')
-					]);
+					];
+					if($ca_ok[$i]==='0'){
+						$preparedStatement['SER_CAT'] = '2';
+						$preparedStatement['SER_RMRK'] = $ca_remark[$i];
+					}
+					$ser_insert_ok += $this->SER_mod->insert($preparedStatement);
 				}
 				if($ser_insert_ok==$ca_count){
 					if(count($rsactive)==0){
@@ -2846,27 +2850,7 @@ class SER extends CI_Controller {
 							]
 						);
 						if($ret_min>0){
-							$ith_insert_ok = 0;
-							// for($i=0; $i<$ca_count ; $i++){
-							// 	if($ca_ok[$i] == "1"){
-							// 		$ith_insert_ok += $this->ITH_mod->insert(
-							// 			[
-							// 				"ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
-							// 				"ITH_DATE" => $currdate,
-							// 				"ITH_FORM" => "INC-QA-FG",
-							// 				"ITH_DOC" => $coldjob,
-							// 				"ITH_QTY" => $ca_qty[$i],
-							// 				"ITH_SER" => $ca_reff[$i],
-							// 				"ITH_WH" => 'ARQA1',
-							// 				"ITH_LUPDT" => $currrtime,
-							// 				"ITH_REMARK" => "AFT-SPLIT",
-							// 				"ITH_USRID" => $CUSERID
-							// 			]
-							// 		);									
-							// 	} else {
-							// 		$ith_insert_ok += 1;
-							// 	}
-							// }
+							$ith_insert_ok = 0;							
 							for($i=0; $i<$ca_count ; $i++){								
 								$ith_insert_ok += $this->ITH_mod->insert(
 									[
@@ -2912,15 +2896,36 @@ class SER extends CI_Controller {
 						);
 						if($ret_min>0){ 
 							$ith_insert_ok = 0;
-							for($i=0; $i<$ca_count ; $i++){
-								// if($ca_ok[$i] == "1"){
-									if((strpos(strtoupper($colditem),'KD') !== false || 
-										strpos(strtoupper($colditem),'ASP') !== false 
-										) && (!strpos(strtoupper($ca_itmcd[$i]),'KD') !==false &&
-										!strpos(strtoupper($ca_itmcd[$i]),'ASP') !==false
+							for($i=0; $i<$ca_count ; $i++){								
+								if((strpos(strtoupper($colditem),'KD') !== false || 
+									strpos(strtoupper($colditem),'ASP') !== false 
+									) && (!strpos(strtoupper($ca_itmcd[$i]),'KD') !==false &&
+									!strpos(strtoupper($ca_itmcd[$i]),'ASP') !==false
+									)
+								) {										
+									//echo "TRANSFER TO PRD";
+									$ith_insert_ok += $this->ITH_mod->insert(
+										[
+											"ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
+											"ITH_DATE" => $currdate,
+											"ITH_FORM" => 'SPLIT-FG-LBL',
+											"ITH_DOC" => $coldjob,
+											"ITH_QTY" => $ca_qty[$i],
+											"ITH_SER" => $ca_reff[$i],
+											"ITH_WH" => 'ARPRD1',
+											"ITH_LOC" => 'TEMP',
+											"ITH_LUPDT" => $currrtime,
+											"ITH_REMARK" => "AFT-SPLIT",
+											"ITH_USRID" => $CUSERID
+										]
+									);
+								} else {
+									if((!strpos(strtoupper($colditem),'KD') !== false && 
+										!strpos(strtoupper($colditem),'ASP') !== false 
+										) && (strpos(strtoupper($ca_itmcd[$i]),'KD') !==false || 
+										strpos(strtoupper($ca_itmcd[$i]),'ASP') !==false
 										)
-									) {										
-										//echo "TRANSFER TO PRD";
+									) {
 										$ith_insert_ok += $this->ITH_mod->insert(
 											[
 												"ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
@@ -2937,49 +2942,24 @@ class SER extends CI_Controller {
 											]
 										);
 									} else {
-										if((!strpos(strtoupper($colditem),'KD') !== false && 
-											!strpos(strtoupper($colditem),'ASP') !== false 
-											) && (strpos(strtoupper($ca_itmcd[$i]),'KD') !==false || 
-											strpos(strtoupper($ca_itmcd[$i]),'ASP') !==false
-											)
-										) {
-											$ith_insert_ok += $this->ITH_mod->insert(
-												[
-													"ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
-													"ITH_DATE" => $currdate,
-													"ITH_FORM" => 'SPLIT-FG-LBL',
-													"ITH_DOC" => $coldjob,
-													"ITH_QTY" => $ca_qty[$i],
-													"ITH_SER" => $ca_reff[$i],
-													"ITH_WH" => 'ARPRD1',
-													"ITH_LOC" => 'TEMP',
-													"ITH_LUPDT" => $currrtime,
-													"ITH_REMARK" => "AFT-SPLIT",
-													"ITH_USRID" => $CUSERID
-												]
-											);
-										} else {
-											//TO SAME WAREHOUSE
-											$ith_insert_ok += $this->ITH_mod->insert(
-												[
-													"ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
-													"ITH_DATE" => $currdate,
-													"ITH_FORM" => 'SPLIT-FG-LBL',
-													"ITH_DOC" => $coldjob,
-													"ITH_QTY" => $ca_qty[$i],
-													"ITH_SER" => $ca_reff[$i],
-													"ITH_WH" => $rsactive_wh,
-													"ITH_LOC" => $rsactive_loc,
-													"ITH_LUPDT" => $currrtime,
-													"ITH_REMARK" => "AFT-SPLIT",
-													"ITH_USRID" => $CUSERID
-												]
-											);											
-										}										
-									}																		
-								// } else {
-								// 	$ith_insert_ok += 1;
-								// }
+										//TO SAME WAREHOUSE
+										$ith_insert_ok += $this->ITH_mod->insert(
+											[
+												"ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
+												"ITH_DATE" => $currdate,
+												"ITH_FORM" => 'SPLIT-FG-LBL',
+												"ITH_DOC" => $coldjob,
+												"ITH_QTY" => $ca_qty[$i],
+												"ITH_SER" => $ca_reff[$i],
+												"ITH_WH" => $rsactive_wh,
+												"ITH_LOC" => $rsactive_loc,
+												"ITH_LUPDT" => $currrtime,
+												"ITH_REMARK" => "AFT-SPLIT",
+												"ITH_USRID" => $CUSERID
+											]
+										);											
+									}										
+								}
 							}
 							if($ith_insert_ok==$ca_count){
 								$myar[] = ["cd" => "1", "msg" => "ok .." ];								
@@ -3005,7 +2985,6 @@ class SER extends CI_Controller {
 				exit('{"status":'.json_encode($myar).'}');
 			}
 		}
-
 	}
 
 	public function validate_wip(){
@@ -4743,7 +4722,7 @@ class SER extends CI_Controller {
 				$rsactive_wh = trim($r['ITH_WH']);
 				$rsactive_loc = trim($r['ITH_LOC']);				
 			}
-			if($cfg_type=='KD' || $cfg_type=='ASP' || $cfg_type=='KDASP' ){ // TO NON REGULAR
+			if($cfg_type=='KD' || $cfg_type=='ASP' || $cfg_type=='KDASP' || $cfg_type=='KDES' ){ // TO NON REGULAR
 				if($this->SER_mod->updatebyId(['SER_QTY' => 0, 'SER_LUPDT' => $currrtime, 'SER_USRID' => $CUSERID], $coldreff) > 0){
 					//create new serial
 					$this->SERD_mod->deletebyID_label(['SERD2_SER' => $coldreff]);
