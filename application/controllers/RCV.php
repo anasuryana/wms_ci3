@@ -1149,7 +1149,7 @@ class RCV extends CI_Controller {
 		$pdate1 = $_COOKIE["CKPSI_DATE1"];
 		$pdate2 = $_COOKIE["CKPSI_DATE2"];
 		$sbgroup =$bsgrp;		
-		$rs = $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup);
+		$rs = $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup,'');
 		$spreadsheet = new Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->setTitle('RESUME');
