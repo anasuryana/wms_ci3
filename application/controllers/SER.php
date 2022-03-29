@@ -2758,7 +2758,7 @@ class SER extends CI_Controller {
 				$myar[] = ["cd" => '0', "msg" => "could not split using this menu, ask MR. H or Mr. Z"]; //07 OKT 2020
 				exit('{"status":'.json_encode($myar).'}');
 			}
-			if($this->SER_mod->updatebyId(["SER_QTY" => 0, "SER_LUPDT" => $currrtime, "SER_USRID" => $CUSERID ], $coldreff) >0){
+			if($this->SER_mod->updatebyId(["SER_QTY" => 0, "SER_LUPDT" => $currrtime, "SER_USRID" => $CUSERID, "SER_CAT" => NULL ], $coldreff) >0){
 				$this->SERD_mod->deletebyID_label(['SERD2_SER' => $coldreff]);
 				$ser_insert_ok = 0;
 				for($i=0; $i<$ca_count ; $i++){
