@@ -65,8 +65,8 @@ class ITH_mod extends CI_Model {
     {
 		$qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
 		ITH_WH,ITH_LINE,ITH_LUPDT,ITH_USRID,ITH_REMARK) 
-		VALUES(?,?,?,?,?,?,dbo.fun_ithline(),GETDATE(),?,?)";
-		$this->db->query($qry , [$data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
+		VALUES(?,CONVERT(DATE,GETDATE()),?,?,?,?,dbo.fun_ithline(),GETDATE(),?,?)";
+		$this->db->query($qry , [$data['ITH_ITMCD'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
 		$data['ITH_WH'],   $data['ITH_USRID'], $data['ITH_REMARK']] );
         return $this->db->affected_rows();
 	}
@@ -1362,5 +1362,12 @@ class ITH_mod extends CI_Model {
         $this->db->from("WMS_V_WOPRD_UNCALCULATED");	
         $query = $this->db->get();
 		return $query->result();
+	}
+
+	public function select_spl_booked($pbookid){
+		$qry = "SELECT ITH_DOC,ITH_ITMCD,SUM(ITH_QTY),ITH_REMARK FROM ITH_TBL WHERE ITH_FORM='BOOK-SPL-1' AND ITH_DOC=?
+		GROUP BY ITH_DOC,ITH_ITMCD,ITH_REMARK";
+		$query =  $this->db->query($qry, [$pbookid]);
+		return $query->result_array();
 	}
 }
