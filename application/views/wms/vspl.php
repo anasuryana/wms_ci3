@@ -671,7 +671,7 @@
                         alertify.warning('qty value must be numerical !');
                         return;
                     }
-                    $(this).val(mthis_ar[1]);                             
+                    $(this).val(mthis_ar[1]) 
                     for(var i=2;i<mthis_ar.length;i++){
                         mlot += mthis_ar[i] + ' ';
                     }                    
@@ -683,7 +683,7 @@
                         alertify.warning('qty value must be numerical !');
                         return;
                     }
-                    $(this).val(mthis_ar[0]);                             
+                    $(this).val(mthis_ar[0]) 
                     for(var i=1;i<mthis_ar.length;i++){
                         mlot += mthis_ar[i] + ' ';
                     }
@@ -788,7 +788,7 @@
                             for(let y=0;y<ttlrowsaved;y++){
                                 if(response.datav[i].SPL_ITMCD.trim()==response.datasaved[y].SPLSCN_ITMCD.trim() &&  
                                  response.datav[i].SPL_ORDERNO.trim().toUpperCase()== response.datasaved[y].SPLSCN_ORDERNO.trim().toUpperCase()){
-                                    todisqty = response.datasaved[y].TTLSAVED;break;                                   
+                                    todisqty = response.datasaved[y].TTLSAVED;break       
                                 }
                             }
                             newrow = tableku2.insertRow(-1);
@@ -808,20 +808,20 @@
                             }
                             newcell.innerHTML = response.datav[i].SPL_ORDERNO
 
-                            newcell = newrow.insertCell(1);                            
+                            newcell = newrow.insertCell(1)
                             newcell.innerHTML = response.datav[i].SPL_RACKNO
 
                             newcell = newrow.insertCell(2);
                             newcell.innerHTML = response.datav[i].SPL_ITMCD
 
-                            newcell = newrow.insertCell(3);                            
+                            newcell = newrow.insertCell(3)
                             newcell.innerHTML = response.datav[i].MITM_SPTNO
 
-                            newcell = newrow.insertCell(4);                            
+                            newcell = newrow.insertCell(4)
                             newcell.innerHTML = Number(response.datav[i].SPL_QTYUSE)                           
                             newcell.style.cssText = 'text-align: center';
 
-                            newcell = newrow.insertCell(5);                            
+                            newcell = newrow.insertCell(5)
                             newcell.innerHTML = response.datav[i].SPL_MS
                             newcell.style.cssText = 'text-align: center';
 
@@ -843,7 +843,7 @@
                             newcell = newrow.insertCell(9);
                             newText = document.createElement('i');
                             newText.classList.add("fas");
-                            newText.classList.add("fa-question-circle");                                
+                            newText.classList.add("fa-question-circle")    
                             newcell.appendChild(newText);
                             newcell.style.cssText = ''.concat('cursor: pointer;','text-align:center;');
                             todisqty=0;
@@ -867,7 +867,7 @@
                                 }
                             }                            
                         }
-                        mydes.innerHTML='';                            
+                        mydes.innerHTML=''
                         mydes.appendChild(myfrag);
                     }
                 }, error: function(xhr, xopt, xthrow){
@@ -896,7 +896,7 @@
                 let cln = mtabel.cloneNode(true);
                 myfrag.appendChild(cln);
                 let tabell = myfrag.getElementById("spl_tbldetissu");
-                let tableku2 = tabell.getElementsByTagName("tbody")[0];//document.getElementById("rprod_tblwo").getElementsByTagName("tbody")[0];
+                let tableku2 = tabell.getElementsByTagName("tbody")[0]
                 let newrow, newcell, newText;
                 tableku2.innerHTML='';
                 let msts='';
@@ -951,7 +951,7 @@
                 }
                 let mrows = tableku2.getElementsByTagName("tr");                  
                 function cgetvaldet(prow){
-                    let tcell0 = prow.getElementsByTagName("td")[0];                                        
+                    let tcell0 = prow.getElementsByTagName("td")[0]            
                     let tcell4 = prow.getElementsByTagName("td")[4];
                     if(tcell4.innerText.charAt(0)=='n'){
                         let konf = confirm("Are you sure want to delete the transaction ["+ tcell0.innerText + "] ?");
@@ -961,7 +961,9 @@
                     }
                 }
                 function spl_e_delete(prow){
-                    if(wms_usergroupid!="PCC"){
+                    if(wms_usergroupid=="PCC" || wms_usergroupid=="ADMIN"){
+                        
+                    } else {
                         alertify.warning("Sorry, we could not process, this function is only for specific user group");
                         return;
                     }
@@ -985,7 +987,7 @@
                                 }, error: function(xhr, xopt, xthrow){
                                     alertify.error(xthrow);
                                 }
-                            });                            
+                            })
                         }
                     }
                 }
@@ -1156,7 +1158,7 @@
                     '<p class="mb-0">'+response.status[0].msg+'</p>'+
                     '<p class="mb-0">'+response.status[0].msgdetail+'</p>' +                    
                     '<hr><p class="mb-0">We could not continue the synchronization until this warning solved</p>' +
-                    '</div>';                                     
+                    '</div>'         
                 }
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
