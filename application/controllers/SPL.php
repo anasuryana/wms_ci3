@@ -44,6 +44,9 @@ class SPL extends CI_Controller {
 	public function create(){		
 		$this->load->view('wms/vspl');
 	}
+	public function form_book_ost(){
+		$this->load->view('wms_report/vspl_booked_list');
+	}
 	public function form_report_kitting_result(){
 		$this->load->view('wms_report/vrpt_kitting_result');
 	}
@@ -514,6 +517,35 @@ class SPL extends CI_Controller {
 		die('{"data": '.json_encode($rspsn).', "datajob": '.json_encode($rsjob).'}');
 	}
 
+	public function cancel_kitting_test(){
+		header('Content-Type: application/json');
+		date_default_timezone_set('Asia/Jakarta');
+		$currrtime 	= date('Y-m-d H:i:s');
+
+		die(json_encode(['time' => $currrtime]));
+		$cidscan = $this->input->get('inidscan');
+		$myar = [];
+		$rs = $this->SPLSCN_mod->selectby_filter(['SPLSCN_ID' => $cidscan]);
+		$_psn = $_itemcd = $_timescan = '';
+		foreach($rs as $r){
+			$_psn = $r['SPLSCN_DOC'];
+			$_itemcd = $r['SPLSCN_ITMCD'];
+			$_timescan = $r['SPLSCN_LUPDT'];
+		}
+		$rsBOOK = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_SPLDOC' => $_psn, 'SPLBOOK_ITMCD' => $_itemcd]);
+		$shouldReBook = false;
+		$isLoopPassed = false;
+		foreach($rsBOOK as $r){
+			$isLoopPassed = true;
+			if($_timescan>$r['SPLBOOK_LUPDTD']){
+				$shouldReBook = true;
+			}
+		}
+		die(json_encode(['rsSCN' => $rs
+		, 'rsBOOK' => $rsBOOK
+		, 'shouldReBook' => $shouldReBook, 'isLoopPassed' => $isLoopPassed]));
+	}
+
 	public function cancel_kitting(){
 		$this->checkSession();
 		date_default_timezone_set('Asia/Jakarta');
@@ -521,11 +553,21 @@ class SPL extends CI_Controller {
 		$cidscan = $this->input->get('inidscan');
 		$myar = [];
 		$rs = $this->SPLSCN_mod->selectby_filter(['SPLSCN_ID' => $cidscan]);
-		$cpsn = '';
+		$cpsn = $_itemcd = $_timescan = $thebookID ='';
 		foreach($rs as $r) {
 			$cpsn = $r['SPLSCN_DOC'];
+			$_itemcd = $r['SPLSCN_ITMCD'];
+			$_timescan = $r['SPLSCN_LUPDT'];
 		}
-		$cwh_out = $_COOKIE["CKPSI_WH"];
+		$rsBOOK = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_SPLDOC' => $cpsn, 'SPLBOOK_ITMCD' => $_itemcd]);
+		$shouldReBook = false;		
+		foreach($rsBOOK as $r){						
+			if($_timescan>$r['SPLBOOK_LUPDTD']){
+				$shouldReBook = true;
+				$thebookID = $r['SPLBOOK_DOC'];
+			}
+		}
+		$cwh_out = '';
 		$rsbg = $this->SPL_mod->select_bg_partreq([$cpsn]);
 		foreach($rsbg as $r){
 			switch($r['PPSN1_BSGRP']){
@@ -581,6 +623,16 @@ class SPL extends CI_Controller {
 				$retith += $this->ITH_mod->insert_cancel_kitting_in(['ITH_ITMCD' => $theitem , 'ITH_WH' => $cwh_inc ,
 					'ITH_DATE' => $crn_date , 'ITH_DOC' => $thedoc, 'ITH_QTY' => $theqty, 'ITH_USRID' => $this->session->userdata('nama')]);
 				if($retith ==2 ){
+					if($shouldReBook) {
+						$datab = [
+							'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' =>  $cwh_inc , 
+							'ITH_DOC' 	=> $thebookID, 'ITH_DATE' => $crn_date,
+							'ITH_FORM' 	=> 'BOOK-SPL-3', 'ITH_QTY' => -$r['SPLSCN_QTY'], 
+							'ITH_REMARK' => $r['SPLSCN_LOTNO'],
+							'ITH_USRID' =>  $this->session->userdata('nama')
+						];
+						$this->ITH_mod->insert_spl($datab);
+					}
 					//delete scannning history
 					if($this->SPLSCN_mod->deleteby_filter(['SPLSCN_ID' => $cidscan]) >0 ){
 						$myar[] = ['cd' => 1, 'msg' => 'canceled successfully'];
@@ -621,7 +673,13 @@ class SPL extends CI_Controller {
 		$cpsn	= $this->input->get('inpsn');
 		$cline	= $this->input->get('inline');
 		$ccat	= $this->input->get('incat');
-		$cfr	= $this->input->get('infr');	
+		$cfr	= $this->input->get('infr');
+		$bookdate = date('Y-m-d');
+		$currrtime 	= date('Y-m-d H:i:s');
+		$bookdate_a = explode('-',$bookdate);
+		$_year = substr($bookdate_a[0],-2);
+		$_month = $bookdate_a[1]*1;
+		$_date = $bookdate_a[2];
 		$rsdiscrepancy = substr($cpsn,0,2) == 'PR' ? [] : $this->SPLSCN_mod->select_discrepancy_scanned_vs_newsynchronized($cpsn);
 		if(count($rsdiscrepancy)>0){
 			$fedr_mcz = '';
@@ -646,13 +704,12 @@ class SPL extends CI_Controller {
 		}
 		$ttlrows = count($rs);
 		if($ttlrows>0){
-			foreach($rs as $r){
-				$currrtime 	= date('Y-m-d H:i:s');
+			foreach($rs as $r){				
 				$datac = [
 					'SPL_DOC' 		=> trim($r['PPSN2_PSNNO']),
 					'SPL_DOCNO'		=> trim($r['PPSN2_DOCNO']),						
 					'SPL_LINE' 		=> trim($r['PPSN2_LINENO']),
-					'SPL_CAT' 		=> trim($r['PPSN2_ITMCAT']),
+					'SPL_CAT' 		=> $r['PPSN2_ITMCAT'],
 					'SPL_PROCD' 	=> trim($r['PPSN2_PROCD']),
 					'SPL_FEDR' 		=> $r['PPSN2_FR'],
 					'SPL_MC' 	=> trim($r['PPSN2_MC']),
@@ -662,8 +719,7 @@ class SPL extends CI_Controller {
 					'SPL_BG' 		=> $r['PPSN2_BSGRP']
 				];
 				if($this->SPL_mod->check_Primary($datac)==0){										
-					$datac['SPL_RACKNO']= trim($r['ITMLOC_LOC']);
-					// $datac['SPL_RACKNO']= trim($r['MITM_RAKNO']);
+					$datac['SPL_RACKNO']= trim($r['ITMLOC_LOC']);					
 					$datac['SPL_QTYUSE']= $r['PPSN2_QTPER'];						
 					$datac['SPL_QTYREQ']= $r['PPSN2_REQQT'];
 					$datac['SPL_LUPDT']	= $currrtime;
@@ -671,10 +727,158 @@ class SPL extends CI_Controller {
 					$this->SPL_mod->insert($datac);					
 				}
 			}
-			echo '{"data":'.json_encode($rs).',"status": '.json_encode($mystatus).'}';			
+			//BOOK SP & PCB
+			$bookid = '';
+			if($this->SPLBOOK_mod->check_Primary(['SPLBOOK_SPLDOC' => $cpsn])){
+				//handle condition when :
+				// - synchronize in several times - handled
+				// - req. qty is changed
+				// - part code is changed - handled
+				// - PSN is deleted - handled
+				//additional handler should be exist when cancel Kitting
+				// $rsCurrentSPL = $this->SPL_mod->select_per_category([$cpsn], ['PCB','SP']);
+				$rsBOOK = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_SPLDOC' => $cpsn]);
+				$rsDiff = $this->SPL_mod->select_booked_spl_diff($cpsn);
+				
+				$bookline = 0;
+				foreach($rsBOOK as $r){
+					$bookid = $r['SPLBOOK_DOC'];
+					if($bookline<$r['SPLBOOK_LINE']){
+						$bookline = $r['SPLBOOK_LINE'];
+					}
+				}
+				$bookline++;
+
+				# handle condition when there are changes in qty
+				// foreach($rsBOOK as &$b){
+				// 	foreach($rsCurrentSPL as $c){
+				// 		if($b['SPLBOOK_SPLDOC'] == $c['SPL_DOC'] && $b['SPLBOOK_ITMCD'] == $c['SPL_ITMCD']) {
+				// 			if($b['SPLBOOK_QTY']!=$c['RQT'])
+				// 			break;
+				// 		}
+				// 	}
+				// }
+				// unset($b);
+				# end handle
+
+				$datas =[];
+				foreach($rsDiff as $r){
+					if(!$r['SPLBOOK_ITMCD']){
+						# handle condition when part code is exist in SPL but it is not exist in BOOK
+						$datas[] = [
+							'SPLBOOK_DOC' => $bookid,
+							'SPLBOOK_SPLDOC' => $cpsn,
+							'SPLBOOK_CAT' => $r['SPL_CAT'],
+							'SPLBOOK_ITMCD' => $r['SPL_ITMCD'],
+							'SPLBOOK_QTY' => $r['RQT'],
+							'SPLBOOK_DATE' => $bookdate,
+							'SPLBOOK_LINE' => $bookline++,
+							'SPLBOOK_LUPDTD' => $currrtime,
+							'SPLBOOK_USRID' => $this->session->userdata('nama')
+						];
+						# end handle 
+					} else {
+						# handle condition when part code is exist in BOOK but it is not exist in SPL
+						$this->SPLBOOK_mod->deleteby_filter(['SPLBOOK_SPLDOC' => $cpsn, 'SPLBOOK_ITMCD' => $r['SPLBOOK_ITMCD']]);
+						$this->ITH_mod->deletebyID(['ITH_REMARK' => $cpsn, 'ITH_ITMCD' => $r['SPLBOOK_ITMCD']]);
+						# end handle
+					}
+				}
+				if(count($datas)>0)	{
+					$this->SPLBOOK_mod->insertb($datas);
+				}
+			} else {
+				//handle condition When User Booked list is not exist
+				$rsready = $this->SPLSCN_mod->select_ready_book(['SPL_DOC' => $cpsn]);
+				$lastbookid = $this->SPLBOOK_mod->lastserialid($bookdate)+1;
+				$newdoc = 'B'.$_year.$this->AMONTHPATRN[($_month-1)].$_date.$lastbookid;				
+				$i=1;
+				foreach($rsready as $r){
+					if(!$this->SPLBOOK_mod->check_Primary(['SPLBOOK_SPLDOC' => $cpsn,'SPLBOOK_ITMCD' => $r['SPL_ITMCD']])){
+						$datas[] = [
+							'SPLBOOK_DOC' => $newdoc,
+							'SPLBOOK_SPLDOC' => $cpsn,
+							'SPLBOOK_CAT' => $r['SPL_CAT'],
+							'SPLBOOK_ITMCD' => $r['SPL_ITMCD'],
+							'SPLBOOK_QTY' => $r['BALQT'],
+							'SPLBOOK_DATE' => $bookdate,
+							'SPLBOOK_LINE' => $i++,
+							'SPLBOOK_LUPDTD' => $currrtime,
+							'SPLBOOK_USRID' => $this->session->userdata('nama')
+						];
+					}
+				}
+				$bookid = $newdoc;
+				if(count($datas)){
+					$this->SPLBOOK_mod->insertb($datas);
+				}
+			}
+			///ITH///		
+			$rs = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_DOC' => $bookid]);
+			$this->ITH_mod->deletebyID(['ITH_DOC' => $bookid, 'ITH_FORM' => 'BOOK-SPL-1']);		
+			$ith_data = [];
+			$psnlist = [];
+			foreach($rs as $r){
+				if(!in_array($r['SPLBOOK_SPLDOC'], $psnlist)){
+					$psnlist[] = $r['SPLBOOK_SPLDOC'];
+				}
+			}
+			$rsbg = $this->SPL_mod->select_bg_psn($psnlist);
+			foreach($rs as $r){
+				$wh = NULL;
+				foreach($rsbg as $b){
+					if($r['SPLBOOK_SPLDOC']==$b['SPL_DOC']){
+						switch($b['SPL_BG']){
+							case 'PSI1PPZIEP':
+								$wh = 'ARWH1';							
+								break;
+							case 'PSI2PPZADI':
+								$wh = 'ARWH2';							
+								break;
+							case 'PSI2PPZINS':
+								$wh = 'NRWH2';							
+								break;
+							case 'PSI2PPZOMC':
+								$wh = 'NRWH2';							
+								break;
+							case 'PSI2PPZOMI':
+								$wh = 'ARWH2';							
+								break;
+							case 'PSI2PPZSSI':
+								$wh = 'NRWH2';							
+								break;
+							case 'PSI2PPZSTY':
+								$wh = 'ARWH2';							
+								break;
+							case 'PSI2PPZTDI':
+								$wh = 'ARWH2';							
+								break;
+						}
+						break;
+					}
+				}
+				$ith_data[] = [
+					'ITH_ITMCD' => $r['SPLBOOK_ITMCD'],
+					'ITH_DATE' => $bookdate,
+					'ITH_FORM' => 'BOOK-SPL-1',
+					'ITH_DOC' => $bookid,
+					'ITH_QTY' => -1*$r['SPLBOOK_QTY'],
+					'ITH_WH' => $wh,
+					'ITH_REMARK' => $r['SPLBOOK_SPLDOC'],
+					'ITH_LUPDT' => $currrtime,
+					'ITH_USRID' => $this->session->userdata('nama')
+				];
+			}
+			if(count($ith_data)){
+				$this->ITH_mod->insertb($ith_data);
+			}
+			//END BOOK
+			echo '{"data":'.json_encode($rs).',"status": '.json_encode($mystatus).'}';
 		} else {
-			$myar[] = ["cd" => 0, "msg" => "Data not found ".$cpsn];
-			echo json_encode($myar);			
+			$this->SPLBOOK_mod->deleteby_filter(['SPLBOOK_SPLDOC' => $cpsn]);
+			$this->ITH_mod->deletebyID(['ITH_REMARK' => $cpsn]);
+			$myar[] = ["cd" => 1, "msg" => "Data not found ".$cpsn];
+			echo json_encode(['status' => $myar]);
 		}		
 	}
 
@@ -1149,6 +1353,22 @@ class SPL extends CI_Controller {
 						'ITH_REMARK' => $r['SPLSCN_LOTNO'],
 						'ITH_USRID' =>  $this->session->userdata('nama')
 				];
+				$rsbook = $this->SPLBOOK_mod->select_book_like(['SPLBOOK_SPLDOC' => $cpsn, 'SPLBOOK_ITMCD' => $r['SPLSCN_ITMCD']]);
+				if(count($rsbook)){
+					$thebookID = '';
+					foreach($rsbook as $n){
+						$thebookID = $n['SPLBOOK_DOC'];
+						break;
+					}
+					$datab = [
+						'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' =>  $cwh_inc , 
+						'ITH_DOC' 	=> $thebookID, 'ITH_DATE' => $currdate,
+						'ITH_FORM' 	=> 'BOOK-SPL-2', 'ITH_QTY' => $r['SPLSCN_QTY'], 
+						'ITH_REMARK' => $r['SPLSCN_LOTNO'],
+						'ITH_USRID' =>  $this->session->userdata('nama')
+					];
+					$this->ITH_mod->insert_spl($datab);
+				}
 				$tor = $this->ITH_mod->insert_spl($datas);				
 				
 				$datas 	= [
@@ -5522,20 +5742,46 @@ class SPL extends CI_Controller {
 		$inqt = $this->input->post('dinqt');
 		$ttlrows = is_array($inpc) ? count($inpc) : 0;
 		$myar = [];
+		$datas = [];
 		if($this->SPLBOOK_mod->check_Primary(['SPLBOOK_DOC' => $bookid])){
 			$lastline = $this->SPLBOOK_mod->select_maxline($bookid)+1;
 			for($i=0;$i<$ttlrows; $i++){
 				if(strlen($inid[$i])>0){
 					$this->SPLBOOK_mod->updatebyVars(['SPLBOOK_QTY' => $inqt[$i]], ['SPLBOOK_DOC' => $bookid,'SPLBOOK_LINE' => $inid[$i]]);
 				} else {
+					if(!$this->SPLBOOK_mod->check_Primary(['SPLBOOK_SPLDOC' => $inpsn[$i],'SPLBOOK_ITMCD' => $inpc[$i]])){
+						$datas[] = [
+							'SPLBOOK_DOC' => $bookid,
+							'SPLBOOK_SPLDOC' => $inpsn[$i],
+							'SPLBOOK_CAT' => $incat[$i],
+							'SPLBOOK_ITMCD' => $inpc[$i],
+							'SPLBOOK_QTY' => $inqt[$i],
+							'SPLBOOK_DATE' => $bookdate,
+							'SPLBOOK_LINE' => $lastline++,
+							'SPLBOOK_LUPDTD' => $currrtime,
+							'SPLBOOK_USRID' => $this->session->userdata('nama')
+						];
+					}
+				}
+			}
+			if(count($datas)){
+				$this->SPLBOOK_mod->insertb($datas);
+			}
+			$myar[] = ['cd' => 1, 'msg' => 'Updated', 'doc' => $bookid];
+		} else {			
+			$lastbookid = $this->SPLBOOK_mod->lastserialid($bookdate)+1;
+			$newdoc = 'B'.$_year.$this->AMONTHPATRN[($_month-1)].$_date.$lastbookid;
+			$bookid = $newdoc;
+			for($i=0;$i<$ttlrows; $i++){
+				if(!$this->SPLBOOK_mod->check_Primary(['SPLBOOK_SPLDOC' => $inpsn[$i],'SPLBOOK_ITMCD' => $inpc[$i]])){
 					$datas[] = [
-						'SPLBOOK_DOC' => $bookid,
+						'SPLBOOK_DOC' => $newdoc,
 						'SPLBOOK_SPLDOC' => $inpsn[$i],
 						'SPLBOOK_CAT' => $incat[$i],
 						'SPLBOOK_ITMCD' => $inpc[$i],
 						'SPLBOOK_QTY' => $inqt[$i],
 						'SPLBOOK_DATE' => $bookdate,
-						'SPLBOOK_LINE' => $lastline++,
+						'SPLBOOK_LINE' => ($i+1),
 						'SPLBOOK_LUPDTD' => $currrtime,
 						'SPLBOOK_USRID' => $this->session->userdata('nama')
 					];
@@ -5543,31 +5789,71 @@ class SPL extends CI_Controller {
 			}
 			if(count($datas)){
 				$this->SPLBOOK_mod->insertb($datas);
+				$myar[] = ['cd' => 1, 'msg' => 'Saved', 'doc' => $newdoc];
+			} else{
+				$myar[] = ['cd' => 0, 'msg' => 'the PSN is already booked'];
 			}
-			$myar[] = ['cd' => 1, 'msg' => 'Updated', 'doc' => $bookid];
-		} else {
-			$datas = [];
-			$lastbookid = $this->SPLBOOK_mod->lastserialid($bookdate)+1;
-			$newdoc = 'B'.$_year.$this->AMONTHPATRN[($_month-1)].$_date.$lastbookid;
-			for($i=0;$i<$ttlrows; $i++){
-				$datas[] = [
-					'SPLBOOK_DOC' => $newdoc,
-					'SPLBOOK_SPLDOC' => $inpsn[$i],
-					'SPLBOOK_CAT' => $incat[$i],
-					'SPLBOOK_ITMCD' => $inpc[$i],
-					'SPLBOOK_QTY' => $inqt[$i],
-					'SPLBOOK_DATE' => $bookdate,
-					'SPLBOOK_LINE' => ($i+1),
-					'SPLBOOK_LUPDTD' => $currrtime,
-					'SPLBOOK_USRID' => $this->session->userdata('nama')
-				];
-			}
-			if(count($datas)){
-				$this->SPLBOOK_mod->insertb($datas);
-			}
-			$myar[] = ['cd' => 1, 'msg' => 'Saved', 'doc' => $newdoc];
 		}
-		die(json_encode(['status' => $myar]));
+		///ITH///		
+		$rs = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_DOC' => $bookid]);
+		$this->ITH_mod->deletebyID(['ITH_DOC' => $bookid, 'ITH_FORM' => 'BOOK-SPL-1']);		
+		$ith_data = [];
+		$psnlist = [];
+		foreach($rs as $r){
+			if(!in_array($r['SPLBOOK_SPLDOC'], $psnlist)){
+				$psnlist[] = $r['SPLBOOK_SPLDOC'];
+			}
+		}
+		$rsbg = $this->SPL_mod->select_bg_psn($psnlist);
+		foreach($rs as $r){
+			$wh = NULL;
+			foreach($rsbg as $b){
+				if($r['SPLBOOK_SPLDOC']==$b['SPL_DOC']){
+					switch($b['SPL_BG']){
+						case 'PSI1PPZIEP':
+							$wh = 'ARWH1';							
+							break;
+						case 'PSI2PPZADI':
+							$wh = 'ARWH2';							
+							break;
+						case 'PSI2PPZINS':
+							$wh = 'NRWH2';							
+							break;
+						case 'PSI2PPZOMC':
+							$wh = 'NRWH2';							
+							break;
+						case 'PSI2PPZOMI':
+							$wh = 'ARWH2';							
+							break;
+						case 'PSI2PPZSSI':
+							$wh = 'NRWH2';							
+							break;
+						case 'PSI2PPZSTY':
+							$wh = 'ARWH2';							
+							break;
+						case 'PSI2PPZTDI':
+							$wh = 'ARWH2';							
+							break;
+					}
+					break;
+				}
+			}
+			$ith_data[] = [
+				'ITH_ITMCD' => $r['SPLBOOK_ITMCD'],
+				'ITH_DATE' => $bookdate,
+				'ITH_FORM' => 'BOOK-SPL-1',
+				'ITH_DOC' => $bookid,
+				'ITH_QTY' => -1*$r['SPLBOOK_QTY'],
+				'ITH_WH' => $wh,
+				'ITH_REMARK' => $r['SPLBOOK_SPLDOC'],
+				'ITH_LUPDT' => $bookdate." 09:00:00",
+				'ITH_USRID' => $this->session->userdata('nama')
+			];
+		}
+		// if(count($ith_data)){
+		// 	$this->ITH_mod->insertb($ith_data);
+		// }
+		die(json_encode(['status' => $myar, 'data' => $ith_data]));
 	}
 
 	public function book_header(){
@@ -5590,8 +5876,40 @@ class SPL extends CI_Controller {
 		header('Content-Type: application/json');
 		$doc = $this->input->post('doc');
 		$rowid = $this->input->post('rowid');
+		$itemcd = $this->input->post('itemcd');
 		$returned = $this->SPLBOOK_mod->deleteby_filter(['SPLBOOK_DOC' => $doc, 'SPLBOOK_LINE' => $rowid]);
+		$this->ITH_mod->deletebyID(['ITH_DOC' => $doc, 'ITH_ITMCD' => $itemcd ]);
 		$myar=[$returned ? ['cd' => 1, 'msg' => 'Deleted'] : ['cd' => 0, 'msg' => 'not found']];
+		die(json_encode(['status' => $myar]));
+	}
+
+	public function book_detail_ost(){
+		header('Content-Type: application/json');
+		$rs = $this->SPLBOOK_mod->select_book_ost();
+		die(json_encode(['data' => $rs]));
+	}
+
+	public function book_closing(){
+		header('Content-Type: application/json');
+		date_default_timezone_set('Asia/Jakarta');
+		$currentDateTime = date('Y-m-d H:i:s');
+		$bookid = $this->input->post('bookid');
+		$itemcd = $this->input->post('itemcd');
+		$issuedQTY = $this->input->post('issuedQTY');		
+		$myar = [];
+		$ret1 = $this->SPLBOOK_mod->updatebyVars(['SPLBOOK_QTY' => $issuedQTY, 'SPLBOOK_CLOSEDDT' => $currentDateTime]
+		, ['SPLBOOK_DOC' => $bookid, 'SPLBOOK_ITMCD' => $itemcd]);
+		$ret2 = 0;
+		if($ret1){
+			$ret2 = $this->ITH_mod->updatebyId(['ITH_FORM' => 'BOOK-SPL-1', 'ITH_DOC' => $bookid, 'ITH_ITMCD' => $itemcd], ['ITH_QTY' => -1*$issuedQTY]);
+			if($ret2){
+				$myar[] = ['cd' => 1, 'msg' => 'Closed'];
+			} else {
+				$myar[] = ['cd' => 1, 'msg' => 'Transaction could not be closed'];
+			}
+		} else {
+			$myar[] = ['cd' => 0, 'msg' => 'Could not be closed'];
+		}
 		die(json_encode(['status' => $myar]));
 	}
 }

@@ -74,4 +74,11 @@ class SPLBOOK_mod extends CI_Model {
         $this->db->delete($this->TABLENAME);
         return $this->db->affected_rows();
     }
+
+    public function select_book_ost()
+	{
+		$this->db->from("wms_v_book_ost");
+		$query = $this->db->get();
+		return $query->result_array();
+	}
 }
