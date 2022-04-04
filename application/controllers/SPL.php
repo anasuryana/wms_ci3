@@ -788,6 +788,7 @@ class SPL extends CI_Controller {
 					$this->SPLBOOK_mod->insertb($datas);
 				}
 			} else {
+				$datas = [];
 				//handle condition When User Booked list is not exist
 				$rsready = $this->SPLSCN_mod->select_ready_book(['SPL_DOC' => $cpsn]);
 				$lastbookid = $this->SPLBOOK_mod->lastserialid($bookdate)+1;
@@ -823,54 +824,56 @@ class SPL extends CI_Controller {
 					$psnlist[] = $r['SPLBOOK_SPLDOC'];
 				}
 			}
-			$rsbg = $this->SPL_mod->select_bg_psn($psnlist);
-			foreach($rs as $r){
-				$wh = NULL;
-				foreach($rsbg as $b){
-					if($r['SPLBOOK_SPLDOC']==$b['SPL_DOC']){
-						switch($b['SPL_BG']){
-							case 'PSI1PPZIEP':
-								$wh = 'ARWH1';							
-								break;
-							case 'PSI2PPZADI':
-								$wh = 'ARWH2';							
-								break;
-							case 'PSI2PPZINS':
-								$wh = 'NRWH2';							
-								break;
-							case 'PSI2PPZOMC':
-								$wh = 'NRWH2';							
-								break;
-							case 'PSI2PPZOMI':
-								$wh = 'ARWH2';							
-								break;
-							case 'PSI2PPZSSI':
-								$wh = 'NRWH2';							
-								break;
-							case 'PSI2PPZSTY':
-								$wh = 'ARWH2';							
-								break;
-							case 'PSI2PPZTDI':
-								$wh = 'ARWH2';							
-								break;
+			if(count($psnlist)){
+				$rsbg = $this->SPL_mod->select_bg_psn($psnlist);
+				foreach($rs as $r){
+					$wh = NULL;
+					foreach($rsbg as $b){
+						if($r['SPLBOOK_SPLDOC']==$b['SPL_DOC']){
+							switch($b['SPL_BG']){
+								case 'PSI1PPZIEP':
+									$wh = 'ARWH1';							
+									break;
+								case 'PSI2PPZADI':
+									$wh = 'ARWH2';							
+									break;
+								case 'PSI2PPZINS':
+									$wh = 'NRWH2';							
+									break;
+								case 'PSI2PPZOMC':
+									$wh = 'NRWH2';							
+									break;
+								case 'PSI2PPZOMI':
+									$wh = 'ARWH2';							
+									break;
+								case 'PSI2PPZSSI':
+									$wh = 'NRWH2';							
+									break;
+								case 'PSI2PPZSTY':
+									$wh = 'ARWH2';							
+									break;
+								case 'PSI2PPZTDI':
+									$wh = 'ARWH2';							
+									break;
+							}
+							break;
 						}
-						break;
 					}
+					$ith_data[] = [
+						'ITH_ITMCD' => $r['SPLBOOK_ITMCD'],
+						'ITH_DATE' => $bookdate,
+						'ITH_FORM' => 'BOOK-SPL-1',
+						'ITH_DOC' => $bookid,
+						'ITH_QTY' => -1*$r['SPLBOOK_QTY'],
+						'ITH_WH' => $wh,
+						'ITH_REMARK' => $r['SPLBOOK_SPLDOC'],
+						'ITH_LUPDT' => $currrtime,
+						'ITH_USRID' => $this->session->userdata('nama')
+					];
 				}
-				$ith_data[] = [
-					'ITH_ITMCD' => $r['SPLBOOK_ITMCD'],
-					'ITH_DATE' => $bookdate,
-					'ITH_FORM' => 'BOOK-SPL-1',
-					'ITH_DOC' => $bookid,
-					'ITH_QTY' => -1*$r['SPLBOOK_QTY'],
-					'ITH_WH' => $wh,
-					'ITH_REMARK' => $r['SPLBOOK_SPLDOC'],
-					'ITH_LUPDT' => $currrtime,
-					'ITH_USRID' => $this->session->userdata('nama')
-				];
-			}
-			if(count($ith_data)){
-				$this->ITH_mod->insertb($ith_data);
+				if(count($ith_data)){
+					$this->ITH_mod->insertb($ith_data);
+				}
 			}
 			//END BOOK
 			echo '{"data":'.json_encode($rs).',"status": '.json_encode($mystatus).'}';

@@ -1162,6 +1162,7 @@
                 }
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
+                $("#SPL_PROGRESS").modal('hide');
             }
         });
     });
