@@ -3189,7 +3189,7 @@
                     newcell = newrow.insertCell(2)
                     newcell.contentEditable = true
                     newcell.classList.add('text-end')
-                    newcell.innerHTML = numeral(response.data[i].DLV_QTY).format(',')
+                    newcell.innerHTML = numeral(response.data[i].DLV_QTY).format('0,0.00')
                     newcell = newrow.insertCell(3)
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].DLV_RMRK
