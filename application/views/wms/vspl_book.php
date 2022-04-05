@@ -240,7 +240,7 @@
                     QT: tbl.rows[i].cells[4].innerText
                 })
             }
-        }
+        }        
         let mydes = document.getElementById("splbook_divku_1");
         let myfrag = document.createDocumentFragment();
         let mtabel = document.getElementById("splbook_tbl_1");
@@ -255,6 +255,7 @@
                 splbook_rowsObj.ridx = e.target.parentNode.rowIndex
                 splbook_rowsObj.ids = e.target.parentNode.cells[0].innerText
                 splbook_rowsObj.description = e.target.parentNode.cells[1].innerText
+                splbook_rowsObj.itemcd = e.target.parentNode.cells[3].innerText
                 splbook_contextMenu.open(e)
                 e.preventDefault()
             })
@@ -270,7 +271,7 @@
             newcell.innerHTML = data[c].PN
             newcell = newrow.insertCell(5)
             newcell.classList.add('text-end')
-            newcell.innerHTML = data[c].QT
+            newcell.innerHTML = data[c].QT            
         }
         mydes.innerHTML=''
         mydes.appendChild(myfrag)
@@ -344,6 +345,7 @@
                         splbook_rowsObj.ridx = e.target.parentNode.rowIndex
                         splbook_rowsObj.ids = e.target.parentNode.cells[0].innerText
                         splbook_rowsObj.description = e.target.parentNode.cells[1].innerText
+                        splbook_rowsObj.itemcd = e.target.parentNode.cells[3].innerText
                         splbook_contextMenu.open(e)
                         e.preventDefault()
                     })
@@ -435,11 +437,11 @@
                             return
                         }
                         document.getElementById('splbook_tbl_1').rows[splbook_rowsObj.ridx].remove()
-                        const txtdoc = document.getElementById('splbook_txt_doc')
+                        const txtdoc = document.getElementById('splbook_txt_doc')                        
                         $.ajax({
                             type: "POST",
                             url: "<?=base_url('SPL/remove_booked')?>",
-                            data: {doc: txtdoc.value, rowid: splbook_rowsObj.ids},
+                            data: {doc: txtdoc.value, rowid: splbook_rowsObj.ids, itemcd: splbook_rowsObj.itemcd},
                             dataType: "json",
                             success: function (response) {
                                 if(response.status[0].cd==1){
