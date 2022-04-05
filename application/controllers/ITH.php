@@ -2334,6 +2334,7 @@ class ITH extends CI_Controller {
 	}
 
 	public function calculate_WO_today(){
+		date_default_timezone_set('Asia/Jakarta');
 		header('Content-Type: application/json');
 		$rsWO = $this->ITH_mod->select_WO_PRD_uncalculated();
 		$Calc_lib = new RMCalculator();
