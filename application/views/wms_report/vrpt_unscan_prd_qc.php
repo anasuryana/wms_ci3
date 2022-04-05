@@ -69,10 +69,10 @@
         <div class="modal-body">  
             <div class="row">
                 <div class="col-md-12 mb-1">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <label class="input-group-text"><i class="fas fa-comments"></i></label>                        
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text"><i class="fas fa-comments"></i></label>
                         <input type="text" class="form-control" id="runscan_prdqc_txt_remark" >    
-                        <input type="hidden" id="runscan_prdqc_txt_reff">                    
+                        <input type="hidden" id="runscan_prdqc_txt_reff">
                     </div>
                 </div>                
             </div>          
