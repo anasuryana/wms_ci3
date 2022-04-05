@@ -333,7 +333,7 @@ class PO extends CI_Controller {
 		}
 		#end	
 
-		if($_num>13){
+		if($_num>13){			
 			$MAXLENGTH_LINE_TO_BOTTOM = 190;
 			$pdf->SetFont('Times','',9);
 			$pdf->SetXY(6,104-$_y);
@@ -347,7 +347,7 @@ class PO extends CI_Controller {
 			$nomor_urut = 1;
 			$YStart = (104-$_y)-5+5;
 			foreach($rs as $r){				
-				if($pdf->GetY()>=180) {
+				if($pdf->GetY()>=280) {
 					$pdf->AddPage();
 					#company
 					$pdf->SetFont('Arial','B',7);
