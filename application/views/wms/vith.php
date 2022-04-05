@@ -51,7 +51,7 @@
         </div>    
         <div class="row" id="ith_stack2">
             <div class="col-md-10 mb-1">
-                <div class="input-group input-group-sm">                    
+                <div class="input-group input-group-sm">
                     <span class="input-group-text" >Warehouse</span>
                     <select class="form-select" id="ith_cmb_wh" ><?=$lwh?></select>
                 </div>
@@ -73,11 +73,11 @@
                                 <th rowspan="2" class="align-middle" title="Unite Measurement">UM</th>
                             </tr>
                             <tr class="second">
-                                <th >Opening</th>                      
-                                <th >In</th>         
-                                <th >Prepare</th>
-                                <th >Out</th>
-                                <th >Closing</th>
+                                <th class="text-end">Opening</th>                      
+                                <th class="text-end">In</th>
+                                <th class="text-end">Prepare</th>
+                                <th class="text-end">Out</th>
+                                <th class="text-end">Closing</th>
                             </tr>
                         </thead>
                         <tbody>                        
