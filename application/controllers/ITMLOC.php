@@ -112,5 +112,12 @@ class ITMLOC extends CI_Controller {
         echo json_encode($myar);
     }
 
-    
+    public function check_item_WithoutPSN(){
+		header('Content-Type: application/json');
+		$itemcd = $this->input->get('itemcd');
+        $rs = $this->ITMLOC_mod->select_item_WithoutPSN(['ITMLOC_ITM' => $itemcd]);
+        $myar = [];
+        $myar[] = count($rs) ? ['cd' => '1' , 'msg' => 'found'] : ['cd' => '0', 'msg' => 'not found'];
+        die(json_encode(['data' => $rs, 'status' => $myar]));
+	}
 }

@@ -327,6 +327,20 @@ class SPL_mod extends CI_Model {
         WHERE PIS3_WONO=? and PIS3_DOCNO=?
         GROUP BY PIS3_WONO,PIS3_LINENO,PIS3_MC,PIS3_MCZ,PDPP_WORQT,PPSN1_MDLCD,PIS3_FR,PIS3_PROCD,PIS3_MPART,SIMQT
         ORDER BY PIS3_MCZ,PIS3_MC,PIS3_PROCD ";
+        // $qry = "select PPSN1_MDLCD PDPP_MDLCD,RTRIM(PPSN1_WONO) PIS3_WONO,'' PIS3_LINENO, '' PIS3_FR
+        // ,UPPER(RTRIM(MBOM_PROCD)) PIS3_PROCD, '' PIS3_MC
+        // ,'' PIS3_MCZ
+        // ,CASE WHEN PDPP_WORQT!=SIMQT THEN 
+		// 	SUM(MBOM_QTY)*PDPP_WORQT else SUM(MBOM_QTY)*SIMQT
+		// END PIS3_REQQTSUM
+        // ,SUM(MBOM_QTY)	 MYPER
+        // ,max(RTRIM(MBOM_ITMCD)) PIS3_ITMCD,RTRIM(MBOM_ITMCD) PIS3_MPART			
+        // from VCIMS_MBOM_TBL         
+        // RIGHT JOIN (SELECT PPSN1_WONO,MAX(PPSN1_SIMQT) SIMQT, RTRIM(PPSN1_MDLCD) PPSN1_MDLCD,max(PPSN1_BOMRV) PPSN1_BOMRV,MAX(PPSN1_DOCNO) PPSN1_DOCNO FROM XPPSN1
+        // GROUP BY PPSN1_WONO, PPSN1_MDLCD) VPPSN1 ON MBOM_MDLCD=PPSN1_MDLCD and MBOM_BOMRV=PPSN1_BOMRV
+		// left JOIN XWO ON PPSN1_WONO=PDPP_WONO
+        // WHERE PPSN1_WONO=? AND PPSN1_DOCNO = ?
+        // GROUP BY PPSN1_WONO,PDPP_WORQT,PPSN1_MDLCD,MBOM_PROCD,MBOM_ITMCD,SIMQT";
 
         //date: 2021-12-30
         //this query is not used regarding lotsize changes
@@ -839,6 +853,22 @@ class SPL_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
     }
+    public function select_bg_psn($pPSN){
+        $this->db->select("RTRIM(SPL_BG) SPL_BG,RTRIM(SPL_DOC) SPL_DOC");
+        $this->db->from($this->TABLENAME);
+        $this->db->where_in("SPL_DOC",$pPSN);
+        $this->db->group_by("SPL_BG,SPL_DOC");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+    public function select_bg_item($pitem){
+        $this->db->select("RTRIM(SPL_BG) SPL_BG");
+        $this->db->from($this->TABLENAME);
+        $this->db->where_in("SPL_ITMCD",$pitem);
+        $this->db->group_by("SPL_BG");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 
     public function select_machine($pwhere){
         $this->db->select("SPL_MC");
@@ -857,6 +887,21 @@ class SPL_mod extends CI_Model {
         $this->db->where($pwhere);
         $this->db->group_by($pcols);
         $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function select_per_category($ppsn, $pcategories){
+        $this->db->select("SPL_DOC,SPL_ITMCD,SUM(SPL_QTYREQ) RQT");
+        $this->db->from($this->TABLENAME);
+        $this->db->where_in("SPL_DOC", $ppsn)->where_in("SPL_CAT", $pcategories);
+        $this->db->group_by("SPL_DOC,SPL_ITMCD");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function select_booked_spl_diff($ppsn){
+        $qry = "wms_sp_booked_spl_diff ?";
+        $query = $this->db->query($qry, [$ppsn]);
         return $query->result_array();
     }
    

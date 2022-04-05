@@ -50,10 +50,11 @@ class RETRM_mod extends CI_Model {
 
     public function selectWithRack($pwhere)
 	{
-        $this->db->select("A.*,ITMLOC_LOC");
+        $this->db->select("A.*,ITMLOC_LOC,RTRIM(MITM_SPTNO) SPTNO,RTRIM(MITM_ITMD1) ITMD1");
 		$query = $this->db->from($this->TABLENAME." A")
-        ->join("(select ITMLOC_ITM,MAX(ITMLOC_LOC) ITMLOC_LOC from ITMLOC_TBL
-        GROUP BY ITMLOC_ITM) VLOC","RETRM_ITMCD=ITMLOC_LOC","left")
+        ->join("(SELECT ITMLOC_ITM,MAX(ITMLOC_LOC) ITMLOC_LOC from ITMLOC_TBL
+        GROUP BY ITMLOC_ITM) VLOC","RETRM_ITMCD=ITMLOC_ITM","LEFT")
+        ->join("MITM_TBL","A.RETRM_ITMCD=MITM_ITMCD","LEFT")
         ->where($pwhere)->get();
 		return $query->result_array();
     }

@@ -25,7 +25,7 @@ class SPL extends CI_Controller {
 		$this->load->model('ITMLOC_mod');
 		$this->load->model('RQSRMRK_mod');
 		$this->load->model('LOGSER_mod');
-		$this->load->model('SPLBOOK_mod');
+		$this->load->model('SPLBOOK_mod');		
 	}
 	public function index()
 	{

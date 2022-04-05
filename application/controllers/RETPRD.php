@@ -4,6 +4,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class RETPRD extends CI_Controller {
+	private $AMONTHPATRN = ['1','2','3', '4', '5', '6', '7', '8', '9', 'X', 'Y' , 'Z'];
 	public function __construct()
 	{
 		parent::__construct();		
@@ -15,7 +16,8 @@ class RETPRD extends CI_Controller {
 		$this->load->model('SPL_mod');
 		$this->load->model('SPLSCN_mod');
 		$this->load->model('ITH_mod');	
-		$this->load->model('C3LC_mod');	
+		$this->load->model('C3LC_mod');
+		$this->load->model('RETRM_mod');
 	}
 	public function index()
 	{
@@ -49,13 +51,13 @@ class RETPRD extends CI_Controller {
 		date_default_timezone_set('Asia/Jakarta');
 		header('Content-Type: application/json');
 		$currentDate = date('Y-m-d');
-		$currentDateTime = date('Y-m-d H:i:s');;
+		$currentDateTime = date('Y-m-d H:i:s');
 		$cidscan = $this->input->post('inidscan');
 		$cpsn = $this->input->post('inpsn');
 		$cline = $this->input->post('inline');
 		$cfr = $this->input->post('infr');
-		$ccat = $this->input->post('incat');		
-		$citemcode = $this->input->post('initemcode');		
+		$ccat = $this->input->post('incat');
+		$citemcode = $this->input->post('initemcode');
 		$coldactqty = $this->input->post('inoldactqty');
 		$cqty = $this->input->post('inqty');
 		$rs = $this->SPLRET_mod->selectby_filter(['RETSCN_ID' => $cidscan ,'RETSCN_SAVED' => '1']);	
@@ -1427,5 +1429,198 @@ class RETPRD extends CI_Controller {
 			$myar[] = ['cd' => 0, 'msg' => 'Not found'];
 		}
 		die('{"data":'.json_encode($rs).', "status":'.json_encode($myar).'}');
+	}
+
+	public function form_rtn_without_psn(){
+		$this->load->view('wms/vretprd_without_psn');
+	}
+
+	public function rtn_without_psn(){
+		header('Content-Type: application/json');
+		date_default_timezone_set('Asia/Jakarta');
+		$itemcd = $this->input->post('itmcd');
+		$oldqty = $this->input->post('oldqty');
+		$newqty = $this->input->post('newqty');
+		$lotnum = $this->input->post('lotnum');
+		$usrid = $this->input->post('usrid');
+		$currentDateTime = date('Y-m-d H:i:s');
+		$currentDate = date('Y-m-d');
+		$_year = substr(date('Y'),-2);
+		$_month = (int)date('m');
+		$_day = date('d');
+		$cwh_inc = '';
+		$cwh_out = '';
+		$myar = [];
+		$rsbg = $this->SPL_mod->select_bg_item([$itemcd]);
+		foreach($rsbg as $r){
+			switch($r['SPL_BG']){
+				case 'PSI1PPZIEP':
+					$cwh_inc = 'ARWH1';
+					$cwh_out = 'PLANT1';
+					break;
+				case 'PSI2PPZADI':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+				case 'PSI2PPZINS':
+					$cwh_inc = 'NRWH2';
+					$cwh_out = 'PLANT_NA';
+					break;
+				case 'PSI2PPZOMC':
+					$cwh_inc = 'NRWH2';
+					$cwh_out = 'PLANT_NA';
+					break;
+				case 'PSI2PPZOMI':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+				case 'PSI2PPZSSI':
+					$cwh_inc = 'NRWH2';
+					$cwh_out = 'PLANT_NA';
+					break;
+				case 'PSI2PPZSTY':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+				case 'PSI2PPZTDI':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+			}
+			break;
+		}
+		if($this->RETRM_mod->check_Primary(['RETRM_ITMCD' => $itemcd, 'RETRM_OLDQTY' => $oldqty, 'RETRM_LOTNUM' => $lotnum, 'CONVERT(DATE, RETRM_CREATEDAT)=' => $currentDate])){
+			$myar[]= ['cd' => '0', 'msg' => 'it was already returned'];
+		} else {
+			$lastNumber = $this->RETRM_mod->lastserialid()+1;
+			$doc = "RWP".$_year.$this->AMONTHPATRN[($_month-1)].$_day.$lastNumber;
+			$data = ['RETRM_DOC' => $doc
+				, 'RETRM_LINE' => 1
+				, 'RETRM_ITMCD' => $itemcd
+				, 'RETRM_OLDQTY' => $oldqty
+				, 'RETRM_NEWQTY' => $newqty
+				, 'RETRM_LOTNUM' => $lotnum
+				, 'RETRM_CREATEDAT' => $currentDateTime
+				, 'RETRM_USRID' => $usrid
+			];
+			$rv = $this->RETRM_mod->insert($data);
+	
+			$datab = [
+				'ITH_ITMCD' => $itemcd, 'ITH_WH' =>  $cwh_inc , 
+				'ITH_DOC' 	=> $doc, 'ITH_DATE' => $currentDate,
+				'ITH_FORM' 	=> 'INCRTN-NO-PSN', 'ITH_QTY' => $newqty, 
+				'ITH_REMARK' => $lotnum,
+				'ITH_USRID' =>  $this->session->userdata('nama')
+			];
+			$this->ITH_mod->insert_spl($datab);
+			$datab = [
+				'ITH_ITMCD' => $itemcd, 'ITH_WH' =>  $cwh_out, 
+				'ITH_DOC' 	=> $doc, 'ITH_DATE' => $currentDate,
+				'ITH_FORM' 	=> 'OUTRTN-NO-PSN', 'ITH_QTY' => -1*$newqty, 
+				'ITH_REMARK' => $lotnum,
+				'ITH_USRID' =>  $this->session->userdata('nama')
+			];
+			$this->ITH_mod->insert_spl($datab);			
+			$myar[] = $rv>0 ? ['cd' => '1', 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'could not be saved'];
+		}
+		die(json_encode(['status' => $myar]));
+	}
+
+	public function rtn_without_psn_list(){
+		header('Content-Type: application/json');
+		date_default_timezone_set('Asia/Jakarta');
+		$currentDate = date('Y-m-d');
+		$rs = $this->RETRM_mod->selectWithRack(['CONVERT(DATE, RETRM_CREATEDAT)=' => $currentDate]);
+		die(json_encode(['data' => $rs]));
+	}
+
+	public function cancel_rtn_without_psn(){
+		header('Content-Type: application/json');
+		date_default_timezone_set('Asia/Jakarta');		
+		$currentDate = date('Y-m-d');
+		$idscan = $this->input->post('inid');
+		$itemcd = $this->input->post('itemcd');
+		$rs = $this->RETRM_mod->select_where(['*'],['RETRM_DOC' => $idscan] );
+		$rsbg = $this->SPL_mod->select_bg_item([$itemcd]);
+		$cwh_inc = '';
+		$cwh_out = '';
+		foreach($rsbg as $r){
+			switch($r['SPL_BG']){
+				case 'PSI1PPZIEP':
+					$cwh_inc = 'ARWH1';
+					$cwh_out = 'PLANT1';
+					break;
+				case 'PSI2PPZADI':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+				case 'PSI2PPZINS':
+					$cwh_inc = 'NRWH2';
+					$cwh_out = 'PLANT_NA';
+					break;
+				case 'PSI2PPZOMC':
+					$cwh_inc = 'NRWH2';
+					$cwh_out = 'PLANT_NA';
+					break;
+				case 'PSI2PPZOMI':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+				case 'PSI2PPZSSI':
+					$cwh_inc = 'NRWH2';
+					$cwh_out = 'PLANT_NA';
+					break;
+				case 'PSI2PPZSTY':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+				case 'PSI2PPZTDI':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+			}
+			break;
+		}
+		$myar = [];
+		if(count($rs) > 0){
+			if($this->ITH_mod->check_Primary(['ITH_DOC' => $idscan])){
+				$newqty = 0;
+				$lotnum = "";
+				foreach($rs as $r){
+					$newqty = $r['RETRM_NEWQTY'];
+					$lotnum = $r['RETRM_LOTNUM'];
+				}
+				if($this->RETRM_mod->delete_where(['RETRM_DOC' => $idscan, 'RETRM_ITMCD' => $itemcd ])){
+					$datab = [
+						'ITH_ITMCD' => $itemcd, 'ITH_WH' =>  $cwh_inc , 
+						'ITH_DOC' 	=> $idscan, 'ITH_DATE' => $currentDate,
+						'ITH_FORM' 	=> 'CANCEL-INCRTN-NO-PSN', 'ITH_QTY' => -1*$newqty, 
+						'ITH_REMARK' => $lotnum,
+						'ITH_USRID' =>  $this->session->userdata('nama')
+					];
+					$this->ITH_mod->insert_spl($datab);
+					$datab = [
+						'ITH_ITMCD' => $itemcd, 'ITH_WH' =>  $cwh_out, 
+						'ITH_DOC' 	=> $idscan, 'ITH_DATE' => $currentDate,
+						'ITH_FORM' 	=> 'CANCEL-OUTRTN-NO-PSN', 'ITH_QTY' => $newqty, 
+						'ITH_REMARK' => $lotnum,
+						'ITH_USRID' =>  $this->session->userdata('nama')
+					];
+					$this->ITH_mod->insert_spl($datab);
+					$myar[] = ['cd' => '1' , 'msg' => 'OK'];
+				} else {
+					$myar[] = ['cd' => '1' , 'msg' => 'OK.'];
+				}				
+			} else {
+				if($this->RETRM_mod->delete_where(['RETRM_DOC' => $idscan, 'RETRM_ITMCD' => $itemcd ])){
+					$myar[] = ['cd' => '1' , 'msg' => 'ok'];
+				} else {
+					$myar[] = ['cd' => '0' , 'msg' => 'could not delete, try reopen the menu'];
+				}
+			}
+		} else {
+			$myar[] = ['cd' => '0' , 'msg' => 'not ok'];
+		}		 
+		die(json_encode(['status' => $myar, 'data' => $rs]));
 	}
 }

@@ -737,5 +737,5 @@ class MSTITM extends CI_Controller {
 			$this->MSTITM_mod->updatebyId(['MITM_NCAT' => $r['CATEGORY']], $r['ASSY_CODE']);
 		}
 		die(json_encode(['data' => $rs]));
-	}
+	}	
 }
