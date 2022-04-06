@@ -2452,8 +2452,7 @@ class DELV extends CI_Controller {
 				for ($i=0; $i<$itemCount; $i++) {
 					$qty = $aItemQty[$i];
 					$qty = str_replace(',','',$qty);
-					$where = ['DLV_ID' => $doNum, 'DLV_LINE' => $aItemRowID[$i]];
-					// if( is_numeric($aItemRowID[$i]) ) {
+					$where = ['DLV_ID' => $doNum, 'DLV_LINE' => $aItemRowID[$i]];					
 					if(strlen($aItemRowID[$i])>=1 && $this->DELV_mod->check_Primary($where) ) {						
 						$ttlUpdated += $this->DELV_mod->updatebyVAR(
 							[						
@@ -2472,16 +2471,9 @@ class DELV extends CI_Controller {
 							'DLV_CUSTDO' => $incustDO,
 							'DLV_RPRDOC' => $inrprdoc
 							], $where);
-					} else {
+					} else {						
 						$_itemdesc = '';
-						$_itemsptno = '';
-						// foreach($rsitem_nm as $r) {
-						// 	if($r['MITM_ITMCD']==$aItemNum[$i]) {
-						// 		$_itemdesc = $r['MITM_ITMD1'];
-						// 		$_itemsptno = $r['MITM_SPTNO'];
-						// 		break;
-						// 	}
-						// }
+						$_itemsptno = '';					
 						$saveRows[] = [
 							'DLV_ID' => $doNum,
 							'DLV_DATE' => $doDate,
@@ -3684,9 +3676,11 @@ class DELV extends CI_Controller {
 	}
 
 	public function printdocs_rm(){
-		$pid = ''; $pforms = '';
+		$pid = $currency = $tglaju = ''; $pforms = '';
         if(isset($_COOKIE["CKPDLV_NO"])){
             $pid = $_COOKIE["CKPDLV_NO"];
+			$currency = $_COOKIE["CKPDLV_CURRENCY"];
+			$tglaju = $_COOKIE["CKPDLV_TGLAJU"];
 		} else {
 			exit('nothing to be printed');
 		}
@@ -3701,8 +3695,25 @@ class DELV extends CI_Controller {
 			//INVOICE
 			$Y_adj = 20;
 			$MAX_INVD_PERPAGE = 6;
+			
 			$rsrmdoc = $this->DLVRMDOC_mod->select_invoice($pid);
 			$rsrmdocFromSO = $this->DLVRMSO_mod->select_invoice($pid);
+			$rs_rcv = $this->RCV_mod->select_for_rmrtn_bytxid($pid);
+			$MultipliedNumber = 1;
+			foreach($rs_rcv as $a){
+				if($a['MSUP_SUPCR']!="RPH" && $currency=="RPH"){
+					$rscurrency = $this->MEXRATE_mod->selectfor_posting($tglaju, $a['MSUP_SUPCR']);
+					if(count($rscurrency)==0){
+						die('exchange rate is required '. $tglaju);
+					} else {
+						foreach($rscurrency as $n){
+							$MultipliedNumber = $n->MEXRATE_VAL;break;
+						}
+					}
+				}
+				break;
+			}
+
 			if(count($rsrmdoc) && count($rsrmdocFromSO)<=0){
 				$h_delnm = '';
 				$h_deladdress = '';
@@ -3719,8 +3730,6 @@ class DELV extends CI_Controller {
 					$hinv_nopen = $r['DLV_NOPEN'];
 					break;
 				}
-								
-				
 				
 				$pdf->AddPage();		
 				$pdf->SetAutoPageBreak(true,1);
@@ -3730,9 +3739,9 @@ class DELV extends CI_Controller {
 				$pdf->Text(144,67,'Nopen : '.$hinv_nopen);
 				$pdf->Text(162,78+5,$h_invno);
 				$pdf->Text(30,78+5,$hinv_date);
-				$pdf->SetXY(13,80.9+15);
+				$pdf->SetXY(10,80.9+15);
 				$pdf->MultiCell(85.67,4,trim($h_delnm),0);
-				$pdf->SetXY(13,80.9+4+$Y_adj);
+				$pdf->SetXY(10,80.9+4+$Y_adj);
 				$pdf->MultiCell(85.67,4,trim($h_deladdress),0);
 				$pdf->Text(110,133+10,$hinv_currency);
 				$curY = 152+20;
@@ -3749,14 +3758,14 @@ class DELV extends CI_Controller {
 						$pdf->Text(144,67,'Nopen : '.$hinv_nopen);
 						$pdf->Text(162,78+5,$h_invno);
 						$pdf->Text(30,78+5,$hinv_date);
-						$pdf->SetXY(13,80.9+15);
+						$pdf->SetXY(10,80.9+15);
 						$pdf->MultiCell(85.67,4,trim($h_delnm),0);
-						$pdf->SetXY(13,80.9+4+$Y_adj);
+						$pdf->SetXY(10,80.9+4+$Y_adj);
 						$pdf->MultiCell(85.67,4,trim($h_deladdress),0);
 						$pdf->Text(110,133+10,$hinv_currency);
 						$curY = 152+20;
 					}					
-					$pdf->SetXY(14,$curY-3);
+					$pdf->SetXY(10,$curY-3);
 					$pdf->Cell(27,4,$no,0,0,'L');
 					$pdf->SetXY(43,$curY-3);	
 					$ttlwidth = $pdf->GetStringWidth(trim($r['DLV_ITMD1']));
@@ -3773,12 +3782,12 @@ class DELV extends CI_Controller {
 					$pdf->Text(45,$curY+4,"(".trim($r['DLVRMDOC_ITMID']).")");
 					$pdf->Text(45,$curY+8,trim($r['DLV_ITMSPTNO']));
 					$pdf->Text(100,$curY,$r['MITM_STKUOM']);
-					$pdf->SetXY(115,$curY-3);
+					$pdf->SetXY(110,$curY-3);
 					$pdf->Cell(20.55,4,number_format($r['ITMQT']),0,0,'R');
 					$pdf->SetXY(137,$curY-3);
-					$pdf->Cell(17.5,4,substr($r['DLVRMDOC_PRPRC'],0,1) =='.' ? number_format('0'.$r['DLVRMDOC_PRPRC'],5): number_format($r['DLVRMDOC_PRPRC'],5) ,0,0,'R');
+					$pdf->Cell(17.5,4,number_format($r['DLVRMDOC_PRPRC']*$MultipliedNumber,5) ,0,0,'R');
 					$pdf->SetXY(155,$curY-3);
-					$pdf->Cell(41.56,4,number_format($r['ITMQT']*$r['DLVRMDOC_PRPRC'],2),0,0,'R');
+					$pdf->Cell(41.56,4,number_format($r['ITMQT']*($r['DLVRMDOC_PRPRC']*$MultipliedNumber),2),0,0,'R');
 					$no++;
 					$curY+=15;
 					$ttlbrs++;
@@ -7551,11 +7560,10 @@ class DELV extends CI_Controller {
 											break;
 										}
 									}
-									// if(!in_array($v->BC_AJU, $rsaju_need_hscode)) {
-									// 	$rsaju_need_hscode[] = $v->BC_AJU;
-									// }
 								} else {
 									$thehscode = $v->RCV_HSCD;
+									$thepph = $v->RCV_PPH;
+									$theppn = $v->RCV_PPN;
 								}
 								
 								if($v->RCV_KPPBC!='-'){
@@ -7679,7 +7687,7 @@ class DELV extends CI_Controller {
 				,'NILAI_FASILITAS' => 0
 				,'KODE_FASILITAS' => 2
 				,'TARIF_FASILITAS' => 100
-				,'TARIF' => 10
+				,'TARIF' => $r['PPN']
 				,'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU']
 
 				,'RASSYCODE' => $r['RASSYCODE']
@@ -11809,6 +11817,8 @@ class DELV extends CI_Controller {
 									$cz_h_totalCIF+= $tCIF;
 
 									$thehscode = '';
+									$theppn = '';
+									$thepph = '';
 
 									if(!$v->RCV_HSCD || rtrim($v->RCV_HSCD)==='') {
 										for($h=0;$h<$count_rsallitem; $h++){ 
@@ -11816,12 +11826,10 @@ class DELV extends CI_Controller {
 												$thehscode = $ary_hscd[$h];
 												break;
 											}
-										}
-										// if(!in_array($v->BC_AJU, $rsaju_need_hscode)) {
-										// 	$rsaju_need_hscode[] = $v->BC_AJU;
-										// }
+										}										
 									} else {
 										$thehscode = $v->RCV_HSCD;
+										$thepph = $v->RCV_PPH;
 									}
 									if($v->RCV_KPPBC!='-'){
 										$tpb_bahan_baku[] = [
@@ -11851,7 +11859,7 @@ class DELV extends CI_Controller {
 											,'RASSYCODE' => $k['XASSY']
 											,'RPRICEGROUP' => $k['XPRICE']
 											,'RBM' => substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM)
-											
+											,'PPH' => $thepph
 										];
 									} else {
 										$tpb_bahan_baku[] = [
@@ -11881,7 +11889,8 @@ class DELV extends CI_Controller {
 											,'RASSYCODE' => $k['XASSY']
 											,'RPRICEGROUP' => $k['XPRICE']
 											
-											,'RBM' => 0										
+											,'RBM' => 0
+											,'PPH' => $thepph										
 										];
 									}
 								}
@@ -12142,7 +12151,7 @@ class DELV extends CI_Controller {
 				,'NILAI_FASILITAS' => 0
 				,'NILAI_SUDAH_DILUNASI' => 0
 				,'SERI_BARANG' => $n['SERI_BARANG']
-				,'TARIF' => 10
+				,'TARIF' => 11
 				,'TARIF_FASILITAS' => 100
 				,'ID_BARANG' => $ZR_TPB_BARANG
 				,'ID_HEADER' => $ZR_TPB_HEADER
@@ -12849,6 +12858,7 @@ class DELV extends CI_Controller {
 		$czkantorasal ='-';		
 		$myar = [];
 		$result_data = [];
+		$response_data = [];
 		foreach($rs_head_dlv as $r){
 			$czkantorasal = $r['DLV_FROMOFFICE'];				
 			$nomorajufull = $r['DLV_ZNOMOR_AJU'];
@@ -13149,7 +13159,7 @@ class DELV extends CI_Controller {
 							"ITH_FORM" => "OUT-SHP-RM",
 							"ITH_DOC" => $cdo,
 							// "ITH_QTY" => -$r['DLV_QTY'],
-							"ITH_QTY" => -$r['BCQT'],
+							"ITH_QTY" => -1*$r['BCQT'],
 							"ITH_WH" => $r['DLV_LOCFR'],
 							"ITH_LUPDT" => $ITHLUPDT, 
 							"ITH_USRID" => $this->session->userdata('nama')
@@ -13161,7 +13171,7 @@ class DELV extends CI_Controller {
 							"ITH_FORM" => "OUT-SHP-RM",
 							"ITH_DOC" => $cdo,
 							// "ITH_QTY" => -$r['DLV_QTY'],
-							"ITH_QTY" => -$r['BCQT'],
+							"ITH_QTY" => -1*$r['BCQT'],
 							"ITH_WH" => "ARWH0PD",
 							"ITH_LUPDT" => $ITHLUPDT, 
 							"ITH_USRID" => $this->session->userdata('nama')
