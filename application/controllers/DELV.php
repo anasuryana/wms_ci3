@@ -3744,7 +3744,7 @@ class DELV extends CI_Controller {
 				$pdf->SetXY(10,80.9+4+$Y_adj);
 				$pdf->MultiCell(85.67,4,trim($h_deladdress),0);
 				$pdf->Text(110,133+10,$hinv_currency);
-				$curY = 152+20;
+				$curY = 152+10;
 				
 				$no =1;
 				$ttlqty_=0;
@@ -3763,7 +3763,7 @@ class DELV extends CI_Controller {
 						$pdf->SetXY(10,80.9+4+$Y_adj);
 						$pdf->MultiCell(85.67,4,trim($h_deladdress),0);
 						$pdf->Text(110,133+10,$hinv_currency);
-						$curY = 152+20;
+						$curY = 152+10;
 					}					
 					$pdf->SetXY(10,$curY-3);
 					$pdf->Cell(27,4,$no,0,0,'L');
@@ -3892,7 +3892,7 @@ class DELV extends CI_Controller {
 			$pdf->Text(155,59+8,$hinv_date);
 			$pdf->Text(11,70+10,$h_delnm);			
 			$pdf->SetXY(10,71+10);
-			$pdf->MultiCell(121,4,$h_deladdress,0,'L');
+			$pdf->MultiCell(105,4,$h_deladdress,0,'L');
 			$pdf->Text(140,91+8,$h_invno);
 			$curY = 110+15;
 			$TTLQTY=0;
@@ -3903,7 +3903,7 @@ class DELV extends CI_Controller {
 					$pdf->Text(155,59+10,$hinv_date);
 					$pdf->Text(11,70+10,$h_delnm);
 					$pdf->SetXY(10,71+10);
-					$pdf->MultiCell(121,4,$h_deladdress,0,'L');
+					$pdf->MultiCell(105,4,$h_deladdress,0,'L');
 					$pdf->Text(140,91+8,$h_invno);					
 					$curY = 110+15;
 				}
