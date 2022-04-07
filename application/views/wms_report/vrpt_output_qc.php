@@ -7,6 +7,15 @@
         from {background: #7FDBFF;}
         to {background: #01FF70;}
     }
+    thead tr.first th, thead tr.first td {
+        position: sticky;
+        top: 0;        
+    }
+
+    thead tr.second th, thead tr.second td {
+        position: sticky;
+        top: 26px;
+    }
 </style>
 <div style="padding: 10px">
     <div class="container-fluid">        
@@ -72,7 +81,7 @@
                 <div class="table-responsive" id="routput_qc_divku">
                     <table id="routput_qc_tbl" class="table table-striped table-bordered table-sm table-hover" style="font-size:75%">
                         <thead class="table-light">
-                            <tr>
+                            <tr class="first">
                                 <th  class="align-middle">Assy Number</th>
                                 <th  class="align-middle">Model</th>
                                 <th  class="align-middle">Lot</th>
@@ -243,8 +252,8 @@
                 let myfrag = document.createDocumentFragment();
                 let mtabel = document.getElementById("routput_qc_tbl");
                 let cln = mtabel.cloneNode(true);
-                myfrag.appendChild(cln);                    
-                let tabell = myfrag.getElementById("routput_qc_tbl");                    
+                myfrag.appendChild(cln)
+                let tabell = myfrag.getElementById("routput_qc_tbl")
                 let tableku2 = tabell.getElementsByTagName("tbody")[0]
                 let newrow, newcell, newText;
                 tableku2.innerHTML='';
@@ -254,51 +263,42 @@
                 for (let i = 0; i<ttlrows; i++){
                     ttlqty += numeral(response.data[i].ITH_QTY).value();
                     newrow = tableku2.insertRow(-1);
-                    newcell = newrow.insertCell(0);            
-                    newText = document.createTextNode(response.data[i].ITH_ITMCD);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(1);
-                    newText = document.createTextNode(response.data[i].MITM_ITMD1);
-                    newcell.appendChild(newText);
+                    newcell = newrow.insertCell(0)
+                    newcell.innerHTML = response.data[i].ITH_ITMCD
+                    newcell = newrow.insertCell(1)
+                    newcell.innerHTML = response.data[i].MITM_ITMD1
                     
-                    newcell = newrow.insertCell(2);
-                    newText = document.createTextNode(response.data[i].SER_LOTNO);
+                    newcell = newrow.insertCell(2)
                     newcell.style.cssText= "white-space: nowrap";
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(3);
-                    newText = document.createTextNode(response.data[i].SER_DOC);
-                    newcell.style.cssText= "white-space: nowrap";
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SER_LOTNO
 
-                    newcell = newrow.insertCell(4);
-                    newText = document.createTextNode(numeral(response.data[i].ITH_QTY).format('0,0'));
+                    newcell = newrow.insertCell(3)
+                    newcell.style.cssText= "white-space: nowrap";
+                    newcell.innerHTML = response.data[i].SER_DOC
+
+                    newcell = newrow.insertCell(4)
                     newcell.style.cssText= "white-space: nowrap;text-align:right";
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = numeral(response.data[i].ITH_QTY).format('0,0')
 
                     newcell = newrow.insertCell(5);
-                    newText = document.createTextNode(response.data[i].ITH_SER);
                     newcell.style.cssText= 'text-align:center';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].ITH_SER
 
-                    newcell = newrow.insertCell(6);
-                    newText = document.createTextNode(response.data[i].PIC);
+                    newcell = newrow.insertCell(6)
                     newcell.style.cssText= 'text-align:center';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].PIC
 
-                    newcell = newrow.insertCell(7);
-                    newText = document.createTextNode(response.data[i].ITH_LUPDT);
+                    newcell = newrow.insertCell(7)
                     newcell.style.cssText= 'text-align:center';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].ITH_LUPDT
 
-                    newcell = newrow.insertCell(8);
-                    newText = document.createTextNode(response.data[i].PDPP_BSGRP);
+                    newcell = newrow.insertCell(8)
                     newcell.style.cssText= 'text-align:center';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].PDPP_BSGRP
 
-                    newcell = newrow.insertCell(9);
-                    newText = document.createTextNode(response.data[i].SER_RMRK);
+                    newcell = newrow.insertCell(9)
                     newcell.style.cssText= 'text-align:center';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SER_RMRK
                 }
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
