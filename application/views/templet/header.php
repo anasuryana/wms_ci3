@@ -41,6 +41,7 @@
 	<script src="<?=base_url("assets/bootstrap_dt/js/tempusdominus-bootstrap-4.min.js")?>"></script>
 	<script src="<?=base_url("assets/tablesorter/js/jquery.tablesorter.js")?>"></script>
 	<script src="<?=base_url("assets/js/raphael.min.js")?>"></script>
+	<script src="<?=base_url("assets/js/html5-qrcode.min.js")?>"></script>	
 	<script src="<?=base_url("assets/jqmap/js/jquery.mapael.js")?>"></script>
 	<script src="<?=base_url("assets/jqmap/js/maps/pt_smt_fg_map.js")?>"></script>
 	<script src="<?=base_url("assets/socket/socket.io.min.js")?>"></script>	
@@ -49,6 +50,6 @@
 	
 </head>
 <body class="easyui-layout">	
-	<div split="true" data-options="region:'west',title:'<i class=\'fas fa-sitemap\'></i> <i>Module List</i>',hideCollapsedContent:false" style="width:15%;min-width:180px;padding:5px;">
+	<div split="true" data-options="region:'west',title:'<i class=\'fas fa-sitemap\'></i> <i>Module List</i>',hideCollapsedContent:false" style="width:15%;min-width:190px;padding:5px;">
     	<ul id="mmenu"></ul>		
     </div>
