@@ -1355,8 +1355,7 @@ class DELV extends CI_Controller {
 							} else {
 								$image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r['REMARK'],0,"","")." BOX ".$cpono;
 							}
-							$image_name = str_replace("KD", "", $image_name);
-							$image_name = str_replace("ASP", "", $image_name);							
+							$image_name = str_replace(["KD","ASP"], "", $image_name);													
 						} else {
 							$image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r['REMARK'],0,"","")." BOX ".$cpono." RFID" ;
 						}
@@ -1368,8 +1367,7 @@ class DELV extends CI_Controller {
 							} else {								
 								$image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r['REMARK'],0,"","")." BOX";
 							}
-							$image_name = str_replace("KD", "", $image_name);
-							$image_name = str_replace("ASP", "", $image_name);
+							$image_name = str_replace(["KD","ASP"], "", $image_name);							
 						} else {
 							$image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r['REMARK'],0,"","")." BOX";
 						}
@@ -5388,8 +5386,7 @@ class DELV extends CI_Controller {
 				$cznomorpolisi = $r['DLV_TRANS'];
 				$cznamapengangkut = $r['MSTTRANS_TYPE'];
 				$czinvoicedt = $r['DLV_INVDT'];
-				$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-				$czidpenerima = str_replace("-","", $czidpenerima);
+				$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);				
 				$cztujuanpengiriman = $r['DLV_PURPOSE'];
 				$czkantortujuan = $r['DLV_DESTOFFICE'];				
 				break;
@@ -5731,8 +5728,7 @@ class DELV extends CI_Controller {
 				$cznomorpolisi = $r['DLV_TRANS'];
 				$cznamapengangkut = $r['MSTTRANS_TYPE'];
 				$czinvoicedt = $r['DLV_INVDT'];
-				$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-				$czidpenerima = str_replace("-","", $czidpenerima);
+				$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);				
 				$cztujuanpengiriman = $r['DLV_PURPOSE'];
 				$czkantortujuan = $r['DLV_DESTOFFICE'];				
 				break;
@@ -6346,8 +6342,7 @@ class DELV extends CI_Controller {
 				$cznomorpolisi = $r['DLV_TRANS'];
 				$cznamapengangkut = $r['MSTTRANS_TYPE'];
 				$czinvoicedt = $r['DLV_INVDT'];
-				$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-				$czidpenerima = str_replace("-","", $czidpenerima);
+				$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);				
 				$cztujuanpengiriman = $r['DLV_PURPOSE'];
 				$czkantortujuan = $r['DLV_DESTOFFICE'];				
 				break;
@@ -7242,8 +7237,7 @@ class DELV extends CI_Controller {
 				$cznomorpolisi = $r['DLV_TRANS'];
 				$cznamapengangkut = $r['MSTTRANS_TYPE'];
 				$czinvoicedt = $r['DLV_INVDT'];
-				$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-				$czidpenerima = str_replace("-","", $czidpenerima);
+				$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);				
 				$cztujuanpengiriman = $r['DLV_PURPOSE'];
 				$czkantortujuan = $r['DLV_DESTOFFICE'];
 				$czConaNo = $r['DLV_CONA'];
@@ -10594,8 +10588,7 @@ class DELV extends CI_Controller {
 				$cznomorpolisi = $r['DLV_TRANS'];
 				$cznamapengangkut = $r['MSTTRANS_TYPE'];
 				$czinvoicedt = $r['DLV_INVDT'];
-				$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-				$czidpenerima = str_replace("-","", $czidpenerima);
+				$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);				
 				$cztujuanpengiriman = $r['DLV_PURPOSE'];
 				$czConaNo = $r['DLV_CONA'];
 				$czConaDate = $r['MCONA_DATE'];
@@ -10858,8 +10851,7 @@ class DELV extends CI_Controller {
 				$cznomorpolisi = $r['DLV_TRANS'];
 				$cznamapengangkut = $r['MSTTRANS_TYPE'];
 				$czinvoicedt = $r['DLV_INVDT'];
-				$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-				$czidpenerima = str_replace("-","", $czidpenerima);
+				$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);				
 				$cztujuanpengiriman = $r['DLV_PURPOSE'];
 				$czConaNo = $r['DLV_CONA'];
 				$czConaDate = $r['MCONA_DATE'];
@@ -10914,12 +10906,7 @@ class DELV extends CI_Controller {
 		if($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $cnoaju])>0){
 			$myar[] = ['cd' => 0 ,'msg' => 'the NOMOR AJU is already posted'];
 			die('{"status" : '.json_encode($myar).'}');
-		}
-		
-		if(strlen($nomoraju)!=6){
-			$myar[] = ['cd' => 0 ,'msg' => 'please enter valid Nomor Pengajuan!'];
-			die('{"status" : '.json_encode($myar).'}');
-		}
+		}				
 		
 		$rsdlv = $this->DELV_mod->select_det_byid_p($csj);
 		$cz_JUMLAH_KEMASAN = count($rsdlv);
@@ -11397,8 +11384,7 @@ class DELV extends CI_Controller {
 				$czKODE_CARA_ANGKUT = $r['DLV_ZKODE_CARA_ANGKUT'];
 				$czSKB = $r['DLV_ZSKB'];
 				$czinvoicedt = $r['DLV_INVDT'];
-				$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-				$czidpenerima = str_replace("-","", $czidpenerima);
+				$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);				
 				break;
 			}
 		}
@@ -11607,8 +11593,7 @@ class DELV extends CI_Controller {
 				$czKODE_CARA_ANGKUT = $r['DLV_ZKODE_CARA_ANGKUT'];
 				$czSKB = $r['DLV_ZSKB'];
 				$czinvoicedt = $r['DLV_INVDT'];
-				$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-				$czidpenerima = str_replace("-","", $czidpenerima);
+				$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);				
 				break;
 			}
 		}
@@ -14962,8 +14947,8 @@ class DELV extends CI_Controller {
 			$czkantortujuan = $r['DLV_DESTOFFICE'];
 			$cz_KODE_JENIS_TPB = $r['DLV_ZJENIS_TPB_ASAL'];
 			$cz_KODE_TUJUAN_TPB = $r['DLV_ZJENIS_TPB_TUJUAN'];
-			$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-			$czidpenerima = str_replace("-","", $czidpenerima);
+			$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);
+			
 
 			$cznmpenerima = $r['MDEL_ZNAMA'];
 			$czalamatpenerima = $r['MDEL_ADDRCUSTOMS'];
@@ -15582,8 +15567,7 @@ class DELV extends CI_Controller {
 			$czkantortujuan = $r['DLV_DESTOFFICE'];
 			$cz_KODE_JENIS_TPB = $r['DLV_ZJENIS_TPB_ASAL'];
 			$cz_KODE_TUJUAN_TPB = $r['DLV_ZJENIS_TPB_TUJUAN'];
-			$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-			$czidpenerima = str_replace("-","", $czidpenerima);
+			$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);			
 
 			$cznmpenerima = $r['MDEL_ZNAMA'];
 			$czalamatpenerima = $r['MDEL_ADDRCUSTOMS'];
@@ -16163,8 +16147,7 @@ class DELV extends CI_Controller {
 			$czkantortujuan = $r['DLV_DESTOFFICE'];
 			$cz_KODE_JENIS_TPB = $r['DLV_ZJENIS_TPB_ASAL'];
 			$cz_KODE_TUJUAN_TPB = $r['DLV_ZJENIS_TPB_TUJUAN'];
-			$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-			$czidpenerima = str_replace("-","", $czidpenerima);
+			$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);			
 
 			$cznmpenerima = $r['MDEL_ZNAMA'];
 			$czalamatpenerima = $r['MDEL_ADDRCUSTOMS'];
@@ -16620,8 +16603,7 @@ class DELV extends CI_Controller {
 			$deliveryDescription = $r['DLV_DSCRPTN'];
 			$czcurrency = trim($r['MCUS_CURCD']);
 								
-			$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-			$czidpenerima = str_replace("-","", $czidpenerima);
+			$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);			
 
 			$cznmpenerima = $r['MDEL_ZNAMA'];
 			$czalamatpenerima = $r['MDEL_ADDRCUSTOMS'];			
@@ -17376,8 +17358,7 @@ class DELV extends CI_Controller {
 			$czConaDate = $r['MCONA_DATE'];
 			$cnoaju = $r['DLV_ZNOMOR_AJU'];
 			$cz_KODE_JENIS_TPB = $r['DLV_ZJENIS_TPB_ASAL'];
-			$czidpenerima = str_replace(".","",$r['MCUS_TAXREG']);
-			$czidpenerima = str_replace("-","", $czidpenerima);
+			$czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);			
 			$cznmpenerima = $r['MDEL_ZNAMA'];
 			$czalamatpenerima = $r['MDEL_ADDRCUSTOMS'];
 			$cznamapengangkut = $r['MSTTRANS_TYPE'];
