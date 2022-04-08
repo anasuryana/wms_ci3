@@ -8,7 +8,7 @@
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#retrm_out_MODSAVED"><i class="fas fa-search"></i></button>
                 </div>
             </div>
-            <div class="col-md-4 mb-1 p-1">
+            <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm">                                        
                     <span class="input-group-text">Customer DO</span>                                        				
                     <input type="text" class="form-control" id="retrm_out_inc_txt_customerDO" required title="Customer Delivery Order">                                        
@@ -234,9 +234,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-1 text-end">
-                                    <div class="btn-group btn-group-sm" role="group" >
-
-                                       
+                                    <div class="btn-group btn-group-sm" role="group" >                                       
                                         <button type="button" class="btn btn-primary" id="retrm_out_inc_btn_add" onclick="retrm_out_inc_btn_add_e_click()"><i class="fas fa-plus"></i></button>
                                         <button type="button" class="btn btn-warning" id="retrm_out_inc_btn_minus" onclick="retrm_out_inc_minusrow()"><i class="fas fa-minus"></i></button>
                                     </div>
@@ -269,7 +267,7 @@
                             <div class="row mt-1">
                                 <div class="col-md-6 mb-1">
                                     <div class="btn-group btn-group-sm" role="group" >
-                                        <button type="button" class="btn btn-primary" id="retrm_out_inc_btncopyFromResume" onclick="retrm_out_inc_btncopyFromResume_eCK()">Copy from resume</button>
+                                        <button type="button" class="btn btn-primary" id="retrm_out_inc_btncopyFromResume" onclick="retrm_out_inc_btncopyFromResume_eCK()">Copy from DO/Price</button>
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-1 text-end">
@@ -294,6 +292,7 @@
                                                     <th class="text-end">Net Weight</th>
                                                     <th class="text-end">Gross Weight</th>
                                                     <th>Measurement</th>
+                                                    <th>Item Type</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -334,6 +333,7 @@
                                                     <th class="text-end">Price</th>
                                                     <th class="text-end">BC Type</th>
                                                     <th class="text-center">...</th>
+                                                    <th>Item Type</th>
                                                 </tr>
                                             </thead>
                                             <tbody>                        
@@ -1826,6 +1826,7 @@
                             newcell.style.cssText = 'cursor:pointer'
                             newcell.classList.add('text-center')
                             newcell.innerHTML = `<span class="fas fa-trash text-danger"></span>`
+                            newcell = newrow.insertCell(10)
                         }
                         mydes.innerHTML=''
                         mydes.appendChild(myfrag)
@@ -1938,7 +1939,7 @@
     }
 
     function retrm_out_inc_btncopyFromResume_eCK(){
-        let mtbl = document.getElementById('retrm_out_inc_tbl')
+        let mtbl = document.getElementById('retrm_out_donprc_tbl')
         let tableku2 = mtbl.getElementsByTagName("tbody")[0]
         let mtbltr = tableku2.getElementsByTagName('tr')
         let ttlrows = mtbltr.length
@@ -1948,8 +1949,8 @@
         let tabeldestination_tbody = tabeldestination.getElementsByTagName("tbody")[0]
         let newrow, newcell, newText
         for(let i=0; i<ttlrows; i++){            
-            let titem = tableku2.rows[i].cells[1].innerText
-            let tqty = tableku2.rows[i].cells[2].innerText            
+            let titem = tableku2.rows[i].cells[5].innerText
+            let tqty = tableku2.rows[i].cells[6].innerText            
             newrow = tabeldestination_tbody.insertRow(-1)
             newcell = newrow.insertCell(0)
             newcell.classList.add('d-none')
@@ -1977,6 +1978,9 @@
             newcell = newrow.insertCell(8)
             newcell.contentEditable = true
             newcell.innerHTML = ''
+            newcell = newrow.insertCell(9)
+            newcell.contentEditable = true
+            newcell.innerHTML = tableku2.rows[i].cells[10].innerText
         }        
     }
 
@@ -2296,6 +2300,7 @@
         newcell.style.cssText = 'cursor:pointer'
         newcell.classList.add('text-center')
         newcell.innerHTML = `<span class="fas fa-trash text-danger"></span>`
+        newcell = newrow.insertCell(10)
     }
     function retrm_out_scr_addrow(pdata) {
         let mytbody = document.getElementById('retrm_out_scr_tbl').getElementsByTagName('tbody')[0]
@@ -3248,6 +3253,9 @@
                     newcell = newrow.insertCell(8)                    
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data_pkg[i].DLV_PKG_MEASURE
+                    newcell = newrow.insertCell(9)                    
+                    newcell.contentEditable = true
+                    newcell.innerHTML = response.data_pkg[i].DLV_PKG_ITMTYPE
                 }
                 mydes.innerHTML=''
                 mydes.appendChild(myfrag)
@@ -3297,6 +3305,9 @@
                     newcell.style.cssText = 'cursor:pointer'
                     newcell.classList.add('text-center')
                     newcell.innerHTML = `<span class="fas fa-trash text-danger"></span>`
+                    newcell = newrow.insertCell(10)
+                    newcell.contentEditable = true
+                    newcell.innerHTML = response.data_rmdo[i].DLVRMDOC_TYPE
                 }
                 mydes.innerHTML=''
                 mydes.appendChild(myfrag)
@@ -3352,14 +3363,14 @@
     }
 
     function retrm_out_btn_toxls_e_click() {
-        let txid = document.getElementById('retrm_out_inc_txt_DO').value;       
-                
+        let txid = document.getElementById('retrm_out_inc_txt_DO').value;               
         if(txid.trim()==''){
             alertify.warning('Please fill TX ID first');           
             document.getElementById('retrm_out_inc_txt_DO').focus();
             return;
         }
         Cookies.set('CKPDLV_NO', txid , {expires:365})
+        
         window.open("<?=base_url('printdocs_2')?>" ,'_blank');         
     }
 
@@ -3540,6 +3551,9 @@
         newcell.contentEditable = true
         newcell.title ='Measurement'
         newcell.innerHTML = 'Box'
+        newcell = newrow.insertCell(9)
+        newcell.contentEditable = true
+        newcell.title ='Item type'        
     }
     function retrm_out_inc_btnadd(){        
         retrm_out_inc_addrow1()
@@ -3628,6 +3642,7 @@
         let apkg_netw = []
         let apkg_grossw = []
         let apkg_measure = []
+        let apkg_itmtype = []
 
         let armdoc_itmID = []
         let armdoc_itmQT = []
@@ -3636,6 +3651,7 @@
         let armdoc_itmNOPEN = []
         let armdoc_itmPRC = []
         let armdoc_itmLINE = []
+        let armdoc_TYPE = []
 
         let armso_itmID = []
         let armso_itmQT = []
@@ -3684,6 +3700,7 @@
             apkg_netw.push(tableku2.rows[i].cells[6].innerText.replace(/\n+/g, ''))
             apkg_grossw.push(tableku2.rows[i].cells[7].innerText.replace(/\n+/g, ''))
             apkg_measure.push(tableku2.rows[i].cells[8].innerText)
+            apkg_itmtype.push(tableku2.rows[i].cells[9].innerText)
         }
 
         mtbl = document.getElementById('retrm_out_donprc_tbl')
@@ -3699,6 +3716,7 @@
             armdoc_itmID.push(tableku2.rows[i].cells[5].innerText)
             armdoc_itmQT.push(tableku2.rows[i].cells[6].innerText)
             armdoc_itmPRC.push(tableku2.rows[i].cells[7].innerText)
+            armdoc_TYPE.push(tableku2.rows[i].cells[10].innerText)
         }
 
         mtbl = document.getElementById('retrm_out_so_tbl')
@@ -3754,7 +3772,7 @@
                     ,inpkg_line: apkg_line
                     ,inpkg_p: apkg_p
                     ,inpkg_l: apkg_l
-                    ,inpkg_t: apkg_t
+                    ,inpkg_t: apkg_t                    
                     ,armdoc_itmLINE: armdoc_itmLINE
                     ,armdoc_itmNOAJU: armdoc_itmNOAJU
                     ,armdoc_itmNOPEN: armdoc_itmNOPEN
@@ -3762,11 +3780,13 @@
                     ,armdoc_itmID: armdoc_itmID
                     ,armdoc_itmQT: armdoc_itmQT
                     ,armdoc_itmPRC: armdoc_itmPRC
+                    ,armdoc_TYPE: armdoc_TYPE
                     ,apkg_item: apkg_item
                     ,apkg_qty: apkg_qty
                     ,apkg_netw: apkg_netw
                     ,apkg_grossw: apkg_grossw
                     ,apkg_measure: apkg_measure
+                    ,apkg_itmtype: apkg_itmtype
                     ,armso_itmID: armso_itmID
                     ,armso_itmQT: armso_itmQT
                     ,armso_itmCPO: armso_itmCPO
@@ -4166,7 +4186,8 @@
         let mckdo = (document.getElementById('retrm_out_ckDO').checked) ? '1' : '0';
         let mckinv = (document.getElementById('retrm_out_ckINV').checked) ? '1' : '0';
         let mckpl = (document.getElementById('retrm_out_ckPL').checked) ? '1' : '0';
-        
+        const txcurrency = document.getElementById('retrm_out_inc_curr').value
+        const txTGLAJU = document.getElementById('retrm_out_inc_customs_date').value
         if((mckdo+mckinv+mckpl)=='000'){
             alertify.message('Please select document first');return;
         }
@@ -4178,6 +4199,8 @@
         }
         Cookies.set('CKPDLV_NO', txid , {expires:365});
         Cookies.set('CKPDLV_FORMS', (mckdo+mckinv+mckpl) , {expires:365});
+        Cookies.set('CKPDLV_CURRENCY', txcurrency , {expires:365})
+        Cookies.set('CKPDLV_TGLAJU', txTGLAJU , {expires:365})
         window.open("<?=base_url('printdeliverydocs_rm')?>" ,'_blank'); 
         $("#retrm_out_MODPRINT").modal('hide');
     }
