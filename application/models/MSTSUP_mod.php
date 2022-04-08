@@ -29,6 +29,13 @@ class MSTSUP_mod extends CI_Model {
 		return $query->result();
 	}
 
+	public function select_like($plike){
+		$this->db->select("MSUP_SUPCD,MSUP_SUPCR,MSUP_SUPNM,MSUP_ABBRV,RTRIM(MSUP_ADDR1) MSUP_ADDR1,MSUP_TELNO,MSUP_FAXNO,MSUP_TAXREG");
+		$this->db->like($plike);
+		$query = $this->db->get($this->TABLENAME,10);
+		return $query->result();
+	}
+
 	public function selectbyName($pname)
 	{
 		$this->db->select("MSUP_SUPCD,MSUP_SUPCR,MSUP_SUPNM");
@@ -36,34 +43,7 @@ class MSTSUP_mod extends CI_Model {
 		$query = $this->db->get($this->TABLENAME, 10);
 		return $query->result();
 	}
-	public function selectbycd_lk($pid)
-	{
-		$this->db->select("MSUP_SUPCD,MSUP_SUPCR,MSUP_SUPNM,MSUP_ABBRV,RTRIM(MSUP_ADDR1) MSUP_ADDR1,MSUP_TELNO,MSUP_FAXNO");
-		$this->db->like('MSUP_SUPCD', $pid);
-		$query = $this->db->get($this->TABLENAME,10);
-		return $query->result();
-	}
-	public function selectbynm_lk($pid)
-	{
-		$this->db->select("MSUP_SUPCD,MSUP_SUPCR,MSUP_SUPNM,MSUP_ABBRV,RTRIM(MSUP_ADDR1) MSUP_ADDR1,MSUP_TELNO,MSUP_FAXNO");
-		$this->db->like('MSUP_SUPNM', $pid);
-		$query = $this->db->get($this->TABLENAME,10);
-		return $query->result();
-	}
-	public function selectbyab_lk($pid)
-	{
-		$this->db->select("MSUP_SUPCD,MSUP_SUPCR,MSUP_SUPNM,MSUP_ABBRV,RTRIM(MSUP_ADDR1) MSUP_ADDR1,MSUP_TELNO,MSUP_FAXNO");
-		$this->db->like('MSUP_ABBRV', $pid);
-		$query = $this->db->get($this->TABLENAME,10);
-		return $query->result();
-	}
-	public function selectbyad_lk($pid)
-	{
-		$this->db->select("MSUP_SUPCD,MSUP_SUPCR,MSUP_SUPNM,MSUP_ABBRV,RTRIM(MSUP_ADDR1) MSUP_ADDR1,MSUP_TELNO,MSUP_FAXNO");
-		$this->db->like('MSUP_ADDR1', $pid);
-		$query = $this->db->get($this->TABLENAME,10);
-		return $query->result();
-	}
+	
 	public function insert($data)
     {        
         $this->db->insert($this->TABLENAME,$data);

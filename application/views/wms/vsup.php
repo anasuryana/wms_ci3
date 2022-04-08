@@ -1,7 +1,7 @@
 <div style="padding: 10px">
-	<div class="container-xxl">
+	<div class="container-fluid">
         <div class="row">
-            <div class="col-md-2 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm">                    
                     <label class="input-group-text">Code</label>                    
                     <input type="text" class="form-control" id="sup_txtsupcd">                    
@@ -20,7 +20,7 @@
                     <input type="text" class="form-control" id="sup_txtnm">
                 </div>
             </div>
-            <div class="col-md-4 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm">                    
                     <label class="input-group-text">Abbr Name</label>                    
                     <input type="text" class="form-control" id="sup_txtabbrnm">
@@ -36,16 +36,22 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 mb-1">
+            <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm">
                     <label class="input-group-text">Phone</label>
                     <input type="text" class="form-control" id="sup_txtphone">
                 </div>                
             </div>
-            <div class="col-md-6 mb-1">
+            <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm">
                     <label class="input-group-text">Fax</label>
                     <input type="text" class="form-control" id="sup_txtfax">
+                </div>
+            </div>
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text">Tax</label>
+                    <input type="text" class="form-control" id="sup_txttax">
                 </div>
             </div>
         </div>
@@ -74,33 +80,20 @@
             <div class="row">
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="sup_txtsearch" maxlength="15" required placeholder="...">                        
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="input-group input-group-sm mb-1">
-                        
                         <span class="input-group-text" >Search by</span>                        
                         <select id="sup_srchby" class="form-select">
                             <option value="cd">Code</option>
                             <option value="nm">Name</option>                            
                             <option value="ab">Abbr Name</option>
                             <option value="ad">Address</option>
-                        </select>                  
+                        </select>                      
+                        <input type="text" class="form-control" id="sup_txtsearch" onkeypress="sup_txtsearch_KP(event)" maxlength="15" required placeholder="...">                        
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col text-right">
-                    <span class="badge bg-info" id="lblinfo_tblsup"></span>
-                </div>
-            </div>
+            </div>           
             <div class="row">
                 <div class="col">
-                    <div class="table-responsive">
+                    <div class="table-responsive" id="sup_tbl_div">
                         <table id="sup_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer">
                             <thead class="table-light">
                                 <tr>
@@ -111,6 +104,7 @@
                                     <th>Address</th>
                                     <th class="d-none">Phone</th>
                                     <th class="d-none">Fax</th>
+                                    <th>Tax</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -134,31 +128,7 @@
         document.getElementById('sup_txtphone').value = ''
         document.getElementById('sup_txtfax').value = ''
         $("#sup_txtsupcd").focus()
-    });
-    $('#sup_tbl tbody').on( 'click', 'tr', function () { 
-		if ( $(this).hasClass('table-active') ) {			
-			$(this).removeClass('table-active');
-        } else {                    			
-			$('#sup_tbl tbody tr.table-active').removeClass('table-active');
-			$(this).addClass('table-active');
-        }
-        let mcd     = $(this).closest("tr").find('td:eq(0)').text();
-        let mcur    = $(this).closest("tr").find('td:eq(1)').text();
-        let mnm     = $(this).closest("tr").find('td:eq(2)').text();
-        let mabbr   = $(this).closest("tr").find('td:eq(3)').text();
-        let maddr   = $(this).closest("tr").find('td:eq(4)').text();
-        let phone   = $(this).closest("tr").find('td:eq(5)').text();
-        let fax   = $(this).closest("tr").find('td:eq(6)').text();
-        $("#sup_txtsupcd").val(mcd);
-        $("#sup_txtcur").val(mcur);
-        $("#sup_txtnm").val(mnm);
-        $("#sup_txtabbrnm").val(mabbr);
-        $("#sup_taaddr").val(maddr);
-        document.getElementById('sup_txtphone').value = phone
-        document.getElementById('sup_txtfax').value = fax
-        $("#SUP_MODSUP").modal('hide');
-        $("#sup_txtsupcd").prop('readonly', true);
-    });
+    })   
     $("#sup_btnformodsup").click(function(){
         $("#SUP_MODSUP").modal('show');
     });
@@ -167,38 +137,72 @@
     });
     $("#sup_srchby").change(function(){
         $("#sup_txtsearch").focus();
-    });
-    $("#sup_txtsearch").keypress(function (e) { 
-        if (e.which==13){
-            var mkey = $(this).val();
-            var msearchby = $("#sup_srchby").val();
-            $("#lblinfo_tblsup").text("Please wait...");
+    })
+    function sup_txtsearch_KP(e){
+        if (e.key=='Enter'){
+            e.target.readOnly = true            
+            const msearchby = $("#sup_srchby").val();            
             $.ajax({
                 type: "get",
                 url: "<?=base_url('MSTSUP/search')?>",
-                data: {cid : mkey, csrchby: msearchby},
+                data: {cid : e.target.value, csrchby: msearchby},
                 dataType: "json",
                 success: function (response) {
-                    var ttlrows = response.length;
-                    var tohtml ='';
-                    for(var i=0;i<ttlrows;i++){
-                        
-                        tohtml += '<tr style="cursor:pointer">'+
-                        '<td style="white-space:nowrap">'+response[i].MSUP_SUPCD.trim()+'</td>'+
-                        '<td style="white-space:nowrap">'+response[i].MSUP_SUPCR+'</td>'+
-                        '<td style="white-space:nowrap">'+response[i].MSUP_SUPNM+'</td>'+
-                        '<td style="white-space:nowrap">'+response[i].MSUP_ABBRV+'</td>'+
-                        '<td>'+response[i].MSUP_ADDR1+'</td>'+
-                        '<td class="d-none">'+response[i].MSUP_TELNO+'</td>'+
-                        '<td class="d-none">'+response[i].MSUP_FAXNO+'</td>'+                        
-                        '</tr>';
+                    e.target.readOnly = false
+                    let ttlrows = response.length;
+                    let mydes = document.getElementById("sup_tbl_div");
+                    let myfrag = document.createDocumentFragment();
+                    let mtabel = document.getElementById("sup_tbl");
+                    let cln = mtabel.cloneNode(true);
+                    myfrag.appendChild(cln);                
+                    let tabell = myfrag.getElementById("sup_tbl");                    
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    let newrow, newcell, newText;
+                    tableku2.innerHTML='';
+                    let tominqty = 0;
+                    let tempqty = 0;
+                    let todisqty = 0;           
+                    for (let i = 0; i<ttlrows; i++){
+                        newrow = tableku2.insertRow(-1);
+                        newcell = newrow.insertCell(0);
+                        newcell.onclick = () => {
+                            $("#sup_txtsupcd").val(response[i].MSUP_SUPCD.trim())
+                            $("#sup_txtcur").val(response[i].MSUP_SUPCR);
+                            $("#sup_txtnm").val(response[i].MSUP_SUPNM);
+                            $("#sup_txtabbrnm").val(response[i].MSUP_ABBRV);
+                            $("#sup_taaddr").val(response[i].MSUP_ADDR1);
+                            document.getElementById('sup_txtphone').value = response[i].MSUP_TELNO
+                            document.getElementById('sup_txtfax').value = response[i].MSUP_FAXNO
+                            document.getElementById('sup_txttax').value = response[i].MSUP_TAXREG
+                            $("#SUP_MODSUP").modal('hide');
+                            $("#sup_txtsupcd").prop('readonly', true);
+                        }
+                        newcell.innerHTML = response[i].MSUP_SUPCD.trim()
+                        newcell = newrow.insertCell(1)
+                        newcell.innerHTML = response[i].MSUP_SUPCR
+                        newcell = newrow.insertCell(2)
+                        newcell.innerHTML = response[i].MSUP_SUPNM
+                        newcell = newrow.insertCell(3)
+                        newcell.innerHTML = response[i].MSUP_ABBRV
+                        newcell = newrow.insertCell(4)
+                        newcell.innerHTML = response[i].MSUP_ADDR1
+                        newcell = newrow.insertCell(5)
+                        newcell.classList.add('d-none')
+                        newcell.innerHTML = response[i].MSUP_TELNO
+                        newcell = newrow.insertCell(6)
+                        newcell.classList.add('d-none')
+                        newcell.innerHTML = response[i].MSUP_FAXNO
+                        newcell = newrow.insertCell(7)                        
+                        newcell.innerHTML = response[i].MSUP_TAXREG
                     }
-                    $("#lblinfo_tblsup").text("");
-                    $('#sup_tbl tbody').html(tohtml);
+                    mydes.innerHTML='';
+                    mydes.appendChild(myfrag)                   
+                }, error: function(xhr, xopt, xthrow){
+                    e.target.readOnly = true
                 }
-            });
+            })
         }
-    });
+    }    
     $("#sup_btnsave").click(function(){        
         if(confirm("Are you sure ?")){
             let mcd     = $("#sup_txtsupcd").val();
@@ -207,7 +211,8 @@
             let mabbr   = $("#sup_txtabbrnm").val();
             let maddr   = $("#sup_taaddr").val();
             let mphone   = $("#sup_txtphone").val();
-            let mfax   = $("#sup_txtfax").val();
+            let mfax   = $("#sup_txtfax").val()
+            let mtax   = $("#sup_txttax").val()
             if(mcd.trim()==''){$("#sup_txtsupcd").focus() ;return;}
             $.ajax({
                 type: "post",

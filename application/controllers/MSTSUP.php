@@ -41,15 +41,15 @@ class MSTSUP extends CI_Controller {
 		$rs = array();
 		switch($csrchkey){
 			case 'cd':
-				$rs = $this->MSTSUP_mod->selectbycd_lk($cid);break;
+				$rs = $this->MSTSUP_mod->select_like(['MSUP_SUPCD' => $cid]);break;
 			case 'nm':
-				$rs = $this->MSTSUP_mod->selectbynm_lk($cid);break;
+				$rs = $this->MSTSUP_mod->select_like(['MSUP_SUPNM' => $cid]);break;
 			case 'ab':
-				$rs = $this->MSTSUP_mod->selectbyab_lk($cid);break;
+				$rs = $this->MSTSUP_mod->select_like(['MSUP_ABBRV' => $cid]);break;
 			case 'ad':
-				$rs = $this->MSTSUP_mod->selectbyad_lk($cid);break;
+				$rs = $this->MSTSUP_mod->select_like(['MSUP_ADDR1' => $cid]);break;
 		}					
-		echo json_encode($rs);
+		die(json_encode($rs));
 	}
 
 	public function checkSession(){
@@ -80,9 +80,10 @@ class MSTSUP extends CI_Controller {
 		$caddr = $this->input->post('inaddr');
 		$mphone = str_replace(" ", "", $this->input->post('mphone'));
 		$mfax = str_replace(" ", "",$this->input->post('mfax'));
-		$datac = array('MSUP_SUPCD'=> $ccd);
+		$mtax = str_replace(" ", "",$this->input->post('mtax'));
+		$datac = ['MSUP_SUPCD'=> $ccd];
 		if($this->MSTSUP_mod->check_Primary($datac)==0){
-			$datas = array(
+			$datas = [
 				'MSUP_SUPCD' => $ccd,
 				'MSUP_SUPCR' => $ccur,
 				'MSUP_SUPNM' => $cnm,
@@ -90,9 +91,10 @@ class MSTSUP extends CI_Controller {
 				'MSUP_ADDR1' => $caddr,
 				'MSUP_TELNO' => $mphone,
 				'MSUP_FAXNO' => $mfax,
+				'MSUP_TAXREG' => $mtax,
 				'MSUP_LUPDT' => $currrtime,
 				'MSUP_USRID' => $this->session->userdata('nama')
-			);
+			];
 			$toret = $this->MSTSUP_mod->insert($datas);
 			if($toret>0){ echo "Saved successfully";}
 		} else {
@@ -103,6 +105,7 @@ class MSTSUP extends CI_Controller {
 				'MSUP_ADDR1' => $caddr,
 				'MSUP_TELNO' => $mphone,
 				'MSUP_FAXNO' => $mfax,
+				'MSUP_TAXREG' => $mtax,
 				'MSUP_LUPDT' => $currrtime,
 				'MSUP_USRID' => $this->session->userdata('nama')
 			];
