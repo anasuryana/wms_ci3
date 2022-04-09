@@ -3704,17 +3704,21 @@ class DELV extends CI_Controller {
 			$rsrmdocFromSO = $this->DLVRMSO_mod->select_invoice($pid);
 			$rs_rcv = $this->RCV_mod->select_for_rmrtn_bytxid($pid);
 			$MultipliedNumber = 1;
+			$shouldRound = false;
 			foreach($rs_rcv as $a){
 				if($a['MSUP_SUPCR']!="RPH" && $currency=="RPH"){
+					$shouldRound = true;
 					$rscurrency = $this->MEXRATE_mod->selectfor_posting($tglaju, $a['MSUP_SUPCR']);
 					if(count($rscurrency)==0){
 						die('exchange rate is required '. $tglaju);
-					} else {
+					} else {						
 						foreach($rscurrency as $n){
 							$MultipliedNumber = $n->MEXRATE_VAL;break;
 						}
 					}
 				}
+
+				
 				break;
 			}
 			$rsfixINV = [];
@@ -3757,11 +3761,13 @@ class DELV extends CI_Controller {
 			unset($r);
 			
 
-			if(count($rsrmdoc) && count($rsrmdocFromSO)<=0){				
+			if(count($rsrmdoc) && count($rsrmdocFromSO)<=0){
+				// echo $MultipliedNumber;
+				// die(json_encode($rs_rcv));
 				$h_delnm = '';
 				$h_deladdress = '';
 				$h_invno = '';
-				$hinv_currency = '';
+				$hinv_currency = '';				
 				foreach($rsrmdoc as $r) {
 					$h_delnm = $r['MDEL_ZNAMA'];
 					$h_deladdress = $r['MDEL_ADDRCUSTOMS'];
@@ -3791,8 +3797,14 @@ class DELV extends CI_Controller {
 				$no =1;
 				$ttlqty_=0;
 				$ttlamount_ = 0;
-				foreach($rsfixINV as $r) {
-					$amount_ = $r['ITMQT']*round($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
+				foreach($rsfixINV as $r) {				
+					if($shouldRound){
+						$amount_ = $r['ITMQT']*round($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
+						$perprice_ = round($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
+					} else {
+						$amount_ = $r['ITMQT']*($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
+						$perprice_ = ($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
+					}
 					if($ttlbrs>$MAX_INVD_PERPAGE){
 						$pdf->AddPage();		
 						$pdf->SetAutoPageBreak(true,1);
@@ -3828,8 +3840,8 @@ class DELV extends CI_Controller {
 					$pdf->Text(100,$curY,$r['MITM_STKUOM']);
 					$pdf->SetXY(110,$curY-3);
 					$pdf->Cell(20.55,4,number_format($r['ITMQT']),0,0,'R');
-					$pdf->SetXY(137,$curY-3);
-					$pdf->Cell(17.5,4,number_format(round($r['DLVRMDOC_PRPRC']*$MultipliedNumber),5) ,0,0,'R');
+					$pdf->SetXY(137,$curY-3);					
+					$pdf->Cell(17.5,4,number_format($perprice_,5) ,0,0,'R');
 					$pdf->SetXY(155,$curY-3);
 					$pdf->Cell(41.56,4,number_format($amount_,2),0,0,'R');
 					$no++;
