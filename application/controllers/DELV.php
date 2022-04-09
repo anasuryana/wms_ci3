@@ -15551,9 +15551,7 @@ class DELV extends CI_Controller {
 		$czinvoice = '';
 		$ccustdate = '';
 		$czdocbctype = '';
-		$nomoraju = '';
-		$cbusiness_group = '';
-		$ccustomer_do = '';
+		$nomoraju = '';		
 		$deliveryDescription = '';
 
 		$czkantortujuan = '';
@@ -15688,12 +15686,7 @@ class DELV extends CI_Controller {
 		#check price source
 		$rsrmmanualDO = $this->DLVRMDOC_mod->select_invoice_posting($csj);
 		$rsrm_fromSO =  $this->DLVRMSO_mod->select_invoice($csj);
-		$SERI_BARANG = 1;
-		$DATA_POST_TYPE = ''; /// 1=DO MANUAL, 2=SO, 3=AUTO 
-		$arx_item = [];
-		$arx_qty = [];
-		$arx_lot = [];
-		$arx_do = [];
+		$SERI_BARANG = 1;		
 		if(count($rsrmmanualDO) && count($rsrm_fromSO) <=0) {
 			$DATA_POST_TYPE = 1;						
 		} else {
@@ -15826,6 +15819,24 @@ class DELV extends CI_Controller {
 					,'SERI_BARANG' => $SERI_BARANG
 					,'KODE_STATUS' => '02'
 					,'JUMLAH_BAHAN_BAKU' => 1
+
+
+					,'KODE_JENIS_DOK_ASAL' => $r['KODE_JENIS_DOK_ASAL']
+					,'NOMOR_DAFTAR_DOK_ASAL' => $r['NOMOR_DAFTAR_DOK_ASAL']
+					,'TANGGAL_DAFTAR_DOK_ASAL' => $r['TANGGAL_DAFTAR_DOK_ASAL']
+					,'KODE_KANTOR' => $r['KODE_KANTOR']
+					,'NOMOR_AJU_DOK_ASAL' => $r['NOMOR_AJU_DOK_ASAL']
+					,'SERI_BARANG_DOK_ASAL' => $r['SERI_BARANG_DOK_ASAL']
+					,'KODE_STATUS' => $r['KODE_STATUS']										
+										
+					,'SERI_BAHAN_BAKU' => 1
+					,'JENIS_SATUAN' => $r['JENIS_SATUAN']
+					,'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU']
+					,'SPESIFIKASI_LAIN' => NULL
+					,'HARGA_PENYERAHAN' => NULL
+
+					,'RBM' =>$r['RBM']
+					,'CURRENCY' =>$r['CURRENCY']
 				];
 				$no++;
 				$SERI_BARANG++;
@@ -16004,60 +16015,58 @@ class DELV extends CI_Controller {
 				,'ID_HEADER' => $n['ID_HEADER']
 			];
 			$ZR_TPB_BARANG = $this->TPB_BARANG_imod->insert($_barang);
-			foreach($tpb_bahan_baku as $b){
-				if($n['KODE_BARANG']==$b['KODE_BARANG'] && $n['CIF'] == $b['CIF']){
-					$ZR_TPB_BAHAN_BAKU = $this->TPB_BAHAN_BAKU_imod
-						->insert([
-							'KODE_JENIS_DOK_ASAL' => $b['KODE_JENIS_DOK_ASAL']
-							,'NOMOR_DAFTAR_DOK_ASAL' => $b['NOMOR_DAFTAR_DOK_ASAL']
-							,'TANGGAL_DAFTAR_DOK_ASAL' => $b['TANGGAL_DAFTAR_DOK_ASAL']
-							,'KODE_KANTOR' => $b['KODE_KANTOR']
-							,'NOMOR_AJU_DOK_ASAL' => $b['NOMOR_AJU_DOK_ASAL']
-							,'SERI_BARANG_DOK_ASAL' => $b['SERI_BARANG_DOK_ASAL']
-							,'SPESIFIKASI_LAIN' => $b['SPESIFIKASI_LAIN']
+			$ZR_TPB_BAHAN_BAKU = $this->TPB_BAHAN_BAKU_imod
+				->insert([
+					'KODE_JENIS_DOK_ASAL' => $n['KODE_JENIS_DOK_ASAL']
+					,'NOMOR_DAFTAR_DOK_ASAL' => $n['NOMOR_DAFTAR_DOK_ASAL']
+					,'TANGGAL_DAFTAR_DOK_ASAL' => $n['TANGGAL_DAFTAR_DOK_ASAL']
+					,'KODE_KANTOR' => $n['KODE_KANTOR']
+					,'NOMOR_AJU_DOK_ASAL' => $n['NOMOR_AJU_DOK_ASAL']
+					,'SERI_BARANG_DOK_ASAL' => $n['SERI_BARANG_DOK_ASAL']
+					,'SPESIFIKASI_LAIN' => $n['SPESIFIKASI_LAIN']
 
-							,'CIF' => ($b['CIF'])							
-							,'HARGA_PENYERAHAN' => $b['HARGA_PENYERAHAN']
-							
-							,'KODE_BARANG' => substr($b['KODE_BARANG'],0,2) == 'PM' ? '-' : $b['KODE_BARANG']
-							,'KODE_STATUS' => $b['KODE_STATUS']
-							,'POS_TARIF' => $b['POS_TARIF']
-							,'URAIAN' => $b['URAIAN']
-							,'TIPE' => $b['TIPE']
-							
-							,'JUMLAH_SATUAN' => $b['JUMLAH_SATUAN']
-							,'JENIS_SATUAN' => $b['JENIS_SATUAN']
-							
-							,'KODE_ASAL_BAHAN_BAKU' => $b['KODE_ASAL_BAHAN_BAKU']
-							
-							,'NDPBM' => 0
-							,'NETTO' => 0
-							,'SERI_BAHAN_BAKU' => $b['SERI_BAHAN_BAKU']
-							,'SERI_BARANG' => $n['SERI_BARANG']
-							,'ID_BARANG' => $ZR_TPB_BARANG
-							,'ID_HEADER' => $ZR_TPB_HEADER
-						]);
+					,'CIF' => ($n['CIF'])
+					,'HARGA_PENYERAHAN' => $n['HARGA_PENYERAHAN']
 					
-					foreach($tpb_bahan_baku_tarif as $t){
-						if($b['KODE_BARANG'] == $t['RITEMCD'] && $b['JUMLAH_SATUAN'] == $t['RITEMQT'] 
-						&&  $b['SERI_BAHAN_BAKU'] == $t['SERI_BAHAN_BAKU']){
-							$this->TPB_BAHAN_BAKU_TARIF_imod
-							->insert([
-								'JENIS_TARIF' => $t['JENIS_TARIF']
-								,'KODE_TARIF' => $t['KODE_TARIF']
-								,'NILAI_BAYAR' => $t['NILAI_BAYAR']
-								,'NILAI_FASILITAS' => $t['NILAI_FASILITAS']
-								,'KODE_FASILITAS' => $t['KODE_FASILITAS']
-								,'TARIF_FASILITAS' => $t['TARIF_FASILITAS']
-								,'TARIF' =>  $t['TARIF']
-								,'SERI_BAHAN_BAKU' =>  $t['SERI_BAHAN_BAKU']
-								,'ID_BAHAN_BAKU' => $ZR_TPB_BAHAN_BAKU
-								,'ID_BARANG' => $ZR_TPB_BARANG
-								,'ID_HEADER' => $ZR_TPB_HEADER
-							]);
-						}
-					}					
-				}				
+					,'KODE_BARANG' => substr($n['KODE_BARANG'],0,2) == 'PM' ? '-' : $n['KODE_BARANG']
+					,'KODE_STATUS' => $n['KODE_STATUS']
+					,'POS_TARIF' => $n['POS_TARIF']
+					,'URAIAN' => $n['URAIAN']
+					,'TIPE' => $n['TIPE']
+					
+					,'JUMLAH_SATUAN' => $n['JUMLAH_SATUAN']
+					,'JENIS_SATUAN' => $n['JENIS_SATUAN']
+					
+					,'KODE_ASAL_BAHAN_BAKU' => $n['KODE_ASAL_BAHAN_BAKU']
+					
+					,'NDPBM' => 0
+					,'NETTO' => 0
+					,'SERI_BAHAN_BAKU' => $n['SERI_BAHAN_BAKU']
+					,'SERI_BARANG' => $n['SERI_BARANG']
+					,'ID_BARANG' => $ZR_TPB_BARANG
+					,'ID_HEADER' => $ZR_TPB_HEADER
+				]);
+			$iteration = 0;
+			foreach($tpb_bahan_baku_tarif as $t){
+				if($n['KODE_BARANG'] == $t['RITEMCD'] && $n['JUMLAH_SATUAN'] == $t['RITEMQT'] 
+				&&  $n['SERI_BAHAN_BAKU'] == $t['SERI_BAHAN_BAKU']){
+					if($iteration==3){break;}
+					$this->TPB_BAHAN_BAKU_TARIF_imod
+					->insert([
+						'JENIS_TARIF' => $t['JENIS_TARIF']
+						,'KODE_TARIF' => $t['KODE_TARIF']
+						,'NILAI_BAYAR' => $t['NILAI_BAYAR']
+						,'NILAI_FASILITAS' => $t['NILAI_FASILITAS']
+						,'KODE_FASILITAS' => $t['KODE_FASILITAS']
+						,'TARIF_FASILITAS' => $t['TARIF_FASILITAS']
+						,'TARIF' =>  $t['TARIF']
+						,'SERI_BAHAN_BAKU' =>  $t['SERI_BAHAN_BAKU']
+						,'ID_BAHAN_BAKU' => $ZR_TPB_BAHAN_BAKU
+						,'ID_BARANG' => $ZR_TPB_BARANG
+						,'ID_HEADER' => $ZR_TPB_HEADER
+					]);
+					$iteration++;
+				}
 			}
 		}
 		##N
