@@ -41,8 +41,14 @@ class SPL extends CI_Controller {
 		die('{"data":'.json_encode($rs).'}');
 	}
 
-	public function create(){		
-		$this->load->view('wms/vspl');
+	public function create(){
+		$rsBG = $this->XBGROUP_mod->selectall();
+		$sListBG = '';
+		foreach($rsBG as $r){
+			$sListBG .= "<option value='".trim($r->MBSG_BSGRP)."'>".$r->MBSG_DESC."</option>";
+		}
+		$data['lbg'] = $sListBG;	
+		$this->load->view('wms/vspl',$data);
 	}
 	public function form_book_ost(){
 		$this->load->view('wms_report/vspl_booked_list');
@@ -5477,7 +5483,8 @@ class SPL extends CI_Controller {
 		header('Content-Type: application/json');
 		$dt1 = $this->input->get('dt1');
 		$dt2 = $this->input->get('dt2');
-		$rs = $this->SPL_mod->select_recap_partreq($dt1, $dt2);
+		$business = $this->input->get('business');
+		$rs = $this->SPL_mod->select_recap_partreq_business($dt1, $dt2, $business);
 		die('{"data":'.json_encode($rs).'}');
 	}
 

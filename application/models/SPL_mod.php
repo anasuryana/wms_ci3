@@ -113,9 +113,22 @@ class SPL_mod extends CI_Model {
     }
 
     public function selectWOITEM($pwo, $pitem){
-        $qry = "select CONVERT(bigint,(PDPP_WORQT-coalesce(LBLTTL,0))) OSTQTY,PDPP_BSGRP,PDPP_CUSCD,PDPP_WORQT,PDPP_GRNQT,PDPP_COMFG,CONVERT(bigint,(PDPP_WORQT-PDPP_GRNQT)) OSTQTYMG,PDPP_ISUDT,PDPP_WONO from
-        XWO a LEFT JOIN  ( select SER_DOC,SUM(SER_QTYLOT) LBLTTL from SER_TBL x WHERE SER_ITMID LIKE ? and SER_DOC = ? AND SER_ID=ISNULL(SER_REFNO,SER_ID)
-        GROUP BY SER_DOC ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_MDLCD LIKE ? and PDPP_WONO = ? ORDER BY PDPP_WONO DESC";
+        // $qry = "select CONVERT(bigint,(PDPP_WORQT-coalesce(LBLTTL,0))) OSTQTY,PDPP_BSGRP,PDPP_CUSCD,PDPP_WORQT,PDPP_GRNQT,PDPP_COMFG,CONVERT(bigint,(PDPP_WORQT-PDPP_GRNQT)) OSTQTYMG,PDPP_ISUDT,PDPP_WONO from
+        // XWO a LEFT JOIN  ( select SER_DOC,SUM(SER_QTYLOT) LBLTTL from SER_TBL x WHERE SER_ITMID LIKE ? and SER_DOC = ? AND SER_ID=ISNULL(SER_REFNO,SER_ID)
+        // GROUP BY SER_DOC ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_MDLCD LIKE ? and PDPP_WONO = ? ORDER BY PDPP_WONO DESC";
+        $qry = "select CONVERT(bigint,((CASE WHEN PDPP_WONO='22-4E05-219552405' THEN PDPP_WORQT-4 ELSE PDPP_WORQT END)-coalesce(LBLTTL,0))) OSTQTY,
+        PDPP_BSGRP,
+        PDPP_CUSCD,
+        CASE WHEN PDPP_WONO='22-4E05-219552405' THEN PDPP_WORQT-4 ELSE PDPP_WORQT END PDPP_WORQT,
+        PDPP_GRNQT,
+        PDPP_COMFG,
+        CONVERT(bigint,((CASE WHEN PDPP_WONO='22-4E05-219552405' THEN PDPP_WORQT-4 ELSE PDPP_WORQT END)-PDPP_GRNQT)) OSTQTYMG,
+        PDPP_ISUDT,
+        PDPP_WONO from
+                XWO a LEFT JOIN  ( select SER_DOC,SUM(SER_QTYLOT) LBLTTL from SER_TBL x WHERE SER_ITMID LIKE ? and SER_DOC = ? AND SER_ID=ISNULL(SER_REFNO,SER_ID)
+                GROUP BY SER_DOC ) v2 on PDPP_WONO=v2.SER_DOC 
+        WHERE PDPP_MDLCD LIKE ? and PDPP_WONO = ?
+        ORDER BY PDPP_WONO DESC";
 		$query = $this->db->query($qry, ["%".$pitem."%", $pwo,"%".$pitem."%", $pwo]);
 		return $query->result_array();
     }    
@@ -811,6 +824,18 @@ class SPL_mod extends CI_Model {
         LEFT JOIN RQSRMRK_TBL ON ISNULL(SPL_RMRK,'') = RQSRMRK_CD
         ORDER BY SPLSCN_DATE desc, SPLSCN_ITMCD";
         $query = $this->db->query($qry, [$pdate1, $pdate2]);
+		return $query->result_array();
+    }
+    public function select_recap_partreq_business($pdate1, $pdate2, $pbusiness){
+        $qry = "select v1.*,SPL_RMRK,SPL_LINE,UPPER(SPL_REFDOCNO) SPL_REFDOCNO,RQSRMRK_DESC,SPL_FMDL from 
+        (select UPPER(SPLSCN_DOC) SPLSCN_DOC,SPLSCN_ITMCD,SUM(SPLSCN_QTY) SCNQTY,SPLSCN_LOTNO,SPLSCN_DATE from V_SPLSCN_TBLC
+        WHERE SPLSCN_DOC LIKE 'PR-%' AND (SPLSCN_DATE >= ? AND SPLSCN_DATE <= ?)
+        group by SPLSCN_DOC,SPLSCN_ITMCD,SPLSCN_LOTNO,SPLSCN_DATE) v1 INNER join
+        (select SPL_DOC,SPL_ITMCD,MAX(SPL_RMRK) SPL_RMRK,MAX(SPL_LINE) SPL_LINE, max(SPL_REFDOCNO) SPL_REFDOCNO,ISNULL(max(SPL_FMDL),'') SPL_FMDL,MAX(SPL_BG) SPL_BG from SPL_TBL         
+        GROUP BY SPL_DOC,SPL_ITMCD) v2 on v1.SPLSCN_DOC=v2.SPL_DOC and v1.SPLSCN_ITMCD=v2.SPL_ITMCD AND SPL_BG=?
+        LEFT JOIN RQSRMRK_TBL ON ISNULL(SPL_RMRK,'') = RQSRMRK_CD
+        ORDER BY SPLSCN_DATE desc, SPLSCN_ITMCD";
+        $query = $this->db->query($qry, [$pdate1, $pdate2,$pbusiness]);
 		return $query->result_array();
     }
 

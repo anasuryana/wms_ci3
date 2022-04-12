@@ -249,13 +249,21 @@
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
-                <div class="col-md-6 mb-1">
+                <div class="col-md-4 mb-1 text-center">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Business Group</span>                                        				
+                        <select class="form-select" id="psn_businessgroup" required>
+                        <?=$lbg?>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text" >From</span>
                         <input type="text" class="form-control" id="spl_txt_dt" readonly>
                     </div>
                 </div>
-                <div class="col-md-6 mb-1">
+                <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text" >To</span>
                         <input type="text" class="form-control" id="spl_txt_dt2" readonly>
@@ -269,7 +277,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col">
                     <div class="table-responsive" id="spl_divexpissu">
@@ -1170,13 +1177,14 @@
     function psn_btnexp_getdata_eClick(){
         let dt1 = document.getElementById('spl_txt_dt').value;
         let dt2 = document.getElementById('spl_txt_dt2').value;
+        let business = document.getElementById('psn_businessgroup').value;
         document.getElementById('psn_btnexp_getdata').innerHTML = "<i class='fas fa-spinner fa-spin'></i>";
         document.getElementById('psn_btnexp_getdata').disabled = true;
         $("#spl_tblexpissu tbody").empty();
         $.ajax({
             type: "get",
             url: "<?=base_url('SPL/getPRListperiod')?>",
-            data:{dt1: dt1, dt2: dt2},
+            data:{dt1: dt1, dt2: dt2, business: business},
             dataType: "json",
             success: (response) => {
                 document.getElementById('psn_btnexp_getdata').innerHTML = '<i class="fas fa-search"></i>';
