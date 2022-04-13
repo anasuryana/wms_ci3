@@ -5700,6 +5700,16 @@ class SER extends CI_Controller {
 	public function form_search_rm_in_fg() {
 		$this->load->view('wms_report/vrpt_rm_in_fg');
 	}
+	public function form_conversion_test() {
+		$this->load->view('wms_report/vrpt_conversion_test');
+	}
+	public function conversion_test(){
+		header('Content-Type: application/json');
+		$date = $this->input->get('ajuDate');
+		$model = $this->input->get('model');
+		$rs = $this->SER_mod->select_conversion_test($date, $model);
+		die(json_encode(['data' => $rs]));
+	}
 	public function search_rm_in_fg() {
 		header('Content-Type: application/json');
 		$itemCD = $this->input->post('itemCD');
