@@ -1427,7 +1427,7 @@ class ITH extends CI_Controller {
 					$r['BAL'] = $current_balance+ $r['INCQTY'] + $r['OUTQTY'];
 					$current_balance = $r['BAL'];
 				}
-				$r['OUTQTY'] = abs($r['OUTQTY']);
+				$r['OUTQTY'] = abs((int)$r['OUTQTY']);
 			}
 			unset($r);
 			$myar[] = ['cd' => 1, 'msg' => 'go ahead'];
@@ -1465,9 +1465,7 @@ class ITH extends CI_Controller {
 		$respon = $this->ZRPSTOCK_mod->updatebyId(['RPSTOCK_REMARK' => $outdoc, 'RPSTOCK_ITMNUM' => $incitem, 'RPSTOCK_DOC' => $incdoc, 'deleted_at is null' => NULL ], ['deleted_at' => $deleted_at] );
 		$this->LOGXDATA_mod->insert(['LOGXDATA_MENU' => 'CANCEL EXBC TX', 'LOGXDATA_USER' => $this->session->userdata('nama')]);
 		$myar[] = ['cd' => 1, 'msg' => 'OK', 'respon' => $respon];
-		die('{"status":'.json_encode($myar).'}');
-		// $rs = $this->ZRPSTOCK_mod->select_all_where_imod(['RPSTOCK_REMARK' => $outdoc, 'RPSTOCK_ITMNUM' => $incitem, 'RPSTOCK_DOC' => $incdoc, 'deleted_at is null' => NULL ]);
-		// die(json_encode(['data' => $rs]));
+		die('{"status":'.json_encode($myar).'}');		
 	}
 
 	public function bcstock_rev(){
