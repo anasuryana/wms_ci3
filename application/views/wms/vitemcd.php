@@ -120,6 +120,10 @@
                 <div class="input-group input-group-sm">
                     <label class="input-group-text">Category</label>
                     <input type="text" class="form-control" id="itm_txt_category" >
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="fas fa-pen-to-square"></span> </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" onclick="itm_btnShow_modalCategory_eCK()">Batch Update</a></li>                       
+                    </ul>
                 </div>
             </div>
             <div class="col-md-6 mb-2">
@@ -322,6 +326,32 @@
                 </div>
             </div>
         </div>             
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ITM_MODCATEGORY">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">      
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Update Category</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">            
+            <div class="row">
+                <div class="col">
+                    <div class="table-responsive" id="itm_bu_categorydiv">
+                        <div id="itm_bu_ss_category"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" id="itm_bu_btn_save" onclick="itm_bu_btn_save_eCK()"><span class="fas fa-save"></span> </button>
+        </div>
       </div>
     </div>
 </div>
@@ -786,4 +816,48 @@
         }
     });
     $("#itm_divku").css('height', $(window).height()*50/100);
+
+    function itm_btnShow_modalCategory_eCK(){
+        $("#ITM_MODCATEGORY").modal('show')
+    }
+    var itmdata = [
+       [''],
+       [''],      
+    ];
+    var itm_bu_ss_category = jspreadsheet(document.getElementById('itm_bu_ss_category'), {
+        data:itmdata,
+        columns: [
+            {
+                type: 'text',
+                title:'Item Code',
+                width:200,            
+            },
+            {
+                type: 'text',
+                title:'Category',
+                width:200,            
+            } 
+        ]   
+    });
+
+    function itm_bu_btn_save_eCK(){
+        let datanya_nonitem = itm_bu_ss_category.getData()
+        let ttlrows = datanya_nonitem.length
+        for(let i=0; i<ttlrows; i++){
+            $.ajax({
+                type: "POST",
+                url: "<?=base_url('MSTITM/updatencat')?>",
+                data: {i: i, item_code :datanya_nonitem[i][0], category: datanya_nonitem[i][1]},
+                dataType: "JSON",
+                success: function (response) {
+                    if(response.status[0].cd===1){
+                        itm_bu_ss_category.setStyle('A'+(response.status[0].reff+1), 'background-color', '#91ffb4')
+                        itm_bu_ss_category.setStyle('B'+(response.status[0].reff+1), 'background-color', '#91ffb4')
+                    }
+                }, error: function(xhr,xopt,xthrow){
+                    alertify.error(xthrow);
+                }
+            })            
+        }
+    }
 </script>

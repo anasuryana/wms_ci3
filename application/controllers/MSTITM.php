@@ -705,37 +705,14 @@ class MSTITM extends CI_Controller {
 		$this->load->view('wms/vitem_reg', $data);
 	}
 
-	public function updatencat(){
-		$json_str = '[
-			{
-				"ASSY_CODE": "05370662490A200",
-				"CATEGORY": "INS"
-			},
-			{
-				"ASSY_CODE": "05370687990P300",
-				"CATEGORY": "INS"
-			},
-			{
-				"ASSY_CODE": "05370748190A200",
-				"CATEGORY": "INS"
-			},
-			{
-				"ASSY_CODE": "05370780890A100",
-				"CATEGORY": "INS"
-			},
-			{
-				"ASSY_CODE": "05370785290A105",
-				"CATEGORY": "INS"
-			},
-			{
-				"ASSY_CODE": "05370785290A200",
-				"CATEGORY": "INS"
-			}
-		]';
-		$rs = json_decode($json_str,true);
-		foreach($rs as $r){
-			$this->MSTITM_mod->updatebyId(['MITM_NCAT' => $r['CATEGORY']], $r['ASSY_CODE']);
-		}
-		die(json_encode(['data' => $rs]));
+	public function updatencat(){		
+		header('Content-Type: application/json');
+		$i = $this->input->post('i');
+		$item_code = $this->input->post('item_code');
+		$category = $this->input->post('category');
+		$ret = $this->MSTITM_mod->updatebyId(['MITM_NCAT' => $category], $item_code);
+		$myar = [];
+		$myar[] = $ret ? ['cd' => 1, 'msg' => 'OK', 'reff' => $i*1] : ['cd' => 0, 'msg' => 'not ok', 'reff' => $i*1];
+		die(json_encode(['status' => $myar]));
 	}	
 }
