@@ -185,9 +185,7 @@ class SO extends CI_Controller {
         $items = $this->input->post('itemcd');
         $columns = ['RTRIM(SSO2_CPONO) SSO2_CPONO' , 'SSO2_ORDQT','SSO2_DELQT', 'SSO2_DELCD', 'RTRIM(SSO2_MDLCD) SSO2_MDLCD', 'SSO2_SLPRC','SSO2_SOLNO'];
 		$where = ['SSO2_BSGRP' => $bg, 'SSO2_CUSCD' => $cuscd, 'SSO2_CPOTYPE' => 'CPO' , 'SSO2_COMFG' => '0'];
-		$rs = $this->XSO_mod->selectbyVAR_inmodel($columns,$where, $items);
-        // $rs[] =  ['SSO2_CPONO' => 'PO1', 'SSO2_ORDQT' => 200, 'SSO2_DELQT' => 0, 'SSO2_MDLCD' => '212206000', 'SSO2_SLPRC' => 0.233, 'SSO2_SOLNO' => 'PO1_LINE' ];
-        // $rs[] =  ['SSO2_CPONO' => 'PO1', 'SSO2_ORDQT' => 200, 'SSO2_DELQT' => 0, 'SSO2_MDLCD' => '219306400', 'SSO2_SLPRC' => 0.233, 'SSO2_SOLNO' => 'PO1_LINE' ];
+		$rs = $this->XSO_mod->selectbyVAR_inmodel($columns,$where, $items);       
         die(json_encode(['data' => $rs]));
     }
     public function outstanding(){
