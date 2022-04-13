@@ -15,6 +15,7 @@ class RCV extends CI_Controller {
 		$this->load->library('Code39e128');
 		$this->load->model('RCVSTXI_mod');
 		$this->load->model('RCV_mod');
+		$this->load->model('RCVPKG_mod');
 		$this->load->model('RCVNI_mod');
 		$this->load->model('RCVSCN_mod');
 		$this->load->model('RCVMEGA_mod');
@@ -22,6 +23,7 @@ class RCV extends CI_Controller {
 		$this->load->model('MSTSUP_mod');
 		$this->load->model('MSTCUS_mod');
 		$this->load->model('XBGROUP_mod');
+		$this->load->model('BGROUP_mod');
 		$this->load->model('ITH_mod');
 		$this->load->model('FIFORM_mod');
 		$this->load->model('XSO_mod');
@@ -33,9 +35,16 @@ class RCV extends CI_Controller {
 		$this->load->model('SER_mod');
 		$this->load->model('SERRC_mod');
 		$this->load->model('PPO_mod');
+		$this->load->model('MMDL_mod');
+		$this->load->model('refceisa/REFERENSI_KEMASAN_imod');
 		$this->load->model('refceisa/MTPB_mod');				
 		$this->load->model('refceisa/ZOffice_mod');
 		$this->load->model('refceisa/MPurposeDLV_mod');
+		$this->load->model('refceisa/AKTIVASIAPLIKASI_imod');
+		$this->load->model('refceisa/TPB_HEADER_imod');
+		$this->load->model('refceisa/TPB_DOKUMEN_imod');
+		$this->load->model('refceisa/TPB_BARANG_imod');
+		$this->load->model('refceisa/TPB_KEMASAN_imod');
 	}
 	public function index()
 	{
@@ -96,20 +105,31 @@ class RCV extends CI_Controller {
 	public function customs(){
 		$data['ltpb_type'] = $this->MTPB_mod->selectAll();
 		$data['officelist'] = $this->ZOffice_mod->selectAll();
-		$rsbg = $this->XBGROUP_mod->selectall();
-		
+		$rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
+		$rsbg = $this->BGROUP_mod->selectall();		
 		$rssupplier = $this->MSTSUP_mod->selectAll();
+		$rsReferensiKemasan = $this->REFERENSI_KEMASAN_imod->selectAll();
+
 		$supdis = '<option value="-">ALL</option>';
-		$bgdis = '<option value="-">ALL</option>';
+		$bgdis = $kemasan = '';
 		foreach($rssupplier as $r){
 			$supdis .= '<option value="'.trim($r->MSUP_SUPCD).'">['.trim($r->MSUP_SUPCR).'] '.$r->MSUP_SUPNM.'</option>';
 		}
 		foreach($rsbg as $r){
 			$bgdis .= '<option value="'.trim($r->MBSG_BSGRP).'">'.$r->MBSG_DESC.'</option>';
 		}
+		foreach($rsReferensiKemasan as $r){
+			$kemasan .= '<option value="'.$r->KODE_KEMASAN.'">'.$r->URAIAN_KEMASAN.'</option>';
+		}
+		foreach($rsaktivasi as $r){
+			$data['KPPBC'] = $r['KPPBC'];
+			$data['ID_MODUL'] = substr('00000'.$r['ID_MODUL'],-6);
+		}
 		$data['lbg'] = $bgdis;
 		$data['lsupplier'] = $supdis;
+		$data['lkemasan'] = $kemasan;
 		$data['sapaDia'] = $this->session->userdata('sfname');
+		
 		$rslocfrom = $this->MSTLOCG_mod->selectall_where_CODE_in(['ARWH1','ARWH2','NRWH2']);
 		$rslocfrom_str = '';
 		foreach($rslocfrom as $r){
@@ -438,7 +458,7 @@ class RCV extends CI_Controller {
 		$h_do = $this->input->post('h_do');
 		$h_bctype = $this->input->post('h_bctype');
 		$h_bcstatus = $this->input->post('h_bcstatus');
-		$h_aju = $this->input->post('h_aju');
+		$h_aju = $this->input->post('h_aju');		
 		$h_nopen = $this->input->post('h_nopen');
 		$h_date_bc = $this->input->post('h_date_bc');
 		$h_date_rcv = $this->input->post('h_date_rcv');
@@ -453,6 +473,7 @@ class RCV extends CI_Controller {
 		$h_mconaDueDate = $this->input->post('h_mconaDueDate');
 		$h_supcd = $this->input->post('h_supcd');
 		$h_minvNo = $this->input->post('h_minvNo');
+		$h_tax_invoice = $this->input->post('h_tax_invoice');
 		$d_grlno = $this->input->post('d_grlno');
 		$d_nourut = $this->input->post('d_nourut');
 		$d_pono = $this->input->post('d_pono');
@@ -463,6 +484,13 @@ class RCV extends CI_Controller {
 		$d_bm = $this->input->post('d_bm');
 		$d_ppn = $this->input->post('d_ppn');
 		$d_pph = $this->input->post('d_pph');
+		$d_prNW = $this->input->post('d_prNW');
+		$d_prGW = $this->input->post('d_prGW');
+		$d_assetnum = $this->input->post('d_assetnum');
+		$d_pkg_idrow = $this->input->post('d_pkg_idrow');
+		$d_pkg_jml = $this->input->post('d_pkg_jml');
+		$d_pkg_kd = $this->input->post('d_pkg_kd');
+		$ttlrowsPKG = is_array($d_pkg_kd) ? count($d_pkg_kd) : 0;
 		$dataCount = count($d_itemcode);
 		$myar = [];
 		$ttlupdated = 0;
@@ -487,6 +515,8 @@ class RCV extends CI_Controller {
 						'RCV_RCVDATE' => $h_date_rcv=='' ? NULL : $h_date_rcv,
 						'RCV_NW' => ($h_nw==''? NULL:$h_nw),
 						'RCV_GW' => ($h_gw==''? NULL:$h_gw),
+						'RCV_PRNW' => ($d_prNW[$i]==''? NULL:$d_prNW[$i]),
+						'RCV_PRGW' => ($d_prGW[$i]==''? NULL:$d_prGW[$i]),
 						'RCV_KPPBC' => $h_kppbc,					
 						'RCV_HSCD' => $d_hscode[$i],
 						'RCV_ZSTSRCV' => $h_bcstatus,
@@ -494,10 +524,12 @@ class RCV extends CI_Controller {
 						'RCV_PPN' => is_numeric($d_ppn[$i]) ? $d_ppn[$i]: 0,
 						'RCV_PPH' => is_numeric($d_pph[$i]) ? $d_pph[$i]: 0,
 						'RCV_ZNOURUT' => $d_nourut[$i],
+						'RCV_ASSETNUM' => $d_assetnum[$i],
 						'RCV_CONA' => $h_cona,
 						'RCV_DUEDT' => $h_mconaDueDate == '' ? NULL : $h_mconaDueDate,
 						'RCV_CONADT' => $h_mconaDate == '' ? NULL : $h_mconaDate,
 						'RCV_INVNO' => $h_minvNo,
+						'RCV_TAXINVOICE' => $h_tax_invoice,
 						'RCV_BSGRP' => $h_bisgrup,
 						'RCV_LUPDT' => date('Y-m-d H:i:s'),
 						'RCV_USRID' => $this->session->userdata('nama')
@@ -508,6 +540,7 @@ class RCV extends CI_Controller {
 						'RCV_PO' => $d_pono[$i],
 						'RCV_DONO' => $h_do,
 						'RCV_INVNO' => $h_minvNo,
+						'RCV_TAXINVOICE' => $h_tax_invoice,
 						'RCV_ITMCD' => trim($d_itemcode[$i]),
 						'RCV_RPNO' => $h_aju,
 						'RCV_RPDATE' => $h_date_bc,
@@ -524,6 +557,8 @@ class RCV extends CI_Controller {
 						'RCV_RCVDATE' => $h_date_rcv=='' ? NULL : $h_date_rcv,
 						'RCV_NW' => ($h_nw==''? NULL:$h_nw),						
 						'RCV_GW' => ($h_gw==''? NULL:$h_gw),
+						'RCV_PRNW' => ($d_prNW[$i]==''? NULL:$d_prNW[$i]),
+						'RCV_PRGW' => ($d_prGW[$i]==''? NULL:$d_prGW[$i]),
 						'RCV_KPPBC' => $h_kppbc,
 						'RCV_GRLNO' => $lastLine,
 						'RCV_HSCD' => $d_hscode[$i],
@@ -532,6 +567,7 @@ class RCV extends CI_Controller {
 						'RCV_PPN' => is_numeric($d_ppn[$i]) ? $d_ppn[$i]: 0,
 						'RCV_PPH' => is_numeric($d_pph[$i]) ? $d_pph[$i]: 0,
 						'RCV_ZNOURUT' => $d_nourut[$i],
+						'RCV_ASSETNUM' => $d_assetnum[$i],
 						'RCV_CONA' => $h_cona,
 						'RCV_DUEDT' => $h_mconaDueDate == '' ? NULL : $h_mconaDueDate,
 						'RCV_CONADT' => $h_mconaDate == '' ? NULL : $h_mconaDate,
@@ -551,6 +587,7 @@ class RCV extends CI_Controller {
 				$datas[] = [
 					'RCV_PO' => $d_pono[$i],
 					'RCV_INVNO' => $h_minvNo,
+					'RCV_TAXINVOICE' => $h_tax_invoice,
 					'RCV_DONO' => $h_do,
 					'RCV_ITMCD' => trim($d_itemcode[$i]),
 					'RCV_RPNO' => $h_aju,
@@ -568,6 +605,8 @@ class RCV extends CI_Controller {
 					'RCV_RCVDATE' => $h_date_rcv=='' ? NULL : $h_date_rcv,
 					'RCV_NW' => ($h_nw==''? NULL:$h_nw),						
 					'RCV_GW' =>($h_gw==''? NULL:$h_gw),
+					'RCV_PRNW' => ($d_prNW[$i]==''? NULL:$d_prNW[$i]),
+					'RCV_PRGW' => ($d_prGW[$i]==''? NULL:$d_prGW[$i]),
 					'RCV_KPPBC' => $h_kppbc,
 					'RCV_GRLNO' => $i,
 					'RCV_HSCD' => $d_hscode[$i],
@@ -576,6 +615,7 @@ class RCV extends CI_Controller {
 					'RCV_PPN' => is_numeric($d_ppn[$i]) ? $d_ppn[$i]: 0,
 					'RCV_PPH' => is_numeric($d_pph[$i]) ? $d_pph[$i]: 0,
 					'RCV_ZNOURUT' => $d_nourut[$i],
+					'RCV_ASSETNUM' => $d_assetnum[$i],
 					'RCV_CONA' => $h_cona,
 					'RCV_DUEDT' => $h_mconaDueDate == '' ? NULL : $h_mconaDueDate,
 					'RCV_CONADT' => $h_mconaDate == '' ? NULL : $h_mconaDate,
@@ -589,11 +629,31 @@ class RCV extends CI_Controller {
 				$myar[] = ['cd' => 1, 'msg' => 'Saved successfully'];
 			}
 		}
+		$newLine = $this->RCVPKG_mod->select_maxline($h_do, $h_aju)+1;
+		for($i=0;$i<$ttlrowsPKG; $i++){
+			if(trim($d_pkg_idrow[$i])===''){
+				$this->RCVPKG_mod->insert([
+					'RCVPKG_AJU' => $h_aju,
+					'RCVPKG_LINE' => $newLine++,
+					'RCVPKG_DOC' => $h_do,
+					'RCVPKG_JUMLAH_KEMASAN' => $d_pkg_jml[$i],
+					'RCVPKG_KODE_JENIS_KEMASAN' => $d_pkg_kd[$i],
+					'RCVPKG_CREATED_AT' => date('Y-m-d H:i:s'),
+					'RCVPKG_CREATED_BY' => $this->session->userdata('nama')
+				]);
+			} else {
+				$this->RCVPKG_mod->updatebyId(
+					['RCVPKG_JUMLAH_KEMASAN' => $d_pkg_jml[$i],	'RCVPKG_KODE_JENIS_KEMASAN' => $d_pkg_kd[$i]],
+					['RCVPKG_AJU' => $h_aju, 'RCVPKG_DOC' => $h_do,'RCVPKG_LINE' => $d_pkg_idrow[$i]]
+				);
+			}
+		}
+
 		$this->toITH(['DOC' => $h_do, 'WH' => 'PSIEQUIP' 
 		, 'DATE' => $h_date_bc , 'LUPDT' => $h_date_bc.' 07:01:00'
 		, 'USRID' => $this->session->userdata('nama')]);
 
-		$api_result =$this->gotoque($h_do);
+		$api_result =  $h_nopen!='' ?  $this->gotoque($h_do) : [];
 		if(count($datas)==0){
 			$myar[] = ['cd' => 1, 'msg' => 'Updated successfully'];
 		}
@@ -1685,6 +1745,7 @@ class RCV extends CI_Controller {
 		header('Content-Type: application/json');
 		$do = $this->input->get('do');
 		$supcd = $this->input->get('supcd');
+		$nomorAju = $this->input->get('nomorAju');
 		$columns = [
 			'RTRIM(RCV_GRLNO) RCV_GRLNO'
 			,'RTRIM(RCV_ZNOURUT) RCV_ZNOURUT'
@@ -1695,12 +1756,17 @@ class RCV extends CI_Controller {
 			,'RTRIM(MITM_STKUOM) MITM_STKUOM'
 			,'RTRIM(RCV_PRPRC) RCV_PRPRC'
 			,'RTRIM(RCV_HSCD) RCV_HSCD'
-			,'RTRIM(RCV_BM) RCV_BM'
-			,'RTRIM(RCV_PPN) RCV_PPN'
-			,'RTRIM(RCV_PPH) RCV_PPH'
+			,'RCV_BM RCV_BM'
+			,'RCV_PPN RCV_PPN'
+			,'RCV_PPH RCV_PPH'
+			,'RCV_PRNW'
+			,'RCV_PRGW'
+			,'RCV_ASSETNUM'
 		];
 		$rs = $this->RCV_mod->select_where($columns, ['RCV_DONO' => $do, 'RCV_SUPCD' => $supcd]);
-		die(json_encode(['data' => $rs]));
+		$rsPKG = $this->RCVPKG_mod->select_where(["RCVPKG_LINE","RCVPKG_JUMLAH_KEMASAN","RCVPKG_KODE_JENIS_KEMASAN", "URAIAN_KEMASAN"]
+			,['RCVPKG_AJU' => $nomorAju, 'RCVPKG_DOC' => $do]);
+		die(json_encode(['data' => $rs, 'pkg' => $rsPKG]));
 	}
 	public function GetDODetail2(){
 		header('Content-Type: application/json');
@@ -2171,6 +2237,12 @@ class RCV extends CI_Controller {
 	public function vreport_pab(){
 		$data['lsup'] = $this->MSTSUP_mod->select3();
 		$data['ltpb_type'] = $this->MTPB_mod->selectAll();
+		$rs = $this->MMDL_mod->select_all(['MMDL_CD', 'MMDL_NM']);
+		$strmdl = '';
+		foreach($rs as $r){
+			$strmdl .= "<option value='".$r['MMDL_CD']."'>".$r['MMDL_NM']."</option>";
+		}
+		$data['modell'] = $strmdl;
 		$this->load->view('wms_report/vrpt_pab_inc', $data);
 	}	
 
@@ -2211,11 +2283,12 @@ class RCV extends CI_Controller {
 		$cdate1 = $this->input->get('indate1');
 		$cnoaju = $this->input->get('innoaju');
 		$cstatus = $this->input->get('instatus');
+		$itemtype = $this->input->get('itemtype');
 		if($csup=='-'){$csup='';}
 		if($cdoctype=='-'){$cdoctype='';}
 		if($ctpbtype=='-'){$ctpbtype='';}
 		if($cstatus=='-'){$cstatus='';}
-		$rs = $this->RCV_mod->select_sp_report_inc_pab($cdoctype, $ctpbtype, $citmcd, $csup, $cdate0, $cdate1, $cnoaju, $cstatus);		
+		$rs = $this->RCV_mod->select_sp_report_inc_pab($cdoctype, $ctpbtype, $citmcd, $csup, $cdate0, $cdate1, $cnoaju, $cstatus, $itemtype);		
 		echo '{"data":'.json_encode($rs).'}';
 	}
 
@@ -2277,11 +2350,12 @@ class RCV extends CI_Controller {
 		$cdate1 = isset($_COOKIE["RP_PAB_DATE1"]) ? $_COOKIE["RP_PAB_DATE1"] : '';
 		$cnoaju = isset($_COOKIE["RP_PAB_NOAJU"]) ? $_COOKIE["RP_PAB_NOAJU"] : '';
 		$cstatus = isset($_COOKIE["RP_PAB_RCVSTATUS"]) ? $_COOKIE["RP_PAB_RCVSTATUS"] : '';
+		$citmtype = isset($_COOKIE["RP_PAB_ITMTYPE"]) ? $_COOKIE["RP_PAB_ITMTYPE"] : '';
 		if($csup=='-'){$csup='';}
 		if($cdoctype=='-'){$cdoctype='';}
 		if($ctpbtype=='-'){$ctpbtype='';}
 		if($cstatus=='-'){$cstatus='';}
-		$rs = $this->RCV_mod->select_sp_report_inc_pab($cdoctype, $ctpbtype, $citmcd, $csup, $cdate0, $cdate1, $cnoaju, $cstatus);	
+		$rs = $this->RCV_mod->select_sp_report_inc_pab($cdoctype, $ctpbtype, $citmcd, $csup, $cdate0, $cdate1, $cnoaju, $cstatus, $citmtype);	
 		$stringjudul = 'PEMBUKUAN MASUK';
 		$spreadsheet = new Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
@@ -3204,11 +3278,152 @@ class RCV extends CI_Controller {
 		die(json_encode(['data' => $rs]));
 	}
 
+	public function remove_pkg(){
+		header('Content-Type: application/json');
+		$rowid = $this->input->post("rowid");
+		$doc = $this->input->post("doc");
+		$aju = $this->input->post("aju");
+		$rtn = $this->RCVPKG_mod->deletebyID(['RCVPKG_AJU' => $aju, 'RCVPKG_LINE' => $rowid, 'RCVPKG_DOC' => $doc]);
+		$myar = [];
+		$myar[] = $rtn ? ['cd' => '1', 'msg' => 'deleted'] : ['cd' => '0', 'msg' => 'could not be deleted'];
+		die(json_encode(['status' => $myar]));
+	}
+
+	public function posting40(){
+		header('Content-Type: application/json');
+		$donumber = $this->input->post('donum');
+		$aju = $this->input->post('aju');
+		$myar = [];
+		$rs = $this->RCV_mod->select_for_posting(['RCV_DONO' => $donumber]);		
+		$ttldata = count($rs);
+		$rsaktivasi = [];
+		if($ttldata){			
+			$nomorAju = "";
+			$statusPengiriman = "";
+			$idPengirim = "";
+			$namaPengirim = "";
+			$alamatPengirim = "";
+			$nomorInvoice = "";
+			$fakturPajak = "";
+			$dodate = "";
+			$rskemasan = $this->RCVPKG_mod->select_where(["RCVPKG_JUMLAH_KEMASAN", "RCVPKG_KODE_JENIS_KEMASAN"],['RCVPKG_AJU' => $aju, 'RCVPKG_DOC' => $donumber]);
+			$rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
+			foreach($rs as $r){
+				$nomorAju = $r['RCV_RPNO'];
+				$idPengirim = str_replace(['.','-'],'',$r['MSUP_TAXREG']);
+				$namaPengirim = $r['SUPNM'];
+				$alamatPengirim = $r['ADDR'];
+				$dodate = $r['RCV_RCVDATE'];
+				$statusPengiriman = $r['RCV_ZSTSRCV'];
+				$nomorInvoice = $r['RCV_INVNO'];
+				$fakturPajak = $r['RCV_TAXINVOICE'];
+				break;
+			}
+			foreach($rsaktivasi as $r){
+				$czkantorasal = $r['KPPBC'];
+				$czidmodul_asli = $r['ID_MODUL'];
+				$czidpengusaha = $r['NPWP'];
+				$cznmpengusaha = $r['NAMA_PENGUSAHA'];
+				$czalamatpengusaha = $r['ALAMAT_PENGUSAHA'];
+				$czizinpengusaha = $r['NOMOR_SKEP'];		
+			}
+			if(strlen($nomorAju)!=26){
+				$myar[] = ['cd' => 0 ,'msg' => 'NOMOR AJU is not valid, please re-check ('.$nomorAju.')'];
+				die('{"status" : '.json_encode($myar).'}');
+			}
+			if($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $nomorAju])>0){
+				$myar[] = ['cd' => 0 ,'msg' => 'the NOMOR AJU is already posted'];
+				die('{"status" : '.json_encode($myar).'}');
+			}
+			
+			$tpb_barang = [];
+			$seri_barang = 1;
+			$hBruto = 0;
+			$hNetto = 0;
+			$TotalhargaPenyerahan = 0;
+			foreach($rs as $r){
+				$hargaPenyerahan = $r['RCV_PRPRC']*$r['RCV_QTY'];
+				$tpb_barang[] = [
+					'KODE_BARANG' => $r['RCV_ITMCD'],
+					'URAIAN' => trim($r['MITM_ITMD1']),
+					'JUMLAH_SATUAN' => $r['RCV_QTY'],
+					'HARGA_PENYERAHAN' => $hargaPenyerahan,
+					'SERI_BARANG' => $seri_barang++,
+					'KODE_SATUAN' => trim($r['MITM_STKUOM'])=='PCS' ? 'PCE' : trim($r['MITM_STKUOM']),
+					'NETTO' => $r['RCV_PRNW']
+				];
+				$hNetto+=$r['RCV_PRNW'];
+				$hBruto+=$r['RCV_PRGW'];
+				$TotalhargaPenyerahan+=$hargaPenyerahan;
+			}
+			$tpb_header = [
+				"NOMOR_AJU" => $nomorAju, "KODE_KANTOR" => $czkantorasal , "KODE_DOKUMEN_PABEAN" => 40,
+				"KODE_JENIS_TPB" => 1 ,  "KODE_TUJUAN_PENGIRIMAN" => $statusPengiriman,
+				
+				"KODE_ID_PENGUSAHA" => "1", "ID_PENGUSAHA" => $czidpengusaha, "NAMA_PENGUSAHA" => $cznmpengusaha,
+				"ALAMAT_PENGUSAHA" => $czalamatpengusaha, "NOMOR_IJIN_TPB" => $czizinpengusaha , 
+	
+				"KODE_ID_PENGIRIM" => "1", "ID_PENGIRIM" => $idPengirim	, "NAMA_PENGIRIM" => $namaPengirim,
+				"ALAMAT_PENGIRIM" => $alamatPengirim,
+				"JUMLAH_BARANG" => $ttldata,"KODE_STATUS" => '00', "ID_MODUL" => $czidmodul_asli, "VERSI_MODUL" => NULL,
+				"KOTA_TTD" => "CIKARANG","NAMA_PENGANGKUT" => "TRUCK",
+				"NETTO"	=> $hNetto, "BRUTO" => $hBruto, "HARGA_PENYERAHAN" => $TotalhargaPenyerahan
+			];
+			$tpb_dokumen = [];
+			$seridokumen = 1;
+			if(!empty($nomorInvoice)){
+				$tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "380", "NOMOR_DOKUMEN" => $nomorInvoice , "TANGGAL_DOKUMEN" => $dodate, "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => $seridokumen++];
+			}
+			if(!empty($nomorInvoice)){
+				$tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "388", "NOMOR_DOKUMEN" => $fakturPajak ,"TANGGAL_DOKUMEN" => null,  "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => $seridokumen++];
+			}
+			$tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "640", "NOMOR_DOKUMEN" => $donumber , "TANGGAL_DOKUMEN" => $dodate, "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => 1];
+
+			$tpb_kemasan = [];$serikemasan = 1;
+			foreach($rskemasan as $r){
+				$tpb_kemasan[] = ["JUMLAH_KEMASAN" =>$r->RCVPKG_JUMLAH_KEMASAN ,"KODE_JENIS_KEMASAN" => $r->RCVPKG_KODE_JENIS_KEMASAN, "SERI_KEMASAN" => $serikemasan++];
+			}
+			#INSERT CEISA
+			##1 TPB HEADER
+			$ZR_TPB_HEADER = $this->TPB_HEADER_imod->insert($tpb_header);		
+			##N
+
+			##2 TPB DOKUMEN
+			foreach($tpb_dokumen as &$n){
+				$n['ID_HEADER'] = $ZR_TPB_HEADER;
+			}
+			unset($n);
+			$this->TPB_DOKUMEN_imod->insertb($tpb_dokumen);
+			##N
+
+			##3 TPB KEMASAN
+			
+			foreach($tpb_kemasan as &$n){
+				$n['ID_HEADER'] = $ZR_TPB_HEADER;
+			}
+			unset($n);
+			if(count($tpb_kemasan))	$this->TPB_KEMASAN_imod->insertb($tpb_kemasan);
+			##N
+
+			##4 TPB BARANG
+			foreach($tpb_barang as &$n){
+				$n['ID_HEADER'] = $ZR_TPB_HEADER;
+				$this->TPB_BARANG_imod->insert($n);	
+			}
+			unset($n);			
+			##N
+			$myar[] = ['cd' => '1', 'msg' => 'Done, Please check the TPB'];
+			die(json_encode(['status' => $myar, 'tpb_header' => $tpb_header, 'tpb_barang' => $tpb_barang]));
+		} else {
+			$myar[] = ['cd' => '0', 'msg' => 'Not found'];
+			die(json_encode(['status' => $myar]));
+		}
+	}	
+
 	public function gotoque($pdo){
 		$mdo = base64_encode($pdo);
 		$ch = curl_init();
-		
-		// curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8081/api_inventory/api/scheduller/MutasiPabean/INC/'.$mdo);
+				
 		curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8081/api_inventory/api/stock/incomingPabean/'.$mdo);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);

@@ -34,16 +34,25 @@
             </div>
         </div>
         <div class="row" id="rpab_in_stack2">
-            <div class="col-md-6 mb-1">
-                <div class="input-group mb-1">                    
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm mb-1">                    
                     <span class="input-group-text" >Item Code</span>                    
                     <input type="text" class="form-control" id="rpab_in_txt_itemcd" required readonly>                    
                     <button title="Find Item" class="btn btn-outline-secondary" type="button" id="rpab_in_btnfinditem"><i class="fas fa-search"></i></button>                        
                     <button title="Find Item" class="btn btn-outline-secondary" type="button" id="rpab_in_btnallitem">All</button>                                                                    
                 </div>
             </div>
-            <div class="col-md-6 mb-1">
-                <div class="input-group mb-1">                    
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm">                    
+                    <label class="input-group-text">Type</label>
+                    <select class="form-select" id="rpab_in_cmb_itemtype">
+                        <option value='-'>All</option>
+                        <?=$modell?>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm mb-1">                    
                     <span class="input-group-text" >Supplier</span>                    
                     <select class="form-select" id="rpab_in_sel_sup" data-style="btn-primary">
                         <option value="-">All</option>
@@ -75,8 +84,8 @@
         </div>    
         <div class="row" id="rpab_in_stack4">
             <div class="col-md-12 mb-1">
-                <div class="input-group input-group-sm mb-1">                                           
-                    <span class="input-group-text"> Nomor Aju</span>                    
+                <div class="input-group input-group-sm mb-1">
+                    <span class="input-group-text">Nomor Aju</span>
                     <input type="text" class="form-control" id="rpab_in_noaju" required maxlength="26">                      
                 </div>
             </div>
@@ -224,6 +233,7 @@
         let mdate1 = document.getElementById('rpab_in_date1').value;
         let mnoaju = document.getElementById('rpab_in_noaju').value;
         let mzstatus = document.getElementById('rpab_in_zsts').value;
+        let itemtype = document.getElementById('rpab_in_cmb_itemtype').value;
         let atpb = mtpbtype.split("#");
         mtpbtype = atpb[0];
         document.getElementById('rpab_in_status').innerHTML = 'Please wait... <i class="fas fa-spinner fa-spin"></i>';
@@ -231,7 +241,7 @@
             type: "get",
             url: "<?=base_url('RCV/dr_pab_inc')?>",
             data: {indoctype : mdoctype, intpbtype: mtpbtype, initmcd: mitmcd.trim(), insup: msup.trim(), indate0: mdate0, indate1: mdate1,
-            innoaju: mnoaju, instatus: mzstatus},
+            innoaju: mnoaju, instatus: mzstatus,itemtype:itemtype},
             dataType: "json",
             success: function (response) {
                 
@@ -242,7 +252,7 @@
                 let cln = mtabel.cloneNode(true);
                 myfrag.appendChild(cln);                    
                 let tabell = myfrag.getElementById("rpab_in_tbl");                    
-                let tableku2 = tabell.getElementsByTagName("tbody")[0];//document.getElementById("rprod_tblwo").getElementsByTagName("tbody")[0];
+                let tableku2 = tabell.getElementsByTagName("tbody")[0]
                 let newrow, newcell, newText;
                 tableku2.innerHTML='';
                 let tmpnomor = '';
@@ -463,6 +473,7 @@
         let mdate1 = document.getElementById('rpab_in_date1').value;
         let mnoaju = document.getElementById('rpab_in_noaju').value;
         let mstatus = document.getElementById('rpab_in_zsts').value;
+        let itemtype = document.getElementById('rpab_in_cmb_itemtype').value;
         let atpb = mtpbtype.split("#");
         mtpbtype = atpb[0];   
         let mtpbtypes = atpb[1];
@@ -475,6 +486,7 @@
         Cookies.set('RP_PAB_DATE1', mdate1, {expires:365});
         Cookies.set('RP_PAB_NOAJU', mnoaju, {expires:365});
         Cookies.set('RP_PAB_RCVSTATUS', mstatus, {expires:365});
+        Cookies.set('RP_PAB_ITMTYPE', itemtype, {expires:365});
         window.open("<?=base_url('laporan_pembukuan_masuk_xlsx')?>",'_blank');
     });
     

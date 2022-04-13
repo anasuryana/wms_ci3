@@ -274,6 +274,7 @@ class RCV_mod extends CI_Model {
 		,MIN(RCV_BCDATE) RCV_BCDATE,MAX(RCV_BCTYPE) RCV_BCTYPE,MAX(RCV_ZSTSRCV) RCV_ZSTSRCV,MAX(RCV_RPNO) RCV_RPNO
         ,MAX(RCV_BCNO) RCV_BCNO,MAX(RCV_RPDATE) RCV_RPDATE,MAX(RCV_RCVDATE) RCV_RCVDATE,MAX(RCV_TPB) RCV_TPB,MAX(RCV_KPPBC) RCV_KPPBC
 		,MAX(RCV_NW) RCV_NW,MAX(RCV_GW) RCV_GW,MAX(RCV_CONA) RCV_CONA,MAX(RCV_DUEDT) RCV_DUEDT,MAX(RCV_CONADT) RCV_CONADT
+        ,MAX(RCV_TAXINVOICE) RCV_TAXINVOICE
 		FROM RCV_TBL b  
 		left join MITM_TBL on RCV_ITMCD=MITM_ITMCD
 		LEFT JOIN (SELECT MSUP_SUPCD,MAX(MSUP_SUPNM) MSUP_SUPNM FROM v_supplier_customer_union GROUP BY MSUP_SUPCD ) S ON RCV_SUPCD=S.MSUP_SUPCD
@@ -378,6 +379,7 @@ class RCV_mod extends CI_Model {
 		,MIN(RCV_BCDATE) RCV_BCDATE,MAX(RCV_BCTYPE) RCV_BCTYPE,MAX(RCV_ZSTSRCV) RCV_ZSTSRCV,MAX(RCV_RPNO) RCV_RPNO,
         MAX(RCV_BCNO) RCV_BCNO,MAX(RCV_RPDATE) RCV_RPDATE,MAX(RCV_RCVDATE) RCV_RCVDATE,MAX(RCV_TPB) RCV_TPB,MAX(RCV_KPPBC) RCV_KPPBC
 		,MAX(RCV_NW) RCV_NW,MAX(RCV_GW) RCV_GW,MAX(RCV_CONA) RCV_CONA,MAX(RCV_DUEDT) RCV_DUEDT,MAX(RCV_CONADT) RCV_CONADT
+        ,MAX(RCV_TAXINVOICE) RCV_TAXINVOICE
         FROM RCV_TBL b  
 		left join MITM_TBL on RCV_ITMCD=MITM_ITMCD
 		LEFT JOIN (SELECT MSUP_SUPCD,MAX(MSUP_SUPNM) MSUP_SUPNM FROM v_supplier_customer_union GROUP BY MSUP_SUPCD ) S ON RCV_SUPCD=S.MSUP_SUPCD
@@ -484,6 +486,7 @@ class RCV_mod extends CI_Model {
 		,MIN(RCV_BCDATE) RCV_BCDATE,MAX(RCV_BCTYPE) RCV_BCTYPE,MAX(RCV_ZSTSRCV) RCV_ZSTSRCV,MAX(RCV_RPNO) RCV_RPNO
         ,MAX(RCV_BCNO) RCV_BCNO,MAX(RCV_RPDATE) RCV_RPDATE,MAX(RCV_RCVDATE) RCV_RCVDATE,MAX(RCV_TPB) RCV_TPB,MAX(RCV_KPPBC) RCV_KPPBC
 		,MAX(RCV_NW) RCV_NW,MAX(RCV_GW) RCV_GW,MAX(RCV_CONA) RCV_CONA,MAX(RCV_DUEDT) RCV_DUEDT,MAX(RCV_CONADT) RCV_CONADT
+        ,MAX(RCV_TAXINVOICE) RCV_TAXINVOICE
 		FROM RCV_TBL b  
 		left join MITM_TBL on RCV_ITMCD=MITM_ITMCD
 		LEFT JOIN (SELECT MSUP_SUPCD,MAX(MSUP_SUPNM) MSUP_SUPNM FROM v_supplier_customer_union GROUP BY MSUP_SUPCD ) S ON RCV_SUPCD=S.MSUP_SUPCD
@@ -798,9 +801,9 @@ class RCV_mod extends CI_Model {
 		return $resq->result_array();
     }
 
-    public function select_sp_report_inc_pab($pdoctype, $ptpbtype, $pitmcd, $psup, $pdate0, $pdate1, $pnoaju, $ptujuan){
-        $qry = "sp_report_inc_pab ?, ?, ? , ? , ?, ? , ? , ?";
-		$resq = $this->db->query($qry, [$pdoctype, $ptpbtype, $pitmcd,$psup, $pdate0, $pdate1 , $pnoaju,$ptujuan]);
+    public function select_sp_report_inc_pab($pdoctype, $ptpbtype, $pitmcd, $psup, $pdate0, $pdate1, $pnoaju, $ptujuan, $pitemtype){
+        $qry = "sp_report_inc_pab ?, ?, ? , ? , ?, ? , ? , ?, ?";
+		$resq = $this->db->query($qry, [$pdoctype, $ptpbtype, $pitmcd,$psup, $pdate0, $pdate1 , $pnoaju,$ptujuan, $pitemtype]);
 		return $resq->result_array();
     }
 
@@ -1036,7 +1039,8 @@ class RCV_mod extends CI_Model {
             GROUP BY MSUP_SUPCD
 		) vc ON RCV_SUPCD=MSUP_SUPCD
         where DLVRMDOC_TXID=?
-        GROUP BY RCV_DONO,RCV_RPNO,RCV_ITMCD,RCV_ZNOURUT,RCV_QTY,RCV_BCDATE,RCV_BCTYPE,RCV_KPPBC,RCV_PRPRC,RCV_HSCD,RCV_BM,MSUP_SUPCR,RCV_PO";
+        GROUP BY RCV_DONO,RCV_RPNO,RCV_ITMCD,RCV_ZNOURUT,RCV_QTY,RCV_BCDATE,RCV_BCTYPE,RCV_KPPBC,RCV_PRPRC,RCV_HSCD,RCV_BM,MSUP_SUPCR,RCV_PO
+        order by RCV_ZNOURUT";
         $query = $this->db->query($qry, [$pdoc]);
 		return $query->result_array();
     }    
@@ -1090,5 +1094,15 @@ class RCV_mod extends CI_Model {
 		$query = $this->db->query($qry, ['%'.$pDO.'%',$pdate1, $pdate2]);
 		return $query->result_array();
 	}
+
+    public function select_for_posting($pwhere){        
+        $this->db->from($this->TABLENAME);
+        $this->db->join('(select MSUP_SUPCD,MAX(MSUP_SUPNM) SUPNM, MAX(MSUP_ADDR1) ADDR,MAX(MSUP_TAXREG) MSUP_TAXREG from v_supplier_customer_union
+        GROUP BY MSUP_SUPCD) VSUP',"RCV_SUPCD=MSUP_SUPCD","LEFT");
+        $this->db->join("MITM_TBL", "RCV_ITMCD=MITM_ITMCD","LEFT");
+        $this->db->where($pwhere);
+		$query = $this->db->get();
+		return $query->result_array();
+    }
     
 }
