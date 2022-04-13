@@ -863,7 +863,7 @@ class DELV_mod extends CI_Model {
     }
 
     public function select_reqPlot($pdoc) {
-        $qry = "select DLV_BSGRP,DLV_CONSIGN,DLV_CUSTCD,SER_ITMID,sum(DLV_QTY) DLVQTY, 0 PLOTQTY from DLV_TBL 
+        $qry = "select DLV_BSGRP,DLV_CONSIGN,DLV_CUSTCD,UPPER(SER_ITMID) SER_ITMID,sum(DLV_QTY) DLVQTY, 0 PLOTQTY from DLV_TBL 
         left join SER_TBL on DLV_SER=SER_ID
         where DLV_ID=?
         group by SER_ITMID,DLV_BSGRP,DLV_CONSIGN,DLV_CUSTCD";
