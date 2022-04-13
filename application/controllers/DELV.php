@@ -51,7 +51,7 @@ class DELV extends CI_Controller {
 		$this->load->model('PST_LOG_mod');
 		$this->load->model('MSG_mod');
 		$this->load->model('MSTLOCG_mod');
-		$this->load->model('XITRN_mod');
+		$this->load->model('XITRN_mod');		
 		$this->load->model('refceisa/TPB_HEADER_imod');
 		$this->load->model('refceisa/TPB_KEMASAN_imod');
 		$this->load->model('refceisa/TPB_DOKUMEN_imod');
@@ -3971,7 +3971,7 @@ class DELV extends CI_Controller {
 				
 				$pdf->SetXY(6,$curY-3);
 				$pdf->Cell(21,4,$nom,0,0,'C');
-				$pdf->SetXY(32,$curY-3);				
+				$pdf->SetXY(28,$curY-3);				
 				$ttlwidth = $pdf->GetStringWidth($ITEMDESC);
 				if($ttlwidth > 63.73){
 					$ukuranfont = 7.5;
@@ -3983,11 +3983,11 @@ class DELV extends CI_Controller {
 				}
 				$pdf->Cell(63.73,4,$ITEMDESC,0,0,'L');	
 				$pdf->SetFont('Arial','',9);
-				$pdf->SetXY(32,$curY+2);
+				$pdf->SetXY(28,$curY+2);
 				$pdf->Cell(63.73,4,$r['DLV_PKG_ITM']!=$r['MITM_ITMCDCUS'] ?$r['MITM_ITMCDCUS'] : $r['DLV_PKG_ITM'] ,0,0,'L');
-				$pdf->SetXY(32,$curY+6);
+				$pdf->SetXY(28,$curY+6);
 				$pdf->Cell(63.73,4,$ITEMSPTNO,0,0,'L');
-				$pdf->SetXY(90,$curY-3);
+				$pdf->SetXY(92,$curY-3);
 				$pdf->Cell(16.63,4, $r['DLV_PKG_QTY'],0,0,'R'); #number_format($r['SISCN_SERQTY'] * $r['TTLBOX'])
 				$pdf->SetXY(110,$curY-3);
 				$pdf->Cell(24.71,4, $r['DLV_PKG_NWG']*1==0? '': number_format($r['DLV_PKG_NWG'],2),0,0,'R');
