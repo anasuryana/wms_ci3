@@ -364,25 +364,6 @@ class INCFG extends CI_Controller {
 						if($cqty> $ostqty){							
 							$datar = ["cd" => "0", "msg" => "Over JOB ..! $FJOB"];
 						} else {
-							#new rule 6 month
-							// $current_ym	= (int)date('Yn');
-							// $jobmonthsel = strtoupper(substr($cjob,3,1));
-							// switch($jobmonthsel){
-							// 	case 'Z':
-							// 		$jobmonthsel = 12; break;
-							// 	case 'Y':
-							// 		$jobmonthsel = 11; break;
-							// 	case 'X':
-							// 		$jobmonthsel = 10; break;
-							// }
-							// $jobyearsel = "20".substr($cjob,0,2);
-							// $jobyearmonth = (int)$jobyearsel.$jobmonthsel;
-							// if($current_ym-$jobyearmonth >6){
-							// 	$myar[] = ["cd" => "0", "msg" => "the JOB should not be used anymore after 6 month"];
-							// 	exit(json_encode($myar));
-							// }
-							#end new rule
-
 							#new rule 6 month from isudate
 							$current_ym	= (int)date('Ym');
 							$_jobdate = '';
@@ -427,6 +408,11 @@ class INCFG extends CI_Controller {
 									$datar = ["cd" => "0", "msg" => "Already scanned (regular)"];
 								}
 							} else {
+								$rsPSN = $this->SPL_mod->select_check_PSN_by_job($cjob);
+								if(count($rsPSN)==0){
+									$myar[] = ["cd" => "0", "msg" => "Kitting for The Job is not ready"];
+									exit(json_encode($myar));
+								}
 								$datas = [
 									"SER_ID" => $creffcd, "SER_DOC" => $cjob,"SER_REFNO" => $creffcd, "SER_ITMID" => $citem,"SER_LOTNO" => $clot ,"SER_QTY" => $cqty, "SER_QTYLOT" => $cqty ,"SER_RAWTXT" => $ckeys,
 									"SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd , "SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama')
@@ -446,19 +432,7 @@ class INCFG extends CI_Controller {
 										];
 										$retITH = $this->ITH_mod->insert($datas);
 										if($retITH>0){
-											// if($creason=='SCRAP'){
-											// 	$datas_scr[] = [
-											// 		'ITH_ITMCD' => $citem, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
-											// 		'ITH_DOC' => $cjob, 'ITH_QTY' => -$cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
-											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-											// 	];
-											// 	$datas_scr[] = [
-											// 		'ITH_ITMCD' => $citem, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
-											// 		'ITH_DOC' => $cjob, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'AFWH9SC',
-											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-											// 	];
-											// 	$retITH = $this->ITH_mod->insertb($datas_scr);
-											// }
+											
 											$datar = ["cd" => "11", "msg" => "Saved","typefg" => $cfgtype];
 										} else {
 											$datar = ["cd" => "0", "msg" => "Could not add stock"];
@@ -541,7 +515,7 @@ class INCFG extends CI_Controller {
 						}
 						if($cqty> $ostqty){
 							$datar = ["cd" => "0", "msg" => "Over JOB ! (New Model)"];
-						} else {							
+						} else {
 							if(count($rsser)>0){
 								$datac = ['ITH_FORM' => 'INC-PRD-FG', 'ITH_SER' => $creffcd];
 								if($this->ITH_mod->check_Primary($datac)==0){
@@ -560,6 +534,11 @@ class INCFG extends CI_Controller {
 									$datar = ["cd" => "0", "msg" => "Already scanned (New Model)"];
 								}
 							} else {
+								$rsPSN = $this->SPL_mod->select_check_PSN_by_job($cjob.$cremark);
+								if(count($rsPSN)==0){
+									$myar[] = ["cd" => "0", "msg" => "Kitting for The Job is not ready"];
+									exit(json_encode($myar));
+								}
 								$datas = [
 									"SER_ID" => $creffcd, "SER_DOC" => $cjob.$cremark,"SER_REFNO" => $creffcd, "SER_ITMID" => $citem.$cremark,"SER_LOTNO" => $clot ,"SER_QTY" => $cqty, "SER_QTYLOT" => $cqty ,"SER_RAWTXT" => $ckeys,
 									"SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd , "SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama')
@@ -578,20 +557,7 @@ class INCFG extends CI_Controller {
 											'ITH_LUPDT' => $currrtime, 'ITH_USRID' => $this->session->userdata('nama')
 										];
 										$retITH = $this->ITH_mod->insert($datas);
-										if($retITH>0){
-											// if($creason=='SCRAP'){
-											// 	$datas_scr[] = [
-											// 		'ITH_ITMCD' => $citem.$cremark, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
-											// 		'ITH_DOC' => $cjob.$cremark, 'ITH_QTY' => -$cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
-											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-											// 	];
-											// 	$datas_scr[] = [
-											// 		'ITH_ITMCD' => $citem.$cremark, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
-											// 		'ITH_DOC' => $cjob.$cremark, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'AFWH9SC',
-											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-											// 	];
-											// 	$retITH = $this->ITH_mod->insertb($datas_scr);
-											// }
+										if($retITH>0){											
 											$datar = ["cd" => "11", "msg" => "Saved (New Model)","typefg" => $cfgtype];											
 										} else {
 											$datar = ["cd" => "0", "msg" => "Could not add stock (New Model)"];
@@ -674,6 +640,11 @@ class INCFG extends CI_Controller {
 									$datar = ["cd" => "0", "msg" => "Successfully create label, but the serial is already in stock ?"];
 								}
 							} else {
+								$rsPSN = $this->SPL_mod->select_check_PSN_by_job($cjob);
+								if(count($rsPSN)==0){
+									$myar[] = ["cd" => "0", "msg" => "Kitting for The Job is not ready"];
+									exit(json_encode($myar));
+								}
 								$datas = [
 									"SER_ID" => $ckeys, "SER_DOC" => $cjob,"SER_REFNO" => $ckeys, "SER_ITMID" => $citemcd.$cfgtype.$cremark_ka ,"SER_LOTNO" => $cinlot ,"SER_QTY" => $cinqty,"SER_QTYLOT" => $cinqty ,
 									"SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd ,"SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama')
@@ -692,20 +663,7 @@ class INCFG extends CI_Controller {
 											'ITH_LUPDT' => $currrtime, 'ITH_USRID' => $this->session->userdata('nama')
 										];
 										$retITH = $this->ITH_mod->insert($datas);
-										if($retITH>0){
-											// if($creason=='SCRAP'){
-											// 	$datas_scr[] = [
-											// 		'ITH_ITMCD' => $citemcd.$cfgtype.$cremark_ka, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'OUT-PRD-FG',
-											// 		'ITH_DOC' => $cjob, 'ITH_QTY' => -$cinqty, 'ITH_SER' => $ckeys, 'ITH_WH' => 'ARPRD1',
-											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-											// 	];
-											// 	$datas_scr[] = [
-											// 		'ITH_ITMCD' => $citemcd.$cfgtype.$cremark_ka, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-SCR-FG',
-											// 		'ITH_DOC' => $cjob, 'ITH_QTY' => $cinqty, 'ITH_SER' => $ckeys, 'ITH_WH' => 'AFWH9SC',
-											// 		'ITH_LUPDT' => $currrtime.".1", 'ITH_USRID' => $this->session->userdata('nama')
-											// 	];
-											// 	$retITH = $this->ITH_mod->insertb($datas_scr);
-											// }
+										if($retITH>0){											
 											$datar = ["cd" => "11", "msg" => "Saved", "typefg" => $cfgtype];	
 										} else {
 											$datar = ["cd" => "0", "msg" => "Could not add stock"];
@@ -874,6 +832,12 @@ class INCFG extends CI_Controller {
 			}
 		}
 		die('{"status":'.json_encode($myar).'}');
+	}
+
+	function test(){
+		$job = $this->input->get('job');
+		$rs = $this->SPL_mod->select_check_PSN_by_job($job);
+		die(json_encode(['data' => $rs]));
 	}
 
 	public function setwhrtn(){
