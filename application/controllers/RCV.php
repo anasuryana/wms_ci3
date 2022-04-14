@@ -2288,6 +2288,7 @@ class RCV extends CI_Controller {
 		if($cdoctype=='-'){$cdoctype='';}
 		if($ctpbtype=='-'){$ctpbtype='';}
 		if($cstatus=='-'){$cstatus='';}
+		if($itemtype=='-'){$itemtype='';}
 		$rs = $this->RCV_mod->select_sp_report_inc_pab($cdoctype, $ctpbtype, $citmcd, $csup, $cdate0, $cdate1, $cnoaju, $cstatus, $itemtype);		
 		echo '{"data":'.json_encode($rs).'}';
 	}
@@ -2355,6 +2356,7 @@ class RCV extends CI_Controller {
 		if($cdoctype=='-'){$cdoctype='';}
 		if($ctpbtype=='-'){$ctpbtype='';}
 		if($cstatus=='-'){$cstatus='';}
+		if($citmtype=='-'){$citmtype='';}
 		$rs = $this->RCV_mod->select_sp_report_inc_pab($cdoctype, $ctpbtype, $citmcd, $csup, $cdate0, $cdate1, $cnoaju, $cstatus, $citmtype);	
 		$stringjudul = 'PEMBUKUAN MASUK';
 		$spreadsheet = new Spreadsheet();
