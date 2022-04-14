@@ -45,6 +45,7 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                             <li><a class="dropdown-item" href="#" id="rconv_test_btn_xls" onclick="rconv_test_btn_xls_eCK()"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> XLS</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="rconv_test_btn_clipboard_eCK()"><i class="fas fa-clipboard"></i> Clipboard</a></li>                            
                         </ul>
                     </div>                   
                 </div>
@@ -141,5 +142,11 @@
                 btn.innerHTML = 'Search'
             }
         });
+    }
+
+    function rconv_test_btn_clipboard_eCK(){
+        cmpr_selectElementContents(document.getElementById('rconv_test_tbl'))
+        document.execCommand("copy");
+        alertify.message("Copied");
     }
 </script>
