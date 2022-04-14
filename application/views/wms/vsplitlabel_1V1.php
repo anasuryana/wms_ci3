@@ -33,17 +33,17 @@
         </div>
         <div class="row">
             <div class="col-md-12 mb-3 pr-1">
-                <h4>Transaction History</h4>
+                <h4>Transaction History <span class="fas fa-circle-info" id="splitlabel1V1_lbl_cat"></span></h4>
                 <input type="hidden" id="splitlabel1V1_txt_activewh">
                 <div class="table-responsive" id="splitlabel1V1_divku">
                     <table id="splitlabel1V1_tbl" class="table table-striped table-bordered table-sm table-hover" style="font-size:75%">
                         <thead class="table-light">
-                            <tr>                               
+                            <tr>
                                 <th  class="align-middle">FORM</th>
                                 <th  class="align-middle">Warehouse</th>
                                 <th  class="align-middle">Location</th>
                                 <th  class="align-middle">Document</th>
-                                <th  class="text-right">Qty</th>                                                              
+                                <th  class="text-end">Qty</th>                                                              
                                 <th  class="align-middle">Time</th>
                                 <th  class="align-middle">PIC</th>
                             </tr>                           
@@ -166,9 +166,9 @@
                             <th  class="align-middle">KD/ASP</th>
                             <th  class="align-middle">Assy Code</th>
                             <th  class="align-middle">Lot Number</th>
-                            <th  class="text-right">QTY</th>
+                            <th  class="text-end">QTY</th>
                             <th  class="text-center">Good ?</th>                                                              
-                            <th  class="align-middle">Remark</th>           
+                            <th  class="align-middle">Reason</th>
                             <th  class="d-none">RAWTEXT</th>
                             <th  class="align-middle">...</th>
                         </tr>                      
@@ -177,8 +177,8 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="4" class="text-right">Total</td>
-                            <td class="text-right"><span id="splitlabel1V1_spn_total"></span></td>
+                            <td colspan="4" class="text-end">Total</td>
+                            <td class="text-end"><span id="splitlabel1V1_spn_total"></span></td>
                             <td colspan="4"></td>
                         </tr>                        
                     </tfoot>
@@ -264,8 +264,7 @@
             let oldjob = document.getElementById('splitlabel1V1_oldjob').value.trim();
             let oldyear = oldjob.substr(0,2);
             let remark1 = document.getElementById('splitlabel1V1_txt_newmodel').value;
-            let aoldjob = oldjob.split('-');
-            console.log(aoldjob);
+            let aoldjob = oldjob.split('-');            
             let tempoldjob = aoldjob[1];
             if(!tempoldjob){
                 tempoldjob = oldjob.substr(3,5);
@@ -284,7 +283,7 @@
                 document.getElementById('splitlabel1V1_txt_newmodel').focus();
                 return;
             }
-            if(olditem.includes('ES')){
+            if(olditem.toUpperCase().includes('ES')){
 
             } else {
                 
@@ -316,9 +315,6 @@
                     return;
                 }
 
-
-
-
                 if(tempjob.substr(0,1)=='0'){
                     tempjob = tempjob.substr(1,4);
                 }  else if( tempjob.substr(0,1)=='C'){
@@ -326,7 +322,6 @@
                     return;
                 }
                 
-
                 ///#1 check item code
                 if( newitem!=olditem.substr(0,9) ){
                     if( newitem!=olditem.substr(0,10) ){
@@ -336,7 +331,6 @@
                     }
                 }
                 
-
                 ///# check job
                 if(tempoldjob.toUpperCase()!=tempjob.toUpperCase()){
                     alertify.warning('job is not same, please check the label again '+ tempoldjob + ' != ' + tempjob);
@@ -401,8 +395,13 @@
                             newcell.style.cssText = 'text-align: center;';
                             newcell.appendChild(newText);
                             newcell = newrow.insertCell(6);
-                            newText = document.createTextNode(remark1);                            
-                            newcell.appendChild(newText);
+                            // newText = document.createTextNode(remark1);                            
+                            newcell.innerHTML = `<select class="form-select form-select-sm" >
+                        <option value="-">-</option>
+                        <option value="SCRAP">SCRAP</option>
+                        <option value="WAITING QA CONFIRMATION">WAITING QA CONFIRMATION</option>
+                        <option value="WAITING REPAIR">WAITING REPAIR</option>
+                    </select>`
                             newcell = newrow.insertCell(7);
                             newText = document.createTextNode(newreff);                            
                             newcell.style.cssText = 'display:none;';
@@ -719,8 +718,13 @@
                         newcell.style.cssText = 'text-align: center;';
                         newcell.appendChild(newText);
                         newcell = newrow.insertCell(6);
-                        newText = document.createTextNode(response.status[0].remark);                            
-                        newcell.appendChild(newText);
+                        // newText = document.createTextNode(response.status[0].remark);                            
+                        newcell.innerHTML = `<select class="form-select form-select-sm">
+                        <option value="-">-</option>
+                        <option value="SCRAP">SCRAP</option>
+                        <option value="WAITING QA CONFIRMATION">WAITING QA CONFIRMATION</option>
+                        <option value="WAITING REPAIR">WAITING REPAIR</option>
+                    </select>`
                         newcell = newrow.insertCell(7);
                         newText = document.createTextNode('');                            
                         newcell.style.cssText = 'display:none;';
@@ -770,7 +774,10 @@
                 moldreff = ar[5].substr(2,ar[5].length-2);
                 $(this).val(moldreff);
             }
-            document.getElementById('splitlabel1V1_oldreff').readOnly=true;
+            document.getElementById('splitlabel1V1_oldreff').readOnly=true
+            const lblcat = document.getElementById('splitlabel1V1_lbl_cat')
+            lblcat.classList.remove(...lblcat.classList)
+            lblcat.classList.add('fas','fa-circle-info')
             $.ajax({
                 type: "get",
                 url: "<?=base_url('SER/getproperties_n_tx_splitplant1')?>",
@@ -828,7 +835,10 @@
                             newcell.appendChild(newText);
                         }
                         mydes.innerHTML='';
-                        mydes.appendChild(myfrag);
+                        mydes.appendChild(myfrag)
+                        if(response.data[0].SER_CAT=='2'){
+                            lblcat.classList.add('text-warning')
+                        }
                         ///end load                        
                     } else {
                         alertify.message(response.status[0].msg);
@@ -855,7 +865,6 @@
         document.getElementById('splitlabel1V1_newqty').value='';   
         document.getElementById('splitlabel1V1_rawtxt1').value='';   
 
-
         document.getElementById('splitlabel1V1_txt_newmodel_ka').value='';   
         document.getElementById('splitlabel1V1_txt_itemcode').value='';   
         document.getElementById('splitlabel1V1_txt_lotno').value='';   
@@ -868,7 +877,11 @@
         document.getElementById('splitlabel1V1_spn_total').innerText= '';
         document.getElementById('splitlabel1V1_oldreff').readOnly=false;
         document.getElementById('splitlabel1V1_newreff').readOnly=false;
-        document.getElementById('splitlabel1V1_oldreff').focus();        
+        document.getElementById('splitlabel1V1_oldreff').focus()
+
+        const lblcat = document.getElementById('splitlabel1V1_lbl_cat')
+        lblcat.classList.remove(...lblcat.classList)
+        lblcat.classList.add('fas','fa-circle-info')
     }
 
     $("#splitlabel1V1_btn_save").click(function (e) { 
@@ -904,12 +917,18 @@
                 alot.push(tableku2.rows[i].cells[3].innerText);
                 aqty.push(numeral(tableku2.rows[i].cells[4].innerText).value());
                 let cktemp = tableku2.rows[i].cells[5].getElementsByTagName('input')[0];
+                const reason = tableku2.rows[i].cells[6].getElementsByTagName('select')[0]
                 if(cktemp.checked){
                     aisok.push('1');
                 } else {
-                    aisok.push('0');
+                    aisok.push('0');                    
+                    if(reason.value=='-'){
+                        alertify.warning('reason is required')
+                        reason.focus()
+                        return
+                    }
                 }
-                aremark.push(tableku2.rows[i].cells[6].innerText);
+                aremark.push(reason.value);
                 arawtxt.push(tableku2.rows[i].cells[7].innerText);
             }
             let konfr = confirm("Are You sure ?");
