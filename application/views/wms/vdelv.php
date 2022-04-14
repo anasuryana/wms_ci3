@@ -745,7 +745,7 @@
     </div>
 </div>
 <div class="modal fade" id="TXFG_MODSAVED">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
       <div class="modal-content">      
         <!-- Modal Header -->
         <div class="modal-header">
@@ -807,7 +807,7 @@
                                     <th>TX Date</th><!-- 1 -->
                                     <th class="d-none">Description</th><!-- 2 -->
                                     <th class="d-none">Customer ID</th><!-- 3 -->
-                                    <th>Customer Name</th><!-- 4 -->
+                                    <th class="d-none">Customer Name</th><!-- 4 -->
                                     <th>Invoice</th><!-- 5 -->
                                     <th>Invoice SMT</th><!-- 6 -->
                                     <th>Transportation</th><!-- 7 -->                                    
@@ -828,7 +828,7 @@
                                     <th class="d-none">Posted By</th><!-- 22 -->
                                     <th class="d-none">Posted Time</th><!-- 23 -->
                                     <th class="d-none">NOAJU</th><!-- 24 -->
-                                    <th class="d-none">BCTYPE</th><!-- 25 -->
+                                    <th >BC Type</th><!-- 25 -->
                                     <th class="d-none">NOPEN</th><!-- 26 -->
                                     <th class="d-none">KANTORTUJUAN</th><!-- 27 -->
                                     <th class="d-none">TUJUANPENGIRIMAN</th><!-- 28 -->
@@ -3438,8 +3438,8 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                         newcell.appendChild(newText);                        
 
                         newcell = newrow.insertCell(4);
-                        newText = document.createTextNode(response.data[i].MCUS_CUSNM);
-                        newcell.appendChild(newText);
+                        newcell.classList.add('d-none')                        
+                        newcell.innerHTML = response.data[i].MCUS_CUSNM
 
                         newcell = newrow.insertCell(5);
                         newText = document.createTextNode(response.data[i].DLV_INVNO);
@@ -3530,8 +3530,7 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                         newcell.style.cssText = 'display:none';
                         newcell.appendChild(newText);                        
                         newcell = newrow.insertCell(25);
-                        newText = document.createTextNode(response.data[i].DLV_BCTYPE);
-                        newcell.style.cssText = 'display:none';
+                        newText = document.createTextNode(response.data[i].DLV_BCTYPE);                        
                         newcell.appendChild(newText);    
                         newcell = newrow.insertCell(26);
                         newText = document.createTextNode(response.data[i].DLV_NOPEN);
@@ -5174,7 +5173,6 @@ function txfg_btn_showweight_e_click(){
     })
     $("#TXFG_MODINFO_WEIGTH").modal('show')
 }
-
 document.getElementById('txfg_fromoffice').value='050900';
 document.getElementById('txfg_cmb_jenisTPB').value='1';
 </script>
