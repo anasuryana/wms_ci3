@@ -15832,8 +15832,7 @@ class DELV extends CI_Controller {
 					,'SERI_BAHAN_BAKU' => 1
 					,'JENIS_SATUAN' => $r['JENIS_SATUAN']
 					,'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU']
-					,'SPESIFIKASI_LAIN' => NULL
-					,'HARGA_PENYERAHAN' => NULL
+					,'SPESIFIKASI_LAIN' => NULL					
 
 					,'RBM' =>$r['RBM']
 					,'CURRENCY' =>$r['CURRENCY']
