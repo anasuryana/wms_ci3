@@ -457,7 +457,7 @@ class RMCalculator {
 		}
 		#END
 		
-		return $rsfix;		
+		return $rsfix;
 	}
 
 	public function get_usage_rm_perjob($pjob){
@@ -582,7 +582,7 @@ class RMCalculator {
 					&& $r['SPLSCN_ITMCD'] == trim($k['SERD_ITMCD'])
 					&& $r['SPLSCN_LOTNO'] == trim($k['SERD_LOTNO'])
 					&& $r['SPLSCN_ORDERNO'] == trim($k['SERD_MCZ'])
-					&& $r['SPLSCN_LINE'] == trim($k['SERD_LINENO'])
+					// && $r['SPLSCN_LINE'] == trim($k['SERD_LINENO'])
 					&& $r['PPSN2_MC'] == trim($k['SERD_MC'])					
 					&& $r['PPSN2_PROCD'] == trim($k['SERD_PROCD'])
 					&& !$k['USED'] )
@@ -2535,6 +2535,7 @@ class RMCalculator {
 		if(trim($strpsn)!=''){
 			$rsMSPP = $this->CI->MSPP_mod->select_byvar(['MSPP_MDLCD' => $strmdlcd]);
 			$xrssub = $this->CI->MSPP_mod->select_all_byvar_group(["MSPP_ACTIVE" => "Y", "MSPP_MDLCD !=" => $strmdlcd]);
+			$rsSpecial = $this->CI->MITMSA_mod->select_where(['RTRIM(MITMSA_ITMCD) MITMSA_ITMCD', 'RTRIM(MITMSA_ITMCDS) MITMSA_ITMCDS'], ['MITMSA_MDLCD' => $strmdlcd]);
 			$rspsnjob_req = $this->CI->SPL_mod->select_psnjob_req($strdocno, $pjob);
 			#Is SubAssy ?
 			if($this->CI->MSTITM_mod->check_Primary_subassy(['PWOP_MDLCD' => $strmdlcd])){
@@ -2995,6 +2996,161 @@ class RMCalculator {
 			}
 			unset($n);
 
+			#sub5 CALCULATION Special Acceptance
+			foreach($rspsnjob_req as &$n){	
+				$processs = ($n['PIS3_REQQTSUM'] > $n["SUPQTY"]) ? true : false;
+				while($processs){
+					foreach($rspsn_sup as &$x){
+						$issubtituted = false;
+						foreach($rsSpecial as $y){
+							if($y['MITMSA_ITMCD'] == $n['PIS3_MPART'] && $y['MITMSA_ITMCDS'] == $x['SPLSCN_ITMCD'] && $x['SPLSCN_QTY']>0){
+								$issubtituted = true;
+								break;
+							}
+						}
+						if($issubtituted){
+							#third side sub
+							$process2 = true;
+							while($process2){
+								if(($n['PIS3_REQQTSUM'] > $n["SUPQTY"]) ){
+									if($x['SPLSCN_QTY']>0 ){
+										$n["SUPQTY"]+=1;
+										$x['SPLSCN_QTY']--;
+										$qtper = $n['MYPER'][0]=="." ? "0".$n['MYPER'] : $n['MYPER'];
+										$islotfound = false;
+										foreach($rspsn_req_d as &$u){
+											if(($u["SERD_JOB"] == $n["PIS3_WONO"]) 
+											&& ($u["SERD_ITMCD"]== $x["SPLSCN_ITMCD"]) 
+											&& ($u["SERD_LOTNO"]== $x["SPLSCN_LOTNO"])
+											&& ($u['SERD_MC'] == $n['PIS3_MC'])  
+											&& ($u['SERD_MCZ'] == $n['PIS3_MCZ']) 
+											&& ($u['SERD_PROCD'] == $n['PIS3_PROCD'])
+											&& ($u['SERD_FR'] == $n['PIS3_FR'] ) 
+											&& ($u['SERD_QTPER'] == $qtper)
+											&& ($u['SERD_REMARK'] == 'SpeAcp' )){
+												$u["SERD_QTY"]+=1;
+												$islotfound=true;break;
+											}
+										}
+										unset($u);
+
+										if(!$islotfound){
+											$rspsn_req_d[] = [
+												"SERD_JOB" => $n["PIS3_WONO"]
+												,"SERD_QTPER" => $qtper 
+												,"SERD_ITMCD" => $x['SPLSCN_ITMCD']
+												,"SERD_QTY" => 1 
+												,"SERD_LOTNO" => $x['SPLSCN_LOTNO']
+												,"SERD_PSNNO" => $x['SPLSCN_DOC']
+												,"SERD_LINENO" => $n['PIS3_LINENO']
+												,"SERD_CAT" => ''
+												,"SERD_FR" => $n['PIS3_FR']
+												,"SERD_QTYREQ" => intval($n['PIS3_REQQTSUM'])
+												,"SERD_MSCANTM" => $x['SCNTIME']
+												,"SERD_MC" => $n['PIS3_MC']
+												,"SERD_MCZ" => $n['PIS3_MCZ']
+												,"SERD_PROCD" => $n['PIS3_PROCD']
+												,"SERD_MSFLG" => $x['PPSN2_MSFLG']
+												,"SERD_MPART" => $n['PIS3_MPART']
+												,"SERD_USRID" => $cuserid
+												, "SERD_LUPDT" => $crnt_dt,
+												"SERD_REMARK" => "SpeAcp" 
+											];
+										}	
+									} else {
+										$process2 =false;
+									}
+								} else {
+									$process2 =false;
+									$processs = false;
+								}
+							}
+						} else {
+							$processs = false;
+						}
+					}
+					unset($x);
+				}
+			}
+			unset($n);
+			#sub5 CALCULATION Special Acceptance two ways
+			foreach($rspsnjob_req as &$n){	
+				$processs = ($n['PIS3_REQQTSUM'] > $n["SUPQTY"]) ? true : false;
+				while($processs){
+					foreach($rspsn_sup as &$x){
+						$issubtituted = false;
+						foreach($rsSpecial as $y){
+							if($y['MITMSA_ITMCDS'] == $n['PIS3_MPART'] && $y['MITMSA_ITMCD'] == $x['SPLSCN_ITMCD'] && $x['SPLSCN_QTY']>0){
+								$issubtituted = true;
+								break;
+							}
+						}
+						if($issubtituted){
+							#third side sub
+							$process2 = true;
+							while($process2){
+								if(($n['PIS3_REQQTSUM'] > $n["SUPQTY"]) ){
+									if($x['SPLSCN_QTY']>0 ){
+										$n["SUPQTY"]+=1;
+										$x['SPLSCN_QTY']--;
+										$qtper = $n['MYPER'][0]=="." ? "0".$n['MYPER'] : $n['MYPER'];
+										$islotfound = false;
+										foreach($rspsn_req_d as &$u){
+											if(($u["SERD_JOB"] == $n["PIS3_WONO"]) 
+											&& ($u["SERD_ITMCD"]== $x["SPLSCN_ITMCD"]) 
+											&& ($u["SERD_LOTNO"]== $x["SPLSCN_LOTNO"])
+											&& ($u['SERD_MC'] == $n['PIS3_MC'])  
+											&& ($u['SERD_MCZ'] == $n['PIS3_MCZ']) 
+											&& ($u['SERD_PROCD'] == $n['PIS3_PROCD'])
+											&& ($u['SERD_FR'] == $n['PIS3_FR'] ) 
+											&& ($u['SERD_QTPER'] == $qtper)
+											&& ($u['SERD_REMARK'] == 'SpeAcp' )){
+												$u["SERD_QTY"]+=1;
+												$islotfound=true;break;
+											}
+										}
+										unset($u);
+
+										if(!$islotfound){
+											$rspsn_req_d[] = [
+												"SERD_JOB" => $n["PIS3_WONO"]
+												,"SERD_QTPER" => $qtper 
+												,"SERD_ITMCD" => $x['SPLSCN_ITMCD']
+												,"SERD_QTY" => 1 
+												,"SERD_LOTNO" => $x['SPLSCN_LOTNO']
+												,"SERD_PSNNO" => $x['SPLSCN_DOC']
+												,"SERD_LINENO" => $n['PIS3_LINENO']
+												,"SERD_CAT" => ''
+												,"SERD_FR" => $n['PIS3_FR']
+												,"SERD_QTYREQ" => intval($n['PIS3_REQQTSUM'])
+												,"SERD_MSCANTM" => $x['SCNTIME']
+												,"SERD_MC" => $n['PIS3_MC']
+												,"SERD_MCZ" => $n['PIS3_MCZ']
+												,"SERD_PROCD" => $n['PIS3_PROCD']
+												,"SERD_MSFLG" => $x['PPSN2_MSFLG']
+												,"SERD_MPART" => $n['PIS3_MPART']
+												,"SERD_USRID" => $cuserid
+												, "SERD_LUPDT" => $crnt_dt,
+												"SERD_REMARK" => "SpeAcp" 
+											];
+										}	
+									} else {
+										$process2 =false;
+									}
+								} else {
+									$process2 =false;
+									$processs = false;
+								}
+							}
+						} else {
+							$processs = false;
+						}
+					}
+					unset($x);
+				}
+			}
+			unset($n);
+
 			if(count($rspsn_req_d) >0){
 				$this->CI->SERD_mod->insertb($rspsn_req_d);
 				$myar[] = ['cd' => 1, 'msg' => 'ok inserted ?'];
@@ -3210,14 +3366,14 @@ class RMCalculator {
 								$this->CI->SERD_mod->deletebyID_label(['SERD2_SER' => $pser[$u]]);
 								$res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser[$u], $pserqty[$u], $pjob[$u]));									
 								$myar[] = $res2->status[0]->cd!=0 ? ['cd' => 1, 'msg' => 'recalculated ok.', 'reffno' => $pser[$u]] : 
-											['cd' => 0, 'msg' => 'recalculating is failed.', 'reffno' => $pser[$u]];								
+											['cd' => 0, 'msg' => 'recalculating is failed..', 'reffno' => $pser[$u]];								
 							} else {
 								$myar[]= ['cd' => 1, 'msg' => 'just get', 'reffno' => $pser[$u]];									
 							}
 						} else {
 							$res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser[$u], $pserqty[$u], $pjob[$u]));								
 							$myar[] = $res2->status[0]->cd!=0 ?  ['cd' => 1, 'msg' => 'recalculated ok.', 'reffno' => $pser[$u] ] : 
-										['cd' => 0, 'msg' => 'calculating is failed.', 'reffno' => $pser[$u] ];
+										['cd' => 0, 'msg' => 'calculating is failed...', 'reffno' => $pser[$u] ];
 						}						
 					}
 					#CHECK IS SUB ASSY
