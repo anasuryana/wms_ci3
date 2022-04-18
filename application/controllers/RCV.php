@@ -3208,14 +3208,8 @@ class RCV extends CI_Controller {
 			 'rsstk' => $rsstk
 			,'rsFIX' => $rsFIX
 		]));
-	}
-
-	public function tes(){
-		$ret  = $this->RCVNI_mod->select_maxline('00016/KI/02/2022')+1;
-		echo $ret;
-	}
+	}	
 	
-
 	public function set_nonitem(){
 		header('Content-Type: application/json');
 		date_default_timezone_set('Asia/Jakarta');
@@ -3249,8 +3243,10 @@ class RCV extends CI_Controller {
 				} else {
 					$ttlupdated+=$this->RCVNI_mod->update_where([
 						'RCVNI_QTY' => $aqty[$i],
+						'RCVNI_LUPDTAT' => $createat,
+						'RCVNI_LUPDTBY' => $user
 					], [
-						'RCVNI_LINE' => $i,
+						'RCVNI_LINE' => $arowid[$i],
 						'RCVNI_DO' => $donum
 					]);
 				}
