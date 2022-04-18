@@ -13,9 +13,11 @@ class RCVPKG_mod extends CI_Model {
 		return $query->result_array();
     }  
     
-    public function select_where($pvar)
+    public function select_where($pcolumns,$pvar)
 	{
+        $this->db->select($pcolumns);
         $this->db->where($pvar);
+        $this->db->join("ZREFERENSI_KEMASAN_TBL","RCVPKG_KODE_JENIS_KEMASAN=KODE_KEMASAN", "LEFT");
 		$query = $this->db->get($this->TABLENAME);
 		return $query->result();
 	}
@@ -35,5 +37,18 @@ class RCVPKG_mod extends CI_Model {
 	public function check_Primary($data)
     {        
         return $this->db->get_where($this->TABLENAME,$data)->num_rows();
-    }    
+    }
+
+    public function deletebyID($parr){        
+        $this->db->where($parr);
+        $this->db->delete($this->TABLENAME);
+        return $this->db->affected_rows();
+	}
+
+    public function select_maxline($pdoc, $paju){
+        $this->db->select("MAX(RCVPKG_LINE) LLINE");
+        $this->db->from($this->TABLENAME);
+        $this->db->where("RCVPKG_DOC", $pdoc)->where("RCVPKG_AJU", $paju);
+		return $this->db->get()->row()->LLINE;
+    }
 }
