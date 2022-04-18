@@ -50,7 +50,7 @@
             <div class="row" id="rcvcustoms_stack2">
                 <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">
-                        <label class="input-group-text">NoAju</label>                    
+                        <label class="input-group-text" style="cursor:pointer" onclick="rcvcustoms_noaju_lbl_eCK()">NoAju</label>
                         <input type="text" class="form-control" id="rcvcustoms_noaju" maxlength="26" autocomplete="off">
                     </div>
                 </div>
@@ -213,7 +213,7 @@
                 <div class="col-md-3 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Doc Type</label>
-                        <select id="rcvcustoms_typedoc_1" class="form-select">
+                        <select id="rcvcustoms_typedoc_1" class="form-select" onchange="rcvcustoms_typedoc_1_eChange(this)">
                             <option value="23">BC 2.3</option>
                             <option value="27">BC 2.7</option>
                             <option value="40">BC 4.0</option>
@@ -230,25 +230,34 @@
                 </div>
             </div>
             <div class="row" id="rcvcustoms_stack2_1">
-                <div class="col-md-4 mb-1">
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Tax Invoice</label>
+                        <input type="text" class="form-control" id="rcvcustoms_tax_invoice">
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">NoAju</label>                    
                         <input type="text" class="form-control" id="rcvcustoms_noaju_1" maxlength="26" autocomplete="off">
                     </div>
                 </div>
-                <div class="col-md-2 mb-1">
-                    <div class="input-group input-group-sm mb-1">                    
-                        <label class="input-group-text">NoPen</label>                    
+            </div>
+            <div class="row" id="rcvcustoms_stack2_1_1">
+                <div class="col-md-4 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">NoPen</label>
                         <input type="text" class="form-control" id="rcvcustoms_regno_1" maxlength="8">
+                        <button class="btn btn-primary" id="rcvcustoms_btnsync"><i class="fas fa-sync"></i></button>
                     </div>
                 </div>
-                <div class="col-md-3 mb-1">
-                    <div class="input-group input-group-sm mb-1">                    
-                        <label class="input-group-text">Doc. Date</label>                    
+                <div class="col-md-4 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Doc. Date</label>
                         <input type="text" class="form-control" id="rcvcustoms_dd_1">
                     </div>
                 </div>
-                <div class="col-md-3 mb-1">
+                <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Rcv. Date</label>
                         <input type="text" class="form-control" id="rcvcustoms_rcvdate_1">
@@ -291,13 +300,13 @@
                 </div>
                 <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">                    
-                        <label class="input-group-text">Net Weight</label>                    
+                        <label class="input-group-text">Net Weight TTL</label>                    
                         <input type="text" class="form-control" id="rcvcustoms_NW_1">
                     </div>
                 </div>
                 <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">                    
-                        <label class="input-group-text">Gross Weight</label>                    
+                        <label class="input-group-text">Gross Weight TTL</label>                    
                         <input type="text" class="form-control" id="rcvcustoms_GW_1">
                     </div>
                 </div>
@@ -350,6 +359,14 @@
                     <div class="btn-group btn-group-sm">
                         <button class="btn btn-outline-primary" id="rcvcustoms_new_1" onclick="rcvcustoms_new_1_eCK()" title="New"><i class="fas fa-file"></i></button>
                         <button class="btn btn-outline-primary" id="rcvcustoms_save_1" onclick="rcvcustoms_save_1_eCK()" title="Save"><i class="fas fa-save"></i></button>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button id="rcvcustoms_btnTPB" title="TPB Operations" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >TPB</button>
+                            <ul class="dropdown-menu">
+                                <li><a id="rcvcustoms_btn_mkemasan" class="dropdown-item" href="#" onclick="rcvcustoms_btnmkemasan_eCK(this)"><i class="fa-solid fa-box"></i> Kemasan</a></li>
+                                <li><a id="rcvcustoms_btn_posting" class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>
+                                <li><a id="rcvcustoms_cancel" class="dropdown-item disabled" onclick="rcvcustoms_cancel_eCK()"  href="#" ><i class="fas fa-ban" style="color: red"></i> Cancel</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>               
                 <div class="col-md-6 mb-1 text-end">
@@ -370,15 +387,18 @@
                                     <th>NoUrut</th> <!-- 1 -->
                                     <th>PO No</th> <!-- 2 -->
                                     <th>Item Code</th> <!-- 3 -->
-                                    <th>Item Name</th> <!-- 4 -->
-                                    <th class="text-end">QTY</th> <!-- 5 -->
-                                    <th title="Unit Measurement">UM</th> <!-- 6 -->
-                                    <th class="text-end">Price</th> <!-- 7 -->
-                                    <th class="text-end">Amount</th> <!-- 8 -->                                    
-                                    <th class="text-center">HS Code</th> <!-- 9 -->
-                                    <th class="text-end" title="Bea Masuk">BM</th> <!-- 10 -->
-                                    <th class="text-end">PPN</th> <!-- 11 -->
-                                    <th class="text-end">PPH</th> <!-- 12 -->                                    
+                                    <th>Asset Number</th> <!-- 4 -->
+                                    <th>Item Name</th> <!-- 5 -->
+                                    <th class="text-end">QTY</th> <!-- 6 -->
+                                    <th title="Unit Measurement">UM</th> <!-- 7 -->
+                                    <th class="text-end">Price</th> <!-- 8 -->
+                                    <th class="text-end">Amount</th> <!-- 9 -->                                    
+                                    <th class="text-end">Net Weight</th> <!-- 10 -->
+                                    <th class="text-end">Gross Weight</th> <!-- 11 -->
+                                    <th class="text-center">HS Code</th> <!-- 12 -->
+                                    <th class="text-end" title="Bea Masuk">BM</th> <!-- 13 -->
+                                    <th class="text-end">PPN</th> <!-- 14 -->
+                                    <th class="text-end">PPH</th> <!-- 15 -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -902,6 +922,8 @@
                                 <th>Business</th>
                                 <th>Invoice</th>
                                 <th>Nomor Pendaftaran</th>
+                                <th>Jenis Dokumen</th>
+                                <th>Tax Invoice</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1368,6 +1390,88 @@
       </div>
     </div>
 </div>
+<div class="modal fade" id="rcvcustoms_KEMASAN_Mod">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content"> 
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">PO List</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Jumlah</span>                        
+                        <input type="text" class="form-control" id="rcvcustoms_pkg_jumlah" maxlength="2" required>
+                        <select class="form-select" id="rcvcustoms_pkg_kodejenis" required onchange="document.getElementById('rcvcustoms_pkg_btnuse').focus()">
+                            <?=$lkemasan?> 
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                <button type="button" class="btn btn-primary btn-sm" id="rcvcustoms_pkg_btnuse" onclick="rcvcustoms_pkg_btnuse_eCK()"><i class="fas fa-plus"></i> </button>
+                </div>
+            </div>           
+            <div class="row">
+                <div class="col">
+                    <div class="table-responsive" id="rcvcustoms_pkg_tbl_div">
+                        <table id="rcvcustoms_pkg_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="d-none">idrow</th>
+                                    <th>Jumlah</th>
+                                    <th>Kode</th>
+                                    <th>Uraian</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            
+        </div>
+      </div>
+    </div>
+</div>
+<div class="modal fade" id="rcvcustoms_QR_Mod">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content"> 
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">QR Scanner</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col mb-1" id="rcvcustoms_reader">
+                    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="input-group input-group-sm mb-1">                    
+                        <label class="input-group-text">Result</label>
+                        <textarea class="form-control" id="rcvcustoms_reader_ta" rows="3"> </textarea>
+                    </div>
+                </div>
+            </div>                       
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal" id="rcvcustoms_qr_btnuse" onclick="rcvcustoms_qr_btnuse_eCK()">Use</button>
+        </div>
+      </div>
+    </div>
+</div>
+<div id='rcvcustoms_contextmenu'></div>
 <script>
     var rcvcustoms_suppliercode = ''
     var rcvcustoms_selected_row = 0;
@@ -1420,6 +1524,7 @@
         const mconaDate = document.getElementById('rcvcustoms_contractdate_1').value
         const mconaDueDate = document.getElementById('rcvcustoms_contractduedate_1').value
         const minvNo = document.getElementById('rcvcustoms_invoicenum_1').value
+        const mtax_invoice = document.getElementById('rcvcustoms_tax_invoice').value
         const supplier = rcvcustoms_suppliercode
         if (mdo.length == 0) {
             alertify.message("DO number could not be empty")
@@ -1429,15 +1534,21 @@
         let d_nourut = []
         let d_pono = []
         let d_itemcode = []
+        let d_assetnum = []
         let d_qty = []
         let d_price = []
         let d_hscode = []
         let d_bm = []
         let d_ppn = []
         let d_pph = []
+        let d_prNW = []
+        let d_prGW = []
+        let d_pkg_idrow = []
+        let d_pkg_jml = []
+        let d_pkg_kd = []        
         
         let mytable = document.getElementById('rcvcustoms_tbl_1').getElementsByTagName('tbody')[0]
-        const mtrlength = mytable.getElementsByTagName('tr').length
+        let mtrlength = mytable.getElementsByTagName('tr').length
         for(let i=0;i<mtrlength; i++) {
             const itmcode = mytable.rows[i].cells[3].innerText.trim().replace(/\n+/g, '')
             if(itmcode.length) {
@@ -1445,17 +1556,27 @@
                 d_nourut.push(mytable.rows[i].cells[1].innerText.replace(/\n+/g, ''))
                 d_pono.push(mytable.rows[i].cells[2].innerText.replace(/\n+/g, ''))
                 d_itemcode.push(itmcode)
-                d_qty.push(mytable.rows[i].cells[5].innerText.replace(/\n+/g, ''))
-                d_price.push(mytable.rows[i].cells[7].innerText.replace(/\n+/g, ''))
-                d_hscode.push(mytable.rows[i].cells[9].innerText.replace(/\n+/g, ''))
-                d_bm.push(mytable.rows[i].cells[10].innerText.replace(/\n+/g, ''))
-                d_ppn.push(mytable.rows[i].cells[11].innerText.replace(/\n+/g, ''))
-                d_pph.push(mytable.rows[i].cells[12].innerText.replace(/\n+/g, ''))
+                d_assetnum.push(mytable.rows[i].cells[4].innerText.replace(/\n+/g, ''))
+                d_qty.push(mytable.rows[i].cells[6].innerText.replace(/\n+/g, ''))
+                d_price.push(mytable.rows[i].cells[8].innerText.replace(/\n+/g, ''))
+                d_prNW.push(mytable.rows[i].cells[10].innerText.replace(/\n+/g, ''))
+                d_prGW.push(mytable.rows[i].cells[11].innerText.replace(/\n+/g, ''))
+                d_hscode.push(mytable.rows[i].cells[12].innerText.replace(/\n+/g, ''))
+                d_bm.push(mytable.rows[i].cells[13].innerText.replace(/\n+/g, ''))
+                d_ppn.push(mytable.rows[i].cells[14].innerText.replace(/\n+/g, ''))
+                d_pph.push(mytable.rows[i].cells[15].innerText.replace(/\n+/g, ''))
             }
         }
         if(d_itemcode.length==0) {
             alertify.message('there is no item')
             return
+        }
+        mytable = document.getElementById('rcvcustoms_pkg_tbl').getElementsByTagName('tbody')[0]
+        mtrlength = mytable.getElementsByTagName('tr').length
+        for(let i=0;i<mtrlength; i++) {
+            d_pkg_idrow.push(mytable.rows[i].cells[0].innerText)
+            d_pkg_jml.push(mytable.rows[i].cells[1].innerText)
+            d_pkg_kd.push(mytable.rows[i].cells[2].innerText)
         }
         if (confirm("Are you sure ?")) {
             $.ajax({
@@ -1480,6 +1601,7 @@
                     ,h_mconaDate: mconaDate
                     ,h_mconaDueDate: mconaDueDate
                     ,h_minvNo: minvNo
+                    ,h_tax_invoice: mtax_invoice
                     ,d_grlno : d_grlno
                     ,d_nourut : d_nourut
                     ,d_pono : d_pono
@@ -1490,12 +1612,18 @@
                     ,d_bm: d_bm
                     ,d_ppn: d_ppn
                     ,d_pph: d_pph
+                    ,d_prNW: d_prNW
+                    ,d_prGW: d_prGW
+                    ,d_assetnum : d_assetnum
+                    ,d_pkg_idrow : d_pkg_idrow
+                    ,d_pkg_jml : d_pkg_jml
+                    ,d_pkg_kd : d_pkg_kd
                 },
                 dataType: "JSON",
                 success: function (response) {
                     if(response.status[0].cd==1){
                         alertify.success(response.status[0].msg)
-                        rcvuctoms_getdetail1({pdo: mdo, psupcd: supplier})
+                        rcvuctoms_getdetail1({pdo: mdo, psupcd: supplier, pAJU: mnoaju})
                     } else {
                         alertify.message(response.status[0].msg)
                     }
@@ -1620,6 +1748,9 @@
         document.getElementById('rcvcustoms_contractdate_1').value =''
         document.getElementById('rcvcustoms_contractduedate_1').value =''
         document.getElementById('rcvcustoms_docnoorigin_1').readOnly =false
+        const btnTPB = document.getElementById('rcvcustoms_btnTPB')
+        btnTPB.disabled = false
+        btnTPB.innerHTML = 'TPB'
     }
     function rcvcustoms_new_2_eCK() {
         document.getElementById('rcvcustoms_tbl_2').getElementsByTagName('tbody')[0].innerHTML = ""
@@ -1647,6 +1778,9 @@
     })
     $("#rcvcustoms_POBAL_Mod").on('shown.bs.modal', function(){
         document.getElementById('rcvcustoms_po_txtsearch').focus()
+    })
+    $("#rcvcustoms_KEMASAN_Mod").on('shown.bs.modal', function(){
+        document.getElementById('rcvcustoms_pkg_jumlah').focus()
     })
 
     function rcvcustoms_NALITM_searchby_eCh() {
@@ -1796,25 +1930,38 @@
         newcell.innerHTML = '-'
 
         newcell = newrow.insertCell(8)
-        newcell.classList.add('text-end')  
-        newcell.classList.add('table-info')       
+        newcell.classList.add('text-end','table-info')         
         newcell.innerHTML = '-'
 
         newcell = newrow.insertCell(9)
+        newcell.title = 'Net weight'
+        newcell.classList.add('text-end')
         newcell.contentEditable = true
-        newcell.innerHTML = '-'        
-
+        newcell.innerHTML = 0
         newcell = newrow.insertCell(10)
         newcell.classList.add('text-end')
+        newcell.title = 'Gross weight'
         newcell.contentEditable = true
-        newcell.innerHTML = '-'
-
+        newcell.innerHTML = '-'        
         newcell = newrow.insertCell(11)
+        newcell.title = 'HSCode'
+        newcell.contentEditable = true
+        newcell.innerHTML = '-'        
+        
+        newcell = newrow.insertCell(12)
+        newcell.title = 'BM'
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = '-'
-
-        newcell = newrow.insertCell(12)
+        
+        newcell = newrow.insertCell(13)
+        newcell.title = 'PPN'
+        newcell.classList.add('text-end')
+        newcell.contentEditable = true
+        newcell.innerHTML = '-'
+        
+        newcell = newrow.insertCell(14)
+        newcell.title = 'PPH'
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = '-'
@@ -1823,8 +1970,7 @@
     function rcvcustoms_plus_1_eC() {
         rcvcustoms_tablefokus = 'rcvcustoms_tbl_1'
         rcvcustoms_addrow('rcvcustoms_tbl_1')
-        let mytbody = document.getElementById('rcvcustoms_tbl_1').getElementsByTagName('tbody')[0]
-        console.log(rcvcustoms_selected_row)
+        let mytbody = document.getElementById('rcvcustoms_tbl_1').getElementsByTagName('tbody')[0]        
         if(rcvcustoms_selected_row<0) {
             rcvcustoms_selected_row = 0
         }
@@ -1868,9 +2014,7 @@
         document.getElementById('rcvcustoms_docnoorigin').readOnly = false
     }
    
-    function rcvcustoms_tbl_tbody_tr_eC(e){
-        console.log("trclick:"+rcvcustoms_selected_row)
-        
+    function rcvcustoms_tbl_tbody_tr_eC(e){        
         if(rcvcustoms_selected_row!=e.srcElement.parentElement.rowIndex - 1){
             if(typeof e.srcElement.parentElement.parentElement.rows[rcvcustoms_selected_row] !== 'undefined'){
                 e.srcElement.parentElement.parentElement.rows[rcvcustoms_selected_row].classList.remove('table-active')
@@ -1881,8 +2025,7 @@
         rcvcustoms_selected_row = e.srcElement.parentElement.rowIndex - 1
         if(isNaN(rcvcustoms_selected_row)){
             rcvcustoms_selected_row = 0
-        }
-        console.log("trclick2:"+rcvcustoms_selected_row)
+        }        
         e.srcElement.parentElement.parentElement.rows[rcvcustoms_selected_row].classList.add('table-active')        
         const ptablefocus = e.srcElement.parentElement.parentElement.offsetParent.id
         rcvcustoms_selected_table = ptablefocus
@@ -2222,7 +2365,8 @@
     $("#rcvcustoms_datefilter").datepicker({
         format: 'yyyy-mm-dd',
         autoclose:true
-    }); 
+    })
+    
 
     function rcvcustoms_btn_filterdate_e_click(){
         document.getElementById('rcvcustoms_datefilter').value="";
@@ -2486,16 +2630,17 @@
         $.ajax({
             type: "GET",
             url: "<?=base_url('RCV/GetDODetail1')?>",
-            data: {do: pdata.pdo, supcd: pdata.psupcd},
+            data: {do: pdata.pdo, supcd: pdata.psupcd, nomorAju:pdata.pAJU},
             dataType: "json",
             success: function (response) {
-                const ttlrows = response.data.length
+                let ttlrows = response.data.length
                 let mydes = document.getElementById("rcvcustoms_divku_1")
                 let myfrag = document.createDocumentFragment()
                 let mtabel = document.getElementById("rcvcustoms_tbl_1")
                 let cln = mtabel.cloneNode(true);
                 myfrag.appendChild(cln)
                 let tabell = myfrag.getElementById("rcvcustoms_tbl_1")
+                let tabelHead = tabell.getElementsByTagName('thead')[0]
                 let tableku2 = tabell.getElementsByTagName("tbody")[0]
                 let newrow, newcell, newText
                 let myitmttl = 0;
@@ -2524,35 +2669,49 @@
                     newcell.style.cssText = "cursor:pointer"
                     newcell.innerHTML = response.data[i].RCV_ITMCD
                     newcell = newrow.insertCell(4)
+                    newcell.contentEditable = true
+                    newcell.innerHTML = response.data[i].RCV_ASSETNUM
+                    newcell = newrow.insertCell(5)
                     newcell.classList.add('table-info')
                     newcell.innerHTML = response.data[i].MITM_ITMD1
-                    newcell = newrow.insertCell(5)
+                    newcell = newrow.insertCell(6)
                     newcell.contentEditable = true
                     newcell.classList.add('text-end')
                     newcell.innerHTML = response.data[i].RCV_QTY
-                    newcell = newrow.insertCell(6)
+                    newcell = newrow.insertCell(7)
                     newcell.classList.add('table-info')
                     newcell.innerHTML = response.data[i].MITM_STKUOM
-                    newcell = newrow.insertCell(7)
+                    newcell = newrow.insertCell(8)
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PRPRC
-                    newcell = newrow.insertCell(8)
-                    newcell.classList.add('text-end')  
-                    newcell.classList.add('table-info') 
-                    newcell.innerHTML = response.data[i].RCV_PRPRC*response.data[i].RCV_QTY
                     newcell = newrow.insertCell(9)
+                    newcell.classList.add('text-end','table-info')                    
+                    newcell.innerHTML = response.data[i].RCV_PRPRC*response.data[i].RCV_QTY
+                    newcell = newrow.insertCell(10)
+                    newcell.classList.add('text-end')
+                    newcell.title = tabelHead.rows[0].cells[9].innerText
+                    newcell.contentEditable = true
+                    newcell.innerHTML = response.data[i].RCV_PRNW
+                    newcell = newrow.insertCell(11)
+                    newcell.classList.add('text-end')
+                    newcell.title = tabelHead.rows[0].cells[10].innerText
+                    newcell.contentEditable = true
+                    newcell.innerHTML = response.data[i].RCV_PRGW
+                    newcell = newrow.insertCell(12)
+                    newcell.title = tabelHead.rows[0].cells[11].innerText
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_HSCD
-                    newcell = newrow.insertCell(10)
+                    newcell = newrow.insertCell(13)
+                    newcell.title = tabelHead.rows[0].cells[12].innerText
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_BM
-                    newcell = newrow.insertCell(11)
+                    newcell = newrow.insertCell(14)
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PPN
-                    newcell = newrow.insertCell(12)
+                    newcell = newrow.insertCell(15)
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PPH
@@ -2561,6 +2720,39 @@
                 mydes.innerHTML=''
                 mydes.appendChild(myfrag)
                 document.getElementById('rcvcustoms_amount_1').value = ttlamount
+                //load data kemasan
+                ttlrows = response.pkg.length
+                mydes = document.getElementById("rcvcustoms_pkg_tbl_div")
+                myfrag = document.createDocumentFragment()
+                mtabel = document.getElementById("rcvcustoms_pkg_tbl")
+                cln = mtabel.cloneNode(true);
+                myfrag.appendChild(cln)
+                tabell = myfrag.getElementById("rcvcustoms_pkg_tbl")
+                tabelHead = tabell.getElementsByTagName('thead')[0]
+                tableku2 = tabell.getElementsByTagName("tbody")[0]
+                tableku2.innerHTML=''
+                for (let i = 0; i<ttlrows; i++){
+                    newrow = tableku2.insertRow(-1)
+                    newrow.addEventListener("contextmenu", function(e){
+                        rcvcustoms_rowsObj.ridx = e.target.parentNode.rowIndex
+                        rcvcustoms_rowsObj.ids = e.target.parentNode.cells[0].innerText                
+                        rcvcustoms_contextMenu.open(e)
+                        e.preventDefault()
+                    })
+                    newcell = newrow.insertCell(0)
+                    newcell.classList.add('d-none')
+                    newcell.innerHTML = response.pkg[i].RCVPKG_LINE
+                    newcell = newrow.insertCell(1)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = response.pkg[i].RCVPKG_JUMLAH_KEMASAN
+                    newcell.contentEditable=true
+                    newcell = newrow.insertCell(2)
+                    newcell.innerHTML = response.pkg[i].RCVPKG_KODE_JENIS_KEMASAN
+                    newcell = newrow.insertCell(3)
+                    newcell.innerHTML = response.pkg[i].URAIAN_KEMASAN
+                }
+                mydes.innerHTML=''
+                mydes.appendChild(myfrag)
             }
         });
     }
@@ -2668,29 +2860,7 @@
                 alertify.error(xthrow);
             }
         });        
-    });
-    $("#rcvcustoms_typedoc_1").change(function(){
-        const mid = document.getElementById('rcvcustoms_typedoc_1').value;
-        $.ajax({
-            type: "get",
-            url: "<?=base_url('RCV/zgetsts_rcv')?>",
-            data: {inid: mid},
-            dataType: "json",
-            success: function (response) {
-                let str = '<option value="-">-</option>';
-                if(response.status[0].cd != '0'){
-                    let ttlrows = response.data.length;
-                    for(let i=0;i<ttlrows;i++){
-                        str  += '<option value="'+response.data[i].KODE_TUJUAN_PENGIRIMAN+'">'+response.data[i].URAIAN_TUJUAN_PENGIRIMAN+'</option>';
-                    }
-                }
-                document.getElementById('rcvcustoms_zsts_1').innerHTML = str
-                document.getElementById('rcvcustoms_zsts_1').focus()
-            }, error: function(xhr, xopt, xthrow){
-                alertify.error(xthrow);
-            }
-        });        
-    });
+    });    
     $("#rcvcustoms_typedoc_2").change(function(){
         const mid = document.getElementById('rcvcustoms_typedoc_2').value;
         $.ajax({
@@ -3323,8 +3493,11 @@
                         newcell = newrow.insertCell(0)
                         newcell.style.cssText = "cursor:pointer"
                         newcell.onclick = function(){
-                            rcvuctoms_getdetail1({pdo:response.data[i].RCV_DONO
-                                , psupcd: response.data[i].MSUP_SUPCD})
+                            rcvuctoms_getdetail1({
+                                pdo:response.data[i].RCV_DONO
+                                , psupcd: response.data[i].MSUP_SUPCD
+                                , pAJU: response.data[i].RCV_RPNO
+                            })
                             document.getElementById('rcvcustoms_docnoorigin_1').value = response.data[i].RCV_DONO
                             document.getElementById('rcvcustoms_typedoc_1').value = response.data[i].RCV_BCTYPE
                             vrcv_equip_e_getstsrcv(response.data[i].RCV_BCTYPE, response.data[i].RCV_ZSTSRCV,'rcvcustoms_zsts_1')                            
@@ -3343,6 +3516,7 @@
                             document.getElementById('rcvcustoms_contractnum_1').value = response.data[i].RCV_CONA
                             document.getElementById('rcvcustoms_contractdate_1').value = response.data[i].RCV_CONADT
                             document.getElementById('rcvcustoms_contractduedate_1').value = response.data[i].RCV_DUEDT
+                            document.getElementById('rcvcustoms_tax_invoice').value = response.data[i].RCV_TAXINVOICE                            
                         }
                         newcell.innerHTML = response.data[i].RCV_DONO
                         newcell = newrow.insertCell(1)
@@ -3352,10 +3526,13 @@
                         newcell = newrow.insertCell(3)
                         newcell.innerHTML = response.data[i].RCV_HSCD
                         newcell = newrow.insertCell(4)
+                        newcell.classList.add('text-end')
                         newcell.innerHTML = response.data[i].RCV_BM
                         newcell = newrow.insertCell(5)
+                        newcell.classList.add('text-end')
                         newcell.innerHTML = response.data[i].RCV_PPN
                         newcell = newrow.insertCell(6)
+                        newcell.classList.add('text-end')
                         newcell.innerHTML = response.data[i].RCV_PPH
                         newcell = newrow.insertCell(7)
                         newcell.innerHTML = response.data[i].RCV_BSGRP
@@ -3363,6 +3540,10 @@
                         newcell.innerHTML = response.data[i].RCV_INVNO
                         newcell = newrow.insertCell(9)
                         newcell.innerHTML = response.data[i].RCV_BCNO
+                        newcell = newrow.insertCell(10)
+                        newcell.innerHTML = response.data[i].RCV_BCTYPE
+                        newcell = newrow.insertCell(11)
+                        newcell.innerHTML = response.data[i].RCV_TAXINVOICE
                     }
                     mydes.innerHTML=''
                     mydes.appendChild(myfrag)
@@ -3571,47 +3752,233 @@
                 newcell.innerHTML = aItem[i]
 
                 newcell = newrow.insertCell(4)
+                newcell.contentEditable = true
+
+                newcell = newrow.insertCell(5)
                 newcell.classList.add('table-info')
                 newcell.innerHTML = aItemName[i]
                 
-                newcell = newrow.insertCell(5)
+                newcell = newrow.insertCell(6)
                 newcell.contentEditable = true
                 newcell.classList.add('text-end')
                 newcell.innerHTML = aqty[i]
 
-                newcell = newrow.insertCell(6)
+                newcell = newrow.insertCell(7)
                 newcell.classList.add('table-info')
                 newcell.innerHTML = aUM[i]
 
-                newcell = newrow.insertCell(7)
+                newcell = newrow.insertCell(8)
                 newcell.classList.add('text-end')
                 newcell.contentEditable = true
                 newcell.innerHTML = aprice[i]
 
-                newcell = newrow.insertCell(8)
-                newcell.classList.add('text-end')  
-                newcell.classList.add('table-info')       
-                newcell.innerHTML = '-'
-
                 newcell = newrow.insertCell(9)
-                newcell.contentEditable = true
-                newcell.innerHTML = '-'        
-
+                newcell.classList.add('text-end','table-info')                
+                newcell.innerHTML = '-'
+                
                 newcell = newrow.insertCell(10)
                 newcell.classList.add('text-end')
+                newcell.title = 'net weight'
+                newcell.contentEditable = true
+                newcell.innerHTML = '-'        
+                newcell = newrow.insertCell(11)
+                newcell.classList.add('text-end')
+                newcell.title = 'gross weight'
                 newcell.contentEditable = true
                 newcell.innerHTML = '-'
-
-                newcell = newrow.insertCell(11)
+                newcell = newrow.insertCell(12)
+                newcell.title = 'HS Code'
+                newcell.contentEditable = true
+                newcell.innerHTML = '-'        
+                
+                newcell = newrow.insertCell(13)
                 newcell.classList.add('text-end')
                 newcell.contentEditable = true
                 newcell.innerHTML = '-'
 
-                newcell = newrow.insertCell(12)
+                newcell = newrow.insertCell(14)
+                newcell.classList.add('text-end')
+                newcell.contentEditable = true
+                newcell.innerHTML = '-'
+
+                newcell = newrow.insertCell(15)
                 newcell.classList.add('text-end')
                 newcell.contentEditable = true
                 newcell.innerHTML = '-'
             }
         }
     }
+
+    var rcvcustoms_ta_result = document.getElementById('rcvcustoms_reader_ta')
+
+    function rcvcustoms_noaju_lbl_eCK(){
+        $("#rcvcustoms_QR_Mod").modal('show')
+    }
+
+    function onScanSuccess(decodedText, decodedResult) {
+        // Handle on success condition with the decoded text or result.
+        console.log(`Scan result: ${decodedText}`, decodedResult);
+        rcvcustoms_ta_result.value = decodedText
+    }
+
+    var html5QrcodeScanner = new Html5QrcodeScanner(
+        "rcvcustoms_reader", { fps: 10, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess);
+
+    function rcvcustoms_typedoc_1_eChange(c){        
+        $.ajax({
+            type: "get",
+            url: "<?=base_url('RCV/zgetsts_rcv')?>",
+            data: {inid: c.value},
+            dataType: "json",
+            success: function (response) {
+                let str = '<option value="-">-</option>';
+                if(response.status[0].cd != '0'){
+                    let ttlrows = response.data.length;
+                    for(let i=0;i<ttlrows;i++){
+                        str  += '<option value="'+response.data[i].KODE_TUJUAN_PENGIRIMAN+'">'+response.data[i].URAIAN_TUJUAN_PENGIRIMAN+'</option>';
+                    }
+                }
+                document.getElementById('rcvcustoms_zsts_1').innerHTML = str
+                document.getElementById('rcvcustoms_zsts_1').focus()
+            }, error: function(xhr, xopt, xthrow){
+                alertify.error(xthrow);
+            }
+        })        
+    }
+
+    function rcvcustoms_btn_posting_eCK(c){
+        const txDOC = document.getElementById('rcvcustoms_docnoorigin_1')
+        const cmbBCDOCType = document.getElementById('rcvcustoms_typedoc_1')
+        const cmbBCReceivingStatus = document.getElementById('rcvcustoms_zsts_1')
+        const txNomorAJU = document.getElementById('rcvcustoms_noaju_1')        
+        const txNomorPEN = document.getElementById('rcvcustoms_regno_1')        
+        const cmbTPBType = document.getElementById('rcvcustoms_typetpb_1')
+        const cmbKPPBC = document.getElementById('rcvcustoms_kppbc_1')
+        const btnTPB = document.getElementById('rcvcustoms_btnTPB')
+        const tbl = document.getElementById('rcvcustoms_tbl_1').getElementsByTagName("tbody")[0]
+        const ttlrows = tbl.getElementsByTagName('tr').length
+
+        //validation        
+        if(txDOC.value.trim().length<=3){
+            alertify.warning('DO Number is required')
+            txDOC.focus()
+            return
+        }
+        if(cmbBCDOCType.value!='40'){
+            alertify.message('BC 40 only')
+            return
+        }
+        if(cmbBCReceivingStatus.value=='-'){
+            alertify.warning('Receiving Status is required')
+            cmbBCReceivingStatus.focus()
+            return
+        }
+        if(txNomorAJU.value.trim().length<26){
+            alertify.warning('Nomor Aju is not valid')
+            txNomorAJU.focus()
+            return
+        }
+
+        btnTPB.disabled = true
+        btnTPB.innerHTML = "Please wait"        
+        const data = {
+            DONum: txDOC.value,
+            BCType: cmbBCDOCType.value,
+            aju: txNomorAJU.value,
+        }        
+        rcvcustoms_prepare_posting(data,btnTPB)
+    }
+    document.getElementById('rcvcustoms_businessgroup_1').value = "PSIOTHERS"
+    function rcvcustoms_prepare_posting(pdata, psender){        
+        const btn = document.getElementById(psender.id)
+        $.ajax({
+            type: "POST",
+            url: "<?=base_url('RCV/posting')?>"+pdata.BCType,
+            data: {donum: pdata.DONum, aju: pdata.aju},
+            dataType: "json",
+            success: function (response) {
+                if(response.status[0].cd=='1'){
+                    alertify.success(response.status[0].msg)
+                } else {
+                    alertify.message(response.status[0].msg)
+                }
+                btn.disabled = false
+                btn.innerHTML = 'TPB'
+            }, error: function(xhr, xopt, xthrow){
+                btn.disabled = false
+                btn.innerHTML = 'TPB'
+                alertify.error(xthrow);
+            }
+        })
+    }
+
+    function rcvcustoms_btnmkemasan_eCK(){
+        $("#rcvcustoms_KEMASAN_Mod").modal('show')
+    }
+
+    function rcvcustoms_pkg_btnuse_eCK(){
+        const txJumlah = document.getElementById('rcvcustoms_pkg_jumlah')
+        const cmbKodeJenis = document.getElementById('rcvcustoms_pkg_kodejenis')
+        if(isNaN(txJumlah.value)){
+            alertify.warning("Jumlah is invalid")
+            return
+        } else {
+            const tbl = document.getElementById('rcvcustoms_pkg_tbl').getElementsByTagName('tbody')[0]
+            let newrow = tbl.insertRow(-1)
+            newrow.addEventListener("contextmenu", function(e){
+                rcvcustoms_rowsObj.ridx = e.target.parentNode.rowIndex
+                rcvcustoms_rowsObj.ids = e.target.parentNode.cells[0].innerText                
+                rcvcustoms_contextMenu.open(e)
+                e.preventDefault()
+            })
+            let newcell = newrow.insertCell(0)
+            newcell.classList.add('d-none')
+            newcell = newrow.insertCell(1)
+            newcell.innerText = txJumlah.value
+            newcell = newrow.insertCell(2)
+            newcell.innerText = cmbKodeJenis.value
+            newcell = newrow.insertCell(3)
+            newcell.innerText = cmbKodeJenis.options[cmbKodeJenis.selectedIndex].text
+        }
+    }
+    var rcvcustoms_rowsObj = {}
+    var rcvcustoms_contextMenu = jSuites.contextmenu(document.getElementById('rcvcustoms_contextmenu'), {
+        items:[
+            {
+                title:'<span class="fas fa-trash text-warning"></span> Delete',                
+                onclick:function() { 
+                    if(rcvcustoms_rowsObj.ids.length>0){
+                        if(!confirm("Are you sure ?")){
+                            return
+                        }
+                        document.getElementById('rcvcustoms_pkg_tbl').rows[rcvcustoms_rowsObj.ridx].remove()
+                        const txtdoc = document.getElementById('rcvcustoms_docnoorigin_1')                        
+                        const txtAju = document.getElementById('rcvcustoms_noaju_1')                        
+                        $.ajax({
+                            type: "POST",
+                            url: "<?=base_url('RCV/remove_pkg')?>",
+                            data: {doc: txtdoc.value, rowid: rcvcustoms_rowsObj.ids, aju: txtAju.value},
+                            dataType: "json",
+                            success: function (response) {
+                                if(response.status[0].cd==1){
+                                    alertify.success(response.status[0].msg)
+                                } else {
+                                    alertify.message(response.status[0].msg)
+                                }
+                            }, error: function(xhr, xopt, xthrow){
+                                alertify.error(xthrow)                                
+                            }
+                        })
+                    } else {
+                        document.getElementById('rcvcustoms_pkg_tbl').rows[rcvcustoms_rowsObj.ridx].remove()
+                    }
+                },
+                tooltip: 'Delete selected item',
+            }       
+        ],
+        onclick:function() {
+            rcvcustoms_contextMenu.close(false);
+        }
+    })
 </script>
