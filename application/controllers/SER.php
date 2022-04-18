@@ -5724,7 +5724,7 @@ class SER extends CI_Controller {
 			} else {
 				$isfound = false;
 				foreach($rsDelivered as &$d){
-					if($r['ITH_ITMCD']==$d['ITH_ITMCD'] && $r['SERD2_JOB'] == $d['SERD2_JOB']){						
+					if($r['ITH_ITMCD']===$d['ITH_ITMCD'] && $r['SERD2_JOB']===$d['SERD2_JOB']){						
 						$isfound = true;break;
 					}
 				}
