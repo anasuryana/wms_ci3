@@ -1,3 +1,22 @@
+<style>
+    .anastylesel_sim{
+        background: red;
+        animation: anamove 1s infinite;
+    }
+    @keyframes anamove {
+        from {background: #7FDBFF;}
+        to {background: #01FF70;}
+    }
+    thead tr.first th, thead tr.first td {
+        position: sticky;
+        top: 0;        
+    }
+
+    thead tr.second th, thead tr.second td {
+        position: sticky;
+        top: 26px;
+    }   
+</style>
 <div style="padding: 10px">
     <div class="container-fluid" id="rm_in_fg_container">        
         <div class="row" id="rm_in_fg_stack2">
@@ -15,10 +34,18 @@
             </div>
         </div>
         <div class="row" id="rm_in_fg_stack3">
-            <div class="col-md-12 mb-1">
+            <div class="col-md-6 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-primary" type="button" id="rm_in_fg_btn_gen" onclick="rm_in_fg_load_data()">Search</button>
                     <button title="Copy to clipboard" id="rm_in_fg_btn_copy" onclick="rm_in_fg_btn_copy_eC()" class="btn btn-success" ><i class="fas fa-clipboard"></i></button>
+                </div>
+            </div>
+            <div class="col-md-6 mb-1">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="rm_in_fg_ck" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        Consider FG's stock
+                    </label>
                 </div>
             </div>
         </div> 
@@ -27,12 +54,12 @@
                 <div class="table-responsive" id="rm_in_fg_divku">
                     <table id="rm_in_fg_tbl" class="table table-striped table-bordered table-sm table-hover" style="font-size:85%">
                         <thead class="table-light">
-                            <tr>
+                            <tr class="first">
                                 <th class="text-end" colspan="4">Total</th>
                                 <th class="text-end" id="rm_in_fg_lbltotal"></th>
                                 <th class="text-end"></th>
                             </tr>
-                            <tr>
+                            <tr class="second">
                                 <th class="align-middle">ID</th>
                                 <th class="align-middle">Assy Code</th>
                                 <th class="align-middle">Assy Name</th>
@@ -63,6 +90,7 @@
         const itemcd = document.getElementById('rm_in_fg_itemcode')
         const itemlot = document.getElementById('rm_in_fg_lotno').value.trim()
         const btn = document.getElementById('rm_in_fg_btn_gen')
+        const considerFGStock = document.getElementById('rm_in_fg_ck').checked ? '1' : '0'
         if(itemcd.value.trim().length==0) {
             alertify.message('item code could not be empty')
             return
@@ -74,7 +102,7 @@
         $.ajax({
             type: "POST",
             url: "<?=base_url('SER/search_rm_in_fg')?>",
-            data: {itemCD: itemcd.value.trim(), itemLOT: itemlot},
+            data: {itemCD: itemcd.value.trim(), itemLOT: itemlot, stock: considerFGStock},
             dataType: "JSON",
             success: function (response) {
                 btn.innerHTML = 'Search'

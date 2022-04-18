@@ -1074,9 +1074,9 @@ class ITH_mod extends CI_Model {
 		return $query->result_array();
 	}
 
-	public function select_rm_in_fg($item, $lotno) {
-		$qry = "wms_sp_rm_in_fg ?, ?";
-		$query = $this->db->query($qry, [$item, $lotno]);
+	public function select_rm_in_fg($item, $lotno, $stock) {
+		$qry = "wms_sp_rm_in_fg ?, ?, ?";
+		$query = $this->db->query($qry, [$item, $lotno, $stock]);
 		return $query->result_array();
 	}
 

@@ -5714,8 +5714,35 @@ class SER extends CI_Controller {
 		header('Content-Type: application/json');
 		$itemCD = $this->input->post('itemCD');
 		$itemLOT = $this->input->post('itemLOT');
-		$rs = $this->ITH_mod->select_rm_in_fg($itemCD, $itemLOT);
-		die('{"data":'.json_encode($rs).'}');
+		$stock = $this->input->post('stock');
+		$rs = $this->ITH_mod->select_rm_in_fg($itemCD, $itemLOT, $stock);
+		$rsfix = [];
+		$rsDelivered = [];
+		foreach($rs as $r){
+			if($r['STKQTY']>0){
+				$rsfix[] = $r;
+			} else {
+				$isfound = false;
+				foreach($rsDelivered as &$d){
+					if($r['ITH_ITMCD']==$d['ITH_ITMCD'] && $r['SERD2_JOB'] == $d['SERD2_JOB']){						
+						$isfound = true;break;
+					}
+				}
+				unset($d);
+				if(!$isfound){
+					$rsDelivered[] = [
+						'ITH_SER' => '-',
+						'ITH_ITMCD' => $r['ITH_ITMCD'],
+						'MITM_ITMD1' => $r['MITM_ITMD1'],
+						'STKQTY' => 0,
+						'SERD2_JOB' => $r['SERD2_JOB'],
+						'ITH_WH' => $r['ITH_WH'],
+					];
+				}
+			}
+		}
+		$rsfix = array_merge($rsfix, $rsDelivered);
+		die('{"data":'.json_encode($rsfix).'}');
 	}
 
 	public function removecalculation_byid(){
