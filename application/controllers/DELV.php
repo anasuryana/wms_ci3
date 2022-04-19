@@ -3705,6 +3705,7 @@ class DELV extends CI_Controller {
 			$rs_rcv = $this->RCV_mod->select_for_rmrtn_bytxid($pid);
 			$MultipliedNumber = 1;
 			$shouldRound = false;
+			$isYEN = false;
 			foreach($rs_rcv as $a){
 				if($a['MSUP_SUPCR']!="RPH" && $currency=="RPH"){
 					$shouldRound = true;
@@ -3716,8 +3717,9 @@ class DELV extends CI_Controller {
 							$MultipliedNumber = $n->MEXRATE_VAL;break;
 						}
 					}
+				} elseif($currency=="YEN"){
+					$isYEN = true;
 				}
-
 				
 				break;
 			}
@@ -3792,7 +3794,7 @@ class DELV extends CI_Controller {
 				$pdf->SetXY(10,80.9+4+$Y_adj);
 				$pdf->MultiCell(85.67,4,trim($h_deladdress),0);
 				$pdf->Text(110,133+10,$hinv_currency);
-				$curY = 152+10;
+				$curY = 152+15;
 				
 				$no =1;
 				$ttlqty_=0;
@@ -3819,7 +3821,7 @@ class DELV extends CI_Controller {
 						$pdf->SetXY(10,80.9+4+$Y_adj);
 						$pdf->MultiCell(85.67,4,trim($h_deladdress),0);
 						$pdf->Text(110,133+10,$hinv_currency);
-						$curY = 152+10;
+						$curY = 152+15;
 					}					
 					$pdf->SetXY(10,$curY-3);
 					$pdf->Cell(27,4,$no,0,0,'L');
@@ -3840,10 +3842,18 @@ class DELV extends CI_Controller {
 					$pdf->Text(100,$curY,$r['MITM_STKUOM']);
 					$pdf->SetXY(110,$curY-3);
 					$pdf->Cell(20.55,4,number_format($r['ITMQT']),0,0,'R');
-					$pdf->SetXY(137,$curY-3);					
-					$pdf->Cell(17.5,4,number_format($perprice_,5) ,0,0,'R');
-					$pdf->SetXY(155,$curY-3);
-					$pdf->Cell(41.56,4,number_format($amount_,2),0,0,'R');
+					if($isYEN){
+						$pdf->SetXY(138,$curY-3);
+						$pdf->Cell(17.5,4,number_format($perprice_,0) ,0,0,'R');
+						$pdf->SetXY(155,$curY-3);
+						$pdf->Cell(41.56,4,number_format($amount_,0),0,0,'R');
+					} else {
+						$pdf->SetXY(138,$curY-3);
+						$pdf->Cell(17.5,4,number_format($perprice_,5) ,0,0,'R');
+						$pdf->SetXY(155,$curY-3);
+						$pdf->Cell(41.56,4,number_format($amount_,2),0,0,'R');
+					}
+					
 					$no++;
 					$curY+=15;
 					$ttlbrs++;
@@ -7650,7 +7660,7 @@ class DELV extends CI_Controller {
 										,'RASSYCODE' => $r['RASSYCODE']
 										,'RPRICEGROUP' => $r['RPRICEGROUP']
 										,'RBM' => substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM)
-										,'PPN' => $theppn
+										,'PPN' => 11 //bu gusti, terkait peraturan 1 april
 										,'PPH' => $thepph
 									];
 								} else {
@@ -7679,7 +7689,7 @@ class DELV extends CI_Controller {
 										,'RASSYCODE' => $r['RASSYCODE']
 										,'RPRICEGROUP' => $r['RPRICEGROUP']
 										,'RBM' => 0			
-										,'PPN' => $theppn
+										,'PPN' => 11 //bu gusti, terkait peraturan 1 april
 										,'PPH' => $thepph							
 									];
 								}
@@ -11910,7 +11920,7 @@ class DELV extends CI_Controller {
 											,'RPRICEGROUP' => $k['XPRICE']
 											,'RBM' => substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM)
 											,'PPH' => $thepph
-											,'PPN' => $theppn
+											,'PPN' => 11 //bu gusti, terkait peraturan 1 april	
 										];
 									} else {
 										$tpb_bahan_baku[] = [
@@ -11942,7 +11952,7 @@ class DELV extends CI_Controller {
 											
 											,'RBM' => 0
 											,'PPH' => $thepph
-											,'PPN' => $theppn										
+											,'PPN' => 11 //bu gusti, terkait peraturan 1 april							
 										];
 									}
 								}
@@ -15142,6 +15152,7 @@ class DELV extends CI_Controller {
 						
 						,'RBM' =>$x['RCV_BM']*1
 						,'CURRENCY' =>$x['MSUP_SUPCR']
+						,'PPN' => 11 //bu gusti, terkait peraturan 1 april
 					];					
 					$IncDateList[] = $x['RCV_BCDATE'];
 					$IncCRList[] = $x['MSUP_SUPCR'];
@@ -15321,7 +15332,7 @@ class DELV extends CI_Controller {
 				,'NILAI_FASILITAS' => 0
 				,'KODE_FASILITAS' => 2
 				,'TARIF_FASILITAS' => 100
-				,'TARIF' => 10
+				,'TARIF' => $r['PPN']
 				,'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU']								
 				
 				,'RITEMCD' => $r['KODE_BARANG']
@@ -15763,6 +15774,7 @@ class DELV extends CI_Controller {
 						
 						,'RBM' =>$x['RCV_BM']*1
 						,'CURRENCY' =>$x['MSUP_SUPCR']
+						,'PPN' => 11 //bu gusti, terkait peraturan 1 april
 					];					
 					$IncDateList[] = $x['RCV_BCDATE'];
 					$IncCRList[] = $x['MSUP_SUPCR'];
@@ -15914,7 +15926,7 @@ class DELV extends CI_Controller {
 				,'NILAI_FASILITAS' => 0
 				,'KODE_FASILITAS' => 2
 				,'TARIF_FASILITAS' => 100
-				,'TARIF' => 10
+				,'TARIF' => $r['PPN']
 				,'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU']								
 				
 				,'RITEMCD' => $r['KODE_BARANG']
