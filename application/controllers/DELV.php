@@ -3938,7 +3938,7 @@ class DELV extends CI_Controller {
 			$rs = $this->DELV_mod->select_for_pkg_rm_rtn($pid);
 			$h_delnm = '';
 			$h_deladdress = '';
-			foreach($rs as $r) {
+			foreach($rs as $r) {				
 				$hinv_date = $r['DLV_INVDT'];
 				$hinv_date = date_create($hinv_date);
 				$hinv_date = date_format($hinv_date, "d/m/Y");
@@ -3946,6 +3946,9 @@ class DELV extends CI_Controller {
 				$h_deladdress = $r['MDEL_ADDRCUSTOMS'];
 				$h_invno = $r['DLV_INVNO'];
 				break;
+			}
+			if(count($rs)==0){
+				die('Please entry packing list first');
 			}
 			$pdf->AddPage();
 			$pdf->Text(155,59+8,$hinv_date);
