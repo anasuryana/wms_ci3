@@ -11879,6 +11879,7 @@ class DELV extends CI_Controller {
 									} else {
 										$thehscode = $v->RCV_HSCD;
 										$thepph = $v->RCV_PPH;
+										$theppn = $v->RCV_PPN;
 									}
 									if($v->RCV_KPPBC!='-'){
 										$tpb_bahan_baku[] = [
@@ -11909,6 +11910,7 @@ class DELV extends CI_Controller {
 											,'RPRICEGROUP' => $k['XPRICE']
 											,'RBM' => substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM)
 											,'PPH' => $thepph
+											,'PPN' => $theppn
 										];
 									} else {
 										$tpb_bahan_baku[] = [
@@ -11939,7 +11941,8 @@ class DELV extends CI_Controller {
 											,'RPRICEGROUP' => $k['XPRICE']
 											
 											,'RBM' => 0
-											,'PPH' => $thepph										
+											,'PPH' => $thepph
+											,'PPN' => $theppn										
 										];
 									}
 								}
@@ -12037,7 +12040,7 @@ class DELV extends CI_Controller {
 					,'NILAI_FASILITAS' => 0
 					,'KODE_FASILITAS' => 0
 					,'TARIF_FASILITAS' => 100
-					,'TARIF' => 10
+					,'TARIF' => $r['PPN']
 					,'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU']
 	
 					,'RASSYCODE' => $r['RASSYCODE']
@@ -12071,7 +12074,7 @@ class DELV extends CI_Controller {
 					,'NILAI_FASILITAS' => 0
 					,'KODE_FASILITAS' => 0
 					,'TARIF_FASILITAS' => 100
-					,'TARIF' => 10
+					,'TARIF' => $r['PPN']
 					,'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU']
 	
 					,'RASSYCODE' => $r['RASSYCODE']
