@@ -1,8 +1,9 @@
 <?php 
 class MITMHSCD_HIS_mod extends CI_Model {
+    private $TABLENAME = "MITMHSCD_HIS_TBL";
     public function __construct()
     {
-        $this->load->database();        
+        $this->load->database();
     }
 
     public function insert($data)
@@ -18,7 +19,7 @@ class MITMHSCD_HIS_mod extends CI_Model {
             $ret = $query->row();
             return $ret->lser;
         } else {
-            return '0';
+            return 0;
         }
     }
 }

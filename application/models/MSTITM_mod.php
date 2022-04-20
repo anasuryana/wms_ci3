@@ -11,7 +11,7 @@ class MSTITM_mod extends CI_Model {
     }
 	public function selectAll()
 	{
-		$this->db->select("MITM_ITMCD,MITM_ITMD1,MITM_ITMD2,MITM_MODEL,MITM_SPTNO");
+		$this->db->select("MITM_ITMCD,MITM_ITMD1,MITM_ITMD2,MITM_MODEL,MITM_SPTNO,MITM_LUPTD");
 		$query = $this->db->get($this->TABLENAME);
 		return $query->result();
 	}
@@ -53,7 +53,8 @@ class MSTITM_mod extends CI_Model {
 	
 	public function selectbyid($pid)
 	{
-		$this->db->select("RTRIM(MITM_ITMCD) MITM_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_ITMD2) MITM_ITMD2, RTRIM(MITM_SPTNO) MITM_SPTNO");
+		$this->db->select("RTRIM(MITM_ITMCD) MITM_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_ITMD2) MITM_ITMD2, 
+		RTRIM(MITM_SPTNO) MITM_SPTNO,MITM_LUPDT,RTRIM(MITM_HSCD) MITM_HSCD,MITM_BM,MITM_PPH,MITM_PPN,MITM_USRID");
 		$this->db->where('MITM_ITMCD', $pid);
 		$query = $this->db->get($this->TABLENAME);
 		return $query->result();

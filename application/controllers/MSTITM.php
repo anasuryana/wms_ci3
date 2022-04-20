@@ -14,6 +14,7 @@ class MSTITM extends CI_Controller {
 		$this->load->model('RCV_mod');
 		$this->load->model('DELV_mod');
 		$this->load->model('MUM_mod');
+		$this->load->model('MITMHSCD_HIS_mod');
 		$this->load->helper('url');
 		$this->load->helper('download');
 		$this->load->library('session');
@@ -676,11 +677,31 @@ class MSTITM extends CI_Controller {
 		$beamasuk = $this->input->post('beamasuk');
 		$ppn = $this->input->post('ppn');
 		$pph = $this->input->post('pph');
+		date_default_timezone_set('Asia/Jakarta');
+        $currrtime = date('Y-m-d H:i:s');
+		#record old data
+		$rsbefore = $this->MSTITM_mod->selectbyid($itemcd);
+		foreach($rsbefore as $r){			
+			$lastLine = $this->MITMHSCD_HIS_mod->lastserialid($itemcd)+1;
+			$this->MITMHSCD_HIS_mod->insert([
+				'MITMHSCD_HIS_ITMCD' => $r->MITM_ITMCD,
+				'MITMHSCD_HIS_HSCD' => $r->MITM_HSCD,
+				'MITMHSCD_HIS_BM' => $r->MITM_BM,
+				'MITMHSCD_HIS_PPN' => $r->MITM_PPN,
+				'MITMHSCD_HIS_PPH' => $r->MITM_PPH,
+				'MITMHSCD_HIS_UPDATED_AT' => $r->MITM_LUPDT,
+				'MITMHSCD_HIS_UPDATED_BY' => $r->MITM_USRID,
+				'MITMHSCD_HIS_LINE' => $lastLine,
+			]);
+		}
+
 		$ret = $this->MSTITM_mod->updatebyId([
-			'MITM_HSCD' => $itemhscd,			
+			'MITM_HSCD' => $itemhscd,
 			'MITM_BM' => $beamasuk,
 			'MITM_PPN' => $ppn,
-			'MITM_PPH' => $pph
+			'MITM_PPH' => $pph,
+			'MITM_LUPDT' => $currrtime,
+			'MITM_USRID' => $this->session->userdata('nama'),
 		]
 		, $itemcd);
 		if($ret) {
