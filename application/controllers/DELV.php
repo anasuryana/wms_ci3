@@ -7490,6 +7490,7 @@ class DELV extends CI_Controller {
 			$rsallitem_qtyplot = [];					
 			$rsallitem_ppn = [];
 			$rsallitem_pph = [];
+			$rsallitem_bm = [];
 			foreach($rs as $r){
 				$itemtosend = $r['ITMGR'] == '' ? trim($r['SERD2_ITMCD']) : $r['ITMGR'];
 				$i = array_search($itemtosend, $rsallitem_cd);
@@ -7502,6 +7503,7 @@ class DELV extends CI_Controller {
 					$rsallitem_qtyplot[] = 0;
 					$rsallitem_ppn[] = '';
 					$rsallitem_pph[] = '';
+					$rsallitem_bm[] = '';
 				}
 			}
 			$count_rsallitem = count($rsallitem_cd);
@@ -7513,6 +7515,7 @@ class DELV extends CI_Controller {
 							$rsallitem_hscd[$i] = $b['MITM_HSCD'];
 							$rsallitem_ppn[$i] = $b['MITM_PPN'];
 							$rsallitem_pph[$i] = $b['MITM_PPH'];
+							$rsallitem_bm[$i] = $b['MITM_BM'];
 							break;
 						}
 					}
@@ -7618,21 +7621,25 @@ class DELV extends CI_Controller {
 								$thehscode = '';
 								$theppn = '';
 								$thepph = '';
-
-								if(!$v->RCV_HSCD || rtrim($v->RCV_HSCD)==='') {
-									for($h=0;$h<$count_rsallitem; $h++){ 
-										if($v->BC_ITEM==$rsallitem_cd[$h]) {
-											$thehscode = $rsallitem_hscd[$h];
-											$theppn = $rsallitem_ppn[$h];
-											$thepph = $rsallitem_pph[$h];
-											break;
-										}
+								$thebm = '';
+								
+								for($h=0;$h<$count_rsallitem; $h++){ 
+									if($v->BC_ITEM==$rsallitem_cd[$h]) {
+										$thehscode = $rsallitem_hscd[$h];
+										$theppn = $rsallitem_ppn[$h];
+										$thepph = $rsallitem_pph[$h];
+										$thebm = $rsallitem_bm[$h];
+										break;
 									}
-								} else {
-									$thehscode = $v->RCV_HSCD;
-									$thepph = $v->RCV_PPH;
-									$theppn = $v->RCV_PPN;
 								}
+								if(trim($thehscode)==''){
+									$thehscode = $v->RCV_HSCD;
+									$theppn = $v->RCV_PPN;
+									$thepph = $v->RCV_PPH;
+									$thebm = substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM);
+								}
+
+								
 								
 								if($v->RCV_KPPBC!='-'){
 									$tpb_bahan_baku[] = [
@@ -7659,7 +7666,7 @@ class DELV extends CI_Controller {
 				
 										,'RASSYCODE' => $r['RASSYCODE']
 										,'RPRICEGROUP' => $r['RPRICEGROUP']
-										,'RBM' => substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM)
+										,'RBM' => $thebm
 										,'PPN' => 11 //bu gusti, terkait peraturan 1 april
 										,'PPH' => $thepph
 									];
@@ -7689,7 +7696,7 @@ class DELV extends CI_Controller {
 										,'RASSYCODE' => $r['RASSYCODE']
 										,'RPRICEGROUP' => $r['RPRICEGROUP']
 										,'RBM' => 0			
-										,'PPN' => 11 //bu gusti, terkait peraturan 1 april
+										,'PPN' => $theppn //bu gusti, terkait peraturan 1 april
 										,'PPH' => $thepph							
 									];
 								}
