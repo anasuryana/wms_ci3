@@ -11829,20 +11829,29 @@ class DELV extends CI_Controller {
 				$ary_hscd = [];
 				$ary_qty = [];
 				$ary_lot = [];
+				$ary_bm = [];
+				$ary_ppn = [];
+				$ary_pph = [];
 				foreach($rsplotrm_per_fgprice as $r){
 					if($k['XASSY'] == $r['RASSYCODE'] && $k['XPRICE'] == $r['RPRICEGROUP']){
 						$ary_item[] =$r['RITEMCDGR'] == '' ? $r['RITEMCD'] : $r['RITEMCDGR'];
 						$ary_hscd[] = '';
+						$ary_bm[] = '';
+						$ary_ppn[] = '';
+						$ary_pph[] = '';
 						$ary_qty[] = $r['RQTY'];
 						$ary_lot[] = $r['RLOTNO'];
 					}
 				}
-				$rshscd  = $this->RCV_mod->select_hscode($ary_item);
+				$rshscd = $this->MSTITM_mod->select_forcustoms($ary_item);
 				$count_rsallitem = count($ary_item);
 				foreach($rshscd as $b){
 					for($i=0;$i<$count_rsallitem; $i++){
-						if($b['RCV_ITMCD'] == $ary_item[$i]) {
-							$ary_hscd[$i] = $b['RCV_HSCD'];
+						if($b['MITM_ITMCD'] == $ary_item[$i]) {
+							$ary_hscd[$i] = $b['MITM_HSCD'];
+							$ary_bm[$i] = $b['MITM_BM'];
+							$ary_ppn[$i] = $b['MITM_PPN'];
+							$ary_pph[$i] = $b['MITM_PPH'];
 							break;
 						}
 					}
@@ -11883,18 +11892,22 @@ class DELV extends CI_Controller {
 									$thehscode = '';
 									$theppn = '';
 									$thepph = '';
+									$thebm = '';
 
-									if(!$v->RCV_HSCD || rtrim($v->RCV_HSCD)==='') {
-										for($h=0;$h<$count_rsallitem; $h++){ 
-											if($v->BC_ITEM==$ary_item[$h]) {
-												$thehscode = $ary_hscd[$h];
-												break;
-											}
-										}										
-									} else {
+									for($h=0;$h<$count_rsallitem; $h++){ 
+										if($v->BC_ITEM==$ary_item[$h]) {
+											$thehscode = $ary_hscd[$h];
+											$thebm = $ary_bm[$h];
+											$theppn = $ary_ppn[$h];
+											$thepph = $ary_pph[$h];
+											break;
+										}
+									}
+									if(trim($thehscode)=='') {
 										$thehscode = $v->RCV_HSCD;
 										$thepph = $v->RCV_PPH;
 										$theppn = $v->RCV_PPN;
+										$thebm = $v->RCV_BM;
 									}
 									if($v->RCV_KPPBC!='-'){
 										$tpb_bahan_baku[] = [
@@ -11923,9 +11936,9 @@ class DELV extends CI_Controller {
 					
 											,'RASSYCODE' => $k['XASSY']
 											,'RPRICEGROUP' => $k['XPRICE']
-											,'RBM' => substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM)
+											,'RBM' => $thebm
 											,'PPH' => $thepph
-											,'PPN' => 11 //bu gusti, terkait peraturan 1 april	
+											,'PPN' => $theppn
 										];
 									} else {
 										$tpb_bahan_baku[] = [
@@ -11955,9 +11968,9 @@ class DELV extends CI_Controller {
 											,'RASSYCODE' => $k['XASSY']
 											,'RPRICEGROUP' => $k['XPRICE']
 											
-											,'RBM' => 0
+											,'RBM' => $thebm
 											,'PPH' => $thepph
-											,'PPN' => 11 //bu gusti, terkait peraturan 1 april							
+											,'PPN' => $theppn							
 										];
 									}
 								}
@@ -12105,7 +12118,7 @@ class DELV extends CI_Controller {
 					,'NILAI_FASILITAS' => 0
 					,'KODE_FASILITAS' => 0
 					,'TARIF_FASILITAS' => 100
-					,'TARIF' => 2.5
+					,'TARIF' => $r['PPH']
 					,'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU']
 	
 					,'RASSYCODE' => $r['RASSYCODE']
