@@ -7637,9 +7637,7 @@ class DELV extends CI_Controller {
 									$theppn = $v->RCV_PPN;
 									$thepph = $v->RCV_PPH;
 									$thebm = substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM);
-								}
-
-								
+								}								
 								
 								if($v->RCV_KPPBC!='-'){
 									$tpb_bahan_baku[] = [
