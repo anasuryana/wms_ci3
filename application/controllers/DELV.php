@@ -3858,7 +3858,7 @@ class DELV extends CI_Controller {
 					}
 					
 					$no++;
-					$curY+=15;
+					$curY+=(15+$YExtra);
 					$ttlbrs++;
 					$ttlqty_+=$r['ITMQT'];
 					$ttlamount_ +=$amount_;
