@@ -3826,19 +3826,22 @@ class DELV extends CI_Controller {
 					$pdf->SetXY(10,$curY-3);
 					$pdf->Cell(27,4,$no,0,0,'L');
 					$pdf->SetXY(43,$curY-3);	
-					$ttlwidth = $pdf->GetStringWidth(trim($r['DLV_ITMD1']));
-					if($ttlwidth > 51){	
-						$ukuranfont = 7.5;
-						while($ttlwidth>50){
-							$pdf->SetFont('Arial','',$ukuranfont);
-							$ttlwidth=$pdf->GetStringWidth(trim($r['DLV_ITMD1']));
-							$ukuranfont = $ukuranfont - 0.5;
-						}
-					}
-					$pdf->Cell(51,4,$r['DLV_ITMD1'],0,0,'L');	
+					// $ttlwidth = $pdf->GetStringWidth(trim($r['DLV_ITMD1']));
+					// if($ttlwidth > 51){	
+					// 	$ukuranfont = 7.5;
+					// 	while($ttlwidth>50){
+					// 		$pdf->SetFont('Arial','',$ukuranfont);
+					// 		$ttlwidth=$pdf->GetStringWidth(trim($r['DLV_ITMD1']));
+					// 		$ukuranfont = $ukuranfont - 0.5;
+					// 	}
+					// }
+					// $pdf->Cell(51,4,$r['DLV_ITMD1'],0,0,'L');
+					$pdf->MultiCell(51,4,$r['DLV_ITMD1'],0,'L');
+					$YExtra_candidate = $pdf->GetY();
+					$YExtra = $YExtra_candidate!=($curY-3) ? $YExtra=$YExtra_candidate-($curY-3)-4 : 0;	
 					$pdf->SetFont('Arial','',9);	
-					$pdf->Text(45,$curY+4,"(".trim($r['DLVRMDOC_ITMID']).")");
-					$pdf->Text(45,$curY+8,trim($r['DLVRMDOC_TYPE']));
+					$pdf->Text(45,$curY+4+$YExtra,"(".trim($r['DLVRMDOC_ITMID']).")");
+					$pdf->Text(45,$curY+8+$YExtra,trim($r['DLVRMDOC_TYPE']));
 					$pdf->Text(100,$curY,$r['MITM_STKUOM']);
 					$pdf->SetXY(110,$curY-3);
 					$pdf->Cell(20.55,4,number_format($r['ITMQT']),0,0,'R');
