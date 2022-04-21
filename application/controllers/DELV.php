@@ -3988,20 +3988,23 @@ class DELV extends CI_Controller {
 				$pdf->SetXY(6,$curY-3);
 				$pdf->Cell(21,4,$nom,0,0,'C');
 				$pdf->SetXY(28,$curY-3);				
-				$ttlwidth = $pdf->GetStringWidth($ITEMDESC);
-				if($ttlwidth > 63.73){
-					$ukuranfont = 7.5;
-					while($ttlwidth>63.73){
-						$pdf->SetFont('Arial','',$ukuranfont);
-						$ttlwidth=$pdf->GetStringWidth($ITEMDESC);
-						$ukuranfont = $ukuranfont - 0.5;
-					}
-				}
-				$pdf->Cell(63.73,4,$ITEMDESC,0,0,'L');	
+				// $ttlwidth = $pdf->GetStringWidth($ITEMDESC);
+				// if($ttlwidth > 63.73){
+				// 	$ukuranfont = 7.5;
+				// 	while($ttlwidth>63.73){
+				// 		$pdf->SetFont('Arial','',$ukuranfont);
+				// 		$ttlwidth=$pdf->GetStringWidth($ITEMDESC);
+				// 		$ukuranfont = $ukuranfont - 0.5;
+				// 	}
+				// }
+				// $pdf->Cell(63.73,4,$ITEMDESC,0,0,'L');
+				$pdf->MultiCell(63.73,4,$ITEMDESC,0,'L');
+				$YExtra_candidate = $pdf->GetY();
+				$YExtra = $YExtra_candidate!=($curY-3) ? $YExtra=$YExtra_candidate-($curY-3)-4 : 0;
 				$pdf->SetFont('Arial','',9);
-				$pdf->SetXY(28,$curY+2);
+				$pdf->SetXY(28,$curY+2+$YExtra);
 				$pdf->Cell(63.73,4,$r['DLV_PKG_ITM']!=$r['MITM_ITMCDCUS'] ?$r['MITM_ITMCDCUS'] : $r['DLV_PKG_ITM'] ,0,0,'L');
-				$pdf->SetXY(28,$curY+6);
+				$pdf->SetXY(28,$curY+6+$YExtra);
 				$pdf->Cell(63.73,4,$ITEMSPTNO,0,0,'L');
 				$pdf->SetXY(92,$curY-3);
 				$pdf->Cell(16.63,4, $r['DLV_PKG_QTY'],0,0,'R'); #number_format($r['SISCN_SERQTY'] * $r['TTLBOX'])
@@ -4011,7 +4014,7 @@ class DELV extends CI_Controller {
 				$pdf->Cell(29.33,4, $r['DLV_PKG_GWG']*1==0 ? '' : number_format($r['DLV_PKG_GWG'],2),0,0,'R');
 				$pdf->SetXY(166.4,$curY-3);
 				$pdf->Cell(31.17,4, $r['DLV_PKG_MEASURE'],0,0,'R');
-				$curY+=15;
+				$curY+=15+$YExtra;
 				$TTLQTY+= $r['DLV_PKG_QTY'];
 				$nom++;
 			}
