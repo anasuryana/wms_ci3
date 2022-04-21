@@ -88,6 +88,7 @@ $route['delivery_doc_as_xls'] = 'DELV/doc_as_xls';
 $route['delivery_doc_rm_as_xls'] = 'DELV/doc_rm_as_xls';
 $route['delivery_doc_as_omi_xls'] = 'DELV/doc_as_omi_xls';
 $route['po_list'] = 'PO/report';
+$route['master_hscode_as_xls'] = 'MSTITM/searchrm_exim_xls';
 $route['logx/(:any)'] = 'ITH/getlogexport/$1';
 $route['404_override'] = '';
 $route['translate_uri_dashes']  = FALSE;
