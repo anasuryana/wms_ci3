@@ -415,7 +415,7 @@ class MSTITM_mod extends CI_Model {
 		return $query->result_array();
 	}
 	public function select_forcustoms($pitems){
-		$this->db->select("rtrim(MITM_ITMCD) MITM_ITMCD,MITM_HSCD,MITM_BM,MITM_PPN,MITM_PPH,RTRIM(MITM_SPTNO) MITM_SPTNO,RTRIM(MITM_ITMD1) MITM_ITMD1");
+		$this->db->select("rtrim(MITM_ITMCD) MITM_ITMCD,RTRIM(MITM_HSCD) MITM_HSCD,MITM_BM,MITM_PPN,MITM_PPH,RTRIM(MITM_SPTNO) MITM_SPTNO,RTRIM(MITM_ITMD1) MITM_ITMD1");
 		$this->db->where_in("MITM_ITMCD", $pitems);
 		$query = $this->db->get($this->TABLENAME);
 		return $query->result_array();
