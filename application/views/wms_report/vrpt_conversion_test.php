@@ -21,13 +21,25 @@
 <div style="padding: 10px">
     <div class="container-fluid">        
         <div class="row" id="rconv_test_stack1">
-            <div class="col-md-6 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text" >Date</span>
+                    <span class="input-group-text" >Date [from]</span>
                     <input type="text" class="form-control" id="rconv_test_txt_dt" readonly>
                 </div>
             </div>
-            <div class="col-md-6 mb-1">
+            <div class="col-md-3 mb-1">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" >Date [to]</span>
+                    <input type="text" class="form-control" id="rconv_test_txt_dt2" readonly>
+                </div>
+            </div>
+            <div class="col-md-3 mb-1">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" >Nomor Aju</span>
+                    <input type="text" class="form-control" id="rconv_test_txt_aju">
+                </div>
+            </div>
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text" >Model Code</span>
                     <input type="text" class="form-control" id="rconv_test_txt_model">
@@ -49,10 +61,7 @@
                         </ul>
                     </div>                   
                 </div>
-            </div>
-            <div class="col-md-4 mb-1 text-end">
-                <span id="rconv_test_lblinfo" class="badge bg-info"></span>               
-            </div>
+            </div>            
         </div>        
         <div class="row">
             <div class="col-md-12 mb-1">
@@ -60,11 +69,13 @@
                     <table id="rconv_test_tbl" class="table table-bordered table-sm table-hover" style="font-size:75%">
                         <thead class="table-light">
                             <tr class="first">
+                                <th  class="align-middle ">Nomor Aju</th>
                                 <th  class="align-middle ">Model Code</th>
-                                <th  class="align-middle ">Model Description</th>
+                                <th  class="align-middle text-end">Model Qty</th>
                                 <th  class="align-middle ">Part Code</th>
                                 <th  class="align-middle ">Part Description</th>
                                 <th  class="align-middle text-center">PER</th>
+                                <th  class="align-middle text-end">Part Qty</th>
                                 <th  class="align-middle text-center">Bom Revision</th>                                                          
                             </tr>                            
                         </thead>
@@ -72,7 +83,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="4" class="text-center">Total</td>
+                                <td colspan="5" class="text-center">Total</td>
                                 <td id="rconv_test_tbl_foot" class="text-center"></td>
                                 <td class="text-center"></td>                                
                             </tr>
@@ -88,17 +99,24 @@
         format: 'yyyy-mm-dd',
         autoclose:true
     })
+    $("#rconv_test_txt_dt2").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true
+    })
     $("#rconv_test_txt_dt").datepicker('update', new Date())
+    $("#rconv_test_txt_dt2").datepicker('update', new Date())
     function rconv_test_btn_gen_eCK(){
         const ajuDate = document.getElementById('rconv_test_txt_dt').value
+        const ajuDate2 = document.getElementById('rconv_test_txt_dt2').value
         const model = document.getElementById('rconv_test_txt_model').value
+        const nomorAju = document.getElementById('rconv_test_txt_aju').value
         const btn = document.getElementById('rconv_test_btn_gen')
         btn.disabled = true
         btn.innerHTML = 'Please wait'
         $.ajax({
             type: "GET",
             url: "<?=base_url('SER/conversion_test')?>",
-            data: {ajuDate: ajuDate, model: model},
+            data: {ajuDate: ajuDate, model: model, nomoraju: nomorAju, ajuDate2:ajuDate2},
             dataType: "json",
             success: function (response) {
                 btn.disabled = false
@@ -118,19 +136,25 @@
                 for (let i = 0; i<ttlrows; i++){
                     newrow = tableku2.insertRow(-1)
                     newcell = newrow.insertCell(0)
-                    newcell.innerHTML = response.data[i].SER_ITMID
+                    newcell.innerHTML = response.data[i].DLV_ZNOMOR_AJU
                     newcell = newrow.insertCell(1)
-                    newcell.innerHTML = response.data[i].FGDESCRIPTION
+                    newcell.innerHTML = response.data[i].SER_ITMID
                     newcell = newrow.insertCell(2)
-                    newcell.innerHTML = response.data[i].SERD2_ITMCD
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(response.data[i].DLVQT).format(',')
                     newcell = newrow.insertCell(3)
-                    newcell.innerHTML = response.data[i].RMDESCRIPTION
+                    newcell.innerHTML = response.data[i].SERD2_ITMCD
                     newcell = newrow.insertCell(4)
-                    newcell.classList.add('text-center')
-                    newcell.innerHTML = response.data[i].PER*1
+                    newcell.innerHTML = response.data[i].PARTDESCRIPTION
                     newcell = newrow.insertCell(5)
                     newcell.classList.add('text-center')
-                    newcell.innerHTML = response.data[i].PPSN1_BOMRV*1
+                    newcell.innerHTML = response.data[i].PER*1
+                    newcell = newrow.insertCell(6)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(response.data[i].RMQT).format(',')
+                    newcell = newrow.insertCell(7)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = response.data[i].PPSN1_BOMRV
                     ttlper+=response.data[i].PER*1
                 }
                 TotalPerContainer.innerHTML = ttlper
@@ -149,4 +173,9 @@
         document.execCommand("copy");
         alertify.message("Copied");
     }
+
+    $("#rconv_test_divku").css('height', $(window).height()   
+    -document.getElementById('rconv_test_stack1').offsetHeight 
+    -document.getElementById('rconv_test_stack2').offsetHeight     
+    -100);
 </script>

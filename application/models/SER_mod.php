@@ -206,9 +206,9 @@ class SER_mod extends CI_Model {
 		$query = $this->db->query($qry);
 		return $query->result_array();
     }
-    public function select_conversion_test($pdate, $pmodel){
-        $qry = "wms_sp_conversion_test ?, ?";
-		$query = $this->db->query($qry, [$pdate, $pmodel]);
+    public function select_conversion_test($pdate,$pdate2, $pmodel, $pAJU){
+        $qry = "wms_sp_conversion_test ?, ?, ?, ?";
+		$query = $this->db->query($qry, [$pdate,$pdate2, $pmodel, $pAJU]);
 		return $query->result_array();
     }
     public function select_joblbl_ost_pitem($pitem){

@@ -5706,8 +5706,10 @@ class SER extends CI_Controller {
 	public function conversion_test(){
 		header('Content-Type: application/json');
 		$date = $this->input->get('ajuDate');
+		$date2 = $this->input->get('ajuDate2');
 		$model = $this->input->get('model');
-		$rs = $this->SER_mod->select_conversion_test($date, $model);
+		$nomoraju = $this->input->get('nomoraju');
+		$rs = $this->SER_mod->select_conversion_test($date,$date2, $model, $nomoraju);
 		die(json_encode(['data' => $rs]));
 	}
 	public function search_rm_in_fg() {
