@@ -367,9 +367,73 @@
       </div>
     </div>
 </div>
-
+<div id='spl_contextmenu'></div>
 <input type="hidden" id="spl_hid_idx">
-<script>    
+<script>
+    var spl_rowsObj = {}
+    var spl_contextMenu = jSuites.contextmenu(document.getElementById('spl_contextmenu'), {
+        items:[
+            {
+                title:'<span class="fas fa-trash text-warning"></span> Delete',                
+                onclick:function() { 
+                    if(spl_rowsObj.itemcd.length>0){
+                        if(!confirm("Are you sure ?")){
+                            return
+                        }
+                        
+                        const txtdoc = document.getElementById('psn_txt_psn')
+                        const txtcat = document.getElementById('psn_txt_cat')
+                        const txtline = document.getElementById('psn_txt_line')
+                        const txtfedr = document.getElementById('psn_txt_fedr')
+                        if(txtdoc.value.trim().length<8){
+                            alertify.warning('PSN No could not be blank')
+                            txtdoc.focus()
+                            return
+                        }
+                        if(txtcat.value=='-'){
+                            alertify.warning("Category could not blank")
+                            txtcat.focus()
+                            return
+                        }
+                        if(txtline.value=='-'){
+                            alertify.warning("Line could not blank")
+                            txtline.focus()
+                            return
+                        }
+                        if(txtfedr.value=='-'){
+                            alertify.warning("Feeder could not blank")
+                            txtfedr.focus()
+                            return
+                        }
+                        $.ajax({
+                            type: "POST",
+                            url: "<?=base_url('SPL/remove')?>",
+                            data: {spl: txtdoc.value, category: txtcat.value, line: txtline.value
+                                ,fr: txtfedr.value, itemcd: spl_rowsObj.itemcd, qty:spl_rowsObj.reqqt
+                                ,tbl: spl_rowsObj.tbl },
+                            dataType: "json",
+                            success: function (response) {
+                                if(response.status[0].cd==1){
+                                    document.getElementById('spl_tbl').rows[spl_rowsObj.ridx].remove()
+                                    alertify.success(response.status[0].msg)
+                                } else {
+                                    alertify.message(response.status[0].msg)
+                                }
+                            }, error: function(xhr, xopt, xthrow){
+                                alertify.error(xthrow)                                
+                            }
+                        })
+                    } else {
+                        document.getElementById('spl_tbl').rows[spl_rowsObj.ridx].remove()
+                    }
+                },
+                tooltip: 'Delete selected item',
+            }       
+        ],
+        onclick:function() {
+            spl_contextMenu.close(false);
+        }
+    })
     function psn_btn_info_eC(){
         const txpsn = document.getElementById('psn_txt_psn')
         if(txpsn.value.trim().length==0){
@@ -819,6 +883,16 @@
                             newcell.innerHTML = response.datav[i].SPL_RACKNO
 
                             newcell = newrow.insertCell(2);
+                            if(numeral(response.datav[i].TTLSCN).value()==0){
+                                newrow.addEventListener("contextmenu", function(e){
+                                    spl_rowsObj.ridx = e.target.parentNode.rowIndex
+                                    spl_rowsObj.tbl = e.target.parentNode.cells[0].innerText
+                                    spl_rowsObj.itemcd = e.target.parentNode.cells[2].innerText
+                                    spl_rowsObj.reqqt = numeral(e.target.parentNode.cells[6].innerText).value()
+                                    spl_contextMenu.open(e)
+                                    e.preventDefault()
+                                })
+                            }
                             newcell.innerHTML = response.datav[i].SPL_ITMCD
 
                             newcell = newrow.insertCell(3)

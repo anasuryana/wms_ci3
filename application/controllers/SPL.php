@@ -1405,6 +1405,35 @@ class SPL extends CI_Controller {
 		}
 	}
 
+	public function remove(){
+		header('Content-Type: application/json');
+		$spl = $this->input->post('spl');
+		$category = $this->input->post('category');
+		$line = $this->input->post('line');
+		$fr = $this->input->post('fr');
+		$itemcd = $this->input->post('itemcd');
+		$qty = $this->input->post('qty');
+		$tbl = $this->input->post('tbl');
+		$data = ['SPL' => $spl, 'category' => $category, 'line' => $line, 'fr' => $fr
+			, 'itemcd' => $itemcd, 'qty' => $qty, 'tbl' => $tbl];
+		$myar = [];
+		$splscnExist = $this->SPLSCN_mod->check_Primary([
+			'SPLSCN_DOC' => $spl, 'SPLSCN_CAT' => $category, 'SPLSCN_LINE' => $line, 'SPLSCN_FEDR' => $fr
+			, 'SPLSCN_ORDERNO' => $tbl, 'SPLSCN_ITMCD' => $itemcd
+		]);
+		if($splscnExist==0){
+			$result = $this->SPL_mod->deleteby_filter([
+				'SPL_DOC' => $spl, 'SPL_CAT' => $category
+				,'SPL_LINE' => $line, 'SPL_FEDR' => $fr
+				,'SPL_ORDERNO' => $tbl, 'SPL_ITMCD' => $itemcd
+			]);			
+			$myar[] = $result ? ['cd' => 1, 'msg' => 'ok'] : ['cd' => 0, 'msg' => 'could not be deleted'];
+		} else {
+			$myar[] = ['cd' => 0, 'msg' => 'Could not be deleted', 'splscn' => $splscnExist];
+		}
+		die(json_encode(['status' => $myar, 'data' => $data ]));
+	}
+
 	public function tobexported_list(){
 		//#next add api from Deny
 		header('Content-Type: application/json');
