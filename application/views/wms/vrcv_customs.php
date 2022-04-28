@@ -1856,9 +1856,15 @@
                                     }
                                 }
                                 if(!isfound) {
-                                    document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[3].innerHTML = response.data[i].MITM_ITMCD.trim()
-                                    document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[4].innerHTML = response.data[i].MITM_ITMD1
-                                    document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[6].innerHTML = response.data[i].MITM_STKUOM
+                                    if(rcvcustoms_tablefokus=='rcvcustoms_tbl_1'){
+                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[3].innerHTML = response.data[i].MITM_ITMCD.trim()
+                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[5].innerHTML = response.data[i].MITM_ITMD1
+                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[7].innerHTML = response.data[i].MITM_STKUOM    
+                                    } else {
+                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[3].innerHTML = response.data[i].MITM_ITMCD.trim()
+                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[4].innerHTML = response.data[i].MITM_ITMD1
+                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[6].innerHTML = response.data[i].MITM_STKUOM
+                                    }
                                     $("#RCVCUSTOMS_INTERNALITEM").modal('hide')
                                 } else {
                                     alertify.message('already added')
@@ -2041,9 +2047,96 @@
         newcell.innerHTML = '-'
     }
 
+    function rcvcustoms_addrow_machine(ptable){
+        let mytbody = document.getElementById(ptable).getElementsByTagName('tbody')[0]
+        let newrow , newcell        
+        newrow = mytbody.insertRow(-1)
+        newrow.onclick = (event) => {            
+            rcvcustoms_tbl_tbody_tr_eC(event);            
+        }
+        newcell = newrow.insertCell(0)
+        newcell.classList.add('d-none')
+        newcell.innerHTML = ''
+
+        newcell = newrow.insertCell(1)
+        newcell.contentEditable = true        
+        
+        newcell = newrow.insertCell(2)
+        newcell.contentEditable = true
+        newcell.innerHTML = '-'
+
+        newcell = newrow.insertCell(3)
+        newcell.title = `double click for showing search dialog`
+        newcell.classList.add('table-info')
+        newcell.onclick = () => {
+            $("#RCVCUSTOMS_INTERNALITEM").modal('show')
+        }
+        newcell.style.cssText = "cursor:pointer"
+        newcell.innerHTML = ''
+
+        newcell = newrow.insertCell(4)        
+        newcell.contentEditable =true
+        newcell.innerHTML = '-'
+
+        newcell = newrow.insertCell(5)
+        newcell.classList.add('table-info')
+        newcell.innerHTML = '-'
+        
+        newcell = newrow.insertCell(6)
+        newcell.contentEditable = true
+        newcell.classList.add('text-end')
+        newcell.innerHTML = '0'
+
+        newcell = newrow.insertCell(7)
+        newcell.classList.add('table-info')
+        newcell.innerHTML = '-'
+
+        newcell = newrow.insertCell(8)
+        newcell.classList.add('text-end')
+        newcell.contentEditable = true
+        newcell.innerHTML = '-'
+
+        newcell = newrow.insertCell(9)
+        newcell.classList.add('text-end','table-info')         
+        newcell.innerHTML = '-'
+
+        newcell = newrow.insertCell(10)
+        newcell.title = 'Net weight'
+        newcell.classList.add('text-end')
+        newcell.contentEditable = true
+        newcell.innerHTML = 0
+        newcell = newrow.insertCell(11)
+        newcell.classList.add('text-end')
+        newcell.title = 'Gross weight'
+        newcell.contentEditable = true
+        newcell.innerHTML = '-'        
+        newcell = newrow.insertCell(12)
+        newcell.title = 'HSCode'
+        newcell.contentEditable = true
+        newcell.innerHTML = '-'        
+        
+        newcell = newrow.insertCell(13)
+        newcell.title = 'BM'
+        newcell.classList.add('text-end')
+        newcell.contentEditable = true
+        newcell.innerHTML = '-'
+        
+        newcell = newrow.insertCell(14)
+        newcell.title = 'PPN'
+        newcell.classList.add('text-end')
+        newcell.contentEditable = true
+        newcell.innerHTML = '-'
+        
+        newcell = newrow.insertCell(15)
+        newcell.title = 'PPH'
+        newcell.classList.add('text-end')
+        newcell.contentEditable = true
+        newcell.innerHTML = '-'
+    }
+
     function rcvcustoms_plus_1_eC() {
         rcvcustoms_tablefokus = 'rcvcustoms_tbl_1'
-        rcvcustoms_addrow('rcvcustoms_tbl_1')
+        rcvcustoms_addrow_machine('rcvcustoms_tbl_1')
         let mytbody = document.getElementById('rcvcustoms_tbl_1').getElementsByTagName('tbody')[0]        
         if(rcvcustoms_selected_row<0) {
             rcvcustoms_selected_row = 0
