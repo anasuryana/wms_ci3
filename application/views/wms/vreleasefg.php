@@ -690,7 +690,7 @@
     }
     $("#relfg_newreff").keypress(function (e) { 
         if(e.which==13){
-            let nreff = $(this).val();
+            let nreff = $(this).val().toUpperCase();
             let rawtext = nreff;
             let oldreff = document.getElementById('relfg_hdn_reff').value;
             let olditem = document.getElementById('relfg_hdn_itemcd').value;            
