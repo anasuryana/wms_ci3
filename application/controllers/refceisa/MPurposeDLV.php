@@ -49,6 +49,16 @@ class MPurposeDLV extends CI_Controller {
                 array_push( $a_diff, array('ID' =>$r['KODE_DOKUMEN'], 'CD' => $r['KODE_TUJUAN_PENGIRIMAN'] ,'DESC' => $r['URAIAN_TUJUAN_PENGIRIMAN']) );
             }
         }
+		foreach($rs as $r){
+			foreach($rsm as $m){
+				if($r['KODE_DOKUMEN']==$m['KODE_DOKUMEN'] && $r['KODE_TUJUAN_PENGIRIMAN'] == $m['KODE_TUJUAN_PENGIRIMAN']){
+					if($r['URAIAN_TUJUAN_PENGIRIMAN']!=$m['URAIAN_TUJUAN_PENGIRIMAN']){
+						$a_diff[] = ['ID' =>$r['KODE_DOKUMEN'], 'CD' => $r['KODE_TUJUAN_PENGIRIMAN'] ,'DESC' => $r['URAIAN_TUJUAN_PENGIRIMAN']];
+						break;
+					}
+				}
+			}
+		}
         echo json_encode($a_diff);
     }
 
@@ -109,6 +119,9 @@ class MPurposeDLV extends CI_Controller {
 		$msg = "";
 		if($this->MPurposeDLV_mod->check_Primary($datas)>0){
 			$msg = "Already Synchronized";
+			if($this->MPurposeDLV_mod->updatebyId(['URAIAN_TUJUAN_PENGIRIMAN' => $cdesc], $datas)){
+				$msg = "Already Synchronized.";
+			}
 		} else {
 			$lastid = $this->MPurposeDLV_mod->selectlastid();
             $lastid++;
