@@ -153,7 +153,7 @@
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">                        
                         <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="pndser_txtsearchitem" maxlength="15" onfocus="this.select()" required placeholder="...">                        
+                        <input type="text" class="form-control" id="pndser_txtsearchitem" maxlength="16" onfocus="this.select()" required placeholder="...">                        
                     </div>
                 </div>
             </div>
