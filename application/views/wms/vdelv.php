@@ -4050,23 +4050,7 @@ function txfg_f_getdetail (ptxid) {
                     let tc_so = pso; 
                     let tc_itmcd = pitem; 
                     let tc_itmnm = pitemname; 
-                    let tc_itmqty = pitemqty;
-                    if(tc_so==''){
-                        let tmptxt,tmptxt2,tmptxt3;  
-                        for(let b=pc_y;b>=0;b--){
-                            tmptxt =tableku2.rows[b].cells[0].innerText;                            
-                            tmptxt2 =tableku2.rows[b].cells[2].innerText;
-                            tmptxt3 =tableku2.rows[b].cells[3].innerText;
-                            if(tc_itmcd.trim()=='' && tmptxt2.trim()!=''){
-                                tc_itmcd=tmptxt2.trim();
-                                tc_itmnm=tmptxt3.trim();
-                            }
-                            if(tmptxt.trim()!=''){                                
-                                tc_so= tmptxt.trim();
-                                break;
-                            }
-                        }
-                    }
+                    let tc_itmqty = pitemqty;                  
                     document.getElementById('txfg_detser_so').value=tc_so;
                     document.getElementById('txfg_detser_itmcd').value=tc_itmcd;
                     document.getElementById('txfg_detser_itmnm').value=tc_itmnm;
