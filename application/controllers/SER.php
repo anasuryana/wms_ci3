@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class SER extends CI_Controller {
 	private $AROMAWI = ['I','II','III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI' , 'XII'];
 	public function __construct()
@@ -5710,7 +5711,88 @@ class SER extends CI_Controller {
 		$date2 = $this->input->get('ajuDate2');
 		$model = $this->input->get('model');
 		$nomoraju = $this->input->get('nomoraju');
-		$rs = $this->SER_mod->select_conversion_test($date,$date2, $model, $nomoraju);
+		$rs = $this->conversion_test_data([
+			'date' => $date
+			,'date2' => $date2
+			,'model' => $model
+			,'nomaju' => $nomoraju
+		]);		
+		die(json_encode($rs));
+	}
+	public function conversion_test_as_xls(){
+		$date = '';
+		$date2 = '';
+		$model = '';
+		$nomoraju = '';
+		if(isset($_COOKIE["CKPSI_DATE1"])){
+            $date = $_COOKIE["CKPSI_DATE1"];
+		} else {
+			exit('nothing to be exported');
+		}
+		$date2 = $_COOKIE["CKPSI_DATE2"];
+		$model = $_COOKIE["CKPSI_MODEL"];
+		$nomoraju = $_COOKIE["CKPSI_AJU"];
+		$rs = $this->conversion_test_data([
+			'date' => $date
+			,'date2' => $date2
+			,'model' => $model
+			,'nomaju' => $nomoraju
+		]);
+		$spreadsheet = new Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->setTitle('RESUME');
+		$sheet->setCellValueByColumnAndRow(1,3, 'Nomor Aju');
+		$sheet->setCellValueByColumnAndRow(2,3, 'Model Code');
+		$sheet->setCellValueByColumnAndRow(3,3, 'Model Qty');
+		$sheet->setCellValueByColumnAndRow(4,3, 'Part Code');
+		$sheet->setCellValueByColumnAndRow(5,3, 'Part Description');
+		$sheet->setCellValueByColumnAndRow(6,3, 'PER');
+		$sheet->setCellValueByColumnAndRow(7,3, 'Part Qty');
+		$sheet->setCellValueByColumnAndRow(8,3, 'Bom Revision');
+		$i = 4;
+		foreach($rs['data'] as $r){			
+			$sheet->setCellValueByColumnAndRow(1,$i, $r['DLV_ZNOMOR_AJU']);
+			$sheet->setCellValueByColumnAndRow(2,$i, $r['SER_ITMID']);
+			$sheet->setCellValueByColumnAndRow(3,$i, $r['DLVQT']);
+			$sheet->setCellValueByColumnAndRow(4,$i, $r['SERD2_ITMCD']);
+			$sheet->setCellValueByColumnAndRow(5,$i, $r['PARTDESCRIPTION']);
+			$sheet->setCellValueByColumnAndRow(6,$i, $r['PER']);
+			$sheet->setCellValueByColumnAndRow(7,$i, $r['RMQT']);
+			$sheet->setCellValueByColumnAndRow(8,$i, $r['PPSN1_BOMRV']);
+			$i++;
+		}
+		$i2 = $i;
+		foreach($rs['data_'] as $r){
+			
+			$sheet->setCellValueByColumnAndRow(1,$i, $r['DLV_ZNOMOR_AJU']);
+			$sheet->setCellValueByColumnAndRow(2,$i, $r['SER_ITMID']);
+			$sheet->setCellValueByColumnAndRow(3,$i, $r['DLVQT']);
+			$sheet->setCellValueByColumnAndRow(4,$i, $r['SERD2_ITMCD']);
+			$sheet->setCellValueByColumnAndRow(5,$i, $r['PARTDESCRIPTION']);
+			$sheet->setCellValueByColumnAndRow(6,$i, $r['PER']);
+			$sheet->setCellValueByColumnAndRow(7,$i, $r['RMQT']);
+			$sheet->setCellValueByColumnAndRow(8,$i, $r['PPSN1_BOMRV']);
+			$i++;
+		}
+		if(count($rs['data_'])){
+			$sheet->getStyle('A'.$i2.':H'.($i-1))->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+				->getStartColor()->setARGB('9EF9FF');
+		}
+		foreach(range('A','O') as $r){
+			$sheet->getColumnDimension($r)->setAutoSize(true);
+		}				
+		$stringjudul = "Uji Konversi";
+		$writer = new Xlsx($spreadsheet);
+		$filename=$stringjudul; //save our workbook as this file name
+		
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		$writer->save('php://output');
+	}
+
+	function conversion_test_data($params = []){
+		$rs = $this->SER_mod->select_conversion_test($params['date'],$params['date2'], $params['model'], $params['nomaju']);
 		$arIndex = [];		
 		$arAJU = [];
 		$arFG = [];
@@ -5737,7 +5819,7 @@ class SER extends CI_Controller {
 			}
 			array_multisort($sort['DLV_ZNOMOR_AJU'], SORT_ASC, $sort['SER_ITMID'], SORT_ASC,$rs);
 		}
-		die(json_encode(['data' => $rs, 'data_' => $rsnull]));
+		return ['data' => $rs, 'data_' => $rsnull];
 	}
 	public function search_rm_in_fg() {
 		header('Content-Type: application/json');

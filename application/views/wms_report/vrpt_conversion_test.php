@@ -105,6 +105,17 @@
     })
     $("#rconv_test_txt_dt").datepicker('update', new Date())
     $("#rconv_test_txt_dt2").datepicker('update', new Date())
+    function rconv_test_btn_xls_eCK(){
+        const ajuDate = document.getElementById('rconv_test_txt_dt').value
+        const ajuDate2 = document.getElementById('rconv_test_txt_dt2').value
+        const model = document.getElementById('rconv_test_txt_model').value
+        const nomorAju = document.getElementById('rconv_test_txt_aju').value
+        Cookies.set('CKPSI_DATE1', ajuDate , {expires:365})
+        Cookies.set('CKPSI_DATE2', ajuDate2 , {expires:365})
+        Cookies.set('CKPSI_MODEL', model , {expires:365})
+        Cookies.set('CKPSI_AJU', nomorAju , {expires:365})
+        window.open("<?=base_url('conversion_test_doc_as_xls')?>" ,'_blank');
+    }
     function rconv_test_btn_gen_eCK(){
         const ajuDate = document.getElementById('rconv_test_txt_dt').value
         const ajuDate2 = document.getElementById('rconv_test_txt_dt2').value
