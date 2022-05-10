@@ -5705,12 +5705,39 @@ class SER extends CI_Controller {
 	}
 	public function conversion_test(){
 		header('Content-Type: application/json');
+		header("Access-Control-Allow-Origin: *");
 		$date = $this->input->get('ajuDate');
 		$date2 = $this->input->get('ajuDate2');
 		$model = $this->input->get('model');
 		$nomoraju = $this->input->get('nomoraju');
 		$rs = $this->SER_mod->select_conversion_test($date,$date2, $model, $nomoraju);
-		die(json_encode(['data' => $rs]));
+		$arIndex = [];		
+		$arAJU = [];
+		$arFG = [];
+		$i=0;
+		foreach($rs as $r){
+			if(!$r['PER']){
+				$arIndex[] = $i;
+				$arAJU[] = $r['DLV_ZNOMOR_AJU'];
+				$arFG[] = $r['SER_ITMID'];
+			}
+			$i++;
+		}
+		foreach($arIndex as $n){
+			unset($rs[$n]);
+		}
+		$rs = array_values($rs);
+		
+		$rsnull = count($arAJU) && count($arFG) ? $this->SER_mod->select_combine_byAju_and_FG($arAJU, $arFG) : [];
+		if(count($rs)) {
+			$sort = [];
+			foreach($rs as $k=>$v) {
+				$sort['DLV_ZNOMOR_AJU'][$k] = $v['DLV_ZNOMOR_AJU'];
+				$sort['SER_ITMID'][$k] = $v['SER_ITMID'];
+			}
+			array_multisort($sort['DLV_ZNOMOR_AJU'], SORT_ASC, $sort['SER_ITMID'], SORT_ASC,$rs);
+		}
+		die(json_encode(['data' => $rs, 'data_' => $rsnull]));
 	}
 	public function search_rm_in_fg() {
 		header('Content-Type: application/json');

@@ -239,6 +239,27 @@ class SER_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+    public function select_combine_byAju_and_FG($pAju, $pFG){        
+        $this->db->from("DLV_TBL");
+        $this->db->join("SERD2_TBL A","DLV_SER=A.SERD2_SER","LEFT");
+        $this->db->join("SER_TBL","DLV_SER=SER_ID","LEFT");
+        $this->db->join("SERC_TBL","DLV_SER=SERC_NEWID","LEFT");
+        $this->db->join("SERD2_TBL B","SERC_COMID=B.SERD2_SER","LEFT");
+        $this->db->join("MITM_TBL","B.SERD2_ITMCD=MITM_ITMCD","LEFT");
+        $this->db->join("(
+            SELECT PPSN1_WONO
+                ,PPSN1_BOMRV
+            FROM XPPSN1
+            GROUP BY PPSN1_WONO
+                ,PPSN1_BOMRV
+            ) VPSN","SERC_COMJOB=PPSN1_WONO","LEFT");
+        $this->db->where_in('SER_ITMID', $pFG)->where_in("DLV_ZNOMOR_AJU", $pAju)->where("A.SERD2_SER is null", null,false);
+        $this->db->group_by("DLV_ZNOMOR_AJU,SER_ITMID,B.SERD2_ITMCD,PPSN1_BOMRV,MITM_ITMD1,DLV_SER,DLV_QTY");
+        $this->db->select("DLV_ZNOMOR_AJU,SER_ITMID,B.SERD2_ITMCD,PPSN1_BOMRV,sum(B.SERD2_QTY) RMQT,DLV_QTY DLVQT,sum(B.SERD2_QTY)/DLV_QTY PER,RTRIM(MITM_ITMD1) PARTDESCRIPTION,DLV_SER");
+        $this->db->order_by('DLV_ZNOMOR_AJU');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
     public function select_sususan_bahan_baku_filter_jobsitems($pjobs, $pitems){
         $this->db->from('vcheck_sususan_bahan_baku');
         $this->db->where_in('SER_DOC', $pjobs)->where_in('SER_ITMID', $pitems);

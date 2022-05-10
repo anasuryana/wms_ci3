@@ -122,6 +122,7 @@
                 btn.disabled = false
                 btn.innerHTML = 'Search'
                 const ttlrows = response.data.length
+                const ttlrows_ = response.data_.length
                 let mydes = document.getElementById("rconv_test_divku");
                 let myfrag = document.createDocumentFragment();
                 let mtabel = document.getElementById("rconv_test_tbl");
@@ -156,6 +157,31 @@
                     newcell.classList.add('text-center')
                     newcell.innerHTML = response.data[i].PPSN1_BOMRV
                     ttlper+=response.data[i].PER*1
+                }
+                for (let i = 0; i<ttlrows_; i++){
+                    newrow = tableku2.insertRow(-1)
+                    newrow.classList.add('table-info')
+                    newcell = newrow.insertCell(0)
+                    newcell.innerHTML = response.data_[i].DLV_ZNOMOR_AJU
+                    newcell = newrow.insertCell(1)
+                    newcell.innerHTML = response.data_[i].SER_ITMID
+                    newcell = newrow.insertCell(2)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(response.data_[i].DLVQT).format(',')
+                    newcell = newrow.insertCell(3)
+                    newcell.innerHTML = response.data_[i].SERD2_ITMCD
+                    newcell = newrow.insertCell(4)
+                    newcell.innerHTML = response.data_[i].PARTDESCRIPTION
+                    newcell = newrow.insertCell(5)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = response.data_[i].PER*1
+                    newcell = newrow.insertCell(6)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(response.data_[i].RMQT).format(',')
+                    newcell = newrow.insertCell(7)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = response.data_[i].PPSN1_BOMRV
+                    ttlper+=response.data_[i].PER*1
                 }
                 TotalPerContainer.innerHTML = ttlper
                 mydes.innerHTML=''
