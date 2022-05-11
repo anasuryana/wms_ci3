@@ -691,14 +691,11 @@ class MSTITM extends CI_Controller {
 		$search = $this->input->get('search');
 		$rs = [];
 		if($searchBy=='in') {
-			$rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', 'RTRIM(MITM_STKUOM) MITM_STKUOM'], ['MITM_ITMD1' => $search]);
-			// $rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', 'RTRIM(MITM_STKUOM) MITM_STKUOM'], ['MITM_ITMD1' => $search]);
+			$rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMD1' => $search]);			
 		} elseif($searchBy=='ic'){
-			$rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', 'RTRIM(MITM_STKUOM) MITM_STKUOM'], ['MITM_ITMCD' => $search]);
-		}
-		 else {
-			$rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', 'RTRIM(MITM_STKUOM) MITM_STKUOM'], ['MITM_ITMCDCUS' => $search]);
-			// $rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', 'RTRIM(MITM_STKUOM) MITM_STKUOM'], ['MITM_ITMCDCUS' => $search]);
+			$rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMCD' => $search]);
+		} else {
+			$rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMCDCUS' => $search]);			
 		}
 		die('{"data":'.json_encode($rs).'}');
 	}
