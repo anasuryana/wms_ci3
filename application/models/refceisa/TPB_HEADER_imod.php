@@ -59,4 +59,15 @@ class TPB_HEADER_imod extends CI_Model {
         $DBUse->delete($this->TABLENAME);
         return $DBUse->affected_rows();
     }
+
+	public function select_uji_konversi($pColumns,$pAju = []){
+		$DBUse = $this->load->database('ceisadb',TRUE);
+		$DBUse->select($pColumns);
+        $DBUse->from($this->TABLENAME." A");
+		$DBUse->join("tpb_barang B", "A.ID=B.ID_HEADER");
+		$DBUse->join("tpb_bahan_baku C", "B.ID=C.ID_BARANG");
+        $DBUse->where_in('NOMOR_AJU', $pAju);
+		$query = $DBUse->get();
+		return $query->result_array();
+	}
 }

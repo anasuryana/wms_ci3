@@ -31,6 +31,7 @@ class SER extends CI_Controller {
 		$this->load->model('SERRC_mod');
 		$this->load->model('MSPP_mod');
 		$this->load->model('C3LC_mod');
+		$this->load->model('refceisa/TPB_HEADER_imod');
 	}
 	public function index()
 	{
@@ -5780,7 +5781,12 @@ class SER extends CI_Controller {
 		}
 		foreach(range('A','O') as $r){
 			$sheet->getColumnDimension($r)->setAutoSize(true);
-		}				
+		}
+		$sheet = $spreadsheet->createSheet();
+		$sheet->setTitle('CEISA');
+		$sheet->fromArray(array_keys($rs['data_ceisa'][0]), NULL, 'A1');
+		$sheet->fromArray($rs['data_ceisa'], NULL, 'A2');
+
 		$stringjudul = "Uji Konversi";
 		$writer = new Xlsx($spreadsheet);
 		$filename=$stringjudul; //save our workbook as this file name
@@ -5795,9 +5801,14 @@ class SER extends CI_Controller {
 		$rs = $this->SER_mod->select_conversion_test($params['date'],$params['date2'], $params['model'], $params['nomaju']);
 		$arIndex = [];		
 		$arAJU = [];
+		$arAJUUnique = [];
 		$arFG = [];
-		$i=0;
+		$rsCeisa = [];
+		$i = 0;
 		foreach($rs as $r){
+			if(!in_array($r['DLV_ZNOMOR_AJU'], $arAJUUnique)) {
+				$arAJUUnique[] = $r['DLV_ZNOMOR_AJU'];
+			}
 			if(!$r['PER']){
 				$arIndex[] = $i;
 				$arAJU[] = $r['DLV_ZNOMOR_AJU'];
@@ -5809,18 +5820,23 @@ class SER extends CI_Controller {
 			unset($rs[$n]);
 		}
 		$rs = array_values($rs);
-		
 		$rsnull = count($arAJU) && count($arFG) ? $this->SER_mod->select_combine_byAju_and_FG($arAJU, $arFG) : [];
 		if(count($rs)) {
 			$sort = [];
-			foreach($rs as $k=>$v) {
+			foreach($rs as $k => $v) {
 				$sort['DLV_ZNOMOR_AJU'][$k] = $v['DLV_ZNOMOR_AJU'];
 				$sort['SER_ITMID'][$k] = $v['SER_ITMID'];
 			}
 			array_multisort($sort['DLV_ZNOMOR_AJU'], SORT_ASC, $sort['SER_ITMID'], SORT_ASC,$rs);
+			$rsCeisa = $this->TPB_HEADER_imod->select_uji_konversi([
+				'A.NOMOR_AJU'
+				,'B.KODE_BARANG FG'
+				,'C.*'
+			], $arAJUUnique);
 		}
-		return ['data' => $rs, 'data_' => $rsnull];
+		return ['data' => $rs, 'data_' => $rsnull, 'data_ceisa' => $rsCeisa];
 	}
+	
 	public function search_rm_in_fg() {
 		header('Content-Type: application/json');
 		$itemCD = $this->input->post('itemCD');
