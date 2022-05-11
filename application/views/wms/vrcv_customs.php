@@ -155,6 +155,14 @@
                     <div class="btn-group btn-group-sm">
                         <button class="btn btn-primary" id="rcvcustoms_save" title="Save"><i class="fas fa-save"></i></button>
                         <button class="btn btn-success" id="rcvcustoms_hscode" title="Update HS Code">Update from xls</button>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button title="TPB Operations" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >TPB</button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="rcvcustoms_btnmkemasan_eCK(this)"><i class="fa-solid fa-box"></i> Kemasan</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>
+                                <li><a class="dropdown-item disabled" onclick="rcvcustoms_cancel_eCK()"  href="#" ><i class="fas fa-ban" style="color: red"></i> Cancel</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-1 text-center">
@@ -1350,7 +1358,9 @@
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">
                         <span class="input-group-text" >PO No</span>                        
-                        <input type="text" class="form-control" id="rcvcustoms_po_txtsearch" onkeypress="rcvcustoms_po_txtsearch_eKP(event)" maxlength="44" required placeholder="...">                        
+                        <input type="text" class="form-control" id="rcvcustoms_po_txtsearch" 
+                        onkeypress="rcvcustoms_po_txtsearch_eKP(event)"                        
+                         maxlength="44" required placeholder="...">
                     </div>
                 </div>
             </div>           
@@ -1847,6 +1857,10 @@
                             newcell = newrow.insertCell(0)
                             newcell.style.cssText = "cursor:pointer"
                             newcell.onclick = () => {
+                                if(response.data[i].MITM_STKUOM.length==0){
+                                    alertify.message('Unit Measurement could not be empty')
+                                    return
+                                }
                                 let isfound = false
                                 let ttlrowstarget = document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows.length
                                 for(let k=0;k<ttlrowstarget;k++) {
@@ -3893,7 +3907,7 @@
             let tabell = document.getElementById("rcvcustoms_tbl_1")
             let tableku2 = tabell.getElementsByTagName("tbody")[0]
             let newrow, newcell
-            tableku2.innerHTML = ''
+            //tableku2.innerHTML = ''
             for(let i=0; i<ttlrows; i++){
                 newrow = tableku2.insertRow(-1)
                 newrow.onclick = (event) => {
@@ -3974,6 +3988,8 @@
                 newcell.innerHTML = '-'
             }
         }
+        document.getElementById('rcvcustoms_po_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
+        document.getElementById('rcvcustoms_po_txtsearch').value=''
     }
 
     var rcvcustoms_ta_result = document.getElementById('rcvcustoms_reader_ta')
