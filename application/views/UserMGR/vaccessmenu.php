@@ -85,11 +85,9 @@
 	var lmenudefault	= [];
 	$("#divroles").css('height', $(window).height()*76/100);
 	$('#cmbgroup').change(function(){
-		console.log(lmenudefault)
-		var a = $(this).val();		
-		for( let i = 0;i<lmenudefault.length;i++){
-			//console.log(lmenudefault[i]);
-			let node = $('#mmenu2').tree('find', lmenudefault[i]);
+		const a = $(this).val();		
+		for( let i = 0;i<lmenudefault.length;i++){			
+			const node = $('#mmenu2').tree('find', lmenudefault[i]);
 			$('#mmenu2').tree('uncheck', node.target);
 		}
 		for( let i = 1;i<lgroupid.length;i++){
@@ -102,21 +100,21 @@
 	});
 
 	$('#btnSave').click(function(){
-		tangkai.length	= 0;
-		var nodes 		= $('#mmenu2').tree('getChecked');		
-		var s2			= '';
-		var grpid		= $('#cmbgroup').val();
+		tangkai.length = 0
+		const nodes = $('#mmenu2').tree('getChecked')
+		let s2 = ''
+		let grpid = $('#cmbgroup').val()
 		if (grpid=='_'){
-			return;
+			return
 		}
-		for(var i=0; i<nodes.length ; i++) {
-			s2 = nodes[i].id.toString();			
-			insertTangkai(s2);
+		for(let i=0; i<nodes.length ; i++) {
+			s2 = nodes[i].id.toString()		
+			insertTangkai(s2)
 			if (s2.length>1) {
-				var tanda=s2;
-				var jalan=true;
-				var percobaan=1;
-				var cnode = $('#mmenu2').tree('getParent', nodes[i].target);
+				let tanda = s2
+				let jalan = true
+				let percobaan = 1
+				let cnode = $('#mmenu2').tree('getParent', nodes[i].target)
 				
 				insertTangkai(cnode.id.toString());
 				while(jalan){
@@ -136,16 +134,13 @@
 					}
 				}
 			}		
-		}
-		// console.log(tangkai);
-		// console.log(grpid);
+		}		
 		
-		s2='';
+		s2 = ''
 		for(var i=0;i<tangkai.length;i++){
-			s2 += ''+tangkai[i]+',';
+			s2 += ''+tangkai[i]+','
 		}
-		s2=s2.substr(0,s2.length-1);
-		console.log(s2);
+		s2=s2.substr(0,s2.length-1)		
 	
 		jQuery.ajax({
 			type: "get",
@@ -158,8 +153,7 @@
 					'Saved successfully',
 					'success'
 				);
-				getAllAM();
-				//location.reload();
+				getAllAM()				
 			},
 			error:function(xhr,ajaxOptions, throwError) {
 			    alertify.error(throwError);
@@ -168,8 +162,8 @@
 	});
 
 	function insertTangkai(punik){
-		var notAdded =true;
-		for(var u=0;u<=tangkai.length;u++){
+		let notAdded =true;
+		for(let u=0;u<=tangkai.length;u++){
 			if (tangkai[u]==punik){
 				notAdded=false;break;
 			}
@@ -187,8 +181,7 @@
 			success:function(response) {
 				lgroupid.length=0;
 				lmenuid.length=0;
-				for (var i=0;i<response.length;i++){
-					//console.log(response[i].ugid + ' _' +response[i].idmenu);
+				for (let i=0;i<response.length;i++){					
 					lgroupid.push(''+response[i].EMPACCESS_GRPID+'');
 					lmenuid.push(''+response[i].EMPACCESS_MENUID+'');
 				}
@@ -196,10 +189,10 @@
 			error:function(xhr,ajaxOptions, throwError) {
                 alertify.error(throwError);
 			}
-		});
+		})
 	}
 
-	getDefaultMenu();
+	getDefaultMenu()
 
 	function getDefaultMenu(){
 		jQuery.ajax({
@@ -208,7 +201,7 @@
 			dataType: "json",
 			success:function(response) {
 				lmenudefault.length=0;				
-				for (var i=0;i<response.length;i++){					
+				for (let i=0;i<response.length;i++){					
 					lmenudefault.push(''+response[i].MENU_ID+'');
 				}
 			},
@@ -227,16 +220,14 @@
     $("#vacc_btn_save").click(function (e) { 
         e.preventDefault();
         $("#VACC_MOD").modal('hide');
-        var mid = $("#vacc_txt_id").val();
-        var mnm = $("#vacc_txt_nm").val();
+        let mid = $("#vacc_txt_id").val();
+        let mnm = $("#vacc_txt_nm").val();
         $.ajax({
             type: "post",
             url: "<?=base_url('User/setgroup')?>",
             data: {inid: mid, innm: mnm},
             dataType: "json",
-            success: function (response) {
-                var mid = $("#vacc_txt_id").val();
-                var mnm = $("#vacc_txt_nm").val();                
+            success: function (response) {                             
                 if(response[0].cd=='1'){
                     $("#cmbgroup").append(new Option(mnm,mid ));
                 }
