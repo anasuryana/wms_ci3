@@ -1240,6 +1240,10 @@ class ITH extends CI_Controller {
 		echo '}';
 	}
 
+	public function form_rm_d_allocation(){
+		$this->load->view('wms_report/vith_detail');
+	}
+
 	public function dispose_save(){
 		date_default_timezone_set('Asia/Jakarta');
 		$currdate = date('Ymd');
@@ -2323,6 +2327,9 @@ class ITH extends CI_Controller {
 	
 	public function form_unscan_prd_qc(){
 		$this->load->view('wms_report/vrpt_unscan_prd_qc');
+	}
+	public function form_report_kka_mega(){
+		$this->load->view('wms_report/vkka_mega');
 	}
 	
 	public function get_prdqc_unscan(){
