@@ -88,6 +88,7 @@ $route['delivery_doc_as_xls'] = 'DELV/doc_as_xls';
 $route['delivery_doc_rm_as_xls'] = 'DELV/doc_rm_as_xls';
 $route['delivery_doc_as_omi_xls'] = 'DELV/doc_as_omi_xls';
 $route['conversion_test_doc_as_xls'] = 'SER/conversion_test_as_xls';
+$route['kka_mega_as_xls'] = 'ITH/report_kka_mega';
 $route['po_list'] = 'PO/report';
 $route['master_hscode_as_xls'] = 'MSTITM/searchrm_exim_xls';
 $route['logx/(:any)'] = 'ITH/getlogexport/$1';

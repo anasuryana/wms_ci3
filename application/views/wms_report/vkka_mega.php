@@ -55,13 +55,19 @@
         let reportType = ''
         for (const radioButton of radioButtons) { 
             if (radioButton.checked) {
-                reportType = radioButton.value;
+                reportType = radioButton.value
                 break
             }
         }
         if(reportType.length==0){
-            alertify.messae()
+            alertify.message('Please select Report Type !')
             return
         }
+        const date1 = document.getElementById('rkka_mega_txt_dt').value
+        const date2 = document.getElementById('rkka_mega_txt_dt2').value
+        Cookies.set('CKPSI_DDATE', date1 , {expires:365})
+        Cookies.set('CKPSI_DDATE2', date2 , {expires:365})
+        Cookies.set('CKPSI_DREPORT', reportType , {expires:365})
+        window.open("<?=base_url('kka_mega_as_xls')?>" ,'_blank')
     }
 </script>
