@@ -5740,6 +5740,8 @@ class SER extends CI_Controller {
 			,'nomaju' => $nomoraju
 		]);
 		$spreadsheet = new Spreadsheet();
+
+		#INTERNAL SHEET
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->setTitle('RESUME');
 		$sheet->setCellValueByColumnAndRow(1,3, 'Nomor Aju');
@@ -5763,8 +5765,7 @@ class SER extends CI_Controller {
 			$i++;
 		}
 		$i2 = $i;
-		foreach($rs['data_'] as $r){
-			
+		foreach($rs['data_'] as $r){			
 			$sheet->setCellValueByColumnAndRow(1,$i, $r['DLV_ZNOMOR_AJU']);
 			$sheet->setCellValueByColumnAndRow(2,$i, $r['SER_ITMID']);
 			$sheet->setCellValueByColumnAndRow(3,$i, $r['DLVQT']);
@@ -5782,10 +5783,24 @@ class SER extends CI_Controller {
 		foreach(range('A','O') as $r){
 			$sheet->getColumnDimension($r)->setAutoSize(true);
 		}
+
+		#CEISA SHEET
+		foreach($rs['data_ceisa'] as &$r){
+			$r['PER'] = '';
+			foreach($rs['data'] as $m){
+				if($r['NOMOR_AJU']===$m['DLV_ZNOMOR_AJU'] && $r['FG']===$m['SER_ITMID'] 
+					&& ($r['KODE_BARANG']===$m['SERD2_ITMCD'] || $r['KODE_BARANG']===$m['MITMGRP_ITMCD'])){
+					$r['PER'] = $m['PER'];
+					break;
+				}
+			}
+		}
+		unset($r);
 		$sheet = $spreadsheet->createSheet();
 		$sheet->setTitle('CEISA');
 		$sheet->fromArray(array_keys($rs['data_ceisa'][0]), NULL, 'A1');
 		$sheet->fromArray($rs['data_ceisa'], NULL, 'A2');
+
 
 		$stringjudul = "Uji Konversi";
 		$writer = new Xlsx($spreadsheet);
@@ -5831,6 +5846,7 @@ class SER extends CI_Controller {
 			$rsCeisa = $this->TPB_HEADER_imod->select_uji_konversi([
 				'A.NOMOR_AJU'
 				,'B.KODE_BARANG FG'
+				,'B.JUMLAH_SATUAN FGQTY'
 				,'C.*'
 			], $arAJUUnique);
 		}
