@@ -1368,7 +1368,7 @@ class ITH extends CI_Controller {
 					$r['ITH_BAL'] = $current_balance+ $r['INCQTY'] + $r['OUTQTY'];
 					$current_balance = $r['ITH_BAL'];
 				}
-				$r['OUTQTY'] = abs($r['OUTQTY']);
+				$r['OUTQTY'] = abs((float)$r['OUTQTY']);
 			}
 			unset($r);
 			$myar[] = ['cd' => 1, 'msg' => 'go ahead'];
@@ -2330,6 +2330,59 @@ class ITH extends CI_Controller {
 	}
 	public function form_report_kka_mega(){
 		$this->load->view('wms_report/vkka_mega');
+	}
+
+	function report_kka_mega(){
+		if(!isset($_COOKIE["CKPSI_DDATE"]) || !isset($_COOKIE["CKPSI_DREPORT"]) && !isset($_COOKIE["CKPSI_DDATE2"])){
+			exit('no data to be found');
+		}	
+		$date1 = $_COOKIE["CKPSI_DDATE"];
+		$date2 = $_COOKIE["CKPSI_DDATE2"];
+		$reportType = $_COOKIE["CKPSI_DREPORT"];
+		$rs = [];
+		$title = '';
+		switch ($reportType) {
+			case 'FG':
+				$rs = $this->ITH_mod->select_KKA_MEGA_FG($date1, $date2);
+				$title = 'Finished Goods';
+				break;
+		}
+		$spreadsheet = new Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->setTitle('RESUME');
+		$sheet->setCellValueByColumnAndRow(1,2, 'Item Code');
+		$sheet->setCellValueByColumnAndRow(2,2, 'Item Description');
+		$sheet->setCellValueByColumnAndRow(3,2, 'Saldo Awal');
+		$sheet->setCellValueByColumnAndRow(4,2, 'Pemasukan');
+		$sheet->setCellValueByColumnAndRow(5,2, 'Penyesuaian Pemasukan');
+		$sheet->setCellValueByColumnAndRow(6,2, 'Pengeluaran');
+		$sheet->setCellValueByColumnAndRow(7,2, 'Penyesuaian Pengeluaran');
+		$i = 3;
+		foreach($rs as $r) {
+			$sheet->setCellValueByColumnAndRow(1,$i, $r['ITRN_ITMCD']);
+			$sheet->setCellValueByColumnAndRow(2,$i, $r['MGMITM_ITMD1']);
+			$sheet->setCellValueByColumnAndRow(3,$i, $r['B4QTY']);
+			$sheet->setCellValueByColumnAndRow(4,$i, $r['INCQTY']);
+			$sheet->setCellValueByColumnAndRow(5,$i, $r['ADJINCQTY']);
+			$sheet->setCellValueByColumnAndRow(6,$i, $r['DLVQTY']);
+			$sheet->setCellValueByColumnAndRow(7,$i, $r['ADJOUTQTY']);
+			$i++;
+		}
+		foreach(range('A','O') as $r){
+			$sheet->getColumnDimension($r)->setAutoSize(true);
+		}
+		$sheet->getStyle('A:A')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+		$sheet->getStyle('A2:G'.($i-1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+		$sheet->setAutoFilter('A2:H2');
+		$sheet->freezePane('C3');
+		$stringjudul = "KKA ".$title." $date1 to $date2";
+		$writer = new Xlsx($spreadsheet);
+		$filename=$stringjudul; //save our workbook as this file name
+		
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		$writer->save('php://output');
 	}
 	
 	public function get_prdqc_unscan(){
