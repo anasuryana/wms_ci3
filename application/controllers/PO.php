@@ -43,6 +43,7 @@ class PO extends CI_Controller {
 			exit('nothing to be printed');
 		}
 		$rs = $this->PO_mod->select_detail_where(['PO_NO' => $pser]);
+		$rsDiscount = $this->PO_mod->select_discount_detail_where(['PODISC_PONO' => $pser]);
 		$_y = 10;
 		$requsted_by = '';
 		$shipment = '';
@@ -306,6 +307,11 @@ class PO extends CI_Controller {
 			}			
 			// die(json_encode(['data' => $discountlist_distinct]));						
 		}
+		$ttldiscount_priceSpecial = 0;
+		foreach($rsDiscount as $r){
+			$discount_msg .= $r['PODISC_DESC'];
+			$ttldiscount_priceSpecial+=$r['PODISC_DISC'];
+		}
 		#end
 
 		#analyze required sheets before generate PDF
@@ -333,7 +339,7 @@ class PO extends CI_Controller {
 		}
 		#end	
 
-		if($_num>13){			
+		if($_num>13){
 			$MAXLENGTH_LINE_TO_BOTTOM = 190;
 			$pdf->SetFont('Times','',9);
 			$pdf->SetXY(6,104-$_y);
@@ -522,6 +528,7 @@ class PO extends CI_Controller {
 				$YStart+=(5+$YExtra);
 			}
 			#footermain
+			$total_amount-=$ttldiscount_priceSpecial;
 			$ppn_price = $total_amount*$ppn/100;
 			$pph_price = $total_amount*$pph/100;
 			$netpayment = $total_amount+$pph_price+$ppn_price;
@@ -544,15 +551,15 @@ class PO extends CI_Controller {
 			$sdata_department = substr($sdata_department,0,strlen($sdata_department)-1);
 			$sdata_subject = substr($sdata_subject,0,strlen($sdata_subject)-1);
 
-			if($ttldiscount_price>0){
+			if($ttldiscount_price>0 || $discount_msg!=''){
 				$pdf->SetXY(6,$YStart);
 				$pdf->Cell(10,5,'',0,0,'C');
 				$pdf->Cell(30,5,'',0,0,'L');
 				$pdf->Cell(60,5,'Discount ('.$discount_msg.')',0,0,'L');
 				$pdf->Cell(15,5,'',0,0,'C');
 				$pdf->Cell(25,5,'',0,0,'R');
-				$pdf->Cell(27.5,5, "(".number_format($ttldiscount_price,2).")" ,0,0,'R');
-				$pdf->Cell(27.5,5, "(".number_format($ttldiscount_price,2).")",0,0,'R');
+				$pdf->Cell(27.5,5, "(".number_format($ttldiscount_price+$ttldiscount_priceSpecial,2).")" ,0,0,'R');
+				$pdf->Cell(27.5,5, "(".number_format($ttldiscount_price+$ttldiscount_priceSpecial,2).")",0,0,'R');
 			}
 			$pdf->AddPage();
 			#company
@@ -805,7 +812,6 @@ class PO extends CI_Controller {
 			$pdf->SetXY(140,294-$_y);
 			$pdf->Cell(60,5,'Nama / Tanggal / Cap Perusahaan',0,0,'C');
 		} else {			
-			$ttldiscount_price = 0;
 			$MAXLENGTH_LINE_TO_BOTTOM = 75;
 			$pdf->SetFont('Times','',9);
 			$pdf->SetXY(6,104-$_y);
@@ -1005,6 +1011,7 @@ class PO extends CI_Controller {
 			}			
 
 			#footermain
+			$total_amount-=$ttldiscount_priceSpecial;
 			$ppn_price = $total_amount*$ppn/100;
 			$pph_price = $total_amount*$pph/100;
 			$netpayment = $total_amount-$pph_price+$ppn_price;
@@ -1028,17 +1035,17 @@ class PO extends CI_Controller {
 			$sdata_subject = substr($sdata_subject,0,strlen($sdata_subject)-1);
 
 			#additional row for discount
-			if($ttldiscount_price>0){
+			if($ttldiscount_price>0 || $discount_msg!=''){
 				$pdf->SetXY(6,(180-$_y)-6);
 				$pdf->Cell(10,5,'',0,0,'C');
 				$pdf->Cell(30,5,'',0,0,'L');
 				$pdf->Cell(60,5,'Discount ('.$discount_msg.')',0,0,'L');
 				$pdf->Cell(15,5,'',0,0,'C');
 				$pdf->Cell(25,5,'',0,0,'R');
-				$pdf->Cell(27.5,5, "(".number_format($ttldiscount_price,2).")" ,0,0,'R');
-				$pdf->Cell(27.5,5, "(".number_format($ttldiscount_price,2).")",0,0,'R');
+				$pdf->Cell(27.5,5, "(".number_format($ttldiscount_price+$ttldiscount_priceSpecial,2).")" ,0,0,'R');
+				$pdf->Cell(27.5,5, "(".number_format($ttldiscount_price+$ttldiscount_priceSpecial,2).")",0,0,'R');
 			}
-			#footer
+			#footer			
 			$pdf->SetXY(6,180-$_y);
 			$pdf->Cell(10,5,'',0,0,'C');
 			$pdf->Cell(30,5,'',0,0,'C');
