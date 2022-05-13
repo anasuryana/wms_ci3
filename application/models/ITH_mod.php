@@ -466,6 +466,16 @@ class ITH_mod extends CI_Model {
 		$query =  $this->db->query($qry, [$pdate1, $pdate2]);
 		return $query->result_array();
 	}
+	public function select_KKA_MEGA_FG_RTN($pdate1, $pdate2){
+		$qry = "wms_sp_kka_mega_fg_rtn ?, ?";
+		$query =  $this->db->query($qry, [$pdate1, $pdate2]);
+		return $query->result_array();
+	}
+	public function select_KKA_MEGA_RM($pdate1, $pdate2){
+		$qry = "wms_sp_kka_mega_rm ?, ?";
+		$query =  $this->db->query($qry, [$pdate1, $pdate2]);
+		return $query->result_array();
+	}
 	public function selectincfg_with_revision($pjob, $psts, $pbg, $prevision){
 		$qry = "sp_rincoming_fg_with_rev ?, ? , ? , ?";
 		$query =  $this->db->query($qry, [$pjob, $psts, $pbg, $prevision ]);

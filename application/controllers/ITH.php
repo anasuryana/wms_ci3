@@ -2341,12 +2341,6 @@ class ITH extends CI_Controller {
 		$reportType = $_COOKIE["CKPSI_DREPORT"];
 		$rs = [];
 		$title = '';
-		switch ($reportType) {
-			case 'FG':
-				$rs = $this->ITH_mod->select_KKA_MEGA_FG($date1, $date2);
-				$title = 'Finished Goods';
-				break;
-		}
 		$spreadsheet = new Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->setTitle('RESUME');
@@ -2354,27 +2348,85 @@ class ITH extends CI_Controller {
 		$sheet->setCellValueByColumnAndRow(2,2, 'Item Description');
 		$sheet->setCellValueByColumnAndRow(3,2, 'Saldo Awal');
 		$sheet->setCellValueByColumnAndRow(4,2, 'Pemasukan');
-		$sheet->setCellValueByColumnAndRow(5,2, 'Penyesuaian Pemasukan');
-		$sheet->setCellValueByColumnAndRow(6,2, 'Pengeluaran');
-		$sheet->setCellValueByColumnAndRow(7,2, 'Penyesuaian Pengeluaran');
-		$i = 3;
-		foreach($rs as $r) {
-			$sheet->setCellValueByColumnAndRow(1,$i, $r['ITRN_ITMCD']);
-			$sheet->setCellValueByColumnAndRow(2,$i, $r['MGMITM_ITMD1']);
-			$sheet->setCellValueByColumnAndRow(3,$i, $r['B4QTY']);
-			$sheet->setCellValueByColumnAndRow(4,$i, $r['INCQTY']);
-			$sheet->setCellValueByColumnAndRow(5,$i, $r['ADJINCQTY']);
-			$sheet->setCellValueByColumnAndRow(6,$i, $r['DLVQTY']);
-			$sheet->setCellValueByColumnAndRow(7,$i, $r['ADJOUTQTY']);
-			$i++;
+		switch ($reportType) {
+			case 'FG':
+				$rs = $this->ITH_mod->select_KKA_MEGA_FG($date1, $date2);
+				$title = 'Finished Goods';
+				$sheet->setCellValueByColumnAndRow(5,2, 'Penyesuaian Pemasukan');
+				$sheet->setCellValueByColumnAndRow(6,2, 'Pengeluaran');
+				$sheet->setCellValueByColumnAndRow(7,2, 'Penyesuaian Pengeluaran');
+				$i = 3;
+				foreach($rs as $r) {
+					$sheet->setCellValueByColumnAndRow(1,$i, $r['ITRN_ITMCD']);
+					$sheet->setCellValueByColumnAndRow(2,$i, $r['MGMITM_ITMD1']);
+					$sheet->setCellValueByColumnAndRow(3,$i, $r['B4QTY']);
+					$sheet->setCellValueByColumnAndRow(4,$i, $r['INCQTY']);
+					$sheet->setCellValueByColumnAndRow(5,$i, $r['ADJINCQTY']);
+					$sheet->setCellValueByColumnAndRow(6,$i, $r['DLVQTY']);
+					$sheet->setCellValueByColumnAndRow(7,$i, $r['ADJOUTQTY']);
+					$i++;
+				}
+				foreach(range('A','O') as $r){
+					$sheet->getColumnDimension($r)->setAutoSize(true);
+				}
+				$sheet->getStyle('A:A')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+				$sheet->getStyle('A2:G'.($i-1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+				$sheet->setAutoFilter('A2:H2');
+				$sheet->freezePane('C3');
+				break;
+			case 'FG-RTN':
+				$rs = $this->ITH_mod->select_KKA_MEGA_FG_RTN($date1, $date2);
+				$title = 'Return Finished Goods';
+				$sheet->setCellValueByColumnAndRow(5,2, 'Penyesuaian Pemasukan');
+				$sheet->setCellValueByColumnAndRow(6,2, 'Pengeluaran');
+				$sheet->setCellValueByColumnAndRow(7,2, 'Penyesuaian Pengeluaran');
+				$i = 3;
+				foreach($rs as $r) {
+					$sheet->setCellValueByColumnAndRow(1,$i, $r['ITRN_ITMCD']);
+					$sheet->setCellValueByColumnAndRow(2,$i, $r['MGMITM_ITMD1']);
+					$sheet->setCellValueByColumnAndRow(3,$i, $r['B4QTY']);
+					$sheet->setCellValueByColumnAndRow(4,$i, $r['INCQTY']);
+					$sheet->setCellValueByColumnAndRow(5,$i, $r['ADJINCQTY']);
+					$sheet->setCellValueByColumnAndRow(6,$i, $r['DLVQTY']);
+					$sheet->setCellValueByColumnAndRow(7,$i, $r['ADJOUTQTY']);
+					$i++;
+				}
+				foreach(range('A','O') as $r){
+					$sheet->getColumnDimension($r)->setAutoSize(true);
+				}
+				$sheet->getStyle('A:A')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+				$sheet->getStyle('A2:G'.($i-1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+				$sheet->setAutoFilter('A2:H2');
+				$sheet->freezePane('C3');
+				break;
+			case 'RM':
+				$rs = $this->ITH_mod->select_KKA_MEGA_RM($date1, $date2);
+				$title = 'Raw Material';
+				$sheet->setCellValueByColumnAndRow(5,2, 'Pemasukan dari Produksi');
+				$sheet->setCellValueByColumnAndRow(6,2, 'Penyesuaian Pemasukan');
+				$sheet->setCellValueByColumnAndRow(7,2, 'Pengeluaran');
+				$sheet->setCellValueByColumnAndRow(8,2, 'Penyesuaian Pengeluaran');
+				$i = 3;
+				foreach($rs as $r) {
+					$sheet->setCellValueByColumnAndRow(1,$i, $r['ITRN_ITMCD']);
+					$sheet->setCellValueByColumnAndRow(2,$i, $r['MGMITM_ITMD1']);
+					$sheet->setCellValueByColumnAndRow(3,$i, $r['B4QTY']);
+					$sheet->setCellValueByColumnAndRow(4,$i, $r['INCQTY']);
+					$sheet->setCellValueByColumnAndRow(5,$i, $r['PRDINCQTY']);
+					$sheet->setCellValueByColumnAndRow(6,$i, $r['ADJINCQTY']);
+					$sheet->setCellValueByColumnAndRow(7,$i, $r['DLVQTY']);
+					$sheet->setCellValueByColumnAndRow(8,$i, $r['ADJOUTQTY']);
+					$i++;
+				}
+				foreach(range('A','O') as $r){
+					$sheet->getColumnDimension($r)->setAutoSize(true);
+				}
+				$sheet->getStyle('A:A')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+				$sheet->getStyle('A2:I'.($i-1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+				$sheet->setAutoFilter('A2:I2');
+				$sheet->freezePane('C3');
+				break;
 		}
-		foreach(range('A','O') as $r){
-			$sheet->getColumnDimension($r)->setAutoSize(true);
-		}
-		$sheet->getStyle('A:A')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-		$sheet->getStyle('A2:G'.($i-1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-		$sheet->setAutoFilter('A2:H2');
-		$sheet->freezePane('C3');
 		$stringjudul = "KKA ".$title." $date1 to $date2";
 		$writer = new Xlsx($spreadsheet);
 		$filename=$stringjudul; //save our workbook as this file name
