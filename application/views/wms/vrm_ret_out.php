@@ -118,6 +118,7 @@
                         <option value="-">-</option>
                         <option value="25">BC 2.5</option>
                         <option value="27">BC 2.7</option>
+                        <option value="30">BC 3.0</option>
                         <option value="41">BC 4.1</option>
                         <option value="261">BC 2.6.1</option>
                     </select>                                        
@@ -1178,6 +1179,46 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save261" onclick="retrm_out_inc_z_btn_save261_e_click()">Save changes</button>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="modal fade" id="retrm_out_inc_CUSTOMSMOD30">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">      
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title text-info">Dokumen BC 3.0</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Nomor Pengajuan</label>
+                        <input type="text" id="retrm_out_inc_txt_noaju30" class="form-control" maxlength="26">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm mb-1">                        
+                        <label class="input-group-text">Nomor Pendaftaran</label>
+                        <input type="text" id="retrm_out_inc_txt_nopen30" class="form-control" maxlength="6">                        
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Tanggal Pendaftaran</label>
+                        <input type="text" id="retrm_out_inc_txt_tglpen30" class="form-control" readonly>                        
+                    </div>
+                </div>
+            </div>            
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save30" onclick="retrm_out_inc_z_btn_save30_e_click()">Save changes</button>
         </div>
       </div>
     </div>
@@ -2689,6 +2730,43 @@
             });
         }
     }
+    function retrm_out_inc_z_btn_save30_e_click(){
+        const msj = document.getElementById('retrm_out_inc_txt_DO')
+        if(msj.value.trim()== ''){
+            msj.focus()
+            return
+        }
+        const mbctype = document.getElementById('retrm_out_cmb_bcdoc')
+        if(mbctype.value.trim()==''){
+            mbctype.focus()
+            return
+        }
+        const mnoaju = document.getElementById('retrm_out_inc_txt_noaju30')
+        const mnopen = document.getElementById('retrm_out_inc_txt_nopen30').value;
+        const mtglpen = document.getElementById('retrm_out_inc_txt_tglpen30').value;                
+        if(mnoaju.value.trim().length!=26){
+            alertify.warning("NO AJU is not valid")
+            mnoaju.focus()
+            return
+        }
+        if(confirm("Are You sure ?")){
+            $.ajax({
+                type: "get",
+                url: "<?=base_url('DELV/change30')?>",
+                data: {inid : msj.value, innopen: mnopen, inaju: mnoaju.value, intgldaftar: mtglpen },
+                dataType: "json",
+                success: function (response) {
+                    if(response[0].cd='11'){
+                        alertify.success(response[0].msg);
+                    } else {
+                        //alertify.error(response[0].msg);
+                    }
+                }, error: function(xhr, xopt, xthrow){
+                    alertify.error(xthrow);
+                }
+            });
+        }
+    }
 
     function retrm_out_inc_z_btn_save25_e_click(){
         const msj = document.getElementById('retrm_out_inc_txt_DO')
@@ -3013,6 +3091,7 @@
                                 ,crprdoc : response.data[i].DLV_RPRDOC
                                 ,crparentdoc : response.data[i].DLV_PARENTDOC
                                 ,cdocbcout : response.data[i].RPSTOCK_REMARK
+                                ,DLV_ZNOMOR_AJU : response.data[i].DLV_ZNOMOR_AJU
                             }
                             newrow.onclick = () => {retrm_out_cclick_hnd(pdata)}
                         }
@@ -3152,6 +3231,12 @@
             if(mrow.cTglpen){
                 document.getElementById('retrm_out_inc_txt_nopen261').value=mnopen.trim()
                 document.getElementById('retrm_out_inc_txt_tglpen261').value = mrow.cTglpen
+            }
+        } else if (mbctype=='30') {
+            document.getElementById('retrm_out_inc_txt_noaju30').value=mrow.DLV_ZNOMOR_AJU
+            if(mrow.cTglpen){
+                document.getElementById('retrm_out_inc_txt_nopen30').value=mnopen.trim()
+                document.getElementById('retrm_out_inc_txt_tglpen30').value = mrow.cTglpen
             }
         }
 
@@ -3396,8 +3481,10 @@
                 $("#retrm_out_inc_CUSTOMSMOD41").modal('show');            
                 break;            
             case '261':
-                $("#retrm_out_inc_CUSTOMSMOD261").modal('show');            
-                break;            
+                $("#retrm_out_inc_CUSTOMSMOD261").modal('show');
+                break;
+            case '30':
+                $("#retrm_out_inc_CUSTOMSMOD30").modal('show');break;
         }
     }
     function retrm_out_inc_e_pastecol1(event){
@@ -3573,9 +3660,14 @@
         format: 'yyyy-mm-dd',
         autoclose:true
     })
+    $("#retrm_out_inc_txt_tglpen30").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true
+    })
     $("#retrm_out_inc_customs_date").datepicker('update', new Date());
     $("#retrm_out_txt_DOdate").datepicker('update', new Date())
     $("#retrm_out_scr_period_search").datepicker('update', new Date())
+    $("#retrm_out_inc_txt_tglpen30").datepicker('update', new Date())
     
     $("#retrm_out_inc_txt_transport").change(function (e) { 
         let mdataplat = $(this).val();

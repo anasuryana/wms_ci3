@@ -5171,6 +5171,36 @@ class DELV extends CI_Controller {
 		}
 		die(json_encode($myar));
 	}
+	public function change30(){
+		date_default_timezone_set('Asia/Jakarta');		
+		$crnt_dt = date('Y-m-d H:i:s');		
+		$cid = $this->input->get('inid');
+		$cnoaju = $this->input->get('inaju');
+		$cnopen = $this->input->get('innopen');		
+		$ctpb_tgl_daftar = $this->input->get('intgldaftar');		
+		if($cnopen=='null') {
+			$cnopen = '';
+		}		
+		$czidmodul ='';
+		$myar = [];				
+		if($czidmodul==''){
+			$myar[] = ["cd" => '00', "msg" => "Please check Aktivasi CEISA Data" ];
+		} else {
+			$ctpb_tgl_daftar = strlen(trim($ctpb_tgl_daftar))==10 ? $ctpb_tgl_daftar : NULL;
+			$keys = ['DLV_ID' => $cid];
+			$vals = [
+				'DLV_NOPEN' => $cnopen, 'DLV_NOAJU' => substr($cnoaju,-6) ,'DLV_ZNOMOR_AJU' => $cnoaju,
+				'DLV_LUPDT' => $crnt_dt, 'DLV_USRID' => $this->session->userdata('nama'),
+				'DLV_ZID_MODUL' => $czidmodul, 'DLV_RPDATE' => $ctpb_tgl_daftar
+			];
+			$ret = $this->DELV_mod->updatebyVAR($vals, $keys);
+			$myar[] = $ret>0 ?  ["cd" => '11', "msg" => "Updated successfully" ] : ["cd" => '00', "msg" => "No data to be updated" ];
+			if(!empty($cnopen)){
+				$this->gotoque($cid);
+			}
+		}
+		die(json_encode($myar));
+	}
 
 	public function checkSession(){
 		$myar =[];
