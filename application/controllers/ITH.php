@@ -2355,15 +2355,17 @@ class ITH extends CI_Controller {
 				$sheet->setCellValueByColumnAndRow(5,2, 'Penyesuaian Pemasukan');
 				$sheet->setCellValueByColumnAndRow(6,2, 'Pengeluaran');
 				$sheet->setCellValueByColumnAndRow(7,2, 'Penyesuaian Pengeluaran');
+				$sheet->setCellValueByColumnAndRow(8,2, 'Saldo Akhir');
 				$i = 3;
 				foreach($rs as $r) {
 					$sheet->setCellValueByColumnAndRow(1,$i, $r['ITRN_ITMCD']);
 					$sheet->setCellValueByColumnAndRow(2,$i, $r['MGMITM_ITMD1']);
-					$sheet->setCellValueByColumnAndRow(3,$i, $r['B4QTY']);
-					$sheet->setCellValueByColumnAndRow(4,$i, $r['INCQTY']);
-					$sheet->setCellValueByColumnAndRow(5,$i, $r['ADJINCQTY']);
-					$sheet->setCellValueByColumnAndRow(6,$i, $r['DLVQTY']);
-					$sheet->setCellValueByColumnAndRow(7,$i, $r['ADJOUTQTY']);
+					$sheet->setCellValueByColumnAndRow(3,$i, $r['B4QTY']); #C
+					$sheet->setCellValueByColumnAndRow(4,$i, $r['INCQTY']); #D
+					$sheet->setCellValueByColumnAndRow(5,$i, $r['ADJINCQTY']); #E
+					$sheet->setCellValueByColumnAndRow(6,$i, $r['DLVQTY']); #F
+					$sheet->setCellValueByColumnAndRow(7,$i, $r['ADJOUTQTY']); #G
+					$sheet->setCellValueByColumnAndRow(8,$i, "=C$i+D$i+E$i-F$i-G$i");
 					$i++;
 				}
 				foreach(range('A','O') as $r){
@@ -2380,6 +2382,7 @@ class ITH extends CI_Controller {
 				$sheet->setCellValueByColumnAndRow(5,2, 'Penyesuaian Pemasukan');
 				$sheet->setCellValueByColumnAndRow(6,2, 'Pengeluaran');
 				$sheet->setCellValueByColumnAndRow(7,2, 'Penyesuaian Pengeluaran');
+				$sheet->setCellValueByColumnAndRow(8,2, 'Saldo Akhir');
 				$i = 3;
 				foreach($rs as $r) {
 					$sheet->setCellValueByColumnAndRow(1,$i, $r['ITRN_ITMCD']);
@@ -2389,6 +2392,7 @@ class ITH extends CI_Controller {
 					$sheet->setCellValueByColumnAndRow(5,$i, $r['ADJINCQTY']);
 					$sheet->setCellValueByColumnAndRow(6,$i, $r['DLVQTY']);
 					$sheet->setCellValueByColumnAndRow(7,$i, $r['ADJOUTQTY']);
+					$sheet->setCellValueByColumnAndRow(8,$i, "=C$i+D$i+E$i-F$i-G$i");
 					$i++;
 				}
 				foreach(range('A','O') as $r){
@@ -2406,6 +2410,7 @@ class ITH extends CI_Controller {
 				$sheet->setCellValueByColumnAndRow(6,2, 'Penyesuaian Pemasukan');
 				$sheet->setCellValueByColumnAndRow(7,2, 'Pengeluaran');
 				$sheet->setCellValueByColumnAndRow(8,2, 'Penyesuaian Pengeluaran');
+				$sheet->setCellValueByColumnAndRow(9,2, 'Saldo Akhir');
 				$i = 3;
 				foreach($rs as $r) {
 					$sheet->setCellValueByColumnAndRow(1,$i, $r['ITRN_ITMCD']);
@@ -2416,6 +2421,7 @@ class ITH extends CI_Controller {
 					$sheet->setCellValueByColumnAndRow(6,$i, $r['ADJINCQTY']);
 					$sheet->setCellValueByColumnAndRow(7,$i, $r['DLVQTY']);
 					$sheet->setCellValueByColumnAndRow(8,$i, $r['ADJOUTQTY']);
+					$sheet->setCellValueByColumnAndRow(9,$i, "=C$i+D$i+E$i+F$i-G$i-H$i");
 					$i++;
 				}
 				foreach(range('A','O') as $r){
