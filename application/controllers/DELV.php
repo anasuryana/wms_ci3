@@ -2576,6 +2576,7 @@ class DELV extends CI_Controller {
 				'DLV_DATE' => $doDate,
 				'DLV_CONSIGN' => $consignee,
 				'DLV_CUSTDO' => $incustDO,
+				'DLV_DSCRPTN' => $indescription,
 				'DLV_ISPTTRND' => $this->PATTERFLG
 			], 
 				['DLV_ID' => $doNum]);
