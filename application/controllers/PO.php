@@ -304,13 +304,12 @@ class PO extends CI_Controller {
 					}
 				}
 				$discount_msg = substr($discount_msg,0,strlen($discount_msg)-2);
-			}			
-			// die(json_encode(['data' => $discountlist_distinct]));						
+			}
 		}
 		$ttldiscount_priceSpecial = 0;
 		foreach($rsDiscount as $r){
 			$discount_msg .= $r['PODISC_DESC'];
-			$ttldiscount_priceSpecial+=$r['PODISC_DISC'];
+			$ttldiscount_priceSpecial+=$r['PODISC_DISC'];			
 		}
 		#end
 
@@ -324,16 +323,12 @@ class PO extends CI_Controller {
 			$itemname = stripslashes($itemname);
 			$itemname = iconv('UTF-8', 'windows-1252', $itemname);
 			$YExtra1 = 1;
-			$YExtra2 = 1;
+			$YExtra2 = $pdf->GetStringWidth($itemname)>60 ? 2 : 1;
 			if(strpos($itemcd, " ")!==false){
 				if($pdf->GetStringWidth($itemcd)>30){
-					$YExtra1 =2;
+					$YExtra1 = 2;
 				}
-			}
-			if($pdf->GetStringWidth($itemname)>60){
-				$YExtra2 = 2;
-			}
-
+			}			
 			$rowsneeded = $YExtra1>$YExtra2? $YExtra1: $YExtra2;
 			$_num+=$rowsneeded;
 		}
@@ -811,7 +806,7 @@ class PO extends CI_Controller {
 			$pdf->SetFont('Times','BIU',9);
 			$pdf->SetXY(140,294-$_y);
 			$pdf->Cell(60,5,'Nama / Tanggal / Cap Perusahaan',0,0,'C');
-		} else {			
+		} else {						
 			$MAXLENGTH_LINE_TO_BOTTOM = 75;
 			$pdf->SetFont('Times','',9);
 			$pdf->SetXY(6,104-$_y);
@@ -825,6 +820,7 @@ class PO extends CI_Controller {
 			$nomor_urut = 1;
 			$YStart = (104-$_y)-5+5;
 			$YExtra = 0;
+			$total_amount_test = 0;
 			foreach($rs as $r){
 				if($pdf->GetY()>=159) {
 					$pdf->AddPage();
@@ -973,8 +969,9 @@ class PO extends CI_Controller {
 				$itemname = iconv('UTF-8', 'windows-1252', $itemname);
 				$itemum = $r['PO_UM'] ? $r['PO_UM'] : $r['MITM_STKUOM'];
 				$amount = $r['PO_PRICE']*$r['PO_QTY'];
-				$discount_price = $amount*($r['PO_DISC']/100);
-				$finalamount = $amount-$discount_price;
+				$discount_price_per = $amount*($r['PO_DISC']/100);
+				$finalamount = $amount-$discount_price_per;
+				$total_amount_test += $amount;
 				$pdf->SetXY(6,$YStart);
 				$pdf->Cell(10,5,$nomor_urut++,0,0,'C');
 				if(strpos($itemcd, " ")!==false){
@@ -998,17 +995,14 @@ class PO extends CI_Controller {
 				$pdf->MultiCell(60,5,$itemname,0,'L');
 				$YExtra_candidate = $pdf->GetY();
 				$YExtra = $YExtra_candidate!=$YStart ? $YExtra=$YExtra_candidate-$YStart-5 : 0;				
-				// $pdf->Cell(60,5,$itemname,0,0,'L');
 				$pdf->SetXY(106,$YStart);
 				$pdf->Cell(15,5,$itemum,0,0,'C');
 				$pdf->Cell(25,5,number_format($r['PO_QTY']),0,0,'R');
-				$pdf->Cell(27.5,5,number_format($r['PO_PRICE'],2),0,0,'R');
-				// $pdf->Cell(27.5,5,number_format($amount)."(".$YStart."_".$YExtra_candidate.")",0,0,'R');
+				$pdf->Cell(27.5,5,number_format($r['PO_PRICE'],2),0,0,'R');				
 				$pdf->Cell(27.5,5,number_format($amount,2),0,0,'R');
-				$total_amount += $finalamount;
-				$ttldiscount_price+=$discount_price;
+				$total_amount += $finalamount;				
 				$YStart+=(5+$YExtra);
-			}			
+			}					
 
 			#footermain
 			$total_amount-=$ttldiscount_priceSpecial;
@@ -1028,13 +1022,12 @@ class PO extends CI_Controller {
 			foreach($adata_subject as $r){
 				$sdata_subject .= $r.",";
 			}
-
-			// die($sdata_section."#".strlen($sdata_section));
+			
 			$sdata_section = substr($sdata_section,0,strlen($sdata_section)-1);
 			$sdata_department = substr($sdata_department,0,strlen($sdata_department)-1);
 			$sdata_subject = substr($sdata_subject,0,strlen($sdata_subject)-1);
 
-			#additional row for discount
+			#additional row for discount			
 			if($ttldiscount_price>0 || $discount_msg!=''){
 				$pdf->SetXY(6,(180-$_y)-6);
 				$pdf->Cell(10,5,'',0,0,'C');
