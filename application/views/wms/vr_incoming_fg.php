@@ -210,7 +210,7 @@
                         qtywh = 0;
                     }
                     if(response.data[i].NG){     
-                        datatemp =  numeral(response.data[i].NG).value() - numeral(response.data[i].SCRQTY).value();
+                        datatemp =  numeral(response.data[i].NG).value()
                         qtyng = numeral(datatemp).format('0,0');
                     } else {
                         qtyng = 0;
@@ -250,7 +250,7 @@
                     newcell.innerHTML = qtywh                    
                     newcell.style.cssText = 'text-align: right';                    
                     newcell = newrow.insertCell(11);
-                    newcell.innerHTML = numeral(response.data[i].QTY_SCR).format(',')
+                    newcell.innerHTML = numeral(response.data[i].SCRQTY).format(',')
                     newcell.style.cssText = 'text-align: right'                    
                 }
                 mydes.innerHTML='';
