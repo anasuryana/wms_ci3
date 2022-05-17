@@ -83,7 +83,27 @@ class SPLREFF_mod extends CI_Model {
         ,SPLREFF_CREATEDAT SCNTIME
         ,'' AS PPSN2_MSFLG");        
 		$query = $this->db->get();
-		return $query->result_array();        
+		return $query->result_array();
+    }
+    public function select_additional_PSN($psnlist = []){
+        $this->db->from("XPPSN1");
+        $this->db->join("XPPSN2", "PPSN1_PSNNO=PPSN2_PSNNO");
+        $this->db->where_in("PPSN1_OPSNNO", $psnlist);
+        $this->db->select("PPSN2_DATANO
+        ,RTRIM(ISNULL(PPSN1_FR,'')) SPLSCN_FEDR
+        ,RTRIM(ISNULL(PPSN2_SUBPN,'')) SPLSCN_ITMCD
+        ,ISNULL(PPSN2_ACTQT,0) SPLSCN_QTY
+        ,'' SPLSCN_LOTNO
+        ,RTRIM(ISNULL(PPSN2_MCZ,'')) SPLSCN_ORDERNO
+        ,RTRIM(ISNULL(PPSN1_LINENO,'')) SPLSCN_LINE
+        ,RTRIM(ISNULL(PPSN2_MC,'')) PPSN2_MC
+        ,RTRIM(ISNULL(PPSN2_PROCD,'')) PPSN2_PROCD
+        ,RTRIM(ISNULL(PPSN2_ITMCAT,'')) SPLSCN_CAT
+        ,RTRIM(ISNULL(PPSN2_PSNNO,'')) SPLSCN_DOC
+        ,NULL SCNTIME
+        ,RTRIM(ISNULL(PPSN2_MSFLG,'')) PPSN2_MSFLG");
+		$query = $this->db->get();
+		return $query->result_array();
     }
 
     public function select_saved($psnlist = []){
