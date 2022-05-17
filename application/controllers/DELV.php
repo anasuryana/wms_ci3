@@ -15725,6 +15725,7 @@ class DELV extends CI_Controller {
 		$netweight_represent = 0;
 		$cz_h_BRUTO = 0;
 		$cz_h_NETTO = 0;
+		$initialCodePKG = '';
 		foreach($rspkg as $r){
 			if($r['DLV_PKG_NWG']>0){
 				$netweight_represent=$r['DLV_PKG_NWG'];
@@ -15732,6 +15733,7 @@ class DELV extends CI_Controller {
 				$cz_h_NETTO+=$r['DLV_PKG_NWG'];
 			}
 			if($r['DLV_PKG_MEASURE']) {
+				$initialCodePKG = strpos(strtoupper($r['DLV_PKG_MEASURE']), 'PALLET') !== false ? 'PX' : 'BX';
 				$cz_JUMLAH_KEMASAN++;
 			}
 		}
@@ -15843,96 +15845,77 @@ class DELV extends CI_Controller {
 		}
 		unset($r);
 		$tpb_barang = [];
-		$no = 1;
-		// if(!$flg_sell){			
-			$rscurr = $this->MEXRATE_mod->selectfor_posting_in($IncDateList,$IncCRList);
-			$listcount = count($IncDateCR_FLGList);
-			foreach($rscurr as $r){
-				for($i=0; $i< $listcount; $i++){
-					if($r->MEXRATE_CURR==$IncCRList[$i] && $r->MEXRATE_DT==$IncDateList[$i]){
-						$IncDateCR_FLGList[$i] = 1;
-					}
-				}
-			}
-
-			#validate exchange rate for incoming date
+		$no = 1;			
+		$rscurr = $this->MEXRATE_mod->selectfor_posting_in($IncDateList,$IncCRList);
+		$listcount = count($IncDateCR_FLGList);
+		foreach($rscurr as $r){
 			for($i=0; $i< $listcount; $i++){
-				if($IncDateCR_FLGList[$i]==0){
-					$dar = ["cd" => "0", "msg" => "Please fill exchange rate data for ".$IncCRList[$i]." on ".$IncDateList[$i]." !"];
-					$myar[] = $dar;
-					die('{"status":'.json_encode($myar).'}');
+				if($r->MEXRATE_CURR==$IncCRList[$i] && $r->MEXRATE_DT==$IncDateList[$i]){
+					$IncDateCR_FLGList[$i] = 1;
 				}
 			}
-			#end
-			
-			foreach($tpb_bahan_baku as &$r){
-				if($cztujuanpengiriman!='7'){
-					foreach($rscurr as $c){					
-						if($r['CURRENCY']== $c->MEXRATE_CURR && $r['TANGGAL_DAFTAR_DOK_ASAL'] == $c->MEXRATE_DT) {
-							if($c->MEXRATE_CURR=='RPH'){
-								$czharga_matauang = 1;
-							} else {
-								$czharga_matauang = $c->MEXRATE_VAL;							
-							}
-							break;
+		}
+
+		#validate exchange rate for incoming date
+		for($i=0; $i< $listcount; $i++){
+			if($IncDateCR_FLGList[$i]==0){
+				$dar = ["cd" => "0", "msg" => "Please fill exchange rate data for ".$IncCRList[$i]." on ".$IncDateList[$i]." !"];
+				$myar[] = $dar;
+				die('{"status":'.json_encode($myar).'}');
+			}
+		}
+		#end
+		
+		foreach($tpb_bahan_baku as &$r){
+			if($cztujuanpengiriman!='7'){
+				foreach($rscurr as $c){					
+					if($r['CURRENCY']== $c->MEXRATE_CURR && $r['TANGGAL_DAFTAR_DOK_ASAL'] == $c->MEXRATE_DT) {
+						if($c->MEXRATE_CURR=='RPH'){
+							$czharga_matauang = 1;
+						} else {
+							$czharga_matauang = $c->MEXRATE_VAL;							
 						}
+						break;
 					}
 				}
-				$r['HARGA_PENYERAHAN'] = $r['CIF']*$czharga_matauang;
-				$tpb_barang[] = [
-					'KODE_BARANG' => $r['KODE_BARANG']
-					,'POS_TARIF' => $r['POS_TARIF']
-					,'URAIAN' => $r['URAIAN']
-					,'TIPE' => $r['TIPE']
-					,'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN']
-					,'KODE_SATUAN' => $r['JENIS_SATUAN']
-					,'NETTO' => $no==1 ? $netweight_represent : 0
-					,'CIF' => $r['CIF']
-					,'HARGA_PENYERAHAN' => $r['CIF']*$czharga_matauang
-					,'SERI_BARANG' => $SERI_BARANG
-					,'KODE_STATUS' => '02'
-					,'JUMLAH_BAHAN_BAKU' => 1
+			}
+			$r['HARGA_PENYERAHAN'] = $r['CIF']*$czharga_matauang;
+			$tpb_barang[] = [
+				'KODE_BARANG' => $r['KODE_BARANG']
+				,'POS_TARIF' => $r['POS_TARIF']
+				,'URAIAN' => $r['URAIAN']
+				,'TIPE' => $r['TIPE']
+				,'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN']
+				,'KODE_SATUAN' => $r['JENIS_SATUAN']
+				,'NETTO' => $no==1 ? $netweight_represent : 0
+				,'CIF' => $r['CIF']
+				,'HARGA_PENYERAHAN' => $r['CIF']*$czharga_matauang
+				,'SERI_BARANG' => $SERI_BARANG
+				,'KODE_STATUS' => '02'
+				,'JUMLAH_BAHAN_BAKU' => 1
 
 
-					,'KODE_JENIS_DOK_ASAL' => $r['KODE_JENIS_DOK_ASAL']
-					,'NOMOR_DAFTAR_DOK_ASAL' => $r['NOMOR_DAFTAR_DOK_ASAL']
-					,'TANGGAL_DAFTAR_DOK_ASAL' => $r['TANGGAL_DAFTAR_DOK_ASAL']
-					,'KODE_KANTOR' => $r['KODE_KANTOR']
-					,'NOMOR_AJU_DOK_ASAL' => $r['NOMOR_AJU_DOK_ASAL']
-					,'SERI_BARANG_DOK_ASAL' => $r['SERI_BARANG_DOK_ASAL']
-					,'KODE_STATUS' => $r['KODE_STATUS']										
-										
-					,'SERI_BAHAN_BAKU' => 1
-					,'JENIS_SATUAN' => $r['JENIS_SATUAN']
-					,'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU']
-					,'SPESIFIKASI_LAIN' => NULL					
+				,'KODE_JENIS_DOK_ASAL' => $r['KODE_JENIS_DOK_ASAL']
+				,'NOMOR_DAFTAR_DOK_ASAL' => $r['NOMOR_DAFTAR_DOK_ASAL']
+				,'TANGGAL_DAFTAR_DOK_ASAL' => $r['TANGGAL_DAFTAR_DOK_ASAL']
+				,'KODE_KANTOR' => $r['KODE_KANTOR']
+				,'NOMOR_AJU_DOK_ASAL' => $r['NOMOR_AJU_DOK_ASAL']
+				,'SERI_BARANG_DOK_ASAL' => $r['SERI_BARANG_DOK_ASAL']
+				,'KODE_STATUS' => $r['KODE_STATUS']										
+									
+				,'SERI_BAHAN_BAKU' => 1
+				,'JENIS_SATUAN' => $r['JENIS_SATUAN']
+				,'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU']
+				,'SPESIFIKASI_LAIN' => NULL					
 
-					,'RBM' =>$r['RBM']
-					,'CURRENCY' =>$r['CURRENCY']
-				];
-				$no++;
-				$SERI_BARANG++;
-			}	
-			unset($r);					
-		// } else {
-			// foreach($tpb_bahan_baku as $r){				
-			// 	$tpb_barang[] = [
-			// 		'KODE_BARANG' => $r['KODE_BARANG']
-			// 		,'POS_TARIF' => $r['POS_TARIF']
-			// 		,'URAIAN' => $r['URAIAN']
-			// 		,'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN']
-			// 		,'KODE_SATUAN' => $r['JENIS_SATUAN']
-			// 		,'NETTO' => $no==1 ? $netweight_represent : 0
-			// 		,'CIF' => $r['CIF']
-			// 		,'HARGA_PENYERAHAN' => $r['CIF']*$czharga_matauang
-			// 		,'SERI_BARANG' => $SERI_BARANG
-			// 		,'KODE_STATUS' => '02'
-			// 		,'JUMLAH_BAHAN_BAKU' => 1
-			// 	];									
-			// 	$no++;
-			// 	$SERI_BARANG++;
-			// }
-		// }
+				,'RBM' =>$r['RBM']
+				,'CURRENCY' =>$r['CURRENCY']
+			];
+			$no++;
+			$SERI_BARANG++;
+		}	
+		unset($r);
+
 		$cz_h_JUMLAH_BARANG = count($tpb_barang);
 		foreach($tpb_barang as $r){
 			$cz_h_CIF_FG += $r['CIF'];
@@ -16028,7 +16011,7 @@ class DELV extends CI_Controller {
 		];
 
 		$tpb_kemasan = [];
-		$tpb_kemasan[] = ["JUMLAH_KEMASAN" =>$cz_JUMLAH_KEMASAN ,"KODE_JENIS_KEMASAN" => "BX"];
+		$tpb_kemasan[] = ["JUMLAH_KEMASAN" =>$cz_JUMLAH_KEMASAN ,"KODE_JENIS_KEMASAN" => $initialCodePKG];
 
 		$tpb_dokumen = [];
 		$tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "380", "NOMOR_DOKUMEN" => $czinvoice , "TANGGAL_DOKUMEN" => $czinvoicedt, "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => 1]; //invoice		
