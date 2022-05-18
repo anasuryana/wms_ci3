@@ -141,6 +141,13 @@ class PO_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+    public function select_balance_mega_like($plike){
+        $this->db->from('v_mega_po');
+        $this->db->like($plike);
+        $this->db->order_by("PO_REQDT");
+		$query = $this->db->get();
+		return $query->result_array();
+    }
 
     public function select_balance_nonitem_like($plike){
         $this->db->select("VPO_RESUME.*,RTRIM(PO_ITMNM) MITM_ITMD1,PO_UM MITM_STKUOM,MSUP_SUPNM,MSUP_SUPCR,MSUP_ADDR1,MSUP_TELNO,MSUP_FAXNO,ISNULL(RCVQTY,0) RCVQTY");

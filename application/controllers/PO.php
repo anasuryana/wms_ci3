@@ -1537,8 +1537,9 @@ class PO extends CI_Controller {
 		header('Content-Type: application/json');
 		$search = $this->input->get('search');
 		$searchtype = $this->input->get('searchtype');
-		$rs = $searchtype == '1' ? $this->PO_mod->select_balance_like(['PO_NO' => $search]) 
-			: $this->PO_mod->select_balance_nonitem_like(['PO_NO' => $search]);
+		$like = ['PO_NO' => $search];
+		$rs = $searchtype == '1' ? array_merge($this->PO_mod->select_balance_like($like), $this->PO_mod->select_balance_mega_like($like))
+			: $this->PO_mod->select_balance_nonitem_like($like);
 		die(json_encode(['data' => $rs]));
 	}
 
