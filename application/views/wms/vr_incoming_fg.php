@@ -250,7 +250,7 @@
                     newcell.innerHTML = qtywh                    
                     newcell.style.cssText = 'text-align: right';                    
                     newcell = newrow.insertCell(11);
-                    newcell.innerHTML = numeral(response.data[i].SCRQTY).format(',')
+                    newcell.innerHTML = numeral(response.data[i].QTY_SCR).format(',')
                     newcell.style.cssText = 'text-align: right'                    
                 }
                 mydes.innerHTML='';
