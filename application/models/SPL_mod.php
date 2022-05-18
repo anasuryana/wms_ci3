@@ -694,6 +694,16 @@ class SPL_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
     }
+    public function select_allxppsn2_by_ops_psn($ppsn){
+        $this->db->select("XPPSN2.*,RTRIM(MITM_ITMD1) MITM_ITMD1, MITM_SPTNO");
+        $this->db->from("XPPSN1");
+        $this->db->join("XPPSN2", "PPSN1_PSNNO=PPSN2_PSNNO");
+        $this->db->join("MITM_TBL", "PPSN2_SUBPN=MITM_ITMCD");
+        $this->db->where_in('PPSN1_OPSNNO', $ppsn);
+        $this->db->order_by('PPSN2_PSNNO,PPSN2_MCZ,PPSN2_MC,PPSN2_PROCD');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
     public function select_allxppsn2_bypsn_mcz($ppsn,$pmcz){        
         $this->db->from("XPPSN2");        
         $this->db->where_in('PPSN2_PSNNO', $ppsn)->where('PPSN2_MCZ', $pmcz);

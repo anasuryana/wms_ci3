@@ -26,6 +26,7 @@ class RMCalculator {
 		$rsbase = $this->CI->SPL_mod->select_ppsn2_forserd($apsn);
 		$rsscn = $this->CI->SPLSCN_mod->selectby_filter_for_serd($apsn);
 		$rsscn_reff = $this->CI->SPLREFF_mod->select_forcalculation($apsn);
+		$rsAdditional = $this->CI->SPLREFF_mod->select_additional_PSN($apsn);
 		$rsfix = [];
 		foreach($rsbase as &$d){
 			if(!array_key_exists("TTLSCN", $d)){
@@ -214,18 +215,17 @@ class RMCalculator {
 			}
 		}
 		unset($r);
-
-		//NEW LOGIC
-		//SET SHIELDPLATE qty = Balance
-		foreach($rsbase as $d){			
+		
+		
+		/* 
+		NEW LOGIC
+		SET SHIELDPLATE qty = Balance
+		*/		
+		foreach($rsbase as $d){
 			$bal = $d['PPSN2_REQQT'] - $d['TTLSCN'];
-			if($bal >0) {
-				if(strpos($d['MITM_ITMD1'],'SHIELD PLATE')!==false || $d["PPSN2_PROCD"]=='SMT-SP') //|| strpos($d['MITM_ITMD1'],'COVER')!==false
-				// if($d['PPSN2_SUBPN']==="163428400" || $d['PPSN2_SUBPN']==="140939500" || $d['PPSN2_SUBPN'] ==="179355900" || $d['PPSN2_SUBPN'] ==="179356000" 
-				// || $d['PPSN2_SUBPN'] === "175998300" || $d['PPSN2_SUBPN'] === "175998400"
-				// || $d['PPSN2_SUBPN'] === "169701300" || $d['PPSN2_SUBPN'] === "160950601"
-				// || $d['PPSN2_SUBPN'] === "169697901" || $d['PPSN2_SUBPN'] === "175998301") 
-				{ 
+			if($bal > 0) {
+				if(strpos($d['MITM_ITMD1'],'SHIELD PLATE')!==false || $d["PPSN2_PROCD"]=='SMT-SP')				
+				{
 					$rsfix[] = [
 						"PPSN2_DATANO" => $d["PPSN2_DATANO"]
 						,"SPLSCN_FEDR" => $d["PPSN2_FR"]
@@ -242,8 +242,10 @@ class RMCalculator {
 						,"PPSN2_MSFLG" => $d['PPSN2_MSFLG']
 					];
 				} else {
-					//NEW LOGIC
-					//SET ASAHI, TOYO, STANLEY KITTING DATA AUTOCOMPLETE
+					/* 
+					NEW LOGIC
+					SET ASAHI, TOYO, STANLEY KITTING DATA AUTOCOMPLETE
+					*/					
 					if($d['PPSN2_BSGRP'] === 'PSI2PPZTDI' || $d['PPSN2_BSGRP'] === 'PSI2PPZADI' || $d['PPSN2_BSGRP'] === 'PSI2PPZSTY') {
 						$rsfix[] = [
 							"PPSN2_DATANO" => $d["PPSN2_DATANO"]
@@ -269,9 +271,11 @@ class RMCalculator {
 		if(count($rsscn_reff)) {
 			$rsfix = array_merge($rsfix, $rsscn_reff);
 		}
+		if(count($rsAdditional)) {
+			$rsfix = array_merge($rsfix, $rsAdditional);
+		}
 		#END
-		return $rsfix;
-		// return ['data' => $rsfix, 'psn' => $rsscn];
+		return $rsfix;		
 	}
 	public function tobexported_list_for_serd_subassy($parpsn = []){
 		$apsn = $parpsn;

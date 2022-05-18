@@ -100,7 +100,7 @@ class SPLREFF_mod extends CI_Model {
         ,RTRIM(ISNULL(PPSN2_PROCD,'')) PPSN2_PROCD
         ,RTRIM(ISNULL(PPSN2_ITMCAT,'')) SPLSCN_CAT
         ,RTRIM(ISNULL(PPSN2_PSNNO,'')) SPLSCN_DOC
-        ,NULL SCNTIME
+        ,'' SCNTIME
         ,RTRIM(ISNULL(PPSN2_MSFLG,'')) PPSN2_MSFLG");
 		$query = $this->db->get();
 		return $query->result_array();
