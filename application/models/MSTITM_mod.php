@@ -58,14 +58,7 @@ class MSTITM_mod extends CI_Model {
 		$this->db->where('MITM_ITMCD', $pid);
 		$query = $this->db->get($this->TABLENAME);
 		return $query->result();
-	}
-	public function selectbyid_mega($pid)
-	{
-		$this->db->select("MITM_ITMCD,MITM_ITMD1,MITM_ITMD2,MITM_SPTNO");
-		$this->db->where('MITM_ITMCD', $pid);
-		$query = $this->db->get('XMITM_TBL');
-		return $query->result();
-	}
+	}	
 	
 	public function selectbyid_lk($pid)
 	{
