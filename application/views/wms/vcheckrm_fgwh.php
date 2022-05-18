@@ -225,6 +225,13 @@
             </div>
             <div class="row">
                 <div class="col-md-12 mb-1">
+                    <div class="btn-group btn-group-sm">                        
+                        <button title="Copy to clipboard" onclick="checksbb_cal_btnclip()" class="btn btn-success" ><i class="fas fa-clipboard"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-1">
                     <div class="table-responsive" id="checksbb_caldiv_rm">
                         <table id="checksbb_caltbl_rm" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
                             <thead class="table-light">
@@ -559,6 +566,12 @@
     var checksbb_docno;
     var checksbb_procd;
     var checksbb_req_rows;
+
+    function checksbb_cal_btnclip() {
+        cmpr_selectElementContents(document.getElementById('checksbb_caltbl_rm'))
+        document.execCommand("copy")
+        alert("Copied")
+    }
     function checksbb_e_filterjob(){
         $("#checksbb_MODFILTERJOB").modal('show');        
     }
