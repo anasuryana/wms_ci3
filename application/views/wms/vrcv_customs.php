@@ -156,10 +156,10 @@
                         <button class="btn btn-primary" id="rcvcustoms_save" title="Save"><i class="fas fa-save"></i></button>
                         <button class="btn btn-success" id="rcvcustoms_hscode" title="Update HS Code">Update from xls</button>
                         <div class="btn-group btn-group-sm" role="group">
-                            <button title="TPB Operations" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >TPB</button>
+                            <button id="rcvcustoms_btnTPB_direct" title="TPB Operations" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >TPB</button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#" onclick="rcvcustoms_btnmkemasan_eCK(this)"><i class="fa-solid fa-box"></i> Kemasan</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>
+                                <li><a id="rcvcustoms_btn_posting_direct" class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>
                                 <li><a class="dropdown-item disabled" onclick="rcvcustoms_cancel_eCK()"  href="#" ><i class="fas fa-ban" style="color: red"></i> Cancel</a></li>
                             </ul>
                         </div>
@@ -718,6 +718,14 @@
                     <div class="btn-group btn-group-sm">
                         <button class="btn btn-outline-primary" id="rcvcustoms_new_2" onclick="rcvcustoms_new_2_eCK()" title="New"><i class="fas fa-file"></i></button>
                         <button class="btn btn-outline-primary" id="rcvcustoms_save_2" onclick="rcvcustoms_save_2_eCK()" title="Save"><i class="fas fa-save"></i></button>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button id="rcvcustoms_btnTPB_2" title="TPB Operations" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >TPB</button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="rcvcustoms_btnmkemasan_eCK(this)"><i class="fa-solid fa-box"></i> Kemasan</a></li>
+                                <li><a id="rcvcustoms_btn_posting_2" class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>
+                                <li><a class="dropdown-item disabled" onclick="rcvcustoms_cancel_eCK()"  href="#" ><i class="fas fa-ban" style="color: red"></i> Cancel</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>               
                 <div class="col-md-6 mb-1 text-end">
@@ -4030,18 +4038,31 @@
         })        
     }
 
-    function rcvcustoms_btn_posting_eCK(c){
-        const txDOC = document.getElementById('rcvcustoms_docnoorigin_1')
-        const cmbBCDOCType = document.getElementById('rcvcustoms_typedoc_1')
+    function rcvcustoms_btn_posting_eCK(c){        
+        let txDOC = document.getElementById('rcvcustoms_docnoorigin_1')
+        let cmbBCDOCType = document.getElementById('rcvcustoms_typedoc_1')
+        let txNomorAJU = document.getElementById('rcvcustoms_noaju_1')
+        let btnTPB = document.getElementById('rcvcustoms_btnTPB')
         const cmbBCReceivingStatus = document.getElementById('rcvcustoms_zsts_1')
-        const txNomorAJU = document.getElementById('rcvcustoms_noaju_1')        
         const txNomorPEN = document.getElementById('rcvcustoms_regno_1')        
         const cmbTPBType = document.getElementById('rcvcustoms_typetpb_1')
         const cmbKPPBC = document.getElementById('rcvcustoms_kppbc_1')
-        const btnTPB = document.getElementById('rcvcustoms_btnTPB')
         const tbl = document.getElementById('rcvcustoms_tbl_1').getElementsByTagName("tbody")[0]
         const ttlrows = tbl.getElementsByTagName('tr').length
-
+        switch(c.id){
+            case 'rcvcustoms_btn_posting_direct':
+                txDOC = document.getElementById('rcvcustoms_docnoorigin')
+                cmbBCDOCType = document.getElementById('rcvcustoms_typedoc')
+                txNomorAJU = document.getElementById('rcvcustoms_noaju')
+                btnTPB = document.getElementById('rcvcustoms_btnTPB_direct')
+                break
+            case 'rcvcustoms_btn_posting_2':
+                txDOC = document.getElementById('rcvcustoms_docnoorigin_2')
+                cmbBCDOCType = document.getElementById('rcvcustoms_typedoc_2')
+                txNomorAJU = document.getElementById('rcvcustoms_noaju_2')
+                btnTPB = document.getElementById('rcvcustoms_btnTPB_2')
+                break
+        }
         //validation        
         if(txDOC.value.trim().length<=3){
             alertify.warning('DO Number is required')
