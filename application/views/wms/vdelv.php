@@ -3265,6 +3265,11 @@ $("#txfg_btn_save").click(function (e) {
         return;
     }
 
+    if(mcustomdoc=='25' && mtxconsig!='STX') {
+        alertify.warning('For now BC2.5 FG is only for dedicated consignee')
+        return
+    }
+
     if(mbg=='-'){
         alertify.message('Please select business group!');
         document.getElementById('txfg_businessgroup').focus();
