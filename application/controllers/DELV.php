@@ -13141,6 +13141,7 @@ class DELV extends CI_Controller {
 		$rsreq = [];
 		$findpsn = [];
 		$rspsndetail = [];
+		$rspsndetail_ops = [];
 		$strmdlcd = '';
 		foreach($rspsn as $k){
 			$strdocno = trim($k['PPSN1_DOCNO']);
@@ -13151,13 +13152,15 @@ class DELV extends CI_Controller {
 			#1. requirement	
 			$rsreq = $this->SPL_mod->select_compare_psnjob_req($strdocno, $cjob);
 			$rspsndetail = $this->SPL_mod->select_allxppsn2_bypsn($findpsn);
+			$rspsndetail_ops = $this->SPL_mod->select_allxppsn2_by_ops_psn($findpsn);
 			$rsjobper_wmscal = $this->SPL_mod->select_job_wmscalculation_byser($cid);			
 			$rsMSPP = $this->MSPP_mod->select_byvar(['MSPP_MDLCD' => $strmdlcd]);
 		}
+		$rspsn_united = array_merge($rspsndetail,$rspsndetail_ops);
 		$docno = ['docno' => $strdocno];
 		die('{
 			"datareq": '.json_encode($rsreq).'
-			, "datapsn": '.json_encode($rspsndetail).'
+			, "datapsn": '.json_encode($rspsn_united).'			
 			, "datacal": '.json_encode($rsjobper_wmscal).'
 			, "datadoc": '.json_encode($docno).'
 			, "datamsp": '.json_encode($rsMSPP).'
