@@ -10,6 +10,7 @@ class SPL extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->library('session');
 		$this->load->library('Code39e128');		
+		$this->load->model('RCV_mod');
 		$this->load->model('SPL_mod');
 		$this->load->model('SPLREFF_mod');
 		$this->load->model('SPLSCN_mod');
@@ -317,7 +318,20 @@ class SPL extends CI_Controller {
 							}
 						}
 					} else {
-						$myar[] = ['cd' => 0, 'msg' => 'Part Code is not found'];
+						$rsbg = $this->RCV_mod->select_bg($a_partcode);
+						$rsbg_count = count($rsbg);
+						if($rsbg_count>0){
+							if($rsbg_count > 1) {
+								$myar[] = ['cd' => 3, 'msg' => 'Business Group more than 1.'];
+							} else {
+								$shouldContinue = true;
+								foreach($rsbg as $b){
+									$initBISGRUP = $b['RCV_BSGRP'];
+								}
+							}
+						} else {
+							$myar[] = ['cd' => 0, 'msg' => 'Part Code is not found'];
+						}
 					}
 				}
 				if($shouldContinue){

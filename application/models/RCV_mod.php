@@ -1104,5 +1104,12 @@ class RCV_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
-    
+    public function select_bg($pitem){
+        $this->db->select("RCV_BSGRP");
+        $this->db->from($this->TABLENAME);
+        $this->db->where_in("RCV_ITMCD", $pitem);
+        $this->db->group_by("RCV_BSGRP");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 }
