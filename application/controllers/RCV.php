@@ -57,12 +57,10 @@ class RCV extends CI_Controller {
 	public function form_nonitem(){
 		$this->load->view('wms/vrcv_nonitem');
 	}
-	public function create_fg(){
-		
+	public function create_fg(){		
 		$this->load->view('wms/vfg_ret_inc');
 	}
-	public function vtracelot(){
-		
+	public function vtracelot(){		
 		$this->load->view('wms_report/vtracelot_inc');
 	}
 
@@ -80,12 +78,8 @@ class RCV extends CI_Controller {
 		$cdo = $this->input->get('indo');
 		$citemcd = $this->input->get('initmcd');
 		$citemlot = $this->input->get('initmlot');
-		$rs = $this->RCVSCN_mod->selectby_filter_like(['RCVSCN_DONO' => $cdo, 'RCVSCN_ITMCD' => $citemcd, "isnull(RCVSCN_LOTNO,'')" => $citemlot]);
-		if(count($rs) >0){
-			$myar[] = ['cd' => 1, 'msg' => 'go ahead'];
-		} else {
-			$myar[] = ['cd' => 0, 'msg' => 'not found'];
-		}
+		$rs = $this->RCVSCN_mod->selectby_filter_like(['RCVSCN_DONO' => $cdo, 'RCVSCN_ITMCD' => $citemcd, "isnull(RCVSCN_LOTNO,'')" => $citemlot]);		
+		$myar[] = count($rs) >0 ? ['cd' => 1, 'msg' => 'go ahead'] : ['cd' => 0, 'msg' => 'not found'];		
 		exit('{"status" : '.json_encode($myar).', "data" : '.json_encode($rs).'}');
 	}
 
@@ -93,12 +87,8 @@ class RCV extends CI_Controller {
 		$cid = $this->input->get('inid');
 		$csts = $this->input->get('instst');
 		$myar = [];
-		$rs = $this->MPurposeDLV_mod->selectbyvar(['KODE_DOKUMEN' => $cid]);
-		if(count($rs) > 0){
-			$myar[] = ['cd' => 1, 'msg' => "Go ahead", 'reff' => $csts];
-		} else {
-			$myar[] = ['cd' => 0, 'msg' => "Data Not found", 'reff' => $csts];
-		}
+		$rs = $this->MPurposeDLV_mod->selectbyvar(['KODE_DOKUMEN' => $cid]);		
+		$myar[] = count($rs) > 0 ? ['cd' => 1, 'msg' => "Go ahead", 'reff' => $csts] : ['cd' => 0, 'msg' => "Data Not found", 'reff' => $csts];		
 		echo '{"status": '.json_encode($myar).', "data": '.json_encode($rs).'}';
 	}
 
@@ -235,24 +225,10 @@ class RCV extends CI_Controller {
 						}
 						$cX+=$wid+$thegap;
 					}
-				}
-				// $pdf->AddPage();
-				   				
-				// $pdf->SetY(0); 
-				// $pdf->SetX(0);
-				// $pdf->SetFont('Courier','',6);		
-				// $clebar = $pdf->GetStringWidth($image_name)+20;							
-				// $pdf->Code128((70/2)-($clebar/2),3,$image_name,$clebar,5);
-				// $clebar = $pdf->GetStringWidth($image_name);
-				// $pdf->Text((70/2)-($clebar/2), 10, $r->RCV_DONO);	
-				// $clebar = $pdf->GetStringWidth(trim($r->MSUP_SUPNM));
-				// $pdf->Text((70/2)-($clebar/2), 12, trim($r->MSUP_SUPNM));
-				// $clebar = $pdf->GetStringWidth(trim($r->RCV_RCVDATE));
-				// $pdf->Text((70/2)-($clebar/2), 14, $r->RCV_RCVDATE);
+				}			
 			}
 			$pdf->Output('I','DO LABEL '.date("d-M-Y").'.pdf');								
 		}
-				
 	}
 
 	public function delete(){
@@ -298,8 +274,7 @@ class RCV extends CI_Controller {
 
 		$cdate 	= $this->input->post('indate');
 		$cdo 	= $this->input->post('indo');
-		$cven 	= $this->input->post('inven');
-		$ccurr 	= $this->input->post('incurr');
+		$cven 	= $this->input->post('inven');		
 
 		$ttldatas = count($cpo);
 		$toret = 0 ;
@@ -339,13 +314,9 @@ class RCV extends CI_Controller {
 	public function setscn(){
 		date_default_timezone_set('Asia/Jakarta');
 		
-		$currdate	= date('Y-m-d');
-		$cdo		= $this->input->post('indo');
-		$citem 		= $this->input->post('initm');		
-		$cscanqty 	= $this->input->post('inscanqty');
-		$csaveqty 	= $this->input->post('insavedqty');
-		$cwh 	= $this->input->post('inwh');
-		$crack 	= $this->input->post('inrack');
+		$currdate = date('Y-m-d');
+		$cdo = $this->input->post('indo');		
+		$cwh = $this->input->post('inwh');		
 
 		$flag_insert = 0;
 		$flag_update = 0;		
@@ -411,9 +382,7 @@ class RCV extends CI_Controller {
 		$cmonth	= $this->input->get('inmonth');
 		$csts	= $this->input->get('insts');
 		$rs 	= $csts=='all' ?  $this->RCV_mod->selectbyYM($cyear, $cmonth) : $this->RCV_mod->selectbyYM_open($cyear, $cmonth);
-		echo '{"data":';
-		echo json_encode($rs);
-		echo '}';
+		echo '{"data":'.json_encode($rs).'}';
 	}
 
 	public function getdetaildo(){
@@ -1810,12 +1779,9 @@ class RCV extends CI_Controller {
 				$cdate1 = $cdatefilter;
 				$cdate2 = $cdatefilter;
 			}
-			if($cpermonth == 'y'){
-				if($csup!='-'){ 
-					$rs = $this->RCV_mod->MGSelectDO_dateSup_return_fg($ckey, $cdate1, $cdate2, $csup);
-				} else {						
-					$rs = $this->RCV_mod->MGSelectDO_date_return_fg($ckey, $cdate1, $cdate2);
-				}
+			if($cpermonth == 'y'){				
+				$rs = $csup!='-' ? $this->RCV_mod->MGSelectDO_dateSup_return_fg($ckey, $cdate1, $cdate2, $csup)
+					: $this->RCV_mod->MGSelectDO_date_return_fg($ckey, $cdate1, $cdate2);
 			} else {
 				if($csup!='-'){
 					$rs = $this->RCV_mod->MGSelectDOSup_return_fg($ckey, $csup);
@@ -1824,12 +1790,9 @@ class RCV extends CI_Controller {
 					 $this->RCV_mod->MGSelectDO_return_fg($ckey);
 				}
 			}
-		} else {
-			if($csup!='-'){
-				$rs = $this->RCV_mod->MGSelectDObyItemSup_return_fg($ckey, $csup);
-			} else {
-				$rs = $this->RCV_mod->MGSelectDObyItem_return_fg($ckey);
-			}
+		} else {			
+			$rs = $csup!='-' ? $this->RCV_mod->MGSelectDObyItemSup_return_fg($ckey, $csup) : 
+				$this->RCV_mod->MGSelectDObyItem_return_fg($ckey);			
 		}		
 		echo json_encode($rs);
 	}
@@ -1837,12 +1800,8 @@ class RCV extends CI_Controller {
 	public function GetDO_split(){
 		header('Content-Type: application/json');
 		$ckey = $this->input->get('inid');
-		$cby = $this->input->get('inby');
-		if($cby=='do'){
-			$rs = $this->RCV_mod->SelectDO_split($ckey);
-		} else {
-			$rs = $this->RCV_mod->SelectDObyItem_split($ckey);
-		}		
+		$cby = $this->input->get('inby');		
+		$rs = $cby=='do' ? $this->RCV_mod->SelectDO_split($ckey) : $this->RCV_mod->SelectDObyItem_split($ckey);		
 		echo json_encode($rs);
 	}
 
@@ -2755,8 +2714,7 @@ class RCV extends CI_Controller {
 					}
 				}
 			}
-			unset($r);
-			// break;
+			unset($r);			
 		}
 		for($i=0; $i< $itemCount; $i++) { 
 			if ($itemqty[$i] != $itemqty_plot[$i]) {
@@ -2876,14 +2834,14 @@ class RCV extends CI_Controller {
 		$searchby = $this->input->post('searchby');
 		$searchval = $this->input->post('searchval');
 		$rs = [];
-		if($searchby==='itemname') {
-			$rs = $this->RCV_mod->select_balanceEXBC_like([$itemcd], ['MITM_ITMD1' => $searchval]);
-		} elseif ($searchby==='do') {
-			$rs = $this->RCV_mod->select_balanceEXBC_like([$itemcd], ['RPSTOCK_DOC' => $searchval]);
-		} else {
-			$rs = $this->RCV_mod->select_balanceEXBC_like([$itemcd], ['PRICE' => $searchval]);
-		}
-		
+		switch($searchby) {
+			case 'itemname':
+				$rs = $this->RCV_mod->select_balanceEXBC_like([$itemcd], ['MITM_ITMD1' => $searchval]);break;
+			case 'do':
+				$rs = $this->RCV_mod->select_balanceEXBC_like([$itemcd], ['RPSTOCK_DOC' => $searchval]);break;
+			default:
+				$rs = $this->RCV_mod->select_balanceEXBC_like([$itemcd], ['PRICE' => $searchval]);
+		}		
 		die(json_encode(['data' => $rs]));
 	}
 
@@ -3039,8 +2997,7 @@ class RCV extends CI_Controller {
 			unset($b);
 		}
 		unset($s);
-		die(json_encode([
-			// 'rsbook' => $rsbooked
+		die(json_encode([			
 			 'rsstk' => $rsstk
 			,'rsFIX' => $rsFIX
 		]));
@@ -3121,8 +3078,7 @@ class RCV extends CI_Controller {
 	}
 	public function booked_vs_stock_detail_fg_serial(){
 		header('Content-Type: application/json');
-		$rsbooked = $this->RCV_mod->select_balanceEXBC_fromSCRBook_detail(['21/12/04/0006','21/12/04/0006-R']);
-		$search = "";
+		$rsbooked = $this->RCV_mod->select_balanceEXBC_fromSCRBook_detail(['21/12/04/0006','21/12/04/0006-R']);		
 		$date0 = '2021-10-31';
 		$rsstk = $this->ITH_mod->select_fordispose_fromfg_serial($date0);
 		$rsFIX = [];
@@ -3159,8 +3115,7 @@ class RCV extends CI_Controller {
 			unset($b);
 		}
 		unset($s);
-		die(json_encode([
-			// 'rsbook' => $rsbooked
+		die(json_encode([			
 			 'rsstk' => $rsstk
 			,'rsFIX' => $rsFIX
 		]));
