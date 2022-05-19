@@ -256,7 +256,7 @@
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">NoPen</label>
                         <input type="text" class="form-control" id="rcvcustoms_regno_1" maxlength="8">
-                        <button class="btn btn-primary" id="rcvcustoms_btnsync"><i class="fas fa-sync"></i></button>
+                        <button class="btn btn-primary" onclick="rcvcustoms_btnsync_eCK(this)"><i class="fas fa-sync"></i></button>
                     </div>
                 </div>
                 <div class="col-md-4 mb-1">
@@ -4190,4 +4190,28 @@
             rcvcustoms_contextMenu.close(false);
         }
     })
+
+    function rcvcustoms_btnsync_eCK(p){
+        let docnum = document.getElementById('rcvcustoms_docnoorigin_1').value;
+        $.ajax({
+            type: "get",
+            url: "<?=base_url('RCV/get_info_pendaftaran')?>",
+            data: {insj: docnum},
+            dataType: "json",
+            success: function (response) {
+                if(response.status[0].cd!='0'){
+                    if(response.data[0].NOMOR_DAFTAR.length==6){
+                        document.getElementById('rcvcustoms_regno_1').value = response.data[0].NOMOR_DAFTAR
+                        alertify.success("OK");
+                    } else {
+                        alertify.message('NOMOR PENDAFTARAN is not recevied yet');
+                    }
+                } else {
+                    alertify.message(response.status[0].msg);
+                }
+            }, error: function(xhr, xopt, xthrow){
+                alertify.error(xthrow);
+            }
+        });
+    }
 </script>

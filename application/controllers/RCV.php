@@ -45,6 +45,7 @@ class RCV extends CI_Controller {
 		$this->load->model('refceisa/TPB_DOKUMEN_imod');
 		$this->load->model('refceisa/TPB_BARANG_imod');
 		$this->load->model('refceisa/TPB_KEMASAN_imod');
+		$this->load->model('refceisa/TPB_RESPON_imod');
 	}
 	public function index()
 	{
@@ -3371,7 +3372,33 @@ class RCV extends CI_Controller {
 			$myar[] = ['cd' => '0', 'msg' => 'Not found'];
 			die(json_encode(['status' => $myar]));
 		}
-	}	
+	}
+
+	public function get_info_pendaftaran(){
+		header('Content-Type: application/json');
+		$cinsj = $this->input->get('insj');
+		$rs_head_dlv = $this->RCV_mod->select_header_bydo($cinsj);		
+		$myar = [];
+		$result_data = [];
+		$response_data = [];
+		foreach($rs_head_dlv as $r){
+			$nomorajufull = $r['RCV_RPNO'];
+		}
+		$result_data = $this->TPB_HEADER_imod->select_where(
+			["TANGGAL_DAFTAR" ,"coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
+			['NOMOR_AJU' => $nomorajufull]
+		);
+		$response_data = $this->TPB_RESPON_imod->select_where(
+			["NOMOR_RESPON"],
+			['NOMOR_AJU' => $nomorajufull, 'NOMOR_RESPON !=' => '']
+		);
+		if(count($result_data) > 0){
+			$myar[] = ['cd' => 1, 'msg' => 'go ahead'];
+		} else {
+			$myar[] = ['cd' => 0, 'msg' => 'NOMOR AJU is not found in ceisa local data', 'aju' => $nomorajufull];
+		}		
+		die(json_encode(['status' => $myar, 'data' => $result_data, 'data2' => $response_data]));		
+	}
 
 	public function gotoque($pdo){
 		$mdo = base64_encode($pdo);

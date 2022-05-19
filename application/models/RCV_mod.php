@@ -1112,4 +1112,14 @@ class RCV_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
     }
+
+    public function select_header_bydo($pdo)
+	{	
+        $this->db->select("RCV_DONO,RCV_RPNO");
+        $this->db->from($this->TABLENAME);        
+        $this->db->where('RCV_DONO', $pdo);
+        $this->db->group_by("RCV_DONO,RCV_RPNO");
+		$query = $this->db->get();
+		return $query->result_array();
+    }
 }
