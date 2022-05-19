@@ -1569,6 +1569,11 @@
         let mtrlength = mytable.getElementsByTagName('tr').length
         for(let i=0;i<mtrlength; i++) {
             const itmcode = mytable.rows[i].cells[3].innerText.trim().replace(/\n+/g, '')
+            const price = mytable.rows[i].cells[8].innerText.replace(/\n+/g, '')
+            if(price=='-'){
+                alertify.warning('Price is not valid')
+                return
+            }
             if(itmcode.length) {
                 d_grlno.push(mytable.rows[i].cells[0].innerText.replace(/\n+/g, ''))
                 d_nourut.push(mytable.rows[i].cells[1].innerText.replace(/\n+/g, ''))
@@ -1576,7 +1581,7 @@
                 d_itemcode.push(itmcode)
                 d_assetnum.push(mytable.rows[i].cells[4].innerText.replace(/\n+/g, ''))
                 d_qty.push(mytable.rows[i].cells[6].innerText.replace(/\n+/g, ''))
-                d_price.push(mytable.rows[i].cells[8].innerText.replace(/\n+/g, ''))
+                d_price.push(price)
                 d_prNW.push(mytable.rows[i].cells[10].innerText.replace(/\n+/g, ''))
                 d_prGW.push(mytable.rows[i].cells[11].innerText.replace(/\n+/g, ''))
                 d_hscode.push(mytable.rows[i].cells[12].innerText.replace(/\n+/g, ''))
