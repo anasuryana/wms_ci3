@@ -785,8 +785,7 @@
             </div>   
             <div class="row">
                 <div class="col-md-12 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <label class="input-group-text"><input type="checkbox" id="rcvcustoms_ck"></label>                        
+                    <div class="input-group input-group-sm mb-1">                        
                         <select id="rcvcustoms_monthfilter" class="form-select">
                             <option value="01">January</option>
                             <option value="02">February</option>
@@ -800,9 +799,11 @@
                             <option value="10">October</option>
                             <option value="11">November</option>
                             <option value="12">December</option>
-                        </select>                
-                        <input type="number" class="form-control" id="rcvcustoms_year" maxlength="4">
-                        
+                        </select>
+                        <div class="input-group-text">
+                            <input type="checkbox" class="form-check-input" id="rcvcustoms_ck">
+                        </div>
+                        <input type="number" class="form-control" id="rcvcustoms_year" maxlength="4">                        
                     </div>
                 </div>
             </div>   
@@ -901,10 +902,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <div class="input-group-text">
-                        <input type="checkbox" class="form-check-input" checked id="rcvcustoms_ck_1">
-                        </div>
+                    <div class="input-group input-group-sm mb-1">                        
                         <select id="rcvcustoms_monthfilter_1" class="form-select" onchange="document.getElementById('rcvcustoms_year_1').focus()">
                             <option value="01">January</option>
                             <option value="02">February</option>
@@ -918,7 +916,10 @@
                             <option value="10">October</option>
                             <option value="11">November</option>
                             <option value="12">December</option>
-                        </select>                
+                        </select>
+                        <div class="input-group-text">
+                        <input type="checkbox" class="form-check-input" checked id="rcvcustoms_ck_1">
+                        </div>
                         <input type="number" class="form-control" id="rcvcustoms_year_1" maxlength="4">                        
                     </div>
                 </div>
@@ -975,10 +976,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <div class="input-group-text">
-                        <input type="checkbox" class="form-check-input" checked id="rcvcustoms_ck_2">
-                        </div>
+                    <div class="input-group input-group-sm mb-1">                        
                         <select id="rcvcustoms_monthfilter_2" class="form-select" onchange="document.getElementById('rcvcustoms_year_2').focus()">
                             <option value="01">January</option>
                             <option value="02">February</option>
@@ -992,7 +990,10 @@
                             <option value="10">October</option>
                             <option value="11">November</option>
                             <option value="12">December</option>
-                        </select>                
+                        </select>
+                        <div class="input-group-text">
+                        <input type="checkbox" class="form-check-input" checked id="rcvcustoms_ck_2">
+                        </div>
                         <input type="number" class="form-control" id="rcvcustoms_year_2" maxlength="4">                        
                     </div>
                 </div>
@@ -1233,8 +1234,7 @@
             </div>   
             <div class="row">
                 <div class="col-md-12 mb-1">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <label class="input-group-text"><input type="checkbox" checked id="rcvcustoms_fg_ck"></label>                        
+                    <div class="input-group input-group-sm mb-1">
                         <select id="rcvcustoms_fg_monthfilter" class="form-select">
                             <option value="01">January</option>
                             <option value="02">February</option>
@@ -1248,9 +1248,11 @@
                             <option value="10">October</option>
                             <option value="11">November</option>
                             <option value="12">December</option>
-                        </select>                
+                        </select>
+                        <div class="input-group-text">
+                            <input type="checkbox" class="form-check-input" checked id="rcvcustoms_fg_ck">
+                        </div>
                         <input type="number" class="form-control" id="rcvcustoms_fg_year" maxlength="4">
-                        
                     </div>
                 </div>
             </div>   
