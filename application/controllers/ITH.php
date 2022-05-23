@@ -1109,6 +1109,10 @@ class ITH extends CI_Controller {
 		$writer->save('php://output');
 	}
 
+	public function form_report_critical_part() {
+		$this->load->view('wms_report/vcritical_part');
+	}
+
 	public function getstock_wh(){
 		date_default_timezone_set('Asia/Jakarta');
 		header('Content-Type: application/json');
@@ -2462,5 +2466,85 @@ class ITH extends CI_Controller {
 		$myar[] = ['cd' => 1, 'msg' => 'done', 'reff' => $libresponses];	
 		log_message('error', "TODAY WO-PRD Calculation occur [".count($libresponses)."]");
 		die(json_encode(['data' => $myar]));
+	}
+
+	public function breakdown_estimation() {		
+		$date = $this->input->get('date');
+		$wh = $this->input->get('wh');
+		$osWO = $this->ITH_mod->select_wo_side_detail($date, '');
+		$rswip = $this->ITH_mod->select_wip_balance($date, $wh, '');
+		$rsFGResume = $this->ITH_mod->select_critical_FGStock($date, '');
+		$rsPlot = [];
+		foreach($rswip as &$w) {
+			$w['B4QTY'] = $w['MGAQTY'];
+			foreach($osWO as &$o) {
+				if($w['MGAQTY']>0 && ($w['ITRN_ITMCD'] == $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] == $o['PWOP_SUBPN']) ){
+					$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
+					$fixqty = $balneed;
+					if($balneed	> $w['MGAQTY']) {
+						$fixqty = $w['MGAQTY'];
+						$o['PLOTQTY']+=$w['MGAQTY'];
+						$w['MGAQTY']=0;
+					} else {
+						$o['PLOTQTY']+=$balneed;
+						$w['MGAQTY']-=$balneed;
+					}
+					$isfound = false;
+					foreach($rsPlot as &$r){
+						if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] ==$w['ITRN_ITMCD']) {
+							$r['PARTQTY']+=$fixqty;
+							$isfound = true;break;
+						}
+					}
+					unset($r);
+					if(!$isfound) {
+						$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty];
+					}
+					if($w['MGAQTY']==0) {
+						break;
+					}
+				}
+			}
+			unset($o);
+		}
+		unset($w);
+		$spreadsheet = new Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->setTitle('FG_RESUME');
+		$sheet->fromArray(array_keys($rsFGResume[0]), NULL, 'A1');
+		$sheet->fromArray($rsFGResume, NULL, 'A2');
+		$rang = "A1:A".$sheet->getHighestDataRow();
+		$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+		foreach(range('A', 'K') as $v) {
+			$sheet->getColumnDimension($v)->setAutoSize(true);
+		}
+
+		$sheet = $spreadsheet->createSheet();
+		$sheet->setTitle('PLANT');
+		$sheet->fromArray(array_keys($rswip[0]), NULL, 'A1');
+		$sheet->fromArray($rswip, NULL, 'A2');
+		$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+		foreach(range('A', 'K') as $v) {
+			$sheet->getColumnDimension($v)->setAutoSize(true);
+		}
+
+		$sheet = $spreadsheet->createSheet();
+		$sheet->setTitle('PLOTWO');
+		$sheet->fromArray(array_keys($rsPlot[0]), NULL, 'A1');
+		$sheet->fromArray($rsPlot, NULL, 'A2');
+		$rang = "C1:C".$sheet->getHighestDataRow();
+		$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+		foreach(range('A', 'K') as $v) {
+			$sheet->getColumnDimension($v)->setAutoSize(true);
+		}
+
+		$stringjudul = "Critical Part $date";
+		$writer = new Xlsx($spreadsheet);
+		$filename=$stringjudul; //save our workbook as this file name
+		
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		$writer->save('php://output');
 	}
 }
