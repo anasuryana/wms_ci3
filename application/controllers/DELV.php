@@ -4372,13 +4372,7 @@ class DELV extends CI_Controller {
 			$pdf->Text(110,133+10,$hinv_currency);
 			$pdf->SetLineWidth(0.4);
 			$curY = 143+$Y_adj;
-			$pdf->SetXY(14,$curY);
-			// $pdf->Cell(27,4,'No',1,0,'L');
-			// $pdf->Cell(55,4,'Description',1,0,'L');
-			// $pdf->Cell(20,4,'Unit',1,0,'C');
-			// $pdf->Cell(20,4,'QTY',1,0,'R');
-			// $pdf->Cell(20,4,'Price',1,0,'R');
-			// $pdf->Cell(45,4,'Total Amount',1,0,'R');
+			$pdf->SetXY(14,$curY);			
 			$curY = 152+20;
 			$no =1;
 			$ttlbrs = 1;
@@ -4389,8 +4383,7 @@ class DELV extends CI_Controller {
 			$ttlqty_ = 0;
 			foreach($rsinv as $r){
 				if($ttlbrs>$MAX_INVD_PERPAGE){
-					$ttlbrs=1;
-					// $pdf->Line(14, $MAX_INVL_PERPAGE, 201, $MAX_INVL_PERPAGE);
+					$ttlbrs=1;					
 					$pdf->AddPage();
 					$pdf->SetFont('Arial','',8);
 					$pdf->Text(144,67,'Nopen : '.$hinv_nopen);
@@ -4405,21 +4398,13 @@ class DELV extends CI_Controller {
 					$pdf->Text(110,133+10,$hinv_currency);
 					$pdf->SetLineWidth(0.4);
 					$curY = 143+$Y_adj;
-					$pdf->SetXY(14,$curY);
-					// $pdf->Cell(27,4,'No',1,0,'L');
-					// $pdf->Cell(55,4,'Description',1,0,'L');
-					// $pdf->Cell(20,4,'Unit',1,0,'C');
-					// $pdf->Cell(20,4,'QTY',1,0,'R');
-					// $pdf->Cell(20,4,'Price',1,0,'R');
-					// $pdf->Cell(45,4,'Total Amount',1,0,'R');
+					$pdf->SetXY(14,$curY);					
 					$curY = 152+20;
 					$curLine = 147;
 
 				}
 				$pdf->SetXY(14,$curY-3);
-				$pdf->Cell(27,4,$no,0,0,'L');
-				// $pdf->Text(15,$curY,$no);
-				// $pdf->Text(45,$curY,$r['MITM_ITMD1']);
+				$pdf->Cell(27,4,$no,0,0,'L');			
 				$pdf->SetXY(43,$curY-3);	
 				$ttlwidth = $pdf->GetStringWidth(trim($r['MITM_ITMD1']));
 				if($ttlwidth > 51){	
@@ -4433,38 +4418,24 @@ class DELV extends CI_Controller {
 				$pdf->Cell(51,4,$r['MITM_ITMD1'],0,0,'L');	
 				$pdf->SetFont('Arial','',8);	
 				$pdf->Text(45,$curY+4,"(".trim($r['SSO2_MDLCD']).")");
-				$pdf->Text(100,$curY,$r['MITM_STKUOM']);
+				$pdf->Text(103,$curY,$r['MITM_STKUOM']);
 				$pdf->SetXY(115,$curY-3);
 				$pdf->Cell(20.55,4,number_format($r['SISOQTY']),0,0,'R');
 				$pdf->SetXY(137,$curY-3);
-				$pdf->Cell(17.5,4,substr($r['SSO2_SLPRC'],0,1) =='.' ? number_format('0'.$r['SSO2_SLPRC'],5): number_format($r['SSO2_SLPRC'],5) ,0,0,'R');
+				if(substr($r['SSO2_SLPRC'],-5)=='00000') {
+					$pdf->Cell(18,4,substr($r['SSO2_SLPRC'],0,1) =='.' ? number_format('0'.$r['SSO2_SLPRC'],5): number_format($r['SSO2_SLPRC'],0) ,0,0,'R');
+				} else {
+					$pdf->Cell(18,4,substr($r['SSO2_SLPRC'],0,1) =='.' ? number_format('0'.$r['SSO2_SLPRC'],5): number_format($r['SSO2_SLPRC'],5) ,0,0,'R');
+				}
 				$pdf->SetXY(155,$curY-3);
-				$pdf->Cell(41.56,4,number_format($r['SISOQTY']*$r['SSO2_SLPRC'],2),0,0,'R');
-				// $pdf->Line(14, $curLine, 14, $curLine+10);
-				// $pdf->Line(41, $curLine, 41, $curLine+10);
-				// $pdf->Line(96, $curLine, 96, $curLine+10);
-				// $pdf->Line(116, $curLine, 116, $curLine+10);
-				// $pdf->Line(136, $curLine, 136, $curLine+10);
-				// $pdf->Line(156, $curLine, 156, $curLine+10);
-				// $pdf->Line(201, $curLine, 201, $curLine+10);
-				// $pdf->Line(41, $curLine, 41, $curLine+10);
+				$pdf->Cell(41.56,4,number_format($r['SISOQTY']*$r['SSO2_SLPRC'],2),0,0,'R');				
 				$curY+=10;
 				$curLine+=10;
 				$no++;
 				$ttlbrs++;
 				$gtotalamount += ($r['SISOQTY']*$r['SSO2_SLPRC']);
 				$ttlqty_+=$r['SISOQTY'];
-			}
-			// if($curLine<$MAX_INVL_PERPAGE){#148+(10*8) = max
-			// 	$pdf->Line(14, $curLine, 14, $MAX_INVL_PERPAGE);
-			// 	$pdf->Line(41, $curLine, 41, $MAX_INVL_PERPAGE);
-			// 	$pdf->Line(96, $curLine, 96, $MAX_INVL_PERPAGE);
-			// 	$pdf->Line(116, $curLine, 116, $MAX_INVL_PERPAGE);
-			// 	$pdf->Line(136, $curLine, 136, $MAX_INVL_PERPAGE);
-			// 	$pdf->Line(156, $curLine, 156, $MAX_INVL_PERPAGE);
-			// 	$pdf->Line(201, $curLine, 201, $MAX_INVL_PERPAGE);
-			// }
-			// $pdf->Line(14, $MAX_INVL_PERPAGE, 201, $MAX_INVL_PERPAGE);
+			}			
 			$pdf->SetXY(115,240+13);
 			$pdf->Cell(20.55,4,number_format($ttlqty_,2),0,0,'R');
 			$pdf->SetXY(155,240+13);
