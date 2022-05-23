@@ -2469,8 +2469,11 @@ class ITH extends CI_Controller {
 	}
 
 	public function breakdown_estimation() {		
-		$date = $this->input->get('date');
-		$wh = $this->input->get('wh');
+		$date = $this->input->post('date');
+		if($date=='') die('could not continue');		
+		$wh = 'PLANT1';
+		$fglist = $this->input->post('fg');
+		$rmlist = $this->input->post('rm');
 		$osWO = $this->ITH_mod->select_wo_side_detail($date, '');
 		$rswip = $this->ITH_mod->select_wip_balance($date, $wh, '');
 		$rsFGResume = $this->ITH_mod->select_critical_FGStock($date, '');

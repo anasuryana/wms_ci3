@@ -10,7 +10,7 @@
             <div class="col-md-6 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" id="criticpart_btn_new" title="New" onclick="criticpart_btn_new_eC()"><i class="fas fa-file"></i></button>
-                    <button class="btn btn-outline-success" id="criticpart_btn_save" title="Save as Sepreadsheet" onclick="criticpart_btn_save_eC()"><i class="fas fa-file-excel"></i></button>                    
+                    <button class="btn btn-outline-success" id="criticpart_btn_save" title="Save as Sepreadsheet" onclick="criticpart_btn_save_eC(this)"><i class="fas fa-file-excel"></i></button>
                 </div>
             </div>            
         </div>
@@ -49,6 +49,43 @@
     </div>
 </div>
 <script>
+    function criticpart_btn_save_eC(p) {
+        p.disabled = true
+        p.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'
+        const cutoffdate = document.getElementById('criticpart_txt_date').value
+        let datanya_FG = criticpart_sso_fg.getData()
+        let datanya_RM = criticpart_sso_part.getData()        
+        let FGList = datanya_FG.filter((data) => data[0].length > 1)
+        let RMList = datanya_RM.filter((data) => data[0].length > 1)
+        RMList = [...new Set(RMList.map(data => data[0]))]
+        FGList = [...new Set(FGList.map(data => data[0]))]
+        $.ajax({
+            type: "POST",
+            url: "<?=base_url('ITH/breakdown_estimation')?>",
+            data: {fg : FGList, rm: RMList, date : cutoffdate},
+            success: function (response) {                
+                const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                saveAs(blob, `Critical Part ${cutoffdate}.xlsx`)
+                p.innerHTML = '<i class="fas fa-file-excel"></i>'
+                p.disabled = false
+            },
+            xhr: function () {
+                const xhr = new XMLHttpRequest()
+                xhr.onreadystatechange = function () {
+                    p.disabled = false
+                    p.innerHTML = '<i class="fas fa-file-excel"></i>'
+                    if (xhr.readyState == 2) {
+                        if (xhr.status == 200) {
+                            xhr.responseType = "blob";
+                        } else {
+                            xhr.responseType = "text";
+                        }
+                    }
+                }
+                return xhr
+            },
+        })
+    }
     function criticpart_btn_new_eC() {
         $("#criticpart_txt_date").datepicker('update', new Date())
         criticpart_sso_part.setData([[],[],[],[],[]])
@@ -60,6 +97,9 @@
     })
     $("#criticpart_txt_date").datepicker('update', new Date())
     var mpurordata = [
+       [''],       
+    ];  
+    var mpurordataFG = [
        [''],       
     ];  
     var criticpart_sso_part = jspreadsheet(document.getElementById('vcritical_partcd'), {
@@ -75,7 +115,7 @@
         ],    
     });    
     var criticpart_sso_fg = jspreadsheet(document.getElementById('vcritical_fg'), {
-        data:mpurordata,
+        data:mpurordataFG,
         columns: [       
             {
                 type: 'text',
