@@ -72,10 +72,10 @@
             xhr: function () {
                 const xhr = new XMLHttpRequest()
                 xhr.onreadystatechange = function () {
-                    p.disabled = false
-                    p.innerHTML = '<i class="fas fa-file-excel"></i>'
                     if (xhr.readyState == 2) {
                         if (xhr.status == 200) {
+                            p.innerHTML = '<i class="fas fa-file-excel"></i>'
+                            p.disabled = false
                             xhr.responseType = "blob";
                         } else {
                             xhr.responseType = "text";
