@@ -3828,7 +3828,7 @@ class DELV extends CI_Controller {
 					$YExtra_candidate = $pdf->GetY();
 					$YExtra = $YExtra_candidate!=($curY-3) ? $YExtra=$YExtra_candidate-($curY-3)-4 : 0;	
 					$pdf->SetFont('Arial','',9);	
-					$pdf->Text(45,$curY+4+$YExtra,"(".trim($r['DLVRMDOC_ITMID']).")");
+					$pdf->Text(45,$curY+4+$YExtra,trim($r['DLVRMDOC_ITMID']));
 					$pdf->Text(45,$curY+8+$YExtra,trim($r['DLVRMDOC_TYPE']));
 					$pdf->Text(100,$curY,$r['MITM_STKUOM']);
 					$pdf->SetXY(110,$curY-3);
