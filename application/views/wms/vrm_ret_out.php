@@ -4438,6 +4438,7 @@
             newcell.style.cssText = 'cursor:pointer'
             newcell.classList.add('text-center')
             newcell.innerHTML = `<span class="fas fa-trash text-danger"></span>`
+            newcell = newrow.insertCell(10)            
         }
         mydes.innerHTML=''
         mydes.appendChild(myfrag)
