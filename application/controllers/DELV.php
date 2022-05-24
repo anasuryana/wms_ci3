@@ -3763,10 +3763,7 @@ class DELV extends CI_Controller {
 			}
 			unset($r);
 			
-
-			if(count($rsrmdoc) && count($rsrmdocFromSO)<=0){
-				// echo $MultipliedNumber;
-				// die(json_encode($rs_rcv));
+			if(count($rsrmdoc) && count($rsrmdocFromSO)<=0){				
 				$h_delnm = '';
 				$h_deladdress = '';
 				$h_invno = '';
@@ -3804,7 +3801,7 @@ class DELV extends CI_Controller {
 					if($shouldRound){
 						$amount_ = $r['ITMQT']*round($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
 						$perprice_ = round($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
-					} else {
+					} else {						
 						$amount_ = $r['ITMQT']*($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
 						$perprice_ = ($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
 					}
@@ -3826,17 +3823,7 @@ class DELV extends CI_Controller {
 					}					
 					$pdf->SetXY(10,$curY-3);
 					$pdf->Cell(27,4,$no,0,0,'L');
-					$pdf->SetXY(43,$curY-3);	
-					// $ttlwidth = $pdf->GetStringWidth(trim($r['DLV_ITMD1']));
-					// if($ttlwidth > 51){	
-					// 	$ukuranfont = 7.5;
-					// 	while($ttlwidth>50){
-					// 		$pdf->SetFont('Arial','',$ukuranfont);
-					// 		$ttlwidth=$pdf->GetStringWidth(trim($r['DLV_ITMD1']));
-					// 		$ukuranfont = $ukuranfont - 0.5;
-					// 	}
-					// }
-					// $pdf->Cell(51,4,$r['DLV_ITMD1'],0,0,'L');
+					$pdf->SetXY(43,$curY-3);					
 					$pdf->MultiCell(51,4,$r['DLV_ITMD1'],0,'L');
 					$YExtra_candidate = $pdf->GetY();
 					$YExtra = $YExtra_candidate!=($curY-3) ? $YExtra=$YExtra_candidate-($curY-3)-4 : 0;	
@@ -3852,10 +3839,17 @@ class DELV extends CI_Controller {
 						$pdf->SetXY(155,$curY-3);
 						$pdf->Cell(41.56,4,number_format($amount_,0),0,0,'R');
 					} else {
-						$pdf->SetXY(138,$curY-3);
-						$pdf->Cell(17.5,4,number_format($perprice_,5) ,0,0,'R');
-						$pdf->SetXY(155,$curY-3);
-						$pdf->Cell(41.56,4,number_format($amount_,2),0,0,'R');
+						if(substr(number_format($perprice_,5),-5) === '00000') {
+							$pdf->SetXY(138,$curY-3);
+							$pdf->Cell(17.5,4,number_format($perprice_,0) ,0,0,'R');
+							$pdf->SetXY(155,$curY-3);
+							$pdf->Cell(41.56,4,number_format($amount_,0),0,0,'R');
+						} else {
+							$pdf->SetXY(138,$curY-3);
+							$pdf->Cell(17.5,4,number_format($perprice_,5) ,0,0,'R');
+							$pdf->SetXY(155,$curY-3);
+							$pdf->Cell(41.56,4,number_format($amount_,2),0,0,'R');
+						}
 					}
 					
 					$no++;
@@ -3988,17 +3982,7 @@ class DELV extends CI_Controller {
 				
 				$pdf->SetXY(6,$curY-3);
 				$pdf->Cell(21,4,$nom,0,0,'C');
-				$pdf->SetXY(28,$curY-3);				
-				// $ttlwidth = $pdf->GetStringWidth($ITEMDESC);
-				// if($ttlwidth > 63.73){
-				// 	$ukuranfont = 7.5;
-				// 	while($ttlwidth>63.73){
-				// 		$pdf->SetFont('Arial','',$ukuranfont);
-				// 		$ttlwidth=$pdf->GetStringWidth($ITEMDESC);
-				// 		$ukuranfont = $ukuranfont - 0.5;
-				// 	}
-				// }
-				// $pdf->Cell(63.73,4,$ITEMDESC,0,0,'L');
+				$pdf->SetXY(28,$curY-3);
 				$pdf->MultiCell(63.73,4,$ITEMDESC,0,'L');
 				$YExtra_candidate = $pdf->GetY();
 				$YExtra = $YExtra_candidate!=($curY-3) ? $YExtra=$YExtra_candidate-($curY-3)-4 : 0;
@@ -4008,7 +3992,7 @@ class DELV extends CI_Controller {
 				$pdf->SetXY(28,$curY+6+$YExtra);
 				$pdf->Cell(63.73,4,$ITEMSPTNO,0,0,'L');
 				$pdf->SetXY(92,$curY-3);
-				$pdf->Cell(16.63,4, $r['DLV_PKG_QTY'],0,0,'R'); #number_format($r['SISCN_SERQTY'] * $r['TTLBOX'])
+				$pdf->Cell(16.63,4, number_format($r['DLV_PKG_QTY']),0,0,'R'); #number_format($r['SISCN_SERQTY'] * $r['TTLBOX'])
 				$pdf->SetXY(110,$curY-3);
 				$pdf->Cell(24.71,4, $r['DLV_PKG_NWG']*1==0? '': number_format($r['DLV_PKG_NWG'],2),0,0,'R');
 				$pdf->SetXY(137.07,$curY-3);
