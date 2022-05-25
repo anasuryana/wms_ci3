@@ -2481,14 +2481,16 @@ class ITH extends CI_Controller {
 		$startDate = date('Y-m-d',strtotime($date." - 60 days"));
 		$rspsn = $this->ITH_mod->select_psn_period($startDate, $date, $rmstring);
 		$psnstring = "";
+		$osWO = [];
 		foreach($rspsn as $r){
 			$psnstring .= "'".$r['DOC']."',";
 		}
 		if($psnstring==''){
 			$psnstring=="''";
+		} else {
+			$psnstring = substr($psnstring,0,strlen($psnstring)-1);
+			$osWO = $WOStatus == 'o' ? $this->ITH_mod->select_wo_side_detail_open($date, $fgstring) : $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring);			
 		}
-		$psnstring = substr($psnstring,0,strlen($psnstring)-1);
-		$osWO = $WOStatus == 'o' ? $this->ITH_mod->select_wo_side_detail_open($date, $fgstring) : $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring);
 		$rswip = $this->ITH_mod->select_wip_balance($date, $wh, $rmstring);
 		$rsFGResume = $this->ITH_mod->select_critical_FGStock($date, $fgstring);
 		$rsPlot = [];
@@ -2525,14 +2527,15 @@ class ITH extends CI_Controller {
 			unset($o);
 		}
 		unset($w);
+		
 
 		$spreadsheet = new Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->setTitle('FG_RESUME');
+		$rang = "A1:A".$sheet->getHighestDataRow();
 		if(count($rsFGResume)){
 			$sheet->fromArray(array_keys($rsFGResume[0]), NULL, 'A1');
 			$sheet->fromArray($rsFGResume, NULL, 'A2');
-			$rang = "A1:A".$sheet->getHighestDataRow();
 			$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 			foreach(range('A', 'K') as $v) {
 				$sheet->getColumnDimension($v)->setAutoSize(true);
