@@ -1135,7 +1135,7 @@ class ITH extends CI_Controller {
 		$tomorrow  = date("Y-m-d 07:00:00", $odate);		
 		$cwh = $_COOKIE["CKPSI_WH"];
 		if($sbgroup=="-"){
-			$rs =  $this->ITH_mod->select_psi_stock_date_wbg($cwh, $citem, $cdate);	#'SINI'.$cwh. $citem. $cdate; #
+			$rs =  $this->ITH_mod->select_psi_stock_date_wbg($cwh, $citem, $cdate);
 		} else {
 			$rs = $this->ITH_mod->select_psi_stock_date($cwh, $citem, $sbgroup, $cdate);	
 		}
@@ -2468,40 +2468,54 @@ class ITH extends CI_Controller {
 		die(json_encode(['data' => $myar]));
 	}
 
-	public function breakdown_estimation() {		
+	public function breakdown_estimation() {	
+		date_default_timezone_set('Asia/Jakarta');	
 		$date = $this->input->post('date');
+		$fglist = $this->input->post('fg');
+		$WOStatus = $this->input->post('wostatus');
+		$rmlist = $this->input->post('rm');
 		if($date=='') die('could not continue');		
 		$wh = 'PLANT1';
-		$fglist = $this->input->post('fg');
-		$rmlist = $this->input->post('rm');
-		$osWO = $this->ITH_mod->select_wo_side_detail($date, '');
-		$rswip = $this->ITH_mod->select_wip_balance($date, $wh, '');
-		$rsFGResume = $this->ITH_mod->select_critical_FGStock($date, '');
+		$fgstring ="'".implode("','", $fglist)."'";
+		$rmstring = "'".implode("','", $rmlist)."'";
+		$startDate = date('Y-m-d',strtotime($date." - 60 days"));
+		$rspsn = $this->ITH_mod->select_psn_period($startDate, $date, $rmstring);
+		$psnstring = "";
+		foreach($rspsn as $r){
+			$psnstring .= "'".$r['DOC']."',";
+		}
+		if($psnstring==''){
+			$psnstring=="''";
+		}
+		$psnstring = substr($psnstring,0,strlen($psnstring)-1);
+		$osWO = $WOStatus == 'o' ? $this->ITH_mod->select_wo_side_detail_open($date, $fgstring) : $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring);
+		$rswip = $this->ITH_mod->select_wip_balance($date, $wh, $rmstring);
+		$rsFGResume = $this->ITH_mod->select_critical_FGStock($date, $fgstring);
 		$rsPlot = [];
 		foreach($rswip as &$w) {
 			$w['B4QTY'] = $w['MGAQTY'];
 			foreach($osWO as &$o) {
-				if($w['MGAQTY']>0 && ($w['ITRN_ITMCD'] == $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] == $o['PWOP_SUBPN']) ){
+				if($w['MGAQTY']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
 					$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
 					$fixqty = $balneed;
 					if($balneed	> $w['MGAQTY']) {
 						$fixqty = $w['MGAQTY'];
-						$o['PLOTQTY']+=$w['MGAQTY'];
-						$w['MGAQTY']=0;
+						$o['PLOTQTY'] += $w['MGAQTY'];
+						$w['MGAQTY'] = 0;
 					} else {
-						$o['PLOTQTY']+=$balneed;
-						$w['MGAQTY']-=$balneed;
+						$o['PLOTQTY'] += $balneed;
+						$w['MGAQTY'] -= $balneed;
 					}
 					$isfound = false;
 					foreach($rsPlot as &$r){
-						if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] ==$w['ITRN_ITMCD']) {
-							$r['PARTQTY']+=$fixqty;
+						if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
+							$r['PARTQTY'] += $fixqty;
 							$isfound = true;break;
 						}
 					}
 					unset($r);
 					if(!$isfound) {
-						$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty];
+						$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty];
 					}
 					if($w['MGAQTY']==0) {
 						break;
@@ -2511,34 +2525,43 @@ class ITH extends CI_Controller {
 			unset($o);
 		}
 		unset($w);
+
 		$spreadsheet = new Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->setTitle('FG_RESUME');
-		$sheet->fromArray(array_keys($rsFGResume[0]), NULL, 'A1');
-		$sheet->fromArray($rsFGResume, NULL, 'A2');
-		$rang = "A1:A".$sheet->getHighestDataRow();
-		$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-		foreach(range('A', 'K') as $v) {
-			$sheet->getColumnDimension($v)->setAutoSize(true);
+		if(count($rsFGResume)){
+			$sheet->fromArray(array_keys($rsFGResume[0]), NULL, 'A1');
+			$sheet->fromArray($rsFGResume, NULL, 'A2');
+			$rang = "A1:A".$sheet->getHighestDataRow();
+			$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+			foreach(range('A', 'K') as $v) {
+				$sheet->getColumnDimension($v)->setAutoSize(true);
+			}
 		}
 
-		$sheet = $spreadsheet->createSheet();
-		$sheet->setTitle('PLANT');
-		$sheet->fromArray(array_keys($rswip[0]), NULL, 'A1');
-		$sheet->fromArray($rswip, NULL, 'A2');
-		$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-		foreach(range('A', 'K') as $v) {
-			$sheet->getColumnDimension($v)->setAutoSize(true);
+		if(count($rswip)){
+			$sheet = $spreadsheet->createSheet();
+			$sheet->setTitle('RM_RESUME');
+			$sheet->fromArray(array_keys($rswip[0]), NULL, 'A1');
+			$sheet->fromArray($rswip, NULL, 'A2');
+			$sheet->getColumnDimension('C')->setVisible(false);
+			$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+			foreach(range('A', 'K') as $v) {
+				$sheet->getColumnDimension($v)->setAutoSize(true);
+			}
 		}
 
-		$sheet = $spreadsheet->createSheet();
-		$sheet->setTitle('PLOTWO');
-		$sheet->fromArray(array_keys($rsPlot[0]), NULL, 'A1');
-		$sheet->fromArray($rsPlot, NULL, 'A2');
-		$rang = "C1:C".$sheet->getHighestDataRow();
-		$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-		foreach(range('A', 'K') as $v) {
-			$sheet->getColumnDimension($v)->setAutoSize(true);
+		if(count($rsPlot)){
+			$sheet = $spreadsheet->createSheet();
+			$sheet->setTitle('PLOTWO');
+			$sheet->fromArray(array_keys($rsPlot[0]), NULL, 'A1');
+			$sheet->fromArray($rsPlot, NULL, 'A2');
+			$sheet->getColumnDimension('F')->setVisible(false);
+			$rang = "C1:C".$sheet->getHighestDataRow();
+			$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+			foreach(range('A', 'K') as $v) {
+				$sheet->getColumnDimension($v)->setAutoSize(true);
+			}
 		}
 
 		$stringjudul = "Critical Part $date";

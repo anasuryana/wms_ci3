@@ -1,13 +1,21 @@
 <div style="padding: 5px" >
 	<div class="container-fluid">
         <div class="row">
-            <div class="col-md-6 mb-1">
+            <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text" title="issue date">Created Date</label>
                     <input type="text" class="form-control" id="criticpart_txt_date" readonly>
                 </div>
             </div>
-            <div class="col-md-6 mb-1">
+            <div class="col-md-4 mb-1">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="criticpart_ck">
+                    <label class="form-check-label" for="criticpart_ck">
+                        Consider WO's completion flag
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-4 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" id="criticpart_btn_new" title="New" onclick="criticpart_btn_new_eC()"><i class="fas fa-file"></i></button>
                     <button class="btn btn-outline-success" id="criticpart_btn_save" title="Save as Sepreadsheet" onclick="criticpart_btn_save_eC(this)"><i class="fas fa-file-excel"></i></button>
@@ -50,8 +58,7 @@
 </div>
 <script>
     function criticpart_btn_save_eC(p) {
-        p.disabled = true
-        p.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'
+        const ck = document.getElementById('criticpart_ck').checked ? 'o' : 'a'
         const cutoffdate = document.getElementById('criticpart_txt_date').value
         let datanya_FG = criticpart_sso_fg.getData()
         let datanya_RM = criticpart_sso_part.getData()        
@@ -59,25 +66,42 @@
         let RMList = datanya_RM.filter((data) => data[0].length > 1)
         RMList = [...new Set(RMList.map(data => data[0]))]
         FGList = [...new Set(FGList.map(data => data[0]))]
+        if(FGList.length == 0) {
+            alertify.message('Assy Code is required')
+            let firstTabEl = document.querySelector('#myTab button[data-bs-target="#criticpart_tabFG"]')
+            let thetab = new bootstrap.Tab(firstTabEl)
+            thetab.show()
+            return
+        }
+        if(RMList.length == 0) {
+            alertify.message('Part Code is required')
+            let firstTabEl = document.querySelector('#myTab button[data-bs-target="#criticpart_tabRM"]')
+            let thetab = new bootstrap.Tab(firstTabEl)
+            thetab.show()
+            return
+        }
+        p.disabled = true
+        p.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'
         $.ajax({
             type: "POST",
             url: "<?=base_url('ITH/breakdown_estimation')?>",
-            data: {fg : FGList, rm: RMList, date : cutoffdate},
+            data: {fg : FGList, rm: RMList, date : cutoffdate, wostatus: ck},
             success: function (response) {                
                 const blob = new Blob([response], { type: "application/vnd.ms-excel" })
                 saveAs(blob, `Critical Part ${cutoffdate}.xlsx`)
                 p.innerHTML = '<i class="fas fa-file-excel"></i>'
                 p.disabled = false
+                alertify.success('Done')
             },
             xhr: function () {
                 const xhr = new XMLHttpRequest()
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == 2) {
                         if (xhr.status == 200) {
-                            p.innerHTML = '<i class="fas fa-file-excel"></i>'
-                            p.disabled = false
                             xhr.responseType = "blob";
                         } else {
+                            p.innerHTML = '<i class="fas fa-file-excel"></i>'
+                            p.disabled = false
                             xhr.responseType = "text";
                         }
                     }
