@@ -489,7 +489,7 @@ class RMCalculator {
 		if(trim($strpsn)!=''){
 			$rsMSPP = $this->CI->MSPP_mod->select_byvar_for_calc($strmdlcd, $pjob);
 			$xrssub = $this->CI->MSPP_mod->select_all_byvar_group(["MSPP_ACTIVE" => "Y", "MSPP_MDLCD !=" => $strmdlcd]);
-			$xrssubENG = $this->CI->MSPP_mod->select_all_byvar_ENG(["REPLACE(ITMCD,'-','')" => $strmdlcd]);
+			//$xrssubENG = $this->CI->MSPP_mod->select_all_byvar_ENG(["REPLACE(ITMCD,'-','')" => $strmdlcd]);
 			$rsSpecial = $this->CI->MITMSA_mod->select_where(['RTRIM(MITMSA_ITMCD) MITMSA_ITMCD', 'RTRIM(MITMSA_ITMCDS) MITMSA_ITMCDS'], ['MITMSA_MDLCD' => $strmdlcd,'MITMSA_DELDT' => NULL]);
 			$rspsnjob_req = $this->CI->SPL_mod->select_psnjob_req($strdocno, $pjob);
 			$rsWOM = $this->CI->PWOP_mod->select_mainsub($pjob);
