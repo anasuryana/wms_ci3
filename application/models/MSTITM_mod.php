@@ -138,7 +138,7 @@ class MSTITM_mod extends CI_Model {
 		$resq = $this->db->query($qry , array('%'.$pkeys.'%'));
 		return $resq->result_array();
 	}
-	public function select_bom_mega_cims($passy, $prev){
+	public function select_bom_mega_cims($passy, $prev){		
 		$qry = "SELECT VALL.*,MG.MITM_SPTNO MG_SPTNO,CM.MITM_SPTNO CM_SPTNO FROM
 		(SELECT VCIMS.*,MBOM_BOMPN,MBOM_PARQT,MBOM_MDLCD,MBOM_BOMRV FROM 
 		(SELECT MBOM_MDLCD MBLA_MDLCD, MBOM_BOMRV MBLA_BOMRV,MBOM_ITMCD MBLA_MITMCD,COUNT(*) CIMSPER FROM VCIMS_MBOM_TBL WHERE MBOM_MDLCD=? AND MBOM_BOMRV=? AND MBOM_LOCCD!=''
