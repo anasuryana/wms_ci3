@@ -9,7 +9,7 @@ class Inventory_mod extends CI_Model {
     }
 	public function selectAll()
 	{
-        $this->db->select("CASSYNO,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,SER_DOC,CLOTNO,CLOC,REFNO,CQTY,CMODEL,CDATE");
+        $this->db->select("SER_ITMID CASSYNO,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,SER_DOC,CLOTNO,CLOC,REFNO,CQTY,CMODEL,CDATE");
         $this->db->from($this->TABLENAME." a");
         $this->db->join('MSTEMP_TBL b', 'cPic=MSTEMP_ID','left');    
         $this->db->join('SER_TBL c', 'REFNO=SER_ID','left');    
