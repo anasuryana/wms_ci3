@@ -3207,6 +3207,7 @@
         var m_amt   = numeral($("#rcvcustoms_fg_amount").val()).value();
         let mkppbc   = $("#rcvcustoms_fg_kppbc").val();
         let zstsrcv = document.getElementById('rcvcustoms_fg_zsts').value;
+        const cona = document.getElementById('rcvcustoms_fg_contractnum').value
         var ar_nourut = [];
         var ar_pono = [];
         var ar_dodt = [];
@@ -3265,7 +3266,8 @@
                 inpo:ar_pono ,indo: mdo, intpb: mtpb, inregno: mregno, inNW: m_nw, inGW: m_gw,
                 insupcd: ar_supcd, incurr: ar_curr, initm: ar_item, inqty: ar_qty,
                 inprice: ar_price, inamt: ar_amt, inttl_amt: m_amt, inkppbc: mkppbc, ingrlno: ar_grlno, inhscode: ar_hscode,
-                instsrcv :zstsrcv, inbm : ar_bm, inppn: ar_ppn, inpph: ar_pph, innomorurut: ar_nourut },
+                instsrcv :zstsrcv, inbm : ar_bm, inppn: ar_ppn, inpph: ar_pph, innomorurut: ar_nourut,
+                inconaNum: cona },
             dataType: "json",
             success: function (response) {
                 alertify.message(response[0].msg);
