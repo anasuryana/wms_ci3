@@ -10,6 +10,7 @@
                         <option value="27">BC 2.7</option>
                         <option value="41">BC 4.1</option>
                         <option value="261">BC 2.6.1</option>
+                        <option value="30">BC 3.0</option>
                     </select>
                 </div>
             </div>
