@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm mb-1">
-                    <label class="input-group-text" title="issue date">Created Date</label>
+                    <label class="input-group-text">Date</label>
                     <input type="text" class="form-control" id="criticpart_txt_date" readonly>
                 </div>
             </div>
