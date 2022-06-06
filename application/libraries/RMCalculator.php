@@ -547,18 +547,11 @@ class RMCalculator {
 					}					
 				} 
 				$rspsn_sup = $this->tobexported_list_for_serd($apsn);
-			}
-
-			// die(json_encode(['description' => 'before cek req', 'SPLSCN' => $rspsn_sup]));	
+			}			
 			
-			if(count($rspsnjob_req)==0){
-				// $rspsnjob_req = $this->CI->SPL_mod->select_psnjob_req_basepwop($pjob);
-				// if(count($rspsnjob_req)){
-
-				// } else {
-					$myar[] = ['cd' => 0, 'msg' => 'pis3 null'];
-					return('{"status": '.json_encode($myar).'}');
-				// }
+			if(count($rspsnjob_req)==0){				
+				$myar[] = ['cd' => 0, 'msg' => 'pis3 null'];
+				return('{"status": '.json_encode($myar).'}');				
 			}
 			foreach($rspsnjob_req as &$n){
 				if(!array_key_exists("SUPQTY", $n)){
@@ -585,8 +578,7 @@ class RMCalculator {
 					&& $r['PPSN2_MSFLG'] == trim($k['SERD_MSFLG'])
 					&& $r['SPLSCN_ITMCD'] == trim($k['SERD_ITMCD'])
 					&& $r['SPLSCN_LOTNO'] == trim($k['SERD_LOTNO'])
-					&& $r['SPLSCN_ORDERNO'] == trim($k['SERD_MCZ'])
-					// && $r['SPLSCN_LINE'] == trim($k['SERD_LINENO'])
+					&& $r['SPLSCN_ORDERNO'] == trim($k['SERD_MCZ'])					
 					&& $r['PPSN2_MC'] == trim($k['SERD_MC'])					
 					&& $r['PPSN2_PROCD'] == trim($k['SERD_PROCD'])
 					&& !$k['USED'] )
@@ -1008,163 +1000,7 @@ class RMCalculator {
 					unset($x);
 				}
 			}
-			unset($n);
-			#sub3 CALCULATION ENG
-			// foreach($rspsnjob_req as &$n){	
-			// 	$processs = ($n['PIS3_REQQTSUM'] > $n["SUPQTY"]) ? true : false;
-			// 	while($processs){
-			// 		foreach($rspsn_sup as &$x){
-			// 			$issubtituted =false;
-			// 			foreach($xrssubENG as $y){
-			// 				if($y['MSPP_BOMPN'] == $n['PIS3_MPART'] && $y['MSPP_SUBPN'] == $x['SPLSCN_ITMCD'] && $x['SPLSCN_QTY']>0){
-			// 					$issubtituted = true;									
-			// 					break;
-			// 				}
-			// 			}
-			// 			if($issubtituted){
-			// 				#third side sub
-			// 				$process2 = true;
-			// 				while($process2){
-			// 					if(($n['PIS3_REQQTSUM'] > $n["SUPQTY"]) ){
-			// 						if($x['SPLSCN_QTY']>0 ){
-			// 							$n["SUPQTY"]+=1;
-			// 							$x['SPLSCN_QTY']--;																					
-			// 							$qtper = $n['MYPER'][0]=="." ? "0".$n['MYPER'] : $n['MYPER'];
-			// 							$islotfound = false;
-			// 							foreach($rspsn_req_d as &$u){
-			// 								if(($u["SERD_JOB"] == $n["PIS3_WONO"]) 
-			// 								&& ($u["SERD_ITMCD"]== $x["SPLSCN_ITMCD"]) 
-			// 								&& ($u["SERD_LOTNO"]== $x["SPLSCN_LOTNO"])
-			// 								&& ($u['SERD_MC'] == $n['PIS3_MC'])  
-			// 								&& ($u['SERD_MCZ'] == $n['PIS3_MCZ']) 
-			// 								&& ($u['SERD_PROCD'] == $n['PIS3_PROCD'])																						
-			// 								&& ($u['SERD_FR'] == $n['PIS3_FR'] ) 
-			// 								&& ($u['SERD_QTPER'] == $qtper)
-			// 								&& ($u['SERD_REMARK'] == 'xfsubENG' )){
-			// 									$u["SERD_QTY"]+=1;
-			// 									$islotfound=true;break;
-			// 								}
-			// 							}
-			// 							unset($u);
-
-			// 							if(!$islotfound){
-			// 								$rspsn_req_d[] = [
-			// 									"SERD_JOB" => $n["PIS3_WONO"]
-			// 									,"SERD_QTPER" => $qtper 
-			// 									,"SERD_ITMCD" => $x['SPLSCN_ITMCD']
-			// 									,"SERD_QTY" => 1 
-			// 									,"SERD_LOTNO" => $x['SPLSCN_LOTNO']
-			// 									,"SERD_PSNNO" => $x['SPLSCN_DOC']
-			// 									,"SERD_LINENO" => $n['PIS3_LINENO']
-			// 									,"SERD_CAT" => ''
-			// 									,"SERD_FR" => $n['PIS3_FR']
-			// 									,"SERD_QTYREQ" => intval($n['PIS3_REQQTSUM'])
-			// 									,"SERD_MSCANTM" => $x['SCNTIME']
-			// 									,"SERD_MC" => $n['PIS3_MC']
-			// 									,"SERD_MCZ" => $n['PIS3_MCZ']
-			// 									,"SERD_PROCD" => $n['PIS3_PROCD']
-			// 									,"SERD_MSFLG" => $x['PPSN2_MSFLG']
-			// 									,"SERD_MPART" => $n['PIS3_MPART']
-			// 									,"SERD_USRID" => $cuserid
-			// 									, "SERD_LUPDT" => $crnt_dt,
-			// 									"SERD_REMARK" => "xfsubENG" 
-			// 								];
-			// 							}	
-			// 						} else {
-			// 							$process2 =false;
-			// 						}
-			// 					} else {
-			// 						$process2 =false;
-			// 						$processs = false;
-			// 					}
-			// 				}
-			// 			} else {
-			// 				$processs = false;
-			// 			}
-			// 		}
-			// 		unset($x);
-			// 	}
-			// }
-			// unset($n);
-
-			#sub4 CALCULATION ENG
-			// foreach($rspsnjob_req as &$n){	
-			// 	$processs = ($n['PIS3_REQQTSUM'] > $n["SUPQTY"]) ? true : false;
-			// 	while($processs){
-			// 		foreach($rspsn_sup as &$x){
-			// 			$issubtituted =false;
-			// 			foreach($xrssubENG as $y){
-			// 				if($y['MSPP_SUBPN'] == $n['PIS3_MPART'] && $y['MSPP_BOMPN'] == $x['SPLSCN_ITMCD'] && $x['SPLSCN_QTY']>0){
-			// 					$issubtituted = true;
-			// 					break;
-			// 				}
-			// 			}
-			// 			if($issubtituted){
-			// 				#fourth side sub
-			// 				$process2 = true;
-			// 				while($process2){
-			// 					if(($n['PIS3_REQQTSUM'] > $n["SUPQTY"]) ){
-			// 						if($x['SPLSCN_QTY']>0 ){
-			// 							$n["SUPQTY"]+=1;
-			// 							$x['SPLSCN_QTY']--;																					
-			// 							$qtper = $n['MYPER'][0]=="." ? "0".$n['MYPER'] : $n['MYPER'];
-			// 							$islotfound = false;
-			// 							foreach($rspsn_req_d as &$u){
-			// 								if(($u["SERD_JOB"] == $n["PIS3_WONO"]) 
-			// 								&& ($u["SERD_ITMCD"]== $x["SPLSCN_ITMCD"]) 
-			// 								&& ($u["SERD_LOTNO"]== $x["SPLSCN_LOTNO"])
-			// 								&& ($u['SERD_MC'] == $n['PIS3_MC'])  
-			// 								&& ($u['SERD_MCZ'] == $n['PIS3_MCZ']) 
-			// 								&& ($u['SERD_PROCD'] == $n['PIS3_PROCD'])
-			// 								&& ($u['SERD_FR'] == $n['PIS3_FR'] ) 
-			// 								&& ($u['SERD_QTPER'] == $qtper)
-			// 								&& ($u['SERD_REMARK'] == 'xfsubENG2' )){
-			// 									$u["SERD_QTY"]+=1;
-			// 									$islotfound=true;break;
-			// 								}
-			// 							}
-			// 							unset($u);
-
-			// 							if(!$islotfound){
-			// 								$rspsn_req_d[] = [
-			// 									"SERD_JOB" => $n["PIS3_WONO"]
-			// 									,"SERD_QTPER" => $qtper 
-			// 									,"SERD_ITMCD" => $x['SPLSCN_ITMCD']
-			// 									,"SERD_QTY" => 1 
-			// 									,"SERD_LOTNO" => $x['SPLSCN_LOTNO']
-			// 									,"SERD_PSNNO" => $x['SPLSCN_DOC']
-			// 									,"SERD_LINENO" => $n['PIS3_LINENO']
-			// 									,"SERD_CAT" => ''
-			// 									,"SERD_FR" => $n['PIS3_FR']
-			// 									,"SERD_QTYREQ" => intval($n['PIS3_REQQTSUM'])
-			// 									,"SERD_MSCANTM" => $x['SCNTIME']
-			// 									,"SERD_MC" => $n['PIS3_MC']
-			// 									,"SERD_MCZ" => $n['PIS3_MCZ']
-			// 									,"SERD_PROCD" => $n['PIS3_PROCD']
-			// 									,"SERD_MSFLG" => $x['PPSN2_MSFLG']
-			// 									,"SERD_MPART" => $n['PIS3_MPART']
-			// 									,"SERD_USRID" => $cuserid
-			// 									, "SERD_LUPDT" => $crnt_dt,
-			// 									"SERD_REMARK" => "xfsubENG2" 
-			// 								];
-			// 							}	
-			// 						} else {
-			// 							$process2 =false;
-			// 						}
-			// 					} else {
-			// 						$process2 =false;
-			// 						$processs = false;
-			// 					}
-			// 				}
-			// 			} else {												
-			// 				$processs = false;
-			// 			}
-			// 		}
-			// 		unset($x);
-			// 	}
-			// }
-			// unset($n);
-
+			unset($n);			
 			
 			#sub5 CALCULATION Special Acceptance
 			foreach($rspsnjob_req as &$n){	
