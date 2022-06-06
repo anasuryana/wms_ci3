@@ -5332,8 +5332,8 @@ class SER extends CI_Controller {
 		foreach($jobunique as $r) {
 			$this->SERD_mod->deletebyID(['SERD_JOB' => $r]);
 		}
-		for($i=0; $i<$countser; $i++){
-			$this->SERD_mod->deletebyID_label(['SERD2_SER' => $cser[$i]]);
+		for($i=0; $i<$countser; $i++){			
+			$this->SERD_mod->deletebyID_label_undelivered($cser[$i]);
 		}
 		$Calc_lib = new RMCalculator();
 		$rs = $Calc_lib->calculate_raw_material_resume($cser, $cqty, $cjob);
