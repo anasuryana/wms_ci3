@@ -2485,14 +2485,10 @@ class ITH extends CI_Controller {
 		foreach($rspsn as $r){
 			$psnstring .= "'".$r['DOC']."',";
 		}
-		if($psnstring==''){
-			$psnstring=="''";
-		} else {
-			$psnstring = substr($psnstring,0,strlen($psnstring)-1);
-			$osWO = $WOStatus == 'o' ? $this->ITH_mod->select_wo_side_detail_open($date, $fgstring) : $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring);			
-		}
+		$psnstring = $psnstring=="" ? "''" : substr($psnstring,0,strlen($psnstring)-1);
+		$osWO = $WOStatus == 'o' ? $this->ITH_mod->select_wo_side_detail_open($date, $fgstring) : $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring);		
 		$rswip = $this->ITH_mod->select_wip_balance($date, $wh, $rmstring);
-		$rsFGResume = $this->ITH_mod->select_critical_FGStock($date, $fgstring);
+		
 		$rsPlot = [];
 		foreach($rswip as &$w) {
 			$w['B4QTY'] = $w['MGAQTY'];
@@ -2527,8 +2523,61 @@ class ITH extends CI_Controller {
 			unset($o);
 		}
 		unset($w);
-		
 
+		$shouldSearchDeep = false;
+		foreach($rswip as $r) {
+			if($r['MGAQTY']>0 && $r['B4QTY'] == $r['MGAQTY']) {
+				$shouldSearchDeep = true;
+				break;
+			}
+		}
+		if($shouldSearchDeep) {
+			$rspsn = $this->ITH_mod->select_psn_return_period($startDate, $date, $rmstring);
+			$psnstring = "";
+			$osWO = [];
+			foreach($rspsn as $r){
+				$psnstring .= "'".$r['DOC']."',";
+			}
+			$psnstring = $psnstring=="" ? "''" : substr($psnstring,0,strlen($psnstring)-1);
+			$osWO = $WOStatus == 'o' ? $this->ITH_mod->select_wo_side_detail_open($date, $fgstring) : $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring);
+			foreach($rswip as &$w) {
+				if($w['MGAQTY']>0){
+					$w['B4QTY'] = $w['MGAQTY'];
+					foreach($osWO as &$o) {
+						if($w['MGAQTY']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
+							$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
+							$fixqty = $balneed;
+							if($balneed	> $w['MGAQTY']) {
+								$fixqty = $w['MGAQTY'];
+								$o['PLOTQTY'] += $w['MGAQTY'];
+								$w['MGAQTY'] = 0;
+							} else {
+								$o['PLOTQTY'] += $balneed;
+								$w['MGAQTY'] -= $balneed;
+							}
+							$isfound = false;
+							foreach($rsPlot as &$r){
+								if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
+									$r['PARTQTY'] += $fixqty;
+									$isfound = true;break;
+								}
+							}
+							unset($r);
+							if(!$isfound) {
+								$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty];
+							}
+							if($w['MGAQTY']==0) {
+								break;
+							}
+						}
+					}
+					unset($o);
+				}
+			}
+			unset($w);
+		}
+		
+		$rsFGResume = $this->ITH_mod->select_critical_FGStock($date, $fgstring);
 		$spreadsheet = new Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->setTitle('FG_RESUME');

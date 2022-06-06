@@ -383,7 +383,7 @@ class ITH_mod extends CI_Model {
 		return $query->result_array();
 	}
 	public function select_psi_stock_date_wbg_detail($wh,  $pdate){	
-		$qry = "select ITH_WH,ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,MITM_STKUOM,ITH_SER 
+		$qry = "select ITH_WH,ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,MITM_STKUOM,ITH_SER,MAX(ITH_LUPDT) ITH_LUPDT
 		from v_ith_tblc a 
 		inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD		
 		WHERE ITH_WH=? 
@@ -1848,6 +1848,14 @@ class ITH_mod extends CI_Model {
 												GROUP BY SUBSTRING(ITRN_DOCNO,1,19))
 		GROUP BY SUBSTRING(ITRN_DOCNO,1,19)";
 		$query =  $this->db->query($qry);
+		return $query->result_array();
+	}
+	public function select_psn_return_period($pdate1,$pdate2, $pItems){
+		$qry = "SELECT SUBSTRING(ITRN_DOCNO,1,19) DOC FROM XITRN_TBL WHERE ITRN_ITMCD in ($pItems)
+		AND (ITRN_ISUDT BETWEEN ? AND ?)
+		AND ITRN_DOCNO LIKE '%SP-IEI%'  and ITRN_DOCNO like '%R%'
+		GROUP BY SUBSTRING(ITRN_DOCNO,1,19)";
+		$query =  $this->db->query($qry, [$pdate1, $pdate2]);
 		return $query->result_array();
 	}
 }
