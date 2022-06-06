@@ -2856,8 +2856,6 @@ class RCV extends CI_Controller {
 	public function simulatefifo(){
 		header('Content-Type: application/json');
 		$iteml = $this->input->post('iteml');
-		// var_dump($iteml);
-		// die('done');
 		$qtyl = $this->input->post('qtyl');
 		if(!is_array($iteml)){
 			$myar[] = ['cd' => 0, 'msg' => 'could not find that data'];
@@ -3244,7 +3242,9 @@ class RCV extends CI_Controller {
 	}
 
 	public function posting40(){
+		date_default_timezone_set('Asia/Jakarta');
 		header('Content-Type: application/json');
+		$createdat = date('Y-m-d');
 		$donumber = $this->input->post('donum');
 		$aju = $this->input->post('aju');
 		$myar = [];
@@ -3320,7 +3320,7 @@ class RCV extends CI_Controller {
 				"KODE_ID_PENGIRIM" => "1", "ID_PENGIRIM" => $idPengirim	, "NAMA_PENGIRIM" => $namaPengirim,
 				"ALAMAT_PENGIRIM" => $alamatPengirim,
 				"JUMLAH_BARANG" => $ttldata,"KODE_STATUS" => '00', "ID_MODUL" => $czidmodul_asli, "VERSI_MODUL" => NULL,
-				"KOTA_TTD" => "CIKARANG","NAMA_PENGANGKUT" => "TRUCK",
+				"KOTA_TTD" => "CIKARANG","NAMA_PENGANGKUT" => "TRUCK", "NAMA_TTD" => "GUSTI AYU KETUT Y", "JABATAN_TTD" => "J.SUPERVISOR", "TANGGAL_TTD" => $createdat,
 				"NETTO"	=> $hNetto, "BRUTO" => $hBruto, "HARGA_PENYERAHAN" => $TotalhargaPenyerahan
 			];
 			$tpb_dokumen = [];
