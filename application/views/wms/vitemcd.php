@@ -240,7 +240,8 @@
                                     <th >Color</th>
                                     <th >QTY / Sheet</th>
                                     <th >Category</th>
-                                    <th >External Code</th>                                    
+                                    <th >External Code</th>
+                                    <th title="Unit of Measurement">UOM</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -657,6 +658,9 @@
                         newcell.innerHTML = response[i].MITM_NCAT
                         newcell = newrow.insertCell(18)
                         newcell.innerHTML = response[i].MITM_ITMCDCUS
+                        newcell = newrow.insertCell(19)
+                        newcell.title = 'Unit of Measurement'
+                        newcell.innerHTML = response[i].MITM_STKUOM
                     }
                     $("#lblinfo_tblitm").text("");
                     mydes.innerHTML='';
