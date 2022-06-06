@@ -996,6 +996,12 @@ class RCV_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+
+    public function select_raw_balanceEXBC($pitems){
+        $qry = "SELECT * FROM VBALEXBC WHERE ITMNUM IN ($pitems) ORDER BY RCV_BCDATE ASC";
+        $query = $this->db->query($qry);
+		return $query->result_array();
+    }
     
     public function select_balanceEXBC_fromBook($pitems = [], $plike = []) {
         $this->db->select("rtrim(RPSTOCK_ITMNUM) ITMNUM,abs(RPSTOCK_QTY) STK,RPSTOCK_NOAJU,RPSTOCK_BCNUM,RPSTOCK_DOC,RPSTOCK_BCDATE RCV_BCDATE,RCV_PRPRC PRICE");
