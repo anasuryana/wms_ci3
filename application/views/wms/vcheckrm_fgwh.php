@@ -474,7 +474,13 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12 mb-1 p-1">
+                <div class="col-md-6 mb-1 p-1">
+                    <div class="input-group input-group-sm">                        
+                        <span class="input-group-text" >Old Qty</span>
+                        <input type="text" class="form-control" id="checksbb_oldqty" readonly>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1 p-1">
                     <div class="input-group input-group-sm">                        
                         <span class="input-group-text" >New Qty</span>
                         <input type="text" class="form-control" id="checksbb_newqty">
@@ -1649,6 +1655,9 @@
                     tableku2.innerHTML=''
                     for (let i = 0; i<ttlrows; i++) {
                         newrow = tableku2.insertRow(-1)
+                        newrow.onclick = () => {
+                            document.getElementById('checksbb_oldqty').value = numeral(response.data[i].SERD2_QTY).value()
+                        }
                         newcell = newrow.insertCell(0)
                         newcell.innerHTML = response.data[i].SERD2_LINENO
                         newcell = newrow.insertCell(1)
@@ -1918,9 +1927,9 @@
 
     function checksbb_e_concfirm_edit_qtycal(){
         const itemcode = document.getElementById('checksbb_caltbl_rm_edit').getElementsByTagName('tbody')[0].rows[0].cells[6].innerText
-        const oldqty = numeral(document.getElementById('checksbb_caltbl_rm_edit_qty').innerText).value()
+        const oldqty = numeral(document.getElementById('checksbb_oldqty').value).value()
         const newqty = numeral(document.getElementById('checksbb_newqty').value).value()        
-        if(confirm("Are you sure ?")){
+        if(confirm("Are you sure ?") && oldqty){
             const txtid = document.getElementById('checksbb_cal_ID').value
             $.ajax({
                 type: "post",
