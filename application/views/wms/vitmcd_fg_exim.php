@@ -4,7 +4,7 @@
             <div class="col-md-6 mb-1"> 
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-primary" type="button" id="mst_fg_exim_btn_save" onclick="mst_fg_exim_btn_save_e_click()"><i class="fas fa-save"></i></button>
-                    <button class="btn btn-success" type="button" id="mst_fg_exim_btn_exp">Export to XLS</button>
+                    <button class="btn btn-success" type="button" id="mst_fg_exim_btn_exp" onclick="mst_fg_exim_btn_exp_eCK()">Export to XLS</button>
                 </div>                
             </div>
             <div class="col-md-6 mb-1">                       
@@ -145,5 +145,13 @@
                 }
             })
         }        
+    }
+
+    function mst_fg_exim_btn_exp_eCK(){
+        const search = document.getElementById('mst_fg_exim_txt_search').value
+        const searchby = document.getElementById('mst_fg_exim_seachby').value
+        Cookies.set('CKPSEARCH', search , {expires:365})
+        Cookies.set('CKPSEARCH_BY', searchby , {expires:365})
+        window.open("<?=base_url('master_hscode_fg_as_xls')?>" ,'_blank')
     }
 </script>

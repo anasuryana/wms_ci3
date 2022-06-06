@@ -257,6 +257,65 @@ class MSTITM extends CI_Controller {
 		$writer->save('php://output');
 
 	}
+	public function searchfg_exim_xls(){
+		$search = $searchby = '';
+		if(isset($_COOKIE["CKPSEARCH"])){
+            $search = $_COOKIE["CKPSEARCH"];
+		} else {
+			exit('nothing to be exported');
+		}
+
+		$search = $_COOKIE["CKPSEARCH"];
+		$searchby = $_COOKIE["CKPSEARCH_BY"];
+		$rs = [];
+		switch($searchby){
+			case 'itemcd':
+				$rs = $this->MSTITM_mod->select_fg_exim(['MITM_ITMCD' => $search]);
+				break;
+			case 'itemnm':
+				$rs = $this->MSTITM_mod->select_fg_exim(['MITM_ITMD1' => $search]);
+				break;
+		}
+		$spreadsheet = new Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->setTitle('master_hscode');
+		$sheet->setCellValueByColumnAndRow(1,1, 'Item Code');
+		$sheet->setCellValueByColumnAndRow(2,1, 'Item Name');
+		$sheet->setCellValueByColumnAndRow(3,1, 'HS Code');
+		$sheet->setCellValueByColumnAndRow(4,1, 'Net Weight');
+		$sheet->setCellValueByColumnAndRow(5,1, 'Gross Weight');
+		$sheet->setCellValueByColumnAndRow(6,1, 'BM');
+		$sheet->setCellValueByColumnAndRow(7,1, 'PPN');
+		$sheet->setCellValueByColumnAndRow(8,1, 'PPH');
+		$n = 2;
+		foreach($rs as &$r){
+			$r['MITM_NWG'] = substr($r['MITM_NWG'],0,1)=='.' ? '0'.$r['MITM_NWG'] : $r['MITM_NWG'];
+			$r['MITM_GWG'] = substr($r['MITM_GWG'],0,1)=='.' ? '0'.$r['MITM_GWG'] : $r['MITM_GWG'];
+			$sheet->setCellValueByColumnAndRow(1,$n, $r['MITM_ITMCD']);
+			$sheet->setCellValueByColumnAndRow(2,$n, $r['MITM_ITMD1']);
+			$sheet->setCellValueByColumnAndRow(3,$n, $r['MITM_HSCD']);
+			$sheet->setCellValueByColumnAndRow(4,$n, $r['MITM_NWG']);
+			$sheet->setCellValueByColumnAndRow(5,$n, $r['MITM_GWG']);
+			$sheet->setCellValueByColumnAndRow(6,$n, $r['MITM_BM']);
+			$sheet->setCellValueByColumnAndRow(7,$n, $r['MITM_PPN']);
+			$sheet->setCellValueByColumnAndRow(8,$n, $r['MITM_PPH']);
+			$n++;
+		}
+		unset($r);
+		foreach(range('A', 'H') as $v) {
+			$sheet->getColumnDimension($v)->setAutoSize(true);			
+		}
+		$sheet->getStyle('A1:A'.$n)->getAlignment()->setHorizontal('left');
+		$stringjudul = "master hscode fg";
+		$writer = new Xlsx($spreadsheet);
+		$filename=$stringjudul; //save our workbook as this file name
+		
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		$writer->save('php://output');
+
+	}
 
 	public function finddiff(){
 		header('Content-Type: application/json');
