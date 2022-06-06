@@ -1672,9 +1672,7 @@
         const m_nw    = numeral($("#rcvcustoms_NW_2").val()).value()
         const m_gw    = numeral($("#rcvcustoms_GW_2").val()).value()
         const mbisgrup = document.getElementById('rcvcustoms_businessgroup_2').value
-        const mwarehouse = document.getElementById('rcvcustoms_cmb_locTo').value
-        
-        
+        const mwarehouse = document.getElementById('rcvcustoms_cmb_locTo')                
         const minvNo = document.getElementById('rcvcustoms_invoicenum_2').value
         const supplier = rcvcustoms_suppliercode
         if (mdo.length == 0) {
@@ -1694,15 +1692,26 @@
         
         let mytable = document.getElementById('rcvcustoms_tbl_2').getElementsByTagName('tbody')[0]
         const mtrlength = mytable.getElementsByTagName('tr').length
+        if(mwarehouse.value==='-') {
+            alertify.warning('Please select warehouse')
+            mwarehouse.focus()
+            return
+        }
         for(let i=0;i<mtrlength; i++) {
             const itmcode = mytable.rows[i].cells[3].innerText.trim().replace(/\n+/g, '')
+            const price = mytable.rows[i].cells[7].innerText.replace(/\n+/g, '')
+            if(price==='-'){
+                alertify.warning("Price value should be numerical")
+                mytable.rows[i].cells[7].focus()
+                return
+            }
             if(itmcode.length) {
                 d_grlno.push(mytable.rows[i].cells[0].innerText.replace(/\n+/g, ''))
                 d_nourut.push(mytable.rows[i].cells[1].innerText.replace(/\n+/g, ''))
                 d_pono.push(mytable.rows[i].cells[2].innerText.replace(/\n+/g, ''))
                 d_itemcode.push(itmcode)
                 d_qty.push(mytable.rows[i].cells[5].innerText.replace(/\n+/g, ''))
-                d_price.push(mytable.rows[i].cells[7].innerText.replace(/\n+/g, ''))
+                d_price.push(price)
                 d_hscode.push(mytable.rows[i].cells[9].innerText.replace(/\n+/g, ''))
                 d_bm.push(mytable.rows[i].cells[10].innerText.replace(/\n+/g, ''))
                 d_ppn.push(mytable.rows[i].cells[11].innerText.replace(/\n+/g, ''))
@@ -1733,7 +1742,7 @@
                     ,h_bisgrup: mbisgrup                    
                     ,h_supcd: supplier                    
                     ,h_minvNo: minvNo
-                    ,h_warehouse: mwarehouse
+                    ,h_warehouse: mwarehouse.value
                     ,d_grlno : d_grlno
                     ,d_nourut : d_nourut
                     ,d_pono : d_pono
