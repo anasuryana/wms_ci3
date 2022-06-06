@@ -5332,11 +5332,13 @@ class SER extends CI_Controller {
 		foreach($jobunique as $r) {
 			$this->SERD_mod->deletebyID(['SERD_JOB' => $r]);
 		}
-		for($i=0; $i<$countser; $i++){			
-			$this->SERD_mod->deletebyID_label_undelivered($cser[$i]);
+		for($i=0; $i<$countser; $i++){
+			if(strlen($cser[$i])>5) {
+				$this->SERD_mod->deletebyID_label_undelivered($cser[$i]);
+			}
 		}
 		$Calc_lib = new RMCalculator();
-		$rs = $Calc_lib->calculate_raw_material_resume($cser, $cqty, $cjob);
+		$Calc_lib->calculate_raw_material_resume($cser, $cqty, $cjob);
 		$myar[] = ['cd' => 1, 'msg' => 'ok'];
 		die('{"status":'.json_encode($myar).'}');
 	}
