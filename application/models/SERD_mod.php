@@ -29,7 +29,7 @@ class SERD_mod extends CI_Model {
     public function deletebyID_label_undelivered($pSER) {
         $qry = "DELETE SERD2_TBL where SERD2_SER = ?
         and SERD2_SER not in (
-        select ITH_SER from ITH_TBL where ITH_SER=? and ITH_WH='ARSHP'
+        select ITH_SER from ITH_TBL where ITH_SER=? and ITH_WH='ARSHP' AND ITH_QTY<0
         GROUP BY ITH_SER )";
 		$this->db->query($qry, [$pSER, $pSER]);
         return $this->db->affected_rows();
