@@ -83,7 +83,7 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group mb-1">                    
                     <span class="input-group-text" >QRCode</span>                    
-                    <input type="text" class="form-control" id="rcvfgprd_txt_code" maxlength="100" readonly placeholder="code here..." required style="text-align:center">                      
+                    <input type="text" class="form-control" id="rcvfgprd_txt_code" maxlength="500" readonly placeholder="code here..." required style="text-align:center">                      
                     <span class="input-group-text" ><i class="fas fa-barcode" id="lbltes_simul"></i></span>                    
                 </div>
             </div>            
@@ -520,9 +520,12 @@
 			reactToPaste: true,
 			reactToKeyDown: true,
 			singleScanQty: 1
+            // suffixKeyCodes: [13], // enter-key expected at the end of a scan
+            // reactToPaste: true, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
+            // minLength: 5,
 		}
 		
-		options.onScan = function(barcode, qty){
+		options.onScan = function(barcode, qty){            
             let tesnya = barcode;
             let ates = tesnya.split(String.fromCharCode(16));
             let  e = $.Event('keypress');
@@ -547,7 +550,22 @@
                 }
             }                                                    
             //console.log("[onScan]: Code: " + barcode + " Quantity: " + qty);
-		};		
+		}
+        // options.keyCodeMapper = function(oEvent) {  
+            // console.log("mapper"+oEvent.key)
+            // if(oEvent.key=='|'){
+                // return '|';
+            // }
+            // if(oEvent.key=='Enter'){
+                // return ' ';
+            // }
+            // if(oEvent.key=='_'){
+                // return '_';
+            // } 
+            // return oEvent.key
+            // Fall back to the default decoder in all other cases
+            // return onScan.decodeKeyEvent(oEvent);
+        // }
         options.onScanError = function(err){
 				var sFormatedErrorString = "Error Details: {\n";
 				for (var i in err){
@@ -591,9 +609,7 @@
     });
     $("#rcvfgprd_txt_code").keypress(function (e) { 
         if(e.which==13){
-            let kurkey = $(this).val();
-            // console.log(kurkey)
-            // if(kurkey.length==18 || kurkey.length==16){
+            let kurkey = $(this).val();  
             if(kurkey.length>=16){
                 let mtypefg = $("input[name='rcvfgprd_typefg']:checked").val()
                 if(kurkey.includes('|') && mtypefg!=''){
@@ -602,9 +618,7 @@
                     document.getElementById('rcvfgprd_txt_lotno').value = akurkey[2].substr(2,akurkey[2].length)
                     document.getElementById('rcvfgprd_txt_qty').value = akurkey[3].substr(2,akurkey[3].length)
                     document.getElementById('rcvfgprd_txt_code').value = akurkey[5].substr(2,akurkey[5].length)
-                    kurkey = akurkey[5].substr(2,akurkey[5].length)
-                    // alertify.message('cobbaaa')
-                    // return 
+                    kurkey = akurkey[5].substr(2,akurkey[5].length)                  
                 }                
                 rcvfgprd_f_send(kurkey);
             } else {

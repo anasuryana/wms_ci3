@@ -95,8 +95,7 @@ class INCFG extends CI_Controller {
 		$cremark_ka = trim($this->input->post("inremark_ka"));
 		$cismanual = trim($this->input->post("inismanual"));
 		$creason = $this->input->post("inreason");
-		$ckeys = trim($ckeys);
-		$ckeys = str_replace(' ', '_', $ckeys);
+		$ckeys = trim($ckeys);		
 		$datalogser = [
 			'LOGSER_KEYS' => $ckeys, 'LOGSER_ITEM' => $citemcd, 'LOGSER_QTY' => $cinqty , 'LOGSER_LOT' => $cinlot, 
 			'LOGSER_JOB' => $cjob, 'LOGSER_USRID' => $this->session->userdata('nama'), "LOGSER_REMARK" => NULL
