@@ -3827,7 +3827,13 @@ class DELV extends CI_Controller {
 					$pdf->SetXY(43,$curY-3);					
 					$pdf->MultiCell(51,4,$r['DLV_ITMD1'],0,'L');
 					$YExtra_candidate = $pdf->GetY();
-					$YExtra = $YExtra_candidate!=($curY-3) ? $YExtra=$YExtra_candidate-($curY-3)-4 : 0;	
+					if($YExtra_candidate!=($curY-3)){
+						$additionalRow = 1;
+						$YExtra = $YExtra=$YExtra_candidate-($curY-3)-4;
+					} else {
+						$YExtra =0;
+						$additionalRow = 0;
+					}					 
 					$pdf->SetFont('Arial','',9);	
 					$pdf->Text(45,$curY+4+$YExtra,trim($r['DLVRMDOC_ITMID']));
 					$pdf->Text(45,$curY+8+$YExtra,trim($r['DLVRMDOC_TYPE']));
@@ -3856,6 +3862,7 @@ class DELV extends CI_Controller {
 					$no++;
 					$curY+=(15+$YExtra);
 					$ttlbrs++;
+					$ttlbrs+=$additionalRow;
 					$ttlqty_+=$r['ITMQT'];
 					$ttlamount_ +=$amount_;
 				}
@@ -16105,7 +16112,8 @@ class DELV extends CI_Controller {
 
 	public function dispose_draft(){
 		header('Content-Type: application/json');
-		$rsRM = $this->DisposeDraft_mod->select_resume_rm();
+		// $rsRM = $this->DisposeDraft_mod->select_resume_rm();
+		$rsRM = $this->DisposeDraft_mod->select_resume_rm_additional1();
 		$itemcd = [];
 		foreach($rsRM as $r) {
 			if(!in_array($r['PART_CODE'], $itemcd)){
@@ -16155,10 +16163,11 @@ class DELV extends CI_Controller {
 
 	public function dispose_lock(){
 		header('Content-Type: application/json');
-		$rsRM = $this->DisposeDraft_mod->select_resume_rm();
+		// $rsRM = $this->DisposeDraft_mod->select_resume_rm();
+		$rsRM = $this->DisposeDraft_mod->select_resume_rm_additional1();
 		$czdocbctype = '27';
 		$cztujuanpengiriman = '1';
-		$csj = 'DISD2206_2';
+		$csj = 'DISD2206_3';
 		$rsallitem_cd = [];
 		$rsallitem_qty = [];
 		$rsallitem_qtyplot = [];
@@ -16168,7 +16177,7 @@ class DELV extends CI_Controller {
 			$rsallitem_qty[] = $r['QTY'];
 			$rsallitem_qtyplot[] = 0;
 		}
-		$ccustdate = '2022-05-30';
+		$ccustdate = '2022-06-7';
 		$count_rsallitem = count($rsallitem_cd);
 		$rstemp = $this->inventory_getstockbc_v2($czdocbctype,$cztujuanpengiriman, $csj, $rsallitem_cd, $rsallitem_qty,[],$ccustdate);
 		$rsbc = json_decode($rstemp);		
@@ -16295,6 +16304,210 @@ class DELV extends CI_Controller {
 			'rsRM' => $rsRM
 			,'rsfix' => $rsfix
 		]));
+	}
+	public function dispose_fromFG_dedicated_draft(){
+		header('Content-Type: application/json');
+		$aReffNo = [
+			'FHTJV266RWMC2QRK',
+			'FRGO02OOU4MC3O6Q',
+			'FU25FT7TH7MC3U82',
+			'FRGO02OOTTMC3G82',
+			'FRGO02OOUCMC3DXU',
+			'G7RARQW5BEMC20Z1',
+			'G7RARQW5BQMCGKKY',
+			'FRGO02OOTPMC2ZRK',
+			'G7RARQW5BCMC37Y6',
+			'FRGO02OOTKMC1TCR',
+			'FRGO02OOTMMC37OI',
+			'G7RARQW5BLMC1HIX',
+			'FRGO02OOTUMC1MVW',
+			'FRGO02OOTYMC3W03',
+			'G7RARQW5B8MC1ENZ',
+			'FRGO02OOTEMC1X83',
+			'FRGO02OOUOMCAKBK',
+			'FRGO02OOTFMC2TKU',
+			'FRGO02OOU3MC1ZWU',
+			'G7RARQW5BMMC1IXN',
+			'FRGO02OOTWMC2O4G',
+			'FRGO02OOU6MCZHG0',
+			'FRGO02OOTOMC5MTB',
+			'FRGO02OOU9MC3VOP',
+			'G7RARQW5BBMC4IS5',
+			'FRGO02OOTHMC2GSZ',
+			'FRGO02OOU1MCZAMA',
+			'FRGO02OOUBMC2JGD',
+			'FRGO02OOTZMC389H',
+			'FRGO02OOU8MCN3KT',
+			'G7RARQW5BIMC2RF5',
+			'FRGO02OOUMMC2CEO',
+			'G7RARQW5BOMC27J5',
+			'FRGO02OOUEMC19E9',
+			'G7RARQW5BHMC8IGZ',
+			'G7RARQW5BKMC1WEE',
+			'FRGO02OOTCMC2D8Z',
+			'FRGO02OOTJMC23DP',
+			'FRGO02OOTRMC3TWI',
+			'G7F0W5EJO2MCRZ7N',
+			'I07020211114239030',
+			'G1L0JKV28H1I2VX0',
+			'G1L0JZ2D6K1I2TCB',
+			'FY39AVJ2OY1I3C39',
+			'FY39AJ8CJO1I36S9',
+			'G0KQVA2S6A2A3UEW',
+			'G0AGEPYKIZ1I2TF0'			
+		];
+		$sReffNo = "'".implode("','", $aReffNo)."'";
+		$rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($sReffNo);
+		$itemcd = [];
+		foreach($rsRM as $r) {
+			if(!in_array($r['PART_CODE'], $itemcd)){
+				$itemcd[] = $r['PART_CODE'];
+			}
+		}		
+		$itemcdstr = "'".implode("','", $itemcd)."'";
+		$rsRCV = $this->RCV_mod->select_raw_balanceEXBC($itemcdstr);
+		$rsfix = [];
+		#FIFO
+		foreach($rsRM as &$r) {
+			$r['PLOTQTY'] = 0;
+			foreach($rsRCV as &$v) {
+				$balneed = $r['QTY']-$r['PLOTQTY'];
+				if($balneed>0 && $r['PART_CODE']===$v['ITMNUM'] && $v['STK']){
+					$fixqty = $balneed;
+					if($balneed>$v['STK']) {
+						$fixqty = $v['STK'];
+						$r['PLOTQTY']+=$v['STK'];
+						$v['STK'] = 0;
+					} else {
+						$r['PLOTQTY']+=$balneed;
+						$v['STK'] -= $balneed;
+					}
+					$rsfix[] = [
+						'NOAJU' => $v['RPSTOCK_NOAJU']
+						,'NOPEN' => $v['RPSTOCK_BCNUM']
+						,'DO' => $v['RPSTOCK_DOC']
+						,'TGLPEN' => $v['RCV_BCDATE']
+						,'ITMNUM' => $v['ITMNUM']
+						,'PRICE' => substr($v['PRICE'],0,1) =='.' ? '0'.$v['PRICE'] : $v['PRICE']
+						,'QTY' => $fixqty
+						,'BCTYPE' => $v['RCV_BCTYPE']
+						,'FG' => $r['ITH_ITMCD']
+					];
+					if($r['QTY'] === $r['PLOTQTY']) break;
+				}
+			}
+			unset($v);
+		}
+		unset($r);
+
+		die(json_encode([
+			'rsRM' => $rsRM
+			,'rsfix' => $rsfix
+		]));
+	}
+
+
+	public function dispose_lock_FG(){
+		header('Content-Type: application/json');
+		$date = '2022-03-18';
+		$rsRM = $this->DisposeDraft_mod->select_resume_fg($date);
+		$czdocbctype = '27';
+		$cztujuanpengiriman = '1';
+		$csj = 'DISD2206_FG';
+		$rsallitem_cd = [];
+		$rsallitem_qty = [];
+		$rsallitem_qtyplot = [];
+		$responseResume = [];
+		foreach($rsRM as $r) {
+			$isfound = false;
+			for($i=0; $i< count($rsallitem_cd); $i++){
+				if($rsallitem_cd[$i]===$r['PART_CODE']){
+					$rsallitem_qty[$i] += $r['QTY'];
+					$isfound = true;
+					break;
+				}
+			}
+			if(!$isfound){
+				$rsallitem_cd[] = $r['PART_CODE'];
+				$rsallitem_qty[] = $r['QTY'];
+				$rsallitem_qtyplot[] = 0;
+			}
+		}
+		$ccustdate = '2022-06-3';
+		$count_rsallitem = count($rsallitem_cd);
+		$rstemp = $this->inventory_getstockbc_v2($czdocbctype,$cztujuanpengiriman, $csj, $rsallitem_cd, $rsallitem_qty,[],$ccustdate);
+		$rsbc = json_decode($rstemp);		
+		if(!is_null($rsbc)){
+			if( count($rsbc)>0 ){				
+				foreach($rsbc as &$o){
+					foreach($o->data as &$v){
+						#resume respone
+						$isfound = false;
+						foreach($responseResume as &$n){
+							if($n['ITEM'] == $v->BC_ITEM){
+								$n['BALRES'] += $v->BC_QTY;
+								$isfound = true;
+							}
+						}
+						unset($n);
+						if(!$isfound){
+							$responseResume[] = ['ITEM' => $v->BC_ITEM, 'BALRES' => $v->BC_QTY];
+						}
+						#end
+					}
+					unset($v);
+				}
+				unset($o);
+			} else {
+				$myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !", "api_respon" => $rstemp];
+				$this->inventory_cancelDO($csj);
+				die('{"status":'.json_encode($myar).'}');
+			}
+		} else {
+			$this->inventory_cancelDO($csj);
+			$myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin", "api_respon" => $rstemp];
+			die('{"status":'.json_encode($myar).'}');
+		}
+		#CHECK IS REQ!=RES
+		$listNeedExBC = []; #outstanding list
+		for($i=0;$i<$count_rsallitem; $i++){
+			foreach($responseResume as &$r) {
+				if($rsallitem_cd[$i]===$r['ITEM']) {
+					$bal = $rsallitem_qty[$i]-$rsallitem_qtyplot[$i];
+					if($bal>$r['BALRES']) {
+						$rsallitem_qtyplot[$i] += $r['BALRES'];
+						$r['BALRES'] = 0;
+					} else {
+						$rsallitem_qtyplot[$i]+=$bal;
+						$r['BALRES']-= $bal;
+					}
+					if($rsallitem_qty[$i]==$rsallitem_qtyplot[$i]) {
+						break;
+					}
+				}
+			}
+			unset($r);
+			$bal = $rsallitem_qty[$i]-$rsallitem_qtyplot[$i];
+			if($bal) {
+				$listNeedExBC[] = ['ITMCD' => $rsallitem_cd[$i], 'QTY' => $bal, 'LOTNO' => '?' ];
+			}
+		}
+		if(count($listNeedExBC)>0){
+			// $this->inventory_cancelDO($csj);
+			$myar[] = ['cd' => 110 ,'msg' => 'EX-BC for '.count($listNeedExBC). ' item(s) is not found. ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman ];
+			die('{"status" : '.json_encode($myar).', "data":'.json_encode($listNeedExBC)
+				.',"rawdata":'.json_encode($rstemp)
+				.',"itemsend":'.json_encode($rsallitem_cd)
+				.',"itemqtysend":'.json_encode($rsallitem_qty)
+				.',"responresume":'.json_encode($responseResume).'}');
+		} else {
+			$myar[] = ['cd' => 110 ,'msg' => 'OK ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman ];
+			die('{"status" : '.json_encode($myar).', "data":'.json_encode($listNeedExBC)
+				.',"rawdata":'.json_encode($rstemp)
+				.',"itemsend":'.json_encode($rsallitem_cd)
+				.',"itemqtysend":'.json_encode($rsallitem_qty)
+				.',"responresume":'.json_encode($responseResume).'}');
+		}
 	}
 
 	public function posting_rm41(){
