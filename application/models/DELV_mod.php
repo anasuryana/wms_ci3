@@ -1083,18 +1083,7 @@ class DELV_mod extends CI_Model {
         GROUP BY DLV_ITMCD,DLV_RPRDOC";
         $query = $this->db->query($qry, [$pdoc]);        
         return $query->result_array();
-    }
-
-    public function select_out_req(){
-        $qry = "SELECT * from OUT_REQ";
-        $query = $this->db->query($qry);
-        return $query->result_array();
-    }
-    public function select_out_DO_SPEC(){
-        $qry = "SELECT * from OUT_DO_SPEC";
-        $query = $this->db->query($qry);
-        return $query->result_array();
-    }
+    }       
 
     public function select_out_pabean($pwhere){
         $this->db->from($this->VIEWUNION);
