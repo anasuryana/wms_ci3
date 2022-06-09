@@ -18379,11 +18379,9 @@ class DELV extends CI_Controller {
 	}
 
 	public function dr_pab_out_as_excel(){
-		date_default_timezone_set('Asia/Jakarta');
-		$currdate = date('d-m-Y');
+		date_default_timezone_set('Asia/Jakarta');		
 		$bctype = isset($_COOKIE["RP_PAB_DOCTYPE"]) ? $_COOKIE["RP_PAB_DOCTYPE"] : '';
-		$jenis_tpb_tujuan = isset($_COOKIE["RP_PAB_TPBTYPE"]) ? $_COOKIE["RP_PAB_TPBTYPE"] : '';
-		$ctpbtypes = isset($_COOKIE["RP_PAB_TPBTYPES"]) ? $_COOKIE["RP_PAB_TPBTYPES"] : '';
+		$jenis_tpb_tujuan = isset($_COOKIE["RP_PAB_TPBTYPE"]) ? $_COOKIE["RP_PAB_TPBTYPE"] : '';		
 		$itemcd = isset($_COOKIE["RP_PAB_ITMCD"]) ? $_COOKIE["RP_PAB_ITMCD"] : '';		
 		$cdate0 = isset($_COOKIE["RP_PAB_DATE0"]) ? $_COOKIE["RP_PAB_DATE0"] : '';
 		$cdate1 = isset($_COOKIE["RP_PAB_DATE1"]) ? $_COOKIE["RP_PAB_DATE1"] : '';
