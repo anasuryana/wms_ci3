@@ -1885,7 +1885,8 @@
                         for(let a=0; a<ttlrowscurrent; a++) {
                             const crt_so = tableku2.rows[a].cells[0].innerText
                             const crt_item = tableku2.rows[a].cells[2].innerText
-                            if(response.data[i].SO_NO===crt_so && response.data[i].ASSYCODE===crt_item) {
+                            const crt_soline = tableku2.rows[a].cells[1].innerText
+                            if(response.data[i].SO_NO===crt_so && response.data[i].ASSYCODE===crt_item && response.data[i].SO_NO.trim()==crt_soline) {
                                 isExist=true;break;
                             }
                         }
