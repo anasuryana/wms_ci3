@@ -1586,9 +1586,7 @@ class DELV extends CI_Controller {
 					}
 					$this->ITH_mod->insertb($datas);
 				}									
-				$result = $this->DELV_mod->deleteby_filter(['DLV_ID' => $docNum, 'DLV_LINE' => $lineId]);
-				#KI Comment
-				#Should improve this function
+				$result = $this->DELV_mod->deleteby_filter(['DLV_ID' => $docNum, 'DLV_LINE' => $lineId]);								
 				$myar[] = $result ? ['cd' => '1', 'msg' => 'Deleted'] : ['cd' => '0' , 'msg' => 'could not be deleted'];
 			}
 		}
