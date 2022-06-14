@@ -325,7 +325,7 @@ class SPLSCN_mod extends CI_Model {
             AND PPSN2_LINENO=SPLSCN_LINE 
             AND PPSN2_SUBPN=SPLSCN_ITMCD
             AND PPSN2_MCZ = SPLSCN_ORDERNO
-            WHERE SPLSCN_DOC=? AND  PPSN2_DOCNO is not null
+            WHERE SPLSCN_DOC=?
             AND PPSN2_MCZ IS NULL";
         $query = $this->db->query($qry, [$psn]);
         return $query->result_array();
