@@ -1078,6 +1078,13 @@ class DELV_mod extends CI_Model {
          return $query->result_array();
     }
 
+    public function select_where($Pwhere){
+        $this->db->from($this->TABLENAME);
+        $this->db->where($Pwhere);        
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
     public function select_itemtotal($pdoc){
         $qry = "SELECT DLV_ITMCD,SUM(DLV_QTY) DLV_QTY,DLV_RPRDOC FROM DLV_TBL WHERE DLV_ID=?
         GROUP BY DLV_ITMCD,DLV_RPRDOC";

@@ -1471,15 +1471,126 @@ class DELV extends CI_Controller {
 		die('{"status":'.json_encode($myar).'}');
 	}
 
+	public function testremove_rm(){
+		header('Content-Type: application/json');
+		$docNum = $this->input->post('docNum');
+		$lineId = $this->input->post('lineId');
+		$myar = [];
+		if(strlen($docNum)===0){
+			$myar[] =  ['cd' => '0' , 'msg' => 'document is required'];
+		} else {
+			if($this->ZRPSTOCK_mod->check_Primary(['RPSTOCK_REMARK' => $docNum])){
+				$myar[] =  ['cd' => '0' , 'msg' => 'could not be deleted because already booked'];
+			} else {
+				$rsForITH = $this->DELV_mod->select_where(['DLV_ID' => $docNum, 'DLV_LINE' => $lineId]);
+				$itemcode = '';
+				foreach($rsForITH as $r) {
+					$itemcode = $r['DLV_ITMCD'];
+				}
+				$FormWH =  [];
+				$rsITHCurrent = $this->ITH_mod->select_where(['ITH_ITMCD' => $itemcode, 'ITH_DOC' => $docNum]);
+				foreach($rsITHCurrent as $r){
+					$isfound = false;
+					foreach($FormWH as $n) {
+						if($n['ITH_WH'] === $r['ITH_WH'] && $n['ITH_FORM'] === $r['ITH_FORM']) {
+							$isfound;
+							break;
+						}
+					}
+					if(!$isfound) {
+						$FormWH[] = ['ITH_WH' => $r['ITH_WH'], 'ITH_FORM' => $r['ITH_FORM']];
+					}
+				}
+				if(count($FormWH)===2) {
+					$datas = [];
+					foreach($rsITHCurrent as $r){
+						$time = new DateTime($r['ITH_LUPDT']);
+						$time->add(new DateInterval('PT1S')); # add 1 second
+						$datas[] = [
+							'ITH_ITMCD' => $r['ITH_ITMCD'],
+							'ITH_DATE' => $time->format('Y-m-d'),
+							'ITH_FORM' => "CANCEL-".$r['ITH_FORM'],
+							'ITH_DOC' => $r['ITH_DOC'],
+							'ITH_QTY' => $r['ITH_QTY']*-1,
+							'ITH_WH' => $r['ITH_WH'],
+							'ITH_REMARK' => $r['ITH_REMARK'],
+							'ITH_LUPTD' => $time->format('Y-m-d H:i:s'),
+							'ITH_USRID' => $r['ITH_USRID']
+						];
+					}
+					$this->ITH_mod->insertb($datas);
+				}
+				
+	
+				
+				$result = 0;
+				$myar[] = 
+				[
+					'FormWH' => $FormWH, '$rsForITH' => $rsForITH, 'rsITHCurrent' => $rsITHCurrent
+					,'datas' => $datas
+				];
+				#KI Comment
+				#Should improve this function
+				// $myar[] = $result ? ['cd' => '1', 'msg' => 'Deleted'] : ['cd' => '0' , 'msg' => 'could not be deleted'];
+			}
+		}
+		die('{"status":'.json_encode($myar).'}');
+	}
+
 	public function remove_rm(){
 		header('Content-Type: application/json');
 		$docNum = $this->input->post('docNum');
 		$lineId = $this->input->post('lineId');
-		if($this->ZRPSTOCK_mod->check_Primary(['RPSTOCK_REMARK' => $docNum])){
-			$myar[] =  ['cd' => '0' , 'msg' => 'could not be deleted because already booked'];
+		$myar = [];
+		if(strlen($docNum)===0){
+			$myar[] =  ['cd' => '0' , 'msg' => 'document is required'];
 		} else {
-			$result = $this->DELV_mod->deleteby_filter(['DLV_ID' => $docNum, 'DLV_LINE' => $lineId]);
-			$myar[] = $result ? ['cd' => '1', 'msg' => 'Deleted'] : ['cd' => '0' , 'msg' => 'could not be deleted'];
+			if($this->ZRPSTOCK_mod->check_Primary(['RPSTOCK_REMARK' => $docNum])){
+				$myar[] =  ['cd' => '0' , 'msg' => 'could not be deleted because already booked'];
+			} else {
+				$rsForITH = $this->DELV_mod->select_where(['DLV_ID' => $docNum, 'DLV_LINE' => $lineId]);
+				$itemcode = '';
+				foreach($rsForITH as $r) {
+					$itemcode = $r['DLV_ITMCD'];
+				}
+				$FormWH =  [];
+				$rsITHCurrent = $this->ITH_mod->select_where(['ITH_ITMCD' => $itemcode, 'ITH_DOC' => $docNum]);
+				foreach($rsITHCurrent as $r){
+					$isfound = false;
+					foreach($FormWH as $n) {
+						if($n['ITH_WH'] === $r['ITH_WH'] && $n['ITH_FORM'] === $r['ITH_FORM']) {
+							$isfound;
+							break;
+						}
+					}
+					if(!$isfound) {
+						$FormWH[] = ['ITH_WH' => $r['ITH_WH'], 'ITH_FORM' => $r['ITH_FORM']];
+					}
+				}
+				if(count($FormWH)===2) {
+					$datas = [];
+					foreach($rsITHCurrent as $r){
+						$time = new DateTime($r['ITH_LUPDT']);
+						$time->add(new DateInterval('PT1S')); # add 1 second
+						$datas[] = [
+							'ITH_ITMCD' => $r['ITH_ITMCD'],
+							'ITH_DATE' => $time->format('Y-m-d'),
+							'ITH_FORM' => "CANCEL-".$r['ITH_FORM'],
+							'ITH_DOC' => $r['ITH_DOC'],
+							'ITH_QTY' => $r['ITH_QTY']*-1,
+							'ITH_WH' => $r['ITH_WH'],
+							'ITH_REMARK' => $r['ITH_REMARK'],
+							'ITH_LUPTD' => $time->format('Y-m-d H:i:s'),
+							'ITH_USRID' => $r['ITH_USRID']
+						];
+					}
+					$this->ITH_mod->insertb($datas);
+				}									
+				$result = $this->DELV_mod->deleteby_filter(['DLV_ID' => $docNum, 'DLV_LINE' => $lineId]);
+				#KI Comment
+				#Should improve this function
+				$myar[] = $result ? ['cd' => '1', 'msg' => 'Deleted'] : ['cd' => '0' , 'msg' => 'could not be deleted'];
+			}
 		}
 		die('{"status":'.json_encode($myar).'}');
 	}

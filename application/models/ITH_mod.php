@@ -252,6 +252,13 @@ class ITH_mod extends CI_Model {
 		return $query->result_array();
 	}
 
+	public function select_where($Pwhere){
+		$this->db->from($this->TABLENAME);
+        $this->db->where($Pwhere);        
+		$query = $this->db->get();
+		return $query->result_array();
+	}
+
 	public function select_psi_stock($wh, $item, $pbg){		
 		$qry = "select ITH_WH,ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,MITM_STKUOM from ITH_TBL a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD
 		left join v_mitm_bsgroup on ITH_ITMCD=PDPP_MDLCD
@@ -935,7 +942,23 @@ class ITH_mod extends CI_Model {
 		// ORDER BY V2.ITH_ITMCD";
 		$query = $this->db->query($qry, [$pwh,"%$passy%", $pdt1,$pwh,"%$passy%"]);
 		return $query->result_array();
-	}	
+	}
+	
+	public function select_txhistory_bef_parent($pwh, $passy, $pdt1){
+		$qry = "select VMEGA.*,WQT from
+		(SELECT  RTRIM(ITRN_ITMCD) ITRN_ITMCD,SUM(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) MGAQTY				
+								FROM XITRN_TBL 						
+								WHERE ITRN_ISUDT<'$pdt1' AND ITRN_LOCCD='$pwh' AND ITRN_ITMCD=?
+								GROUP BY ITRN_ITMCD) VMEGA
+		LEFT JOIN 
+		(
+		SELECT ITH_ITMCD,SUM(ITH_QTY) WQT FROM v_ith_tblc WHERE ITH_DATEC<'$pdt1' AND ITH_WH='$pwh' AND ITH_ITMCD=?
+		GROUP BY ITH_ITMCD
+		) VWMS ON ITRN_ITMCD=ITH_ITMCD
+		ORDER BY ITRN_ITMCD";
+		$query = $this->db->query($qry, [$passy,$passy]);
+		return $query->result_array();
+	}
 	public function select_txhistory_customs_bef_d1($pitemcd, $pdt1){
 		$qry = "SELECT RTRIM(RPSTOCK_ITMNUM) RPSTOCK_ITMNUM,RPSTOCK_NOAJU,RPSTOCK_BCNUM,RPSTOCK_QTY BALQTY,RTRIM(MITM_ITMD1) MITM_ITMD1,RPSTOCK_DOC,FORMAT(IODATE,'dd-MMM-yy') INCDATE FROM ZRPSAL_BCSTOCK
 		LEFT JOIN MITM_TBL ON RPSTOCK_ITMNUM=MITM_ITMCD
@@ -972,6 +995,21 @@ class ITH_mod extends CI_Model {
 				GROUP BY ITH_ITMCD, rtrim(MITM_ITMD1),ITH_DATEC,ITH_FORM,ITH_DOC,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm')
 				ORDER BY ITH_ITMCD,ITH_DATEC ,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm'), 6 desc";				
 		$query = $this->db->query($qry, [$pwh, "%$passy%", $pdt1, $pdt2]);
+		return $query->result_array();
+	}
+	public function select_txhistory_parent($pwh, $passy, $pdt1 ){	
+		$qry = "select VMEGA.*,WQT from
+		(SELECT  RTRIM(ITRN_ITMCD) ITRN_ITMCD,CONVERT(DATE,ITRN_ISUDT) ISUDT,SUM(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) MGAQTY				
+								FROM XITRN_TBL 						
+								WHERE ITRN_ISUDT>='$pdt1' AND ITRN_LOCCD='$pwh' AND ITRN_ITMCD=?
+								GROUP BY ITRN_ITMCD,ITRN_ISUDT) VMEGA
+		LEFT JOIN 
+		(
+		SELECT ITH_ITMCD,ITH_DATEC,SUM(ITH_QTY) WQT FROM v_ith_tblc WHERE ITH_DATEC>='$pdt1' AND ITH_WH='$pwh' AND ITH_ITMCD=?
+		GROUP BY ITH_ITMCD,ITH_DATEC
+		) VWMS ON ITRN_ITMCD=ITH_ITMCD AND ISUDT=ITH_DATEC
+		ORDER BY ISUDT";				
+		$query = $this->db->query($qry, [$passy, $passy]);
 		return $query->result_array();
 	}
 	public function select_txhistory_customs($plike,$pdate){		
