@@ -1860,8 +1860,7 @@
         const so_tbl = document.getElementById('txfg_tblso_plot').getElementsByTagName('tbody')[0]
         const so_tbl_rows = so_tbl.getElementsByTagName('tr').length
         let plotedqty = 0
-        for(let i = 0; i<so_tbl_rows; i++) { 
-            console.log(so_tbl.rows[i].cells[2].innerText+ "==" + pdata.so_item)
+        for(let i = 0; i<so_tbl_rows; i++) {            
             if(so_tbl.rows[i].cells[2].innerText==pdata.so_item){
                 const qty = numeral(so_tbl.rows[i].cells[5].innerText.trim()).value()
                 plotedqty+=qty
@@ -1953,11 +1952,7 @@
                         newcell = newrow.insertCell(0)
                         newcell.innerHTML = response.data[i].SO_NO
                         newcell = newrow.insertCell(1)
-                        newcell.innerHTML = response.data[i].SO_LINE
-                        newcell.ondblclick = function(e){
-                            console.log('sini')
-                            console.log(e)
-                        }
+                        newcell.innerHTML = response.data[i].SO_LINE                        
                         newcell = newrow.insertCell(2)
                         newcell.innerHTML = response.data[i].ASSYCODE
                         newcell = newrow.insertCell(3)
@@ -2931,8 +2926,7 @@ function txfg_cksi_e_click(e,elem,pitem, pstrloc){
                 }
             }
         } else {
-            alertify.message('Please check same str.Loc for a DO');
-            console.log({selectedloc : selectedloc, pstrloc:pstrloc})
+            alertify.message('Please check same str.Loc for a DO');            
             elem.checked=false;
         }                
     }
@@ -3328,8 +3322,7 @@ $("#txfg_btn_save").click(function (e) {
         aXSILine.push(so_tbl.rows[i].cells[6].innerText)
     }
    
-    if(txfg_isedit_mode){
-        console.log(aXSO)
+    if(txfg_isedit_mode){        
         if(confirm("Are you sure ?")) {
             $.ajax({
                 type: "post",
