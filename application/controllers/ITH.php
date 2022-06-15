@@ -20,6 +20,9 @@ class ITH extends CI_Controller {
 		$this->load->model('MSPP_mod');
 		$this->load->model('RPSAL_INVENTORY_mod');
 		$this->load->model('ZRPSTOCK_mod');
+		$this->load->model('XITRN_mod');
+		$this->load->model('XFTRN_mod');
+		$this->load->model('XICYC_mod');
 		$this->load->helper('url');
 		$this->load->library('session');
 		$this->load->library('RMCalculator');
@@ -139,6 +142,15 @@ class ITH extends CI_Controller {
 		}
 		$data['lwh'] = $todiswh;
 		$this->load->view('wms_report/vrpt_txhistory', $data);
+	}
+	public function form_txhistory(){
+		$todiswh  ='';
+		$rs = $this->MSTLOCG_mod->selectall();
+		foreach($rs as $r){
+			$todiswh .= '<option value="'.$r['MSTLOCG_ID'].'">'.$r['MSTLOCG_NM'].' ('.$r['MSTLOCG_ID'].')</option>';
+		}
+		$data['lwh'] = $todiswh;
+		$this->load->view('wms_report/vrpt_txhistory_parent', $data);
 	}
 	public function vtxhistory_customs(){		
 		$this->load->view('wms_report/vrpt_txhistory_customs');
@@ -1380,6 +1392,50 @@ class ITH extends CI_Controller {
 			$myar[] = ['cd' => 0, 'msg' => 'not found'];			
 		}
 		exit('{"status": '.json_encode($myar).', "data" : '.json_encode($rstoret).'}');
+	}
+	public function gettxhistory_parent(){
+		header('Content-Type: application/json');
+		$fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT'];
+		$cwh = $this->input->get('inwh');
+		$citemcd = trim($this->input->get('initemcode'));
+		$cdate1 = $this->input->get('indate1');		
+		if(in_array($cwh, $fg_wh)) {
+			$rsbef =  $this->ITH_mod->select_txhistory_bef_parent_fg($cwh, $citemcd, $cdate1);
+			$rs = $this->ITH_mod->select_txhistory_parent_fg($cwh, $citemcd, $cdate1);
+		} else {
+			$rsbef =  $this->ITH_mod->select_txhistory_bef_parent($cwh, $citemcd, $cdate1);
+			$rs = $this->ITH_mod->select_txhistory_parent($cwh, $citemcd, $cdate1);
+		}		 			
+		$rstoret = [];
+		$myar = [];
+		if(count($rsbef) >0){
+			foreach($rsbef as $t){
+				$rstoret[] = ['ITRN_ITMCD' => $t['ITRN_ITMCD'], 'ISUDT' => '' , 'MGAQTY' => '', 'WQT' => '',  'MGABAL' => $t['MGAQTY'], 'WBAL' => $t['WQT']];
+				foreach($rs as $r){
+					if($r['ITRN_ITMCD'] == $t['ITRN_ITMCD']) {
+						$rstoret[]= $r;
+					}
+				}
+			}
+			$current_balance = 0;
+			$current_balanceWMS = 0;
+			foreach($rstoret as &$r){
+				if($r['ISUDT'] ==''){
+					$current_balance = $r['MGABAL'];				
+					$current_balanceWMS = $r['WBAL'];				
+				} else {					
+					$r['MGABAL'] = $current_balance+ $r['MGAQTY'];
+					$r['WBAL'] = $current_balanceWMS+ $r['WQT'];
+					$current_balance = $r['MGABAL'];
+					$current_balanceWMS = $r['WBAL'];
+				}
+			}
+			unset($r);
+			$myar[] = ['cd' => 1, 'msg' => 'go ahead'];
+		} else {
+			$myar[] = ['cd' => 0, 'msg' => 'not found'];			
+		}
+		exit('{"status": '.json_encode($myar).', "data" : '.json_encode($rstoret).'}');
 	}	
 	public function gettxhistory_customs(){
 		header('Content-Type: application/json');
@@ -1641,6 +1697,27 @@ class ITH extends CI_Controller {
 			$myar[] = ['cd' => 0,'msg'=> 'there is no transaction'];
 		}
 		die('{"status": '.json_encode($myar).', "data":'.json_encode($rs).'}');
+	}
+
+	public function transaction() 
+	{
+		header('Content-Type: application/json');
+		$fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT'];
+		$date = $this->input->get('date');
+		$item = $this->input->get('item');
+		$location = $this->input->get('location');
+		if(in_array($location, $fg_wh)){
+			$rsParent = $this->XFTRN_mod->select_where(
+				['FTRN_ISUDT ITRN_ISUDT', 'FTRN_DOCNO ITRN_DOCNO', "(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) QTY"]
+				, ['FTRN_ISUDT' => $date, 'FTRN_ITMCD' => $item, 'FTRN_LOCCD' => $location] );
+		} else {
+			$rsParent = $this->XITRN_mod->select_where(
+				['ITRN_ISUDT', 'ITRN_DOCNO', "(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) QTY"]
+				, ['ITRN_ISUDT' => $date, 'ITRN_ITMCD' => $item, 'ITRN_LOCCD' => $location] );
+		}
+		
+		$rsChild = $this->ITH_mod->select_view_where(['ITH_DATEC' => $date, 'ITH_ITMCD' => $item, 'ITH_WH' => $location]);
+		die(json_encode(['parent' => $rsParent, 'child' => $rsChild]));
 	}
 
 	public function get_bcblc_tx(){
@@ -2309,6 +2386,66 @@ class ITH extends CI_Controller {
 		die('{"status":'.json_encode($myar).',"data":'.json_encode($rsadj).'}');
 	}
 
+	public function MEGAToInventory() {
+		header('Content-Type: application/json');
+		date_default_timezone_set('Asia/Jakarta');
+		$current_datetime = date('Y-m-d H:i:s');
+		$cwh = $this->input->post('inwh');
+		$cdate = $this->input->post('indate');
+		$dateObj = new DateTime($cdate);
+		$_MONTH = $dateObj->format('m');
+		$_YEAR = $dateObj->format('Y');
+		$cwh_inv = $cwh;
+		$WHERE = ['INV_MONTH' => $_MONTH, 'INV_YEAR' => $_YEAR, 'INV_WH' => $cwh_inv];
+		$rssaved = $this->RPSAL_INVENTORY_mod->select_compare_where($WHERE);
+		$rs = $this->XICYC_mod->select_for_it_inventory(['ICYC_STKDT' => $cdate, 'ICYC_WHSCD' => $cwh]);
+		$rsadj = [];
+		$ttlupdated = 0;
+		$ttlsaved = 0;
+		$saverows = [];
+		foreach($rs as $r) {
+			$isfound = false;
+			foreach($rssaved as $s){
+				if(strtoupper($r['ITH_ITMCD']) == strtoupper($s['INV_ITMNUM'])){
+					if($r['STOCKQTY']*1 != $s['INV_QTY']*1) {
+						$WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];					
+						$ttlupdated+=$this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY']*1, 'INV_DATE' =>  $cdate], $WHERE );
+					}
+					$isfound = true;
+					break;
+				}
+			}
+			if(!$isfound){
+				$saverows[] = [
+					'INV_ITMNUM' => $r['ITH_ITMCD']
+					,'INV_MONTH' => $WHERE['INV_MONTH']
+					,'INV_YEAR' => $WHERE['INV_YEAR']
+					,'INV_WH' => $cwh == 'AFSMT' ? 'AFWH3' : $cwh
+					,'INV_QTY' => $r['STOCKQTY']*1
+					,'INV_DATE' => $cdate
+					,'created_at' => $current_datetime
+				];
+			}
+		}
+		if(count($saverows)){
+			$ttlsaved = $this->RPSAL_INVENTORY_mod->insertb($saverows);
+		}
+		if($ttlsaved > 0 || $ttlupdated > 0){
+			$myar[] = [
+				'cd' => "1"
+				, 'msg' => 'done, Total saved : '.$ttlsaved.' , Total updated :'.$ttlupdated
+				,'rs' => $rs
+			];
+		} else {
+			$myar[] = [
+				'cd' => "1"
+				, 'msg' => 'done, nothing changes'
+				,'data' => $saverows
+			];
+		}
+		die('{"status":'.json_encode($myar).',"data":'.json_encode($rsadj).'}');
+	}
+
 	public function tesics() {
 		header('Content-Type: application/json');
 		$rs = $this->RCV_mod->select_ics(['211313600'], '2021-04-30');
@@ -2624,5 +2761,13 @@ class ITH extends CI_Controller {
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
 		header('Cache-Control: max-age=0');
 		$writer->save('php://output');
+	}
+
+	public function tx_compare(){
+		$location = $this->input->post('location');
+		$partcode = $this->input->post('partcode');
+		$date = $this->input->post('date');
+
+		
 	}
 }

@@ -1,6 +1,6 @@
 <?php 
-class XITRN_mod extends CI_Model {
-	private $TABLENAME = "XITRN_TBL";
+class XFTRN_mod extends CI_Model {
+	private $TABLENAME = "XFTRN_TBL";
 	public function __construct()
     {
         $this->load->database();
@@ -14,9 +14,9 @@ class XITRN_mod extends CI_Model {
     public function select_where($pcols,$pwhere){
         $this->db->select($pcols);
         $this->db->from($this->TABLENAME)
-        ->join("MITM_TBL", "ITRN_ITMCD=MITM_ITMCD")
+        ->join("MITM_TBL", "FTRN_ITMCD=MITM_ITMCD")
         ->where($pwhere)
-        ->order_by("ITRN_ISUDT");        
+        ->order_by("FTRN_ISUDT");        
 		$query = $this->db->get();
 		return $query->result_array();
     }
