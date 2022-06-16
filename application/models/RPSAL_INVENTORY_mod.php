@@ -36,6 +36,15 @@ class RPSAL_INVENTORY_mod extends CI_Model {
 		$query = $this->DBUse->get();
 		return $query->result_array();
     }
+    public function select_for_compare_mega($pwhere)
+	{
+        $this->DBUse->select("UPPER(RTRIM(INV_ITMNUM)) INV_ITMNUM,SUM(INV_QTY) INV_QTY,UPPER(RTRIM(INV_WH)) INV_WH");
+        $this->DBUse->from($this->TABLENAME);
+        $this->DBUse->where($pwhere);
+        $this->DBUse->group_by("INV_ITMNUM,INV_WH");
+		$query = $this->DBUse->get();
+		return $query->result_array();
+    }
 
     public function updatebyVAR($pdata, $pwhere)
     {        

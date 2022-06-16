@@ -2241,6 +2241,11 @@ class ITH extends CI_Controller {
 		die('{"data":'.json_encode($rs).'}');
 	}
 
+	function form_st_itinventory() 
+	{
+		$this->load->view('wms/vst_itinventory');
+	}
+
 	public function adjust_base_mega() {
 		$this->checkSession();
 		header('Content-Type: application/json');
@@ -2386,6 +2391,14 @@ class ITH extends CI_Controller {
 		die('{"status":'.json_encode($myar).',"data":'.json_encode($rsadj).'}');
 	}
 
+	function inventory_date() {
+		header('Content-Type: application/json');
+		$invYear = $this->input->get('year');
+		$invMonth = $this->input->get('month');
+		$rs = $this->XICYC_mod->select_date(['YEAR(ICYC_STKDT)' => $invYear, 'MONTH(ICYC_STKDT)' => $invMonth]);
+		die(json_encode(['data' => $rs]));
+	}
+
 	public function MEGAToInventory() {
 		header('Content-Type: application/json');
 		date_default_timezone_set('Asia/Jakarta');
@@ -2442,6 +2455,74 @@ class ITH extends CI_Controller {
 				, 'msg' => 'done, nothing changes'
 				,'data' => $saverows
 			];
+		}
+		die('{"status":'.json_encode($myar).',"data":'.json_encode($rsadj).'}');
+	}
+
+	public function MEGAAllLocationToInventory() {
+		header('Content-Type: application/json');
+		date_default_timezone_set('Asia/Jakarta');
+		ini_set('max_execution_time', '-1');
+		$current_datetime = date('Y-m-d H:i:s');		
+		$cdate = $this->input->post('indate');
+		$dateObj = new DateTime($cdate);
+		$_MONTH = $dateObj->format('m');
+		$_YEAR = $dateObj->format('Y');		
+		$WHERE = ['INV_MONTH' => $_MONTH, 'INV_YEAR' => $_YEAR];
+		$rssaved = $this->RPSAL_INVENTORY_mod->select_for_compare_mega($WHERE);
+		$rs = $this->XICYC_mod->select_for_it_inventory(['ICYC_STKDT' => $cdate]);
+		$rsadj = [];
+		$ttlupdated = 0;
+		$ttlsaved = 0;
+		$saverows = [];
+		foreach($rs as $r) {
+			$isfound = false;
+			foreach($rssaved as $s){
+				if($r['ITH_ITMCD'] === $s['INV_ITMNUM'] && $r['ICYC_WHSCD']===$s['INV_WH']){
+					if($r['STOCKQTY']*1 != $s['INV_QTY']*1) {
+						$WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];
+						$WHERE['INV_WH'] = $s['INV_WH'];
+						$ttlupdated+=$this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY']*1, 'INV_DATE' =>  $cdate], $WHERE );
+					}
+					$isfound = true;
+					break;
+				}
+			}
+			if(!$isfound){
+				$saverows[] = [
+					'INV_ITMNUM' => $r['ITH_ITMCD']
+					,'INV_MONTH' => $WHERE['INV_MONTH']
+					,'INV_YEAR' => $WHERE['INV_YEAR']
+					,'INV_WH' => $r['ICYC_WHSCD'] == 'AFSMT' ? 'AFWH3' : $r['ICYC_WHSCD']
+					,'INV_QTY' => $r['STOCKQTY']*1
+					,'INV_DATE' => $cdate
+					,'created_at' => $current_datetime
+				];
+			}
+		}
+		if(count($saverows)){
+			$ttlsaved = $this->RPSAL_INVENTORY_mod->insertb($saverows);
+		}
+		if($ttlsaved > 0 || $ttlupdated > 0){
+			$myar[] = [
+				'cd' => "1"
+				,'msg' => 'Uploaded successfully'
+				,'rs' => $rs
+			];
+		} else {
+			if(count($rs)) {
+				$myar[] = [
+					'cd' => "1"
+					,'msg' => 'done, nothing changes'
+					,'data' => $saverows
+				];
+			} else {
+				$myar[] = [
+					'cd' => "0"
+					,'msg' => 'Stock taking on '.$cdate.' is empty'
+					,'data' => $saverows
+				];
+			}
 		}
 		die('{"status":'.json_encode($myar).',"data":'.json_encode($rsadj).'}');
 	}
