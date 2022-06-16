@@ -2513,7 +2513,7 @@ class ITH extends CI_Controller {
 			if(count($rs)) {
 				$myar[] = [
 					'cd' => "1"
-					,'msg' => 'done, nothing changes'
+					,'msg' => 'nothing changes'
 					,'data' => $saverows
 				];
 			} else {
