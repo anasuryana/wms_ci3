@@ -27,6 +27,7 @@ class RCV extends CI_Controller {
 		$this->load->model('ITH_mod');
 		$this->load->model('FIFORM_mod');
 		$this->load->model('XSO_mod');
+		$this->load->model('XPGRN_mod');
 		$this->load->model('SI_mod');
 		$this->load->model('DELV_mod');
 		$this->load->model('STKTRN_mod');
@@ -502,7 +503,8 @@ class RCV extends CI_Controller {
 						'RCV_TAXINVOICE' => $h_tax_invoice,
 						'RCV_BSGRP' => $h_bisgrup,
 						'RCV_LUPDT' => date('Y-m-d H:i:s'),
-						'RCV_USRID' => $this->session->userdata('nama')
+						'RCV_USRID' => $this->session->userdata('nama'),
+						'RCV_CREATEDBY' => $this->session->userdata('nama')
 					];
 					$ttlupdated+= $this->RCV_mod->updatebyVAR($datau, $dataw);
 				} else {
@@ -543,7 +545,8 @@ class RCV extends CI_Controller {
 						'RCV_CONADT' => $h_mconaDate == '' ? NULL : $h_mconaDate,
 						'RCV_BSGRP' => $h_bisgrup,
 						'RCV_LUPDT' => date('Y-m-d H:i:s'),
-						'RCV_USRID' => $this->session->userdata('nama')
+						'RCV_USRID' => $this->session->userdata('nama'),
+						'RCV_CREATEDBY' => $this->session->userdata('nama')
 					];
 					$lastLine++;
 				}
@@ -591,7 +594,8 @@ class RCV extends CI_Controller {
 					'RCV_CONADT' => $h_mconaDate == '' ? NULL : $h_mconaDate,
 					'RCV_BSGRP' => $h_bisgrup,					
 					'RCV_LUPDT' => date('Y-m-d H:i:s'),
-					'RCV_USRID' => $this->session->userdata('nama')
+					'RCV_USRID' => $this->session->userdata('nama'),
+					'RCV_CREATEDBY' => $this->session->userdata('nama')
 				];
 			}
 			if(count($datas)) {
@@ -768,7 +772,8 @@ class RCV extends CI_Controller {
 						'RCV_INVNO' => $h_minvNo,
 						'RCV_BSGRP' => $h_bisgrup,
 						'RCV_LUPDT' => date('Y-m-d H:i:s'),
-						'RCV_USRID' => $this->session->userdata('nama')
+						'RCV_USRID' => $this->session->userdata('nama'),
+						'RCV_CREATEDBY' => $this->session->userdata('nama')
 					];
 					$ttlupdated+= $this->RCV_mod->updatebyVAR($datau, $dataw);
 				} else {
@@ -802,7 +807,8 @@ class RCV extends CI_Controller {
 						'RCV_ZNOURUT' => $d_nourut[$i],						
 						'RCV_BSGRP' => $h_bisgrup,
 						'RCV_LUPDT' => date('Y-m-d H:i:s'),
-						'RCV_USRID' => $this->session->userdata('nama')
+						'RCV_USRID' => $this->session->userdata('nama'),
+						'RCV_CREATEDBY' => $this->session->userdata('nama')
 					];
 					$lastLine++;
 				}
@@ -843,7 +849,8 @@ class RCV extends CI_Controller {
 					'RCV_ZNOURUT' => $d_nourut[$i],					
 					'RCV_BSGRP' => $h_bisgrup,					
 					'RCV_LUPDT' => date('Y-m-d H:i:s'),
-					'RCV_USRID' => $this->session->userdata('nama')
+					'RCV_USRID' => $this->session->userdata('nama'),
+					'RCV_CREATEDBY' => $this->session->userdata('nama')
 				];
 			}
 			if(count($datas)) {
@@ -894,7 +901,13 @@ class RCV extends CI_Controller {
 		$cpph		= $this->input->post('inpph');
 		$cnourut	= $this->input->post('innomorurut');
 		$cstsrcv	= $this->input->post('instsrcv');
-		
+
+		$rsPGRN = $this->XPGRN_mod->selec_where_group(['RTRIM(PGRN_USRID) PGRN_USRID'], 'PGRN_USRID', ['PGRN_SUPNO' => $cdo]);
+		$MEGAUser = '';
+		foreach($rsPGRN as $r) {
+			$MEGAUser = $r->PGRN_USRID;
+		}
+
 		$myctr_edited = 0;
 		$myctr_saved = 0;		
 		if(is_array($cpo)){
@@ -931,9 +944,9 @@ class RCV extends CI_Controller {
 						'RCV_PPH' => $cpph[$i],
 						'RCV_ZNOURUT' => $cnourut[$i],
 						'RCV_CONA' => $cconaNum,
-						'RCV_BSGRP' => $cbisgrup,
-						//'RCV_LUPDT' => $currrtime,
-						'RCV_USRID' => $this->session->userdata('nama')
+						'RCV_BSGRP' => $cbisgrup,						
+						'RCV_USRID' => $this->session->userdata('nama'),
+						'RCV_CREATEDBY' => $MEGAUser
 					];					
 					$cret = $this->RCV_mod->updatebyVAR($datau, $dataw);
 					$myctr_edited += $cret;					
@@ -968,17 +981,13 @@ class RCV extends CI_Controller {
 						'RCV_CONA' => $cconaNum,
 						'RCV_BSGRP' => $cbisgrup,
 						'RCV_LUPDT' => $currrtime,
-						'RCV_USRID' => $this->session->userdata('nama')
+						'RCV_USRID' => $this->session->userdata('nama'),
+						'RCV_CREATEDBY' => $MEGAUser
 					];
 					$cret = $this->RCV_mod->insert($datas);					
 					$myctr_saved +=  $cret;
 				}
-			}
-			// if(trim($cwh[0])=='AIWH1'){
-				// $this->toITH(['DOC' => $cdo, 'WH' => trim($cwh[0])
-				// , 'DATE' => $cbcdate , 'LUPDT' => $cbcdate.' 07:01:00'
-				// , 'USRID' => $this->session->userdata('nama')]);
-			// }
+			}		
 		} else {
 			$dataw = [
 				'RCV_PO' => $cpo,
@@ -1010,19 +1019,12 @@ class RCV extends CI_Controller {
 					'RCV_BM' => $cbm,
 					'RCV_PPN' => $cppn,
 					'RCV_PPH' => $cpph,
-					'RCV_ZNOURUT' => $cnourut,
-					//'RCV_LUPDT' => $currrtime,
-					'RCV_USRID' => $this->session->userdata('nama')
+					'RCV_ZNOURUT' => $cnourut,					
+					'RCV_USRID' => $this->session->userdata('nama'),
+					'RCV_CREATEDBY' => $MEGAUser
 				];
 				$cret = $this->RCV_mod->updatebyVAR($datau, $dataw);
-				$myctr_edited += $cret;
-				// if($cret>0){
-				// 	$currTM = date('H:i:s');
-				// 	$mdataw = array('FIFORM_DT' => $cdodt, 'FIFORM_BCTYPE' => $cbctype, 'FIFORM_NOAJU' => $caju , 'FIFORM_ITMCD' => $citem);
-				// 	$mdatas = array('FIFORM_DT' => $cdodt, 'FIFORM_BCTYPE' => $cbctype, 'FIFORM_NOAJU' => $caju, 'FIFORM_NOPEN' => $cregno, 'FIFORM_ITMCD' => $citem, 'FIFORM_QTY' => $cqty[$i], 'FIFORM_TM' => $currTM);
-				// 	$mdatau	= array('FIFORM_NOPEN' => $cregno, 'FIFORM_QTY' => $cqty);
-				// 	$this->storeto_fiform($mdataw, $mdatas, $mdatau);
-				// }
+				$myctr_edited += $cret;				
 			} else {
 				$datas = [
 					'RCV_PO' => $cpo,
@@ -1052,26 +1054,18 @@ class RCV extends CI_Controller {
 					'RCV_PPH' => $cpph,
 					'RCV_ZNOURUT' => $cnourut,
 					'RCV_LUPDT' => $currrtime,
-					'RCV_USRID' => $this->session->userdata('nama')
+					'RCV_USRID' => $this->session->userdata('nama'),
+					'RCV_CREATEDBY' => $MEGAUser
 				];
-				$cret = 	$this->RCV_mod->insert($datas);
-				$myctr_saved +=  $cret;
-				// if($cret>0){
-				// 	$currTM = date('H:i:s');
-				// 	$mdataw = array('FIFORM_DT' => $cdodt, 'FIFORM_BCTYPE' => $cbctype, 'FIFORM_NOAJU' => $caju , 'FIFORM_ITMCD' => $citem);
-				// 	$mdatas = array('FIFORM_DT' => $cdodt, 'FIFORM_BCTYPE' => $cbctype, 'FIFORM_NOAJU' => $caju, 'FIFORM_NOPEN' => $cregno, 'FIFORM_ITMCD' => $citem, 'FIFORM_QTY' => $cqty[$i], 'FIFORM_TM' => $currTM);
-				// 	$mdatau	= array('FIFORM_NOPEN' => $cregno, 'FIFORM_QTY' => $cqty);
-				// 	$this->storeto_fiform($mdataw, $mdatas, $mdatau);
-				// }
+				$cret = $this->RCV_mod->insert($datas);
+				$myctr_saved +=  $cret;				
 			}
 		}
 
 		$this->toITH(['DOC' => $cdo, 'WH' => $cwh[0]
 		, 'DATE' => $cbcdate , 'LUPDT' => $cbcdate.' 07:01:00'
 		, 'USRID' => $this->session->userdata('nama')]);
-
-		
-		
+				
 		$catccc =$this->gotoque($cdo);
 		$myar = [];	
 		$myar[] = ["cd" => "1"
