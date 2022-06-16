@@ -1517,21 +1517,14 @@ class DELV extends CI_Controller {
 							'ITH_LUPTD' => $time->format('Y-m-d H:i:s'),
 							'ITH_USRID' => $r['ITH_USRID']
 						];
-					}
-					$this->ITH_mod->insertb($datas);
+					}					
 				}
-				
-	
-				
-				$result = 0;
+													
 				$myar[] = 
 				[
 					'FormWH' => $FormWH, '$rsForITH' => $rsForITH, 'rsITHCurrent' => $rsITHCurrent
 					,'datas' => $datas
-				];
-				#KI Comment
-				#Should improve this function
-				// $myar[] = $result ? ['cd' => '1', 'msg' => 'Deleted'] : ['cd' => '0' , 'msg' => 'could not be deleted'];
+				];				
 			}
 		}
 		die('{"status":'.json_encode($myar).'}');
@@ -3978,7 +3971,7 @@ class DELV extends CI_Controller {
 				$pdf->SetXY(115,240+13);
 				$pdf->Cell(20.55,4,number_format($ttlqty_,0),0,0,'R');
 				$pdf->SetXY(155,240+13);
-				$pdf->Cell(41.56,4,number_format($ttlamount_,0),0,0,'R');
+				$pdf->Cell(41.56,4,number_format($ttlamount_,2),0,0,'R');
 				$pdf->Text(35,240+25,"Non Commercial Value For Customs Purpose Only");
 			} else {
 				$rsrmdoc = $rsrmdocFromSO;
