@@ -747,154 +747,141 @@ class SPL extends CI_Controller {
 					$this->SPL_mod->insert($datac);					
 				}
 			}
-			//BOOK SP & PCB
-			$bookid = '';
-			if($this->SPLBOOK_mod->check_Primary(['SPLBOOK_SPLDOC' => $cpsn])){
-				//handle condition when :
-				// - synchronize in several times - handled
-				// - req. qty is changed
-				// - part code is changed - handled
-				// - PSN is deleted - handled
-				//additional handler should be exist when cancel Kitting
-				// $rsCurrentSPL = $this->SPL_mod->select_per_category([$cpsn], ['PCB','SP']);
-				$rsBOOK = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_SPLDOC' => $cpsn]);
-				$rsDiff = $this->SPL_mod->select_booked_spl_diff($cpsn);
+			// //BOOK SP & PCB
+			// $bookid = '';
+			// if($this->SPLBOOK_mod->check_Primary(['SPLBOOK_SPLDOC' => $cpsn])){
+			// 	//handle condition when :
+			// 	// - synchronize in several times - handled
+			// 	// - req. qty is changed
+			// 	// - part code is changed - handled
+			// 	// - PSN is deleted - handled
+			// 	//additional handler should be exist when cancel Kitting
+			// 	// $rsCurrentSPL = $this->SPL_mod->select_per_category([$cpsn], ['PCB','SP']);
+			// 	$rsBOOK = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_SPLDOC' => $cpsn]);
+			// 	$rsDiff = $this->SPL_mod->select_booked_spl_diff($cpsn);
 				
-				$bookline = 0;
-				foreach($rsBOOK as $r){
-					$bookid = $r['SPLBOOK_DOC'];
-					if($bookline<$r['SPLBOOK_LINE']){
-						$bookline = $r['SPLBOOK_LINE'];
-					}
-				}
-				$bookline++;
-
-				# handle condition when there are changes in qty
-				// foreach($rsBOOK as &$b){
-				// 	foreach($rsCurrentSPL as $c){
-				// 		if($b['SPLBOOK_SPLDOC'] == $c['SPL_DOC'] && $b['SPLBOOK_ITMCD'] == $c['SPL_ITMCD']) {
-				// 			if($b['SPLBOOK_QTY']!=$c['RQT'])
-				// 			break;
-				// 		}
-				// 	}
-				// }
-				// unset($b);
-				# end handle
-
-				$datas =[];
-				foreach($rsDiff as $r){
-					if(!$r['SPLBOOK_ITMCD']){
-						# handle condition when part code is exist in SPL but it is not exist in BOOK
-						$datas[] = [
-							'SPLBOOK_DOC' => $bookid,
-							'SPLBOOK_SPLDOC' => $cpsn,
-							'SPLBOOK_CAT' => $r['SPL_CAT'],
-							'SPLBOOK_ITMCD' => $r['SPL_ITMCD'],
-							'SPLBOOK_QTY' => $r['RQT'],
-							'SPLBOOK_DATE' => $bookdate,
-							'SPLBOOK_LINE' => $bookline++,
-							'SPLBOOK_LUPDTD' => $currrtime,
-							'SPLBOOK_USRID' => $this->session->userdata('nama')
-						];
-						# end handle 
-					} else {
-						# handle condition when part code is exist in BOOK but it is not exist in SPL
-						$this->SPLBOOK_mod->deleteby_filter(['SPLBOOK_SPLDOC' => $cpsn, 'SPLBOOK_ITMCD' => $r['SPLBOOK_ITMCD']]);
-						$this->ITH_mod->deletebyID(['ITH_REMARK' => $cpsn, 'ITH_ITMCD' => $r['SPLBOOK_ITMCD']]);
-						# end handle
-					}
-				}
-				if(count($datas)>0)	{
-					$this->SPLBOOK_mod->insertb($datas);
-				}
-			} else {
-				$datas = [];
-				//handle condition When User Booked list is not exist
-				$rsready = $this->SPLSCN_mod->select_ready_book(['SPL_DOC' => $cpsn]);
-				$lastbookid = $this->SPLBOOK_mod->lastserialid($bookdate)+1;
-				$newdoc = 'B'.$_year.$this->AMONTHPATRN[($_month-1)].$_date.$lastbookid;				
-				$i=1;
-				foreach($rsready as $r){
-					if(!$this->SPLBOOK_mod->check_Primary(['SPLBOOK_SPLDOC' => $cpsn,'SPLBOOK_ITMCD' => $r['SPL_ITMCD']])){
-						$datas[] = [
-							'SPLBOOK_DOC' => $newdoc,
-							'SPLBOOK_SPLDOC' => $cpsn,
-							'SPLBOOK_CAT' => $r['SPL_CAT'],
-							'SPLBOOK_ITMCD' => $r['SPL_ITMCD'],
-							'SPLBOOK_QTY' => $r['BALQT'],
-							'SPLBOOK_DATE' => $bookdate,
-							'SPLBOOK_LINE' => $i++,
-							'SPLBOOK_LUPDTD' => $currrtime,
-							'SPLBOOK_USRID' => $this->session->userdata('nama')
-						];
-					}
-				}
-				$bookid = $newdoc;
-				if(count($datas)){
-					$this->SPLBOOK_mod->insertb($datas);
-				}
-			}
-			///ITH///		
-			$rs = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_DOC' => $bookid]);
-			$this->ITH_mod->deletebyID(['ITH_DOC' => $bookid, 'ITH_FORM' => 'BOOK-SPL-1']);		
-			$ith_data = [];
-			$psnlist = [];
-			foreach($rs as $r){
-				if(!in_array($r['SPLBOOK_SPLDOC'], $psnlist)){
-					$psnlist[] = $r['SPLBOOK_SPLDOC'];
-				}
-			}
-			if(count($psnlist)){
-				$rsbg = $this->SPL_mod->select_bg_psn($psnlist);
-				foreach($rs as $r){
-					$wh = NULL;
-					foreach($rsbg as $b){
-						if($r['SPLBOOK_SPLDOC']==$b['SPL_DOC']){
-							switch($b['SPL_BG']){
-								case 'PSI1PPZIEP':
-									$wh = 'ARWH1';							
-									break;
-								case 'PSI2PPZADI':
-									$wh = 'ARWH2';							
-									break;
-								case 'PSI2PPZINS':
-									$wh = 'NRWH2';							
-									break;
-								case 'PSI2PPZOMC':
-									$wh = 'NRWH2';							
-									break;
-								case 'PSI2PPZOMI':
-									$wh = 'ARWH2';							
-									break;
-								case 'PSI2PPZSSI':
-									$wh = 'NRWH2';							
-									break;
-								case 'PSI2PPZSTY':
-									$wh = 'ARWH2';							
-									break;
-								case 'PSI2PPZTDI':
-									$wh = 'ARWH2';							
-									break;
-							}
-							break;
-						}
-					}
-					$ith_data[] = [
-						'ITH_ITMCD' => $r['SPLBOOK_ITMCD'],
-						'ITH_DATE' => $bookdate,
-						'ITH_FORM' => 'BOOK-SPL-1',
-						'ITH_DOC' => $bookid,
-						'ITH_QTY' => -1*$r['SPLBOOK_QTY'],
-						'ITH_WH' => $wh,
-						'ITH_REMARK' => $r['SPLBOOK_SPLDOC'],
-						'ITH_LUPDT' => $currrtime,
-						'ITH_USRID' => $this->session->userdata('nama')
-					];
-				}
-				if(count($ith_data)){
-					$this->ITH_mod->insertb($ith_data);
-				}
-			}
+			// 	$bookline = 0;
+			// 	foreach($rsBOOK as $r){
+			// 		$bookid = $r['SPLBOOK_DOC'];
+			// 		if($bookline<$r['SPLBOOK_LINE']){
+			// 			$bookline = $r['SPLBOOK_LINE'];
+			// 		}
+			// 	}
+			// 	$bookline++;				
+			// 	$datas =[];
+			// 	foreach($rsDiff as $r){
+			// 		if(!$r['SPLBOOK_ITMCD']){
+			// 			# handle condition when part code is exist in SPL but it is not exist in BOOK
+			// 			$datas[] = [
+			// 				'SPLBOOK_DOC' => $bookid,
+			// 				'SPLBOOK_SPLDOC' => $cpsn,
+			// 				'SPLBOOK_CAT' => $r['SPL_CAT'],
+			// 				'SPLBOOK_ITMCD' => $r['SPL_ITMCD'],
+			// 				'SPLBOOK_QTY' => $r['RQT'],
+			// 				'SPLBOOK_DATE' => $bookdate,
+			// 				'SPLBOOK_LINE' => $bookline++,
+			// 				'SPLBOOK_LUPDTD' => $currrtime,
+			// 				'SPLBOOK_USRID' => $this->session->userdata('nama')
+			// 			];
+			// 			# end handle 
+			// 		} else {
+			// 			# handle condition when part code is exist in BOOK but it is not exist in SPL
+			// 			$this->SPLBOOK_mod->deleteby_filter(['SPLBOOK_SPLDOC' => $cpsn, 'SPLBOOK_ITMCD' => $r['SPLBOOK_ITMCD']]);
+			// 			$this->ITH_mod->deletebyID(['ITH_REMARK' => $cpsn, 'ITH_ITMCD' => $r['SPLBOOK_ITMCD']]);
+			// 			# end handle
+			// 		}
+			// 	}
+			// 	if(count($datas)>0)	{
+			// 		$this->SPLBOOK_mod->insertb($datas);
+			// 	}
+			// } else {
+			// 	$datas = [];
+			// 	//handle condition When User Booked list is not exist
+			// 	$rsready = $this->SPLSCN_mod->select_ready_book(['SPL_DOC' => $cpsn]);
+			// 	$lastbookid = $this->SPLBOOK_mod->lastserialid($bookdate)+1;
+			// 	$newdoc = 'B'.$_year.$this->AMONTHPATRN[($_month-1)].$_date.$lastbookid;				
+			// 	$i=1;
+			// 	foreach($rsready as $r){
+			// 		if(!$this->SPLBOOK_mod->check_Primary(['SPLBOOK_SPLDOC' => $cpsn,'SPLBOOK_ITMCD' => $r['SPL_ITMCD']])){
+			// 			$datas[] = [
+			// 				'SPLBOOK_DOC' => $newdoc,
+			// 				'SPLBOOK_SPLDOC' => $cpsn,
+			// 				'SPLBOOK_CAT' => $r['SPL_CAT'],
+			// 				'SPLBOOK_ITMCD' => $r['SPL_ITMCD'],
+			// 				'SPLBOOK_QTY' => $r['BALQT'],
+			// 				'SPLBOOK_DATE' => $bookdate,
+			// 				'SPLBOOK_LINE' => $i++,
+			// 				'SPLBOOK_LUPDTD' => $currrtime,
+			// 				'SPLBOOK_USRID' => $this->session->userdata('nama')
+			// 			];
+			// 		}
+			// 	}
+			// 	$bookid = $newdoc;
+			// 	if(count($datas)){
+			// 		$this->SPLBOOK_mod->insertb($datas);
+			// 	}
+			// }
+			// ///ITH///		
+			// $rs = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_DOC' => $bookid]);
+			// $this->ITH_mod->deletebyID(['ITH_DOC' => $bookid, 'ITH_FORM' => 'BOOK-SPL-1']);		
+			// $ith_data = [];
+			// $psnlist = [];
+			// foreach($rs as $r){
+			// 	if(!in_array($r['SPLBOOK_SPLDOC'], $psnlist)){
+			// 		$psnlist[] = $r['SPLBOOK_SPLDOC'];
+			// 	}
+			// }
+			// if(count($psnlist)){
+			// 	$rsbg = $this->SPL_mod->select_bg_psn($psnlist);
+			// 	foreach($rs as $r){
+			// 		$wh = NULL;
+			// 		foreach($rsbg as $b){
+			// 			if($r['SPLBOOK_SPLDOC']==$b['SPL_DOC']){
+			// 				switch($b['SPL_BG']){
+			// 					case 'PSI1PPZIEP':
+			// 						$wh = 'ARWH1';							
+			// 						break;
+			// 					case 'PSI2PPZADI':
+			// 						$wh = 'ARWH2';							
+			// 						break;
+			// 					case 'PSI2PPZINS':
+			// 						$wh = 'NRWH2';							
+			// 						break;
+			// 					case 'PSI2PPZOMC':
+			// 						$wh = 'NRWH2';							
+			// 						break;
+			// 					case 'PSI2PPZOMI':
+			// 						$wh = 'ARWH2';							
+			// 						break;
+			// 					case 'PSI2PPZSSI':
+			// 						$wh = 'NRWH2';							
+			// 						break;
+			// 					case 'PSI2PPZSTY':
+			// 						$wh = 'ARWH2';							
+			// 						break;
+			// 					case 'PSI2PPZTDI':
+			// 						$wh = 'ARWH2';							
+			// 						break;
+			// 				}
+			// 				break;
+			// 			}
+			// 		}
+			// 		$ith_data[] = [
+			// 			'ITH_ITMCD' => $r['SPLBOOK_ITMCD'],
+			// 			'ITH_DATE' => $bookdate,
+			// 			'ITH_FORM' => 'BOOK-SPL-1',
+			// 			'ITH_DOC' => $bookid,
+			// 			'ITH_QTY' => -1*$r['SPLBOOK_QTY'],
+			// 			'ITH_WH' => $wh,
+			// 			'ITH_REMARK' => $r['SPLBOOK_SPLDOC'],
+			// 			'ITH_LUPDT' => $currrtime,
+			// 			'ITH_USRID' => $this->session->userdata('nama')
+			// 		];
+			// 	}
+			// 	if(count($ith_data)){
+			// 		$this->ITH_mod->insertb($ith_data);
+			// 	}
+			// }
 			//END BOOK
 			echo '{"data":'.json_encode($rs).',"status": '.json_encode($mystatus).'}';
 		} else {
