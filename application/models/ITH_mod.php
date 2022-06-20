@@ -50,6 +50,11 @@ class ITH_mod extends CI_Model {
         $this->db->insert_batch($this->TABLENAME,$data);
         return $this->db->affected_rows();
     }
+	public function insertb_bin($data)
+    {
+        $this->db->insert_batch($this->TABLENAME_BIN,$data);
+        return $this->db->affected_rows();
+    }
 
 	public function insert_incdo($data)
     {
@@ -261,7 +266,7 @@ class ITH_mod extends CI_Model {
 
 	public function select_view_where($Pwhere){
 		$this->db->from('v_ith_tblc');
-        $this->db->where($Pwhere);		        
+        $this->db->where($Pwhere);
 		$query = $this->db->get();
 		return $query->result_array();
 	}
@@ -357,6 +362,23 @@ class ITH_mod extends CI_Model {
 	public function select_psi_stock_date_wbg($wh, $item, $pdate){
 		$qry = "wms_sp_std_stock_wbg ?, ?, ?";	
 		$query =  $this->db->query($qry, [$wh,$item,$pdate] );		
+		return $query->result_array();
+	}
+
+	function select_abnormal_kitting_tx($pDate) 
+	{
+		$qry = "wms_sp_abnormal_kitting_tx ?";
+		$query =  $this->db->query($qry, [$pDate] );
+		return $query->result_array();
+	}
+
+	function select_abnormal_kitting_tx_detail($docs, $items, $date) {
+		$this->db->from('v_ith_tblc');
+        $this->db->where_in("ITH_DOC", $docs)->where_in("ITH_ITMCD", $items)
+		->where("ITH_DATEC", $date)
+		->not_like("ITH_FORM", "RET")
+		->order_by("ITH_LUPDT");
+		$query = $this->db->get();
 		return $query->result_array();
 	}
 

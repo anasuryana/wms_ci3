@@ -2552,6 +2552,204 @@ class ITH extends CI_Controller {
 	}
 	public function form_report_kka_mega(){
 		$this->load->view('wms_report/vkka_mega');
+	}	
+	
+	function sync_abnormal_transaction($pdate){
+		date_default_timezone_set('Asia/Jakarta');
+		$dateTimesBin = date('Y-m-d H:i:s');
+		$date = $pdate;
+		$rs = $this->ITH_mod->select_abnormal_kitting_tx($date);
+		$adocs = [];
+		$aitems = [];
+		$isExist = false;
+		$myar = [];
+		$rsPatch = [];
+		$rsPatchBin = [];
+		foreach($rs as $r) {
+			if(!in_array($r['ITH_DOC'], $adocs)) {
+				$adocs[] = $r['ITH_DOC'];
+				$isExist = true;
+			}
+			if(!in_array($r['ITH_ITMCD'], $aitems)) {
+				$aitems[] = $r['ITH_ITMCD'];
+				$isExist = true;
+			}
+		}
+		if($isExist) {
+			$qtylist = [];
+			$rsdetail = $this->ITH_mod->select_abnormal_kitting_tx_detail($adocs, $aitems, $date);
+			foreach($rs as $r) {
+				if($r['TTLROWS']===1){
+					foreach($rsdetail as $d) {
+						if($r['ITH_ITMCD'] === trim($d['ITH_ITMCD']) && $r['ITH_DOC'] === trim($d['ITH_DOC'])) {
+							$wh = '_';
+							switch(trim($d['ITH_WH'])){
+								case 'PLANT1' :
+									$wh = 'ARWH1';break;
+								case 'ARWH1':
+									$wh = 'PLANT1';break;
+								case 'PLANT2':
+									$wh = 'ARWH2';break;
+								case 'ARWH2':
+									$wh = 'PLANT2';break;
+							}							
+							$rsPatch[] = [
+								'ITH_ITMCD' => $r['ITH_ITMCD'],
+								'ITH_DATE' => $d['ITH_DATE'],
+								'ITH_FORM' => $d['ITH_FORM']==='INC-PRD-RM' ? 'OUT-WH-RM' : 'INC-PRD-RM',
+								'ITH_DOC' => $r['ITH_DOC'],
+								'ITH_QTY' => $d['ITH_QTY']*-1,
+								'ITH_WH' => $wh,
+								'ITH_LUPDT' => $d['ITH_LUPDT'],
+								'ITH_USRID' => $d['ITH_USRID']
+							];
+							$rsPatchBin[] = [
+								'ITH_ITMCD' => $r['ITH_ITMCD'],
+								'ITH_DATE' => $d['ITH_DATE'],
+								'ITH_FORM' => $d['ITH_FORM']==='INC-PRD-RM' ? 'OUT-WH-RM' : 'INC-PRD-RM',
+								'ITH_DOC' => $r['ITH_DOC'],
+								'ITH_QTY' => $d['ITH_QTY']*-1,
+								'ITH_WH' => $wh,
+								'ITH_LUPDT' => $d['ITH_LUPDT'],
+								'ITH_USRID' => $d['ITH_USRID'],
+								'ITH_LUPDTBIN' => $dateTimesBin,
+								'ITH_REASON' => 'PATCH'
+							];
+							break;
+						}						
+					}
+				} else {										
+					foreach($rsdetail as $d) {
+						if($r['ITH_ITMCD'] === trim($d['ITH_ITMCD']) && $r['ITH_DOC'] === trim($d['ITH_DOC'])) {
+							$isfound = false;
+							foreach($qtylist as &$n) {
+								if($r['ITH_DOC'] === $n['ITH_DOC'] 
+								&& $r['ITH_ITMCD'] === $n['ITH_ITMCD']
+								&& abs($d['ITH_QTY']) === abs($n['ITH_QTY'])) {
+									$n['COUNTQT']++; 
+									$isfound = true;
+									break;
+								}
+							}
+							unset($n);
+							if(!$isfound) {
+								$qtylist[] = [
+									'ITH_ITMCD' => $r['ITH_ITMCD'],
+									'ITH_DOC' => $r['ITH_DOC'],
+									'ITH_QTY' => abs($d['ITH_QTY']),
+									'COUNTQT' => 1
+								];
+							}
+						}
+					}
+				}
+			}
+
+			# patch for TTLROWS !=1
+			$rs2 = array_filter($qtylist, function($value){
+				return ($value['COUNTQT']==1);
+			});
+
+			# apply patch
+			foreach($rs2 as $r) {
+				foreach($rsdetail as $d) {
+					if($r['ITH_ITMCD'] === trim($d['ITH_ITMCD']) && $r['ITH_DOC'] === trim($d['ITH_DOC']) 
+						&& abs($r['ITH_QTY']) === abs($d['ITH_QTY'])
+						){
+						$wh = '_';
+						switch(trim($d['ITH_WH'])){
+							case 'PLANT1' :
+								$wh = 'ARWH1';break;
+							case 'ARWH1':
+								$wh = 'PLANT1';break;
+							case 'PLANT2':
+								$wh = 'ARWH2';break;
+							case 'ARWH2':
+								$wh = 'PLANT2';break;
+						}
+						$rsPatch[] = [
+							'ITH_ITMCD' => $r['ITH_ITMCD'],
+							'ITH_DATE' => $d['ITH_DATE'],
+							'ITH_FORM' => $d['ITH_FORM']==='INC-PRD-RM' ? 'OUT-WH-RM' : 'INC-PRD-RM',
+							'ITH_DOC' => $r['ITH_DOC'],
+							'ITH_QTY' => $d['ITH_QTY']*-1,
+							'ITH_WH' => $wh,
+							'ITH_LUPDT' => $d['ITH_LUPDT'],
+							'ITH_USRID' => $d['ITH_USRID'],							
+						];
+						$rsPatchBin[] = [
+							'ITH_ITMCD' => $r['ITH_ITMCD'],
+							'ITH_DATE' => $d['ITH_DATE'],
+							'ITH_FORM' => $d['ITH_FORM']==='INC-PRD-RM' ? 'OUT-WH-RM' : 'INC-PRD-RM',
+							'ITH_DOC' => $r['ITH_DOC'],
+							'ITH_QTY' => $d['ITH_QTY']*-1,
+							'ITH_WH' => $wh,
+							'ITH_LUPDT' => $d['ITH_LUPDT'],
+							'ITH_USRID' => $d['ITH_USRID'],
+							'ITH_LUPDTBIN' => $dateTimesBin,
+							'ITH_REASON' => 'PATCH'
+						];
+						break;
+					}
+				}
+			}	
+			
+			if(!empty($rsPatchBin)) {
+				$this->ITH_mod->insertb_bin($rsPatchBin);
+				$this->ITH_mod->insertb($rsPatch);
+			}
+
+			$myar[] = ['cd' => '1', 'mst' => 'ready to be inserted'
+			, 'data' => $rsPatch
+			, '$rs' => $rs
+			, '$rsdetail' => $rsdetail
+			, 'rs2' => $rs2
+			, 'qtylist' => $qtylist
+			];
+		} else {
+			$myar[] = ['cd' => '1', 'msg' => 'ok'];
+		}
+		return ['status' => $myar];
+	}
+
+	function sync_today_abnormal_transaction() {
+		header('Content-Type: application/json');
+		date_default_timezone_set('Asia/Jakarta');
+		$date = date('Y-m-d');
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, start, sync abnomral tx (today)');
+		$result = $this->sync_abnormal_transaction($date);
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, finish');
+		die(json_encode($result));
+	}
+
+	function sync_yesterday_abnormal_transaction(){
+		header('Content-Type: application/json');
+		date_default_timezone_set('Asia/Jakarta');
+		$date = date('Y-m-d',strtotime("-1 days"));
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, start, sync abnomral tx (yesterday)');
+		$result = $this->sync_abnormal_transaction($date);
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, finish');
+		die(json_encode($result));
+	}
+
+	function validateDate($date, $format = 'Y-m-d')
+	{
+		$d = DateTime::createFromFormat($format, $date);
+		// The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
+		return $d && $d->format($format) === $date;
+	}
+
+	function sync_atdate_abnormal_transaction(){
+		header('Content-Type: application/json');
+		date_default_timezone_set('Asia/Jakarta');
+		$date = $this->input->get('date');
+		if(!$this->validateDate($date)) {
+			die('valid date is required');
+		}
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, start, sync abnomral tx ('.$date.')');
+		$result = $this->sync_abnormal_transaction($date);
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, finish');
+		die(json_encode($result));
 	}
 
 	function report_kka_mega(){
