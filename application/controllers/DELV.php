@@ -4169,6 +4169,14 @@ class DELV extends CI_Controller {
 							$r['PLOTQT']+=$reqbal;
 							$x['RCV_QTY']-=$reqbal;
 						}
+						switch(trim($r['MITM_STKUOM'])){
+							case 'GMS':
+								$uom = 'GRM';break;
+							case 'KG':
+								$uom = 'KGM';break;
+							default:
+								$uom = $r['MITM_STKUOM'];
+						}
 						$rsfix[] = [
 							'DLVRMDOC_ITMID' => $r['DLVRMDOC_ITMID']
 							,'DLV_ITMD1' => $r['DLV_ITMD1']
@@ -4179,7 +4187,7 @@ class DELV extends CI_Controller {
 							,'DLVRMDOC_AJU' => $r['DLVRMDOC_AJU']
 							,'DLVRMDOC_NOPEN' => $r['DLVRMDOC_NOPEN']
 							,'DLVRMDOC_ITMQT' => $useqt
-							,'MITM_STKUOM' => rtrim($r['MITM_STKUOM'])=='GMS' ? 'GRM' : $r['MITM_STKUOM']
+							,'MITM_STKUOM' => $uom
 							,'RCV_BCDATE' => $x['RCV_BCDATE']
 							,'RCV_BCTYPE' => $x['RCV_BCTYPE']
 							,'MITM_ITMCDCUS' => $r['MITM_ITMCDCUS']
