@@ -532,6 +532,11 @@
             alertify.warning('PSN is required')
             return
         }
+        if(wms_usergroupid=="PCC" || wms_usergroupid=="ADMIN"){                        
+        } else {
+            alertify.warning("Sorry, we could not process, this function is only for specific user group");
+            return;
+        }
         if(confirm("Are you sure ?")) {
             if(confirm("Are you sure want to CANCEL the document ? ")) {
                 p.disabled = true
