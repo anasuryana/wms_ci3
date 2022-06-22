@@ -3900,14 +3900,20 @@ class DELV extends CI_Controller {
 				$no =1;
 				$ttlqty_=0;
 				$ttlamount_ = 0;
-				foreach($rsfixINV as $r) {
+				$isDecimal = false;
+				foreach($rsfixINV as $r) {					
 					switch(trim($r['MITM_STKUOM'])){
 						case 'GMS':
-							$uom = 'GRM';break;
+							$uom = 'GRM';
+							$isDecimal = true;
+							break;
 						case 'KG':
-							$uom = 'KGM';break;
+							$uom = 'KGM';
+							$isDecimal = true;
+							break;
 						default:
 							$uom = $r['MITM_STKUOM'];
+							$isDecimal = false;
 					}
 					if($shouldRound){
 						$amount_ = $r['ITMQT']*round($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
@@ -3949,7 +3955,11 @@ class DELV extends CI_Controller {
 					$pdf->Text(45,$curY+8+$YExtra,trim($r['DLVRMDOC_TYPE']));
 					$pdf->Text(100,$curY,$uom);
 					$pdf->SetXY(110,$curY-3);
-					$pdf->Cell(20.55,4,number_format($r['ITMQT']),0,0,'R');
+					if($isDecimal) {
+						$pdf->Cell(20.55,4,number_format($r['ITMQT'],2),0,0,'R');
+					} else {						
+						$pdf->Cell(20.55,4,number_format($r['ITMQT']),0,0,'R');
+					}
 					if($isYEN){
 						$pdf->SetXY(138,$curY-3);
 						$pdf->Cell(17.5,4,number_format($perprice_,0) ,0,0,'R');
@@ -3977,7 +3987,11 @@ class DELV extends CI_Controller {
 					$ttlamount_ +=$amount_;
 				}
 				$pdf->SetXY(115,240+13);
-				$pdf->Cell(20.55,4,number_format($ttlqty_,0),0,0,'R');
+				if($isDecimal){					
+					$pdf->Cell(20.55,4,number_format($ttlqty_,2),0,0,'R');
+				} else {
+					$pdf->Cell(20.55,4,number_format($ttlqty_,0),0,0,'R');
+				}
 				$pdf->SetXY(155,240+13);
 				$pdf->Cell(41.56,4,number_format($ttlamount_,2),0,0,'R');
 				$pdf->Text(35,240+25,"Non Commercial Value For Customs Purpose Only");
@@ -4086,6 +4100,17 @@ class DELV extends CI_Controller {
 			$TTLQTY=0;
 			$nom = 1;
 			foreach($rs as $r) {
+				switch(trim($r['MITM_STKUOM'])){
+					case 'GMS':						
+						$isDecimal = true;
+						break;
+					case 'KG':						
+						$isDecimal = true;
+						break;
+					default:
+						$uom = $r['MITM_STKUOM'];
+						$isDecimal = false;
+				}
 				if($curY>200){
 					$pdf->AddPage();
 					$pdf->Text(155,59+10,$hinv_date);
@@ -4110,7 +4135,11 @@ class DELV extends CI_Controller {
 				$pdf->SetXY(28,$curY+6+$YExtra);
 				$pdf->Cell(63.73,4,$ITEMSPTNO,0,0,'L');
 				$pdf->SetXY(92,$curY-3);
-				$pdf->Cell(16.63,4, number_format($r['DLV_PKG_QTY']),0,0,'R'); #number_format($r['SISCN_SERQTY'] * $r['TTLBOX'])
+				if($isDecimal){
+					$pdf->Cell(16.63,4, number_format($r['DLV_PKG_QTY'],2),0,0,'R');
+				} else {
+					$pdf->Cell(16.63,4, number_format($r['DLV_PKG_QTY']),0,0,'R');
+				}
 				$pdf->SetXY(110,$curY-3);
 				$pdf->Cell(24.71,4, $r['DLV_PKG_NWG']*1==0? '': number_format($r['DLV_PKG_NWG'],2),0,0,'R');
 				$pdf->SetXY(137.07,$curY-3);
@@ -4124,7 +4153,11 @@ class DELV extends CI_Controller {
 			$pdf->SetXY(32,235);
 			$pdf->Cell(63.73,4, "Total",0,0,'L');
 			$pdf->SetXY(90,235);
-			$pdf->Cell(16.63,4, number_format($TTLQTY),0,0,'R');
+			if($isDecimal) {
+				$pdf->Cell(16.63,4, number_format($TTLQTY,2),0,0,'R');
+			} else {
+				$pdf->Cell(16.63,4, number_format($TTLQTY),0,0,'R');
+			}
 		}
 		if(substr($pforms,0,1)=='1'){
 			//DELIVERY ORDER
@@ -4156,6 +4189,7 @@ class DELV extends CI_Controller {
 				break;
 			}
 			$rsfix = [];
+			$isDecimal = false;
 			foreach($rs_do as &$r){
 				$r['PLOTQT'] = 0;
 				foreach($rs_xbc as &$x){
@@ -4177,12 +4211,17 @@ class DELV extends CI_Controller {
 							$x['RCV_QTY']-=$reqbal;
 						}
 						switch(trim($r['MITM_STKUOM'])){
-							case 'GMS':
-								$uom = 'GRM';break;
+							case 'GM':
+								$uom = 'GRM';
+								$isDecimal = true;
+								break;
 							case 'KG':
-								$uom = 'KGM';break;
+								$uom = 'KGM';								
+								$isDecimal = true;
+								break;
 							default:
 								$uom = $r['MITM_STKUOM'];
+								$isDecimal = false;						
 						}
 						$rsfix[] = [
 							'DLVRMDOC_ITMID' => $r['DLVRMDOC_ITMID']
@@ -4207,8 +4246,7 @@ class DELV extends CI_Controller {
 				}
 				unset($x);
 			}
-			unset($r);
-			// die(json_encode($rs_xbc));
+			unset($r);			
 			$pdf->AddPage();
 			$pdf->SetAutoPageBreak(true,1);
 			$pdf->SetMargins(0,0);
@@ -4242,7 +4280,7 @@ class DELV extends CI_Controller {
 			$pdf->SetFont('Arial','',9);
 			$UM = '';			
 			$a_stkuom = [];
-			foreach($rsfix as $r){
+			foreach($rsfix as $r){				
 				$nourutDO++;
 				$tempItem = $r['MITM_ITMCDCUS']!='' ? $r['MITM_ITMCDCUS'] :  $r['DLVRMDOC_ITMID'];
 				$ItemDis = $tempItem;
@@ -4304,7 +4342,11 @@ class DELV extends CI_Controller {
 				$pdf->SetXY(30.75,$curY+8);
 				$pdf->Cell(85,4, $r['TYPE'],0,0,'L');
 				$pdf->SetXY(90,$curY);
-				$pdf->Cell(43.43,4, number_format($r['DLVRMDOC_ITMQT']). " ".$r['MITM_STKUOM'],0,0,'R');
+				if($isDecimal) {					
+					$pdf->Cell(43.43,4, number_format($r['DLVRMDOC_ITMQT'],2). " ".$r['MITM_STKUOM'],0,0,'R');
+				} else {					
+					$pdf->Cell(43.43,4, number_format($r['DLVRMDOC_ITMQT']). " ".$r['MITM_STKUOM'],0,0,'R');
+				}
 				$pdf->SetXY(140,$curY);
 				$pdf->Cell(43.43,4, "Ex.BC.".$r['RCV_BCTYPE'].":".$r['DLVRMDOC_NOPEN'],0,0,'L');
 				$pdf->SetXY(140,$curY+4);
@@ -4320,8 +4362,12 @@ class DELV extends CI_Controller {
 			$pdf->SetXY(90,220);
 			if(count($a_stkuom)>1){
 				$pdf->Cell(43.43,4, number_format($ttldoqty),0,0,'R');				
-			} else {				
-				$pdf->Cell(43.43,4, number_format($ttldoqty). " ".$UM,0,0,'R');
+			} else {
+				if($isDecimal) {
+					$pdf->Cell(43.43,4, number_format($ttldoqty,2). " ".$UM,0,0,'R');
+				} else {
+					$pdf->Cell(43.43,4, number_format($ttldoqty). " ".$UM,0,0,'R');
+				}
 			}
 		}
 		$pdf->Output('I','Delivery Docs RM '.date("d-M-Y").'.pdf');
