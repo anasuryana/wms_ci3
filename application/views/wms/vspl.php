@@ -179,11 +179,11 @@
     </div>
 </div>
 <div class="modal" id="SPL_DETISSU_UNFIXED" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">      
         <!-- Modal Header -->
         <div class="modal-header">
-            <h4 class="modal-title">Unfixed Data</h4>            
+            <h4 class="modal-title">Kitting Data List</h4>
         </div>
         
         <!-- Modal body -->
@@ -191,7 +191,11 @@
             <div class="row">
                 <div class="col mb-1">
                     <div class="btn-group btn-group-sm">
-                        <button title="Fix the data below" type="button" class="btn btn-warning" id="psn_btn_fix" onclick="psn_btn_fix_eCK(this)">Try to fix</button>
+                        <button title="Fix the data below" type="button" class="btn btn-danger" id="psn_btn_fix" onclick="psn_btn_fix_eCK(this)">Cancel per PSN</button>                        
+                    </div>
+                </div>
+                <div class="col mb-1 text-end">
+                    <div class="btn-group btn-group-sm">                        
                         <button type="button" class="btn btn-primary" id="psn_btn_close" onclick="psn_btn_close_eCK(this)">Close</button>
                     </div>
                 </div>
@@ -491,10 +495,13 @@
             idrows.push(idrow)
         }
         if(idrows.length>0) {
+            if(!confirm('Are you sure ?')) {
+                return
+            }
             p.disabled = true
             $.ajax({
                 type: "POST",
-                url: "<?=base_url('SPL/cancel_kitting_per_document')?>",
+                url: "<?=base_url('SPL/cancel_kitting_per_idscan_array')?>",
                 data: {inidscan: idrows},
                 dataType: "JSON",
                 success: function (response) {
@@ -529,13 +536,42 @@
             if(confirm("Are you sure want to CANCEL the document ? ")) {
                 p.disabled = true
                 $.ajax({
-                    type: "POST",
-                    url: "<?=base_url('SPL/cancel_kitting_per_psn')?>",
+                    type: "GET",
+                    url: "<?=base_url('SPL/select_scanned_per_document')?>",
                     data: {doc : txtPSN.value},
                     dataType: "json",
                     success: function (response) {
                         p.disabled = false
-                        alertify.message(response.status[0].msg)
+                        const ttlrows = response.data_unfixed.length
+                        let mydes = document.getElementById("spl_tblunfixed_div");
+                        let myfrag = document.createDocumentFragment();
+                        let mtabel = document.getElementById("spl_tblunfixed");
+                        let cln = mtabel.cloneNode(true);
+                        myfrag.appendChild(cln);                    
+                        let tabell = myfrag.getElementById("spl_tblunfixed");
+                        let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                        let newrow, newcell, newText;
+                        tableku2.innerHTML=''
+                        for (let i = 0; i<ttlrows; i++){
+                            newrow = tableku2.insertRow(-1)
+                            newcell = newrow.insertCell(0)
+                            newcell.innerHTML = response.data_unfixed[i].SPLSCN_ID
+                            newcell = newrow.insertCell(1)
+                            newcell.innerHTML = response.data_unfixed[i].SPLSCN_ITMCD
+                            newcell = newrow.insertCell(2)
+                            newcell.classList.add('text-end')
+                            newcell.innerHTML = numeral(response.data_unfixed[i].SPLSCN_QTY).format(',')
+                            newcell = newrow.insertCell(3)
+                            newcell.innerHTML = response.data_unfixed[i].SPLSCN_LOTNO
+                            newcell = newrow.insertCell(4)
+                            newcell.innerHTML = response.data_unfixed[i].SPLSCN_LUPDT                            
+                            newcell = newrow.insertCell(5)
+                        }
+                        mydes.innerHTML=''
+                        mydes.appendChild(myfrag)
+                        if(ttlrows){
+                            $("#SPL_DETISSU_UNFIXED").modal('show');
+                        }
                     }, error: function(xhr, xopt, xthrow){
                         p.disabled = false
                         alertify.error(xthrow)
@@ -607,12 +643,7 @@
         $("#spl_tbl tbody").empty();
     });
     $("#spl_divku").css('height', $(window).height()*60/100);
-    
-    // $("#psn_txt_psn").keydown(function (e) {
-    //     if(e.keyCode==9){           
-    //         psn_e_psn();               
-    //     }
-    // });
+        
     $("#psn_txt_psn").keypress(function (e) {         
         if(e.which==13){
             psn_e_psn();

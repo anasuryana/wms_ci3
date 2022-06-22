@@ -566,6 +566,157 @@ class SPL extends CI_Controller {
 		, 'shouldReBook' => $shouldReBook, 'isLoopPassed' => $isLoopPassed]));
 	}
 
+	public function select_scanned_per_document(){
+		header('Content-Type: application/json');
+		$doc = $this->input->get('doc');
+		$rs = $this->SPLSCN_mod->selectby_filter(['SPLSCN_DOC' => $doc]);
+		die(json_encode(['data_unfixed' => $rs]));
+	}
+
+	public function cancel_kitting_per_idscan_array(){
+		# Purpose : cancel kitting per id scan
+		# Expected transaction : raw material location [+], plant location [-]
+		$this->checkSession();
+		date_default_timezone_set('Asia/Jakarta');
+		$crn_date = date('Y-m-d');
+		$cidscan = $this->input->post('inidscan');
+		$myar = [];
+		$rs = $this->SPLSCN_mod->selectby_ID_whereIn($cidscan);
+		$cpsn = '';
+		foreach($rs as $r) {
+			$cpsn = $r['SPLSCN_DOC'];break;
+		}		
+		$cwh_out = '';
+		$rsbg = $this->SPL_mod->select_bg_partreq([$cpsn]);
+		foreach($rsbg as $r){
+			switch($r['PPSN1_BSGRP']){
+				case 'PSI1PPZIEP':
+					$cwh_inc = 'ARWH1';
+					$cwh_out = 'PLANT1';
+					break;
+				case 'PSI2PPZADI':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+				case 'PSI2PPZINS':
+					$cwh_inc = 'NRWH2';
+					$cwh_out = 'PLANT_NA';
+					break;
+				case 'PSI2PPZOMC':
+					$cwh_inc = 'NRWH2';
+					$cwh_out = 'PLANT_NA';
+					break;
+				case 'PSI2PPZOMI':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+				case 'PSI2PPZSSI':
+					$cwh_inc = 'NRWH2';
+					$cwh_out = 'PLANT_NA';
+					break;
+				case 'PSI2PPZSTY':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+				case 'PSI2PPZTDI':
+					$cwh_inc = 'ARWH2';
+					$cwh_out = 'PLANT2';
+					break;
+			}
+			break;
+		}
+		if($cwh_out===''){
+			$rsbg = $this->SPL_mod->select_bg_ppsn([$cpsn]);
+			foreach($rsbg as $r){
+				switch($r['PPSN1_BSGRP']){
+					case 'PSI1PPZIEP':
+						$cwh_inc = 'ARWH1';
+						$cwh_out = 'PLANT1';
+						break;
+					case 'PSI2PPZADI':
+						$cwh_inc = 'ARWH2';
+						$cwh_out = 'PLANT2';
+						break;
+					case 'PSI2PPZINS':
+						$cwh_inc = 'NRWH2';
+						$cwh_out = 'PLANT_NA';
+						break;
+					case 'PSI2PPZOMC':
+						$cwh_inc = 'NRWH2';
+						$cwh_out = 'PLANT_NA';
+						break;
+					case 'PSI2PPZOMI':
+						$cwh_inc = 'ARWH2';
+						$cwh_out = 'PLANT2';
+						break;
+					case 'PSI2PPZSSI':
+						$cwh_inc = 'NRWH2';
+						$cwh_out = 'PLANT_NA';
+						break;
+					case 'PSI2PPZSTY':
+						$cwh_inc = 'ARWH2';
+						$cwh_out = 'PLANT2';
+						break;
+					case 'PSI2PPZTDI':
+						$cwh_inc = 'ARWH2';
+						$cwh_out = 'PLANT2';
+						break;
+				}
+				break;
+			}
+		}
+		if(!empty($rs)>0){
+			foreach($rs as $r){
+				$thedoc = trim($r['SPLSCN_DOC'])."|".trim($r['SPLSCN_CAT'])."|".trim($r['SPLSCN_LINE'])."|".trim($r['SPLSCN_FEDR']);
+				$theitem = trim($r['SPLSCN_ITMCD']);
+				$theqty = $r['SPLSCN_QTY'];
+				$where = ['ITH_DOC' => $thedoc, 'ITH_ITMCD' => $theitem , 'ITH_WH' => $cwh_out];
+				if($this->ITH_mod->check_Primary($where)>0 ){
+					$retith = 0;
+					//adjust transaction
+					$retith = $this->ITH_mod->insert_cancel_kitting_out(['ITH_ITMCD' => $theitem ,  'ITH_WH' => $cwh_out,
+						'ITH_DATE' => $crn_date , 'ITH_DOC' => $thedoc, 'ITH_QTY' => -$theqty, 'ITH_USRID' => $this->session->userdata('nama')]);
+					$retith += $this->ITH_mod->insert_cancel_kitting_in(['ITH_ITMCD' => $theitem , 'ITH_WH' => $cwh_inc ,
+						'ITH_DATE' => $crn_date , 'ITH_DOC' => $thedoc, 'ITH_QTY' => $theqty, 'ITH_USRID' => $this->session->userdata('nama')]);
+					if($retith == 2){
+						//delete scannning history
+						if($this->SPLSCN_mod->deleteby_filter(['SPLSCN_ID' => $r['SPLSCN_ID'] ]) >0 ){
+							$myar[] = ['cd' => 1, 'msg' => 'canceled successfully', 'reff' => $r['SPLSCN_ID']];
+						} else {
+							$myar[] = ['cd' => 0, 
+								'msg' => 'the transaction is successfully adjusted but could not remove scanning history, please contact admin',
+								'reff' => $r['SPLSCN_ID'] ];
+						}
+					} else {
+						$myar[] = ['cd' => 0,
+						'msg' => 'could not adjust transaction please contact admin',
+						'reff' => $r['SPLSCN_ID']];
+					}
+				} else {
+					if($this->ITH_mod->check_Primary(['ITH_DOC' => $thedoc, 'ITH_ITMCD' => $theitem])>0 ){
+						$this->ITH_mod->deletebyID(['ITH_DOC' => $thedoc, 'ITH_ITMCD' => $theitem]);
+						if($this->SPLSCN_mod->deleteby_filter(['SPLSCN_ID' => $r['SPLSCN_ID'] ]) >0 ){
+							$myar[] = ['cd' => 1, 'msg' => 'canceled successfully..' ,'reff' => $r['SPLSCN_ID']];
+						} else {
+							$myar[] = ['cd' => 0, 
+								'msg' => 'the transaction is successfully deleted but could not remove scanning history, please contact admin'
+								,'reff' => $r['SPLSCN_ID']];
+						}
+					} else {
+						if($this->SPLSCN_mod->deleteby_filter(['SPLSCN_ID' => $r['SPLSCN_ID']]) >0 ){
+							$myar[]  = ['cd' => 1, 'msg' => 'canceled successfully','reff' => $r['SPLSCN_ID']];
+						} else {
+							$myar[] = ['cd' => 0, 'msg' => 'delete failed','reff' => $r['SPLSCN_ID']];
+						}
+					}
+				}
+			}
+		} else {
+			$myar[] = ['cd' => 0, 'msg' => 'The data is not found, so it could not be canceled', 'reff' => ''];
+		}
+		die(json_encode(['status' => $myar]));
+	}
+
 	public function cancel_kitting(){
 		$this->checkSession();
 		date_default_timezone_set('Asia/Jakarta');
@@ -921,16 +1072,18 @@ class SPL extends CI_Controller {
 		$cpsn = $this->input->get('inpsn');
 		$myar = [];
 		$rs = $this->SPL_mod->select_category($cpsn);
+		$rsunfixed = $this->SPLSCN_mod->select_unfully_canceled($cpsn);
 		$ttlrows = count($rs);
 		if($ttlrows>0){
 			$myar[] = ["cd" => $ttlrows, "msg" => "GO AHEAD"];
 		} else {
 			$myar[] = ["cd" => $ttlrows, "msg" => "Trans No not found"];
-		}		
-		echo '{"data":';
-		echo json_encode($rs);
-		echo ',"status" : '.json_encode($myar);
-		echo '}';
+		}
+		die(json_encode([
+			'data' => $rs,
+			'data_unfixed' => $rsunfixed,
+			'status' => $myar,
+		]));		
 	}
 
 	function checkPSNCAT(){

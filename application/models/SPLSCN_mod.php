@@ -34,6 +34,14 @@ class SPLSCN_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+    public function selectby_ID_whereIn($id){
+	
+        $this->db->from($this->TABLENAME);        
+        $this->db->where_in("SPLSCN_ID",$id);
+        $this->db->order_by('SPLSCN_FEDR,SPLSCN_LUPDT ASC');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
 
     public function selectby_filter_like($pwhere){	
         $this->db->limit(2500);
@@ -352,6 +360,14 @@ class SPLSCN_mod extends CI_Model {
         LEFT JOIN MITM_TBL ON SPLSCN_ITMCD=MITM_ITMCD
         ORDER BY SPLSCN_ITMCD";
         $query = $this->db->query($qry, [$pdoc]);
+        return $query->result_array();
+    }
+
+    function select_unfully_canceled($doc){
+        $qry = "select SPLSCN_TBL.* from SPLSCN_TBL left join 
+        SPL_TBL on SPLSCN_DOC=SPL_DOC and SPLSCN_ITMCD=SPL_ITMCD and SPLSCN_ORDERNO=SPL_ORDERNO
+        WHERE SPL_DOC is null and SPLSCN_DOC=?";
+        $query = $this->db->query($qry, [$doc]);
         return $query->result_array();
     }
 }
