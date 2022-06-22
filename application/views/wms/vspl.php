@@ -77,17 +77,22 @@
             </div>           
         </div>
         <div class="row">
-            <div class="col-md-6 mb-1" >
+            <div class="col-md-4 mb-1" >
                 Selected warehouse : <strong><span id="spl_selwh" class="text-info"></span></strong>
-            </div>            
-            <div class="col-md-6 mb-1 text-end">
+            </div>
+            <div class="col-md-4 mb-1 text-center">
+                <div class="btn-group btn-group-sm">
+                    <button title="Cancel per PSN" type="button" class="btn btn-warning" id="psn_btn_cancel" onclick="psn_btn_cancel_eCK(this)">Cancel per PSN</button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-1 text-end">
                 <div class="btn-group btn-group-sm">
                     <button title="New Entry" type="button" class="btn btn-outline-primary" id="psn_btn_new"><i class="fas fa-file"></i></button>
                     <button title="Synchronize" type="button" class="btn btn-outline-success" id="psn_btn_msync"><i class="fas fa-sync"></i></button>
                     <button title="Save" type="button" class="btn btn-outline-primary" id="psn_btn_save"><i class="fas fa-save"></i></button>                    
                     <button title="Print" type="button" class="btn btn-outline-secondary" id="psn_btn_print"><i class="fas fa-print"></i></button>
                     <button title="Export to Spreadsheet" type="button" class="btn btn-success" id="psn_btn_export"><i class="fas fa-file-excel"></i></button>
-                    <button title="Document Info" type="button" class="btn btn-info" id="psn_btn_info" onclick="psn_btn_info_eC()"><i class="fas fa-info"></i></button>
+                    <button title="Document Info" type="button" class="btn btn-info" id="psn_btn_info" onclick="psn_btn_info_eC()"><i class="fas fa-info"></i></button>                    
                 </div>
             </div>
         </div>
@@ -161,6 +166,48 @@
                                     <th>Status</th>
                                     <th>.</th>
                                     <th><i class="fas fa-trash"></i></th>
+                                </tr>
+                            </thead>
+                            <tbody>                            
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>             
+      </div>
+    </div>
+</div>
+<div class="modal" id="SPL_DETISSU_UNFIXED" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">      
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Unfixed Data</h4>            
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col mb-1">
+                    <div class="btn-group btn-group-sm">
+                        <button title="Fix the data below" type="button" class="btn btn-warning" id="psn_btn_fix" onclick="psn_btn_fix_eCK(this)">Try to fix</button>
+                        <button type="button" class="btn btn-primary" id="psn_btn_close" onclick="psn_btn_close_eCK(this)">Close</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="table-responsive" id="spl_tblunfixed_div">
+                        <table id="spl_tblunfixed" class="table table-hover table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Item Code</th>
+                                    <th>QTY</th>
+                                    <th>Lot No</th>
+                                    <th>Last Update</th>
+                                    <th>.</th>
                                 </tr>
                             </thead>
                             <tbody>                            
@@ -434,6 +481,69 @@
             spl_contextMenu.close(false);
         }
     })
+
+    function psn_btn_fix_eCK(p){
+        const tbl = document.getElementById('spl_tblunfixed').getElementsByTagName('tbody')[0]
+        const tbl_rows = tbl.getElementsByTagName('tr').length
+        let idrows = []
+        for(let i=0; i<tbl_rows; i++) {
+            let idrow = tbl.rows[i].cells[0].innerHTML            
+            idrows.push(idrow)
+        }
+        if(idrows.length>0) {
+            p.disabled = true
+            $.ajax({
+                type: "POST",
+                url: "<?=base_url('SPL/cancel_kitting_per_document')?>",
+                data: {inidscan: idrows},
+                dataType: "JSON",
+                success: function (response) {
+                    p.disabled = false
+                    const ttlrows = response.status.length
+                    for(let i=0; i<tbl_rows; i++) {
+                        let idrow = tbl.rows[i].cells[0].innerHTML 
+                        for(let x=0; x<ttlrows; x++) {
+                            let responseId = response.status[x].reff
+                            if(idrow==responseId){
+                                tbl.rows[i].cells[5].innerHTML = response.status[x].msg
+                                break
+                            }
+                        }
+                    }
+                }, error: function(xhr, xopt, xthrow){
+                    p.disabled = false
+                    alertify.error(xthrow)
+                }
+            })            
+        }
+    }  
+
+    function psn_btn_cancel_eCK(p) {
+        const txtPSN = document.getElementById('psn_txt_psn')
+        if(txtPSN.value.trim().length<7) {
+            txtPSN.focus()
+            alertify.warning('PSN is required')
+            return
+        }
+        if(confirm("Are you sure ?")) {
+            if(confirm("Are you sure want to CANCEL the document ? ")) {
+                p.disabled = true
+                $.ajax({
+                    type: "POST",
+                    url: "<?=base_url('SPL/cancel_kitting_per_psn')?>",
+                    data: {doc : txtPSN.value},
+                    dataType: "json",
+                    success: function (response) {
+                        p.disabled = false
+                        alertify.message(response.status[0].msg)
+                    }, error: function(xhr, xopt, xthrow){
+                        p.disabled = false
+                        alertify.error(xthrow)
+                    }
+                })
+            }
+        }
+    }
     function psn_btn_info_eC(){
         const txpsn = document.getElementById('psn_txt_psn')
         if(txpsn.value.trim().length==0){
@@ -498,11 +608,11 @@
     });
     $("#spl_divku").css('height', $(window).height()*60/100);
     
-    $("#psn_txt_psn").keydown(function (e) {
-        if(e.keyCode==9){           
-            psn_e_psn();               
-        }
-    });
+    // $("#psn_txt_psn").keydown(function (e) {
+    //     if(e.keyCode==9){           
+    //         psn_e_psn();               
+    //     }
+    // });
     $("#psn_txt_psn").keypress(function (e) {         
         if(e.which==13){
             psn_e_psn();
@@ -510,7 +620,7 @@
     });
     
     function  psn_e_psn(){
-        let mval = document.getElementById("psn_txt_psn").value; //$(this).val();       
+        let mval = document.getElementById("psn_txt_psn").value
         $("#psn_txt_cat").html("<option value='-'>-</option>");     
         if(mval.trim()!=''){            
             $("#psn_txt_line").html("<option value='-'>-</option>");
@@ -522,8 +632,7 @@
                 dataType: "json",
                 success: function (response) {
                     if(response.status[0].cd==0){
-                        alertify.warning(response.status[0].msg);
-                        document.getElementById("psn_txt_psn").focus();
+                        alertify.warning(response.status[0].msg);                        
                     } else {                        
                         let ttlrows = response.data.length;
                         let tohtml = "<option value='-'>-</option>";
@@ -532,6 +641,36 @@
                         }
                         $("#psn_txt_cat").html(tohtml);
                         $("#psn_txt_cat").focus();
+                    }
+                    const ttlrows = response.data_unfixed.length                    
+                    if(ttlrows>0) {
+                        $("#SPL_DETISSU_UNFIXED").modal('show');
+                        let mydes = document.getElementById("spl_tblunfixed_div");
+                        let myfrag = document.createDocumentFragment();
+                        let mtabel = document.getElementById("spl_tblunfixed");
+                        let cln = mtabel.cloneNode(true);
+                        myfrag.appendChild(cln);                
+                        let tabell = myfrag.getElementById("spl_tblunfixed");                    
+                        let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                        let newrow, newcell, newText;
+                        tableku2.innerHTML='';
+                        for (let i = 0; i<ttlrows; i++){
+                            newrow = tableku2.insertRow(-1)
+                            newcell = newrow.insertCell(0)
+                            newcell.innerHTML = response.data_unfixed[i].SPLSCN_ID
+                            newcell = newrow.insertCell(1)
+                            newcell.innerHTML = response.data_unfixed[i].SPLSCN_ITMCD
+                            newcell = newrow.insertCell(2)
+                            newcell.classList.add('text-end')
+                            newcell.innerHTML = numeral(response.data_unfixed[i].SPLSCN_QTY).format(',')
+                            newcell = newrow.insertCell(3)
+                            newcell.innerHTML = response.data_unfixed[i].SPLSCN_LOTNO
+                            newcell = newrow.insertCell(4)
+                            newcell.innerHTML = response.data_unfixed[i].SPLSCN_LUPDT                            
+                            newcell = newrow.insertCell(5)
+                        }
+                        mydes.innerHTML='';
+                        mydes.appendChild(myfrag);
                     }
                 }, error: function(xhr, xopt, xthrow){
                     alertify.error(xthrow);
@@ -1136,29 +1275,7 @@
     $("#spl_txt_dt2").datepicker('update', new Date());
 
     $("#psn_btn_export").click(function (e) {
-        $("#SPL_EXPORTISSU").modal('show');
-        // let mpsn = document.getElementById("psn_txt_psn").value;
-        // let mcat = document.getElementById("psn_txt_cat").value;
-        // let mline = document.getElementById("psn_txt_line").value;
-        // let mfedr = document.getElementById("psn_txt_fedr").value;
-        // if(mpsn.trim()==''){
-        //     document.getElementById("psn_txt_psn").focus();return;
-        // }
-        // if(mcat.trim()==''){
-        //     document.getElementById("psn_txt_cat").focus();return;
-        // } 
-        // if(mline.trim() == ''){
-        //     document.getElementById("psn_txt_line").focus();return;
-        // } 
-        // if(mfedr.trim==''){
-        //     document.getElementById("psn_txt_fedr").focus();return;
-        // }
-        // Cookies.set('CKPSI_DPSN', mpsn, {expires:365});
-        // Cookies.set('CKPSI_DCAT', mcat, {expires:365});
-        // Cookies.set('CKPSI_DLNE', mline, {expires:365});
-        // Cookies.set('CKPSI_DFDR', mfedr, {expires:365});
-        // alertify.message("Under Construction");
-        //window.open("<?//=base_url('SPL/export_to_spreadsheet')?>",'_blank');
+        $("#SPL_EXPORTISSU").modal('show');        
     });
     $("#psn_btn_print").click(function (e) { 
         $("#SPL_MODPRINT").modal('show');
@@ -1177,8 +1294,7 @@
         Cookies.set('CKPSI_DCAT', mcat, {expires:365});
         Cookies.set('CKPSI_DLNE', mline, {expires:365});
         Cookies.set('CKPSI_DFDR', mfedr, {expires:365});
-        let radioValue = $("input[name='spl_doctype']:checked").val();  
-        console.log({mpsn: mpsn, mcat: mcat,mline: mline, mfedr: mfedr })
+        let radioValue = $("input[name='spl_doctype']:checked").val()        
         if(radioValue=='KIT'){
             if(mcat.trim()=='-'){
                 alertify.message('Please choose Category')
@@ -1306,5 +1422,9 @@
                 document.getElementById('psn_btnexp_getdata').disabled = false;
             }
         });
+    }
+
+    function psn_btn_close_eCK() {        
+        $("#SPL_DETISSU_UNFIXED").modal('hide')
     }
 </script>
