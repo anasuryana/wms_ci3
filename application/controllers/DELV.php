@@ -3900,7 +3900,15 @@ class DELV extends CI_Controller {
 				$no =1;
 				$ttlqty_=0;
 				$ttlamount_ = 0;
-				foreach($rsfixINV as $r) {				
+				foreach($rsfixINV as $r) {
+					switch(trim($r['MITM_STKUOM'])){
+						case 'GMS':
+							$uom = 'GRM';break;
+						case 'KG':
+							$uom = 'KGM';break;
+						default:
+							$uom = $r['MITM_STKUOM'];
+					}
 					if($shouldRound){
 						$amount_ = $r['ITMQT']*round($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
 						$perprice_ = round($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
@@ -3939,7 +3947,7 @@ class DELV extends CI_Controller {
 					$pdf->SetFont('Arial','',9);	
 					$pdf->Text(45,$curY+4+$YExtra,trim($r['DLVRMDOC_ITMID']));
 					$pdf->Text(45,$curY+8+$YExtra,trim($r['DLVRMDOC_TYPE']));
-					$pdf->Text(100,$curY,$r['MITM_STKUOM']);
+					$pdf->Text(100,$curY,$uom);
 					$pdf->SetXY(110,$curY-3);
 					$pdf->Cell(20.55,4,number_format($r['ITMQT']),0,0,'R');
 					if($isYEN){
@@ -4131,8 +4139,7 @@ class DELV extends CI_Controller {
 			$hdlv_date = '';
 			$tempItem = '';
 			$ItemDis = '';
-			$ItemDis2 = '';
-			$ItemSPTNO = '';
+			$ItemDis2 = '';			
 			$nourutDO = 0;
 			$ttlbaris = 1;
 			$ttldoqty = 0;
