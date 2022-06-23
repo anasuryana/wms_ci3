@@ -50,6 +50,17 @@ class MSTITM_mod extends CI_Model {
     {        
         return $this->db->get_where($this->VIEW_FG_AS_BOM,$data)->num_rows();
 	}
+
+	public function check_Primary_unused_item($data){
+		return $this->db->get_where('wms_v_unused_machine_and_equipment',$data)->num_rows();
+	}
+
+	public function deleteby_filter($pwhere)
+    {
+        $this->db->where($pwhere);
+        $this->db->delete($this->TABLENAME);
+        return $this->db->affected_rows();
+    }
 	
 	public function selectbyid($pid)
 	{

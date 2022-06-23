@@ -141,16 +141,19 @@
                         <?=$UMl?>
                     </select>
                 </div>
-            </div>            
+            </div>
         </div>
         <div class="row">
-            <div class="col-md-12 mb-2">
+            <div class="col-md-9 mb-2">
                 <div class="btn-group btn-group-sm">
                     <button title="New" id="itm_btnnew" class="btn btn-primary" ><i class="fas fa-file"></i></button>
                     <button title="Save" id="itm_btnsave" class="btn btn-primary" ><i class="fas fa-save"></i></button>
                     <button title="Synchronize" id="itm_btnsync" class="btn btn-success" ><i class="fas fa-sync"></i> Synchronize</button>
                     <button title="Import Template data to System" class="btn btn-outline-success" id="itm_btn_import"><i class="fas fa-file-import"></i></button>
                 </div>                                
+            </div>
+            <div class="col-md-3 mb-2 text-end">
+                <button title="Remove" id="itm_btndelete" class="btn btn-danger btn-sm" onclick="itm_btndelete(this)"><i class="fas fa-trash"></i></button>
             </div>
         </div>
         <div class="row">
@@ -360,6 +363,29 @@
     var itm_ttlxls = 0;
     var itm_ttlxls_savd = 0;
     var itm_old_itmcd = ''
+    function itm_btndelete(p) {
+        const itmid = document.getElementById('itm_txtitmcd')
+        if(itmid.value.trim().length==0) {
+            itmid.focus()
+            return
+        }
+        if(confirm('Are you sure ?')) {
+            p.disabled = true
+            $.ajax({
+                type: "POST",
+                url: "<?=base_url('MSTITM/remove')?>",
+                data: {itm: itmid.value.trim()},
+                dataType: "json",
+                success: function (response) {
+                    p.disabled = false
+                    alertify.message(response.status[0].msg)
+                }, error: function(xhr, xopt, xthrow){
+                    alertify.error(xthrow);
+                    p.disabled = false
+                }
+            })
+        }
+    }
     $("#itm_btnsave").click(function(){
         if(confirm("Are you sure ?")){
             const mitmcd      = $("#itm_txtitmcd").val();

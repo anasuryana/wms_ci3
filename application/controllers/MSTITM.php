@@ -722,6 +722,19 @@ class MSTITM extends CI_Controller {
 		}
 	}
 
+	public function remove() {
+		header('Content-Type: application/json');
+		$itm = $this->input->post('itm');
+		$myar = [];
+		if($this->MSTITM_mod->check_Primary_unused_item(['MITM_ITMCD' => $itm])){
+			$myar[] = $this->MSTITM_mod->deleteby_filter(['MITM_ITMCD' => $itm, 'MITM_MODEL' => '6']) ? 
+				['cd' => 1, 'msg' => 'deleted'] : ['cd' => 0, 'msg' => 'could not be deleted'];
+		} else {
+			$myar[] = ['cd' => 0, 'msg' => 'sorry, the data could not be deleted.'];
+		}
+		die(json_encode(['status' => $myar]));
+	}
+
 	public function removeSA() {
 		header('Content-Type: application/json');
 		date_default_timezone_set('Asia/Jakarta');
