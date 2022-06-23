@@ -16,6 +16,14 @@ class ITH_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
 	}
+
+	function select_minus_stock(){
+		$this->db->from('VMINUS_STOCK');
+		$this->db->order_by('ITH_WH,ITH_ITMCD');
+		$query = $this->db->get();
+		return $query->result_array();
+	}
+	
 	public function selectbin_history($plike)
 	{		
 		$this->db->from($this->TABLENAME_BIN." A");

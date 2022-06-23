@@ -52,6 +52,16 @@ class ITH extends CI_Controller {
 		$this->load->view('wms_report/vfg_slowmoving');
 	}
 
+	function form_minus_stock(){
+		$this->load->view('wms_report/vminus_stock');
+	}
+
+	function minus_stock(){
+		header('Content-Type: application/json');
+		$rs = $this->ITH_mod->select_minus_stock();
+		die(json_encode(['data' => $rs]));
+	}
+
 	public function fg_slow_moving(){
 		header('Content-Type: application/json');
 		$cbgroup = $this->input->get('bsgrp');	
