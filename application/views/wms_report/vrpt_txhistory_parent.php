@@ -13,12 +13,18 @@
 <div style="padding: 10px">
     <div class="container-fluid">        
         <div class="row" id="rhistory_parent_stack1">
-            <div class="col-md-6 mb-1">
-                <div class="input-group input-group-sm">                    
-                    <span class="input-group-text" >From</span>                    
-                    <input type="text" class="form-control" id="rhistory_parent_txt_dt" readonly>
+            <div class="col-md-3 mb-1">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" >From</span>
+                    <input type="text" class="form-control" id="rhistory_parent_txt_dt" readonly onchange="rhistory_parent_txt_dt_eChange(event)">
                 </div>
-            </div>            
+            </div>
+            <div class="col-md-3 mb-1">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" >To</span>
+                    <input type="text" class="form-control" id="rhistory_parent_txt_dt2" readonly onclick="rhistory_parent_txt_dt_eChange(event)">
+                </div>
+            </div>
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm">                    
                     <span class="input-group-text" >Warehouse</span>
@@ -92,6 +98,7 @@
                                     <th>Date</th>
                                     <th>Document</th>
                                     <th class="text-end">QTY</th>
+                                    <th>Remark</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -104,11 +111,13 @@
                 <div class="col">
                     <div class="table-responsive" id="rhistory_parent_tbldetail_child_div">
                         <table id="rhistory_parent_tbldetail_child" class="table table-sm table-striped table-bordered table-hover caption-top">
+                            <caption>WMS</caption>
                             <thead class="table-light">
                                 <tr>
                                     <th>Date</th>
                                     <th>Document</th>
                                     <th class="text-end">QTY</th>
+                                    <th>Remark</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -137,15 +146,31 @@
         Cookies.set('CKPSI_DWH', wh, {expires:365});
         window.open("<?=base_url('ITH/gettxhistory_to_xls')?>",'_blank');
     });
+    
+    function rhistory_parent_txt_dt_eChange(e){        
+        const date1 = document.getElementById('rhistory_parent_txt_dt')
+        const date2 = document.getElementById('rhistory_parent_txt_dt2')
+        if(date1.value>date2.value) {
+            date2.value = date1.value            
+        }
+    }
     $("#rhistory_parent_txt_dt").datepicker({
         format: 'yyyy-mm-dd',
         autoclose:true
     }); 
-    $("#rhistory_parent_txt_dt").datepicker('update', new Date());    
+    $("#rhistory_parent_txt_dt").datepicker('update', new Date())
+    $("#rhistory_parent_txt_dt2").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true,
+        todayHighlight: true
+    }); 
+    $("#rhistory_parent_txt_dt2").datepicker('update', new Date())    
+    
 
     $("#rhistory_parent_btn_gen").click(function (e) { 
-        let dt1 = document.getElementById('rhistory_parent_txt_dt').value;        
-        let itmcd = document.getElementById('rhistory_parent_txt_assy').value.trim();        
+        let dt1 = document.getElementById('rhistory_parent_txt_dt').value
+        let dt2 = document.getElementById('rhistory_parent_txt_dt2').value
+        let itmcd = document.getElementById('rhistory_parent_txt_assy').value.trim()
         let wh = document.getElementById('rhistory_parent_cmb_wh').value;
         if(itmcd.length==0){
             alertify.warning('item code is required')
@@ -157,7 +182,10 @@
         $.ajax({
             type: "get",
             url: "<?=base_url('ITH/gettxhistory_parent')?>",
-            data: {initemcode :itmcd ,indate1: dt1, inwh: wh},
+            data: {initemcode :itmcd 
+                ,indate1: dt1
+                ,indate2: dt2
+                , inwh: wh},
             dataType: "json",
             success: function (response) {
                 document.getElementById('rhistory_parent_btn_gen').disabled=false;
@@ -220,6 +248,22 @@
         });
     });
 
+    function rhistory_sync_Tx(doc, loccd, item, qty , reff, isudt){
+        if(confirm(`Are you sure sync ${doc} document ?`)) {
+            $.ajax({
+                type: "POST",
+                url: "ITH/sync_parent_based_doc",
+                data: {doc: doc, loccd : loccd, item: item,qty: qty, reff: reff, isudt: isudt},
+                dataType: "JSON",
+                success: function (response) {
+                    alertify.message(response.status[0].msg)
+                }, error : function(xhr, xopt, xthrow){                
+                    alertify.error(xthrow);
+                }
+            })
+        }
+    }
+
     function rhistory_parent_get_tx_perdate(pdate, pItem,pWH){
         $.ajax({
             type: "GET",
@@ -240,12 +284,17 @@
                 for(let i=0; i< ttlrows; i++){                    
                     newrow = tableku2.insertRow(-1);
                     newcell = newrow.insertCell(0);
-                    newcell.innerHTML = response.parent[i].ITRN_ISUDT                   
-                    newcell = newrow.insertCell(1)                        
+                    newcell.innerHTML = response.parent[i].ITRN_ISUDT
+                    newcell = newrow.insertCell(1)
+                    newcell.ondblclick = () => {
+                        rhistory_sync_Tx(response.parent[i].ITRN_DOCNO, pWH, pItem, numeral(response.parent[i].QTY).value(), response.parent[i].ITRN_REFNO1, response.parent[i].ITRN_ISUDT.substr(0,10))
+                    }
                     newcell.innerHTML = response.parent[i].ITRN_DOCNO
                     newcell = newrow.insertCell(2)
                     newcell.classList.add('text-end')
                     newcell.innerHTML = numeral(response.parent[i].QTY).format(',')
+                    newcell = newrow.insertCell(3)
+                    newcell.innerHTML = response.parent[i].ITRN_REFNO1
                 }
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
@@ -268,6 +317,8 @@
                     newcell = newrow.insertCell(2)
                     newcell.classList.add('text-end')
                     newcell.innerHTML = numeral(response.child[i].ITH_QTY).format(',')
+                    newcell = newrow.insertCell(3)
+                    newcell.innerHTML = response.child[i].ITH_REMARK
                 }
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);

@@ -1049,30 +1049,30 @@ class ITH_mod extends CI_Model {
 		$query = $this->db->query($qry, [$pwh, "%$passy%", $pdt1, $pdt2]);
 		return $query->result_array();
 	}
-	public function select_txhistory_parent($pwh, $passy, $pdt1 ){	
+	public function select_txhistory_parent($pwh, $passy, $pdt1, $pdt2 ){	
 		$qry = "select ISNULL(ITRN_ITMCD,ITH_ITMCD) ITRN_ITMCD,ISNULL(ISUDT,ITH_DATEC) ISUDT ,ISNULL(MGAQTY,0) MGAQTY,WQT from
 		(SELECT  RTRIM(ITRN_ITMCD) ITRN_ITMCD,CONVERT(DATE,ITRN_ISUDT) ISUDT,SUM(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) MGAQTY				
 								FROM XITRN_TBL 						
-								WHERE ITRN_ISUDT>='$pdt1' AND ITRN_LOCCD='$pwh' AND ITRN_ITMCD=?
+								WHERE (ITRN_ISUDT BETWEEN '$pdt1' AND '$pdt2') AND ITRN_LOCCD='$pwh' AND ITRN_ITMCD=?
 								GROUP BY ITRN_ITMCD,ITRN_ISUDT) VMEGA
 		FULL JOIN 
 		(
-		SELECT ITH_ITMCD,ITH_DATEC,SUM(ITH_QTY) WQT FROM v_ith_tblc WHERE ITH_DATEC>='$pdt1' AND ITH_WH='$pwh' AND ITH_ITMCD=?
+		SELECT ITH_ITMCD,ITH_DATEC,SUM(ITH_QTY) WQT FROM v_ith_tblc WHERE (ITH_DATEC BETWEEN '$pdt1' AND '$pdt2') AND ITH_WH='$pwh' AND ITH_ITMCD=?
 		GROUP BY ITH_ITMCD,ITH_DATEC
 		) VWMS ON ITRN_ITMCD=ITH_ITMCD AND ISUDT=ITH_DATEC
 		ORDER BY ISUDT";				
 		$query = $this->db->query($qry, [$passy, $passy]);
 		return $query->result_array();
 	}
-	public function select_txhistory_parent_fg($pwh, $passy, $pdt1 ){	
+	public function select_txhistory_parent_fg($pwh, $passy, $pdt1, $pdt2 ){
 		$qry = "select ISNULL(ITRN_ITMCD,ITH_ITMCD) ITRN_ITMCD,ISNULL(ISUDT,ITH_DATEC) ISUDT ,ISNULL(MGAQTY,0) MGAQTY,WQT from
 		(SELECT  RTRIM(FTRN_ITMCD) ITRN_ITMCD,CONVERT(DATE,FTRN_ISUDT) ISUDT,SUM(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) MGAQTY				
 								FROM XFTRN_TBL 						
-								WHERE FTRN_ISUDT>='$pdt1' AND FTRN_LOCCD='$pwh' AND FTRN_ITMCD=?
+								WHERE (FTRN_ISUDT BETWEEN '$pdt1' AND '$pdt2') AND FTRN_LOCCD='$pwh' AND FTRN_ITMCD=?
 								GROUP BY FTRN_ITMCD,FTRN_ISUDT) VMEGA
 		FULL JOIN 
 		(
-		SELECT ITH_ITMCD,ITH_DATEC,SUM(ITH_QTY) WQT FROM v_ith_tblc WHERE ITH_DATEC>='$pdt1' AND ITH_WH='$pwh' AND ITH_ITMCD=?
+		SELECT ITH_ITMCD,ITH_DATEC,SUM(ITH_QTY) WQT FROM v_ith_tblc WHERE (ITH_DATEC BETWEEN '$pdt1' AND '$pdt2') AND ITH_WH='$pwh' AND ITH_ITMCD=?
 		GROUP BY ITH_ITMCD,ITH_DATEC
 		) VWMS ON ITRN_ITMCD=ITH_ITMCD AND ISUDT=ITH_DATEC
 		ORDER BY ISUDT";				

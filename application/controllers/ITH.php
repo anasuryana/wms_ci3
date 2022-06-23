@@ -1408,14 +1408,15 @@ class ITH extends CI_Controller {
 		$fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT'];
 		$cwh = $this->input->get('inwh');
 		$citemcd = trim($this->input->get('initemcode'));
-		$cdate1 = $this->input->get('indate1');		
+		$cdate1 = $this->input->get('indate1');
+		$cdate2 = $this->input->get('indate2');
 		if(in_array($cwh, $fg_wh)) {
 			$rsbef =  $this->ITH_mod->select_txhistory_bef_parent_fg($cwh, $citemcd, $cdate1);
-			$rs = $this->ITH_mod->select_txhistory_parent_fg($cwh, $citemcd, $cdate1);
+			$rs = $this->ITH_mod->select_txhistory_parent_fg($cwh, $citemcd, $cdate1, $cdate2);
 		} else {
 			$rsbef =  $this->ITH_mod->select_txhistory_bef_parent($cwh, $citemcd, $cdate1);
-			$rs = $this->ITH_mod->select_txhistory_parent($cwh, $citemcd, $cdate1);
-		}		 			
+			$rs = $this->ITH_mod->select_txhistory_parent($cwh, $citemcd, $cdate1, $cdate2);
+		}
 		$rstoret = [];
 		$myar = [];
 		if(count($rsbef) >0){
@@ -1709,6 +1710,47 @@ class ITH extends CI_Controller {
 		die('{"status": '.json_encode($myar).', "data":'.json_encode($rs).'}');
 	}
 
+	function sync_parent_based_doc() {
+		header('Content-Type: application/json');
+		$doc = $this->input->post('doc');
+		$loccd = $this->input->post('loccd');
+		$item = $this->input->post('item');
+		$qty = $this->input->post('qty');
+		$reff = $this->input->post('reff');
+		$isudt = $this->input->post('isudt');
+		$rs = [];
+		$myar = [];
+		if(substr($doc,0,3)=='TRF') {
+			$rs[] = [
+				'ITH_ITMCD' => $item,
+				'ITH_DATE' => $isudt,
+				'ITH_FORM' => $qty > 0 ? 'TRFIN-RM' : 'TRFOUT-RM',
+				'ITH_DOC' => $doc,
+				'ITH_WH' => $loccd,
+				'ITH_QTY' => $qty,
+				'ITH_REMARK' => $reff,
+				'ITH_LUPDT' => $isudt.' 08:08:08',
+				'ITH_USRID' => $this->session->userdata('nama'),
+			];
+			$rs[] = [
+				'ITH_ITMCD' => $item,
+				'ITH_DATE' => $isudt,
+				'ITH_FORM' => $qty*-1 > 0 ? 'TRFIN-RM' : 'TRFOUT-RM',
+				'ITH_DOC' => $doc,
+				'ITH_WH' => $reff,
+				'ITH_QTY' => $qty*-1,
+				'ITH_REMARK' => $loccd,
+				'ITH_LUPDT' => $isudt.' 08:08:08',
+				'ITH_USRID' => $this->session->userdata('nama'),
+			];
+			$myar[] = ['cd' => 1, 'msg' => 'OK, please refresh to see the changes'];
+			$this->ITH_mod->insertb($rs);
+		} else {
+			$myar[] = ['cd' => 0, 'msg' => 'Currently not supported'];
+		}
+		die(json_encode(['status' => $myar, 'data' => $rs]));
+	}
+
 	public function transaction() 
 	{
 		header('Content-Type: application/json');
@@ -1718,11 +1760,11 @@ class ITH extends CI_Controller {
 		$location = $this->input->get('location');
 		if(in_array($location, $fg_wh)){
 			$rsParent = $this->XFTRN_mod->select_where(
-				['FTRN_ISUDT ITRN_ISUDT', 'FTRN_DOCNO ITRN_DOCNO', "(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) QTY"]
+				['FTRN_ISUDT ITRN_ISUDT', 'RTRIM(FTRN_DOCNO) ITRN_DOCNO', "(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) QTY",'RTRIM(FTRN_REFNO1) ITRN_REFNO1']
 				, ['FTRN_ISUDT' => $date, 'FTRN_ITMCD' => $item, 'FTRN_LOCCD' => $location] );
 		} else {
 			$rsParent = $this->XITRN_mod->select_where(
-				['ITRN_ISUDT', 'ITRN_DOCNO', "(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) QTY"]
+				['ITRN_ISUDT', 'RTRIM(ITRN_DOCNO) ITRN_DOCNO', "(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) QTY",'RTRIM(ITRN_REFNO1) ITRN_REFNO1']
 				, ['ITRN_ISUDT' => $date, 'ITRN_ITMCD' => $item, 'ITRN_LOCCD' => $location] );
 		}
 		
