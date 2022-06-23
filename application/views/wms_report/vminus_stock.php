@@ -15,6 +15,7 @@
             <div class="col-md-12 mb-1 text-center">  
                 <div class="btn-group btn-group-sm">                                     
                     <button class="btn btn-sm btn-primary" type="button" id="r_minus_stock_btn_gen" onclick="r_minus_stock_btn_gen_eCK(this)"><i class="fas fa-sync"></i></button>
+                    <button title="Copy to clipboard" id="r_minus_stock_btn_clip" onclick="r_minus_stock_btn_clip_eCK()" class="btn btn-success" ><i class="fas fa-clipboard"></i></button>
                 </div>
             </div>
         </div>        
@@ -50,6 +51,11 @@
     </div>
 </div>
 <script>
+    function r_minus_stock_btn_clip_eCK() {
+        cmpr_selectElementContents(document.getElementById('r_minus_stock_tbl'))
+        document.execCommand("copy");
+        alertify.message("Copied");
+    }
     $("#r_minus_stock_divku").css('height', $(window).height()   
         -document.getElementById('r_minus_stock_stack1').offsetHeight         
         -150);
