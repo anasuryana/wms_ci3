@@ -1419,6 +1419,11 @@ class ITH extends CI_Controller {
 		}
 		$rstoret = [];
 		$myar = [];
+		if(!empty($rs) && empty($rsbef)){
+			$rsbef = [
+				['ITRN_ITMCD' => $citemcd, 'MGAQTY' => 0, 'WQT' => 0]
+			];
+		}
 		if(count($rsbef) >0){
 			foreach($rsbef as $t){
 				$rstoret[] = ['ITRN_ITMCD' => $t['ITRN_ITMCD'], 'ISUDT' => '' , 'MGAQTY' => '', 'WQT' => '',  'MGABAL' => $t['MGAQTY'], 'WBAL' => $t['WQT']];
@@ -1443,10 +1448,10 @@ class ITH extends CI_Controller {
 			}
 			unset($r);
 			$myar[] = ['cd' => 1, 'msg' => 'go ahead'];
-		} else {
+		} else {					
 			$myar[] = ['cd' => 0, 'msg' => 'not found'];			
 		}
-		exit('{"status": '.json_encode($myar).', "data" : '.json_encode($rstoret).'}');
+		die(json_encode(['status' => $myar, 'data' => $rstoret]));
 	}	
 	public function gettxhistory_customs(){
 		header('Content-Type: application/json');
