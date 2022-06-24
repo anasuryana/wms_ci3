@@ -12035,7 +12035,7 @@ class DELV extends CI_Controller {
 								if($v->BC_QTY>0) {
 									$isfound = false;
 									foreach($responseResume as &$n){
-										if($n['ITEM'] == $v->BC_ITEM){
+										if($n['ITEM'] == strtoupper($v->BC_ITEM)){
 											$n['QTY'] += $v->BC_QTY;
 											$n['BALRES'] += $v->BC_QTY;
 											$isfound = true;
@@ -12043,7 +12043,7 @@ class DELV extends CI_Controller {
 									}
 									unset($n);
 									if(!$isfound){
-										$responseResume[] = ['ITEM' => $v->BC_ITEM, 'QTY' => $v->BC_QTY, 'BALRES' => $v->BC_QTY];
+										$responseResume[] = ['ITEM' => strtoupper($v->BC_ITEM), 'QTY' => $v->BC_QTY, 'BALRES' => $v->BC_QTY];
 									}
 									//THE ADDITIONAL INFO						
 									$tCIF = substr($v->RCV_PRPRC,0,1)=='.' ? ('0'.$v->RCV_PRPRC* $v->BC_QTY) : ($v->RCV_PRPRC * $v->BC_QTY);
@@ -12082,7 +12082,7 @@ class DELV extends CI_Controller {
 											,'CIF_RUPIAH' => $v->BC_TYPE == '40' ? NULL : ($tCIF*$cz_h_NDPBM)
 											,'NDPBM' => $cz_h_NDPBM
 					
-											,'KODE_BARANG' => trim($v->BC_ITEM)
+											,'KODE_BARANG' => trim(strtoupper($v->BC_ITEM))
 											,'KODE_STATUS' => "03"
 											,'POS_TARIF' => $thehscode
 											,'URAIAN' => $v->MITM_ITMD1
@@ -12115,7 +12115,7 @@ class DELV extends CI_Controller {
 											,'NDPBM' => $cz_h_NDPBM
 											,'HARGA_PENYERAHAN' => 0
 						
-											,'KODE_BARANG' => $v->BC_ITEM
+											,'KODE_BARANG' => strtoupper($v->BC_ITEM)
 											,'KODE_STATUS' => "02"
 											,'POS_TARIF' => $thehscode
 											,'URAIAN' =>  $v->MITM_ITMD1
@@ -13400,8 +13400,7 @@ class DELV extends CI_Controller {
 							"ITH_ITMCD" => $r['DLV_ITMCD'],
 							"ITH_DATE" => $ITHDATE,
 							"ITH_FORM" => "OUT-SHP-RM",
-							"ITH_DOC" => $cdo,
-							// "ITH_QTY" => -$r['DLV_QTY'],
+							"ITH_DOC" => $cdo,							
 							"ITH_QTY" => -1*$r['BCQT'],
 							"ITH_WH" => $r['DLV_LOCFR'],
 							"ITH_LUPDT" => $ITHLUPDT, 
@@ -13412,8 +13411,7 @@ class DELV extends CI_Controller {
 							"ITH_ITMCD" => $r['DLV_ITMCD'],
 							"ITH_DATE" => $ITHDATE,
 							"ITH_FORM" => "OUT-SHP-RM",
-							"ITH_DOC" => $cdo,
-							// "ITH_QTY" => -$r['DLV_QTY'],
+							"ITH_DOC" => $cdo,							
 							"ITH_QTY" => -1*$r['BCQT'],
 							"ITH_WH" => "ARWH0PD",
 							"ITH_LUPDT" => $ITHLUPDT, 
