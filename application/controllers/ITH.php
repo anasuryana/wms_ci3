@@ -1746,7 +1746,19 @@ class ITH extends CI_Controller {
 			$myar[] = ['cd' => 1, 'msg' => 'OK, please refresh to see the changes'];
 			$this->ITH_mod->insertb($rs);
 		} else {
-			$myar[] = ['cd' => 0, 'msg' => 'Currently not supported'];
+			$rs[] = [
+				'ITH_ITMCD' => $item,
+				'ITH_DATE' => $isudt,
+				'ITH_FORM' => $qty > 0 ? 'ADJ-INC' : 'ADJ-OUT',
+				'ITH_DOC' => $doc,
+				'ITH_WH' => $loccd,
+				'ITH_QTY' => $qty,
+				'ITH_REMARK' => $reff,
+				'ITH_LUPDT' => $isudt.' 08:08:08',
+				'ITH_USRID' => $this->session->userdata('nama'),
+			];
+			$this->ITH_mod->insertb($rs);
+			$myar[] = ['cd' => 1, 'msg' => 'OK Adjusted, please refresh to see the changes'];
 		}
 		die(json_encode(['status' => $myar, 'data' => $rs]));
 	}
