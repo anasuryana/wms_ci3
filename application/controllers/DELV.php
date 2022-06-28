@@ -13350,7 +13350,7 @@ class DELV extends CI_Controller {
 		$ITHLUPDT = date('Y-m-d H:i:s');
 		$ITHDATE = date('Y-m-d');
 		$cdo = $this->input->get('indo');
-		$rsser_si = $this->DELV_mod->select_det_byid($cdo);				
+		$rsser_si = $this->DELV_mod->select_det_byid($cdo);
 		$resith = 0;
 		foreach($rsser_si as $r){
 			if($this->ITH_mod->check_Primary(["ITH_SER" => $r['DLV_SER'], "ITH_FORM" => "OUT-SHP-FG"])==0 ){
@@ -13368,7 +13368,7 @@ class DELV extends CI_Controller {
 					"ITH_FORM" => "OUT-SHP-FG",
 					"ITH_DOC" => $cdo,
 					"ITH_QTY" => -$r['SISCN_SERQTY'],
-					"ITH_WH" => $thewh, #$r['SI_WH']=="AFWH3" ? "ARSHP" : "ARSHPRTN",
+					"ITH_WH" => $thewh,
 					"ITH_SER" => $r['DLV_SER'],
 					"ITH_LUPDT" => $ITHLUPDT, 
 					"ITH_USRID" => $this->session->userdata('nama')
@@ -13389,35 +13389,47 @@ class DELV extends CI_Controller {
 			$this->setPrice(base64_encode($cdo));
 			$rsstatus_ith[] = ["cd" => "1", "msg" => "Confirmed", "time" => $ITHLUPDT];
 		} else {
+			$dedicatedWarehouse = ['AIWH1','NRWH2','ARWH9SC'];
 			$rsrm = $this->DELV_mod->select_det_rm_byid($cdo);
 			foreach($rsrm as $r){
 				if($this->ITH_mod->check_Primary(["ITH_ITMCD" => $r['DLV_ITMCD'], "ITH_FORM" => "OUT-SHP-RM" , "ITH_DOC" =>$cdo ])==0 ){
-					if($r['DLV_LOCFR']=='AIWH1' || $r['DLV_LOCFR']=='NRWH2' 
-					|| $r['DLV_LOCFR']=='PSIEQUIP' 
-					|| $r['DLV_LOCFR']=='ARWH9SC' 
-					) {
+					# for MITM_MODEL, set warehouse to PSIEQUIP
+					# to prevent user from wrong choise in setting warehouse
+					if($r['MITM_MODEL']=='6') {
 						$datam = [
 							"ITH_ITMCD" => $r['DLV_ITMCD'],
 							"ITH_DATE" => $ITHDATE,
 							"ITH_FORM" => "OUT-SHP-RM",
 							"ITH_DOC" => $cdo,							
 							"ITH_QTY" => -1*$r['BCQT'],
-							"ITH_WH" => $r['DLV_LOCFR'],
+							"ITH_WH" => 'PSIEQUIP',
 							"ITH_LUPDT" => $ITHLUPDT, 
 							"ITH_USRID" => $this->session->userdata('nama')
 						];
-					} else {						
-						$datam = [
-							"ITH_ITMCD" => $r['DLV_ITMCD'],
-							"ITH_DATE" => $ITHDATE,
-							"ITH_FORM" => "OUT-SHP-RM",
-							"ITH_DOC" => $cdo,							
-							"ITH_QTY" => -1*$r['BCQT'],
-							"ITH_WH" => "ARWH0PD",
-							"ITH_LUPDT" => $ITHLUPDT, 
-							"ITH_USRID" => $this->session->userdata('nama')
-						];
-
+					} else {
+						if( in_array($r['DLV_LOCFR'], $dedicatedWarehouse) ) {
+							$datam = [
+								"ITH_ITMCD" => $r['DLV_ITMCD'],
+								"ITH_DATE" => $ITHDATE,
+								"ITH_FORM" => "OUT-SHP-RM",
+								"ITH_DOC" => $cdo,							
+								"ITH_QTY" => -1*$r['BCQT'],
+								"ITH_WH" => $r['DLV_LOCFR'],
+								"ITH_LUPDT" => $ITHLUPDT, 
+								"ITH_USRID" => $this->session->userdata('nama')
+							];
+						} else {						
+							$datam = [
+								"ITH_ITMCD" => $r['DLV_ITMCD'],
+								"ITH_DATE" => $ITHDATE,
+								"ITH_FORM" => "OUT-SHP-RM",
+								"ITH_DOC" => $cdo,							
+								"ITH_QTY" => -1*$r['BCQT'],
+								"ITH_WH" => "ARWH0PD",
+								"ITH_LUPDT" => $ITHLUPDT, 
+								"ITH_USRID" => $this->session->userdata('nama')
+							];	
+						}
 					}
 					$resith += $this->ITH_mod->insert($datam);
 				}

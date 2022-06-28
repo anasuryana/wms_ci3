@@ -315,7 +315,7 @@ class DELV_mod extends CI_Model {
 		return $query->result_array();
     }
     public function select_det_rm_byid($pid){
-        $qry = "SELECT VDELV.*,ITH_DOC,BCQT FROM
+        $qry = "SELECT VDELV.*,ITH_DOC,BCQT,MITM_MODEL FROM
         (select DLV_ITMCD,DLV_ID,sum(DLV_QTY) DLV_QTY,MAX(DLV_LOCFR) DLV_LOCFR from DLV_TBL where DLV_ID=? AND DLV_SER=''
         group by DLV_ITMCD,DLV_ID) VDELV
         LEFT JOIN 
@@ -324,6 +324,7 @@ class DELV_mod extends CI_Model {
         LEFT JOIN (
 		SELECT DLVRMDOC_ITMID,DLVRMDOC_TXID,SUM(DLVRMDOC_ITMQT) BCQT FROM DLVRMDOC_TBL GROUP BY DLVRMDOC_ITMID,DLVRMDOC_TXID
 		) VBC ON DLV_ITMCD=DLVRMDOC_ITMID AND DLVRMDOC_TXID=DLV_ID
+        LEFT JOIN MITM_TBL ON DLV_ITMCD=MITM_ITMCD
         ORDER BY DLV_ID,DLV_ITMCD";
         $query = $this->db->query($qry, [$pid]);
         return $query->result_array();
