@@ -5085,6 +5085,12 @@ class DELV extends CI_Controller {
 					}
 				}
 				$this->gotoque($cid);
+				# for RPR transaction deduction start from here
+				if($ctglpen) {
+					if($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) == 0) {
+						$resith = $this->NonReffnumberDeliveryConfirmation(['DOC' => $cid, 'DATE' => $ctglpen, 'DATETIME' => $ctglpen.' 15:15:15']);
+					}
+				}
 			}
 		}
 		die(json_encode($myar));
@@ -5098,8 +5104,7 @@ class DELV extends CI_Controller {
 
 	public function change27(){
 		date_default_timezone_set('Asia/Jakarta');		
-		$crnt_dt = date('Y-m-d H:i:s');
-		$crnt_year = date('Y');
+		$crnt_dt = date('Y-m-d H:i:s');		
 		$cid = $this->input->get('inid');
 		$cnoaju = $this->input->get('inaju');
 		$cnopen = $this->input->get('innopen');
@@ -5112,9 +5117,7 @@ class DELV extends CI_Controller {
 		$cona = $this->input->get('incona');
 		$sppbdoc = $this->input->get('sppbdoc');
 		$rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
-		$rs_head_dlv = $this->DELV_mod->select_header_bydo($cid);
-		$ttlPostedRows = $this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_POSTTM IS NOT NULL' => null]);
-		$ttlPostedAndHasbc = $this->DELV_mod->check_Primary(['DLV_ID' => $cid, "ISNULL(DLV_NOPEN,'')" => '']);
+		$rs_head_dlv = $this->DELV_mod->select_header_bydo($cid);		
 		$customsyear = '';
 		foreach($rs_head_dlv as $r){
 			$czdocbctype = $r['DLV_BCTYPE'];
@@ -5156,10 +5159,66 @@ class DELV extends CI_Controller {
 			$ret = $this->DELV_mod->updatebyVAR($vals, $keys);
 			if(!empty($cnopen)){
 				$res = $this->gotoque($cid);
+				# for RPR transaction deduction start from here
+				if($ctpb_tgl_daftar) {
+					if($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) == 0) {
+						$resith = $this->NonReffnumberDeliveryConfirmation(['DOC' => $cid, 'DATE' => $ctpb_tgl_daftar, 'DATETIME' => $ctpb_tgl_daftar.' 15:15:15']);
+					}
+				}
 			}
 			$myar[] = $ret>0 ? ["cd" => '11', "msg" => "Updated successfully" , "res" => $res] : ["cd" => '00', "msg" => "No data to be updated", "res" => $res];
 		}
 		die(json_encode($myar));
+	}
+
+	function NonReffnumberDeliveryConfirmation($data)  {
+		$dedicatedWarehouse = ['AIWH1','NRWH2','ARWH9SC'];
+		$rsrm = $this->DELV_mod->select_det_rm_byid($data['DOC']);
+		$resith = 0;
+		foreach($rsrm as $r){
+			if($this->ITH_mod->check_Primary(["ITH_ITMCD" => $r['DLV_ITMCD'], "ITH_FORM" => "OUT-SHP-RM" , "ITH_DOC" =>$data['DOC'] ])==0 ){
+				# for MITM_MODEL, set warehouse to PSIEQUIP
+				# to prevent user from wrong choise in setting warehouse
+				if($r['MITM_MODEL']=='6') {
+					$datam = [
+						"ITH_ITMCD" => $r['DLV_ITMCD'],
+						"ITH_DATE" => $data['DATE'],
+						"ITH_FORM" => "OUT-SHP-RM",
+						"ITH_DOC" => $data['DOC'],							
+						"ITH_QTY" => -1*$r['BCQT'],
+						"ITH_WH" => 'PSIEQUIP',
+						"ITH_LUPDT" => $data['DATETIME'], 
+						"ITH_USRID" => $this->session->userdata('nama')
+					];
+				} else {
+					if( in_array($r['DLV_LOCFR'], $dedicatedWarehouse) ) {
+						$datam = [
+							"ITH_ITMCD" => $r['DLV_ITMCD'],
+							"ITH_DATE" => $data['DATE'],
+							"ITH_FORM" => "OUT-SHP-RM",
+							"ITH_DOC" => $data['DOC'],							
+							"ITH_QTY" => -1*$r['BCQT'],
+							"ITH_WH" => $r['DLV_LOCFR'],
+							"ITH_LUPDT" => $data['DATETIME'], 
+							"ITH_USRID" => $this->session->userdata('nama')
+						];
+					} else {						
+						$datam = [
+							"ITH_ITMCD" => $r['DLV_ITMCD'],
+							"ITH_DATE" => $data['DATE'],
+							"ITH_FORM" => "OUT-SHP-RM",
+							"ITH_DOC" => $data['DOC'],							
+							"ITH_QTY" => -1*$r['BCQT'],
+							"ITH_WH" => "ARWH0PD",
+							"ITH_LUPDT" => $data['DATETIME'], 
+							"ITH_USRID" => $this->session->userdata('nama')
+						];	
+					}
+				}
+				$resith += $this->ITH_mod->insert($datam);
+			}
+		}
+		return $resith;
 	}
 
 	public function change41(){
@@ -5294,6 +5353,12 @@ class DELV extends CI_Controller {
 			$myar[] = $ret>0 ?  ["cd" => '11', "msg" => "Updated successfully" ] : ["cd" => '00', "msg" => "No data to be updated" ];
 			if(!empty($cnopen)){
 				$this->gotoque($cid);
+				# for RPR transaction deduction start from here
+				if($ctpb_tgl_daftar) {
+					if($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) == 0) {
+						$resith = $this->NonReffnumberDeliveryConfirmation(['DOC' => $cid, 'DATE' => $ctpb_tgl_daftar, 'DATETIME' => $ctpb_tgl_daftar.' 15:15:15']);
+					}
+				}
 			}
 		}
 		die(json_encode($myar));
@@ -13389,51 +13454,7 @@ class DELV extends CI_Controller {
 			$this->setPrice(base64_encode($cdo));
 			$rsstatus_ith[] = ["cd" => "1", "msg" => "Confirmed", "time" => $ITHLUPDT];
 		} else {
-			$dedicatedWarehouse = ['AIWH1','NRWH2','ARWH9SC'];
-			$rsrm = $this->DELV_mod->select_det_rm_byid($cdo);
-			foreach($rsrm as $r){
-				if($this->ITH_mod->check_Primary(["ITH_ITMCD" => $r['DLV_ITMCD'], "ITH_FORM" => "OUT-SHP-RM" , "ITH_DOC" =>$cdo ])==0 ){
-					# for MITM_MODEL, set warehouse to PSIEQUIP
-					# to prevent user from wrong choise in setting warehouse
-					if($r['MITM_MODEL']=='6') {
-						$datam = [
-							"ITH_ITMCD" => $r['DLV_ITMCD'],
-							"ITH_DATE" => $ITHDATE,
-							"ITH_FORM" => "OUT-SHP-RM",
-							"ITH_DOC" => $cdo,							
-							"ITH_QTY" => -1*$r['BCQT'],
-							"ITH_WH" => 'PSIEQUIP',
-							"ITH_LUPDT" => $ITHLUPDT, 
-							"ITH_USRID" => $this->session->userdata('nama')
-						];
-					} else {
-						if( in_array($r['DLV_LOCFR'], $dedicatedWarehouse) ) {
-							$datam = [
-								"ITH_ITMCD" => $r['DLV_ITMCD'],
-								"ITH_DATE" => $ITHDATE,
-								"ITH_FORM" => "OUT-SHP-RM",
-								"ITH_DOC" => $cdo,							
-								"ITH_QTY" => -1*$r['BCQT'],
-								"ITH_WH" => $r['DLV_LOCFR'],
-								"ITH_LUPDT" => $ITHLUPDT, 
-								"ITH_USRID" => $this->session->userdata('nama')
-							];
-						} else {						
-							$datam = [
-								"ITH_ITMCD" => $r['DLV_ITMCD'],
-								"ITH_DATE" => $ITHDATE,
-								"ITH_FORM" => "OUT-SHP-RM",
-								"ITH_DOC" => $cdo,							
-								"ITH_QTY" => -1*$r['BCQT'],
-								"ITH_WH" => "ARWH0PD",
-								"ITH_LUPDT" => $ITHLUPDT, 
-								"ITH_USRID" => $this->session->userdata('nama')
-							];	
-						}
-					}
-					$resith += $this->ITH_mod->insert($datam);
-				}
-			}
+			$resith = $this->NonReffnumberDeliveryConfirmation(['DOC' => $cdo, 'DATE' => $ITHDATE, 'DATETIME' => $ITHLUPDT]);
 			if($resith>0){
 				$current_date = date('Y-m-d');
 				$current_time = date('H:i:s');
@@ -13445,7 +13466,7 @@ class DELV extends CI_Controller {
 				$this->DELV_mod->updatebyVAR(['DLV_DATE' => $fixdate],['DLV_ID' => $cdo]);
 				$rsstatus_ith[] = ["cd" => "1", "msg" => "Confirmed", "time" => $ITHLUPDT];
 			} else {
-				$rsstatus_ith[] = ["cd" => "0", "msg" => "It is weird, nothing saved", "datay" => $rsrm];
+				$rsstatus_ith[] = ["cd" => "0", "msg" => "It is weird, nothing saved"];
 			}
 		}
 		die('{"status": '.json_encode($rsstatus_ith).'}');
