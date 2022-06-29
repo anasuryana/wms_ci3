@@ -96,6 +96,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Date</th>
+                                    <th>Form</th>
                                     <th>Document</th>
                                     <th class="text-end">QTY</th>
                                     <th>Remark</th>
@@ -115,6 +116,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Date</th>
+                                    <th>Form</th>                                    
                                     <th>Document</th>
                                     <th class="text-end">QTY</th>
                                     <th>Remark</th>
@@ -285,15 +287,17 @@
                     newrow = tableku2.insertRow(-1);
                     newcell = newrow.insertCell(0);
                     newcell.innerHTML = response.parent[i].ITRN_ISUDT
-                    newcell = newrow.insertCell(1)
+                    newcell = newrow.insertCell(1);
+                    newcell.innerHTML = response.parent[i].ITRN_DOCCD
+                    newcell = newrow.insertCell(2)
                     newcell.ondblclick = () => {
                         rhistory_sync_Tx(response.parent[i].ITRN_DOCNO, pWH, pItem, numeral(response.parent[i].QTY).value(), response.parent[i].ITRN_REFNO1, response.parent[i].ITRN_ISUDT.substr(0,10))
                     }
                     newcell.innerHTML = response.parent[i].ITRN_DOCNO
-                    newcell = newrow.insertCell(2)
+                    newcell = newrow.insertCell(3)
                     newcell.classList.add('text-end')
                     newcell.innerHTML = numeral(response.parent[i].QTY).format(',')
-                    newcell = newrow.insertCell(3)
+                    newcell = newrow.insertCell(4)
                     newcell.innerHTML = response.parent[i].ITRN_REFNO1
                 }
                 mydes.innerHTML='';
@@ -312,12 +316,14 @@
                     newrow = tableku2.insertRow(-1);                    
                     newcell = newrow.insertCell(0);
                     newcell.innerHTML = response.child[i].ITH_DATEC
-                    newcell = newrow.insertCell(1)
-                    newcell.innerHTML = response.child[i].ITH_DOC
+                    newcell = newrow.insertCell(1);
+                    newcell.innerHTML = response.child[i].ITH_FORM
                     newcell = newrow.insertCell(2)
+                    newcell.innerHTML = response.child[i].ITH_DOC
+                    newcell = newrow.insertCell(3)
                     newcell.classList.add('text-end')
                     newcell.innerHTML = numeral(response.child[i].ITH_QTY).format(',')
-                    newcell = newrow.insertCell(3)
+                    newcell = newrow.insertCell(4)
                     newcell.innerHTML = response.child[i].ITH_REMARK
                 }
                 mydes.innerHTML='';
