@@ -5087,7 +5087,7 @@ class DELV extends CI_Controller {
 				$this->gotoque($cid);
 				# for RPR transaction deduction start from here
 				if($ctglpen) {
-					if($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) == 0) {
+					if($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) > 0) {
 						$resith = $this->NonReffnumberDeliveryConfirmation(['DOC' => $cid, 'DATE' => $ctglpen, 'DATETIME' => $ctglpen.' 15:15:15']);
 					}
 				}
@@ -5161,7 +5161,7 @@ class DELV extends CI_Controller {
 				$res = $this->gotoque($cid);
 				# for RPR transaction deduction start from here
 				if($ctpb_tgl_daftar) {
-					if($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) == 0) {
+					if($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) > 0) {
 						$resith = $this->NonReffnumberDeliveryConfirmation(['DOC' => $cid, 'DATE' => $ctpb_tgl_daftar, 'DATETIME' => $ctpb_tgl_daftar.' 15:15:15']);
 					}
 				}
@@ -5169,6 +5169,11 @@ class DELV extends CI_Controller {
 			$myar[] = $ret>0 ? ["cd" => '11', "msg" => "Updated successfully" , "res" => $res] : ["cd" => '00', "msg" => "No data to be updated", "res" => $res];
 		}
 		die(json_encode($myar));
+	}
+
+	function testIsNonUnique() {
+		$cid = $this->input->get('doc');
+		echo $this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']);
 	}
 
 	function NonReffnumberDeliveryConfirmation($data)  {
@@ -5355,7 +5360,7 @@ class DELV extends CI_Controller {
 				$this->gotoque($cid);
 				# for RPR transaction deduction start from here
 				if($ctpb_tgl_daftar) {
-					if($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) == 0) {
+					if($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) > 0) {
 						$resith = $this->NonReffnumberDeliveryConfirmation(['DOC' => $cid, 'DATE' => $ctpb_tgl_daftar, 'DATETIME' => $ctpb_tgl_daftar.' 15:15:15']);
 					}
 				}
