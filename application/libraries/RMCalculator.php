@@ -548,6 +548,9 @@ class RMCalculator {
 				} 
 				$rspsn_sup = $this->tobexported_list_for_serd($apsn);
 			}			
+
+			// $myar[] = ['cd' => 0, 'msg' => 'DEBUG', 'rspsn_sup' => $rspsn_sup, 'rspsnjob_req' => $rspsnjob_req];
+			// 	return('{"status": '.json_encode($myar).'}');
 			
 			if(count($rspsnjob_req)==0){				
 				$myar[] = ['cd' => 0, 'msg' => 'pis3 null'];
