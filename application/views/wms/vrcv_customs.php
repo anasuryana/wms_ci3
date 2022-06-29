@@ -3396,6 +3396,7 @@
                             MGGetDODetail_FGRET(response[i].STKTRND1_DOCNO);        
                             $("#rcvcustoms_fg_DTLMOD").modal('hide');
                             WMSGetDODetail_FGRET(response[i].STKTRND1_DOCNO);
+                            document.getElementById('rcvcustoms_fg_contractnum').value = response[i].RCV_CONA
                         }
                         newcell = newrow.insertCell(1)
                         newcell.innerHTML = response[i].ISUDT
