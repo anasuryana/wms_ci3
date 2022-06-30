@@ -1512,6 +1512,7 @@
                                     <th class="text-end">Price</th>
                                     <th class="text-end">Balance Qty</th>
                                     <th>BC Type</th>
+                                    <th>Supplier</th>
                                 </tr>
                             </thead>
                             <tbody>                        
@@ -2109,6 +2110,8 @@
                             newcell.innerHTML = numeral(response.data[i].STK).format(',')
                             newcell = newrow.insertCell(8)
                             newcell.innerHTML = response.data[i].RCV_BCTYPE
+                            newcell = newrow.insertCell(9)
+                            newcell.innerHTML = response.data[i].MSUP_SUPNM
                         }
                     }
                     mydes.innerHTML=''
