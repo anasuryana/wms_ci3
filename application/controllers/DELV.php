@@ -4400,6 +4400,7 @@ class DELV extends CI_Controller {
 		
 		$hinv_currency ='';		
 		$hinv_bctype ='';		
+		$h_tujuanPengiriman ='';		
 		$ar_item = [];
 		$ar_itemdesc = [];
 		$ar_itemUM = [];
@@ -4423,6 +4424,7 @@ class DELV extends CI_Controller {
 			$hinv_bctype = $r['DLV_BCTYPE'];			
 			$customer_hasPO = $r['MCUS_CUSNM'];
 			$ATTN = $r['ATTN'];
+			$h_tujuanPengiriman = $r['DLV_PURPOSE'];
 			break;
 		}
 		//end of data base
@@ -4431,11 +4433,10 @@ class DELV extends CI_Controller {
 			$Y_adj = 20;
 			$pdf->AddPage();			
 			$pdf->SetAutoPageBreak(true,1);
-			$pdf->SetMargins(0,0);
-			///$rsinv = $this->DELV_mod->select_invoice_bydono($pid);
-			$rsinv = []; //$this->DELV_mod->select_item_per_price($pid);
+			$pdf->SetMargins(0,0);			
+			$rsinv = []; 
 			if($rswhSI==='AFWH3RT' || $rswhSI==='AFWH3') {
-				$rsinv = $this->setPriceRS(base64_encode($pid)); //$this->DELV_mod->select_item_per_price($pid);
+				$rsinv = $this->setPriceRS(base64_encode($pid));
 				$rsresume = [];
 				$rsmultiprice = [];
 				foreach($rsinv as &$k){
@@ -4861,44 +4862,79 @@ class DELV extends CI_Controller {
 			$nourutDO = 0;
 			$nourutDODis = 0;
 			if($hinv_bctype==='41') {
-				$rs41 = $this->DELV_mod->select_DO41($pid);
-				foreach($rs41 as $n) {
-					if($tempItem!=$n['SER_ITMID']) {
-						$nourutDO++;
-						$tempItem = $n['SER_ITMID'];
-						$ItemDis = $tempItem;
-						$ItemDis2 = $n['MITM_ITMD1'];
-						$nourutDODis = $nourutDO;
-					} else {
-						$ItemDis = '';
-						$ItemDis2 = '';
-						$nourutDODis = '';
+				if($h_tujuanPengiriman=='5'){
+					$rs41 = $this->setPriceRS(base64_encode($pid));
+					// die(json_encode($rs41));
+					foreach($rs41 as $n) {
+						if($tempItem!=$n['SSO2_MDLCD']) {
+							$nourutDO++;
+							$tempItem = $n['SSO2_MDLCD'];
+							$ItemDis = $tempItem;
+							$ItemDis2 = $n['MITM_ITMD1'];
+							$nourutDODis = $nourutDO;
+						} else {
+							$ItemDis = '';
+							$ItemDis2 = '';
+							$nourutDODis = '';
+						}
+						if($ttlbaris>6){
+							$ttlbaris=1;
+							$curY=93;
+							$pdf->AddPage();
+						}
+						$pdf->SetXY(16,$curY);
+						$pdf->Cell(14.75,4, $nourutDODis,0,0,'C');
+						$pdf->SetXY(30.75,$curY);
+						$pdf->Cell(63.91,4, $ItemDis2,0,0,'L');
+						$pdf->SetXY(30.75,$curY+4);
+						$pdf->Cell(63.91,4, $ItemDis,0,0,'L');//LINE2
+						$pdf->SetXY(94.66,$curY);
+						$pdf->Cell(43.43,4, number_format($n['SISOQTY']). " ".$n['MITM_STKUOM'],0,0,'R');
+						$pdf->SetXY(138.09,$curY);
+						$pdf->Cell(58.34,4, "PO : ". $n['CPO'],0,0,'L');												
+						$curY+=16;
+						$ttlbaris++;
 					}
-					if($ttlbaris>6){
-						$ttlbaris=1;
-						$curY=93;
-						$pdf->AddPage();
+				} else {
+					$rs41 = $this->DELV_mod->select_DO41($pid);
+					foreach($rs41 as $n) {
+						if($tempItem!=$n['SER_ITMID']) {
+							$nourutDO++;
+							$tempItem = $n['SER_ITMID'];
+							$ItemDis = $tempItem;
+							$ItemDis2 = $n['MITM_ITMD1'];
+							$nourutDODis = $nourutDO;
+						} else {
+							$ItemDis = '';
+							$ItemDis2 = '';
+							$nourutDODis = '';
+						}
+						if($ttlbaris>6){
+							$ttlbaris=1;
+							$curY=93;
+							$pdf->AddPage();
+						}
+						$pdf->SetXY(16,$curY);
+						$pdf->Cell(14.75,4, $nourutDODis,0,0,'C');
+						$pdf->SetXY(30.75,$curY);
+						$pdf->Cell(63.91,4, $ItemDis2,0,0,'L');
+						$pdf->SetXY(30.75,$curY+4);
+						$pdf->Cell(63.91,4, $ItemDis,0,0,'L');//LINE2
+						$pdf->SetXY(94.66,$curY);
+						$pdf->Cell(43.43,4, number_format($n['TTLDLV']). " ".$n['MITM_STKUOM'],0,0,'R');
+						$pdf->SetXY(138.09,$curY);
+						$pdf->Cell(58.34,4, "EX.BC 40 : ". $n['RCV_BCNO'],0,0,'L');
+						$pdf->SetXY(138.09,$curY+4);
+						$pdf->Cell(58.34,4, "LOT. : ".number_format($n['TTLALLDLV'])." / ".number_format($n['MTTL']),0,0,'L'); //LINE2
+						$pdf->SetXY(138.09,$curY+8);
+						$pdf->Cell(58.34,4, "Sisa. : ".number_format($n['MTTL']-$n['TTLALLDLV']),0,0,'L'); //LINE
+						if($n['DLV_CONA']!=''){
+							$pdf->SetXY(138.09,$curY+12);
+							$pdf->Cell(58.34,4, "PK. NO : ".$n['DLV_CONA'],0,0,'L'); //LINE
+						}
+						$curY+=16;
+						$ttlbaris++;
 					}
-					$pdf->SetXY(16,$curY);
-					$pdf->Cell(14.75,4, $nourutDODis,0,0,'C');
-					$pdf->SetXY(30.75,$curY);
-					$pdf->Cell(63.91,4, $ItemDis2,0,0,'L');
-					$pdf->SetXY(30.75,$curY+4);
-					$pdf->Cell(63.91,4, $ItemDis,0,0,'L');//LINE2
-					$pdf->SetXY(94.66,$curY);
-					$pdf->Cell(43.43,4, number_format($n['TTLDLV']). " ".$n['MITM_STKUOM'],0,0,'R');
-					$pdf->SetXY(138.09,$curY);
-					$pdf->Cell(58.34,4, "EX.BC 40 : ". $n['RCV_BCNO'],0,0,'L');
-					$pdf->SetXY(138.09,$curY+4);
-					$pdf->Cell(58.34,4, "LOT. : ".number_format($n['TTLALLDLV'])." / ".number_format($n['MTTL']),0,0,'L'); //LINE2
-					$pdf->SetXY(138.09,$curY+8);
-					$pdf->Cell(58.34,4, "Sisa. : ".number_format($n['MTTL']-$n['TTLALLDLV']),0,0,'L'); //LINE
-					if($n['DLV_CONA']!=''){
-						$pdf->SetXY(138.09,$curY+12);
-						$pdf->Cell(58.34,4, "PK. NO : ".$n['DLV_CONA'],0,0,'L'); //LINE
-					}
-					$curY+=16;
-					$ttlbaris++;
 				}
 			} else {
 				if(count($rsdo) > 0) {
@@ -13694,6 +13730,7 @@ class DELV extends CI_Controller {
 									, 'SISO_SOLINE' => $s['SISO_SOLINE']												
 									, 'SI_BSGRP' => $k['SI_BSGRP']
 									, 'SI_CUSCD' => $k['SI_CUSCD']									
+									, 'CPO' => $s['SISO_CPONO']
 								];
 					}
 					if($k['SISOQTY'] === $k['SISOQTY_X']) {
