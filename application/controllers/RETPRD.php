@@ -1276,7 +1276,6 @@ class RETPRD extends CI_Controller {
 						'ITH_USRID' =>  $cuser
 					];
 					$this->ITH_mod->insert_ret($datas);					
-					// $this->gotoque($citemcd[$b],$cpsn, trim($r['RETSCN_CAT']), trim($r['RETSCN_LINE']), trim($r['RETSCN_FEDR']), trim($r['RETSCN_ORDERNO']), trim($r['RETSCN_LOT']));
 				}
 				$rowaff += $toret;
 			}
