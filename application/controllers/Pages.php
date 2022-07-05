@@ -139,6 +139,38 @@ class Pages extends CI_Controller {
             }
         }
     }
+
+    public function loginPerApp(){        
+        $allowedList = ['http://localhost:3000', 'http://localhost/scan-doc/', 'http://192.168.0.29:8081','http://localhost'];
+        if(in_array($_SERVER['HTTP_ORIGIN'], $allowedList)) {
+            header("Access-Control-Allow-Origin: ".$_SERVER['HTTP_ORIGIN']);
+        }
+        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+        header('Access-Control-Allow-Headers: X-Requested-With, Content-Type, Accept');        
+        date_default_timezone_set('Asia/Jakarta');        
+        $post = json_decode($this->security->xss_clean($this->input->raw_input_stream));
+        $username = $post->userid;
+        $password = $post->userpassword;
+        $where = [
+            'MSTEMP_ID' => $username,
+            'MSTEMP_PW' => hash('sha256',$password),
+            'MSTEMP_ACTSTS' => true,
+            'MSTEMP_STS' => true
+        ];        
+        
+        $dlogses  = $this->Usr_mod->cek_login($where);              
+        $fname    = '';                
+        foreach ($dlogses as $dlog) {
+            $fname = $dlog['MSTEMP_FNM'];
+            $this->m_grupid = $dlog['MSTEMP_GRP'];
+        }        
+        if(strlen($fname) > 0) {            
+            $response = ['cd' => 1, 'msg' => 'go ahead', 'userinfo' =>['FIRSTNAME' => $fname, 'GROUP' => $this->m_grupid, 'USERID' => $username] ];
+        } else {
+            $response = ['cd' => 0, 'msg' => 'not found', 'post' => $post];
+        }
+        die(json_encode(['status' => $response]));
+    }
 	
 	function IsAlreadyLogged()
     {
