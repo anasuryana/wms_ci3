@@ -511,7 +511,7 @@
     }
 
     function scanHandler(e){
-		//console.log("[scanHandler]: Code: " + e.detail.code);
+		console.log("[scanHandler]: Code: " + e.detail.code);
 	}
 	
     function scanErrorHandler(e){
@@ -520,23 +520,26 @@
 			sFormatedErrorString += '    ' + i + ': ' + e.detail[i] + ",\n";
 		}
 		sFormatedErrorString = sFormatedErrorString.trim().replace(/,$/, '') + "\n}";
-		//console.log("[scanErrorHandler]: " + sFormatedErrorString);
+		console.log("[scanErrorHandler]: " + sFormatedErrorString);
 	}
 
     function rcvfgprd_abn_initOnScan(){
 		let options = {
-			timeBeforeScanTest: 100, 
-			avgTimeByChar: 30,
-			minLength: 5, 			
-			scanButtonLongPressTime: 500, 
-			stopPropagation: false, 
-			preventDefault: false,
-			reactToPaste: true,
-			reactToKeyDown: true,
-			singleScanQty: 1
+			// timeBeforeScanTest: 100, 
+			// avgTimeByChar: 60,
+			// minLength: 5, 			
+			// scanButtonLongPressTime: 500, 
+			// stopPropagation: false, 
+			// preventDefault: false,
+			// reactToPaste: true,
+			// reactToKeyDown: true,
+			// singleScanQty: 1
+            suffixKeyCodes: [13], // enter-key expected at the end of a scan
+            reactToPaste: true, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
+            minLength: 5,
 		}
 		
-		options.onScan = function(barcode, qty){
+		options.onScan = function(barcode, qty){                    
             let tesnya = barcode;
             let ates = tesnya.split(String.fromCharCode(16));
             let  e = $.Event('keypress');
@@ -544,8 +547,8 @@
             tesnya = '';
             for(let i = 0;i<ates.length; i++){
                 tesnya += ates[i];
-            }
-            tesnya = tesnya.replace(/Ü/g, "|");
+            }      
+            tesnya = tesnya.replace(/Ü/g, "|");      
             let mactiveEl = document.activeElement.id;              
             let mactiveTag = document.activeElement.tagName;              
             let mis_selpickershow = $("[role=combobox]").hasClass("show"); 
@@ -559,24 +562,41 @@
                     document.getElementById('rcvfgprd_abn_txt_code').value=tesnya;
                     rcvfgprd_abn_f_send(tesnya);                    
                 }
-            }                                                    
-            //console.log("[onScan]: Code: " + barcode + " Quantity: " + qty);
-		};		
+            }
+		};
+        options.keyCodeMapper = function(oEvent) {
+            console.log("mapper: "+oEvent.key)
+            if(oEvent.key=='|'){
+                return '|';
+            }
+            if(oEvent.key=='Enter'){
+                return ' ';
+            }
+            if(oEvent.key=='_'){
+                return '_';
+            }
+            return oEvent.key
+            // Fall back to the default decoder in all other cases
+            // return onScan.decodeKeyEvent(oEvent);
+        }		
         options.onScanError = function(err){
-				var sFormatedErrorString = "Error Details: {\n";
-				for (var i in err){
-					sFormatedErrorString += '    ' + i + ': ' + err[i] + ",\n";
-				}
-				sFormatedErrorString = sFormatedErrorString.trim().replace(/,$/, '') + "\n}";
-				// console.log("[onScanError]: " + sFormatedErrorString);
-			}; 	
+            let sFormatedErrorString = "Error Details: {\n";
+            for (let i in err){
+                sFormatedErrorString += '    ' + i + ': ' + err[i] + ",\n";
+            }
+            sFormatedErrorString = sFormatedErrorString.trim().replace(/,$/, '') + "\n}";
+            // console.log("[onScanError]: " + sFormatedErrorString);
+        }; 	
 		
         options.onKeyProcess = function(iKey, oEvent){
             // console.log("[onKeyProcess]: Processed key code: " + iKey);
         };				
-		options.onKeyDetect = function(iKey, oEvent){
-            // console.log("[onKeyDetect]: Detected key code: " + iKey);
-        };				
+		// options.onKeyDetect = function(iKey, oEvent){
+        //     console.log("[onKeyDetect]: Detected key code: " + iKey);
+        // };				
+		options.onKeyDetect = function(iKeyCode){ // output all potentially relevant key events - great for debugging!
+            // console.log('Pressed: ' + iKeyCode);
+        }		
         options.onScanButtonLongPress = function(){
             // console.log("[onScanButtonLongPress]: ScanButton has been long-pressed");
         };

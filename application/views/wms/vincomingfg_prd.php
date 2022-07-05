@@ -83,7 +83,7 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group mb-1">                    
                     <span class="input-group-text" >QRCode</span>                    
-                    <input type="text" class="form-control" id="rcvfgprd_txt_code" maxlength="500" readonly placeholder="code here..." required style="text-align:center">                      
+                    <input type="text" class="form-control" id="rcvfgprd_txt_code" ondblclick="rcvfgprd_txt_code_edck(this)" maxlength="500" readonly placeholder="code here..." required style="text-align:center">                      
                     <span class="input-group-text" ><i class="fas fa-barcode" id="lbltes_simul"></i></span>                    
                 </div>
             </div>            
@@ -182,7 +182,17 @@
     }
     $("#rcvfgprd_refreshjob").click(function (e) { 
         rcvfgprd_f_refreshjob();        
-    });
+    })
+
+    function rcvfgprd_txt_code_edck(p){        
+        if(p.readOnly){
+            p.readOnly = false
+            onScan.detachFrom(document)
+        } else {
+            p.readOnly = true
+            rcvfgprd_initOnScan()
+        }
+    }
 
     function rcvfgprd_f_send(pkey){
         let mkey = pkey;
