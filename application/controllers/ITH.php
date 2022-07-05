@@ -1584,7 +1584,7 @@ class ITH extends CI_Controller {
 		if(!isset($_COOKIE["CKPSI_DDT1"]) || !isset($_COOKIE["CKPSI_DDT2"]) || !isset($_COOKIE["CKPSI_DITEMCD"]) || !isset($_COOKIE["CKPSI_DWH"]) ){
 			exit('no data to be found');
 		}
-
+		ini_set('max_execution_time', '-1');
 		$cwh = $_COOKIE["CKPSI_DWH"];
 		$citemcd = trim($_COOKIE["CKPSI_DITEMCD"]);
 		$cdate1 = $_COOKIE["CKPSI_DDT1"];
@@ -1663,7 +1663,7 @@ class ITH extends CI_Controller {
 			$sheet->setCellValueByColumnAndRow(5,$no, $r['ITH_FORM']);
 			$sheet->setCellValueByColumnAndRow(6,$no, $r['ITH_DOC']);
 			$sheet->setCellValueByColumnAndRow(7,$no, $r['INCQTY']);
-			$sheet->setCellValueByColumnAndRow(8,$no, abs($r['OUTQTY']));
+			$sheet->setCellValueByColumnAndRow(8,$no, abs((float)$r['OUTQTY']));
 			$sheet->setCellValueByColumnAndRow(9,$no, $r['ITH_BAL']);
 			$no++;
 		}
