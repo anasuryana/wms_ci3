@@ -125,7 +125,7 @@ const devNode = $('#mmenu').tree({
         } else {
             if (node.hasOwnProperty('url')){                
                 if (node.url!=''){                
-                    if (node.desc=='Receiving FG PRD' || node.desc=='Transfer OQC' || node.desc=='Transfer OQC Sub-Assy' 
+                    if (node.desc=='Receiving FG PRD' || node.desc=='Receiving FG PRD NG' || node.desc=='Transfer OQC' || node.desc=='Transfer OQC Sub-Assy' 
                     || node.desc=='Receiving FG WH' || node.desc=='Receiving Returned FG'){
                         if($('#tt').tabs('tabs').length>0){
                             alertify.warning('Please close all opened tabs'); return;
@@ -136,6 +136,8 @@ const devNode = $('#mmenu').tree({
                         } else if ($('#tt').tabs('exists','Receiving FG WH')){
                             alertify.warning('Please close all opened tabs'); return;
                         } else if ($('#tt').tabs('exists','Receiving FG PRD')){
+                            alertify.warning('Please close all opened tabs'); return;
+                        } else if ($('#tt').tabs('exists','Receiving FG PRD NG')){
                             alertify.warning('Please close all opened tabs'); return;
                         } else if ($('#tt').tabs('exists','Transfer OQC Sub-Assy')){
                             alertify.warning('Please close all opened tabs'); return;
@@ -208,7 +210,6 @@ $("#FOOTER_MODWH_btnsave").click(function (e) {
     $("#FOOTER_MODWH").modal('hide'); alertify.message('Saved');
 });
 
-
     $('#tt').tabs({
         onBeforeClose: function(title){
             let konf = confirm('Are you sure want to close '+title);
@@ -256,7 +257,7 @@ $("#FOOTER_MODWH_btnsave").click(function (e) {
                     }
                     
                 }
-                if(title=='Receiving FG PRD' || title=='Transfer OQC' || title=='Transfer OQC Sub-Assy' || title=='Receiving Returned FG'){
+                if(title=='Receiving FG PRD' || title=='Receiving FG PRD NG' || title=='Transfer OQC' || title=='Transfer OQC Sub-Assy' || title=='Receiving Returned FG'){
                     console.log('mulai detach seharusnya....');
                     if(typeof scannerDetectionData != 'undefined'){
                         onScan.detachFrom(document);
