@@ -152,10 +152,7 @@ class SPL extends CI_Controller {
 	}
 	public function form_book_ost(){
 		$this->load->view('wms_report/vspl_booked_list');
-	}
-	public function form_report_kitting_result(){
-		$this->load->view('wms_report/vrpt_kitting_result');
-	}
+	}	
 
 	public function form_reference(){
 		$this->load->view('wms/vspl_reference');
