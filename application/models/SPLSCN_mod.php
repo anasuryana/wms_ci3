@@ -136,6 +136,16 @@ class SPLSCN_mod extends CI_Model {
         $query = $this->db->query($qry, [$pjob]);
         return $query->result_array();
     }
+    public function select_supplied_vs_confirmed($doc) {
+        $qry = "wms_sp_check_doc ?";
+        $query = $this->db->query($qry, [$doc]);
+        return $query->result_array();
+    }
+    public function select_supplied_vs_confirmed_progress($doc) {
+        $qry = "wms_sp_check_doc_progress ?";
+        $query = $this->db->query($qry, [$doc]);
+        return $query->result_array();
+    }
     public function select_spl_vs_splscn_null_old($ppsn){
         $qry = "select PPSN2_PSNNO SPL_DOC, PPSN2_LINENO SPL_LINE,PPSN2_FR SPL_FEDR,PPSN2_MCZ SPL_ORDERNO,PPSN2_ITMCAT SPL_CAT
         ,PPSN2_SUBPN SPL_ITMCD,PPSN2_REQQT REQQT from XPPSN2 where PPSN2_PSNNO in ($ppsn) 

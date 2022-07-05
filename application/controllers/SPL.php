@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 class SPL extends CI_Controller {
-	private $AMONTHPATRN = ['1','2','3', '4', '5', '6', '7', '8', '9', 'X', 'Y' , 'Z'];
+	private $AMONTHPATRN = ['1','2','3', '4', '5', '6', '7', '8', '9', 'X', 'Y' , 'Z'];	
 	public function __construct()
 	{
 		parent::__construct();
@@ -26,11 +26,110 @@ class SPL extends CI_Controller {
 		$this->load->model('ITMLOC_mod');
 		$this->load->model('RQSRMRK_mod');
 		$this->load->model('LOGSER_mod');
-		$this->load->model('SPLBOOK_mod');		
+		$this->load->model('SPLBOOK_mod');
+		$this->load->model('SCNDOC_mod');
+		$this->load->model('SCNDOCITM_mod');
 	}
 	public function index()
 	{
 		echo "sorry";
+	}
+
+	function get_doc_today() {					
+		header("Access-Control-Allow-Origin: *");	        
+		header('Content-Type: application/json');
+
+		$rs = $this->SCNDOC_mod->select_today();
+		die(json_encode(['data' => $rs]));
+	}
+
+	function get_psn_item_confirmation_list_progress() {
+		header("Access-Control-Allow-Origin: *");
+		header('Content-Type: application/json');
+		$doc = $this->input->get('doc');
+		$myar = $this->SCNDOC_mod->check_Primary(['SCNDOC_DOCNO' => $doc]) ? ['cd' => 1, 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'PSN is not found'];
+		$rsProgress = $this->SPLSCN_mod->select_supplied_vs_confirmed_progress($doc);
+		die(json_encode(['status' => $myar, 'progress' => $rsProgress]));
+	}
+	function get_psn_item_confirmation_list() {
+		header("Access-Control-Allow-Origin: *");
+		header('Content-Type: application/json');
+		$doc = $this->input->get('doc');
+		$myar = $this->SCNDOC_mod->check_Primary(['SCNDOC_DOCNO' => $doc]) ? ['cd' => 1, 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'PSN is not found'];
+		$rs = $this->SPLSCN_mod->select_supplied_vs_confirmed($doc);
+		die(json_encode(['status' => $myar, 'data' => $rs]));
+	}
+
+	function confirm_psn_item_at_plant() {
+		date_default_timezone_set('Asia/Jakarta');
+        $currentDateTime = date('Y-m-d H:i:s');
+		header("Access-Control-Allow-Origin: *");
+		header('Content-Type: application/json');
+		$doc = $this->input->post('doc');
+		$userid = $this->input->post('userid');
+		$itemcode = $this->input->post('itemcode');
+		$itemqty = $this->input->post('itemqty');
+		$itemlot = $this->input->post('itemlot');
+		$rsProgress = $this->SPLSCN_mod->select_supplied_vs_confirmed_progress($doc);
+		$myar = [];
+		$balance = 0;
+		foreach($rsProgress as $r) {
+			$balance = $r['RQT']-$r['CQT'];
+		}
+		if($balance>0 && $balance>=$itemqty){
+			$WHERE = [
+				'SPLSCN_DOC' => $doc,
+				'SPLSCN_ITMCD' => $itemcode,
+				'SPLSCN_QTY' => $itemqty,
+				'SPLSCN_LOTNO' => $itemlot,
+			];
+			if($this->SPLSCN_mod->check_Primary($WHERE)) {
+				$newLine = $this->SCNDOCITM_mod->lastserialid($doc)+1;
+				$this->SCNDOCITM_mod->insert([
+					'SCNDOCITM_DOCNO' => $doc,
+					'SCNDOCITM_ITMCD' => $itemcode,
+					'SCNDOCITM_LOTNO' => $itemlot,
+					'SCNDOCITM_QTY' => $itemqty,
+					'SCNDOCITM_LINE' => $newLine,
+					'SCNDOCITM_CREATEDAT' => $currentDateTime,
+					'SCNDOCITM_CREATEDBY' => $userid,
+				]);
+				$myar[] = ['cd' => 1, 'msg' => 'OK'];
+			} else {
+				$myar[] = ['cd' => 0, 'msg' => 'label is not registered in the document'];				
+			}
+		} else {
+			$myar[] = ['cd' => 1, 'msg' => 'already finished'];
+		}
+		$rsProgress = $this->SPLSCN_mod->select_supplied_vs_confirmed_progress($doc);
+		die(json_encode(['status' => $myar, 'progress' => $rsProgress]));
+	}
+
+	function confirm_psn_at_plant() {   
+		header("Access-Control-Allow-Origin: *");
+		date_default_timezone_set('Asia/Jakarta');
+		$current_time = date('Y-m-d H:i:s');
+		header('Content-Type: application/json');
+		$doc = $this->input->post('doc');
+		$userid = $this->input->post('userid');
+		$myar = [];		
+		if($this->SCNDOC_mod->check_Primary(['SCNDOC_DOCNO' => $doc])) {
+			$myar[] = ['cd' => 1, 'msg' => 'aleready scanned'];
+		} else {
+			if($this->SPL_mod->check_Primary(['SPL_DOC' => $doc])) {
+				$this->SCNDOC_mod->insert([
+					'SCNDOC_DOCNO' => $doc,
+					'SCNDOC_TYPE' => '01',
+					'SCNDOC_USRID' => $userid,
+					'SCNDOC_SCANNEDAT' => $current_time,
+					'SCNDOC_CREATEDAT' => $current_time,
+				]);
+				$myar[] = ['cd' => 1, 'msg' => 'OK'];
+			} else {
+				$myar[] = ['cd' => 0, 'msg' => 'Document is not valid'];
+			}
+		}
+		die(json_encode(['status' => $myar]));
 	}
 
 	public function get_c3_definition(){
@@ -40,7 +139,7 @@ class SPL extends CI_Controller {
 		$cqty = $this->input->post('inqty');
 		$rs = $this->C3LC_mod->selectall_where(['C3LC_ITMCD' => $citemcd, 'C3LC_NLOTNO' => $clotno]);
 		die('{"data":'.json_encode($rs).'}');
-	}
+	}	
 
 	public function create(){
 		$rsBG = $this->XBGROUP_mod->selectall();
