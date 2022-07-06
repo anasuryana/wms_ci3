@@ -340,55 +340,43 @@ class SPL_mod extends CI_Model {
         // THERE ARE SOME differences between WO Simulation and BOM
         // SO WE NEED TO HANDLE THIS PROBLEM
         // NOTE : ASK PPIC DEPT FOR DETAIL PROBLEM
-        $specialWO = ['22-5A09-217724501','22-6A27-F65929-09V','22-6AG28-222011501'];
-        
+        $specialWO = ['22-5A09-217724501','22-6A27-F65929-09V'];        
         if(in_array($pwo, $specialWO)) {
             $qry = "SELECT PDPP_MDLCD,PDPP_WONO PIS3_WONO, MBOM_LINE PIS3_LINENO, '' PIS3_FR, '' PIS3_PROCD, '' PIS3_MC, '' PIS3_MCZ, PDPP_WORQT*MBOM_PARQT PIS3_REQQTSUM, MBOM_PARQT MYPER, RTRIM(MBOM_BOMPN) PIS3_ITMCD, RTRIM(MBOM_BOMPN) PIS3_MPART  FROM XMBOM
             inner join XWO ON MBOM_MDLCD=PDPP_MDLCD AND MBOM_BOMRV=PDPP_BOMRV
             WHERE PDPP_WONO=?";
             $query = $this->db->query($qry, [$pwo] );
-        } else {
-            if($pwo==='21-XA08-221093101ES') {
-                #PROBLEM : SIMULATION WAS DELETED
-                $qry = "select PIS3_MDLCD PDPP_MDLCD,'21-XA08-221093101ES' PIS3_WONO,RTRIM(PIS3_LINENO) PIS3_LINENO, RTRIM(PIS3_FR) PIS3_FR
-                ,UPPER(RTRIM(PIS3_PROCD)) PIS3_PROCD, RTRIM(PIS3_MC) PIS3_MC
-                ,RTRIM(PIS3_MCZ) PIS3_MCZ
-                ,CASE WHEN PDPP_WORQT!=SIMQT THEN 
-                    SUM(PIS3_REQQT)+(SUM(PIS3_REQQT)/SIMQT * (PDPP_WORQT-SIMQT)) else SUM(PIS3_REQQT)
-                END PIS3_REQQTSUM
-                ,CASE WHEN PDPP_WORQT!=SIMQT THEN 
-                    (SUM(PIS3_REQQT)+(SUM(PIS3_REQQT)/SIMQT * (PDPP_WORQT-SIMQT))) / PDPP_WORQT else SUM(PIS3_REQQT)/PDPP_WORQT
-                END MYPER
-                ,max(RTRIM(PIS3_ITMCD)) PIS3_ITMCD,RTRIM(PIS3_MPART) PIS3_MPART	
-                from XPIS3 
-                left JOIN XWO ON PIS3_WONO=PDPP_WONO
-                LEFT JOIN (SELECT PPSN1_WONO,MAX(PPSN1_SIMQT) SIMQT, RTRIM(PPSN1_MDLCD) PPSN1_MDLCD FROM XPPSN1
-                GROUP BY PPSN1_WONO, PPSN1_MDLCD) VPPSN1 ON PPSN1_WONO=PIS3_WONO
-                WHERE PIS3_WONO='21-XA09-221093101ES'
-                GROUP BY PIS3_WONO,PIS3_LINENO,PIS3_MC,PIS3_MCZ,PDPP_WORQT,PIS3_MDLCD,PIS3_FR,PIS3_PROCD,PIS3_MPART,SIMQT
-                ORDER BY PIS3_MCZ,PIS3_MC,PIS3_PROCD ";
-                $query = $this->db->query($qry, [$pwo] );
-            } else {
-                $qry = "select PPSN1_MDLCD PDPP_MDLCD,RTRIM(PIS3_WONO) PIS3_WONO,RTRIM(PIS3_LINENO) PIS3_LINENO, RTRIM(PIS3_FR) PIS3_FR
-                ,UPPER(RTRIM(PIS3_PROCD)) PIS3_PROCD, RTRIM(PIS3_MC) PIS3_MC
-                ,RTRIM(PIS3_MCZ) PIS3_MCZ
-                ,CASE WHEN PDPP_WORQT!=SIMQT THEN 
-                    SUM(PIS3_REQQT)+(SUM(PIS3_REQQT)/SIMQT * (PDPP_WORQT-SIMQT)) else SUM(PIS3_REQQT)
-                END PIS3_REQQTSUM
-                ,CASE WHEN PDPP_WORQT!=SIMQT THEN 
-                    (SUM(PIS3_REQQT)+(SUM(PIS3_REQQT)/SIMQT * (PDPP_WORQT-SIMQT))) / PDPP_WORQT else SUM(PIS3_REQQT)/SIMQT
-                END MYPER
-                ,max(RTRIM(PIS3_ITMCD)) PIS3_ITMCD,RTRIM(PIS3_MPART) PIS3_MPART	
-                from XPIS3 
-                left JOIN XWO ON PIS3_WONO=PDPP_WONO
-                LEFT JOIN (SELECT PPSN1_WONO,MAX(PPSN1_SIMQT) SIMQT, RTRIM(PPSN1_MDLCD) PPSN1_MDLCD FROM XPPSN1
-                GROUP BY PPSN1_WONO, PPSN1_MDLCD) VPPSN1 ON PPSN1_WONO=PIS3_WONO
-                WHERE PIS3_WONO=? and PIS3_DOCNO=?
-                GROUP BY PIS3_WONO,PIS3_LINENO,PIS3_MC,PIS3_MCZ,PDPP_WORQT,PPSN1_MDLCD,PIS3_FR,PIS3_PROCD,PIS3_MPART,SIMQT
-                ORDER BY PIS3_MCZ,PIS3_MC,PIS3_PROCD ";
-                $query = $this->db->query($qry, [$pwo, $pdocno] );
-            }
+        } else {            
+            $qry = "select PPSN1_MDLCD PDPP_MDLCD,RTRIM(PIS3_WONO) PIS3_WONO,RTRIM(PIS3_LINENO) PIS3_LINENO, RTRIM(PIS3_FR) PIS3_FR
+            ,UPPER(RTRIM(PIS3_PROCD)) PIS3_PROCD, RTRIM(PIS3_MC) PIS3_MC
+            ,RTRIM(PIS3_MCZ) PIS3_MCZ
+            ,CASE WHEN PDPP_WORQT!=SIMQT THEN 
+                SUM(PIS3_REQQT)+(SUM(PIS3_REQQT)/SIMQT * (PDPP_WORQT-SIMQT)) else SUM(PIS3_REQQT)
+            END PIS3_REQQTSUM
+            ,CASE WHEN PDPP_WORQT!=SIMQT THEN 
+                (SUM(PIS3_REQQT)+(SUM(PIS3_REQQT)/SIMQT * (PDPP_WORQT-SIMQT))) / PDPP_WORQT else SUM(PIS3_REQQT)/SIMQT
+            END MYPER
+            ,max(RTRIM(PIS3_ITMCD)) PIS3_ITMCD,RTRIM(PIS3_MPART) PIS3_MPART	
+            from XPIS3 
+            left JOIN XWO ON PIS3_WONO=PDPP_WONO
+            LEFT JOIN (SELECT PPSN1_WONO,MAX(PPSN1_SIMQT) SIMQT, RTRIM(PPSN1_MDLCD) PPSN1_MDLCD FROM XPPSN1
+            GROUP BY PPSN1_WONO, PPSN1_MDLCD) VPPSN1 ON PPSN1_WONO=PIS3_WONO
+            WHERE PIS3_WONO=? and PIS3_DOCNO=?
+            GROUP BY PIS3_WONO,PIS3_LINENO,PIS3_MC,PIS3_MCZ,PDPP_WORQT,PPSN1_MDLCD,PIS3_FR,PIS3_PROCD,PIS3_MPART,SIMQT
+            ORDER BY PIS3_MCZ,PIS3_MC,PIS3_PROCD ";
+            $query = $this->db->query($qry, [$pwo, $pdocno] );
+            
         }
+        return $query->result_array();
+    }
+    public function select_psnjob_req_from_CIMS($pwo, $assycode){
+        $qry = "SELECT PDPP_MDLCD,PDPP_WONO PIS3_WONO, RTRIM(MBLA_LINENO) PIS3_LINENO, RTRIM(MBLA_FR) PIS3_FR, RTRIM(MBLA_PROCD) PIS3_PROCD, RTRIM(MBLA_MC) PIS3_MC
+        , RTRIM(MBLA_MCZ) PIS3_MCZ, PDPP_WORQT*SUM(MBLA_QTY) PIS3_REQQTSUM, SUM(MBLA_QTY) MYPER, MAX(RTRIM(MBLA_SPART)) PIS3_ITMCD, RTRIM(MBLA_ITMCD) PIS3_MPART  
+                FROM VCIMS_MBLA_TBL
+                inner join XWO ON MBLA_MDLCD=PDPP_MDLCD AND MBLA_BOMRV=PDPP_BOMRV
+                WHERE PDPP_WONO=? AND MBLA_MDLCD=?
+            GROUP BY PDPP_MDLCD,PDPP_WONO,MBLA_LINENO,MBLA_FR,MBLA_PROCD,MBLA_MC,MBLA_MCZ,MBLA_ITMCD,PDPP_WORQT";
+        $query = $this->db->query($qry, [$pwo, $assycode] );
         return $query->result_array();
     }
     public function select_psnjob_req_basepwop($pwo){

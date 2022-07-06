@@ -5175,6 +5175,14 @@ class SER extends CI_Controller {
 		die('{"data":'.json_encode($rs).',"psna": '.json_encode($apsn).'}');
 	}
 
+	public function testRMCalculator(){
+		header('Content-Type: application/json');
+		$doc  = $this->input->get('doc');
+		$Calc_lib = new RMCalculator();
+		$rs = $Calc_lib->get_usage_rm_perjob($doc);
+		die(json_encode(['data' => $rs]));
+	}
+
 	public function upload_serd2(){
 		date_default_timezone_set('Asia/Jakarta');
 		$current_datetime = date('Y-m-d H:i:s');

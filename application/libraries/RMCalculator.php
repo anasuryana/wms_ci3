@@ -478,6 +478,7 @@ class RMCalculator {
 		$apsn = [];
 		$strmdlcd = '';
 		$BSGRP = '';
+		$deletedSimulation = ['22-6AG28-222011501','21-XA08-221093101ES'];
 		foreach($rspsn as $r){
 			$strpsn .= "'".$r['PPSN1_PSNNO']."',";
 			$apsn[] = $r['PPSN1_PSNNO'];
@@ -488,10 +489,10 @@ class RMCalculator {
 		$strpsn = substr($strpsn,0,strlen($strpsn)-1);
 		if(trim($strpsn)!=''){
 			$rsMSPP = $this->CI->MSPP_mod->select_byvar_for_calc($strmdlcd, $pjob);
-			$xrssub = $this->CI->MSPP_mod->select_all_byvar_group(["MSPP_ACTIVE" => "Y", "MSPP_MDLCD !=" => $strmdlcd]);
-			//$xrssubENG = $this->CI->MSPP_mod->select_all_byvar_ENG(["REPLACE(ITMCD,'-','')" => $strmdlcd]);
+			$xrssub = $this->CI->MSPP_mod->select_all_byvar_group(["MSPP_ACTIVE" => "Y", "MSPP_MDLCD !=" => $strmdlcd]);			
 			$rsSpecial = $this->CI->MITMSA_mod->select_where(['RTRIM(MITMSA_ITMCD) MITMSA_ITMCD', 'RTRIM(MITMSA_ITMCDS) MITMSA_ITMCDS'], ['MITMSA_MDLCD' => $strmdlcd,'MITMSA_DELDT' => NULL]);
-			$rspsnjob_req = $this->CI->SPL_mod->select_psnjob_req($strdocno, $pjob);
+			$rspsnjob_req = in_array($pjob, $deletedSimulation) ? $this->CI->SPL_mod->select_psnjob_req_from_CIMS($pjob, $strmdlcd)
+				: $this->CI->SPL_mod->select_psnjob_req($strdocno, $pjob);
 			$rsWOM = $this->CI->PWOP_mod->select_mainsub($pjob);
 			$rsSPLREFF = $this->CI->SPLREFF_mod->select_mainsub($apsn);
 			#Is SubAssy ?
