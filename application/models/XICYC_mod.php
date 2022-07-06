@@ -22,9 +22,10 @@ class XICYC_mod extends CI_Model {
 
     function select_date($pWhere)
     {
-        $this->db->select("CONVERT(DATE,MAX(ICYC_STKDT)) ICYC_STKDT");
+        $this->db->select("CONVERT(DATE,ICYC_STKDT) ICYC_STKDT");
         $this->db->from($this->TABLENAME);
-        $this->db->where($pWhere);        
+        $this->db->where($pWhere);
+        $this->db->group_by('ICYC_STKDT');
 		$query = $this->db->get();
 		return $query->result();
     }
