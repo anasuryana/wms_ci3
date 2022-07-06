@@ -29,6 +29,7 @@ class SPL extends CI_Controller {
 		$this->load->model('SPLBOOK_mod');
 		$this->load->model('SCNDOC_mod');
 		$this->load->model('SCNDOCITM_mod');
+		$this->load->model('XMBOM_mod');
 	}
 	public function index()
 	{
@@ -217,59 +218,89 @@ class SPL extends CI_Controller {
 	public function simulate_sim_vs_stock(){
 		header('Content-Type: application/json');
 		$csimno = $this->input->post('insimno');
-		$myar = [];
+		$tab = $this->input->post('tab');
+		$assycode = $this->input->post('assycode');
+		$qty = $this->input->post('qty');
 		$rs = [];
-		$csimnoCount = count($csimno);
-		$docno_in = "";
-		for($i=0; $i<$csimnoCount; $i++){
-			$docno_in .= "'".$csimno[$i]."',";
-			$rsget = $this->SPL_mod->select_psnjob_req_for_simulate($csimno[$i]);
-			$rs = array_merge($rs, $rsget);
-		}
-		$docno_in = substr($docno_in,0, strlen($docno_in)-1);
-		$rsstock = $this->SPL_mod->select_sim_item_stock($docno_in);
-		foreach($rs as &$n){
-			foreach($rsstock as &$k){
-				if($n['PIS3_MPART'] == $k['ITEMCODE'] && $k['TSTKQTY'] >0){
-					if($n['REQQTY'] > $n['PLOTQTY']){
-						$balance = $n['REQQTY'] - $n['PLOTQTY'];
-						if($balance > $k['TSTKQTY']){
-							$n['PLOTQTY'] += $k['TSTKQTY'];
-							$k['TSTKQTY'] = 0;
+		$myar = [];
+		if($tab==='simvsstock_byassy-tab') {
+			$rs = $this->XMBOM_mod->select_for_simulation($assycode, $qty);
+			$rsstock = $this->XMBOM_mod->select_sim_item_stock($assycode);
+			foreach($rs as &$n){
+				foreach($rsstock as &$k){
+					if($n['PIS3_MPART'] == $k['ITEMCODE'] && $k['TSTKQTY'] >0){
+						if($n['REQQTY'] > $n['PLOTQTY']){
+							$balance = $n['REQQTY'] - $n['PLOTQTY'];
+							if($balance > $k['TSTKQTY']){
+								$n['PLOTQTY'] += $k['TSTKQTY'];
+								$k['TSTKQTY'] = 0;
+							} else {
+								$n['PLOTQTY'] += $balance;
+								$k['TSTKQTY'] -= $balance;
+							}
 						} else {
-							$n['PLOTQTY'] += $balance;
-							$k['TSTKQTY'] -= $balance;
+							break;
 						}
-					} else {
-						break;
 					}
 				}
+				unset($k);
 			}
-			unset($k);
-		}
-		unset($n);
-
-		foreach($rs as &$n){
-			foreach($rsstock as &$k){
-				if($n['PIS3_ITMCD'] == $k['ITEMCODESUB'] && $k['TSTKSUBQTY'] >0){
-					if($n['REQQTY'] > ($n['PLOTQTY'] + $n['PLOTSUBQTY']) ){
-						$balance = $n['REQQTY'] - ($n['PLOTQTY']+ $n['PLOTSUBQTY']);
-						if($balance > $k['TSTKSUBQTY']){
-							$n['PLOTSUBQTY'] += $k['TSTKSUBQTY'];
-							$k['TSTKSUBQTY'] = 0;
+			unset($n);
+			$myar[] = ['cd' => 1, 'msg' => 'OK', 'reff' => $rsstock];
+		} else {
+			$myar[] = ['cd' => 1, 'msg' => 'OK'];
+			$csimnoCount = count($csimno);
+			$docno_in = "";
+			for($i=0; $i<$csimnoCount; $i++){
+				$docno_in .= "'".$csimno[$i]."',";
+				$rsget = $this->SPL_mod->select_psnjob_req_for_simulate($csimno[$i]);
+				$rs = array_merge($rs, $rsget);
+			}
+			$docno_in = substr($docno_in,0, strlen($docno_in)-1);
+			$rsstock = $this->SPL_mod->select_sim_item_stock($docno_in);
+			foreach($rs as &$n){
+				foreach($rsstock as &$k){
+					if($n['PIS3_MPART'] == $k['ITEMCODE'] && $k['TSTKQTY'] >0){
+						if($n['REQQTY'] > $n['PLOTQTY']){
+							$balance = $n['REQQTY'] - $n['PLOTQTY'];
+							if($balance > $k['TSTKQTY']){
+								$n['PLOTQTY'] += $k['TSTKQTY'];
+								$k['TSTKQTY'] = 0;
+							} else {
+								$n['PLOTQTY'] += $balance;
+								$k['TSTKQTY'] -= $balance;
+							}
 						} else {
-							$n['PLOTSUBQTY'] += $balance;
-							$k['TSTKSUBQTY'] -= $balance;
+							break;
 						}
-					} else {
-						break;
 					}
 				}
+				unset($k);
 			}
-			unset($k);
+			unset($n);
+	
+			foreach($rs as &$n){
+				foreach($rsstock as &$k){
+					if($n['PIS3_ITMCD'] == $k['ITEMCODESUB'] && $k['TSTKSUBQTY'] >0){
+						if($n['REQQTY'] > ($n['PLOTQTY'] + $n['PLOTSUBQTY']) ){
+							$balance = $n['REQQTY'] - ($n['PLOTQTY']+ $n['PLOTSUBQTY']);
+							if($balance > $k['TSTKSUBQTY']){
+								$n['PLOTSUBQTY'] += $k['TSTKSUBQTY'];
+								$k['TSTKSUBQTY'] = 0;
+							} else {
+								$n['PLOTSUBQTY'] += $balance;
+								$k['TSTKSUBQTY'] -= $balance;
+							}
+						} else {
+							break;
+						}
+					}
+				}
+				unset($k);
+			}
+			unset($n);
 		}
-		unset($n);
-		die('{"data":'.json_encode($rs).'}');		
+		die(json_encode(['data' => $rs, 'status' => $myar]));
 	}
 
 	public function requestdoc(){
