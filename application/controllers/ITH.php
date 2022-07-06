@@ -1408,8 +1408,13 @@ class ITH extends CI_Controller {
 		$cdate1 = $this->input->get('indate1');
 		$cdate2 = $this->input->get('indate2');
 		if(in_array($cwh, $fg_wh)) {
-			$rsbef =  $this->ITH_mod->select_txhistory_bef_parent_fg($cwh, $citemcd, $cdate1);
-			$rs = $this->ITH_mod->select_txhistory_parent_fg($cwh, $citemcd, $cdate1, $cdate2);
+			if($cwh==='NFWH4RT') {
+				$rsbef =  $this->ITH_mod->select_txhistory_bef_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, [$cwh,'ARSHPRTN','AFQART']);
+				$rs = $this->ITH_mod->select_txhistory_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, $cdate2,[$cwh,'ARSHPRTN','AFQART']);
+			} else {
+				$rsbef =  $this->ITH_mod->select_txhistory_bef_parent_fg($cwh, $citemcd, $cdate1);
+				$rs = $this->ITH_mod->select_txhistory_parent_fg($cwh, $citemcd, $cdate1, $cdate2);
+			}
 		} else {
 			$rsbef =  $this->ITH_mod->select_txhistory_bef_parent($cwh, $citemcd, $cdate1);
 			$rs = $this->ITH_mod->select_txhistory_parent($cwh, $citemcd, $cdate1, $cdate2);
@@ -1772,17 +1777,21 @@ class ITH extends CI_Controller {
 		$date = $this->input->get('date');
 		$item = $this->input->get('item');
 		$location = $this->input->get('location');
-		if(in_array($location, $fg_wh)){
-			$rsParent = $this->XFTRN_mod->select_where(
-				['CONVERT(DATE,FTRN_ISUDT) ITRN_ISUDT', 'RTRIM(FTRN_DOCCD) ITRN_DOCCD', 'RTRIM(FTRN_DOCNO) ITRN_DOCNO', "(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) QTY",'RTRIM(FTRN_REFNO1) ITRN_REFNO1']
-				, ['FTRN_ISUDT' => $date, 'FTRN_ITMCD' => $item, 'FTRN_LOCCD' => $location] );
+		if(in_array($location, $fg_wh)){			
+				$rsParent = $this->XFTRN_mod->select_where(
+					['CONVERT(DATE,FTRN_ISUDT) ITRN_ISUDT', 'RTRIM(FTRN_DOCCD) ITRN_DOCCD', 'RTRIM(FTRN_DOCNO) ITRN_DOCNO', "(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) QTY",'RTRIM(FTRN_REFNO1) ITRN_REFNO1']
+					, ['FTRN_ISUDT' => $date, 'FTRN_ITMCD' => $item, 'FTRN_LOCCD' => $location] );			
 		} else {
 			$rsParent = $this->XITRN_mod->select_where(
 				['CONVERT(DATE,ITRN_ISUDT) ITRN_ISUDT', 'RTRIM(ITRN_DOCCD) ITRN_DOCCD', 'RTRIM(ITRN_DOCNO) ITRN_DOCNO', "(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) QTY",'RTRIM(ITRN_REFNO1) ITRN_REFNO1']
 				, ['ITRN_ISUDT' => $date, 'ITRN_ITMCD' => $item, 'ITRN_LOCCD' => $location] );
 		}
-		
-		$rsChild = $this->ITH_mod->select_view_where(['ITH_DATEC' => $date, 'ITH_ITMCD' => $item, 'ITH_WH' => $location]);
+		if($location==='NFWH4RT') {
+			$rsChild = $this->ITH_mod->select_view_where_and_locationIn(['ITH_DATEC' => $date, 'ITH_ITMCD' => $item],
+			[$location,'ARSHPRTN','AFQART']);
+		} else {
+			$rsChild = $this->ITH_mod->select_view_where(['ITH_DATEC' => $date, 'ITH_ITMCD' => $item, 'ITH_WH' => $location]);
+		}
 		die(json_encode(['parent' => $rsParent, 'child' => $rsChild]));
 	}
 
