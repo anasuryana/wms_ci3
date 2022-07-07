@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class ITH extends CI_Controller {
 
@@ -3110,10 +3112,10 @@ class ITH extends CI_Controller {
 					$sheet->getColumnDimension($v)->setAutoSize(true);
 				}
 			}
-		} else {			
+		} else {
 			$spreadsheet = new Spreadsheet();			
 			$sheet = $spreadsheet->getActiveSheet();
-			$sheet->setTitle('FG_RESUME_OTHER');
+			$sheet->setTitle('FG_RESUME');
 			$sheet->setCellValueByColumnAndRow(1,2, 'Assy Code');
 			$sheet->setCellValueByColumnAndRow(2,2, 'Description');
 			$sheet->setCellValueByColumnAndRow(3,2, 'Location');
@@ -3151,28 +3153,60 @@ class ITH extends CI_Controller {
 			#FORMAT NUMBER
 			$rang = "C4:I".$sheet->getHighestDataRow();
 			$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-			
-			$rsRM = $this->XPGRN_mod->selec_where_group(['RTRIM(PGRN_ITMCD) PGRN_ITMCD'],['PGRN_ITMCD'], ['PGRN_BSGRP' => $bg]);
-			$rmstring = '';
-			foreach($rsRM as $r){
-				$rmstring .= "'".$r->PGRN_ITMCD."',";
-			}
-			$rmstring = substr($rmstring,0,strlen($rmstring)-1);
-			$rswip = $this->ITH_mod->select_allwip_plant2($date,$rmstring);
+						
+			$rswip = $this->ITH_mod->select_allwip_plant2_byBG($date,$bg);
 			$rang = "A1:A".$sheet->getHighestDataRow();
 			if(count($rswip)){
 				$sheet = $spreadsheet->createSheet();
 				$sheet->setTitle('RM_RESUME');
-				$sheet->fromArray(array_keys($rswip[0]), NULL, 'A1');
-				$sheet->fromArray($rswip, NULL, 'A2');
-				$sheet->getColumnDimension('C')->setVisible(false);
+				$sheet->setCellValueByColumnAndRow(1,2, 'Part Code'); $sheet->mergeCells('A2:A4'); #rowspan3
+				$sheet->setCellValueByColumnAndRow(2,2, 'Description'); $sheet->mergeCells('B2:B4'); #rowspan3
+				$sheet->setCellValueByColumnAndRow(3,2, 'Location'); $sheet->mergeCells('C2:J2'); #colspan8
+				$sheet->setCellValueByColumnAndRow(3,3, 'RM Warehouse'); $sheet->mergeCells('C3:D3'); #colspan2
+				$sheet->setCellValueByColumnAndRow(5,3, 'ARWH0PD'); $sheet->mergeCells('E3:E4'); #rowspan2
+				$sheet->setCellValueByColumnAndRow(6,3, 'Plant'); $sheet->mergeCells('F3:I3'); #colspan4
+				$sheet->setCellValueByColumnAndRow(10,3, 'QA'); $sheet->mergeCells('J3:J4'); #rowspan2
+
+				$sheet->setCellValueByColumnAndRow(3,4, 'ARWH2');
+				$sheet->setCellValueByColumnAndRow(4,4, 'NRWH2');
+
+				$sheet->setCellValueByColumnAndRow(6,4, 'Job');
+				$sheet->setCellValueByColumnAndRow(7,4, 'Qty UNIT');
+				$sheet->setCellValueByColumnAndRow(8,4, 'Qty PCS');
+				$sheet->setCellValueByColumnAndRow(9,4, 'Logical Return');
+				$sheet->freezePane('C5');
+				$y = 5;
+				foreach($rswip as $r){
+					$sheet->setCellValueByColumnAndRow(1,$y, $r['ITRN_ITMCD']);
+					$sheet->setCellValueByColumnAndRow(2,$y, $r['ITMD1']);
+					$sheet->setCellValueByColumnAndRow(3,$y, $r['ARWH']);
+					$sheet->setCellValueByColumnAndRow(4,$y, $r['NRWH2']);
+					$sheet->setCellValueByColumnAndRow(5,$y, $r['ARWH0PD']);
+					$sheet->setCellValueByColumnAndRow(6,$y, $r['JOB']);
+					$sheet->setCellValueByColumnAndRow(7,$y, $r['JOBUNIT']);
+					$sheet->setCellValueByColumnAndRow(8,$y, $r['PLANT2']); #QTYPCS
+					$sheet->setCellValueByColumnAndRow(9,$y, $r['LOGRTN']);
+					$y++;
+				}
 				$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 				foreach(range('A', 'K') as $v) {
 					$sheet->getColumnDimension($v)->setAutoSize(true);
 				}
-			}
 
-			
+				#FORMAT HEADER				
+				$sheet->getStyle("A2:J4")->getAlignment()
+				->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+				->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+				#FORMAT BORDER
+				$rang = "A2:J".$sheet->getHighestDataRow();				
+				$sheet->getStyle($rang)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
+				->setColor(new Color('1F1812'));
+
+				#FORMAT NUMBER
+				$rang = "C5:J".$sheet->getHighestDataRow();
+				$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+			}
 		}
 		$current_datetime = date('Y-m-d H:i:s');
 		$spreadsheet->getProperties()

@@ -1995,6 +1995,11 @@ class ITH_mod extends CI_Model {
 		$query =  $this->db->query($qry, [$pDate]);
 		return $query->result_array();
 	}
+	public function select_allwip_plant2_byBG($pDate,$pBG){
+		$qry = "wms_sp_rmstock ?, ?";
+		$query =  $this->db->query($qry, [$pBG,$pDate]);
+		return $query->result_array();
+	}
 
 	public function select_fg($date, $bg){
 		$qry = "wms_sp_fgstock ?, ?";
