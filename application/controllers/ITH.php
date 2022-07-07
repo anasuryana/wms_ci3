@@ -3147,7 +3147,11 @@ class ITH extends CI_Controller {
 			}
 			foreach(range('A', 'I') as $v) {
 				$sheet->getColumnDimension($v)->setAutoSize(true);
-			}			
+			}	
+			#FORMAT NUMBER
+			$rang = "C4:I".$sheet->getHighestDataRow();
+			$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+			
 			$rsRM = $this->XPGRN_mod->selec_where_group(['RTRIM(PGRN_ITMCD) PGRN_ITMCD'],['PGRN_ITMCD'], ['PGRN_BSGRP' => $bg]);
 			$rmstring = '';
 			foreach($rsRM as $r){
@@ -3167,6 +3171,8 @@ class ITH extends CI_Controller {
 					$sheet->getColumnDimension($v)->setAutoSize(true);
 				}
 			}
+
+			
 		}
 		$current_datetime = date('Y-m-d H:i:s');
 		$spreadsheet->getProperties()
