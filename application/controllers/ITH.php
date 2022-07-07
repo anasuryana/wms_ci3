@@ -23,6 +23,7 @@ class ITH extends CI_Controller {
 		$this->load->model('XITRN_mod');
 		$this->load->model('XFTRN_mod');
 		$this->load->model('XICYC_mod');
+		$this->load->model('XPGRN_mod');
 		$this->load->helper('url');
 		$this->load->library('session');
 		$this->load->library('RMCalculator');
@@ -2959,8 +2960,9 @@ class ITH extends CI_Controller {
 		die(json_encode(['data' => $myar]));
 	}
 
-	public function breakdown_estimation() {	
-		date_default_timezone_set('Asia/Jakarta');	
+	public function breakdown_estimation() {
+		ini_set('max_execution_time', '-1');
+		date_default_timezone_set('Asia/Jakarta');		
 		$date = $this->input->post('date');
 		$fglist = $this->input->post('fg');
 		$WOStatus = $this->input->post('wostatus');
@@ -3108,12 +3110,67 @@ class ITH extends CI_Controller {
 					$sheet->getColumnDimension($v)->setAutoSize(true);
 				}
 			}
-		} else {
-			$spreadsheet = new Spreadsheet();
+		} else {			
+			$spreadsheet = new Spreadsheet();			
 			$sheet = $spreadsheet->getActiveSheet();
 			$sheet->setTitle('FG_RESUME_OTHER');
+			$sheet->setCellValueByColumnAndRow(1,2, 'Assy Code');
+			$sheet->setCellValueByColumnAndRow(2,2, 'Description');
+			$sheet->setCellValueByColumnAndRow(3,2, 'Location');
+			$sheet->setCellValueByColumnAndRow(3,3, 'SCAN PRODUCTION');
+			$sheet->setCellValueByColumnAndRow(4,3, 'SCAN QC');
+			$sheet->setCellValueByColumnAndRow(5,3, 'FRESH WAREHOUSE');
+			$sheet->setCellValueByColumnAndRow(6,3, 'PENDING');
+			$sheet->setCellValueByColumnAndRow(7,3, 'QCRTN');
+			$sheet->setCellValueByColumnAndRow(8,3, 'NFWH4RT');
+			$sheet->setCellValueByColumnAndRow(9,3, 'AFWH3RT');
+			$sheet->mergeCells('A2:A3');
+			$sheet->getStyle('A2')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+			$sheet->mergeCells('B2:B3');
+			$sheet->getStyle('B2')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+			$sheet->mergeCells('C2:I2');
+			$sheet->getStyle('A2:I3')->getAlignment()->setHorizontal('center');
+			$sheet->freezePane('C4');			
+			$y = 4;
+			$rsFG = $this->ITH_mod->select_fg($date, $bg);
+			foreach($rsFG as $r){
+				$sheet->setCellValueByColumnAndRow(1,$y, $r['ITH_ITMCD']);
+				$sheet->setCellValueByColumnAndRow(2,$y, $r['ITMD1']);				
+				$sheet->setCellValueByColumnAndRow(3,$y, 0);
+				$sheet->setCellValueByColumnAndRow(4,$y, $r['LOC_QC']);
+				$sheet->setCellValueByColumnAndRow(5,$y, "=".$r['LOC_AFWH3']."+".$r['LOC_ARSHP']);
+				$sheet->setCellValueByColumnAndRow(6,$y, $r['LOC_QAFG']);
+				$sheet->setCellValueByColumnAndRow(7,$y, $r['LOC_AFQART']);
+				$sheet->setCellValueByColumnAndRow(8,$y, "=".$r['LOC_NFWH4RT']."+".$r['LOC_ARSHPRTN']);
+				$sheet->setCellValueByColumnAndRow(9,$y, "=".$r['LOC_AFWH3RT']."+".$r['LOC_ARSHPRTN2']);
+				$y++;
+			}
+			foreach(range('A', 'I') as $v) {
+				$sheet->getColumnDimension($v)->setAutoSize(true);
+			}			
+			$rsRM = $this->XPGRN_mod->selec_where_group(['RTRIM(PGRN_ITMCD) PGRN_ITMCD'],['PGRN_ITMCD'], ['PGRN_BSGRP' => $bg]);
+			$rmstring = '';
+			foreach($rsRM as $r){
+				$rmstring .= "'".$r->PGRN_ITMCD."',";
+			}
+			$rmstring = substr($rmstring,0,strlen($rmstring)-1);
+			$rswip = $this->ITH_mod->select_allwip_plant2($date,$rmstring);
+			$rang = "A1:A".$sheet->getHighestDataRow();
+			if(count($rswip)){
+				$sheet = $spreadsheet->createSheet();
+				$sheet->setTitle('RM_RESUME');
+				$sheet->fromArray(array_keys($rswip[0]), NULL, 'A1');
+				$sheet->fromArray($rswip, NULL, 'A2');
+				$sheet->getColumnDimension('C')->setVisible(false);
+				$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+				foreach(range('A', 'K') as $v) {
+					$sheet->getColumnDimension($v)->setAutoSize(true);
+				}
+			}
 		}
-
+		$current_datetime = date('Y-m-d H:i:s');
+		$spreadsheet->getProperties()
+		->setCreator('WMS')->setTitle('CP '.$current_datetime);
 		$stringjudul = "Critical Part $date";
 		$writer = new Xlsx($spreadsheet);
 		$filename=$stringjudul; //save our workbook as this file name

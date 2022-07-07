@@ -1951,15 +1951,7 @@ class ITH_mod extends CI_Model {
 		$query =  $this->db->query($qry, [$pDate,$pWarehouse]);
 		return $query->result_array();
 	}
-	public function select_wip_balance($pDate, $pWarehouse,$pItems){
-		// $qry = "SELECT * FROM
-		// (SELECT RTRIM(ITRN_ITMCD) ITRN_ITMCD,SUM(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE 0-ITRN_TRNQT END) MGAQTY		
-		// 		FROM XITRN_TBL 		
-		// 		WHERE ITRN_ISUDT<=? AND ITRN_LOCCD=?
-		// 		AND ITRN_ITMCD IN ($pItems)
-		// GROUP BY ITRN_ITMCD) VMEGA
-		// WHERE MGAQTY>0
-		// ORDER BY 1";
+	public function select_wip_balance($pDate, $pWarehouse,$pItems){		
 		$qry = "SELECT * FROM
 		(SELECT RTRIM(ITRN_ITMCD) ITRN_ITMCD,
 		 SUM( CASE WHEN ITRN_LOCCD='ARWH1' THEN 
@@ -1979,6 +1971,34 @@ class ITH_mod extends CI_Model {
 		WHERE MGAQTY>0
 		ORDER BY 1";
 		$query =  $this->db->query($qry, [$pDate,$pWarehouse]);
+		return $query->result_array();
+	}
+	public function select_allwip_plant2($pDate,$pItems){
+		$qry = "SELECT * FROM
+		(SELECT RTRIM(ITRN_ITMCD) ITRN_ITMCD,
+		 SUM( CASE WHEN ITRN_LOCCD='ARWH2' THEN 
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE 0-ITRN_TRNQT END
+			ELSE 
+			 0 END)  ARWHQTY,
+		SUM( CASE WHEN ITRN_LOCCD='PLANT2' THEN
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE 0-ITRN_TRNQT END
+			ELSE 
+			0 END) MGAQTY
+				FROM XITRN_TBL 		
+				WHERE ITRN_ISUDT<=? AND ITRN_LOCCD in ('PLANT2','ARWH2')
+				AND ITRN_ITMCD IN ($pItems)
+		GROUP BY ITRN_ITMCD) VMEGA
+		WHERE MGAQTY>0
+		ORDER BY 1";
+		$query =  $this->db->query($qry, [$pDate]);
+		return $query->result_array();
+	}
+
+	public function select_fg($date, $bg){
+		$qry = "wms_sp_fgstock ?, ?";
+		$query =  $this->db->query($qry, [$bg,$date]);
 		return $query->result_array();
 	}
 
