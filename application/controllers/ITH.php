@@ -2970,12 +2970,13 @@ class ITH extends CI_Controller {
 		$WOStatus = $this->input->post('wostatus');
 		$rmlist = $this->input->post('rm');
 		$bg = $this->input->post('bg');
+		$fgstring =  is_array($fglist) ? "'".implode("','", $fglist)."'" : "''";
 		if($date=='') die('could not continue');
+        $startDate = date('Y-m-d',strtotime($date." - 60 days"));
 		if($bg==='PSI1PPZIEP') {
-			$wh = 'PLANT1';
-			$fgstring ="'".implode("','", $fglist)."'";
+			$wh = 'PLANT1';			
 			$rmstring = "'".implode("','", $rmlist)."'";
-			$startDate = date('Y-m-d',strtotime($date." - 60 days"));
+			
 			$rspsn = $this->ITH_mod->select_psn_period($startDate, $date, $rmstring);
 			$psnstring = "";
 			$osWO = [];
@@ -3113,7 +3114,7 @@ class ITH extends CI_Controller {
 				}
 			}
 		} else {
-			$spreadsheet = new Spreadsheet();			
+            $spreadsheet = new Spreadsheet();			
 			$sheet = $spreadsheet->getActiveSheet();
 			$sheet->setTitle('FG_RESUME');
 			$sheet->setCellValueByColumnAndRow(1,2, 'Assy Code');
@@ -3134,9 +3135,10 @@ class ITH extends CI_Controller {
 			$sheet->getStyle('A2:I3')->getAlignment()->setHorizontal('center');
 			$sheet->freezePane('C4');			
 			$y = 4;
+            log_message('error', $_SERVER['REMOTE_ADDR'].', step0#, BG:OTHER, init FG');
 			$rsFG = $this->ITH_mod->select_fg($date, $bg);
 			foreach($rsFG as $r){
-				$sheet->setCellValueByColumnAndRow(1,$y, $r['ITH_ITMCD']);
+                $sheet->setCellValueByColumnAndRow(1,$y, $r['ITH_ITMCD']);
 				$sheet->setCellValueByColumnAndRow(2,$y, $r['ITMD1']);				
 				$sheet->setCellValueByColumnAndRow(3,$y, 0);
 				$sheet->setCellValueByColumnAndRow(4,$y, $r['LOC_QC']);
@@ -3148,15 +3150,94 @@ class ITH extends CI_Controller {
 				$y++;
 			}
 			foreach(range('A', 'I') as $v) {
-				$sheet->getColumnDimension($v)->setAutoSize(true);
+                $sheet->getColumnDimension($v)->setAutoSize(true);
 			}	
 			#FORMAT NUMBER
 			$rang = "C4:I".$sheet->getHighestDataRow();
 			$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-						
+            
+            log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP');
 			$rswip = $this->ITH_mod->select_allwip_plant2_byBG($date,$bg);
+            log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, BG:OTHER, get rsPSN');
+            $rspsn = $this->ITH_mod->select_psn_period_byBG($startDate, $date, $bg);
+			$psnstring = "";
+			$osWO = [];
+			foreach($rspsn as $r){
+				$psnstring .= "'".$r['DOC']."',";
+			}
+			$psnstring = $psnstring=="" ? "''" : substr($psnstring,0,strlen($psnstring)-1);
+			log_message('error', $_SERVER['REMOTE_ADDR'].', step2.1#, BG:OTHER, get osWO');
+			if(strlen($fgstring)>5) {
+				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.2#, BG:OTHER, --with FG');
+				$osWO = $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring);
+			} else {				
+				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.2#, BG:OTHER, --without FG');
+				$osWO = $this->ITH_mod->select_wo_side_detail_byPSN($date, $psnstring);
+			}
+			// $osWO = strlen($fgstring)>5 ? $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring) 
+			// 	: $this->ITH_mod->select_wo_side_detail_byPSN($date, $psnstring);			
+			$rsPlot = [];
+			foreach($rswip as &$w) {
+				$w['B4QTY'] = $w['PLANT2'];
+				foreach($osWO as &$o) {
+					if($w['PLANT2']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
+						$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
+						$fixqty = $balneed;
+						if($balneed	> $w['PLANT2']) {
+							$fixqty = $w['PLANT2'];
+							$o['PLOTQTY'] += $w['PLANT2'];
+							$w['PLANT2'] = 0;
+						} else {
+							$o['PLOTQTY'] += $balneed;
+							$w['PLANT2'] -= $balneed;
+						}
+						$isfound = false;
+						foreach($rsPlot as &$r){
+							if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
+								$r['PARTQTY'] += $fixqty;
+								$isfound = true;break;
+							}
+						}
+						unset($r);
+						if(!$isfound) {
+							$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty];
+						}
+						if($w['PLANT2']==0) {
+							break;
+						}
+					}
+				}
+				unset($o);
+			}
+			unset($w);
+			if(count($rsPlot)){				
+				#add detail on specific index
+				foreach($rsPlot as $r) {
+					$theIndex = 0;
+					$sampleRow = [];
+					foreach($rswip as $index => $w){						
+						if($r['PARTCD']	=== $w['ITRN_ITMCD']) {
+							$theIndex = $index+1;
+							$sampleRow = $w;
+							break;
+						}
+					}
+					if($theIndex!=0) {
+						$sampleRow['ITMD1'] = '';
+						$sampleRow['ARWH'] = 0;
+						$sampleRow['NRWH2'] = 0;
+						$sampleRow['ARWH0PD'] = 0;
+						$sampleRow['JOB'] = $r['WO'];
+						$sampleRow['JOBUNIT'] = $r['UNIT'];
+						$sampleRow['PLANT2'] = $r['PARTQTY'];
+						$sampleRow['LOGRTN'] = 0;
+						$rswip = array_merge(array_slice($rswip,0,$theIndex), [$sampleRow], array_slice($rswip,$theIndex));
+					}
+				}
+			}
 			$rang = "A1:A".$sheet->getHighestDataRow();
-			if(count($rswip)){
+			if(count($rswip)) {
+                log_message('error', $_SERVER['REMOTE_ADDR'].', step3#, BG:OTHER, rsPSN to Spreadsheet');
 				$sheet = $spreadsheet->createSheet();
 				$sheet->setTitle('RM_RESUME');
 				$sheet->setCellValueByColumnAndRow(1,2, 'Part Code'); $sheet->mergeCells('A2:A4'); #rowspan3
@@ -3193,21 +3274,22 @@ class ITH extends CI_Controller {
 					$sheet->getColumnDimension($v)->setAutoSize(true);
 				}
 
-				#FORMAT HEADER				
+				#FORMAT HEADER
 				$sheet->getStyle("A2:J4")->getAlignment()
 				->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
 				->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
 				#FORMAT BORDER
-				$rang = "A2:J".$sheet->getHighestDataRow();				
+				$rang = "A2:J".$sheet->getHighestDataRow();
 				$sheet->getStyle($rang)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
 				->setColor(new Color('1F1812'));
 
 				#FORMAT NUMBER
 				$rang = "C5:J".$sheet->getHighestDataRow();
 				$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-			}
+			}			
 		}
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step4#, BG:OTHER, done');
 		$current_datetime = date('Y-m-d H:i:s');
 		$spreadsheet->getProperties()
 		->setCreator('WMS')->setTitle('CP '.$current_datetime);

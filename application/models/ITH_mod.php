@@ -1658,6 +1658,17 @@ class ITH_mod extends CI_Model {
 		$query = $this->db->query($qry, [$pdate,$pdate]);
         return $query->result_array();
 	}
+	public function select_wo_side_detail_byPSN($pdate,$ppsn) {
+		$qry = "SELECT XWO.*,ISNULL(ITHQT,0) ITHQT,RTRIM(PWOP_BOMPN) PWOP_BOMPN,RTRIM(PWOP_SUBPN) PWOP_SUBPN,PWOP_PER, (PDPP_WORQT-ISNULL(ITHQT,0)) * PWOP_PER NEEDQTY, 0 PLOTQTY FROM XWO
+		LEFT JOIN (SELECT ITH_DOC,ITH_ITMCD,SUM(ITH_QTY) ITHQT FROM v_ith_tblc LEFT JOIN XWO ON ITH_DOC=PDPP_WONO AND ITH_ITMCD=PDPP_MDLCD WHERE ITH_WH='AFWH3' AND ITH_FORM='INC-WH-FG' AND ITH_DATEC<=?  GROUP BY ITH_DOC,ITH_ITMCD) VITHQC ON PDPP_WONO=ITH_DOC AND PDPP_MDLCD=ITH_ITMCD
+		LEFT JOIN XPWOP ON PDPP_WONO=PWOP_WONO
+		LEFT JOIN (select PPSN1_WONO from XPPSN1 group by PPSN1_WONO) VPSN ON PDPP_WONO=PPSN1_WONO		
+		WHERE PDPP_WORQT!=isnull(ITHQT,0) AND abs(DATEDIFF(MONTH,  PDPP_ISUDT,?))<=2
+		AND PPSN1_WONO IS NOT NULL AND PDPP_WONO IN (SELECT PPSN1_WONO FROM XPPSN1 WHERE PPSN1_PSNNO IN ($ppsn) GROUP BY  PPSN1_WONO)
+		ORDER BY PDPP_WONO DESC";		
+		$query = $this->db->query($qry, [$pdate,$pdate]);
+        return $query->result_array();
+	}
 	public function select_wo_side_detail_open($pdate,$passycode) {
 		$qry = "SELECT XWO.*,ISNULL(ITHQT,0) ITHQT,RTRIM(PWOP_BOMPN) PWOP_BOMPN,RTRIM(PWOP_SUBPN) PWOP_SUBPN,PWOP_PER, (PDPP_WORQT-ISNULL(ITHQT,0)) * PWOP_PER NEEDQTY, 0 PLOTQTY FROM XWO
 		LEFT JOIN (SELECT ITH_DOC,ITH_ITMCD,SUM(ITH_QTY) ITHQT FROM v_ith_tblc LEFT JOIN XWO ON ITH_DOC=PDPP_WONO AND ITH_ITMCD=PDPP_MDLCD WHERE ITH_WH='AFWH3' AND ITH_FORM='INC-WH-FG' AND ITH_DATEC<=?  GROUP BY ITH_DOC,ITH_ITMCD) VITHQC ON PDPP_WONO=ITH_DOC AND PDPP_MDLCD=ITH_ITMCD
@@ -2017,6 +2028,22 @@ class ITH_mod extends CI_Model {
 												GROUP BY SUBSTRING(ITRN_DOCNO,1,19))
 		GROUP BY SUBSTRING(ITRN_DOCNO,1,19)";
 		$query =  $this->db->query($qry);
+		return $query->result_array();
+	}
+	public function select_psn_period_byBG($pdate1,$pdate2, $pBG){
+		$qry = "SELECT VHEAD.* FROM 
+		(SELECT SUBSTRING(ITRN_DOCNO,1,19) DOC FROM XITRN_TBL WHERE ITRN_BSGRP=?
+				AND (ITRN_ISUDT BETWEEN '$pdate1' AND '$pdate2')
+				AND ITRN_DOCCD='TRF'		
+				GROUP BY SUBSTRING(ITRN_DOCNO,1,19)) VHEAD
+		LEFT JOIN (
+		SELECT SUBSTRING(ITRN_DOCNO,1,19) DOCD FROM XITRN_TBL WHERE ITRN_BSGRP=?
+														AND (ITRN_ISUDT BETWEEN '$pdate1' AND '$pdate2')
+														AND ITRN_DOCNO LIKE '%SP-%'  and ITRN_DOCNO like '%R%'
+														GROUP BY SUBSTRING(ITRN_DOCNO,1,19)
+		) VDETAIL ON VHEAD.DOC=VDETAIL.DOCD
+		WHERE DOCD IS NULL AND SUBSTRING(DOC,1,3)!='TRF' and DOC not like '%SP-MAT%'";
+		$query =  $this->db->query($qry, [$pBG, $pBG]);
 		return $query->result_array();
 	}
 	public function select_psn_return_period($pdate1,$pdate2, $pItems){
