@@ -2012,7 +2012,7 @@ class ITH_mod extends CI_Model {
 		return $query->result_array();
 	}
 	public function select_allwip_plant2_byBG_and_Part($pDate,$pBG, $pParts){
-		$qry = "SELECT * FROM
+		$qry = "SELECT *,(ARWH+NRWH2+ARWH0PD+PLANT2+QA) STOCK FROM
 		(SELECT RTRIM(ITRN_ITMCD) ITRN_ITMCD,RTRIM(MITM_ITMD1) ITMD1,
 			SUM( CASE WHEN ITRN_LOCCD='ARWH2' THEN 
 				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
@@ -2043,7 +2043,7 @@ class ITH_mod extends CI_Model {
 			'' PSN,
 			0 JOBUNIT,
 			0 QTYPCS,
-			0 LOGRTN
+			0 LOGRTN			
 				FROM XITRN_TBL
 				LEFT JOIN XMITM_V ON ITRN_ITMCD=MITM_ITMCD
 				WHERE ITRN_ISUDT<=? AND ITRN_LOCCD in ('PLANT2','ARWH2')

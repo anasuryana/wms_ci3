@@ -3208,7 +3208,7 @@ class ITH extends CI_Controller {
 						}
 						unset($r);
 						if(!$isfound) {
-							$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => $o['PPSN1_PSNNO']];
+							$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => $o['PPSN1_PSNNO']];
 						}
 						if($w['PLANT2']==0) {
 							break;
@@ -3245,6 +3245,7 @@ class ITH extends CI_Controller {
 						$sampleRow['JOBUNIT'] = $r['UNIT'];
 						$sampleRow['PLANT2'] = $r['PARTQTY'];
 						$sampleRow['LOGRTN'] = 0;
+						$sampleRow['STOCK'] = 0;
 						$rswip = array_merge(array_slice($rswip,0,$theIndex), [$sampleRow], array_slice($rswip,$theIndex));
 					}
 				}
@@ -3256,11 +3257,12 @@ class ITH extends CI_Controller {
 				$sheet->setTitle('RM_RESUME');
 				$sheet->setCellValueByColumnAndRow(1,2, 'Part Code'); $sheet->mergeCells('A2:A4'); #rowspan3
 				$sheet->setCellValueByColumnAndRow(2,2, 'Description'); $sheet->mergeCells('B2:B4'); #rowspan3
-				$sheet->setCellValueByColumnAndRow(3,2, 'Location'); $sheet->mergeCells('C2:K2'); #colspan8
+				$sheet->setCellValueByColumnAndRow(3,2, 'Location'); $sheet->mergeCells('C2:L2'); #colspan8
 				$sheet->setCellValueByColumnAndRow(3,3, 'RM Warehouse'); $sheet->mergeCells('C3:D3'); #colspan2
 				$sheet->setCellValueByColumnAndRow(5,3, 'ARWH0PD'); $sheet->mergeCells('E3:E4'); #rowspan2
 				$sheet->setCellValueByColumnAndRow(6,3, 'Plant'); $sheet->mergeCells('F3:J3'); #colspan4
 				$sheet->setCellValueByColumnAndRow(11,3, 'QA'); $sheet->mergeCells('K3:K4'); #rowspan2
+				$sheet->setCellValueByColumnAndRow(12,3, 'STOCK'); $sheet->mergeCells('L3:L4'); #rowspan2
 
 				$sheet->setCellValueByColumnAndRow(3,4, 'ARWH2');
 				$sheet->setCellValueByColumnAndRow(4,4, 'NRWH2');
@@ -3283,25 +3285,27 @@ class ITH extends CI_Controller {
 					$sheet->setCellValueByColumnAndRow(8,$y, $r['JOBUNIT']);
 					$sheet->setCellValueByColumnAndRow(9,$y, $r['PLANT2']); #QTYPCS
 					$sheet->setCellValueByColumnAndRow(10,$y, $r['LOGRTN']);
+					$sheet->setCellValueByColumnAndRow(11,$y, $r['QA']);
+					$sheet->setCellValueByColumnAndRow(12,$y, $r['STOCK']);
 					$y++;
 				}
 				$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-				foreach(range('A', 'K') as $v) {
+				foreach(range('A', 'L') as $v) {
 					$sheet->getColumnDimension($v)->setAutoSize(true);
 				}
 
 				#FORMAT HEADER
-				$sheet->getStyle("A2:K4")->getAlignment()
+				$sheet->getStyle("A2:L4")->getAlignment()
 				->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
 				->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
 				#FORMAT BORDER
-				$rang = "A2:K".$sheet->getHighestDataRow();
+				$rang = "A2:L".$sheet->getHighestDataRow();
 				$sheet->getStyle($rang)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
 				->setColor(new Color('1F1812'));
 
 				#FORMAT NUMBER
-				$rang = "C5:K".$sheet->getHighestDataRow();
+				$rang = "C5:L".$sheet->getHighestDataRow();
 				$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 			}			
 		}
