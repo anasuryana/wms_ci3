@@ -3173,9 +3173,7 @@ class ITH extends CI_Controller {
 			} else {				
 				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.2#, BG:OTHER, --without FG');
 				$osWO = $this->ITH_mod->select_wo_side_detail_byPSN($date, $psnstring);
-			}
-			// $osWO = strlen($fgstring)>5 ? $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring) 
-			// 	: $this->ITH_mod->select_wo_side_detail_byPSN($date, $psnstring);			
+			}				
 			$rsPlot = [];
 			foreach($rswip as &$w) {
 				$w['B4QTY'] = $w['PLANT2'];
@@ -3215,13 +3213,18 @@ class ITH extends CI_Controller {
 				foreach($rsPlot as $r) {
 					$theIndex = 0;
 					$sampleRow = [];
-					foreach($rswip as $index => $w){						
+					foreach($rswip as $index => &$w){
 						if($r['PARTCD']	=== $w['ITRN_ITMCD']) {
+							if($w['PLANT2']>0) {
+								$w['LOGRTN'] = $w['PLANT2'];
+								$w['PLANT2'] = 0;
+							}
 							$theIndex = $index+1;
 							$sampleRow = $w;
 							break;
 						}
 					}
+					unset($w);
 					if($theIndex!=0) {
 						$sampleRow['ITMD1'] = '';
 						$sampleRow['ARWH'] = 0;
