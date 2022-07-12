@@ -2970,13 +2970,12 @@ class ITH extends CI_Controller {
 		$WOStatus = $this->input->post('wostatus');
 		$rmlist = $this->input->post('rm');
 		$bg = $this->input->post('bg');
-		$fgstring =  is_array($fglist) ? "'".implode("','", $fglist)."'" : "''";
 		if($date=='') die('could not continue');
+		$fgstring =  is_array($fglist) ? "'".implode("','", $fglist)."'" : "''";
+		$rmstring = is_array($rmlist) ? "'".implode("','", $rmlist)."'" : "''";
         $startDate = date('Y-m-d',strtotime($date." - 60 days"));
 		if($bg==='PSI1PPZIEP') {
-			$wh = 'PLANT1';			
-			$rmstring = "'".implode("','", $rmlist)."'";
-			
+			$wh = 'PLANT1';						
 			$rspsn = $this->ITH_mod->select_psn_period($startDate, $date, $rmstring);
 			$psnstring = "";
 			$osWO = [];
@@ -3156,16 +3155,27 @@ class ITH extends CI_Controller {
 			$rang = "C4:I".$sheet->getHighestDataRow();
 			$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
             
-            log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP');
-			$rswip = $this->ITH_mod->select_allwip_plant2_byBG($date,$bg);
-            log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, BG:OTHER, get rsPSN');
-            $rspsn = $this->ITH_mod->select_psn_period_byBG($startDate, $date, $bg);
+            
+			if(strlen($rmstring)>5) {
+				log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, with parts');
+				$rswip = $this->ITH_mod->select_allwip_plant2_byBG_and_Part($date,$bg, $rmstring);
+
+				log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, BG:OTHER, get rsPSN, with parts');
+            	$rspsn = $this->ITH_mod->select_psn_period_byBG_and_Parts($startDate, $date, $bg, $rmstring);
+			} else {
+				log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, without parts');
+				$rswip = $this->ITH_mod->select_allwip_plant2_byBG($date,$bg);
+
+				log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, BG:OTHER, get rsPSN, without parts');
+            	$rspsn = $this->ITH_mod->select_psn_period_byBG($startDate, $date, $bg);
+			}            
 			$psnstring = "";
 			$osWO = [];
 			foreach($rspsn as $r){
 				$psnstring .= "'".$r['DOC']."',";
 			}
 			$psnstring = $psnstring=="" ? "''" : substr($psnstring,0,strlen($psnstring)-1);
+
 			log_message('error', $_SERVER['REMOTE_ADDR'].', step2.1#, BG:OTHER, get osWO');
 			if(strlen($fgstring)>5) {
 				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.2#, BG:OTHER, --with FG');

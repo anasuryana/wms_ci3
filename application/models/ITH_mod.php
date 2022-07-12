@@ -2011,6 +2011,48 @@ class ITH_mod extends CI_Model {
 		$query =  $this->db->query($qry, [$pBG,$pDate]);
 		return $query->result_array();
 	}
+	public function select_allwip_plant2_byBG_and_Part($pDate,$pBG, $pParts){
+		$qry = "SELECT * FROM
+		(SELECT RTRIM(ITRN_ITMCD) ITRN_ITMCD,RTRIM(MITM_ITMD1) ITMD1,
+			SUM( CASE WHEN ITRN_LOCCD='ARWH2' THEN 
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE -1*ITRN_TRNQT END
+			ELSE 
+				0 END)  ARWH,
+		SUM( CASE WHEN ITRN_LOCCD='NRWH2' THEN 
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE -1*ITRN_TRNQT END
+			ELSE 
+				0 END)  NRWH2,
+		SUM( CASE WHEN ITRN_LOCCD='ARWH0PD' THEN 
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE -1*ITRN_TRNQT END
+			ELSE 
+				0 END)  ARWH0PD,
+		SUM( CASE WHEN ITRN_LOCCD='PLANT2' THEN
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE -1*ITRN_TRNQT END
+			ELSE 
+			0 END) PLANT2,
+		SUM( CASE WHEN ITRN_LOCCD='QA' THEN
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE -1*ITRN_TRNQT END
+			ELSE 
+			0 END) QA,
+			'' JOB,
+			'' PSN,
+			0 JOBUNIT,
+			0 QTYPCS,
+			0 LOGRTN
+				FROM XITRN_TBL
+				LEFT JOIN XMITM_V ON ITRN_ITMCD=MITM_ITMCD
+				WHERE ITRN_ISUDT<=? AND ITRN_LOCCD in ('PLANT2','ARWH2')
+				AND ITRN_BSGRP=? AND ITRN_ITMCD IN ($pParts)
+		GROUP BY ITRN_ITMCD,MITM_ITMD1) VMEGA		
+		ORDER BY 1";
+		$query =  $this->db->query($qry, [$pDate,$pBG]);
+		return $query->result_array();
+	}
 
 	public function select_fg($date, $bg){
 		$qry = "wms_sp_fgstock ?, ?";
@@ -2040,6 +2082,24 @@ class ITH_mod extends CI_Model {
 		SELECT SUBSTRING(ITRN_DOCNO,1,19) DOCD FROM XITRN_TBL WHERE ITRN_BSGRP=?
 														AND (ITRN_ISUDT BETWEEN '$pdate1' AND '$pdate2')
 														AND ITRN_DOCNO LIKE '%SP-%'  and ITRN_DOCNO like '%R%'
+														GROUP BY SUBSTRING(ITRN_DOCNO,1,19)
+		) VDETAIL ON VHEAD.DOC=VDETAIL.DOCD
+		WHERE DOCD IS NULL AND SUBSTRING(DOC,1,3)!='TRF' and DOC not like '%SP-MAT%'";
+		$query =  $this->db->query($qry, [$pBG, $pBG]);
+		return $query->result_array();
+	}
+	public function select_psn_period_byBG_and_Parts($pdate1,$pdate2, $pBG, $pParts){
+		$qry = "SELECT VHEAD.* FROM 
+		(SELECT SUBSTRING(ITRN_DOCNO,1,19) DOC FROM XITRN_TBL WHERE ITRN_BSGRP=?
+				AND (ITRN_ISUDT BETWEEN '$pdate1' AND '$pdate2')
+				AND ITRN_DOCCD='TRF'
+				AND ITRN_ITMCD IN ($pParts)
+				GROUP BY SUBSTRING(ITRN_DOCNO,1,19)) VHEAD
+		LEFT JOIN (
+		SELECT SUBSTRING(ITRN_DOCNO,1,19) DOCD FROM XITRN_TBL WHERE ITRN_BSGRP=?
+														AND (ITRN_ISUDT BETWEEN '$pdate1' AND '$pdate2')
+														AND ITRN_DOCNO LIKE '%SP-%'  and ITRN_DOCNO like '%R%'
+														AND ITRN_ITMCD IN ($pParts) 
 														GROUP BY SUBSTRING(ITRN_DOCNO,1,19)
 		) VDETAIL ON VHEAD.DOC=VDETAIL.DOCD
 		WHERE DOCD IS NULL AND SUBSTRING(DOC,1,3)!='TRF' and DOC not like '%SP-MAT%'";
