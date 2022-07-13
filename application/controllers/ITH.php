@@ -3187,35 +3187,38 @@ class ITH extends CI_Controller {
 			$rsPlot = [];
 			foreach($rswip as &$w) {
 				$w['B4QTY'] = $w['PLANT2'];
-				foreach($osWO as &$o) {
-					if($w['PLANT2']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
-						$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
-						$fixqty = $balneed;
-						if($balneed	> $w['PLANT2']) {
-							$fixqty = $w['PLANT2'];
-							$o['PLOTQTY'] += $w['PLANT2'];
-							$w['PLANT2'] = 0;
-						} else {
-							$o['PLOTQTY'] += $balneed;
-							$w['PLANT2'] -= $balneed;
-						}
-						$isfound = false;
-						foreach($rsPlot as &$r){
-							if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
-								$r['PARTQTY'] += $fixqty;
-								$isfound = true;break;
+				$w['LOTSIZE'] = 0;
+				if($w['PLANT2']>0) {
+					foreach($osWO as &$o) {
+						if($w['PLANT2']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
+							$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
+							$fixqty = $balneed;
+							if($balneed	> $w['PLANT2']) {
+								$fixqty = $w['PLANT2'];
+								$o['PLOTQTY'] += $w['PLANT2'];
+								$w['PLANT2'] = 0;
+							} else {
+								$o['PLOTQTY'] += $balneed;
+								$w['PLANT2'] -= $balneed;
+							}
+							$isfound = false;
+							foreach($rsPlot as &$r){
+								if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
+									$r['PARTQTY'] += $fixqty;
+									$isfound = true;break;
+								}
+							}
+							unset($r);
+							if(!$isfound) {
+								$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => $o['PPSN1_PSNNO']];
+							}
+							if($w['PLANT2']==0) {
+								break;
 							}
 						}
-						unset($r);
-						if(!$isfound) {
-							$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => $o['PPSN1_PSNNO']];
-						}
-						if($w['PLANT2']==0) {
-							break;
-						}
 					}
+					unset($o);
 				}
-				unset($o);
 			}
 			unset($w);
 			if(count($rsPlot)){				
@@ -3246,6 +3249,7 @@ class ITH extends CI_Controller {
 						$sampleRow['PLANT2'] = $r['PARTQTY'];
 						$sampleRow['LOGRTN'] = 0;
 						$sampleRow['STOCK'] = 0;
+						$sampleRow['LOTSIZE'] = $r['LOTSIZE'];
 						$rswip = array_merge(array_slice($rswip,0,$theIndex), [$sampleRow], array_slice($rswip,$theIndex));
 					}
 				}
@@ -3257,21 +3261,22 @@ class ITH extends CI_Controller {
 				$sheet->setTitle('RM_RESUME');
 				$sheet->setCellValueByColumnAndRow(1,2, 'Part Code'); $sheet->mergeCells('A2:A4'); #rowspan3
 				$sheet->setCellValueByColumnAndRow(2,2, 'Description'); $sheet->mergeCells('B2:B4'); #rowspan3
-				$sheet->setCellValueByColumnAndRow(3,2, 'Location'); $sheet->mergeCells('C2:L2'); #colspan8
+				$sheet->setCellValueByColumnAndRow(3,2, 'Location'); $sheet->mergeCells('C2:M2'); #colspan11
 				$sheet->setCellValueByColumnAndRow(3,3, 'RM Warehouse'); $sheet->mergeCells('C3:D3'); #colspan2
 				$sheet->setCellValueByColumnAndRow(5,3, 'ARWH0PD'); $sheet->mergeCells('E3:E4'); #rowspan2
-				$sheet->setCellValueByColumnAndRow(6,3, 'Plant'); $sheet->mergeCells('F3:J3'); #colspan4
-				$sheet->setCellValueByColumnAndRow(11,3, 'QA'); $sheet->mergeCells('K3:K4'); #rowspan2
-				$sheet->setCellValueByColumnAndRow(12,3, 'STOCK'); $sheet->mergeCells('L3:L4'); #rowspan2
+				$sheet->setCellValueByColumnAndRow(6,3, 'Plant'); $sheet->mergeCells('F3:K3'); #colspan6
+				$sheet->setCellValueByColumnAndRow(12,3, 'QA'); $sheet->mergeCells('L3:L4'); #rowspan2
+				$sheet->setCellValueByColumnAndRow(13,3, 'STOCK'); $sheet->mergeCells('M3:M4'); #rowspan2
 
 				$sheet->setCellValueByColumnAndRow(3,4, 'ARWH2');
 				$sheet->setCellValueByColumnAndRow(4,4, 'NRWH2');
 
 				$sheet->setCellValueByColumnAndRow(6,4, 'PSN');
 				$sheet->setCellValueByColumnAndRow(7,4, 'Job');
-				$sheet->setCellValueByColumnAndRow(8,4, 'Qty UNIT');
-				$sheet->setCellValueByColumnAndRow(9,4, 'Qty PCS');
-				$sheet->setCellValueByColumnAndRow(10,4, 'Logical Return');
+				$sheet->setCellValueByColumnAndRow(8,4, 'Lot Size');
+				$sheet->setCellValueByColumnAndRow(9,4, 'Qty UNIT');
+				$sheet->setCellValueByColumnAndRow(10,4, 'Qty PCS');
+				$sheet->setCellValueByColumnAndRow(11,4, 'Logical Return');
 				$sheet->freezePane('C5');
 				$y = 5;
 				foreach($rswip as $r){
@@ -3279,33 +3284,34 @@ class ITH extends CI_Controller {
 					$sheet->setCellValueByColumnAndRow(2,$y, $r['ITMD1']);
 					$sheet->setCellValueByColumnAndRow(3,$y, $r['ARWH']);
 					$sheet->setCellValueByColumnAndRow(4,$y, $r['NRWH2']);
-					$sheet->setCellValueByColumnAndRow(5,$y, $r['ARWH0PD']);					
+					$sheet->setCellValueByColumnAndRow(5,$y, $r['ARWH0PD']);
 					$sheet->setCellValueByColumnAndRow(6,$y, $r['PSN']);
 					$sheet->setCellValueByColumnAndRow(7,$y, $r['JOB']);
-					$sheet->setCellValueByColumnAndRow(8,$y, $r['JOBUNIT']);
-					$sheet->setCellValueByColumnAndRow(9,$y, $r['PLANT2']); #QTYPCS
-					$sheet->setCellValueByColumnAndRow(10,$y, $r['LOGRTN']);
-					$sheet->setCellValueByColumnAndRow(11,$y, $r['QA']);
-					$sheet->setCellValueByColumnAndRow(12,$y, $r['STOCK']);
+					$sheet->setCellValueByColumnAndRow(8,$y, $r['LOTSIZE']);
+					$sheet->setCellValueByColumnAndRow(9,$y, $r['JOBUNIT']);
+					$sheet->setCellValueByColumnAndRow(10,$y, $r['PLANT2']); #QTYPCS
+					$sheet->setCellValueByColumnAndRow(11,$y, $r['LOGRTN']);
+					$sheet->setCellValueByColumnAndRow(12,$y, $r['QA']);
+					$sheet->setCellValueByColumnAndRow(13,$y, $r['STOCK']);
 					$y++;
 				}
 				$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-				foreach(range('A', 'L') as $v) {
+				foreach(range('A', 'M') as $v) {
 					$sheet->getColumnDimension($v)->setAutoSize(true);
 				}
 
 				#FORMAT HEADER
-				$sheet->getStyle("A2:L4")->getAlignment()
+				$sheet->getStyle("A2:M4")->getAlignment()
 				->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
 				->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
 				#FORMAT BORDER
-				$rang = "A2:L".$sheet->getHighestDataRow();
+				$rang = "A2:M".$sheet->getHighestDataRow();
 				$sheet->getStyle($rang)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
 				->setColor(new Color('1F1812'));
 
 				#FORMAT NUMBER
-				$rang = "C5:L".$sheet->getHighestDataRow();
+				$rang = "C5:M".$sheet->getHighestDataRow();
 				$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 			}			
 		}
