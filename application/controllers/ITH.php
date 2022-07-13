@@ -26,6 +26,7 @@ class ITH extends CI_Controller {
 		$this->load->model('XFTRN_mod');
 		$this->load->model('XICYC_mod');
 		$this->load->model('XPGRN_mod');
+		$this->load->model('SPL_mod');
 		$this->load->helper('url');
 		$this->load->library('session');
 		$this->load->library('RMCalculator');
@@ -3185,6 +3186,8 @@ class ITH extends CI_Controller {
 				$osWO = $this->ITH_mod->select_wo_side_detail_byPSN($date, $psnstring);
 			}				
 			$rsPlot = [];
+			$_aWO = [];
+			$_aPart = [];
 			foreach($rswip as &$w) {
 				$w['B4QTY'] = $w['PLANT2'];
 				$w['LOTSIZE'] = 0;
@@ -3210,7 +3213,13 @@ class ITH extends CI_Controller {
 							}
 							unset($r);
 							if(!$isfound) {
-								$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => $o['PPSN1_PSNNO']];
+								if(!in_array($o['PDPP_WONO'], $_aWO)) {
+									$_aWO[] = $o['PDPP_WONO'];
+								}
+								if(!in_array($w['ITRN_ITMCD'], $_aPart)) {
+									$_aPart[] = $w['ITRN_ITMCD'];
+								}
+								$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => ''];
 							}
 							if($w['PLANT2']==0) {
 								break;
@@ -3221,7 +3230,19 @@ class ITH extends CI_Controller {
 				}
 			}
 			unset($w);
-			if(count($rsPlot)){				
+			if(count($rsPlot)){
+				#recap WO
+
+				#get PPSN1
+
+				#get PPSN2
+				$_sWO = "'".implode("','", $_aWO)."'";
+				$_sPart = "'".implode("','", $_aPart)."'";
+				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.3#, BG:OTHER, get PPSN2');
+				$rsPPSN2 = $this->SPL_mod->select_ppsn2_byArrayOf_WO_and_part($_sWO, $_sPart);
+				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.4#, BG:OTHER, get PPSN1');
+				$rsPPSN1 = $this->SPL_mod->select_wo_byArrayOf_WO($_sWO);
+
 				#add detail on specific index
 				foreach($rsPlot as $r) {
 					$theIndex = 0;
@@ -3239,12 +3260,24 @@ class ITH extends CI_Controller {
 					}
 					unset($w);
 					if($theIndex!=0) {
+						#SET PSN
+						foreach($rsPPSN2 as $k) {
+							if($k['SUBPN']===$r['PARTCD']) {
+								$isfound = false;
+								foreach($rsPPSN1 as $y) {
+									if($r['WO'] === $y['WONO'] && $k['PSN'] === $y['PSN']) {
+										$sampleRow['PSN'] = $y['PSN'];
+										$isfound = true;break;
+									}
+								}
+								if($isfound) break;
+							}
+						}
 						$sampleRow['ITMD1'] = '';
 						$sampleRow['ARWH'] = 0;
 						$sampleRow['NRWH2'] = 0;
 						$sampleRow['ARWH0PD'] = 0;
-						$sampleRow['JOB'] = $r['WO'];
-						$sampleRow['PSN'] = $r['PSN'];
+						$sampleRow['JOB'] = $r['WO'];						
 						$sampleRow['JOBUNIT'] = $r['UNIT'];
 						$sampleRow['PLANT2'] = $r['PARTQTY'];
 						$sampleRow['LOGRTN'] = 0;

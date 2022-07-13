@@ -942,5 +942,22 @@ class SPL_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
     }
+
+    public function select_ppsn2_byArrayOf_WO_and_part($pWO, $pPart) {
+        $qry = "SELECT rtrim(PPSN2_PSNNO) PSN, RTRIM(PPSN2_SUBPN) SUBPN,(SUM(PPSN2_ACTQT)-SUM(PPSN2_REQQT)) LOGRTNQT  FROM XPPSN2 WHERE
+        PPSN2_PSNNO IN (
+        SELECT PPSN1_PSNNO FROM XPPSN1 WHERE PPSN1_WONO IN ($pWO)
+        ) AND PPSN2_SUBPN IN ($pPart)
+        GROUP BY PPSN2_PSNNO,PPSN2_SUBPN";
+        $query = $this->db->query($qry);
+        return $query->result_array();
+    }
+
+    public function select_wo_byArrayOf_WO($pWO){
+        $qry = "SELECT RTRIM(PPSN1_PSNNO) PSN,RTRIM(PPSN1_WONO) WONO FROM XPPSN1 WHERE PPSN1_WONO IN ($pWO)
+        GROUP BY PPSN1_PSNNO,PPSN1_WONO";
+        $query = $this->db->query($qry);
+        return $query->result_array();
+    }
    
 }
