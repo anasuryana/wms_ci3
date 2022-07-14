@@ -3191,6 +3191,7 @@ class ITH extends CI_Controller {
 			foreach($rswip as &$w) {
 				$w['B4QTY'] = $w['PLANT2'];
 				$w['LOTSIZE'] = 0;
+				$w['COMMENTS'] = '';
 				if($w['PLANT2']>0) {
 					foreach($osWO as &$o) {
 						if($w['PLANT2']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
@@ -3230,16 +3231,16 @@ class ITH extends CI_Controller {
 				}
 			}
 			unset($w);
-			if(count($rsPlot)){
-				#recap WO
 
-				#get PPSN1
+			if( !empty($rsPlot) ) {
 
 				#get PPSN2
 				$_sWO = "'".implode("','", $_aWO)."'";
 				$_sPart = "'".implode("','", $_aPart)."'";
 				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.3#, BG:OTHER, get PPSN2');
 				$rsPPSN2 = $this->SPL_mod->select_ppsn2_byArrayOf_WO_and_part($_sWO, $_sPart);
+
+				#get PPSN1
 				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.4#, BG:OTHER, get PPSN1');
 				$rsPPSN1 = $this->SPL_mod->select_wo_byArrayOf_WO($_sWO);
 
@@ -3250,7 +3251,8 @@ class ITH extends CI_Controller {
 					foreach($rswip as $index => &$w){
 						if($r['PARTCD']	=== $w['ITRN_ITMCD']) {
 							if($w['PLANT2']>0) {
-								$w['LOGRTN'] = $w['PLANT2'];
+								$w['LOGRTN'] = 0; # $w['PLANT2']; <=== use this to see logical balance of PLANT
+                                $w['COMMENTS'] = 'code:'. $w['PLANT2'];
 								$w['PLANT2'] = 0;
 							}
 							$theIndex = $index+1;
@@ -3270,25 +3272,43 @@ class ITH extends CI_Controller {
 										$isfound = true;break;
 									}
 								}
-								if($isfound) break;
+								if($isfound) {
+									#check is logical return per PSN is already plotted
+									$isPlotted = false;
+									foreach($rswip as $g){
+										if($g['PSN'] === $sampleRow['PSN']) {
+											$isPlotted = true;
+											break;
+										}
+									}
+									if(!$isPlotted) 
+									{
+										$sampleRow['LOGRTN'] = $k['LOGRTNQT'];
+									} else {
+										$sampleRow['LOGRTN'] = 0;
+									}
+									break;
+								}
 							}
 						}
+
 						$sampleRow['ITMD1'] = '';
 						$sampleRow['ARWH'] = 0;
 						$sampleRow['NRWH2'] = 0;
 						$sampleRow['ARWH0PD'] = 0;
 						$sampleRow['JOB'] = $r['WO'];						
 						$sampleRow['JOBUNIT'] = $r['UNIT'];
-						$sampleRow['PLANT2'] = $r['PARTQTY'];
-						$sampleRow['LOGRTN'] = 0;
+						$sampleRow['PLANT2'] = $r['PARTQTY'];						
 						$sampleRow['STOCK'] = 0;
+						$sampleRow['QA'] = 0;
 						$sampleRow['LOTSIZE'] = $r['LOTSIZE'];
+						$sampleRow['COMMENTS'] = '';
 						$rswip = array_merge(array_slice($rswip,0,$theIndex), [$sampleRow], array_slice($rswip,$theIndex));
 					}
 				}
 			}
 			$rang = "A1:A".$sheet->getHighestDataRow();
-			if(count($rswip)) {
+			if( !empty($rswip) ) {
                 log_message('error', $_SERVER['REMOTE_ADDR'].', step3#, BG:OTHER, rsPSN to Spreadsheet');
 				$sheet = $spreadsheet->createSheet();
 				$sheet->setTitle('RM_RESUME');
@@ -3313,6 +3333,9 @@ class ITH extends CI_Controller {
 				$sheet->freezePane('C5');
 				$y = 5;
 				foreach($rswip as $r){
+                    if(!empty($r['COMMENTS']) ) {
+                        $sheet->getComment('J'.$y)->getText()->createTextRun($r['COMMENTS']);
+                    }
 					$sheet->setCellValueByColumnAndRow(1,$y, $r['ITRN_ITMCD']);
 					$sheet->setCellValueByColumnAndRow(2,$y, $r['ITMD1']);
 					$sheet->setCellValueByColumnAndRow(3,$y, $r['ARWH']);
