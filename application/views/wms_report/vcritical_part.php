@@ -102,7 +102,7 @@
             data: {fg : FGList, rm: RMList, date : cutoffdate, wostatus: ck, bg : business},
             success: function (response) {                
                 const blob = new Blob([response], { type: "application/vnd.ms-excel" })
-                saveAs(blob, `Critical Part ${cutoffdate}.xlsx`)
+                saveAs(blob, `Critical Part ${business} On ${cutoffdate}.xlsx`)
                 p.innerHTML = '<i class="fas fa-file-excel"></i>'
                 p.disabled = false
                 alertify.success('Done')

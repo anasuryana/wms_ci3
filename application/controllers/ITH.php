@@ -3180,10 +3180,10 @@ class ITH extends CI_Controller {
 			log_message('error', $_SERVER['REMOTE_ADDR'].', step2.1#, BG:OTHER, get osWO');
 			if(strlen($fgstring)>5) {
 				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.2#, BG:OTHER, --with FG');
-				$osWO = $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring);
+				$osWO = $this->ITH_mod->select_wo_side_detail_BGOther($date, $fgstring, $psnstring);
 			} else {				
 				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.2#, BG:OTHER, --without FG');
-				$osWO = $this->ITH_mod->select_wo_side_detail_byPSN($date, $psnstring);
+				$osWO = $this->ITH_mod->select_wo_side_detail_byPSN_BGOther($date, $psnstring);
 			}
 			$rsPlot = [];
 			$_aWO = [];
