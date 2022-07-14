@@ -3184,10 +3184,37 @@ class ITH extends CI_Controller {
 			} else {				
 				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.2#, BG:OTHER, --without FG');
 				$osWO = $this->ITH_mod->select_wo_side_detail_byPSN($date, $psnstring);
-			}				
+			}
 			$rsPlot = [];
 			$_aWO = [];
 			$_aPart = [];
+
+            log_message('error', $_SERVER['REMOTE_ADDR'].', step2.3#, BG:OTHER, resume WO');
+            foreach($osWO as &$o) {
+                if(!in_array($o['PDPP_WONO'], $_aWO)) {
+                    $_aWO[] = $o['PDPP_WONO'];
+                }
+            }
+
+            log_message('error', $_SERVER['REMOTE_ADDR'].', step2.4#, BG:OTHER, resume Parts');
+            foreach($rswip as &$w) {
+                if($w['PLANT2']>0) {
+                    if(!in_array($w['ITRN_ITMCD'], $_aPart)) {
+                        $_aPart[] = $w['ITRN_ITMCD'];
+                    }
+                }
+            }
+
+            #get PPSN2
+            $_sWO = "'".implode("','", $_aWO)."'";
+            $_sPart = "'".implode("','", $_aPart)."'";
+            log_message('error', $_SERVER['REMOTE_ADDR'].', step2.5#, BG:OTHER, get PPSN2');
+            $rsPPSN2 = $this->SPL_mod->select_ppsn2_byArrayOf_WO_and_part($_sWO, $_sPart);
+
+            #get PPSN1
+            log_message('error', $_SERVER['REMOTE_ADDR'].', step2.6#, BG:OTHER, get PPSN1');
+            $rsPPSN1 = $this->SPL_mod->select_wo_byArrayOf_WO($_sWO);
+
 			foreach($rswip as &$w) {
 				$w['B4QTY'] = $w['PLANT2'];
 				$w['LOTSIZE'] = 0;
@@ -3195,36 +3222,51 @@ class ITH extends CI_Controller {
 				if($w['PLANT2']>0) {
 					foreach($osWO as &$o) {
 						if($w['PLANT2']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
-							$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
-							$fixqty = $balneed;
-							if($balneed	> $w['PLANT2']) {
-								$fixqty = $w['PLANT2'];
-								$o['PLOTQTY'] += $w['PLANT2'];
-								$w['PLANT2'] = 0;
-							} else {
-								$o['PLOTQTY'] += $balneed;
-								$w['PLANT2'] -= $balneed;
-							}
-							$isfound = false;
-							foreach($rsPlot as &$r){
-								if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
-									$r['PARTQTY'] += $fixqty;
-									$isfound = true;break;
-								}
-							}
-							unset($r);
-							if(!$isfound) {
-								if(!in_array($o['PDPP_WONO'], $_aWO)) {
-									$_aWO[] = $o['PDPP_WONO'];
-								}
-								if(!in_array($w['ITRN_ITMCD'], $_aPart)) {
-									$_aPart[] = $w['ITRN_ITMCD'];
-								}
-								$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => ''];
-							}
-							if($w['PLANT2']==0) {
-								break;
-							}
+                            #PSN CHECK
+                            $isRightPSN = false;
+                            foreach($rsPPSN1 as $p) {
+                                if($o['PDPP_WONO'] === $p['WONO']) {                                    
+                                    foreach($rsPPSN2 as $p2) {
+                                        if($p['PSN'] === $p2['PSN'] && $w['ITRN_ITMCD']===$p2['SUBPN'] ) {
+                                            $isRightPSN = true;
+                                            break;
+                                        }
+                                    }
+                                    if($isRightPSN) {
+                                        break;
+                                    }
+                                }
+                            }
+                            #END PSN CHECK
+                            if($isRightPSN) {
+                                $balneed = $o['NEEDQTY']-$o['PLOTQTY'];
+                                if($balneed==0) break;
+                                $fixqty = $balneed;
+                                if($balneed	> $w['PLANT2']) {
+                                    $fixqty = $w['PLANT2'];
+                                    $o['PLOTQTY'] += $w['PLANT2'];
+                                    $w['PLANT2'] = 0;
+                                } else {
+                                    $o['PLOTQTY'] += $balneed;
+                                    $w['PLANT2'] -= $balneed;
+                                }
+                                $isfound = false;
+                                foreach($rsPlot as &$r){
+                                    if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
+                                        $r['PARTQTY'] += $fixqty;
+                                        $isfound = true;break;
+                                    }
+                                }
+                                unset($r);
+                                if(!$isfound) {																
+                                    $rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => ''];
+                                }
+                                if($w['PLANT2']==0) {
+                                    break;
+                                }
+                            } else {
+                                break;
+                            }
 						}
 					}
 					unset($o);
@@ -3232,18 +3274,7 @@ class ITH extends CI_Controller {
 			}
 			unset($w);
 
-			if( !empty($rsPlot) ) {
-
-				#get PPSN2
-				$_sWO = "'".implode("','", $_aWO)."'";
-				$_sPart = "'".implode("','", $_aPart)."'";
-				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.3#, BG:OTHER, get PPSN2');
-				$rsPPSN2 = $this->SPL_mod->select_ppsn2_byArrayOf_WO_and_part($_sWO, $_sPart);
-
-				#get PPSN1
-				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.4#, BG:OTHER, get PPSN1');
-				$rsPPSN1 = $this->SPL_mod->select_wo_byArrayOf_WO($_sWO);
-
+			if( !empty($rsPlot) ) {				
 				#add detail on specific index
 				foreach($rsPlot as $r) {
 					$theIndex = 0;
@@ -3345,7 +3376,7 @@ class ITH extends CI_Controller {
 					$sheet->setCellValueByColumnAndRow(7,$y, $r['JOB']);
 					$sheet->setCellValueByColumnAndRow(8,$y, $r['LOTSIZE']);
 					$sheet->setCellValueByColumnAndRow(9,$y, $r['JOBUNIT']);
-					$sheet->setCellValueByColumnAndRow(10,$y, $r['PLANT2']); #QTYPCS
+					$sheet->setCellValueByColumnAndRow(10,$y, $r['PLANT2']);
 					$sheet->setCellValueByColumnAndRow(11,$y, $r['LOGRTN']);
 					$sheet->setCellValueByColumnAndRow(12,$y, $r['QA']);
 					$sheet->setCellValueByColumnAndRow(13,$y, $r['STOCK']);
@@ -3375,7 +3406,7 @@ class ITH extends CI_Controller {
 		$current_datetime = date('Y-m-d H:i:s');
 		$spreadsheet->getProperties()
 		->setCreator('WMS')->setTitle('CP '.$current_datetime);
-		$stringjudul = "Critical Part $date";
+		$stringjudul = "Critical Part $bg On $date";
 		$writer = new Xlsx($spreadsheet);
 		$filename=$stringjudul; //save our workbook as this file name
 		
