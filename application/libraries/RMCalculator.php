@@ -545,7 +545,7 @@ class RMCalculator {
 								return('{"status": '.json_encode($myar).'}');
 							}
 						}
-					}					
+					}
 				} 
 				$rspsn_sup = $this->tobexported_list_for_serd($apsn);
 			}			
