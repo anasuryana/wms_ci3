@@ -30,6 +30,14 @@ class PWOP_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+    public function select_mainsub_byModelArray($pModel){
+        $this->db->select('RTRIM(PWOP_BOMPN) PWOP_BOMPN,RTRIM(PWOP_SUBPN) PWOP_SUBPN');
+        $this->db->from($this->TABLENAME . " a");
+        $this->db->where_in("PWOP_MDLCD", $pModel);
+        $this->db->group_by("PWOP_BOMPN,PWOP_SUBPN");
+		$query = $this->db->get();
+		return $query->result_array();
+    }
 
     public function isMainUnit($pitemcode){
         return $this->db->get_where("(select PWOP_MDLCD from XPWOP left join XMITM_V on PWOP_BOMPN=MITM_ITMCD
