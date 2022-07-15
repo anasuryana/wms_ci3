@@ -3159,17 +3159,15 @@ class ITH extends CI_Controller {
             
 			if(strlen($rmstring)>5) {
 				log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, with parts');
-				$rswip = $this->ITH_mod->select_allwip_plant2_byBG_and_Part($date,$bg, $rmstring);
-
-				log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, BG:OTHER, get rsPSN, with parts');
-            	$rspsn = $this->ITH_mod->select_psn_period_byBG_and_Parts($startDate, $date, $bg, $rmstring);
+				$rswip = $this->ITH_mod->select_allwip_plant2_byBG_and_Part($date,$bg, $rmstring);				
 			} else {
 				log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, without parts');
 				$rswip = $this->ITH_mod->select_allwip_plant2_byBG($date,$bg);
+			}
 
-				log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, BG:OTHER, get rsPSN, without parts');
-            	$rspsn = $this->ITH_mod->select_psn_period_byBG($startDate, $date, $bg);
-			}            
+            log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, BG:OTHER, get rsPSN, without parts');
+            $rspsn = $this->ITH_mod->select_psn_period_byBG($startDate, $date, $bg);
+
 			$psnstring = "";
 			$osWO = [];
 			foreach($rspsn as $r){
@@ -3218,7 +3216,7 @@ class ITH extends CI_Controller {
 			foreach($rswip as &$w) {
 				$w['B4QTY'] = $w['PLANT2'];
 				$w['LOTSIZE'] = 0;
-				$w['COMMENTS'] = '';
+				$w['COMMENTS'] = '';				
 				if($w['PLANT2']>0) {
 					foreach($osWO as &$o) {
 						if($w['PLANT2']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
@@ -3284,6 +3282,7 @@ class ITH extends CI_Controller {
 							if($w['PLANT2']>0) {
 								$w['LOGRTN'] = 0; # $w['PLANT2']; <=== use this to see logical balance of PLANT
                                 $w['COMMENTS'] = 'code:'. $w['PLANT2'];
+                                $w['STOCK'] = $w['ARWH']+$w['NRWH2']+$w['ARWH0PD']+$w['QA']+($w['B4QTY']-$w['PLANT2']);
 								$w['PLANT2'] = 0;
 							}
 							$theIndex = $index+1;

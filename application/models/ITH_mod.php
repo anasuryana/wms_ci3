@@ -2122,7 +2122,7 @@ class ITH_mod extends CI_Model {
 		SELECT SUBSTRING(ITRN_DOCNO,1,19) DOCD FROM XITRN_TBL WHERE ITRN_BSGRP=?
 														AND (ITRN_ISUDT BETWEEN '$pdate1' AND '$pdate2')
 														AND ITRN_DOCNO LIKE '%SP-%'  and ITRN_DOCNO like '%R%'
-														AND ITRN_ITMCD IN ($pParts) 
+														
 														GROUP BY SUBSTRING(ITRN_DOCNO,1,19)
 		) VDETAIL ON VHEAD.DOC=VDETAIL.DOCD
 		WHERE DOCD IS NULL AND SUBSTRING(DOC,1,3)!='TRF' and DOC not like '%SP-MAT%'";
