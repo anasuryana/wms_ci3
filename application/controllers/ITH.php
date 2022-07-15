@@ -3256,6 +3256,7 @@ class ITH extends CI_Controller {
                                     }
                                 }
                                 unset($r);
+								
                                 if(!$isfound) {																
                                     $rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => ''];
                                 }
