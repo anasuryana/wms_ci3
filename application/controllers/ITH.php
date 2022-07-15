@@ -3021,30 +3021,28 @@ class ITH extends CI_Controller {
 		#FORMAT NUMBER
 		$rang = "C4:I".$sheet->getHighestDataRow();
 		$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-		
-		
-		if(is_array($fglist)) {
-			#set FG's part code as additional data for rmlist
-			#based on Hadi's (PPIC) request
-			if(!is_array($rmlist)) {
-				$rmlist = [];
-			}
-			$rsPWOP = $this->PWOP_mod->select_mainsub_byModelArray($fglist);
-			foreach($rsPWOP as $r) {
-				if(!in_array($r['PWOP_BOMPN'], $rmlist)) {
-					$rmlist[] = $r['PWOP_BOMPN'];
-				}
-				if(!in_array($r['PWOP_SUBPN'], $rmlist)) {
-					$rmlist[] = $r['PWOP_SUBPN'];
-				}
-			}
-			$rmstring = "'".implode("','", $rmlist)."'";
-		}
-		
+						
 		if(strlen($rmstring)>5) {
 			log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, with parts');
 			$rswip = $bg==='PSI1PPZIEP' ? $this->ITH_mod->select_allwip_plant1_byBG_and_Part($date,$bg, $rmstring) :  $this->ITH_mod->select_allwip_plant2_byBG_and_Part($date,$bg, $rmstring);
 		} else {
+			if(is_array($fglist)) {
+				#set FG's part code as additional data for rmlist
+				#based on Hadi's (PPIC) request
+				if(!is_array($rmlist)) {
+					$rmlist = [];
+				}
+				$rsPWOP = $this->PWOP_mod->select_mainsub_byModelArray($fglist);
+				foreach($rsPWOP as $r) {
+					if(!in_array($r['PWOP_BOMPN'], $rmlist)) {
+						$rmlist[] = $r['PWOP_BOMPN'];
+					}
+					if(!in_array($r['PWOP_SUBPN'], $rmlist)) {
+						$rmlist[] = $r['PWOP_SUBPN'];
+					}
+				}
+				$rmstring = "'".implode("','", $rmlist)."'";
+			}
 			log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, without parts');
 			$rswip = $bg==='PSI1PPZIEP' ?  $this->ITH_mod->select_allwip_plant1_byBG($date,$bg) : $this->ITH_mod->select_allwip_plant2_byBG($date,$bg);
 		}
