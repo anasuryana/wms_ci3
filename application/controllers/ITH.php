@@ -2966,466 +2966,325 @@ class ITH extends CI_Controller {
 
 	public function breakdown_estimation() {
 		ini_set('max_execution_time', '-1');
-		date_default_timezone_set('Asia/Jakarta');		
+		date_default_timezone_set('Asia/Jakarta');
 		$date = $this->input->post('date');
 		$fglist = $this->input->post('fg');
-		$WOStatus = $this->input->post('wostatus');
 		$rmlist = $this->input->post('rm');
 		$bg = $this->input->post('bg');
 		if($date=='') die('could not continue');
 		$fgstring =  is_array($fglist) ? "'".implode("','", $fglist)."'" : "''";
 		$rmstring = is_array($rmlist) ? "'".implode("','", $rmlist)."'" : "''";
-        $startDate = date('Y-m-d',strtotime($date." - 60 days"));
-		if($bg==='PSI1PPZIEP') {
-			$wh = 'PLANT1';						
-			$rspsn = $this->ITH_mod->select_psn_period($startDate, $date, $rmstring);
-			$psnstring = "";
-			$osWO = [];
-			foreach($rspsn as $r){
-				$psnstring .= "'".$r['DOC']."',";
+        $startDate = date('Y-m-d',strtotime($date." - 60 days"));		
+		$spreadsheet = new Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->setTitle('FG_RESUME');
+		$sheet->setCellValueByColumnAndRow(1,2, 'Assy Code');
+		$sheet->setCellValueByColumnAndRow(2,2, 'Description');
+		$sheet->setCellValueByColumnAndRow(3,2, 'Location');
+		$sheet->setCellValueByColumnAndRow(3,3, 'SCAN PRODUCTION');
+		$sheet->setCellValueByColumnAndRow(4,3, 'SCAN QC');
+		$sheet->setCellValueByColumnAndRow(5,3, 'FRESH WAREHOUSE');
+		$sheet->setCellValueByColumnAndRow(6,3, 'PENDING');
+		$sheet->setCellValueByColumnAndRow(7,3, 'QCRTN');
+		$sheet->setCellValueByColumnAndRow(8,3, 'NFWH4RT');
+		$sheet->setCellValueByColumnAndRow(9,3, 'AFWH3RT');
+		$sheet->mergeCells('A2:A3');
+		$sheet->getStyle('A2')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+		$sheet->mergeCells('B2:B3');
+		$sheet->getStyle('B2')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+		$sheet->mergeCells('C2:I2');
+		$sheet->getStyle('A2:I3')->getAlignment()->setHorizontal('center');
+		$sheet->freezePane('C4');			
+		$y = 4;
+		if(strlen($fgstring)>5) { 
+			log_message('error', $_SERVER['REMOTE_ADDR'].', step0#, BG:OTHER, init FG with item code');
+			$rsFG = $this->ITH_mod->select_fg_byItemCodeArray($date, $bg, $fgstring);
+		} else {
+			log_message('error', $_SERVER['REMOTE_ADDR'].', step0#, BG:OTHER, init FG');
+			$rsFG = $this->ITH_mod->select_fg($date, $bg);
+		}
+		foreach($rsFG as $r){
+			$sheet->setCellValueByColumnAndRow(1,$y, $r['ITH_ITMCD']);
+			$sheet->setCellValueByColumnAndRow(2,$y, $r['ITMD1']);				
+			$sheet->setCellValueByColumnAndRow(3,$y, 0);
+			$sheet->setCellValueByColumnAndRow(4,$y, $r['LOC_QC']);
+			$sheet->setCellValueByColumnAndRow(5,$y, "=".$r['LOC_AFWH3']."+".$r['LOC_ARSHP']);
+			$sheet->setCellValueByColumnAndRow(6,$y, $r['LOC_QAFG']);
+			$sheet->setCellValueByColumnAndRow(7,$y, $r['LOC_AFQART']);
+			$sheet->setCellValueByColumnAndRow(8,$y, "=".$r['LOC_NFWH4RT']."+".$r['LOC_ARSHPRTN']);
+			$sheet->setCellValueByColumnAndRow(9,$y, "=".$r['LOC_AFWH3RT']."+".$r['LOC_ARSHPRTN2']);
+			$y++;
+		}
+		foreach(range('A', 'I') as $v) {
+			$sheet->getColumnDimension($v)->setAutoSize(true);
+		}	
+		#FORMAT NUMBER
+		$rang = "C4:I".$sheet->getHighestDataRow();
+		$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+		
+		
+		if(is_array($fglist)) {
+			#set FG's part code as additional data for rmlist
+			#based on Hadi's (PPIC) request
+			if(!is_array($rmlist)) {
+				$rmlist = [];
 			}
-			$psnstring = $psnstring=="" ? "''" : substr($psnstring,0,strlen($psnstring)-1);
-			$osWO = $WOStatus == 'o' ? $this->ITH_mod->select_wo_side_detail_open($date, $fgstring) : $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring);		
-			$rswip = $this->ITH_mod->select_wip_balance($date, $wh, $rmstring);
-			
-			$rsPlot = [];
-			foreach($rswip as &$w) {
-				$w['B4QTY'] = $w['MGAQTY'];
+			$rsPWOP = $this->PWOP_mod->select_mainsub_byModelArray($fglist);
+			foreach($rsPWOP as $r) {
+				if(!in_array($r['PWOP_BOMPN'], $rmlist)) {
+					$rmlist[] = $r['PWOP_BOMPN'];
+				}
+				if(!in_array($r['PWOP_SUBPN'], $rmlist)) {
+					$rmlist[] = $r['PWOP_SUBPN'];
+				}
+			}
+			$rmstring = "'".implode("','", $rmlist)."'";
+		}
+		
+		if(strlen($rmstring)>5) {
+			log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, with parts');
+			$rswip = $bg==='PSI1PPZIEP' ? $this->ITH_mod->select_allwip_plant1_byBG_and_Part($date,$bg, $rmstring) :  $this->ITH_mod->select_allwip_plant2_byBG_and_Part($date,$bg, $rmstring);
+		} else {
+			log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, without parts');
+			$rswip = $bg==='PSI1PPZIEP' ?  $this->ITH_mod->select_allwip_plant1_byBG($date,$bg) : $this->ITH_mod->select_allwip_plant2_byBG($date,$bg);
+		}
+
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, BG:OTHER, get rsPSN, without parts');
+		$rspsn = $this->ITH_mod->select_psn_period_byBG($startDate, $date, $bg);
+
+		$psnstring = "";
+		$osWO = [];
+		foreach($rspsn as $r){
+			$psnstring .= "'".$r['DOC']."',";
+		}
+		$psnstring = $psnstring=="" ? "''" : substr($psnstring,0,strlen($psnstring)-1);
+
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step2.1#, BG:OTHER, get osWO');
+		if(strlen($fgstring)>5) {
+			log_message('error', $_SERVER['REMOTE_ADDR'].', step2.2#, BG:OTHER, --with FG');
+			$osWO = $this->ITH_mod->select_wo_side_detail_BGOther($date, $fgstring, $psnstring);
+		} else {
+			log_message('error', $_SERVER['REMOTE_ADDR'].', step2.2#, BG:OTHER, --without FG');
+			$osWO = $this->ITH_mod->select_wo_side_detail_byPSN_BGOther($date, $psnstring);
+		}
+		$rsPlot = [];
+		$_aWO = [];
+		$_aPart = [];
+
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step2.3#, BG:OTHER, resume WO');
+		foreach($osWO as &$o) {
+			if(!in_array($o['PDPP_WONO'], $_aWO)) {
+				$_aWO[] = $o['PDPP_WONO'];
+			}
+		}
+
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step2.4#, BG:OTHER, resume Parts');
+		foreach($rswip as &$w) {
+			if($w['PLANT2']>0) {
+				if(!in_array($w['ITRN_ITMCD'], $_aPart)) {
+					$_aPart[] = $w['ITRN_ITMCD'];
+				}
+			}
+		}
+
+		#get PPSN2
+		$_sWO = "'".implode("','", $_aWO)."'";
+		$_sPart = "'".implode("','", $_aPart)."'";
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step2.5#, BG:OTHER, get PPSN2');
+		$rsPPSN2 = $this->SPL_mod->select_ppsn2_byArrayOf_WO_and_part($_sWO, $_sPart);
+
+		#get PPSN1
+		log_message('error', $_SERVER['REMOTE_ADDR'].', step2.6#, BG:OTHER, get PPSN1');
+		$rsPPSN1 = $this->SPL_mod->select_wo_byArrayOf_WO($_sWO);
+
+		foreach($rswip as &$w) {
+			$w['B4QTY'] = $w['PLANT2'];
+			$w['LOTSIZE'] = 0;
+			$w['COMMENTS'] = '';				
+			if($w['PLANT2']>0) {
 				foreach($osWO as &$o) {
-					if($w['MGAQTY']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
-						$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
-						$fixqty = $balneed;
-						if($balneed	> $w['MGAQTY']) {
-							$fixqty = $w['MGAQTY'];
-							$o['PLOTQTY'] += $w['MGAQTY'];
-							$w['MGAQTY'] = 0;
-						} else {
-							$o['PLOTQTY'] += $balneed;
-							$w['MGAQTY'] -= $balneed;
-						}
-						$isfound = false;
-						foreach($rsPlot as &$r){
-							if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
-								$r['PARTQTY'] += $fixqty;
-								$isfound = true;break;
+					if($w['PLANT2']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
+						#PSN CHECK
+						$isRightPSN = false;
+						foreach($rsPPSN1 as $p) {
+							if($o['PDPP_WONO'] === $p['WONO']) {                                    
+								foreach($rsPPSN2 as $p2) {
+									if($p['PSN'] === $p2['PSN'] && $w['ITRN_ITMCD']===$p2['SUBPN'] ) {
+										$isRightPSN = true;
+										break;
+									}
+								}
+								if($isRightPSN) {
+									break;
+								}
 							}
 						}
-						unset($r);
-						if(!$isfound) {
-							$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty];
-						}
-						if($w['MGAQTY']==0) {
+						#END PSN CHECK
+						if($isRightPSN) {
+							$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
+							if($balneed==0) break;
+							$fixqty = $balneed;
+							if($balneed	> $w['PLANT2']) {
+								$fixqty = $w['PLANT2'];
+								$o['PLOTQTY'] += $w['PLANT2'];
+								$w['PLANT2'] = 0;
+							} else {
+								$o['PLOTQTY'] += $balneed;
+								$w['PLANT2'] -= $balneed;
+							}
+							$isfound = false;
+							foreach($rsPlot as &$r){
+								if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
+									$r['PARTQTY'] += $fixqty;
+									$isfound = true;break;
+								}
+							}
+							unset($r);
+
+							if(!$isfound) {																
+								$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => ''];
+							}
+							if($w['PLANT2']==0) {
+								break;
+							}
+						} else {
 							break;
 						}
 					}
 				}
 				unset($o);
 			}
-			unset($w);
-	
-			$shouldSearchDeep = false;
-			foreach($rswip as $r) {
-				if($r['MGAQTY']>0 && $r['B4QTY'] == $r['MGAQTY']) {
-					$shouldSearchDeep = true;
-					break;
-				}
-			}
-			if($shouldSearchDeep) {
-				$rspsn = $this->ITH_mod->select_psn_return_period($startDate, $date, $rmstring);
-				$psnstring = "";
-				$osWO = [];
-				foreach($rspsn as $r){
-					$psnstring .= "'".$r['DOC']."',";
-				}
-				$psnstring = $psnstring=="" ? "''" : substr($psnstring,0,strlen($psnstring)-1);
-				$osWO = $WOStatus == 'o' ? $this->ITH_mod->select_wo_side_detail_open($date, $fgstring) : $this->ITH_mod->select_wo_side_detail($date, $fgstring, $psnstring);
-				foreach($rswip as &$w) {
-					if($w['MGAQTY']>0){
-						$w['B4QTY'] = $w['MGAQTY'];
-						foreach($osWO as &$o) {
-							if($w['MGAQTY']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
-								$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
-								$fixqty = $balneed;
-								if($balneed	> $w['MGAQTY']) {
-									$fixqty = $w['MGAQTY'];
-									$o['PLOTQTY'] += $w['MGAQTY'];
-									$w['MGAQTY'] = 0;
-								} else {
-									$o['PLOTQTY'] += $balneed;
-									$w['MGAQTY'] -= $balneed;
-								}
-								$isfound = false;
-								foreach($rsPlot as &$r){
-									if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
-										$r['PARTQTY'] += $fixqty;
-										$isfound = true;break;
-									}
-								}
-								unset($r);
-								if(!$isfound) {
-									$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty];
-								}
-								if($w['MGAQTY']==0) {
-									break;
-								}
-							}
+		}
+		unset($w);
+
+		if( !empty($rsPlot) ) {				
+			#add detail on specific index
+			foreach($rsPlot as $r) {
+				$theIndex = 0;
+				$sampleRow = [];
+				foreach($rswip as $index => &$w){
+					if($r['PARTCD']	=== $w['ITRN_ITMCD']) {
+						if($w['PLANT2']>0) {
+							$w['LOGRTN'] = 0; # $w['PLANT2']; <=== use this to see logical balance of PLANT
+							$w['COMMENTS'] = 'code:'. $w['PLANT2'];
+							$w['STOCK'] = $w['ARWH']+$w['NRWH2']+$w['ARWH0PD']+$w['QA']+($w['B4QTY']-$w['PLANT2']);
+							$w['PLANT2'] = 0;
 						}
-						unset($o);
+						$theIndex = $index+1;
+						$sampleRow = $w;
+						break;
 					}
 				}
 				unset($w);
-			}
-			
-			$rsFGResume = $this->ITH_mod->select_critical_FGStock($date, $fgstring);
-			$spreadsheet = new Spreadsheet();
-			$sheet = $spreadsheet->getActiveSheet();
-			$sheet->setTitle('FG_RESUME');
-			$rang = "A1:A".$sheet->getHighestDataRow();
-			if(count($rsFGResume)){
-				$sheet->fromArray(array_keys($rsFGResume[0]), NULL, 'A1');
-				$sheet->fromArray($rsFGResume, NULL, 'A2');
-				$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-				foreach(range('A', 'K') as $v) {
-					$sheet->getColumnDimension($v)->setAutoSize(true);
+				if($theIndex!=0) {
+					#SET PSN
+					foreach($rsPPSN2 as $k) {
+						if($k['SUBPN']===$r['PARTCD']) {
+							$isfound = false;
+							foreach($rsPPSN1 as $y) {
+								if($r['WO'] === $y['WONO'] && $k['PSN'] === $y['PSN']) {
+									$sampleRow['PSN'] = $y['PSN'];
+									$isfound = true;break;
+								}
+							}
+							if($isfound) {
+								#check is logical return per PSN is already plotted
+								$isPlotted = false;
+								foreach($rswip as $g){
+									if($g['PSN'] === $sampleRow['PSN']) {
+										$isPlotted = true;
+										break;
+									}
+								}
+								if(!$isPlotted) 
+								{
+									$sampleRow['LOGRTN'] = $k['LOGRTNQT'];
+								} else {
+									$sampleRow['LOGRTN'] = 0;
+								}
+								break;
+							}
+						}
+					}
+
+					$sampleRow['ITMD1'] = '';
+					$sampleRow['ARWH'] = 0;
+					$sampleRow['NRWH2'] = 0;
+					$sampleRow['ARWH0PD'] = 0;
+					$sampleRow['JOB'] = $r['WO'];						
+					$sampleRow['JOBUNIT'] = $r['UNIT'];
+					$sampleRow['PLANT2'] = $r['PARTQTY'];						
+					$sampleRow['STOCK'] = 0;
+					$sampleRow['QA'] = 0;
+					$sampleRow['LOTSIZE'] = $r['LOTSIZE'];
+					$sampleRow['COMMENTS'] = '';
+					$rswip = array_merge(array_slice($rswip,0,$theIndex), [$sampleRow], array_slice($rswip,$theIndex));
 				}
 			}
-	
-			if(count($rswip)){
-				$sheet = $spreadsheet->createSheet();
-				$sheet->setTitle('RM_RESUME');
-				$sheet->fromArray(array_keys($rswip[0]), NULL, 'A1');
-				$sheet->fromArray($rswip, NULL, 'A2');
-				$sheet->getColumnDimension('C')->setVisible(false);
-				$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-				foreach(range('A', 'K') as $v) {
-					$sheet->getColumnDimension($v)->setAutoSize(true);
+		}
+		$rang = "A1:A".$sheet->getHighestDataRow();
+		if( !empty($rswip) ) {
+			log_message('error', $_SERVER['REMOTE_ADDR'].', step3#, BG:OTHER, rsPSN to Spreadsheet');
+			$sheet = $spreadsheet->createSheet();
+			$sheet->setTitle('RM_RESUME');
+			$sheet->setCellValueByColumnAndRow(1,2, 'Part Code'); $sheet->mergeCells('A2:A4'); #rowspan3
+			$sheet->setCellValueByColumnAndRow(2,2, 'Description'); $sheet->mergeCells('B2:B4'); #rowspan3
+			$sheet->setCellValueByColumnAndRow(3,2, 'Location'); $sheet->mergeCells('C2:M2'); #colspan11
+			$sheet->setCellValueByColumnAndRow(3,3, 'RM Warehouse'); $sheet->mergeCells('C3:D3'); #colspan2
+			$sheet->setCellValueByColumnAndRow(5,3, 'ARWH0PD'); $sheet->mergeCells('E3:E4'); #rowspan2
+			$sheet->setCellValueByColumnAndRow(6,3, 'Plant'); $sheet->mergeCells('F3:K3'); #colspan6
+			$sheet->setCellValueByColumnAndRow(12,3, 'QA'); $sheet->mergeCells('L3:L4'); #rowspan2
+			$sheet->setCellValueByColumnAndRow(13,3, 'STOCK'); $sheet->mergeCells('M3:M4'); #rowspan2
+
+			$sheet->setCellValueByColumnAndRow(3,4, 'ARWH');
+			$sheet->setCellValueByColumnAndRow(4,4, 'NRWH2');
+
+			$sheet->setCellValueByColumnAndRow(6,4, 'PSN');
+			$sheet->setCellValueByColumnAndRow(7,4, 'Job');
+			$sheet->setCellValueByColumnAndRow(8,4, 'Lot Size');
+			$sheet->setCellValueByColumnAndRow(9,4, 'Qty UNIT');
+			$sheet->setCellValueByColumnAndRow(10,4, 'Qty PCS');
+			$sheet->setCellValueByColumnAndRow(11,4, 'Logical Return');
+			$sheet->freezePane('C5');
+			$y = 5;
+			foreach($rswip as $r){
+				if(!empty($r['COMMENTS']) ) {
+					$sheet->getComment('J'.$y)->getText()->createTextRun($r['COMMENTS']);
 				}
-			}
-	
-			if(count($rsPlot)){
-				$sheet = $spreadsheet->createSheet();
-				$sheet->setTitle('PLOTWO');
-				$sheet->fromArray(array_keys($rsPlot[0]), NULL, 'A1');
-				$sheet->fromArray($rsPlot, NULL, 'A2');
-				$sheet->getColumnDimension('F')->setVisible(false);
-				$rang = "C1:C".$sheet->getHighestDataRow();
-				$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-				foreach(range('A', 'K') as $v) {
-					$sheet->getColumnDimension($v)->setAutoSize(true);
-				}
-			}
-		} else {
-            $spreadsheet = new Spreadsheet();			
-			$sheet = $spreadsheet->getActiveSheet();
-			$sheet->setTitle('FG_RESUME');
-			$sheet->setCellValueByColumnAndRow(1,2, 'Assy Code');
-			$sheet->setCellValueByColumnAndRow(2,2, 'Description');
-			$sheet->setCellValueByColumnAndRow(3,2, 'Location');
-			$sheet->setCellValueByColumnAndRow(3,3, 'SCAN PRODUCTION');
-			$sheet->setCellValueByColumnAndRow(4,3, 'SCAN QC');
-			$sheet->setCellValueByColumnAndRow(5,3, 'FRESH WAREHOUSE');
-			$sheet->setCellValueByColumnAndRow(6,3, 'PENDING');
-			$sheet->setCellValueByColumnAndRow(7,3, 'QCRTN');
-			$sheet->setCellValueByColumnAndRow(8,3, 'NFWH4RT');
-			$sheet->setCellValueByColumnAndRow(9,3, 'AFWH3RT');
-			$sheet->mergeCells('A2:A3');
-			$sheet->getStyle('A2')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-			$sheet->mergeCells('B2:B3');
-			$sheet->getStyle('B2')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-			$sheet->mergeCells('C2:I2');
-			$sheet->getStyle('A2:I3')->getAlignment()->setHorizontal('center');
-			$sheet->freezePane('C4');			
-			$y = 4;
-			if(strlen($fgstring)>5) { 
-				log_message('error', $_SERVER['REMOTE_ADDR'].', step0#, BG:OTHER, init FG with item code');
-				$rsFG = $this->ITH_mod->select_fg_byItemCodeArray($date, $bg, $fgstring);
-			} else {
-				log_message('error', $_SERVER['REMOTE_ADDR'].', step0#, BG:OTHER, init FG');
-				$rsFG = $this->ITH_mod->select_fg($date, $bg);
-			}
-			foreach($rsFG as $r){
-                $sheet->setCellValueByColumnAndRow(1,$y, $r['ITH_ITMCD']);
-				$sheet->setCellValueByColumnAndRow(2,$y, $r['ITMD1']);				
-				$sheet->setCellValueByColumnAndRow(3,$y, 0);
-				$sheet->setCellValueByColumnAndRow(4,$y, $r['LOC_QC']);
-				$sheet->setCellValueByColumnAndRow(5,$y, "=".$r['LOC_AFWH3']."+".$r['LOC_ARSHP']);
-				$sheet->setCellValueByColumnAndRow(6,$y, $r['LOC_QAFG']);
-				$sheet->setCellValueByColumnAndRow(7,$y, $r['LOC_AFQART']);
-				$sheet->setCellValueByColumnAndRow(8,$y, "=".$r['LOC_NFWH4RT']."+".$r['LOC_ARSHPRTN']);
-				$sheet->setCellValueByColumnAndRow(9,$y, "=".$r['LOC_AFWH3RT']."+".$r['LOC_ARSHPRTN2']);
+				$sheet->setCellValueByColumnAndRow(1,$y, $r['ITRN_ITMCD']);
+				$sheet->setCellValueByColumnAndRow(2,$y, $r['ITMD1']);
+				$sheet->setCellValueByColumnAndRow(3,$y, $r['ARWH']);
+				$sheet->setCellValueByColumnAndRow(4,$y, $r['NRWH2']);
+				$sheet->setCellValueByColumnAndRow(5,$y, $r['ARWH0PD']);
+				$sheet->setCellValueByColumnAndRow(6,$y, $r['PSN']);
+				$sheet->setCellValueByColumnAndRow(7,$y, $r['JOB']);
+				$sheet->setCellValueByColumnAndRow(8,$y, $r['LOTSIZE']);
+				$sheet->setCellValueByColumnAndRow(9,$y, $r['JOBUNIT']);
+				$sheet->setCellValueByColumnAndRow(10,$y, $r['PLANT2']);
+				$sheet->setCellValueByColumnAndRow(11,$y, $r['LOGRTN']);
+				$sheet->setCellValueByColumnAndRow(12,$y, $r['QA']);
+				$sheet->setCellValueByColumnAndRow(13,$y, $r['STOCK']);
 				$y++;
 			}
-			foreach(range('A', 'I') as $v) {
-                $sheet->getColumnDimension($v)->setAutoSize(true);
-			}	
+			$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+			foreach(range('A', 'M') as $v) {
+				$sheet->getColumnDimension($v)->setAutoSize(true);
+			}
+
+			#FORMAT HEADER
+			$sheet->getStyle("A2:M4")->getAlignment()
+			->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+			->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+			#FORMAT BORDER
+			$rang = "A2:M".$sheet->getHighestDataRow();
+			$sheet->getStyle($rang)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
+			->setColor(new Color('1F1812'));
+
 			#FORMAT NUMBER
-			$rang = "C4:I".$sheet->getHighestDataRow();
+			$rang = "C5:M".$sheet->getHighestDataRow();
 			$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-            
-			
-			if(is_array($fglist)) {
-				#set FG's part code as additional data for rmlist
-				#based on Hadi's (PPIC) request
-				if(!is_array($rmlist)) {
-					$rmlist = [];
-				}
-				$rsPWOP = $this->PWOP_mod->select_mainsub_byModelArray($fglist);
-				foreach($rsPWOP as $r) {
-					if(!in_array($r['PWOP_BOMPN'], $rmlist)) {
-						$rmlist[] = $r['PWOP_BOMPN'];
-					}
-					if(!in_array($r['PWOP_SUBPN'], $rmlist)) {
-						$rmlist[] = $r['PWOP_SUBPN'];
-					}
-				}
-				$rmstring = "'".implode("','", $rmlist)."'";
-			}
-            
-			if(strlen($rmstring)>5) {
-				log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, with parts');
-				$rswip = $this->ITH_mod->select_allwip_plant2_byBG_and_Part($date,$bg, $rmstring);
-			} else {
-				log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, without parts');
-				$rswip = $this->ITH_mod->select_allwip_plant2_byBG($date,$bg);
-			}
-
-            log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, BG:OTHER, get rsPSN, without parts');
-            $rspsn = $this->ITH_mod->select_psn_period_byBG($startDate, $date, $bg);
-
-			$psnstring = "";
-			$osWO = [];
-			foreach($rspsn as $r){
-				$psnstring .= "'".$r['DOC']."',";
-			}
-			$psnstring = $psnstring=="" ? "''" : substr($psnstring,0,strlen($psnstring)-1);
-
-			log_message('error', $_SERVER['REMOTE_ADDR'].', step2.1#, BG:OTHER, get osWO');
-			if(strlen($fgstring)>5) {
-				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.2#, BG:OTHER, --with FG');
-				$osWO = $this->ITH_mod->select_wo_side_detail_BGOther($date, $fgstring, $psnstring);
-			} else {
-				log_message('error', $_SERVER['REMOTE_ADDR'].', step2.2#, BG:OTHER, --without FG');
-				$osWO = $this->ITH_mod->select_wo_side_detail_byPSN_BGOther($date, $psnstring);
-			}
-			$rsPlot = [];
-			$_aWO = [];
-			$_aPart = [];
-
-            log_message('error', $_SERVER['REMOTE_ADDR'].', step2.3#, BG:OTHER, resume WO');
-            foreach($osWO as &$o) {
-                if(!in_array($o['PDPP_WONO'], $_aWO)) {
-                    $_aWO[] = $o['PDPP_WONO'];
-                }
-            }
-
-            log_message('error', $_SERVER['REMOTE_ADDR'].', step2.4#, BG:OTHER, resume Parts');
-            foreach($rswip as &$w) {
-                if($w['PLANT2']>0) {
-                    if(!in_array($w['ITRN_ITMCD'], $_aPart)) {
-                        $_aPart[] = $w['ITRN_ITMCD'];
-                    }
-                }
-            }
-
-            #get PPSN2
-            $_sWO = "'".implode("','", $_aWO)."'";
-            $_sPart = "'".implode("','", $_aPart)."'";
-            log_message('error', $_SERVER['REMOTE_ADDR'].', step2.5#, BG:OTHER, get PPSN2');
-            $rsPPSN2 = $this->SPL_mod->select_ppsn2_byArrayOf_WO_and_part($_sWO, $_sPart);
-
-            #get PPSN1
-            log_message('error', $_SERVER['REMOTE_ADDR'].', step2.6#, BG:OTHER, get PPSN1');
-            $rsPPSN1 = $this->SPL_mod->select_wo_byArrayOf_WO($_sWO);
-
-			foreach($rswip as &$w) {
-				$w['B4QTY'] = $w['PLANT2'];
-				$w['LOTSIZE'] = 0;
-				$w['COMMENTS'] = '';				
-				if($w['PLANT2']>0) {
-					foreach($osWO as &$o) {
-						if($w['PLANT2']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
-                            #PSN CHECK
-                            $isRightPSN = false;
-                            foreach($rsPPSN1 as $p) {
-                                if($o['PDPP_WONO'] === $p['WONO']) {                                    
-                                    foreach($rsPPSN2 as $p2) {
-                                        if($p['PSN'] === $p2['PSN'] && $w['ITRN_ITMCD']===$p2['SUBPN'] ) {
-                                            $isRightPSN = true;
-                                            break;
-                                        }
-                                    }
-                                    if($isRightPSN) {
-                                        break;
-                                    }
-                                }
-                            }
-                            #END PSN CHECK
-                            if($isRightPSN) {
-                                $balneed = $o['NEEDQTY']-$o['PLOTQTY'];
-                                if($balneed==0) break;
-                                $fixqty = $balneed;
-                                if($balneed	> $w['PLANT2']) {
-                                    $fixqty = $w['PLANT2'];
-                                    $o['PLOTQTY'] += $w['PLANT2'];
-                                    $w['PLANT2'] = 0;
-                                } else {
-                                    $o['PLOTQTY'] += $balneed;
-                                    $w['PLANT2'] -= $balneed;
-                                }
-                                $isfound = false;
-                                foreach($rsPlot as &$r){
-                                    if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
-                                        $r['PARTQTY'] += $fixqty;
-                                        $isfound = true;break;
-                                    }
-                                }
-                                unset($r);
-
-                                if(!$isfound) {																
-                                    $rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => ''];
-                                }
-                                if($w['PLANT2']==0) {
-                                    break;
-                                }
-                            } else {
-                                break;
-                            }
-						}
-					}
-					unset($o);
-				}
-			}
-			unset($w);
-
-			if( !empty($rsPlot) ) {				
-				#add detail on specific index
-				foreach($rsPlot as $r) {
-					$theIndex = 0;
-					$sampleRow = [];
-					foreach($rswip as $index => &$w){
-						if($r['PARTCD']	=== $w['ITRN_ITMCD']) {
-							if($w['PLANT2']>0) {
-								$w['LOGRTN'] = 0; # $w['PLANT2']; <=== use this to see logical balance of PLANT
-                                $w['COMMENTS'] = 'code:'. $w['PLANT2'];
-                                $w['STOCK'] = $w['ARWH']+$w['NRWH2']+$w['ARWH0PD']+$w['QA']+($w['B4QTY']-$w['PLANT2']);
-								$w['PLANT2'] = 0;
-							}
-							$theIndex = $index+1;
-							$sampleRow = $w;
-							break;
-						}
-					}
-					unset($w);
-					if($theIndex!=0) {
-						#SET PSN
-						foreach($rsPPSN2 as $k) {
-							if($k['SUBPN']===$r['PARTCD']) {
-								$isfound = false;
-								foreach($rsPPSN1 as $y) {
-									if($r['WO'] === $y['WONO'] && $k['PSN'] === $y['PSN']) {
-										$sampleRow['PSN'] = $y['PSN'];
-										$isfound = true;break;
-									}
-								}
-								if($isfound) {
-									#check is logical return per PSN is already plotted
-									$isPlotted = false;
-									foreach($rswip as $g){
-										if($g['PSN'] === $sampleRow['PSN']) {
-											$isPlotted = true;
-											break;
-										}
-									}
-									if(!$isPlotted) 
-									{
-										$sampleRow['LOGRTN'] = $k['LOGRTNQT'];
-									} else {
-										$sampleRow['LOGRTN'] = 0;
-									}
-									break;
-								}
-							}
-						}
-
-						$sampleRow['ITMD1'] = '';
-						$sampleRow['ARWH'] = 0;
-						$sampleRow['NRWH2'] = 0;
-						$sampleRow['ARWH0PD'] = 0;
-						$sampleRow['JOB'] = $r['WO'];						
-						$sampleRow['JOBUNIT'] = $r['UNIT'];
-						$sampleRow['PLANT2'] = $r['PARTQTY'];						
-						$sampleRow['STOCK'] = 0;
-						$sampleRow['QA'] = 0;
-						$sampleRow['LOTSIZE'] = $r['LOTSIZE'];
-						$sampleRow['COMMENTS'] = '';
-						$rswip = array_merge(array_slice($rswip,0,$theIndex), [$sampleRow], array_slice($rswip,$theIndex));
-					}
-				}
-			}
-			$rang = "A1:A".$sheet->getHighestDataRow();
-			if( !empty($rswip) ) {
-                log_message('error', $_SERVER['REMOTE_ADDR'].', step3#, BG:OTHER, rsPSN to Spreadsheet');
-				$sheet = $spreadsheet->createSheet();
-				$sheet->setTitle('RM_RESUME');
-				$sheet->setCellValueByColumnAndRow(1,2, 'Part Code'); $sheet->mergeCells('A2:A4'); #rowspan3
-				$sheet->setCellValueByColumnAndRow(2,2, 'Description'); $sheet->mergeCells('B2:B4'); #rowspan3
-				$sheet->setCellValueByColumnAndRow(3,2, 'Location'); $sheet->mergeCells('C2:M2'); #colspan11
-				$sheet->setCellValueByColumnAndRow(3,3, 'RM Warehouse'); $sheet->mergeCells('C3:D3'); #colspan2
-				$sheet->setCellValueByColumnAndRow(5,3, 'ARWH0PD'); $sheet->mergeCells('E3:E4'); #rowspan2
-				$sheet->setCellValueByColumnAndRow(6,3, 'Plant'); $sheet->mergeCells('F3:K3'); #colspan6
-				$sheet->setCellValueByColumnAndRow(12,3, 'QA'); $sheet->mergeCells('L3:L4'); #rowspan2
-				$sheet->setCellValueByColumnAndRow(13,3, 'STOCK'); $sheet->mergeCells('M3:M4'); #rowspan2
-
-				$sheet->setCellValueByColumnAndRow(3,4, 'ARWH2');
-				$sheet->setCellValueByColumnAndRow(4,4, 'NRWH2');
-
-				$sheet->setCellValueByColumnAndRow(6,4, 'PSN');
-				$sheet->setCellValueByColumnAndRow(7,4, 'Job');
-				$sheet->setCellValueByColumnAndRow(8,4, 'Lot Size');
-				$sheet->setCellValueByColumnAndRow(9,4, 'Qty UNIT');
-				$sheet->setCellValueByColumnAndRow(10,4, 'Qty PCS');
-				$sheet->setCellValueByColumnAndRow(11,4, 'Logical Return');
-				$sheet->freezePane('C5');
-				$y = 5;
-				foreach($rswip as $r){
-                    if(!empty($r['COMMENTS']) ) {
-                        $sheet->getComment('J'.$y)->getText()->createTextRun($r['COMMENTS']);
-                    }
-					$sheet->setCellValueByColumnAndRow(1,$y, $r['ITRN_ITMCD']);
-					$sheet->setCellValueByColumnAndRow(2,$y, $r['ITMD1']);
-					$sheet->setCellValueByColumnAndRow(3,$y, $r['ARWH']);
-					$sheet->setCellValueByColumnAndRow(4,$y, $r['NRWH2']);
-					$sheet->setCellValueByColumnAndRow(5,$y, $r['ARWH0PD']);
-					$sheet->setCellValueByColumnAndRow(6,$y, $r['PSN']);
-					$sheet->setCellValueByColumnAndRow(7,$y, $r['JOB']);
-					$sheet->setCellValueByColumnAndRow(8,$y, $r['LOTSIZE']);
-					$sheet->setCellValueByColumnAndRow(9,$y, $r['JOBUNIT']);
-					$sheet->setCellValueByColumnAndRow(10,$y, $r['PLANT2']);
-					$sheet->setCellValueByColumnAndRow(11,$y, $r['LOGRTN']);
-					$sheet->setCellValueByColumnAndRow(12,$y, $r['QA']);
-					$sheet->setCellValueByColumnAndRow(13,$y, $r['STOCK']);
-					$y++;
-				}
-				$sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-				foreach(range('A', 'M') as $v) {
-					$sheet->getColumnDimension($v)->setAutoSize(true);
-				}
-
-				#FORMAT HEADER
-				$sheet->getStyle("A2:M4")->getAlignment()
-				->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
-				->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-
-				#FORMAT BORDER
-				$rang = "A2:M".$sheet->getHighestDataRow();
-				$sheet->getStyle($rang)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
-				->setColor(new Color('1F1812'));
-
-				#FORMAT NUMBER
-				$rang = "C5:M".$sheet->getHighestDataRow();
-				$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-			}			
-		}
+		}		
         log_message('error', $_SERVER['REMOTE_ADDR'].', step4#, BG:OTHER, done');
 		$current_datetime = date('Y-m-d H:i:s');
 		$spreadsheet->getProperties()

@@ -2029,6 +2029,11 @@ class ITH_mod extends CI_Model {
 		$query =  $this->db->query($qry, [$pDate]);
 		return $query->result_array();
 	}
+	public function select_allwip_plant1_byBG($pDate,$pBG){
+		$qry = "wms_sp_rmstock_plant1 ?, ?";
+		$query =  $this->db->query($qry, [$pBG,$pDate]);
+		return $query->result_array();
+	}
 	public function select_allwip_plant2_byBG($pDate,$pBG){
 		$qry = "wms_sp_rmstock ?, ?";
 		$query =  $this->db->query($qry, [$pBG,$pDate]);
@@ -2070,6 +2075,49 @@ class ITH_mod extends CI_Model {
 				FROM XITRN_TBL
 				LEFT JOIN XMITM_V ON ITRN_ITMCD=MITM_ITMCD
 				WHERE ITRN_ISUDT<=? AND ITRN_LOCCD in ('PLANT2','ARWH2','QA','ARWH0PD','NRWH2')
+				AND ITRN_BSGRP=? AND ITRN_ITMCD IN ($pParts)
+		GROUP BY ITRN_ITMCD,MITM_ITMD1) VMEGA		
+		ORDER BY 1";
+		$query =  $this->db->query($qry, [$pDate,$pBG]);
+		return $query->result_array();
+	}
+
+	public function select_allwip_plant1_byBG_and_Part($pDate,$pBG, $pParts){
+		$qry = "SELECT *,(ARWH+NRWH2+ARWH0PD+PLANT2+QA) STOCK FROM
+		(SELECT RTRIM(ITRN_ITMCD) ITRN_ITMCD,RTRIM(MITM_ITMD1) ITMD1,
+			SUM( CASE WHEN ITRN_LOCCD='ARWH1' THEN 
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE -1*ITRN_TRNQT END
+			ELSE 
+				0 END)  ARWH,
+		SUM( CASE WHEN ITRN_LOCCD='NRWH2' THEN 
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE -1*ITRN_TRNQT END
+			ELSE 
+				0 END)  NRWH2,
+		SUM( CASE WHEN ITRN_LOCCD='ARWH0PD' THEN 
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE -1*ITRN_TRNQT END
+			ELSE 
+				0 END)  ARWH0PD,
+		SUM( CASE WHEN ITRN_LOCCD='PLANT1' THEN
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE -1*ITRN_TRNQT END
+			ELSE 
+			0 END) PLANT2,
+		SUM( CASE WHEN ITRN_LOCCD='QA' THEN
+				CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT 
+				ELSE -1*ITRN_TRNQT END
+			ELSE 
+			0 END) QA,
+			'' JOB,
+			'' PSN,
+			0 JOBUNIT,
+			0 QTYPCS,
+			0 LOGRTN			
+				FROM XITRN_TBL
+				LEFT JOIN XMITM_V ON ITRN_ITMCD=MITM_ITMCD
+				WHERE ITRN_ISUDT<=? AND ITRN_LOCCD in ('PLANT1','ARWH1','QA','ARWH0PD')
 				AND ITRN_BSGRP=? AND ITRN_ITMCD IN ($pParts)
 		GROUP BY ITRN_ITMCD,MITM_ITMD1) VMEGA		
 		ORDER BY 1";
