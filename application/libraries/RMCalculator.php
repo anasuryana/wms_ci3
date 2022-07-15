@@ -501,7 +501,7 @@ class RMCalculator {
 				if(count($rspsn_kit)>0){
 					$myar[] = ['cd' => 0, 'msg' => 'not complete kitting sub assy', "data" => $rspsn_kit];
 					return('{"status": '.json_encode($myar).'}');
-				}				
+				}
 				$rspsn_sup = $this->tobexported_list_for_serd_subassy($apsn);
 			} else {
 				if ($BSGRP==='PSI2PPZTDI' || $BSGRP==='PSI2PPZADI' || $BSGRP==='PSI2PPZSTY') {	
