@@ -3734,6 +3734,7 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                             document.getElementById('txfg_btn_addsi').disabled = true
                             document.getElementById('txfg_status').value="Posted";
                         }
+                        
                         if(mbctype=='27'){
                             document.getElementById('txfg_txt_noaju').value=mnoaju.trim();
                             document.getElementById('txfg_fromoffice').value=mfromoffice;
@@ -3742,10 +3743,8 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                             document.getElementById('txfg_cmb_tujuanpengiriman').value=mpurpose;
                             document.getElementById('txfg_txt_nopen').value=mnopen.trim()
                             document.getElementById('txfg_txt_nokontrak').value=mcona
-                            document.getElementById('txfg_txt_sppb27').value=mrow.csppbdoc
-                            if(mrow.cTglpen){
-                                document.getElementById('txfg_txt_tglpen').value = mrow.cTglpen
-                            }
+                            document.getElementById('txfg_txt_sppb27').value=mrow.csppbdoc                            
+                            document.getElementById('txfg_txt_tglpen').value = mrow.cTglpen ? mrow.cTglpen : ''                            
                         } else if (mbctype=='25') {
                             document.getElementById('txfg_txt_noaju25').value=mnoaju.trim();
                             document.getElementById('txfg_fromoffice25').value=mfromoffice;
@@ -3754,10 +3753,8 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                             $("#txfg_txt_noskb_tgl").datepicker('update', mskb_tgl );
                             document.getElementById('txfg_jenis_saranapengangkut25').value=mnama_pengangkut;
                             document.getElementById('txfg_txt_nopen25').value=mnopen.trim()
-                            document.getElementById('txfg_txt_sppb25').value=mrow.csppbdoc
-                            if(mrow.cTglpen){
-                                document.getElementById('txfg_txt_tglpen25').value = mrow.cTglpen
-                            }
+                            document.getElementById('txfg_txt_sppb25').value=mrow.csppbdoc                            
+                            document.getElementById('txfg_txt_tglpen25').value = mrow.cTglpen ? mrow.cTglpen : ''                            
                         } else if (mbctype=='41') {
                             document.getElementById('txfg_txt_noaju41').value=mnoaju.trim();
                             document.getElementById('txfg_fromoffice41').value=mfromoffice;
@@ -3765,10 +3762,8 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                             document.getElementById('txfg_cmb_tujuanpengiriman41').value=mpurpose;
                             document.getElementById('txfg_txt_nokontrak41').value=mcona
                             document.getElementById('txfg_txt_nopen41').value=mnopen.trim()
-                            document.getElementById('txfg_txt_sppb41').value=mrow.csppbdoc
-                            if(mrow.cTglpen){
-                                document.getElementById('txfg_txt_tglpen41').value = mrow.cTglpen
-                            }
+                            document.getElementById('txfg_txt_sppb41').value=mrow.csppbdoc     
+                            document.getElementById('txfg_txt_tglpen41').value = mrow.cTglpen ? mrow.cTglpen : ''                            
                         }
                         
                         $("#TXFG_MODSAVED").modal('hide');
