@@ -3070,14 +3070,14 @@ class ITH extends CI_Controller {
 		$_aPart = [];
 
 		log_message('error', $_SERVER['REMOTE_ADDR'].', step2.3#, BG:OTHER, resume WO');
-		foreach($osWO as &$o) {
+		foreach($osWO as $o) {
 			if(!in_array($o['PDPP_WONO'], $_aWO)) {
 				$_aWO[] = $o['PDPP_WONO'];
 			}
 		}
 
 		log_message('error', $_SERVER['REMOTE_ADDR'].', step2.4#, BG:OTHER, resume Parts');
-		foreach($rswip as &$w) {
+		foreach($rswip as $w) {
 			if($w['PLANT2']>0) {
 				if(!in_array($w['ITRN_ITMCD'], $_aPart)) {
 					$_aPart[] = $w['ITRN_ITMCD'];
