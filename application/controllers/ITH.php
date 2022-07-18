@@ -3042,9 +3042,17 @@ class ITH extends CI_Controller {
 					}
 				}
 				$rmstring = "'".implode("','", $rmlist)."'";
+				if(!empty($rmlist)) {
+					log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, with parts from FG');
+					$rswip = $bg==='PSI1PPZIEP' ? $this->ITH_mod->select_allwip_plant1_byBG_and_Part($date,$bg, $rmstring) :  $this->ITH_mod->select_allwip_plant2_byBG_and_Part($date,$bg, $rmstring);
+				} else {
+					log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, without parts.');
+					$rswip = $bg==='PSI1PPZIEP' ?  $this->ITH_mod->select_allwip_plant1_byBG($date,$bg) : $this->ITH_mod->select_allwip_plant2_byBG($date,$bg);
+				}
+			} else {
+				log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, without parts');
+				$rswip = $bg==='PSI1PPZIEP' ?  $this->ITH_mod->select_allwip_plant1_byBG($date,$bg) : $this->ITH_mod->select_allwip_plant2_byBG($date,$bg);
 			}
-			log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, without parts');
-			$rswip = $bg==='PSI1PPZIEP' ?  $this->ITH_mod->select_allwip_plant1_byBG($date,$bg) : $this->ITH_mod->select_allwip_plant2_byBG($date,$bg);
 		}
 
 		log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, BG:OTHER, get rsPSN, without parts');
@@ -3294,6 +3302,7 @@ class ITH extends CI_Controller {
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
 		header('Cache-Control: max-age=0');
+		$writer->save('d:/'.$filename .'.xlsx');
 		$writer->save('php://output');
 	}	
 }
