@@ -99,7 +99,7 @@
         $.ajax({
             type: "POST",
             url: "<?=base_url('ITH/breakdown_estimation')?>",
-            data: {fg : FGList, rm: RMList, date : cutoffdate, wostatus: ck, bg : business},
+            data: {fg : FGList, rm: RMList, date : cutoffdate, wostatus: ck, bg : business, save:1 },
             success: function (response) {                
                 const blob = new Blob([response], { type: "application/vnd.ms-excel" })
                 saveAs(blob, `Critical Part ${business} On ${cutoffdate}.xlsx`)

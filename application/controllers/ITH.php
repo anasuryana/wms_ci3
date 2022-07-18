@@ -2971,10 +2971,11 @@ class ITH extends CI_Controller {
 		$fglist = $this->input->post('fg');
 		$rmlist = $this->input->post('rm');
 		$bg = $this->input->post('bg');
+		$saveOutput = $this->input->post('save');
 		if($date=='') die('could not continue');
 		$fgstring =  is_array($fglist) ? "'".implode("','", $fglist)."'" : "''";
 		$rmstring = is_array($rmlist) ? "'".implode("','", $rmlist)."'" : "''";
-        $startDate = date('Y-m-d',strtotime($date." - 60 days"));		
+        $startDate = date('Y-m-d',strtotime($date." - 60 days"));
 		$spreadsheet = new Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->setTitle('FG_RESUME');
@@ -3294,7 +3295,8 @@ class ITH extends CI_Controller {
         log_message('error', $_SERVER['REMOTE_ADDR'].', step4#, BG:OTHER, done');
 		$current_datetime = date('Y-m-d H:i:s');
 		$spreadsheet->getProperties()
-		->setCreator('WMS')->setTitle('CP '.$current_datetime);
+			->setCreator('WMS')
+			->setTitle('CP '.$current_datetime);
 		$stringjudul = "Critical Part $bg On $date";
 		$writer = new Xlsx($spreadsheet);
 		$filename=$stringjudul; //save our workbook as this file name
@@ -3302,7 +3304,47 @@ class ITH extends CI_Controller {
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
 		header('Cache-Control: max-age=0');
-		$writer->save('d:/'.$filename .'.xlsx');
-		$writer->save('php://output');
-	}	
+		if(is_readable('E:/PUBLIC_FOLDER/attachment_omi/')) {
+			$writer->save('E:/PUBLIC_FOLDER/attachment_omi/'.$filename .'.xlsx');
+		} else {
+			$writer->save('D:/PUBLIC_FOLDER/attachment_omi/'.$filename .'.xlsx');
+		}
+		if($saveOutput==1) {
+			$writer->save('php://output');
+		} else {
+			echo "done";
+		}
+	}
+
+	function checkFolder() {
+		$requiredFolder = "\\psi-svr3\SMTSoft\it\attachment_omi";
+		$folder1 = 'd:/';
+		$folder2 = '\\\192.168.0.18\SMTSoft\\it\\attachment_omi';
+		if(is_readable($folder1)){
+			echo "$folder1 ==> readable <br>";
+		} else {
+			echo "$folder1 ==> is not readable <br>";
+		}
+		if(is_writable($folder1)){
+			echo "$folder1 ==> writable <br>";
+		} else {
+			echo "$folder1 ==> is not writable <br>";
+		}
+		if(is_dir($folder1)){
+			echo "$folder1 ==> it is a directory <br>";
+		} else {
+			echo "$folder1 ==> it is not a directory <br>";
+		}
+		if(opendir($folder1)){
+			echo "$folder1 ==> able to access directory tree <br>";
+		} else {
+			echo "$folder1 ==> not able to access directory tree <br>";
+		}
+
+		if(is_readable($folder2)){
+			echo "$folder2 ==> readable <br>";
+		} else {
+			echo "$folder2 ==> is not readable <br>";
+		}
+	}
 }
