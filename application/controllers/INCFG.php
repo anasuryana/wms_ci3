@@ -409,7 +409,7 @@ class INCFG extends CI_Controller {
 							} else {
 								$rsPSN = $this->SPL_mod->select_check_PSN_by_job($cjob);
 								if(count($rsPSN)==0){
-									$myar[] = ["cd" => "0", "msg" => "Kitting for The Job is not ready"];
+									$myar[] = ["cd" => "0", "msg" => "Kitting for The Job is not ready reguler"];
 									exit(json_encode($myar));
 								}
 								$datas = [
@@ -492,6 +492,7 @@ class INCFG extends CI_Controller {
 
 						$bsgrp = '';
 						$cuscd = '';
+                        $jobFromRs = '';
 						foreach($rsostqty as $r){
 							$ostqty = $r['OSTQTY'] < $r['OSTQTYMG'] ? $r['OSTQTY'] : $r['OSTQTYMG'];
 							$lotsizeqty = $r['PDPP_WORQT'];
@@ -499,6 +500,7 @@ class INCFG extends CI_Controller {
 							$bsgrp = trim($r['PDPP_BSGRP']);
 							$cuscd = trim($r['PDPP_CUSCD']);
 							$flgclose = trim($r['PDPP_COMFG']);
+                            $jobFromRs = $r['PDPP_WONO'];
 						}
 						if($lotsizeqty!=$grnqty && $flgclose==1){
 							$myar[] = ["cd" => "0", "msg" => "The JOB is closed directly"];
@@ -520,7 +522,7 @@ class INCFG extends CI_Controller {
 								if($this->ITH_mod->check_Primary($datac)==0){
 									$datas = [
 										'ITH_ITMCD' => $citem.$cremark, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-PRD-FG',
-										'ITH_DOC' => $cjob.$cremark, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
+										'ITH_DOC' => $jobFromRs, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
 										'ITH_LUPDT' => $currrtime, 'ITH_USRID' => $this->session->userdata('nama')
 									];
 									$retITH = $this->ITH_mod->insert($datas);
@@ -533,13 +535,14 @@ class INCFG extends CI_Controller {
 									$datar = ["cd" => "0", "msg" => "Already scanned (New Model)"];
 								}
 							} else {
-								$rsPSN = $this->SPL_mod->select_check_PSN_by_job($cjob.$cremark);
+								$rsPSN = $this->SPL_mod->select_check_PSN_by_job($jobFromRs);
 								if(count($rsPSN)==0){
 									$myar[] = ["cd" => "0", "msg" => "Kitting for The Job is not ready"];
 									exit(json_encode($myar));
 								}
+                                
 								$datas = [
-									"SER_ID" => $creffcd, "SER_DOC" => $cjob.$cremark,"SER_REFNO" => $creffcd, "SER_ITMID" => $citem.$cremark,"SER_LOTNO" => $clot ,"SER_QTY" => $cqty, "SER_QTYLOT" => $cqty ,"SER_RAWTXT" => $ckeys,
+									"SER_ID" => $creffcd, "SER_DOC" => $jobFromRs,"SER_REFNO" => $creffcd, "SER_ITMID" => $citem.$cremark,"SER_LOTNO" => $clot ,"SER_QTY" => $cqty, "SER_QTYLOT" => $cqty ,"SER_RAWTXT" => $ckeys,
 									"SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd , "SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama')
 								];
 								if(strlen($creason)!=0){
@@ -552,7 +555,7 @@ class INCFG extends CI_Controller {
 									if($this->ITH_mod->check_Primary($datac)==0){
 										$datas = [
 											'ITH_ITMCD' => $citem.$cremark, 'ITH_DATE' => $currdate, 'ITH_FORM' => 'INC-PRD-FG',
-											'ITH_DOC' => $cjob.$cremark, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
+											'ITH_DOC' => $jobFromRs, 'ITH_QTY' => $cqty, 'ITH_SER' => $creffcd, 'ITH_WH' => 'ARPRD1',
 											'ITH_LUPDT' => $currrtime, 'ITH_USRID' => $this->session->userdata('nama')
 										];
 										$retITH = $this->ITH_mod->insert($datas);
@@ -567,10 +570,10 @@ class INCFG extends CI_Controller {
 								} else {
 									$datar = ["cd" => "0", "msg" => "could not register master serial (New Model)"];
 								}
-							}						
+							}
 						}
 					} else {
-						$datar = ["cd" => "0", "msg" => "WO and Item don't match (new model)"];
+						$datar = ["cd" => "0", "msg" => "WO and Item don't match (new model)", 'rsos' => $rsostqty, 'job' => $cjob.$cremark];
 					}
 				}
 			} else { //handle KD ASP
@@ -641,7 +644,7 @@ class INCFG extends CI_Controller {
 							} else {
 								$rsPSN = $this->SPL_mod->select_check_PSN_by_job($cjob);
 								if(count($rsPSN)==0){
-									$myar[] = ["cd" => "0", "msg" => "Kitting for The Job is not ready"];
+									$myar[] = ["cd" => "0", "msg" => "Kitting for The Job is not ready KD ASP"];
 									exit(json_encode($myar));
 								}
 								$datas = [

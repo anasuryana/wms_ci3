@@ -113,9 +113,9 @@ class SPL_mod extends CI_Model {
     }
 
     public function selectWOITEM($pwo, $pitem){
-        $qry = "select CONVERT(bigint,(PDPP_WORQT-coalesce(LBLTTL,0))) OSTQTY,PDPP_BSGRP,PDPP_CUSCD,PDPP_WORQT,PDPP_GRNQT,PDPP_COMFG,CONVERT(bigint,(PDPP_WORQT-PDPP_GRNQT)) OSTQTYMG,PDPP_ISUDT,PDPP_WONO from
-        XWO a LEFT JOIN  ( select SER_DOC,SUM(SER_QTYLOT) LBLTTL from SER_TBL x WHERE SER_ITMID LIKE ? and SER_DOC = ? AND SER_ID=ISNULL(SER_REFNO,SER_ID)
-        GROUP BY SER_DOC ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_MDLCD LIKE ? and PDPP_WONO = ? ORDER BY PDPP_WONO DESC";
+        $qry = "select CONVERT(bigint,(PDPP_WORQT-coalesce(LBLTTL,0))) OSTQTY,PDPP_BSGRP,PDPP_CUSCD,PDPP_WORQT,PDPP_GRNQT,PDPP_COMFG,CONVERT(bigint,(PDPP_WORQT-PDPP_GRNQT)) OSTQTYMG,PDPP_ISUDT,RTRIM(PDPP_WONO) PDPP_WONO from
+        XWO a LEFT JOIN  ( select SER_DOC,SUM(SER_QTYLOT) LBLTTL from SER_TBL x WHERE SER_ITMID LIKE ? and SER_DOC like ? AND SER_ID=ISNULL(SER_REFNO,SER_ID)
+        GROUP BY SER_DOC ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_MDLCD LIKE ? and PDPP_WONO like ? ORDER BY PDPP_WONO DESC";
         // $qry = "select CONVERT(bigint,((CASE WHEN PDPP_WONO='22-4E05-219552405' THEN PDPP_WORQT-4 ELSE PDPP_WORQT END)-coalesce(LBLTTL,0))) OSTQTY,
         // PDPP_BSGRP,
         // PDPP_CUSCD,
@@ -129,7 +129,7 @@ class SPL_mod extends CI_Model {
         //         GROUP BY SER_DOC ) v2 on PDPP_WONO=v2.SER_DOC 
         // WHERE PDPP_MDLCD LIKE ? and PDPP_WONO = ?
         // ORDER BY PDPP_WONO DESC";
-		$query = $this->db->query($qry, ["%".$pitem."%", $pwo,"%".$pitem."%", $pwo]);
+		$query = $this->db->query($qry, ["%".$pitem."%", $pwo,"%".$pitem."%", "%$pwo%"]);
 		return $query->result_array();
     }    
     public function selectWOITEM_open($pwo, $pitem){
@@ -937,7 +937,7 @@ class SPL_mod extends CI_Model {
     public function select_check_PSN_by_job($pjob){
         $this->db->select("PPSN1_PSNNO");
         $this->db->from("XPPSN1");
-        $this->db->where("PPSN1_WONO", $pjob);
+        $this->db->like("PPSN1_WONO", $pjob);
         $this->db->group_by("PPSN1_PSNNO");
         $query = $this->db->get();
         return $query->result_array();
