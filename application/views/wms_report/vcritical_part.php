@@ -77,23 +77,7 @@
         let FGList = datanya_FG.filter((data) => data[0].length > 1)
         let RMList = datanya_RM.filter((data) => data[0].length > 1)
         RMList = [...new Set(RMList.map(data => data[0]))]
-        FGList = [...new Set(FGList.map(data => data[0]))]
-        if(business==='PSI1PPZIEP') {
-            if(FGList.length == 0) {
-                alertify.message('Assy Code is required')
-                let firstTabEl = document.querySelector('#myTab button[data-bs-target="#criticpart_tabFG"]')
-                let thetab = new bootstrap.Tab(firstTabEl)
-                thetab.show()
-                return
-            }
-            if(RMList.length == 0) {
-                alertify.message('Part Code is required')
-                let firstTabEl = document.querySelector('#myTab button[data-bs-target="#criticpart_tabRM"]')
-                let thetab = new bootstrap.Tab(firstTabEl)
-                thetab.show()
-                return
-            }
-        }
+        FGList = [...new Set(FGList.map(data => data[0]))]        
         p.disabled = true
         p.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'
         $.ajax({
