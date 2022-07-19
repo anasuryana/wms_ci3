@@ -111,4 +111,13 @@ class MSTSUP_mod extends CI_Model {
 		$this->db->query($qry);
 		return $this->db->affected_rows();  		
 	}
+
+	public function update_based_on_parent() {
+		$qry = "UPDATE A
+		SET A.MSUP_ADDR1=B.MSUP_ADDR1,A.MSUP_ADDR2=B.MSUP_ADDR2,A.MSUP_TELNO=B.MSUP_TELNO,A.MSUP_PIC=B.MSUP_PIC
+		from MSUP_TBL A
+		left join XMSUP B on A.MSUP_SUPCD=B.MSUP_SUPCD";
+		$this->db->query($qry);
+		return $this->db->affected_rows();
+	}
 }

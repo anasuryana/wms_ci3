@@ -55,12 +55,17 @@
                 </div>
             </div>
         </div>
-        <div class="row">				
-            <div class="col-md-12 mb-3 text-center">
+        <div class="row">
+            <div class="col-md-6 mb-3">
                 <div class="btn-group btn-group-sm">
                     <button title="New" id="sup_btnnew" class="btn btn-primary" ><i class="fas fa-file"></i></button>
                     <button title="Save" id="sup_btnsave" class="btn btn-primary" ><i class="fas fa-save"></i></button>
-                </div>                                
+                </div>
+            </div>
+            <div class="col-md-6 mb-3 text-end">
+                <div class="btn-group btn-group-sm">
+                    <button title="New" id="sup_btnsync" class="btn btn-primary" onclick="sup_sync(this)">Synchronize</button>
+                </div>
             </div>
         </div>        
     </div>
@@ -210,7 +215,7 @@
             let mnm     = $("#sup_txtnm").val();
             let mabbr   = $("#sup_txtabbrnm").val();
             let maddr   = $("#sup_taaddr").val();
-            let mphone   = $("#sup_txtphone").val();
+            let mphone  = $("#sup_txtphone").val();
             let mfax   = $("#sup_txtfax").val()
             let mtax   = $("#sup_txttax").val()
             if(mcd.trim()==''){$("#sup_txtsupcd").focus() ;return;}
@@ -226,5 +231,26 @@
                 }
             })
         }
-    });
+    })
+
+    function sup_sync(p) {
+        if( confirm('Are you sure ?') ) {
+            p.innerHTML = 'Please wait'
+            p.disabled = true
+            $.ajax({
+                type: "post",
+                url: "<?=base_url('MSTSUP/synchronize_parent')?>",
+                dataType: "json",
+                success: function (response) {
+                    p.innerHTML = 'Synchronize'
+                    p.disabled = false
+                    alertify.message(response.status.msg)
+                }, error: function(xhr, xopt, xthrow){
+                    alertify.error(xthrow)
+                    p.disabled = false
+                    p.innerHTML = 'Synchronize'
+                }
+            })
+        }
+    }
 </script>

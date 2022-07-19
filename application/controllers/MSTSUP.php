@@ -113,4 +113,11 @@ class MSTSUP extends CI_Controller {
 			if($toret>0){ echo "Updated successfully";}
 		}
 	}
+
+	public function synchronize_parent() {
+		header('Content-Type: application/json');
+		$respon = $this->MSTSUP_mod->update_based_on_parent();
+		$myar = ['cd' => 1, 'msg' => 'Done'];
+		die(json_encode(['status' => $myar]));
+	}
 }
