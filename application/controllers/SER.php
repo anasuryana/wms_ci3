@@ -5808,9 +5808,10 @@ class SER extends CI_Controller {
 		unset($r);
 		$sheet = $spreadsheet->createSheet();
 		$sheet->setTitle('CEISA');
-		$sheet->fromArray(array_keys($rs['data_ceisa'][0]), NULL, 'A1');
-		$sheet->fromArray($rs['data_ceisa'], NULL, 'A2');
-
+		if(!empty($rs['data_ceisa'])) {
+			$sheet->fromArray(array_keys($rs['data_ceisa'][0]), NULL, 'A1');
+			$sheet->fromArray($rs['data_ceisa'], NULL, 'A2');
+		}
 
 		$stringjudul = "Uji Konversi";
 		$writer = new Xlsx($spreadsheet);
