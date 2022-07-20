@@ -1635,7 +1635,7 @@ class SER extends CI_Controller {
 				$OMR_DT = $cprodt[2].$cprodt[1].substr($cprodt[0],-2);
 				$OMR_CVT = substr("000".substr($aomr_line[1],0,3),-3);
 				$OMR_MC = '';
-				$OMR_DIES = substr('00000'.substr($cprdshift,0,1),-5);
+				$OMR_DIES = "    -";
 				$OMR_SHIFT = str_replace(['M','N'],"", $cprdshift);
 				$OMR_NOURUT = substr($noseri,-5);
 				$OMR_UNIQUE = $OMR_UNIQUE_YEAR.$OMR_UNIQUE_MONTH.$OMR_UNIQUE_DATE.$OMR_NOURUT;//substr($noseri,1,5).$OMR_NOURUT;
