@@ -3965,17 +3965,20 @@ class DELV extends CI_Controller {
 						$pdf->Cell(17.5,4,number_format($perprice_,0) ,0,0,'R');
 						$pdf->SetXY(155,$curY-3);
 						$pdf->Cell(41.56,4,number_format($amount_,0),0,0,'R');
+						$ttlamount_ += number_format($amount_,0);
 					} else {
 						if(substr(number_format($perprice_,5),-5) === '00000') {
 							$pdf->SetXY(138,$curY-3);
 							$pdf->Cell(17.5,4,number_format($perprice_,0) ,0,0,'R');
 							$pdf->SetXY(155,$curY-3);
 							$pdf->Cell(41.56,4,number_format($amount_,0),0,0,'R');
+							$ttlamount_ += number_format($amount_,0);
 						} else {
 							$pdf->SetXY(138,$curY-3);
 							$pdf->Cell(17.5,4,number_format($perprice_,5) ,0,0,'R');
 							$pdf->SetXY(155,$curY-3);
 							$pdf->Cell(41.56,4,number_format($amount_,2),0,0,'R');
+							$ttlamount_ += number_format($amount_,2);
 						}
 					}
 					
@@ -3983,8 +3986,7 @@ class DELV extends CI_Controller {
 					$curY+=(15+$YExtra);
 					$ttlbrs++;
 					$ttlbrs+=$additionalRow;
-					$ttlqty_+=$r['ITMQT'];
-					$ttlamount_ +=$amount_;
+					$ttlqty_+=$r['ITMQT'];					
 				}
 				$pdf->SetXY(115,240+13);
 				if($isDecimal){					
