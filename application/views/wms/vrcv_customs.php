@@ -3296,6 +3296,12 @@
         let dono = document.getElementById('rcvcustoms_fg_docnoorigin').value;
         let mnoaju = document.getElementById('rcvcustoms_fg_noaju').value;
         let mnopen = document.getElementById('rcvcustoms_fg_regno').value;
+        const customername = document.getElementById('rcvcustoms_fg_supplier_2')
+        if (customername.value.trim().length<5) {
+            alertify.warning('Please select customer first')
+            customername.focus()
+            return
+        }
 
         if(dono.trim()==''){
             alertify.warning('Please select DO first');
