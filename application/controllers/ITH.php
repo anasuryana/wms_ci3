@@ -2607,6 +2607,21 @@ class ITH extends CI_Controller {
 		die('{"status":'.json_encode($myar).',"data":'.json_encode($rsadj).'}');
 	}
 
+	public function testAdj_ParentBased(){
+		header('Content-Type: application/json');
+		$RMLocation = ['AIWH1',	'ARWH0PD', 'ARWH1',	'ARWH2','ARWH9SC','NRWH2','PLANT_NA','PLANT1','PLANT2','QA'];
+		$date = $this->input->post('date');
+		$location = $this->input->post('location');
+		$rs = in_array($location, $RMLocation) ? $this->XITRN_mod->select_stock($date, $location) : $this->XFTRN_mod->select_stock($date, $location);
+		$myar = !empty($rs) ? ['cd' => 1, 'msg' => 'done', 'reff' => $location] : 
+			['cd' => 0, 'msg' => 'not found', 'reff' => $location];
+		die(json_encode(['status' => $myar]));
+	}
+
+	public function upload_to_itinventory() {
+
+	}
+
 	public function tesics() {
 		header('Content-Type: application/json');
 		$rs = $this->RCV_mod->select_ics(['211313600'], '2021-04-30');
@@ -3057,7 +3072,7 @@ class ITH extends CI_Controller {
 		}
 
 		log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, BG:OTHER, get rsPSN, without parts');
-		$rspsn = $this->ITH_mod->select_psn_period_byBG($startDate, $date, $bg);
+		$rspsn = $this->ITH_mod->select_psn_period_byBG($startDate, $date, $bg);		
 
 		$psnstring = "";
 		$osWO = [];
@@ -3229,6 +3244,53 @@ class ITH extends CI_Controller {
 				}
 			}
 		}
+
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step2.7#, analyze data when WO Closed but PSN is not returned');
+        $arrPSNUnplotted = [];        
+        foreach($rspsn as &$p){
+            $isfound = false;
+            foreach($rswip as $w) {
+                if($p['DOC']===$w['PSN']){
+                    $isfound = true;
+                    break;
+                }
+            }
+            $p['PLOTTED'] = $isfound;
+            if(!$isfound) $arrPSNUnplotted[] = $p['DOC'];            
+        }
+        unset($p);
+
+        $strPSNUnplotted = "'".implode("','", $arrPSNUnplotted)."'";
+        $rsPSNBalance = $this->SPLSCN_mod->select_logical_return_byPSN($strPSNUnplotted);
+        foreach($rsPSNBalance as $r) {
+            $theIndex = 0;
+            $sampleRow = [];
+            foreach($rswip as $index => &$w){
+                if($r['ITMCD']	=== $w['ITRN_ITMCD']) {
+                    $theIndex = $index+1;
+                    $sampleRow = $w;
+                    break;
+                }
+            }
+            unset($w);
+            if($theIndex!=0) {
+                $sampleRow['ITMD1'] = '';
+                $sampleRow['ARWH'] = 0;
+                $sampleRow['NRWH2'] = 0;
+                $sampleRow['ARWH0PD'] = 0;
+                $sampleRow['PSN'] = $r['PSNNO'];
+                $sampleRow['JOB'] = '';
+                $sampleRow['JOBUNIT'] = '';
+                $sampleRow['PLANT2'] = '';
+                $sampleRow['LOGRTN'] = $r['LOGRET'];
+                $sampleRow['STOCK'] = 0;
+                $sampleRow['QA'] = 0;
+                $sampleRow['LOTSIZE'] = '';
+                $sampleRow['COMMENTS'] = '';
+                $rswip = array_merge(array_slice($rswip,0,$theIndex), [$sampleRow], array_slice($rswip,$theIndex));
+            }
+        }
+
 		$rang = "A1:A".$sheet->getHighestDataRow();
 		if( !empty($rswip) ) {
 			log_message('error', $_SERVER['REMOTE_ADDR'].', step3#, BG:OTHER, rsPSN to Spreadsheet');

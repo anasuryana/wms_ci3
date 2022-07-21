@@ -380,4 +380,13 @@ class SPLSCN_mod extends CI_Model {
         $query = $this->db->query($qry, [$doc]);
         return $query->result_array();
     }
+
+    function select_logical_return_byPSN($pPSN){
+        $qry = "SELECT RTRIM(PPSN2_PSNNO) PSNNO,RTRIM(PPSN2_SUBPN) ITMCD,sum(PPSN2_ACTQT)-sum(PPSN2_REQQT) LOGRET
+        FROM XPPSN2 WHERE PPSN2_PSNNO in ($pPSN)
+        AND  (PPSN2_ACTQT-PPSN2_REQQT)>0
+        group by PPSN2_PSNNO,PPSN2_SUBPN ORDER BY 1 DESC";
+        $query = $this->db->query($qry);
+        return $query->result_array();
+    }
 }
