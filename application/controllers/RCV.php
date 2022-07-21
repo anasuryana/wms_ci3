@@ -503,8 +503,7 @@ class RCV extends CI_Controller {
 						'RCV_TAXINVOICE' => $h_tax_invoice,
 						'RCV_BSGRP' => $h_bisgrup,
 						'RCV_LUPDT' => date('Y-m-d H:i:s'),
-						'RCV_USRID' => $this->session->userdata('nama'),
-						'RCV_CREATEDBY' => $this->session->userdata('nama')
+						'RCV_USRID' => $this->session->userdata('nama')						
 					];
 					$ttlupdated+= $this->RCV_mod->updatebyVAR($datau, $dataw);
 				} else {
