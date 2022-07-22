@@ -3036,7 +3036,7 @@ class ITH extends CI_Controller {
 		}	
 		#FORMAT NUMBER
 		$rang = "C4:I".$sheet->getHighestDataRow();
-		$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+		$sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0');
 						
 		if(strlen($rmstring)>5) {
 			log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, BG:OTHER, get rsWIP, with parts');
@@ -3122,60 +3122,54 @@ class ITH extends CI_Controller {
 		foreach($rswip as &$w) {
 			$w['B4QTY'] = $w['PLANT2'];
 			$w['LOTSIZE'] = 0;
-			$w['COMMENTS'] = '';				
-			if($w['PLANT2']>0) {
-				foreach($osWO as &$o) {
-					if($w['PLANT2']>0 && ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
-						#PSN CHECK
-						$isRightPSN = false;
-						foreach($rsPPSN1 as $p) {
-							if($o['PDPP_WONO'] === $p['WONO']) {                                    
-								foreach($rsPPSN2 as $p2) {
-									if($p['PSN'] === $p2['PSN'] && $w['ITRN_ITMCD']===$p2['SUBPN'] ) {
-										$isRightPSN = true;
-										break;
-									}
-								}
-								if($isRightPSN) {
+			$w['COMMENTS'] = 'code:'.$w['B4QTY'];
+			$w['STOCK'] = $w['ARWH']+$w['NRWH2']+$w['ARWH0PD']+$w['QA'];
+			foreach($osWO as &$o) {
+				if( ($w['ITRN_ITMCD'] === $o['PWOP_BOMPN'] || $w['ITRN_ITMCD'] === $o['PWOP_SUBPN']) ){
+					#PSN CHECK
+					$isRightPSN = false;
+					foreach($rsPPSN1 as $p) {
+						if($o['PDPP_WONO'] === $p['WONO']) {
+							foreach($rsPPSN2 as $p2) {
+								if($p['PSN'] === $p2['PSN'] && $w['ITRN_ITMCD']===$p2['SUBPN'] ) {
+									$isRightPSN = true;
 									break;
 								}
 							}
-						}
-						#END PSN CHECK
-						if($isRightPSN) {
-							$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
-							if($balneed==0) break;
-							$fixqty = $balneed;
-							if($balneed	> $w['PLANT2']) {
-								$fixqty = $w['PLANT2'];
-								$o['PLOTQTY'] += $w['PLANT2'];
-								$w['PLANT2'] = 0;
-							} else {
-								$o['PLOTQTY'] += $balneed;
-								$w['PLANT2'] -= $balneed;
-							}
-							$isfound = false;
-							foreach($rsPlot as &$r){
-								if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
-									$r['PARTQTY'] += $fixqty;
-									$isfound = true;break;
-								}
-							}
-							unset($r);
-
-							if(!$isfound) {																
-								$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => ''];
-							}
-							if($w['PLANT2']==0) {
+							if($isRightPSN) {
 								break;
 							}
-						} else {
-							break;
 						}
 					}
+					#END PSN CHECK
+					if($isRightPSN) {
+						$balneed = $o['NEEDQTY']-$o['PLOTQTY'];
+						if($balneed==0) break;
+						$fixqty = $balneed;
+						if($balneed	> $w['PLANT2']) {								
+							$w['PLANT2'] = 0;
+						} else {								
+							$w['PLANT2'] -= $balneed;
+						}
+						$o['PLOTQTY'] = $o['NEEDQTY'];
+						$isfound = false;
+						foreach($rsPlot as &$r){
+							if($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
+								$r['PARTQTY'] += $fixqty;
+								$isfound = true;break;
+							}
+						}
+						unset($r);
+
+						if(!$isfound) {																
+							$rsPlot[] = ['WO' => $o['PDPP_WONO'], 'ISSUEDATE' => $o['PDPP_ISUDT'], 'LOTSIZE' => $o['PDPP_WORQT'], 'UNIT' => $o['NEEDQTY']/$o['PWOP_PER'] , 'PER' => $o['PWOP_PER'], 'PARTCD' => $w['ITRN_ITMCD'],'REQQTY' => $o['NEEDQTY'], 'PARTQTY' => $fixqty, 'PSN' => ''];
+						}							
+					} else {
+						break;
+					}
 				}
-				unset($o);
 			}
+			unset($o);
 		}
 		unset($w);
 
@@ -3188,16 +3182,16 @@ class ITH extends CI_Controller {
 					if($r['PARTCD']	=== $w['ITRN_ITMCD']) {
 						if($w['PLANT2']>0) {
 							$w['LOGRTN'] = 0; # $w['PLANT2']; <=== use this to see logical balance of PLANT
-							$w['COMMENTS'] = 'code:'. $w['PLANT2'];
-							$w['STOCK'] = $w['ARWH']+$w['NRWH2']+$w['ARWH0PD']+$w['QA']+($w['B4QTY']-$w['PLANT2']);
 							$w['PLANT2'] = 0;
 						}
+						
 						$theIndex = $index+1;
 						$sampleRow = $w;
 						break;
 					}
 				}
 				unset($w);
+
 				if($theIndex!=0) {
 					#SET PSN
 					foreach($rsPPSN2 as $k) {
@@ -3220,6 +3214,7 @@ class ITH extends CI_Controller {
 								}
 								if(!$isPlotted) 
 								{
+									$rswip[$theIndex-1]['STOCK']+=($k['LOGRTNQT']+$r['PARTQTY']);
 									$sampleRow['LOGRTN'] = $k['LOGRTNQT'];
 								} else {
 									$sampleRow['LOGRTN'] = 0;
@@ -3233,9 +3228,9 @@ class ITH extends CI_Controller {
 					$sampleRow['ARWH'] = 0;
 					$sampleRow['NRWH2'] = 0;
 					$sampleRow['ARWH0PD'] = 0;
-					$sampleRow['JOB'] = $r['WO'];						
+					$sampleRow['JOB'] = $r['WO'];
 					$sampleRow['JOBUNIT'] = $r['UNIT'];
-					$sampleRow['PLANT2'] = $r['PARTQTY'];						
+					$sampleRow['PLANT2'] = $r['PARTQTY'];
 					$sampleRow['STOCK'] = 0;
 					$sampleRow['QA'] = 0;
 					$sampleRow['LOTSIZE'] = $r['LOTSIZE'];
@@ -3311,8 +3306,8 @@ class ITH extends CI_Controller {
 			$sheet->setCellValueByColumnAndRow(6,4, 'PSN');
 			$sheet->setCellValueByColumnAndRow(7,4, 'Job');
 			$sheet->setCellValueByColumnAndRow(8,4, 'Lot Size');
-			$sheet->setCellValueByColumnAndRow(9,4, 'Qty UNIT');
-			$sheet->setCellValueByColumnAndRow(10,4, 'Qty PCS');
+			$sheet->setCellValueByColumnAndRow(9,4, 'OS Job (Unit)');
+			$sheet->setCellValueByColumnAndRow(10,4, 'OS Job (Pcs)');
 			$sheet->setCellValueByColumnAndRow(11,4, 'Logical Return');
 			$sheet->freezePane('C5');
 			$y = 5;
@@ -3329,7 +3324,7 @@ class ITH extends CI_Controller {
 				$sheet->setCellValueByColumnAndRow(7,$y, $r['JOB']);
 				$sheet->setCellValueByColumnAndRow(8,$y, $r['LOTSIZE']);
 				$sheet->setCellValueByColumnAndRow(9,$y, $r['JOBUNIT']);
-				$sheet->setCellValueByColumnAndRow(10,$y, $r['PLANT2']);
+				$sheet->setCellValueByColumnAndRow(10,$y, $r['ITMD1']!='' ? 0 :$r['PLANT2']);
 				$sheet->setCellValueByColumnAndRow(11,$y, $r['LOGRTN']);
 				$sheet->setCellValueByColumnAndRow(12,$y, $r['QA']);
 				$sheet->setCellValueByColumnAndRow(13,$y, $r['STOCK']);
@@ -3352,7 +3347,7 @@ class ITH extends CI_Controller {
 
 			#FORMAT NUMBER
 			$rang = "C5:M".$sheet->getHighestDataRow();
-			$sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+			$sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0');
 		}		
         log_message('error', $_SERVER['REMOTE_ADDR'].', step4#, BG:OTHER, done');
 		$current_datetime = date('Y-m-d H:i:s');
@@ -3376,37 +3371,5 @@ class ITH extends CI_Controller {
 		} else {
 			echo "done";
 		}
-	}
-
-	function checkFolder() {
-		$requiredFolder = "\\psi-svr3\SMTSoft\it\attachment_omi";
-		$folder1 = 'd:/';
-		$folder2 = '\\\192.168.0.18\SMTSoft\\it\\attachment_omi';
-		if(is_readable($folder1)){
-			echo "$folder1 ==> readable <br>";
-		} else {
-			echo "$folder1 ==> is not readable <br>";
-		}
-		if(is_writable($folder1)){
-			echo "$folder1 ==> writable <br>";
-		} else {
-			echo "$folder1 ==> is not writable <br>";
-		}
-		if(is_dir($folder1)){
-			echo "$folder1 ==> it is a directory <br>";
-		} else {
-			echo "$folder1 ==> it is not a directory <br>";
-		}
-		if(opendir($folder1)){
-			echo "$folder1 ==> able to access directory tree <br>";
-		} else {
-			echo "$folder1 ==> not able to access directory tree <br>";
-		}
-
-		if(is_readable($folder2)){
-			echo "$folder2 ==> readable <br>";
-		} else {
-			echo "$folder2 ==> is not readable <br>";
-		}
-	}
+	}	
 }
