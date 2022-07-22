@@ -483,7 +483,7 @@ class INCFG extends CI_Controller {
 						$myar[] = ["cd" => "0", "msg" => "The label is already scanned (New Model)"];
 						exit(json_encode($myar));
 					}
-					$rsostqty = $this->SPL_mod->selectWOITEM($cjob.$cremark, $citem);				
+					$rsostqty = $this->SPL_mod->selectWOITEM_es($cjob.$cremark, $citem);
 					if(count($rsostqty) > 0){
 						$ostqty = 0;
 						$lotsizeqty = 0;
