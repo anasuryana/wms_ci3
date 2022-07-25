@@ -86,7 +86,8 @@
             data: {fg : FGList, rm: RMList, date : cutoffdate, wostatus: ck, bg : business, save:1 },
             success: function (response) {                
                 const blob = new Blob([response], { type: "application/vnd.ms-excel" })
-                saveAs(blob, `Critical Part ${business} On ${cutoffdate}.xlsx`)
+                const fileName = business==='PSI2PPZOMI' ? `Daily Stock Report On ${cutoffdate}.xlsx` : `Critical Part ${business} On ${cutoffdate}.xlsx`
+                saveAs(blob, fileName)
                 p.innerHTML = '<i class="fas fa-file-excel"></i>'
                 p.disabled = false
                 alertify.success('Done')

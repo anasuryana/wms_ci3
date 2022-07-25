@@ -3354,7 +3354,7 @@ class ITH extends CI_Controller {
 		$spreadsheet->getProperties()
 			->setCreator('WMS')
 			->setTitle('CP '.$current_datetime);
-		$stringjudul = "Critical Part $bg On $date";
+		$stringjudul = $bg==='PSI2PPZOMI' ? "Daily Stock Report On $date" : "Critical Part $bg On $date";
 		$writer = new Xlsx($spreadsheet);
 		$filename=$stringjudul; //save our workbook as this file name
 		
