@@ -2293,9 +2293,11 @@ class SPL extends CI_Controller {
 				$pdf->Cell(20,4,'No Rak',1,0,'L');
 				$pdf->Cell(80,4,'Machine No',1,0,'C');		
 				$pdf->Cell(25,4,'Part No',1,0,'L');
-				$pdf->Cell(40,4,'Part Name',1,0,'L');	
-				$pdf->Cell(15,4,'Req',1,0,'R');
-				$pdf->Cell(5,4,'',1,0,'L');	
+				$pdf->Cell(30,4,'Part Name',1,0,'L');	
+				$pdf->Cell(8,4,'Use',1,0,'C');
+				$pdf->Cell(13,4,'Req.',1,0,'R');
+				$pdf->Cell(13,4,'Issued',1,0,'R');
+				$pdf->Cell(13,4,'Remain',1,0,'R');
 				#end old way
 				$wd2col = 3+20+80;
 				$cury+=4;				
@@ -2346,207 +2348,7 @@ class SPL extends CI_Controller {
 					}
 				}
 				unset($r);
-				$tempMachine = '';
-				#new way
-				// $isnewpage = true;
-				// $i=1;
-				// foreach($rsmachine as $g){
-				// 	foreach($rs as $r){
-				// 		if($g['SPL_MC']==$r['SPL_MC'] ){			#&& $r['TTLREQ']>0
-				// 			if(($cury+20)>$hgt_p){
-				// 				$pdf->AddPage();				
-				// 				$pdf->SetFont('Arial','',6);
-				// 				$clebar = $pdf->GetStringWidth($cpsn)+40;
-				// 				$pdf->Code128(3, 4,$cpsn, $clebar,4);		
-				// 				$pdf->Text(3,11,$cpsn);
-				// 				$clebar = $pdf->GetStringWidth($ccat)+17;
-				// 				$pdf->Code128(170, 4,trim($ccat),$clebar,4);		
-				// 				$pdf->Text(170,11,$ccat);
-				// 				$clebar = $pdf->GetStringWidth($cline)+17;
-				// 				$pdf->Code128(3, 13,$cline, $clebar, 4);
-				// 				$pdf->Text(3,20,$cline);
-				// 				$clebar = $pdf->GetStringWidth($cfedr)+17;
-				// 				$pdf->Code128(170, 13,$cfedr, $clebar, 4);
-				// 				$pdf->Text(170,20,$cfedr);
-				// 				$pdf->SetXY(90,4);
-				// 				$pdf->SetFont('Arial','BU',10);
-				// 				$pdf->Cell(35,4,'Picking Instruction',0,0,'C');
-				// 				$pdf->SetXY(100,15);
-				// 				$pdf->SetFont('Arial','',6);
-				// 				$pdf->Cell(15,4,'Page '.$pdf->PageNo().' / {nb}',1,0,'R');
-				// 				$pdf->SetFont('Arial','B',7);					
-				// 				$cury=22;
-				// 				$isleft = true;
-				// 				for($j=0;$j<$xWOcount; $j++){#count($cwos)
-				// 					if( ($j % 2)==0){
-				// 						$pdf->SetXY(3,$cury);
-				// 						$pdf->Cell(50,4,'Model',1,0,'L');
-				// 						$pdf->Cell(40,4,'Job',1,0,'L');
-				// 						$pdf->Cell(10,4,'Lot Size',1,0,'C');
-				// 						$pdf->SetXY(3,$cury+4);
-				// 						$ttlwidth = $pdf->GetStringWidth($cmodels[$j]);
-				// 						if($ttlwidth > 50){
-				// 							$ukuranfont = 6.5;
-				// 							while($ttlwidth>50){
-				// 								$pdf->SetFont('Arial','',$ukuranfont);
-				// 								$ttlwidth=$pdf->GetStringWidth($cmodels[$j]);
-				// 								$ukuranfont = $ukuranfont - 0.5;
-				// 							}
-				// 						}
-				// 						$pdf->Cell(50,4,$cmodels[$j],1,0,'L');
-				// 						$pdf->SetFont('Arial','B',7);
-				// 						$pdf->Cell(40,4,$cwos[$j],1,0,'L');
-				// 						$pdf->Cell(10,4,number_format($clotsize[$j]),1,0,'L');
-				// 						$isleft = true;
-				// 					} else {
-				// 						$pdf->SetXY(105,$cury);
-				// 						$pdf->Cell(50,4,'Model',1,0,'L');
-				// 						$pdf->Cell(40,4,'Job',1,0,'L');
-				// 						$pdf->Cell(10,4,'Lot Size',1,0,'C');
-				// 						$pdf->SetXY(105,$cury+4);
-				// 						$ttlwidth = $pdf->GetStringWidth($cmodels[$j]);
-				// 						if($ttlwidth > 50){
-				// 							$ukuranfont = 6.5;
-				// 							while($ttlwidth>50){
-				// 								$pdf->SetFont('Arial','',$ukuranfont);
-				// 								$ttlwidth=$pdf->GetStringWidth($cmodels[$j]);
-				// 								$ukuranfont = $ukuranfont - 0.5;
-				// 							}
-				// 						}
-				// 						$pdf->Cell(50,4,$cmodels[$j],1,0,'L');
-				// 						$pdf->SetFont('Arial','B',7);
-				// 						$pdf->Cell(40,4,$cwos[$j],1,0,'L');
-				// 						$pdf->Cell(10,4,number_format($clotsize[$j]),1,0,'L');
-				// 						$cury+=8;
-				// 						$isleft=false;
-				// 					}
-				// 				}
 			
-				// 				$cury+=$isleft ? 9:1;	
-				// 				$isnewpage = true;																								
-				// 			} else {
-				// 				$isnewpage = false;
-				// 			}
-				// 			if($tempMachine!=$g['SPL_MC']){ 
-				// 				$pdf->SetFont('Arial','B',7);
-				// 				$pdf->SetXY(3,$cury);
-				// 				$pdf->Cell(40,4,'Machine : '.$g['SPL_MC'],1,0,'L');
-				// 				$tempMachine=$g['SPL_MC'];								
-				// 				$cury+=4;
-				// 				$pdf->SetXY(3,$cury);
-				// 				$pdf->Cell(20,4,'No Rak',1,0,'L');
-				// 				$pdf->Cell(80,4,'Machine No',1,0,'C');		
-				// 				$pdf->Cell(25,4,'Part No',1,0,'L');
-				// 				$pdf->Cell(40,4,'Part Name',1,0,'L');	
-				// 				$pdf->Cell(15,4,'Req',1,0,'R');
-				// 				$pdf->Cell(5,4,'',1,0,'L');
-				// 				$cury+=4;
-				// 				$pdf->SetFont('Arial','',8);
-				// 				$pdf->SetXY(3,$cury);
-								
-				// 				if(strpos($r['SPL_RACKNO'], '-')!== false){
-				// 					$pdf->Cell(20,$td_h,'',1,0,'L');
-				// 					$achar = explode('-',$r['SPL_RACKNO']);
-				// 					$pdf->Text(3.5, $cury+3,$achar[0]);
-				// 					$pdf->Text(3.5, $cury+6,$achar[1]);
-				// 				} else {
-				// 					$pdf->Cell(20,$td_h,$r['SPL_RACKNO'],1,0,'L');
-				// 				}
-				// 				$lebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO']))+17;
-				// 				$clebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO']))+16;
-				// 				$strx =$wd2col - ($lebar+3);
-				// 				if(($i%2)>0){									
-				// 					$pdf->Code128($wd2col -80 +2 ,$cury+1.5,trim($r['SPL_ORDERNO']),$clebar,3);
-				// 					$pdf->Cell(80,$td_h,$r['SPL_ORDERNO'],1,0,'R');
-				// 					$pdf->SetFont('Arial','',4);
-				// 					$pdf->Text($wd2col -5, $cury+1.5,$r['SPL_PROCD']);
-				// 					$pdf->SetFont('Arial','',8);
-				// 				} else {									
-				// 					$pdf->Code128($strx,$cury+1.5,trim($r['SPL_ORDERNO']),$clebar,3);
-				// 					$pdf->Cell(80,$td_h,$r['SPL_ORDERNO'],1,0,'L');
-				// 					$pdf->SetFont('Arial','',4);
-				// 					$pdf->Text($wd2col -79, $cury+1.5,$r['SPL_PROCD']);
-				// 					$pdf->SetFont('Arial','',8);
-				// 				}
-								
-				// 				$pdf->Cell(25,$td_h,trim($r['SPL_ITMCD']),1,0,'L');
-				// 				$ttlwidth = $pdf->GetStringWidth(trim($r['MITM_SPTNO']));
-				// 				if($ttlwidth > 40){
-				// 					$ukuranfont = 7.5;
-				// 					while($ttlwidth>39){
-				// 						$pdf->SetFont('Arial','',$ukuranfont);
-				// 						$ttlwidth=$pdf->GetStringWidth(trim($r['MITM_SPTNO']));
-				// 						$ukuranfont = $ukuranfont - 0.5;
-				// 					}
-				// 				}								
-				// 				$pdf->Cell(40,$td_h,trim($r['MITM_SPTNO']),1,0,'L');	
-				// 				$pdf->SetFont('Arial','',8);
-				// 				$pdf->Cell(15,$td_h,number_format($r['TTLREQ']),1,0,'R');//-
-				// 				$pdf->Cell(5,$td_h,'',1,0,'L');									
-				// 			} else {
-				// 				if($isnewpage){
-				// 					$pdf->SetFont('Arial','B',7);
-				// 					$pdf->SetXY(3,$cury);
-				// 					$pdf->Cell(40,4,'Machine : '.$g['SPL_MC'],1,0,'L');							
-				// 					$cury+=4; 
-				// 					$pdf->SetXY(3,$cury);
-				// 					$pdf->Cell(20,4,'No Rak',1,0,'L');
-				// 					$pdf->Cell(80,4,'Machine No',1,0,'C');		
-				// 					$pdf->Cell(25,4,'Part No',1,0,'L');
-				// 					$pdf->Cell(40,4,'Part Name',1,0,'L');	
-				// 					$pdf->Cell(15,4,'Req',1,0,'R');
-				// 					$pdf->Cell(5,4,'',1,0,'L');	
-				// 					$cury+=4;						
-				// 				}
-				// 				$pdf->SetFont('Arial','',8);
-				// 				$pdf->SetXY(3,$cury);
-								
-				// 				if(strpos($r['SPL_RACKNO'], '-')!== false){
-				// 					$pdf->Cell(20,$td_h,'',1,0,'L');
-				// 					$achar = explode('-',$r['SPL_RACKNO']);
-				// 					$pdf->Text(3.5, $cury+3,$achar[0]);
-				// 					$pdf->Text(3.5, $cury+6,$achar[1]);
-				// 				} else {
-				// 					$pdf->Cell(20,$td_h,$r['SPL_RACKNO'],1,0,'L');
-				// 				}
-				// 				$lebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO']))+17;
-				// 				$clebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO']))+16;
-				// 				$strx =$wd2col - ($lebar+3);
-				// 				if(($i%2)>0){									
-				// 					$pdf->Code128($wd2col -80 +2 ,$cury+1.5,trim($r['SPL_ORDERNO']),$clebar,3);
-				// 					$pdf->Cell(80,$td_h,$r['SPL_ORDERNO'],1,0,'R');
-				// 					$pdf->SetFont('Arial','',4);
-				// 					$pdf->Text($wd2col -5, $cury+1.5,$r['SPL_PROCD']);
-				// 					$pdf->SetFont('Arial','',8);
-				// 				} else {									
-				// 					$pdf->Code128($strx,$cury+1.5,trim($r['SPL_ORDERNO']),$clebar,3);
-				// 					$pdf->Cell(80,$td_h,$r['SPL_ORDERNO'],1,0,'L');
-				// 					$pdf->SetFont('Arial','',4);
-				// 					$pdf->Text($wd2col -79, $cury+1.5,$r['SPL_PROCD']);
-				// 					$pdf->SetFont('Arial','',8);
-				// 				}
-								
-				// 				$pdf->Cell(25,$td_h,trim($r['SPL_ITMCD']),1,0,'L');
-				// 				$ttlwidth = $pdf->GetStringWidth(trim($r['MITM_SPTNO']));
-				// 				if($ttlwidth > 40){
-				// 					$ukuranfont = 7.5;
-				// 					while($ttlwidth>39){
-				// 						$pdf->SetFont('Arial','',$ukuranfont);
-				// 						$ttlwidth=$pdf->GetStringWidth(trim($r['MITM_SPTNO']));
-				// 						$ukuranfont = $ukuranfont - 0.5;
-				// 					}
-				// 				}								
-				// 				$pdf->Cell(40,$td_h,trim($r['MITM_SPTNO']),1,0,'L');	
-				// 				$pdf->SetFont('Arial','',8);
-				// 				$pdf->Cell(15,$td_h,number_format($r['TTLREQ']),1,0,'R');//-
-				// 				$pdf->Cell(5,$td_h,'',1,0,'L');	
-				// 			}
-				// 			$cury+=$td_h;$i++;
-				// 		}
-				// 	}
-				// 	$cury+=10;
-				// }
-				#end new way
 				#current way
 				$i=1;
 				foreach($rs as $r){
@@ -2575,7 +2377,7 @@ class SPL extends CI_Controller {
 							$pdf->SetFont('Arial','B',7);					
 							$cury=22;
 							$isleft = true;
-							for($j=0;$j<$xWOcount; $j++){#count($cwos)
+							for($j=0;$j<$xWOcount; $j++){
 								if( ($j % 2)==0){
 									$pdf->SetXY(3,$cury);
 									$pdf->Cell(50,4,'Model',1,0,'L');
@@ -2625,9 +2427,11 @@ class SPL extends CI_Controller {
 							$pdf->Cell(20,4,'No Rak',1,0,'L');
 							$pdf->Cell(80,4,'Machine No',1,0,'C');		
 							$pdf->Cell(25,4,'Part No',1,0,'L');
-							$pdf->Cell(40,4,'Part Name',1,0,'L');	
-							$pdf->Cell(15,4,'Req',1,0,'R');
-							$pdf->Cell(5,4,'',1,0,'L');	
+							$pdf->Cell(30,4,'Part Name',1,0,'L');	
+							$pdf->Cell(8,4,'Use',1,0,'C');
+							$pdf->Cell(13,4,'Req.',1,0,'R');
+							$pdf->Cell(13,4,'Issued',1,0,'R');
+							$pdf->Cell(13,4,'Remain',1,0,'R');
 							$wd2col = 3+20+80;
 							$cury+=4;
 						}
@@ -2661,18 +2465,20 @@ class SPL extends CI_Controller {
 						
 						$pdf->Cell(25,$td_h,trim($r['SPL_ITMCD']),1,0,'L');
 						$ttlwidth = $pdf->GetStringWidth(trim($r['MITM_SPTNO']));
-						if($ttlwidth > 40){
+						if($ttlwidth > 28){
 							$ukuranfont = 7.5;
-							while($ttlwidth>39){
+							while($ttlwidth>28){
 								$pdf->SetFont('Arial','',$ukuranfont);
 								$ttlwidth=$pdf->GetStringWidth(trim($r['MITM_SPTNO']));
 								$ukuranfont = $ukuranfont - 0.5;
 							}
 						}						
-						$pdf->Cell(40,$td_h,trim($r['MITM_SPTNO']),1,0,'L');	
+						$pdf->Cell(30,$td_h,trim($r['MITM_SPTNO']),1,0,'L');	
 						$pdf->SetFont('Arial','',8);
-						$pdf->Cell(15,$td_h,number_format($r['TTLREQ']),1,0,'R');//-
-						$pdf->Cell(5,$td_h,'',1,0,'L');	
+						$pdf->Cell(8,$td_h,$r['SPL_QTYUSE']*1,1,0,'C');	
+						$pdf->Cell(13,$td_h,number_format($r['TTLREQB4']),1,0,'R');
+						$pdf->Cell(13,$td_h,number_format($r['TTLREQB4']-$r['TTLREQ']),1,0,'R');
+						$pdf->Cell(13,$td_h,number_format($r['TTLREQ']),1,0,'R');
 						$cury+=$td_h;$i++;
 					}
 				}

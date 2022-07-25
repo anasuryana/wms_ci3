@@ -178,12 +178,12 @@ class SPL_mod extends CI_Model {
     }
 
     public function selectkitby4par($pspl, $pcat, $pline, $pfr){
-        $this->db->select("SPL_PROCD,SPL_ORDERNO,SPL_RACKNO, rtrim(SPL_ITMCD) SPL_ITMCD,MITM_SPTNO, SPL_QTYUSE, SPL_MC, SPL_MS, TTLREQ, TTLSCN, SPL_ITMRMRK");
+        $this->db->select("SPL_PROCD,SPL_ORDERNO,SPL_RACKNO, rtrim(SPL_ITMCD) SPL_ITMCD,MITM_SPTNO, SPL_QTYUSE, SPL_MC, SPL_MS, TTLREQ, TTLSCN, SPL_ITMRMRK,TTLREQ TTLREQB4");
         $this->db->from("(SELECT SPL_PROCD,SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD, max(SPL_QTYUSE) SPL_QTYUSE,SPL_MS, SPL_MC, SUM(SPL_QTYREQ) TTLREQ, 0 TTLSCN , max(SPL_ITMRMRK) SPL_ITMRMRK
         FROM $this->TABLENAME LEFT JOIN (SELECT MSTLOC_CD,MAX(aliasrack) aliasrack FROM vinitlocation GROUP BY MSTLOC_CD) VRAK on SPL_RACKNO=MSTLOC_CD WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline' AND SPL_FEDR='$pfr' 
         GROUP BY SPL_PROCD,SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD,  SPL_MC,SPL_MS) a");
-        $this->db->join('MITM_TBL b', 'a.SPL_ITMCD=b.MITM_ITMCD');         
-        $this->db->order_by('aliasrack,SPL_RACKNO,SPL_ORDERNO,SPL_MC,SPL_ITMCD,SPL_PROCD'); //
+        $this->db->join('MITM_TBL b', 'a.SPL_ITMCD=b.MITM_ITMCD','LEFT');        
+        $this->db->order_by('aliasrack,SPL_RACKNO,SPL_ORDERNO,SPL_MC,SPL_ITMCD,SPL_PROCD');
         $query = $this->db->get();
         return $query->result_array();
     }
