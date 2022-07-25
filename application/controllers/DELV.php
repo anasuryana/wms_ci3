@@ -2648,12 +2648,7 @@ class DELV extends CI_Controller {
 			, 'LUPDT' => $xdatetime
 			, 'USRID' => $this->session->userdata('nama')
 			, 'REFFDOC' => $megadoc
-			];
-			if($inlocfrom=='PSIEQUIP' || $inlocfrom=='NRWH2' || $inlocfrom=='AIWH1' || $inlocfrom=='ARWH9SC' ){
-
-			} else {
-				$this->set_rm_ith_handler($pdata);
-			}
+			];			
 
 			#update header
 			$rshead = $this->DELV_mod->select_header_rm($doNum);
@@ -2855,12 +2850,7 @@ class DELV extends CI_Controller {
 				, 'LUPDT' => $xdatetime
 				, 'USRID' => $this->session->userdata('nama')
 				, 'REFFDOC' => $megadoc
-				];
-				if($inlocfrom=='PSIEQUIP' || $inlocfrom=='NRWH2' || $inlocfrom=='AIWH1' || $inlocfrom=='ARWH9SC' ){
-
-				} else {
-					$this->set_rm_ith_handler($pdata);
-				}
+				];				
 			}
 			$saveRows = [];
 			for ($i=0; $i<$PKGCount; $i++) {
