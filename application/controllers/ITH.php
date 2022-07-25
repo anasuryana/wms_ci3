@@ -3214,7 +3214,6 @@ class ITH extends CI_Controller {
 								}
 								if(!$isPlotted) 
 								{
-									$rswip[$theIndex-1]['STOCK']+=($k['LOGRTNQT']+$r['PARTQTY']);
 									$sampleRow['LOGRTN'] = $k['LOGRTNQT'];
 								} else {
 									$sampleRow['LOGRTN'] = 0;
@@ -3223,7 +3222,8 @@ class ITH extends CI_Controller {
 							}
 						}
 					}
-
+					
+					$rswip[$theIndex-1]['STOCK']+=($sampleRow['LOGRTN']+$r['PARTQTY']);
 					$sampleRow['ITMD1'] = '';
 					$sampleRow['ARWH'] = 0;
 					$sampleRow['NRWH2'] = 0;
