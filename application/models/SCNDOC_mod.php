@@ -23,7 +23,7 @@ class SCNDOC_mod extends CI_Model {
 	}
 
     public function select_today(){
-        $this->db->from('wms_v_scandoc_today');
+        $this->db->from('wms_v_scandoc_today')->order_by('SCNDOC_SCANNEDAT desc');
 		$query = $this->db->get();
 		return $query->result_array();
     }
