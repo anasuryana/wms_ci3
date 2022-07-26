@@ -2299,7 +2299,33 @@ class SPL extends CI_Controller {
 						$pdf->SetFont('Arial','B',7);					
 						$cury=$cury+18;
 						$isleft = true;
-						for($j=0;$j<$xWOcount; $j++){
+						for($j=0;$j<$xWOcount; $j++){							
+							if(($cury+10)>$hgt_p){
+								$cury = 4;
+								$pdf->AddPage();
+								$pdf->SetFont('Arial','',6);
+								$clebar = $pdf->GetStringWidth($cpsn)+40;
+								$pdf->Code128(3,$cury,$cpsn, $clebar,4);		
+								$pdf->Text(3,$cury+7,$cpsn);
+								$clebar = $pdf->GetStringWidth($ccat)+17;
+								$pdf->Code128(170, $cury,trim($ccat),$clebar,4);						
+								$pdf->Text(170,$cury+7,$ccat);
+								$clebar = $pdf->GetStringWidth($cline)+17;
+								$pdf->Code128(3, $cury+9,$cline, $clebar, 4);
+								$pdf->Text(3,$cury+16,$cline);
+								$clebar = $pdf->GetStringWidth($cfedr)+17;
+								$pdf->Code128(170, $cury+9,$cfedr, $clebar, 4);
+								$pdf->Text(170,$cury+16,$cfedr);
+								$pdf->SetXY(90,$cury);
+								$pdf->SetFont('Arial','BU',10);
+								$pdf->Cell(35,4,'Picking Instruction',0,0,'C');
+								$pdf->SetXY(100,$cury+11);
+								$pdf->SetFont('Arial','',6);
+								$pdf->Cell(15,4,'Page '.$pdf->PageNo().' / {nb}',1,0,'R');
+								$pdf->SetFont('Arial','B',7);					
+								$cury=$cury+18;
+								$isleft = true;
+							}
 							if( ($j % 2)==0){
 								$pdf->SetXY(3,$cury);
 								$pdf->Cell(50,4,'Model',1,0,'L');
@@ -2383,6 +2409,32 @@ class SPL extends CI_Controller {
 							$cury=$cury+18;
 							$isleft = true;
 							for($j=0;$j<$xWOcount; $j++){
+								if(($cury+10)>$hgt_p){
+									$cury = 4;
+									$pdf->AddPage();
+									$pdf->SetFont('Arial','',6);
+									$clebar = $pdf->GetStringWidth($cpsn)+40;
+									$pdf->Code128(3,$cury,$cpsn, $clebar,4);		
+									$pdf->Text(3,$cury+7,$cpsn);
+									$clebar = $pdf->GetStringWidth($ccat)+17;
+									$pdf->Code128(170, $cury,trim($ccat),$clebar,4);						
+									$pdf->Text(170,$cury+7,$ccat);
+									$clebar = $pdf->GetStringWidth($cline)+17;
+									$pdf->Code128(3, $cury+9,$cline, $clebar, 4);
+									$pdf->Text(3,$cury+16,$cline);
+									$clebar = $pdf->GetStringWidth($cfedr)+17;
+									$pdf->Code128(170, $cury+9,$cfedr, $clebar, 4);
+									$pdf->Text(170,$cury+16,$cfedr);
+									$pdf->SetXY(90,$cury);
+									$pdf->SetFont('Arial','BU',10);
+									$pdf->Cell(35,4,'Picking Instruction',0,0,'C');
+									$pdf->SetXY(100,$cury+11);
+									$pdf->SetFont('Arial','',6);
+									$pdf->Cell(15,4,'Page '.$pdf->PageNo().' / {nb}',1,0,'R');
+									$pdf->SetFont('Arial','B',7);					
+									$cury=$cury+18;
+									$isleft = true;
+								}
 								if( ($j % 2)==0){
 									$pdf->SetXY(3,$cury);
 									$pdf->Cell(50,4,'Model',1,0,'L');
@@ -2485,7 +2537,6 @@ class SPL extends CI_Controller {
 					$pdf->Cell(13,$td_h,number_format($r['TTLREQ']),1,0,'R');
 					$cury+=$td_h;$i++;										
 				}
-
 			}
 			
 			
