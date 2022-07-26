@@ -188,6 +188,17 @@ class SPL_mod extends CI_Model {
         return $query->result_array();
     }
 
+    public function selectkitbyPSN($pspl){
+        $this->db->select("SPL_PROCD,SPL_ORDERNO,SPL_RACKNO, rtrim(SPL_ITMCD) SPL_ITMCD,rtrim(MITM_SPTNO) MITM_SPTNO, SPL_QTYUSE, SPL_MC, SPL_MS, TTLREQ, TTLSCN, SPL_ITMRMRK,TTLREQ TTLREQB4,SPL_LINE,SPL_CAT,SPL_FEDR");
+        $this->db->from("(SELECT SPL_PROCD,SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD, max(SPL_QTYUSE) SPL_QTYUSE,SPL_MS, SPL_MC, SUM(SPL_QTYREQ) TTLREQ, 0 TTLSCN , max(SPL_ITMRMRK) SPL_ITMRMRK,SPL_LINE,SPL_CAT,SPL_FEDR
+        FROM $this->TABLENAME LEFT JOIN (SELECT MSTLOC_CD,MAX(aliasrack) aliasrack FROM vinitlocation GROUP BY MSTLOC_CD) VRAK on SPL_RACKNO=MSTLOC_CD WHERE SPL_DOC='$pspl' 
+        GROUP BY SPL_LINE,SPL_CAT,SPL_FEDR, SPL_PROCD,SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD,  SPL_MC,SPL_MS) a");
+        $this->db->join('MITM_TBL b', 'a.SPL_ITMCD=b.MITM_ITMCD','LEFT');        
+        $this->db->order_by('SPL_CAT,SPL_LINE,SPL_FEDR,aliasrack,SPL_RACKNO,SPL_ORDERNO,SPL_MC,SPL_ITMCD,SPL_PROCD');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function selectkitby4parv($pspl, $pcat, $pline, $pfr){
         $this->db->select("SPL_ORDERNO,SPL_RACKNO, UPPER(SPL_ITMCD) SPL_ITMCD,MITM_SPTNO, SPL_QTYUSE, SPL_MC, SPL_MS, TTLREQ, TTLSCN");
         $this->db->from("(SELECT SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD, max(SPL_QTYUSE) SPL_QTYUSE,SPL_MS, SPL_MC, SUM(SPL_QTYREQ) TTLREQ, 0 TTLSCN
@@ -223,6 +234,12 @@ class SPL_mod extends CI_Model {
     public function selecthead($psnno, $line, $fr){
         $qry = "exec xsp_megapsnhead ?, ?, ?";
 		$query = $this->db->query($qry, array($psnno, $line, $fr));
+		return $query->result_array();
+    }
+
+    public function select_pi_head_bypsn($psnno){ #pi = picking instruction
+        $qry = "exec xsp_megapsnhead_bypsn ?";
+		$query = $this->db->query($qry, [$psnno]);
 		return $query->result_array();
     }
 
@@ -601,16 +618,20 @@ class SPL_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_but_diff_machine($ppsn, $pcat, $pline, $pfr){
-        // $qry = "SELECT SPL_DOC, SPL_CAT, SPL_LINE, SPL_FEDR,SPL_PROCD,SPL_ORDERNO,SPL_ITMCD FROM SPL_TBL
-        // where SPL_DOC = ? and SPL_CAT = ? and SPL_LINE =? and SPL_FEDR = ?
-        // group by SPL_DOC, SPL_CAT, SPL_LINE, SPL_FEDR,SPL_PROCD,SPL_ORDERNO,SPL_ITMCD
-        // HAVING COUNT(*)>1";
+    public function select_but_diff_machine($ppsn, $pcat, $pline, $pfr){        
         $qry = "SELECT SPL_DOC, SPL_CAT, SPL_LINE, SPL_FEDR,SPL_ORDERNO,SPL_ITMCD FROM SPL_TBL
         where SPL_DOC = ? and SPL_CAT = ? and SPL_LINE =? and SPL_FEDR = ?
         group by SPL_DOC, SPL_CAT, SPL_LINE, SPL_FEDR,SPL_ORDERNO,SPL_ITMCD
         HAVING COUNT(*)>1";
         $query = $this->db->query($qry, [$ppsn, $pcat, $pline, $pfr]);
+        return $query->result_array();
+    }
+    public function select_but_diff_machine_bypsn($ppsn){
+        $qry = "SELECT SPL_DOC, SPL_CAT, SPL_LINE, SPL_FEDR,SPL_ORDERNO,SPL_ITMCD FROM SPL_TBL
+        where SPL_DOC = ? 
+        group by SPL_DOC, SPL_CAT, SPL_LINE, SPL_FEDR,SPL_ORDERNO,SPL_ITMCD
+        HAVING COUNT(*)>1";
+        $query = $this->db->query($qry, [$ppsn]);
         return $query->result_array();
     }
 
