@@ -2369,8 +2369,12 @@ class SPL extends CI_Controller {
 								$isleft=false;
 							}
 						}
-	
-						$cury+=$isleft ? 9:1;
+						
+						$cury+=$isleft ? 9:1;						
+						if(($cury+10)>$hgt_p){
+							$cury = 4;
+							$pdf->AddPage();
+						}
 						$pdf->SetXY(3,$cury);
 						$pdf->Cell(20,4,'No Rak',1,0,'L');
 						$pdf->Cell(80,4,'Machine No',1,0,'C');		
@@ -2477,9 +2481,12 @@ class SPL extends CI_Controller {
 									$cury+=8;
 									$isleft=false;
 								}
-							}
-		
+							}														
 							$cury+=$isleft ? 9:1;
+							if(($cury+10)>$hgt_p){
+								$cury = 4;
+								$pdf->AddPage();
+							}
 							$pdf->SetXY(3,$cury);
 							$pdf->Cell(20,4,'No Rak',1,0,'L');
 							$pdf->Cell(80,4,'Machine No',1,0,'C');		
@@ -2862,7 +2869,7 @@ class SPL extends CI_Controller {
 			// 			$cury+=$td_h;$i++;
 			// 		}
 			// 	}
-			// 	#end current way
+				// #end current way
 			// }
 		} else {
 			if(count($this->SPL_mod->select_header_partreq_unapproved($cpsn))==0){
