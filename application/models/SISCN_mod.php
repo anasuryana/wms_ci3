@@ -165,7 +165,7 @@ class SISCN_mod extends CI_Model {
         LEFT JOIN MCUS_TBL ON SI_CUSCD=MCUS_CUSCD
         LEFT JOIN (SELECT RETFG_DOCNO FROM RETFG_TBL GROUP BY RETFG_DOCNO) VRCV ON VDET.SER_DOC=RETFG_DOCNO
         LEFT JOIN MITM_TBL ON VTTLQTY.SI_ITMCD=MITM_ITMCD
-        left join (SELECT RCV_DONO, RCV_RPNO,RCV_BCNO FROM RCV_TBL GROUP BY RCV_DONO,RCV_RPNO, RCV_BCNO) VRCVCUST ON SER_DOC=RCV_DONO		
+        left join (SELECT RCV_INVNO, RCV_RPNO,RCV_BCNO FROM RCV_TBL GROUP BY RCV_INVNO,RCV_RPNO, RCV_BCNO) VRCVCUST ON SER_DOC=RCV_INVNO		
         order by SI_ITMCD,SISCN_SERQTY,PERBOX DESC";#order by SI_ITMCD,AX_SER, PERBOX DESC
         $query =  $this->db->query($qry, [$psi, $psi, $psi]);
         return $query->result_array();
@@ -232,7 +232,7 @@ class SISCN_mod extends CI_Model {
                 ) VRCV ON VDET.SER_DOC = RETFG_DOCNO
             LEFT JOIN MITM_TBL ON VDET.SI_ITMCD = MITM_ITMCD
             LEFT JOIN (
-                SELECT RCV_DONO
+                SELECT RCV_INVNO
                     ,RCV_RPNO
                     ,RCV_BCNO
                     ,RCV_KPPBC
@@ -244,14 +244,14 @@ class SISCN_mod extends CI_Model {
                     ,MAX(RCV_HSCD) RCV_HSCD
                     ,MAX(RCV_BM) RCV_BM
                 FROM RCV_TBL
-                GROUP BY RCV_DONO
+                GROUP BY RCV_INVNO
                     ,RCV_RPNO
                     ,RCV_BCNO
                     ,RCV_KPPBC
                     ,RCV_BCTYPE
                     ,RCV_RPDATE	
                     ,RCV_ITMCD		
-                ) VRCVCUST ON SER_DOC = RCV_DONO AND OLDITEM=RCV_ITMCD
+                ) VRCVCUST ON SER_DOC = RCV_INVNO AND OLDITEM=RCV_ITMCD
             ORDER BY SI_ITMCD
                 ,SISCN_SERQTY
                 ,PERBOX DESC

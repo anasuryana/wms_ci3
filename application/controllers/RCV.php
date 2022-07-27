@@ -900,6 +900,7 @@ class RCV extends CI_Controller {
 		$cpph		= $this->input->post('inpph');
 		$cnourut	= $this->input->post('innomorurut');
 		$cstsrcv	= $this->input->post('instsrcv');
+		$invoice	= $this->input->post('invoice');
 
 		$rsPGRN = $this->XPGRN_mod->selec_where_group(['RTRIM(PGRN_USRID) PGRN_USRID'], 'PGRN_USRID', ['PGRN_SUPNO' => $cdo]);
 		$MEGAUser = '';
@@ -945,7 +946,8 @@ class RCV extends CI_Controller {
 						'RCV_CONA' => $cconaNum,
 						'RCV_BSGRP' => $cbisgrup,						
 						'RCV_USRID' => $this->session->userdata('nama'),
-						'RCV_CREATEDBY' => $MEGAUser
+						'RCV_CREATEDBY' => $MEGAUser,
+						'RCV_INVNO' => $invoice
 					];					
 					$cret = $this->RCV_mod->updatebyVAR($datau, $dataw);
 					$myctr_edited += $cret;					
@@ -981,7 +983,8 @@ class RCV extends CI_Controller {
 						'RCV_BSGRP' => $cbisgrup,
 						'RCV_LUPDT' => $currrtime,
 						'RCV_USRID' => $this->session->userdata('nama'),
-						'RCV_CREATEDBY' => $MEGAUser
+						'RCV_CREATEDBY' => $MEGAUser,
+						'RCV_INVNO' => $invoice
 					];
 					$cret = $this->RCV_mod->insert($datas);					
 					$myctr_saved +=  $cret;
@@ -1020,7 +1023,8 @@ class RCV extends CI_Controller {
 					'RCV_PPH' => $cpph,
 					'RCV_ZNOURUT' => $cnourut,					
 					'RCV_USRID' => $this->session->userdata('nama'),
-					'RCV_CREATEDBY' => $MEGAUser
+					'RCV_CREATEDBY' => $MEGAUser,
+					'RCV_INVNO' => $invoice
 				];
 				$cret = $this->RCV_mod->updatebyVAR($datau, $dataw);
 				$myctr_edited += $cret;				
@@ -1054,7 +1058,8 @@ class RCV extends CI_Controller {
 					'RCV_ZNOURUT' => $cnourut,
 					'RCV_LUPDT' => $currrtime,
 					'RCV_USRID' => $this->session->userdata('nama'),
-					'RCV_CREATEDBY' => $MEGAUser
+					'RCV_CREATEDBY' => $MEGAUser,
+					'RCV_INVNO' => $invoice
 				];
 				$cret = $this->RCV_mod->insert($datas);
 				$myctr_saved +=  $cret;				
@@ -1778,26 +1783,28 @@ class RCV extends CI_Controller {
 		$cdate1 = $this->input->get('inyear') . '-'. $this->input->get('inmonth') . '-01';
 		$cdate2 = date("Y-m-t", strtotime($cdate1));
 		$rs = [];
-		if($cby=='do'){			
-			if($cdatefilter!=''){
-				$cdate1 = $cdatefilter;
-				$cdate2 = $cdatefilter;
-			}
-			if($cpermonth == 'y'){				
-				$rs = $csup!='-' ? $this->RCV_mod->MGSelectDO_dateSup_return_fg($ckey, $cdate1, $cdate2, $csup)
-					: $this->RCV_mod->MGSelectDO_date_return_fg($ckey, $cdate1, $cdate2);
-			} else {
-				if($csup!='-'){
-					$rs = $this->RCV_mod->MGSelectDOSup_return_fg($ckey, $csup);
-				} else {					
-					$rs = $cdatefilter !='' ? $this->RCV_mod->MGSelectDO_date_return_fg($ckey, $cdate1, $cdate2) :
-					 $this->RCV_mod->MGSelectDO_return_fg($ckey);
+		switch($cby){
+			case 'ra':
+				if($cdatefilter!=''){
+					$cdate1 = $cdatefilter;
+					$cdate2 = $cdatefilter;
 				}
-			}
-		} else {			
-			$rs = $csup!='-' ? $this->RCV_mod->MGSelectDObyItemSup_return_fg($ckey, $csup) : 
-				$this->RCV_mod->MGSelectDObyItem_return_fg($ckey);			
-		}		
+				if($cpermonth == 'y'){
+					$rs = $csup!='-' ? $this->RCV_mod->MGSelectDO_dateSup_return_fg($ckey, $cdate1, $cdate2, $csup)
+						: $this->RCV_mod->MGSelectDO_date_return_fg($ckey, $cdate1, $cdate2);
+				} else {
+					if($csup!='-'){
+						$rs = $this->RCV_mod->MGSelectDOSup_return_fg($ckey, $csup);
+					} else {					
+						$rs = $cdatefilter !='' ? $this->RCV_mod->MGSelectDO_date_return_fg($ckey, $cdate1, $cdate2) :
+						 $this->RCV_mod->MGSelectDO_return_fg($ckey);
+					}
+				}
+				break;
+			case 'do':
+
+				break;
+		}					
 		echo json_encode($rs);
 	}
 

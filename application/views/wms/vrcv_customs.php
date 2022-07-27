@@ -504,8 +504,8 @@
                     </div>
                 </div>
                 <div class="col-md-4 mb-1">
-                    <div class="input-group input-group-sm mb-1">                    
-                        <label class="input-group-text">Net Weight</label>                    
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Net Weight</label>
                         <input type="text" class="form-control" id="rcvcustoms_fg_NW">
                     </div>
                 </div>
@@ -517,7 +517,7 @@
                 </div>
             </div>
             <div class="row" id="rcvcustoms_fg_stack5">
-                <div class="col-md-6 mb-1">
+                <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Contract</label>                    
                         <input type="text" class="form-control" id="rcvcustoms_fg_contractnum" list="rcvcustoms_fg_contractnum_dl">
@@ -525,11 +525,17 @@
                         </datalist>
                     </div>
                 </div>
-                <div class="col-md-6 mb-1">
+                <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">
-                        <label class="input-group-text">Customer</label>
+                        <label class="input-group-text">Invoice</label>
+                        <input type="text" class="form-control" id="rcvcustoms_fg_invoice">
+                    </div>
+                </div>
+                <div class="col-md-4 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Return From</label>
                         <input type="text" class="form-control" id="rcvcustoms_fg_supplier_2" readonly>
-                        <button class="btn btn-primary" id="rcvcustoms_fg_btn_find_supplier_2" onclick="rcvcustoms_th_sup_eC(this)"><i class="fas fa-search"></i></button>
+                        <input type="hidden" id="rcvcustoms_fg_supcd" readonly>
                     </div>
                 </div>
             </div>
@@ -1215,7 +1221,7 @@
 </div>
 <!-- fg return modal -->
 <div class="modal fade" id="rcvcustoms_fg_DTLMOD">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
       <div class="modal-content">      
         <!-- Modal Header -->
         <div class="modal-header">
@@ -1227,7 +1233,11 @@
             <div class="row">
                 <div class="col-md-12 mb-1">
                     <div class="input-group input-group-sm mb-1">                        
-                        <label class="input-group-text">Search</label>                        
+                        <label class="input-group-text">Search by</label>
+                        <select id="rcvcustoms_fg_searchby" class="form-select" onchange="document.getElementById('rcvcustoms_fg_txt_search').focus()">
+                            <option value="ra">RA Number</option>                            
+                            <option value="do">DO Number</option>
+                        </select>
                         <input type="text" class="form-control" id="rcvcustoms_fg_txt_search">
                     </div>
                 </div>
@@ -1276,27 +1286,6 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col text-center">
-                    <div class="form-check-inline">
-                        <label class="form-check-label">
-                           Search by
-                        </label>
-                    </div>
-                    <div class="form-check-inline">
-                        <input type="radio" id="rcvcustoms_fg_rad_do" class="form-check-input" name="optradio_fg" value="do" checked>
-                        <label class="form-check-label" for="rcvcustoms_fg_rad_do">
-                        DO No
-                        </label>
-                    </div>
-                    <div class="form-check-inline">
-                        <input type="radio" id="rcvcustoms_fg_rad_item" class="form-check-input" name="optradio_fg" value="item">
-                        <label class="form-check-label" for="rcvcustoms_fg_rad_item">
-                        Item Code
-                        </label>
-                    </div>
-                </div>
-            </div>         
-            <div class="row">
                 <div class="col text-end mb-1">
                     <span class="badge bg-info" id="lblinfo_rcvcustoms_fg_tbldono"></span>
                 </div>
@@ -1306,10 +1295,10 @@
                     <table id="rcvcustoms_fg_tbldono" class="table table-hover table-sm table-bordered" style="width:100%;font-size:75%">
                         <thead class="table-light">
                             <tr>
-                                <th>DO No</th>
+                                <th>RA Number</th>
                                 <th>Date</th>
                                 <th>Business</th>
-                                <th class="text-end">Status</th>
+                                <th class="text-center">Status</th>
                                 <th class="text-center">HSCODE</th>
                                 <th class="text-end">BM</th>
                                 <th class="text-end">PPN</th>
@@ -1317,6 +1306,7 @@
                                 <th class="d-none">BISGRUP</th>
                                 <th>Customer</th>
                                 <th class="d-none">CustomerID</th>
+                                <th>DO</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -3175,12 +3165,8 @@
         document.getElementById('rcvcustoms_fg_txt_search').focus();
     });
     document.getElementById('rcvcustoms_fg_year').value=new Date().getFullYear();
-    $("#rcvcustoms_fg_rad_do").click(function (e) {         
-        document.getElementById('rcvcustoms_fg_txt_search').focus();
-    });
-    $("#rcvcustoms_fg_rad_item").click(function (e) {             
-        document.getElementById('rcvcustoms_fg_txt_search').focus();
-    });
+    
+   
     $("#rcvcustoms_fg_PROGRESS").on('shown.bs.modal', function(){
         rcvcustoms_fg_e_save();
     });
@@ -3217,6 +3203,7 @@
         let mkppbc   = $("#rcvcustoms_fg_kppbc").val();
         let zstsrcv = document.getElementById('rcvcustoms_fg_zsts').value;
         const cona = document.getElementById('rcvcustoms_fg_contractnum').value
+        const invoice = document.getElementById('rcvcustoms_fg_invoice').value
         var ar_nourut = [];
         var ar_pono = [];
         var ar_dodt = [];
@@ -3276,7 +3263,7 @@
                 insupcd: ar_supcd, incurr: ar_curr, initm: ar_item, inqty: ar_qty,
                 inprice: ar_price, inamt: ar_amt, inttl_amt: m_amt, inkppbc: mkppbc, ingrlno: ar_grlno, inhscode: ar_hscode,
                 instsrcv :zstsrcv, inbm : ar_bm, inppn: ar_ppn, inpph: ar_pph, innomorurut: ar_nourut,
-                inconaNum: cona },
+                inconaNum: cona, invoice: invoice },
             dataType: "json",
             success: function (response) {
                 alertify.message(response[0].msg);
@@ -3298,7 +3285,7 @@
         let mnopen = document.getElementById('rcvcustoms_fg_regno').value;
         const customername = document.getElementById('rcvcustoms_fg_supplier_2')
         if (customername.value.trim().length<5) {
-            alertify.warning('Please select customer first')
+            alertify.warning('Please select "return from" first')
             customername.focus()
             return
         }
@@ -3358,18 +3345,13 @@
     });
     $("#rcvcustoms_fg_txt_search").keypress(function (e) { 
         if(e.which==13){
-            let mval = $(this).val();
-            let mby = '';
-            if(document.getElementById('rcvcustoms_fg_rad_do').checked){
-                mby = document.getElementById('rcvcustoms_fg_rad_do').value;
-            } else {
-                mby = document.getElementById('rcvcustoms_fg_rad_item').value;
-            }
-            let mpermonth = document.getElementById('rcvcustoms_fg_ck').checked ? 'y' : 'n';
-            let myear = document.getElementById('rcvcustoms_fg_year').value;
-            let mmonth = document.getElementById('rcvcustoms_fg_monthfilter').value;
-            let msuplier = document.getElementById('rcvcustoms_fg_supfilter').value;
-            let mdatefilter = document.getElementById('rcvcustoms_fg_datefilter').value;
+            let mval = $(this).val()
+            let mby = document.getElementById('rcvcustoms_fg_searchby').value
+            let mpermonth = document.getElementById('rcvcustoms_fg_ck').checked ? 'y' : 'n'
+            let myear = document.getElementById('rcvcustoms_fg_year').value
+            let mmonth = document.getElementById('rcvcustoms_fg_monthfilter').value
+            let msuplier = document.getElementById('rcvcustoms_fg_supfilter').value
+            let mdatefilter = document.getElementById('rcvcustoms_fg_datefilter').value
             
             $("#lblinfo_rcvcustoms_fg_tbldono").text("Please wait...");
             $.ajax({
@@ -3396,13 +3378,19 @@
                         newcell.innerHTML = response[i].STKTRND1_DOCNO
                         newcell.style.cssText = `cursor:pointer`
                         newcell.onclick = () => {
-                            rcvcustoms_suppliercode = response[i].RCV_SUPCD
-                            $("#rcvcustoms_fg_docnoorigin").val(response[i].STKTRND1_DOCNO);
+                            if(response[i].SUPNO==''){
+                                alertify.warning('DO Number could not be empty')
+                                return 
+                            }
+                            rcvcustoms_suppliercode = response[i].RETFG_SUPCD
+                            $("#rcvcustoms_fg_docnoorigin").val(response[i].SUPNO);
                             $("#rcvcustoms_fg_supplier_2").val(response[i].MSUP_SUPNM);
-                            MGGetDODetail_FGRET(response[i].STKTRND1_DOCNO);        
+                            MGGetDODetail_FGRET(response[i].STKTRND1_DOCNO);
                             $("#rcvcustoms_fg_DTLMOD").modal('hide');
-                            WMSGetDODetail_FGRET(response[i].STKTRND1_DOCNO);
+                            WMSGetDODetail_FGRET(response[i].SUPNO);
                             document.getElementById('rcvcustoms_fg_contractnum').value = response[i].RCV_CONA
+                            document.getElementById('rcvcustoms_fg_invoice').value = response[i].STKTRND1_DOCNO
+
                         }
                         newcell = newrow.insertCell(1)
                         newcell.innerHTML = response[i].ISUDT
@@ -3426,6 +3414,8 @@
                         newcell = newrow.insertCell(10)
                         newcell.classList.add('d-none')
                         newcell.innerHTML = response[i].RCV_SUPCD
+                        newcell = newrow.insertCell(11)                        
+                        newcell.innerHTML = response[i].SUPNO
                     }
                     mydes.innerHTML=''
                     mydes.appendChild(myfrag)                    
@@ -3528,8 +3518,8 @@
                         $("#rcvcustoms_fg_rcvdate").datepicker('update',response[i].RCV_RCVDATE);
                         $("#rcvcustoms_fg_typetpb").val(response[i].RCV_TPB);
                         $("#rcvcustoms_fg_kppbc").val(response[i].RCV_KPPBC);
-                        $("#rcvcustoms_fg_NW").val(m_nw);
-                        $("#rcvcustoms_fg_GW").val(m_gw);                        
+                        $("#rcvcustoms_fg_NW").val(m_nw)
+                        $("#rcvcustoms_fg_GW").val(m_gw)
                     }
                 } else {
                     
