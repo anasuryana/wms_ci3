@@ -2099,6 +2099,8 @@ class RCV extends CI_Controller {
 		unset($r);
 		echo json_encode($rs);
 	}
+
+	
 	public function MGGetDODetailReturn(){
 		header('Content-Type: application/json');
 		$cdo = $this->input->get('indo');
@@ -2120,16 +2122,12 @@ class RCV extends CI_Controller {
 
 		foreach($rs as &$r){
 			$dataw = [
-				'RCV_DONO' => trim($cdo),
+				'RCV_INVNO' => trim($cdo),
 				'RCV_ITMCD' => trim($r['STKTRND2_ITMCD'])
 			];
 			$r['SYNC_STS'] = ($this->RCV_mod->check_Primary($dataw) > 0) ? 'Synchronized': 'Not yet';
 
-			//SAVED CUSTOMS DOC
-			$dataw = [
-				'RCV_DONO' => trim($cdo),
-				'RCV_ITMCD' => trim($r['STKTRND2_ITMCD']),									
-			];
+			//SAVED CUSTOMS DOC			
 			$rs2 = $this->RCV_mod->selectbypar($dataw);
 			$r['PROFNO'] = '';
 			$r['HSCD'] = '';
