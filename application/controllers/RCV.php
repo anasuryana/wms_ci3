@@ -1348,11 +1348,13 @@ class RCV extends CI_Controller {
 		$ca_rowid = $this->input->post('inrowid');
 		$ca_notice = $this->input->post('innotice');
 		$ca_category = $this->input->post('incat');
+		$supcd = $this->input->post('insupcd');
+		$supno = $this->input->post('insupno');
 		$ttldata = count($ca_item);
 		$ttldata_saved = 0;
 		$myar = [];
 		$aromawi = ['I','II','III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI' , 'XII'];
-		// if($cdocinternal==''){
+		
 		if($this->RETFG_mod->check_Primary(['RETFG_DOCNO' => $cdoc])==0){
 			$adate = explode("-", $cdocinternal_date);
 			$mmonth = intval($adate[1]);
@@ -1375,24 +1377,33 @@ class RCV extends CI_Controller {
 					,'RETFG_PLANT' => $cplant
 					,'RETFG_STRDOC' => $ctxid
 					,'RETFG_CONSIGN' => $cconsign
-				];
-				// if($this->RETFG_mod->check_Primary($datac) == 0 ){
-					$datac['RETFG_USRID'] = $this->session->userdata('nama');
-					$datac['RETFG_LUPDT'] = $current_datetime;
-					$datac['RETFG_STRDT'] = $cdocinternal_date;
-					$datac['RETFG_NTCNO'] = $ca_notice[$i];
-					$datac['RETFG_CAT'] = $ca_category[$i];
-					$mlastid = $this->RETFG_mod->lastserialid($cdoc);
-					$mlastid++;
-					$datac['RETFG_LINE'] = $mlastid;
-					$ttldata_saved += $this->RETFG_mod->insert($datac);
-				// }
+				];				
+				$datac['RETFG_USRID'] = $this->session->userdata('nama');
+				$datac['RETFG_LUPDT'] = $current_datetime;
+				$datac['RETFG_STRDT'] = $cdocinternal_date;
+				$datac['RETFG_NTCNO'] = $ca_notice[$i];
+				$datac['RETFG_CAT'] = $ca_category[$i];
+				$datac['RETFG_SUPNO'] = $supno;
+				$datac['RETFG_SUPCD'] = $supcd;
+				$mlastid = $this->RETFG_mod->lastserialid($cdoc);
+				$mlastid++;
+				$datac['RETFG_LINE'] = $mlastid;
+				$ttldata_saved += $this->RETFG_mod->insert($datac);
 			}
 			$myar[] = ['cd' => 1, 'msg' => 'Saved'];
 			die('{"status": '.json_encode($myar).'}');
 		} else {
 			for($i=0; $i< $ttldata; $i++){
-				$ret = $this->RETFG_mod->update_where(['RETFG_RMRK' => $ca_remark[$i] , 'RETFG_NTCNO' => $ca_notice[$i]], ['RETFG_DOCNO' => $cdoc, 'RETFG_LINE' => $ca_rowid[$i] ]);
+				$ret = $this->RETFG_mod->update_where(
+				[
+					'RETFG_RMRK' => $ca_remark[$i] 
+					, 'RETFG_NTCNO' => $ca_notice[$i]
+					, 'RETFG_SUPNO' => $supno
+					, 'RETFG_SUPCD' => $supcd
+				]
+				, ['RETFG_DOCNO' => $cdoc
+					, 'RETFG_LINE' => $ca_rowid[$i] 
+				]);
 				if($ret==0){
 					$datac = ['RETFG_DOCNO' => $cdoc
 						,'RETFG_ITMCD' => $ca_item[$i]
@@ -1402,18 +1413,16 @@ class RCV extends CI_Controller {
 						,'RETFG_PLANT' => $cplant
 						,'RETFG_STRDOC' => $cdocinternal
 						,'RETFG_CONSIGN' => $cconsign
-					];
-					// if($this->RETFG_mod->check_Primary($datac) == 0 ){
-						$datac['RETFG_USRID'] = $this->session->userdata('nama');
-						$datac['RETFG_LUPDT'] = $current_datetime;
-						$datac['RETFG_STRDT'] = $cdocinternal_date;
-						$datac['RETFG_NTCNO'] = $ca_notice[$i];
-						$datac['RETFG_CAT'] = $ca_category[$i];
-						$mlastid = $this->RETFG_mod->lastserialid($cdoc);
-						$mlastid++;
-						$datac['RETFG_LINE'] = $mlastid;
-						$ttldata_saved += $this->RETFG_mod->insert($datac);
-					// }
+					];					
+					$datac['RETFG_USRID'] = $this->session->userdata('nama');
+					$datac['RETFG_LUPDT'] = $current_datetime;
+					$datac['RETFG_STRDT'] = $cdocinternal_date;
+					$datac['RETFG_NTCNO'] = $ca_notice[$i];
+					$datac['RETFG_CAT'] = $ca_category[$i];
+					$mlastid = $this->RETFG_mod->lastserialid($cdoc);
+					$mlastid++;
+					$datac['RETFG_LINE'] = $mlastid;
+					$ttldata_saved += $this->RETFG_mod->insert($datac);
 				}
 			}
 			$myar[] = ['cd' => 1, 'msg' => 'Updated'];
@@ -1424,11 +1433,12 @@ class RCV extends CI_Controller {
 	public function get_rtn_fg(){
 		header('Content-Type: application/json');
 		$cdo = $this->input->get('indo');
-		$COLUMNS = ['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RETFG_QTY', 'RETFG_RMRK', 
-		'RETFG_CUSCD', 'RETFG_PLANT', 'RETFG_LINE', 'RETFG_STRDOC' , 'RETFG_STRDT', 
-		"ISNULL(RETFG_CONSIGN,'-') RETFG_CONSIGN", "RETFG_NTCNO", "RETFG_CAT"];
+		$COLUMNS = ["RTRIM(MITM_ITMCD) MITM_ITMCD", "RTRIM(MITM_ITMD1) MITM_ITMD1", 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RETFG_QTY', 'RETFG_RMRK'
+		,"RETFG_CUSCD", 'RETFG_PLANT', 'RETFG_LINE', 'RETFG_STRDOC' , 'RETFG_STRDT'
+		,"ISNULL(RETFG_CONSIGN,'-') RETFG_CONSIGN", "RETFG_NTCNO", "RETFG_CAT" , "RETFG_SUPNO", "RETFG_SUPCD"
+		,"RTRIM(MCUS_CUSNM) MCUS_CUSNM"];
 		$rs = $this->RETFG_mod->select_cols_where($COLUMNS, ['RETFG_DOCNO' => $cdo]);
-		die('{"data":'.json_encode($rs).'}');
+		die(json_encode(['data' => $rs]));		
 	}
 	public function get_h_serah_terima_doc(){
 		header('Content-Type: application/json');	

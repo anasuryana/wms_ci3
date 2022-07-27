@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm mb-1">
-                    <span class="input-group-text" >No</span>
+                    <span class="input-group-text" >Notice</span>
                     <input type="text" class="form-control" id="retfg_inc_txt_noserahterima" required readonly placeholder="Autonumber">  
                     <select id="retfg_inc_cmb_consignee" class="form-select">
                         <option value="-">-</option>
@@ -42,7 +42,7 @@
                     <span class="input-group-text" >Customer</span>                 
                     <select id="retfg_inc_cmb_customer" class="form-select" onchange="retfg_inc_cmb_customer_e_change()">
                         <option value="-">-</option>
-                    </select>                   
+                    </select>
                 </div>                
             </div>
             <div class="col-md-4 mb-1">               
@@ -52,8 +52,24 @@
                         <option value="-">-</option>
                     </select>                   
                 </div>
-            </div>            
-        </div>        
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <span class="input-group-text" >Return From</span>
+                    <input type="text" class="form-control" id="retfg_inc_txt_supnm" required readonly>
+                    <button class="btn btn-primary" onclick="retfg_e_finsup()"><i class="fas fa-search"></i></button>
+                    <input type="hidden" id="retfg_inc_txt_supcd">
+                </div>
+            </div>
+            <div class="col-md-6 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <span class="input-group-text" >DO. Number</span>
+                    <input type="text" class="form-control" id="retfg_inc_txt_supno" required>                    
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12 mb-1">
                 <div class="card">
@@ -205,15 +221,15 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>        
         <!-- Modal body -->
-        <div class="modal-body">              
+        <div class="modal-body">
             <div class="row">
                 <div class="col-md-12 mb-1">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <label class="input-group-text">Search</label>                        
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Search</label>
                         <input type="text" class="form-control" id="retfg_txt_search_serahterima" title="press enter to start searching" onkeypress="retfg_e_mod_searching_serahterima_doc(event)">
                     </div>
                 </div>
-            </div>                                
+            </div>
             <div class="row">
                 <div class="col text-end mb-1">
                     <span class="badge bg-info" id="lblinfo_retfg_tbldono"></span>
@@ -225,7 +241,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Serah Terima Doc.</th>
-                                <th>Plant</th>                                
+                                <th>Plant</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -263,6 +279,36 @@
         <div class="modal-footer">            
             <button type="button" class="btn btn-primary" id="retfg_inc_btn_confirmcategory" onclick="retfg_inc_btn_confirmcategory_e_click()">Confirm</button>
         </div>
+      </div>
+    </div>
+</div>
+<div class="modal fade" id="retfg_MOD_supplier">
+    <div class="modal-dialog">
+      <div class="modal-content">      
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">From List</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <div class="col" id="retfg_tblsuplier_div">
+                        <table id="retfg_tblsuplier" class="table table-hover table-sm table-bordered" style="width:100%;cursor:pointer;font-size:75%">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>        
       </div>
     </div>
 </div>
@@ -452,6 +498,8 @@
         let cuscd = $("#retfg_inc_cmb_customer").val();
         let plant = $("#retfg_inc_cmb_loc").val();
         let consign = document.getElementById('retfg_inc_cmb_consignee').value;
+        let supcd = document.getElementById('retfg_inc_txt_supcd').value;
+        let supno = document.getElementById('retfg_inc_txt_supno').value;
         let mtbl = document.getElementById('retfg_inc_tbl');    
         let tableku2 = mtbl.getElementsByTagName("tbody")[0];
         let mtbltr = tableku2.getElementsByTagName('tr');
@@ -485,10 +533,11 @@
                 url: "<?=base_url('RCV/set_rtn_fg')?>",
                 data: {indoc: docno, incuscd: cuscd, initem: aitem, inqty: aqty, inremark: aremark, inplant: plant
                 ,indocinternal : internal_docno, indocinternaldate: internal_docno_date, inrowid: arowid
-                ,inconsign: consign, innotice: anoticeno, incat: acategory},
+                ,inconsign: consign, innotice: anoticeno, incat: acategory
+                ,insupcd: supcd, insupno:supno},
                 dataType: "json",
                 success: function (response) {
-                    if(response.status[0].cd=='1'){
+                    if(response.status[0].cd=='1') {
                         alertify.success(response.status[0].msg);
                         retfg_e_get_rtn_fg();
                     } else {
@@ -578,8 +627,11 @@
                 let tmpnomor = '';
                 let mnomor =0;
                 if(ttlrows > 0) {
-                    document.getElementById('retfg_inc_txt_noserahterima').value = response.data[0].RETFG_STRDOC;
-                    document.getElementById('retfg_inc_txt_tgl_serahterima').value = response.data[0].RETFG_STRDT;                                        
+                    document.getElementById('retfg_inc_txt_noserahterima').value = response.data[0].RETFG_STRDOC
+                    document.getElementById('retfg_inc_txt_tgl_serahterima').value = response.data[0].RETFG_STRDT
+                    document.getElementById('retfg_inc_txt_supcd').value = response.data[0].RETFG_SUPCD
+                    document.getElementById('retfg_inc_txt_supno').value = response.data[0].RETFG_SUPNO
+                    document.getElementById('retfg_inc_txt_supnm').value = response.data[0].MCUS_CUSNM
                     $('#retfg_inc_cmb_customer').val(response.data[0].RETFG_CUSCD);
                     retfg_inc_e_getlocation(response.data[0].RETFG_CUSCD);
                     document.getElementById('retfg_inc_g_id').value = response.data[0].RETFG_PLANT;
@@ -1008,7 +1060,31 @@
                     str+= '<option value="'+response[i].id+'">'+response[i].text+'</option>';
                 }
                 document.getElementById('retfg_inc_cmb_customer').innerHTML = str;                
-                 
+                
+                let mydes = document.getElementById("retfg_tblsuplier_div");
+                let myfrag = document.createDocumentFragment();
+                let mtabel = document.getElementById("retfg_tblsuplier")
+                let cln = mtabel.cloneNode(true)
+                myfrag.appendChild(cln)
+                let tabell = myfrag.getElementById("retfg_tblsuplier")
+                let tableku2 = tabell.getElementsByTagName("tbody")[0]
+                let newrow, newcell, newText;
+                tableku2.innerHTML=''
+                for (let i = 0; i<ttlrows; i++){
+                    newrow = tableku2.insertRow(-1)
+                    newrow.style.cssText = 'cursor:pointer'
+                    newrow.onclick = () => {
+                        document.getElementById('retfg_inc_txt_supcd').value = response[i].id
+                        document.getElementById('retfg_inc_txt_supnm').value = response[i].text
+                        $("#retfg_MOD_supplier").modal('hide')
+                    }
+                    newcell = newrow.insertCell(0)                    
+                    newcell.innerHTML = response[i].id
+                    newcell = newrow.insertCell(1)
+                    newcell.innerHTML = response[i].text
+                }
+                mydes.innerHTML=''
+                mydes.appendChild(myfrag)
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
             }
@@ -1028,6 +1104,10 @@
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
             }
-        });
+        })
+    }
+
+    function retfg_e_finsup() {
+        $("#retfg_MOD_supplier").modal('show')
     }
 </script>
