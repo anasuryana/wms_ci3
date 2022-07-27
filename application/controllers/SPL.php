@@ -2257,6 +2257,7 @@ class SPL extends CI_Controller {
 			$td_h=7;
 			$xWOcount = count($cwos);			
 			$firstPage = false;
+			$i=0;
 			foreach($rs as $r) {
 				#Print Outstanding QTY Only
 				if($r['TTLREQ']>0){
@@ -2869,7 +2870,7 @@ class SPL extends CI_Controller {
 			// 			$cury+=$td_h;$i++;
 			// 		}
 			// 	}
-				// #end current way
+			// 	#end current way
 			// }
 		} else {
 			if(count($this->SPL_mod->select_header_partreq_unapproved($cpsn))==0){
