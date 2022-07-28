@@ -13835,21 +13835,7 @@ class DELV extends CI_Controller {
 					$qtyuse = 0;
 					if($bal>$s['PLOTQTY']) {
 						$qtyuse = $s['PLOTQTY'];
-						$k['SISOQTY_X'] += $s['PLOTQTY'];
-						// $rsPriceItemSer[] = ['DLV_ID' => $doc
-						// 						,'SISOQTY' => $s['PLOTQTY']
-						// 						, 'SSO2_SLPRC' => $s['SSO2_SLPRC']
-						// 						, 'SSO2_MDLCD' => $s['ITMID']
-						// 						, 'CIF' => $s['PLOTQTY']*$s['SSO2_SLPRC']
-						// 						, 'NWG' => $k['NWG']
-						// 						, 'MITM_HSCD' => $k['MITM_HSCD']
-						// 						, 'MITM_STKUOM' => $k['MITM_STKUOM']												
-						// 						, 'SISOQTY_X' => 0 //$k['SISOQTY_X']
-						// 						, 'MITM_ITMD1' => $k['MITM_ITMD1']												
-						// 						, 'SISO_SOLINE' => $s['SISO_SOLINE']												
-						// 						, 'SI_BSGRP' => $k['SI_BSGRP']
-						// 						, 'SI_CUSCD' => $k['SI_CUSCD']												
-						// 					];
+						$k['SISOQTY_X'] += $s['PLOTQTY'];						
 						$s['PLOTQTY'] = 0;						
 					} else {
 						$qtyuse = $bal;
