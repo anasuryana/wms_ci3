@@ -57,9 +57,10 @@ class Inventory_mod extends CI_Model {
         $this->db->select("CPARTCODE,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOC,sum(CQTY) CQTY");
         $this->db->from($this->TABLENAMERM." a");        
         $this->db->join('MITM_TBL c', 'CPARTCODE=MITM_ITMCD','left');
+        $this->db->join('vinitlocation d', 'CLOC=MSTLOC_CD','left');
         $this->db->like('CPARTCODE', $pitem)->like('CLOTNO', $plot)
         ->like('CLOC', $prack[0], 'after')->like('CLOC', $prack[1], 'before');
-        $this->db->group_by("CPARTCODE,MITM_SPTNO,CLOC");
+        $this->db->group_by("CPARTCODE,MITM_SPTNO,CLOC,");
         $this->db->order_by('CPARTCODE,CLOC');
         $query = $this->db->get();
         return $query->result_array();
@@ -75,6 +76,30 @@ class Inventory_mod extends CI_Model {
         ->like('CLOC', $prack[0], 'after')->like('CLOC', $prack[1], 'before');
         $this->db->group_by("CPARTCODE,MITM_SPTNO,CLOC");
         $this->db->order_by('CPARTCODE,CLOC');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function select_unscanned() {
+        $this->db->select("ITMLOC_ITM,RTRIM(MITM_SPTNO) SPTNO,ITMLOC_LOC");
+        $this->db->from("ITMLOC_TBL");
+        $this->db->join('(SELECT cPartCode,cLoc FROM WMS_InvRM GROUP BY cPartCode,cLoc) V1', 'ITMLOC_ITM=cPartCode','left');
+        $this->db->join('MITM_TBL', 'ITMLOC_ITM=MITM_ITMCD','left');
+        $this->db->where_not_in("ITMLOC_LOCG", ['AFWH3']);
+        $this->db->where("cLoc IS NULL",NULL, FALSE);
+        $this->db->order_by("ITMLOC_ITM");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+    public function select_unscanned_where($pwhere) {
+        $this->db->select("ITMLOC_ITM,RTRIM(MITM_SPTNO) SPTNO,ITMLOC_LOC");
+        $this->db->from("ITMLOC_TBL");
+        $this->db->join('(SELECT cPartCode,cLoc FROM WMS_InvRM GROUP BY cPartCode,cLoc) V1', 'ITMLOC_ITM=cPartCode','left');
+        $this->db->join('MITM_TBL', 'ITMLOC_ITM=MITM_ITMCD','left');
+        $this->db->where_not_in("ITMLOC_LOCG", ['AFWH3']);
+        $this->db->where("cLoc IS NULL",NULL, FALSE);
+        $this->db->where($pwhere);
+        $this->db->order_by("ITMLOC_ITM");
         $query = $this->db->get();
         return $query->result_array();
     }

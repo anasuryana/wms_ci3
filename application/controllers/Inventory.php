@@ -89,9 +89,9 @@ class Inventory extends CI_Controller {
         $cbisgrup = $this->input->get('inbg');
         $rs = [];
         $rs2 = [];
+        $rsUnscanned = $this->Inventory_mod->select_unscanned();
         if (strpos($crack, '**') !== false){
-            $arack = explode("**", $crack);
-            // $rs = $this->Inventory_mod->selectAll_rm_rack_like($citem, $clotno, $arack); 
+            $arack = explode("**", $crack);            
             if($cbisgrup=='-'){
                 $rs = $this->Inventory_mod->selectAll_rm_rack_like($citem, $clotno, $arack);
                 $rs2 = $this->Inventory_mod->selectAll_rm_rack_like_group($citem, $clotno, $arack);           
@@ -100,8 +100,7 @@ class Inventory extends CI_Controller {
                 $rs2 = $this->Inventory_mod->selectAll_rm_rack_like_group_with_bisgrup($citem, $clotno, $arack,$cbisgrup);
             }
         } else {
-            $clike = ['CPARTCODE' => $citem, 'CLOTNO' => $clotno, 'CLOC' => $crack];
-            // $rs = $this->Inventory_mod->selectAll_rm_like($clike);
+            $clike = ['CPARTCODE' => $citem, 'CLOTNO' => $clotno, 'CLOC' => $crack];            
             if($cbisgrup=='-' ){
                 $rs = $this->Inventory_mod->selectAll_rm_like($clike);
                 $rs2 = $this->Inventory_mod->selectAll_rm_group($clike);
@@ -110,8 +109,7 @@ class Inventory extends CI_Controller {
                 $rs2 = $this->Inventory_mod->selectAll_rm_group_with_bisgrup($clike, $cbisgrup);
             }            
         }      
-        // return;
-        // $rs = $this->Inventory_mod->selectAll_rm();
+        
         $spreadsheet = new Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->setTitle('DETAIL');
@@ -136,6 +134,8 @@ class Inventory extends CI_Controller {
 			$no++;
         }
         $rang = "A1:H".$sheet->getHighestDataRow();
+        $rangText1 = "A1:C".$sheet->getHighestDataRow();
+        $rangText2 = "F1:H".$sheet->getHighestDataRow();
         $myConditi = new \PhpOffice\PhpSpreadsheet\Style\Conditional;
         $myConditi->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_EXPRESSION)
         ->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
@@ -152,6 +152,8 @@ class Inventory extends CI_Controller {
         $aconditions[] = $myConditi;
         $aconditions[] = $myConditi2;
         $sheet->getStyle($rang)->setConditionalStyles($aconditions);
+        $sheet->getStyle($rangText1)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle($rangText2)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
         $sheet->getStyle($rang)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
@@ -169,16 +171,46 @@ class Inventory extends CI_Controller {
 		$sheet->setCellValueByColumnAndRow(2,1, 'ITEM_NAME');
 		$sheet->setCellValueByColumnAndRow(3,1, 'QTY');				
 		$sheet->setCellValueByColumnAndRow(4,1, 'LOCATION');
-        $no=2;
+        $no=2;        
         foreach($rs2 as $r){
 			$sheet->setCellValueByColumnAndRow(1,$no, $r['CPARTCODE']);
 			$sheet->setCellValueByColumnAndRow(2,$no, $r['MITM_SPTNO']);
 			$sheet->setCellValueByColumnAndRow(3,$no, $r['CQTY']);
-			$sheet->setCellValueByColumnAndRow(4,$no, $r['CLOC']);
+			$sheet->setCellValueByColumnAndRow(4,$no, $r['CLOC']);            
 			$no++;
         }
         $rang = "A1:D".$sheet->getHighestDataRow();
+        $rangText1 = "A1:B".$sheet->getHighestDataRow();
+        $rangText2 = "D1:D".$sheet->getHighestDataRow();
         $sheet->getStyle($rang)->setConditionalStyles($aconditions);
+        $sheet->getStyle($rangText1)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle($rangText2)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle($rang)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('REMAIN');
+        
+        $sheet->setCellValueByColumnAndRow(1,1, 'ITEM_CODE');
+		$sheet->setCellValueByColumnAndRow(2,1, 'ITEM_NAME');
+		$sheet->setCellValueByColumnAndRow(3,1, 'QTY');				
+		$sheet->setCellValueByColumnAndRow(4,1, 'LOCATION');
+        $no=2;        
+        foreach($rsUnscanned as $r){
+			$sheet->setCellValueByColumnAndRow(1,$no, $r['ITMLOC_ITM']);
+			$sheet->setCellValueByColumnAndRow(2,$no, $r['SPTNO']);
+			$sheet->setCellValueByColumnAndRow(4,$no, $r['ITMLOC_LOC']);            
+			$no++;
+        }
+        $rang = "A1:D".$sheet->getHighestDataRow();
+        $rangText1 = "A1:B".$sheet->getHighestDataRow();
+        $rangText2 = "D1:D".$sheet->getHighestDataRow();
+        $sheet->getStyle($rang)->setConditionalStyles($aconditions);
+        $sheet->getStyle($rangText1)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle($rangText2)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
         $sheet->getStyle($rang)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
@@ -219,5 +251,11 @@ class Inventory extends CI_Controller {
         $this->Inventory_mod->delete_all_rm();
         $myar[] = ['cd' => 1, 'msg' => 'cleared'];
         die('{"status": '.json_encode($myar).'}');
+    }
+
+    public function testUnscanned(){
+        header('Content-Type: application/json');
+        $rs = $this->Inventory_mod->select_unscanned();
+        die(json_encode(['data' => $rs]));
     }
 }
