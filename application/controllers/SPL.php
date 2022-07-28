@@ -2264,7 +2264,7 @@ class SPL extends CI_Controller {
 			$i=0;
 			foreach($rs as $r) {
 				#Print Outstanding QTY Only
-				// if($r['TTLREQ']>0){					
+				if($r['TTLREQ']>0){					
 					$ccat = $r['SPL_CAT'];
 					$cline = $r['SPL_LINE'];
 					$cfedr = $r['SPL_FEDR'];
@@ -2553,7 +2553,7 @@ class SPL extends CI_Controller {
 					$pdf->Cell(13,$td_h,number_format($r['TTLREQB4']-$r['TTLREQ']),1,0,'R');
 					$pdf->Cell(13,$td_h,number_format($r['TTLREQ']),1,0,'R');
 					$cury+=$td_h;$i++;										
-				// }
+				}
 			}
 			
 			
