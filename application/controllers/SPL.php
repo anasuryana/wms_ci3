@@ -2199,8 +2199,12 @@ class SPL extends CI_Controller {
 			}
 			unset($d);
 			
+			$firstCategory = '';
 
 			foreach($rs as &$r){
+				if($firstCategory==='') {
+					$firstCategory=$r['SPL_CAT'];
+				}
 				$think = true;
 				while($think){
 					$grasp = false;
@@ -2260,7 +2264,7 @@ class SPL extends CI_Controller {
 			$i=0;
 			foreach($rs as $r) {
 				#Print Outstanding QTY Only
-				if($r['TTLREQ']>0){
+				// if($r['TTLREQ']>0){					
 					$ccat = $r['SPL_CAT'];
 					$cline = $r['SPL_LINE'];
 					$cfedr = $r['SPL_FEDR'];
@@ -2275,6 +2279,11 @@ class SPL extends CI_Controller {
 								$firstPage=true;
 							} else {
 								$cury += 4;
+							}
+							if($firstCategory!=$ccat){
+								$firstCategory=$ccat;
+								$cury = 4;
+								$pdf->AddPage();
 							}
 						}
 						$strheader=$r['SPL_CAT']."|".$r['SPL_LINE']."|".$r['SPL_FEDR'];
@@ -2544,7 +2553,7 @@ class SPL extends CI_Controller {
 					$pdf->Cell(13,$td_h,number_format($r['TTLREQB4']-$r['TTLREQ']),1,0,'R');
 					$pdf->Cell(13,$td_h,number_format($r['TTLREQ']),1,0,'R');
 					$cury+=$td_h;$i++;										
-				}
+				// }
 			}
 			
 			
