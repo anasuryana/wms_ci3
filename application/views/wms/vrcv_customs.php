@@ -3197,9 +3197,9 @@
         var mdo     = $("#rcvcustoms_fg_docnoorigin").val();
         var mnoaju  = $("#rcvcustoms_fg_noaju").val();
         var mregno  = $("#rcvcustoms_fg_regno").val();
-        var m_nw    = numeral($("#rcvcustoms_fg_NW").val()).value();
-        var m_gw    = numeral($("#rcvcustoms_fg_GW").val()).value();
-        var m_amt   = numeral($("#rcvcustoms_fg_amount").val()).value();
+        let m_nw    = numeral($("#rcvcustoms_fg_NW").val()).value();
+        let m_gw    = numeral($("#rcvcustoms_fg_GW").val()).value();
+        let m_amt   = numeral($("#rcvcustoms_fg_amount").val()).value();
         let mkppbc   = $("#rcvcustoms_fg_kppbc").val();
         let zstsrcv = document.getElementById('rcvcustoms_fg_zsts').value;
         const cona = document.getElementById('rcvcustoms_fg_contractnum').value
@@ -3220,7 +3220,7 @@
         let ar_ppn = [];
         let ar_pph = [];
         
-        let tables      = $("#rcvcustoms_fg_tbl tbody");
+        let tables = $("#rcvcustoms_fg_tbl tbody")
         tables.find('tr').each(function (i) {
             let $tds = $(this).find('td'),
                 rnourut =  $tds.eq(1).text(),

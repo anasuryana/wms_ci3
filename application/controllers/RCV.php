@@ -907,6 +907,12 @@ class RCV extends CI_Controller {
 		foreach($rsPGRN as $r) {
 			$MEGAUser = $r->PGRN_USRID;
 		}
+		if( empty($MEGAUser) ) {
+			$rsPGRN = $this->RETFG_mod->selec_where_group(['RTRIM(RETFG_USRID) PGRN_USRID'], 'RETFG_USRID', ['RETFG_SUPNO' => $cdo]);
+			foreach($rsPGRN as $r) {
+				$MEGAUser = $r->PGRN_USRID;
+			}
+		}
 
 		$myctr_edited = 0;
 		$myctr_saved = 0;		
