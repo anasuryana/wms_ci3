@@ -2540,7 +2540,7 @@ class SPL extends CI_Controller {
 						$pdf->Text($wd2col -79, $cury+1.5,$r['SPL_PROCD']);
 						$pdf->SetFont('Arial','',8);
 					}
-					$pdf->Cell(25,$td_h,trim($r['SPL_ITMCD'])."[".$i."]"."[".$firstCategory."]",1,0,'L');
+					$pdf->Cell(25,$td_h,trim($r['SPL_ITMCD']),1,0,'L');
 					$ttlwidth = $pdf->GetStringWidth(trim($r['MITM_SPTNO']));
 					if($ttlwidth > 28){
 						$ukuranfont = 7.5;
