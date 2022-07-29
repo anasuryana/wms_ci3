@@ -3225,6 +3225,7 @@ class ITH extends CI_Controller {
 					
 					$rswip[$theIndex-1]['STOCK']+=($sampleRow['LOGRTN']+$r['PARTQTY']);
 					$sampleRow['ITMD1'] = '';
+					$sampleRow['MITM_SPTNO'] = '';
 					$sampleRow['ARWH'] = 0;
 					$sampleRow['NRWH2'] = 0;
 					$sampleRow['ARWH0PD'] = 0;
@@ -3270,6 +3271,7 @@ class ITH extends CI_Controller {
             unset($w);
             if($theIndex!=0) {
                 $sampleRow['ITMD1'] = '';
+                $sampleRow['MITM_SPTNO'] = '';
                 $sampleRow['ARWH'] = 0;
                 $sampleRow['NRWH2'] = 0;
                 $sampleRow['ARWH0PD'] = 0;
@@ -3292,7 +3294,7 @@ class ITH extends CI_Controller {
 			$sheet = $spreadsheet->createSheet();
 			$sheet->setTitle('RM_RESUME');
 			$sheet->setCellValueByColumnAndRow(1,2, 'Part Code'); $sheet->mergeCells('A2:A4'); #rowspan3
-			$sheet->setCellValueByColumnAndRow(2,2, 'Description'); $sheet->mergeCells('B2:B4'); #rowspan3
+			$sheet->setCellValueByColumnAndRow(2,2, 'Part Name'); $sheet->mergeCells('B2:B4'); #rowspan3
 			$sheet->setCellValueByColumnAndRow(3,2, 'Location'); $sheet->mergeCells('C2:M2'); #colspan11
 			$sheet->setCellValueByColumnAndRow(3,3, 'RM Warehouse'); $sheet->mergeCells('C3:D3'); #colspan2
 			$sheet->setCellValueByColumnAndRow(5,3, 'ARWH0PD'); $sheet->mergeCells('E3:E4'); #rowspan2
@@ -3316,7 +3318,7 @@ class ITH extends CI_Controller {
 					$sheet->getComment('J'.$y)->getText()->createTextRun($r['COMMENTS']);
 				}
 				$sheet->setCellValueByColumnAndRow(1,$y, $r['ITRN_ITMCD']);
-				$sheet->setCellValueByColumnAndRow(2,$y, $r['ITMD1']);
+				$sheet->setCellValueByColumnAndRow(2,$y, $r['MITM_SPTNO']);
 				$sheet->setCellValueByColumnAndRow(3,$y, $r['ARWH']);
 				$sheet->setCellValueByColumnAndRow(4,$y, $r['NRWH2']);
 				$sheet->setCellValueByColumnAndRow(5,$y, $r['ARWH0PD']);
