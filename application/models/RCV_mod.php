@@ -305,7 +305,7 @@ class RCV_mod extends CI_Model {
                     ,ISNULL(RCV_PPN, 0) RCV_PPN
                     ,ISNULL(RCV_PPH, 0) RCV_PPH
                     ,MBSG_BSGRP
-                    ,RETFG_SUPCD,isnull(MSUP_SUPNM,'') MSUP_SUPNM
+                    ,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM
                     ,ISNULL(RCV_CONA,'') RCV_CONA
                     ,SUPNO
                 FROM XVU_RTN
@@ -327,6 +327,9 @@ class RCV_mod extends CI_Model {
                 LEFT JOIN (
                     SELECT rtrim(MCUS_CUSCD) MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM FROM XMCUS GROUP BY MCUS_CUSCD
                 ) VSUP ON isnull(RETFG_SUPCD,'')=MSUP_SUPCD
+                LEFT JOIN (
+                    SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM FROM MSUP_TBL GROUP BY MSUP_SUPCD
+                ) VSUP2 ON isnull(RETFG_SUPCD,'')=SUPCD 
                 WHERE STKTRND1_DOCNO LIKE ? ORDER BY ISUDT DESC";
         $query = $this->db->query($qry, ['%'.$pdo.'%']);
 		return $query->result_array();
@@ -349,7 +352,7 @@ class RCV_mod extends CI_Model {
     }
     public function MGSelectDOSup_return_fg($pdo, $psup){
         $qry = "SELECT V1.*,COALESCE(TTLITEMIN,0) TTLITEMIN,ISNULL(RCV_HSCD,'') RCV_HSCD
-        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,'') MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO FROM
+        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO FROM
         (select STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,COUNT(*) TTLITEM,ISUDT from XVU_RTN where MBSG_BSGRP=?
         GROUP BY STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,ISUDT) V1
         left join
@@ -363,6 +366,9 @@ class RCV_mod extends CI_Model {
 		LEFT JOIN (
             SELECT rtrim(MCUS_CUSCD) MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM FROM XMCUS GROUP BY MCUS_CUSCD
         ) VSUP ON isnull(RETFG_SUPCD,'')=MSUP_SUPCD
+        LEFT JOIN (
+            SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM FROM MSUP_TBL GROUP BY MSUP_SUPCD
+        ) VSUP2 ON isnull(RETFG_SUPCD,'')=SUPCD
         where STKTRND1_DOCNO LIKE ?";
         $query = $this->db->query($qry, [$psup,'%'.$pdo.'%']);
 		return $query->result_array();
@@ -419,7 +425,7 @@ class RCV_mod extends CI_Model {
 
     public function MGSelectDO_date_return_fg($pdo , $pdate1 , $pdate2){
         $qry = "SELECT V1.*,COALESCE(TTLITEMIN,0) TTLITEMIN,ISNULL(RCV_HSCD,'') RCV_HSCD
-        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,'') MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO FROM
+        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO FROM
         (select STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,COUNT(*) TTLITEM, ISUDT from XVU_RTN
         GROUP BY STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,ISUDT) V1
         left join
@@ -432,6 +438,9 @@ class RCV_mod extends CI_Model {
 		LEFT JOIN (
             SELECT rtrim(MCUS_CUSCD) MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM FROM XMCUS GROUP BY MCUS_CUSCD
         ) VSUP ON isnull(RETFG_SUPCD,'')=MSUP_SUPCD
+        LEFT JOIN (
+            SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM FROM MSUP_TBL GROUP BY MSUP_SUPCD
+        ) VSUP2 ON isnull(RETFG_SUPCD,'')=SUPCD
         where STKTRND1_DOCNO LIKE ? and (CONVERT(DATE, ISUDT) BETWEEN ? AND ?) 
         ORDER BY ISUDT DESC";
         $query = $this->db->query($qry, ['%'.$pdo.'%', $pdate1, $pdate2]);
@@ -455,7 +464,7 @@ class RCV_mod extends CI_Model {
     }
     public function MGSelectDO_dateSup_return_fg($pdo , $pdate1 , $pdate2, $psup){
         $qry = "SELECT V1.*,COALESCE(TTLITEMIN,0) TTLITEMIN,ISNULL(RCV_HSCD,'') RCV_HSCD
-        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,'') MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO FROM
+        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO FROM
         (select STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,COUNT(*) TTLITEM,ISUDT from XVU_RTN where MBSG_BSGRP=?
         GROUP BY STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,ISUDT) V1
         LEFT join (
@@ -468,6 +477,9 @@ class RCV_mod extends CI_Model {
 		LEFT JOIN (
             SELECT MCUS_CUSCD MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM FROM XMCUS GROUP BY MCUS_CUSCD
         ) VSUP ON isnull(RETFG_SUPCD,'')=MSUP_SUPCD
+        LEFT JOIN (
+            SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM FROM MSUP_TBL GROUP BY MSUP_SUPCD
+        ) VSUP2 ON isnull(RETFG_SUPCD,'')=SUPCD
         where STKTRND1_DOCNO LIKE ? and (CONVERT(DATE, ISUDT) BETWEEN ? AND ?)";
         $query = $this->db->query($qry,[$psup,'%'.$pdo.'%', $pdate1, $pdate2]);
 		return $query->result_array();

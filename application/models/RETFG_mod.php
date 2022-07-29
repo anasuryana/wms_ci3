@@ -29,6 +29,7 @@ class RETFG_mod extends CI_Model {
         $this->db->join('MITM_TBL', 'RETFG_ITMCD=MITM_ITMCD', 'LEFT');
         $this->db->join('XVU_RTN', 'RETFG_DOCNO=STKTRND1_DOCNO', 'LEFT');
         $this->db->join('XMCUS', 'RETFG_SUPCD=MCUS_CUSCD', 'LEFT');
+        $this->db->join('MSUP_TBL', 'RETFG_SUPCD=MSUP_SUPCD', 'LEFT');
         $this->db->select($pcols);
         $this->db->WHERE($pwhere);        
 		$query = $this->db->get();
