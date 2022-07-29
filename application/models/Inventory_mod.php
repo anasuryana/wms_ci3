@@ -39,19 +39,34 @@ class Inventory_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
     }
-	public function selectAll_rm_group_with_bisgrup($pwhere,$pbisgrup)
+	public function selectAll_rm_group_with_bisgrup($plike,$pbisgrup)
 	{	        
         $this->db->select("CPARTCODE,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOC,sum(CQTY) CQTY");
         $this->db->from($this->TABLENAMERM." a");        
         $this->db->join('MITM_TBL c', 'CPARTCODE=MITM_ITMCD','left');
         $this->db->join('ITMLOC_TBL d', 'CLOC=ITMLOC_LOC AND CPARTCODE=ITMLOC_ITM','left');
         $this->db->where('ITMLOC_BG', $pbisgrup);
-        $this->db->like($pwhere);
+        $this->db->like($plike);
         $this->db->group_by("CPARTCODE,MITM_SPTNO,CLOC");
         $this->db->order_by('CPARTCODE,CLOC');
         $query = $this->db->get();
         return $query->result_array();
     }
+
+    public function selectAll_unscanned_like_with_bisgrup($plike, $pbisgrup) {
+        $this->db->select("ITMLOC_ITM,RTRIM(MITM_SPTNO) SPTNO,ITMLOC_LOC");
+        $this->db->from("ITMLOC_TBL");
+        $this->db->join('(SELECT cPartCode,cLoc FROM WMS_InvRM GROUP BY cPartCode,cLoc) V1', 'ITMLOC_ITM=cPartCode','left');
+        $this->db->join('MITM_TBL', 'ITMLOC_ITM=MITM_ITMCD','left');
+        $this->db->where_not_in("ITMLOC_LOCG", ['AFWH3']);
+        $this->db->where("cLoc IS NULL",NULL, FALSE);
+        $this->db->where('ITMLOC_BG', $pbisgrup);
+        $this->db->like($plike);
+        $this->db->order_by("ITMLOC_ITM");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
 	public function selectAll_rm_rack_like_group($pitem, $plot, $prack)
 	{	        
         $this->db->select("CPARTCODE,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOC,sum(CQTY) CQTY");
@@ -80,6 +95,20 @@ class Inventory_mod extends CI_Model {
         return $query->result_array();
     }
 
+    public function selectAll_unscanned_rack_like_with_bisgrup($prack, $pbisgrup) {
+        $this->db->select("ITMLOC_ITM,RTRIM(MITM_SPTNO) SPTNO,ITMLOC_LOC");
+        $this->db->from("ITMLOC_TBL");
+        $this->db->join('(SELECT cPartCode,cLoc FROM WMS_InvRM GROUP BY cPartCode,cLoc) V1', 'ITMLOC_ITM=cPartCode','left');
+        $this->db->join('MITM_TBL', 'ITMLOC_ITM=MITM_ITMCD','left');
+        $this->db->where_not_in("ITMLOC_LOCG", ['AFWH3']);
+        $this->db->where("cLoc IS NULL",NULL, FALSE);
+        $this->db->where('ITMLOC_BG', $pbisgrup);
+        $this->db->like('ITMLOC_LOC', $prack[0], 'after')->like('ITMLOC_LOC', $prack[1], 'before');
+        $this->db->order_by("ITMLOC_ITM");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function select_unscanned() {
         $this->db->select("ITMLOC_ITM,RTRIM(MITM_SPTNO) SPTNO,ITMLOC_LOC");
         $this->db->from("ITMLOC_TBL");
@@ -91,18 +120,7 @@ class Inventory_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
     }
-    public function select_unscanned_where($pwhere) {
-        $this->db->select("ITMLOC_ITM,RTRIM(MITM_SPTNO) SPTNO,ITMLOC_LOC");
-        $this->db->from("ITMLOC_TBL");
-        $this->db->join('(SELECT cPartCode,cLoc FROM WMS_InvRM GROUP BY cPartCode,cLoc) V1', 'ITMLOC_ITM=cPartCode','left');
-        $this->db->join('MITM_TBL', 'ITMLOC_ITM=MITM_ITMCD','left');
-        $this->db->where_not_in("ITMLOC_LOCG", ['AFWH3']);
-        $this->db->where("cLoc IS NULL",NULL, FALSE);
-        $this->db->where($pwhere);
-        $this->db->order_by("ITMLOC_ITM");
-        $query = $this->db->get();
-        return $query->result_array();
-    }
+    
     
 	public function selectAll_rm_like($plike)
 	{	        
@@ -154,6 +172,8 @@ class Inventory_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
     }
+
+    
     
     public function delete_rm($pwhere)
     {    

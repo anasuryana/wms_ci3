@@ -89,7 +89,7 @@ class Inventory extends CI_Controller {
         $cbisgrup = $this->input->get('inbg');
         $rs = [];
         $rs2 = [];
-        $rsUnscanned = $this->Inventory_mod->select_unscanned();
+        $rsUnscanned = [];
         if (strpos($crack, '**') !== false){
             $arack = explode("**", $crack);            
             if($cbisgrup=='-'){
@@ -98,15 +98,18 @@ class Inventory extends CI_Controller {
             } else {
                 $rs = $this->Inventory_mod->selectAll_rm_rack_like_with_bisgrup($citem, $clotno, $arack, $cbisgrup) ;           
                 $rs2 = $this->Inventory_mod->selectAll_rm_rack_like_group_with_bisgrup($citem, $clotno, $arack,$cbisgrup);
+                $rsUnscanned = $this->Inventory_mod->selectAll_unscanned_rack_like_with_bisgrup( $arack,$cbisgrup);
             }
         } else {
             $clike = ['CPARTCODE' => $citem, 'CLOTNO' => $clotno, 'CLOC' => $crack];            
+            $clike2 = ['ITMLOC_LOC' => $crack];            
             if($cbisgrup=='-' ){
                 $rs = $this->Inventory_mod->selectAll_rm_like($clike);
-                $rs2 = $this->Inventory_mod->selectAll_rm_group($clike);
+                $rs2 = $this->Inventory_mod->selectAll_rm_group($clike);                
             } else {
                 $rs = $this->Inventory_mod->selectAll_rm_like_with_bisgrup($clike, $cbisgrup);
                 $rs2 = $this->Inventory_mod->selectAll_rm_group_with_bisgrup($clike, $cbisgrup);
+                $rsUnscanned = $this->Inventory_mod->selectAll_unscanned_like_with_bisgrup($clike2, $cbisgrup);
             }            
         }      
         
