@@ -2272,6 +2272,15 @@ class RCV extends CI_Controller {
 				,'text' => trim($r['MCUS_CUSNM'])
 			];
 		}
+		if($cbg==='PSI1PPZIEP') {
+			$rs = $this->MSTSUP_mod->select_where_id_in(['M90002U', 'KKI056U','KIY001U','PEI208U']);
+			foreach($rs as $r) {
+				$rs_j[] = [
+					'id' => $r['SUPCD']
+					,'text' => $r['SUPNM']
+				];
+			}
+		}
 		exit(json_encode($rs_j));
 	}
 

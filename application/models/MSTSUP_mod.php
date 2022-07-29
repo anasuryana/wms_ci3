@@ -57,6 +57,13 @@ class MSTSUP_mod extends CI_Model {
 		return $query->result();
 	}
 
+	function select_where_id_in($arrayCD) {
+		$this->db->select("RTRIM(MSUP_SUPCD) SUPCD,RTRIM(MSUP_SUPNM) SUPNM,MSUP_SUPCR");
+		$this->db->where_in("MSUP_SUPCD", $arrayCD);
+		$query = $this->db->get($this->TABLENAME);
+		return $query->result_array();
+	}
+
 	public function sync(){
 		$qry = "
 		INSERT INTO MSUP_TBL (
