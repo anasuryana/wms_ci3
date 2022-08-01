@@ -3961,8 +3961,8 @@ class DELV extends CI_Controller {
 							$pdf->SetXY(138,$curY-3);
 							$pdf->Cell(17.5,4,number_format($perprice_,0) ,0,0,'R');
 							$pdf->SetXY(155,$curY-3);
-							$pdf->Cell(41.56,4,number_format($amount_,0),0,0,'R');
-							$ttlamount_ += number_format($amount_,0);
+							$pdf->Cell(41.56,4,number_format($amount_,0),0,0,'R');							
+							$ttlamount_ += str_replace(",","",number_format($amount_,0));
 						} else {
 							$pdf->SetXY(138,$curY-3);
 							$pdf->Cell(17.5,4,number_format($perprice_,5) ,0,0,'R');
