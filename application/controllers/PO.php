@@ -1540,6 +1540,22 @@ class PO extends CI_Controller {
 		$like = ['PO_NO' => $search];
 		$rs = $searchtype == '1' ? array_merge($this->PO_mod->select_balance_like($like), $this->PO_mod->select_balance_mega_like($like))
 			: $this->PO_mod->select_balance_nonitem_like($like);
+		$polist = [];
+		foreach($rs as $r) {
+			if(!in_array($r['PO_NO'],$polist)) {
+				$polist[] = $r['PO_NO'];
+			}
+		}
+		$rsdisc = $this->PO_mod->select_discount_where_PO_in($polist);
+		foreach($rs as &$r) {
+			foreach($rsdisc as $d) {
+				if($r['PO_NO']===$d['PODISC_PONO']) {
+					$r['SPECEIALDISC'] = $d['PODISC_DISC'];
+					$r['PO_PRICE']-=$d['PODISC_DISC'];
+				}
+			}
+		}
+		unset($r);
 		die(json_encode(['data' => $rs]));
 	}
 

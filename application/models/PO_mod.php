@@ -116,6 +116,13 @@ class PO_mod extends CI_Model {
 		return $query->result_array();
     }
 
+    public function select_discount_where_PO_in($pPO){
+        $this->db->from($this->TABLENAME_DISCOUNT);
+        $this->db->where_in("PODISC_PONO", $pPO);
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
     public function select_maxline($pdoc){
         $this->db->select("MAX(PO_LINE) LLINE");
         $this->db->from($this->TABLENAME);
@@ -131,12 +138,14 @@ class PO_mod extends CI_Model {
     }
 
     public function select_balance_like($plike){
-        $this->db->select($this->TABLENAME.".*, RTRIM(MITM_ITMD1) MITM_ITMD1,MITM_STKUOM,MSUP_SUPNM,MSUP_SUPCR,MSUP_ADDR1,MSUP_TELNO,MSUP_FAXNO,ISNULL(RCVQTY,0) RCVQTY");
+        $this->db->select($this->TABLENAME.".*, RTRIM(MITM_ITMD1) MITM_ITMD1,MITM_STKUOM,MSUP_SUPNM,MSUP_SUPCR,MSUP_ADDR1,MSUP_TELNO,MSUP_FAXNO,ISNULL(RCVQTY,0) RCVQTY, 0 SPECIALDISC");
         $this->db->from($this->TABLENAME);
         $this->db->join("MITM_TBL", "PO_ITMCD=MITM_ITMCD", "LEFT");
         $this->db->join("MSUP_TBL", "PO_SUPCD=MSUP_SUPCD", "LEFT");
-        $this->db->join("(SELECT RCV_PO,RCV_ITMCD,SUM(RCV_QTY) RCVQTY FROM RCV_TBL GROUP BY RCV_PO,RCV_ITMCD) VRCV", "PO_NO=RCV_PO AND PO_ITMCD=RCV_ITMCD", "LEFT");
-        $this->db->like($plike)->where("ISNULL(RCVQTY,0) < PO_QTY",null,false)->where("PO_ITMCD is not null", null,false);
+        $this->db->join("(SELECT RCV_PO,RCV_ITMCD,SUM(RCV_QTY) RCVQTY FROM RCV_TBL GROUP BY RCV_PO,RCV_ITMCD) VRCV", "PO_NO=RCV_PO AND PO_ITMCD=RCV_ITMCD", "LEFT");        
+        $this->db->like($plike);
+        // $this->db->where("ISNULL(RCVQTY,0) < PO_QTY",null,false);
+        $this->db->where("PO_ITMCD is not null", null,false);
         $this->db->order_by("PO_REQDT");
 		$query = $this->db->get();
 		return $query->result_array();
