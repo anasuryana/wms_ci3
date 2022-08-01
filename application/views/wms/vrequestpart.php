@@ -104,8 +104,9 @@
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">                        
                         <span class="input-group-text" >Search</span>  
-                        <select id="pareq_srchby" class="form-select">
+                        <select id="pareq_srchby" class="form-select" onchange="document.getElementById('pareq_txtsearch').focus()">
                             <option value="D1">Document No.</option>
+                            <option value="D2">Part Code</option>
                         </select>                      
                         <input type="text" class="form-control" id="pareq_txtsearch" onkeypress="pareq_txtsearch_e_keypress(event)" maxlength="25" required placeholder="...">
                     </div>

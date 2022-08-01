@@ -333,7 +333,9 @@ class SPL extends CI_Controller {
 		$rs = [];
 		switch($doctype){
 			case 'D1':
-				$rs = $this->SPL_mod->select_partreq_h_bydoc($doc);break;			
+				$rs = $this->SPL_mod->select_partreq_h_bydoc($doc);break;
+			case 'D2':
+				$rs = $this->SPL_mod->select_partreq_h_bypart($doc);break;
 		}
 		$rsret = [];
 		foreach($rs as &$r){
