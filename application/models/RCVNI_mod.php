@@ -72,4 +72,12 @@ class RCVNI_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+
+    function select_receiving_like($pLike, $pDateFrom, $pDateTo) {
+        $this->db->from("wms_v_receiving_list");
+        $this->db->like($pLike)->where("RCV_RCVDATE >=", $pDateFrom)->where("RCV_RCVDATE <=", $pDateTo);
+        $this->db->order_by("RCV_RCVDATE");
+		$query = $this->db->get();
+		return $query->result_array();
+    }
 }
