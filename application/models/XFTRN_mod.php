@@ -20,4 +20,18 @@ class XFTRN_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+    public function select_stock($pDate, $pLocation) {
+        $this->db->select('FTRN_ITMCD ITEMCD');
+        $this->db->from($this->TABLENAME)        
+        ->where("FTRN_LOCCD", $pLocation)
+        ->where("FTRN_ISUDT<=", $pDate)
+        ->order_by("FTRN_ISUDT");
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
+    public function check_Primary($data)
+    {        
+        return $this->db->get_where($this->TABLENAME,$data)->num_rows();		
+	}
 }

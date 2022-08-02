@@ -2619,7 +2619,13 @@ class ITH extends CI_Controller {
 	}
 
 	public function upload_to_itinventory() {
-
+		header('Content-Type: application/json');
+		$date = $this->input->post('date');
+		$location = $this->input->post('location');
+		$rs =  $this->ITH_mod->select_psi_stock_date_wbg($location, '', $date);
+		$myar = !empty($rs) ?  ['cd' => 1, 'msg' => 'done', 'reff' => $location] : 
+		['cd' => 0, 'msg' => 'not found', 'reff' => $location];
+		die(json_encode(['status' => $myar]));
 	}
 
 	public function tesics() {
