@@ -178,43 +178,7 @@
             strDisplay += item + ', '
         })
         document.getElementById('stinventory_cmb_bg').value = strDisplay.substr(0,strDisplay.length-2)
-    })    
-
-    function fungsi1() {
-        return new Promise((resolve) => {
-            console.log('sini satu')
-            resolve('satu')
-        })
-    }
-    function fungsi2() {
-        return new Promise((resolve) => {
-            console.log('sini dua')
-            resolve('dua')
-        })
-    }
-
-    function stinventoryAPI(data) {
-        console.log(data)
-        return $.ajax({
-                type: "POST",
-                url: "<?=base_url('ITH/testAdj_ParentBased')?>",
-                data: {date: data.date, location : data.item},
-                dataType: "JSON",
-                success: function (response) {                    
-                    for(let i=0;i<stinventory_a_BG.length; i++) {
-                        if(tableku2.rows[i].cells[0].innerText===response.status.reff) {
-                            tableku2.rows[i].cells[1].innerHTML = `<span class="badge bg-success">${response.status.msg}</span>`
-                            break;
-                        }
-                    }
-                    resolveku('ok')
-                }, error : function(xhr, xopt, xthrow){                    
-                    reject('belum ok')
-                }
-            })
-       
-    }    
-    
+    })
 
     function stinventory_e_upload(p)
     {
