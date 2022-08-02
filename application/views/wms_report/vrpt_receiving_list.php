@@ -47,7 +47,7 @@
                             Export to
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                            <li><a class="dropdown-item" href="#" id="rrcvlist_btn_xls"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> XLS</a></li>                            
+                            <li><a class="dropdown-item" href="#" id="rrcvlist_btn_xls" onclick="rrcvlist_btn_xls_eClick(this)"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> XLS</a></li>                            
                         </ul>
                     </div>                   
                 </div>
@@ -176,6 +176,43 @@
                 alertify.error(xthrow)
                 p.disabled = false
             }
+        })
+    }
+
+    function rrcvlist_btn_xls_eClick(p) {
+        const infoDiv = document.getElementById('rrcvlist_lblinfo')
+        infoDiv.innerHTML = 'Please wait . . .'
+        p.classList.add('disabled')
+        const searchby = document.getElementById('rrcvlist_seachby').value
+        const search = document.getElementById('rrcvlist_txt_search').value
+        const date0 = document.getElementById('rrcvlist_txt_dt').value
+        const date1 = document.getElementById('rrcvlist_txt_dt2').value
+        $.ajax({            
+            url: "<?=base_url('RCVHistory/receivingAsXLS')?>",
+            data: {searchby: searchby, search:search, date0: date0, date1:date1 },
+            success: function (response) {
+                const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                const fileName =  `Receiving List Report ${date0} - ${date1}.xlsx`
+                saveAs(blob, fileName)
+                p.classList.remove('disabled')
+                alertify.success('Done')
+                infoDiv.innerHTML = ''
+            },
+            xhr: function () {
+                const xhr = new XMLHttpRequest()
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 2) {
+                        if (xhr.status == 200) {
+                            xhr.responseType = "blob";
+                        } else {
+                            p.classList.remove('disabled')
+                            infoDiv.innerHTML = ''
+                            xhr.responseType = "text";
+                        }
+                    }
+                }
+                return xhr
+            },
         })
     }
 </script>
