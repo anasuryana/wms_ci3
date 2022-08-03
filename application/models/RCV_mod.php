@@ -1156,4 +1156,13 @@ class RCV_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+
+    public function select_currency_byaju($strAju) {
+        $qry = "select RCV_RPNO,RTRIM(MSUP_SUPCR) MSUP_SUPCR from RCV_TBL
+            LEFT JOIN MSUP_TBL ON RCV_SUPCD=MSUP_SUPCD 
+            where RCV_RPNO in ($strAju)
+            group by MSUP_SUPCR,RCV_RPNO";
+            $query = $this->db->query($qry);
+            return $query->result_array();
+    }
 }
