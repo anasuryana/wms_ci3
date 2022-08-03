@@ -96,16 +96,18 @@ class PO extends CI_Controller {
 		$pdf->SetTextColor(0,0,0);
 		$pdf->SetFont('Times','IB',9);
 		$pdf->SetXY(6,26-$_y);
-		$pdf->Cell(50,4,'EJIP Industrial Park Plot 5C - 2',0,0,'L');
+		$pdf->Cell(50,4,'JL. Cisokan 5 Plot 5C-2 EJIP Industrial Park',0,0,'L');
 		$pdf->SetXY(6,30-$_y);
-		$pdf->Cell(80,4,'Cikarang Selatan, Bekasi 17550 INDONESIA',0,0,'L');
-		$pdf->SetXY(6,34-$_y);
+		$pdf->Cell(80,4,'Sukaresmi Cikarang Selatan',0,0,'L');
+		$pdf->SetXY(6,30-$_y+4);
+		$pdf->Cell(80,4,'Kab. Bekasi Jawa Barat',0,0,'L');
+		$pdf->SetXY(6,34-$_y+4);
 		$pdf->Cell(80,4,'Tel.    : +62-21-8970-567 (Hunting), 468,469,470',0,0,'L');		
 		$pdf->SetFont('Times','IB',8);
-		$pdf->SetXY(6,38-$_y);
+		$pdf->SetXY(6,38-$_y+4);
 		$pdf->Cell(98,4,'Fax.    : +62-21-8970-577 (Purchasing Department / Accounting & Financial Dept)',0,0,'L');
 		$pdf->SetFont('Times','IB',9);
-		$pdf->SetXY(6,42-$_y);
+		$pdf->SetXY(6,42-$_y+4);
 		$pdf->Cell(80,4,'Fax.   : +62-21-8975-333 (Manufacturing Department)',0,0,'L');
 		#end company
 		$pdf->SetFont('Times','B',7);
