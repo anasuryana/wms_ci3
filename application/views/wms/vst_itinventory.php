@@ -200,6 +200,13 @@
                 newcell.classList.add('text-center')
                 newcell.innerHTML = 'Please wait'
                 newcell = newrow.insertCell(2)
+                newcell.onclick = (e) => {
+                    if(e.target.innerText!='done' && !e.target.innerText.includes('wait')) {
+                        if(confirm("Re-run process ?")) {
+
+                        }
+                    }
+                }
                 newcell.classList.add('text-center')
                 newcell.innerHTML = 'Please wait'
             })
