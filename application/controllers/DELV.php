@@ -15,6 +15,7 @@ class DELV extends CI_Controller {
 		$this->load->library('session');
 		$this->load->library('Code39e128');
 		$this->load->library('RMCalculator');
+		$this->load->library('TXBridge');
 		$this->load->model('Usergroup_mod');
 		$this->load->model('DELV_mod');
 		$this->load->model('DLVCK_mod');
@@ -2369,92 +2370,8 @@ class DELV extends CI_Controller {
 			}			
 		}
 		die(json_encode(['status' => $myar]));
-	}
-
-	public function set_rm_ith_handler($p){
-		$rsdlv = $this->DELV_mod->select_itemtotal($p['DOC']);
-		$rsith = $this->ITH_mod->select_itemtotal($p['DOC'], $p['WH']);
-		$rstosave = [];
-		if(count($rsith)){
-			foreach($rsdlv as $r){
-				$isfound = false;
-				foreach($rsith as $n){
-					if($r['DLV_ITMCD']==$n['ITH_ITMCD'] ) {
-						$isfound = true;
-						if($r['DLV_QTY']!=$n['ITH_QTY']) {							
-							//update in
-							$where = ['ITH_WH' => $p['WH']
-								, 'ITH_DOC' => $n['ITH_DOC']
-								, 'ITH_ITMCD' => $n['ITH_ITMCD']
-								];
-							$this->ITH_mod->updatebyId($where, ['ITH_QTY' => -1*$r['DLV_QTY']]);
-
-							//update out
-							$where = ['ITH_WH' => 'ARWH0PD'
-								, 'ITH_DOC' => $n['ITH_DOC']
-								, 'ITH_ITMCD' => $n['ITH_ITMCD']
-								];
-							$this->ITH_mod->updatebyId($where, ['ITH_QTY' => 1*$r['DLV_QTY']]);
-						}
-						break;
-					} 
-				}
-				if(!$isfound){
-					$rstosave[] = [
-						'ITH_ITMCD' => $r['DLV_ITMCD']
-						,'ITH_DATE' => $p['DATE']
-						,'ITH_FORM' => 'RPR-INC'
-						,'ITH_DOC' => $p['DOC']
-						,'ITH_QTY' => 1*$r['DLV_QTY']
-						,'ITH_WH' => 'ARWH0PD'
-						,'ITH_REMARK' => $p['REFFDOC']
-						,'ITH_LUPDT' => $p['LUPDT']
-						,'ITH_USRID' => $p['USRID']
-					];
-					$rstosave[] = [
-						'ITH_ITMCD' => $r['DLV_ITMCD']
-						,'ITH_DATE' => $p['DATE']
-						,'ITH_FORM' => 'RPR-OUT'
-						,'ITH_DOC' => $p['DOC']
-						,'ITH_QTY' => -1*$r['DLV_QTY']
-						,'ITH_WH' => $p['WH']
-						,'ITH_REMARK' => $p['REFFDOC']
-						,'ITH_LUPDT' => $p['LUPDT']
-						,'ITH_USRID' => $p['USRID']
-					];
-				}
-			}
-		} else {
-			foreach($rsdlv as $r){
-				$rstosave[] = [
-					'ITH_ITMCD' => $r['DLV_ITMCD']
-					,'ITH_DATE' => $p['DATE']
-					,'ITH_FORM' => 'RPR-INC'
-					,'ITH_DOC' => $p['DOC']
-					,'ITH_QTY' => 1*$r['DLV_QTY']
-					,'ITH_WH' => 'ARWH0PD'
-					,'ITH_REMARK' => $p['REFFDOC']
-					,'ITH_LUPDT' => $p['LUPDT']
-					,'ITH_USRID' => $p['USRID']
-				];
-				$rstosave[] = [
-					'ITH_ITMCD' => $r['DLV_ITMCD']
-					,'ITH_DATE' => $p['DATE']
-					,'ITH_FORM' => 'RPR-OUT'
-					,'ITH_DOC' => $p['DOC']
-					,'ITH_QTY' => -1*$r['DLV_QTY']
-					,'ITH_WH' => $p['WH']
-					,'ITH_REMARK' => $p['REFFDOC']
-					,'ITH_LUPDT' => $p['LUPDT']
-					,'ITH_USRID' => $p['USRID']
-				];
-			}
-		}
-		
-		if(count($rstosave)){
-			$this->ITH_mod->insertb($rstosave);
-		}
-	}
+	}	
+	
 	public function set_rm(){
 		header('Content-Type: application/json');
 		date_default_timezone_set('Asia/Jakarta');
@@ -2514,7 +2431,6 @@ class DELV extends CI_Controller {
 		if($pknum41!='') {
 			$cona = $pknum41;
 		}
-		// die(json_encode(['item' => $aItemNum,'qty' => $aItemQty, 'remark' => $aItemRemark] ));
 
 		$PKGCount = is_array($aPKG_Line) ? count($aPKG_Line) : 0;
 		$aRMDOCCount = is_array($armdoc_itmNOAJU) ? count($armdoc_itmNOAJU) : 0;
@@ -2530,16 +2446,8 @@ class DELV extends CI_Controller {
 			$myar[] = $datar;
 			die(json_encode($myar));
 		}
+		$this->txbridge->syncParentDocument(['DOC' => $megadoc]);
 
-		#validate input item
-		// for ($i=0; $i<$itemCount; $i++) {
-		// 	if($this->MSTITM_mod->check_Primary(['MITM_ITMCD' => $aItemNum[$i]])==0){
-		// 		$myar[] = ['cd' => '0', 'msg' => 'Item '.$aItemNum[$i].' is not registered'];
-		// 		die('{"status":'.json_encode($myar).'}');
-		// 	}
-		// }
-		// $rsitem_nm = $itemCount ? $this->MSTITM_mod->select_forcustoms($aItemNum) : [];
-		$rsitrn = $this->XITRN_mod->select_where(['CONVERT(DATE,ITRN_ISUDT) ITRN_ISUDT'], ['ITRN_DOCNO' => $megadoc]);
 		$rmbooked = $this->ZRPSTOCK_mod->check_Primary(['RPSTOCK_REMARK' => $doNum]);
 		if($this->DELV_mod->check_Primary(['DLV_ID' => $doNum])){
 			$ttlUpdated = 0;
@@ -2558,7 +2466,7 @@ class DELV extends CI_Controller {
 					$where = ['DLV_ID' => $doNum, 'DLV_LINE' => $aItemRowID[$i]];					
 					if(strlen($aItemRowID[$i])>=1 && $this->DELV_mod->check_Primary($where) ) {						
 						$ttlUpdated += $this->DELV_mod->updatebyVAR(
-							[						
+							[
 							'DLV_CUSTCD' => $customerCode,
 							'DLV_BSGRP' => $bisgrup,																		 
 							'DLV_TRANS' => $transportNum,
@@ -2611,7 +2519,7 @@ class DELV extends CI_Controller {
 					}
 				}
 				if(count($saveRows)){
-					$ttlSaved += $this->DELV_mod->insertb($saveRows);				
+					$ttlSaved += $this->DELV_mod->insertb($saveRows);
 				}
 			} else {
 				for ($i=0; $i<$itemCount; $i++) {
@@ -2632,23 +2540,7 @@ class DELV extends CI_Controller {
 					}
 				}
 			}						
-			#end
-
-			$xdate= $doDate;
-			$xdatetime= $doDate.' 08:00:00';
-			if($rsitrn){
-				foreach($rsitrn as $n){
-					$xdate = $n['ITRN_ISUDT'];
-					$xdatetime = $xdate.' 08:00:00';
-					break;
-				}
-			} 
-			$pdata = ['DOC' => $doNum, 'WH' => $inlocfrom
-			, 'DATE' => $xdate
-			, 'LUPDT' => $xdatetime
-			, 'USRID' => $this->session->userdata('nama')
-			, 'REFFDOC' => $megadoc
-			];			
+			#end			
 
 			#update header
 			$rshead = $this->DELV_mod->select_header_rm($doNum);
@@ -2832,25 +2724,8 @@ class DELV extends CI_Controller {
 					'DLV_CONA' => $cona,
 				];
 			}
-			if(count($saveRows)){
-				//var_dump($aItemNum);
-				// die(json_encode($saveRows));
-				$this->DELV_mod->insertb($saveRows);
-				$xdate= $doDate;
-				$xdatetime= $doDate.' 08:00:00';
-				if($rsitrn){
-					foreach($rsitrn as $n){
-						$xdate = $n['ITRN_ISUDT'];
-						$xdatetime = $doDate.' 08:00:00';
-						break;
-					}
-				} 
-				$pdata = ['DOC' => $ctxid, 'WH' => $inlocfrom
-				, 'DATE' => $xdate
-				, 'LUPDT' => $xdatetime
-				, 'USRID' => $this->session->userdata('nama')
-				, 'REFFDOC' => $megadoc
-				];				
+			if(count($saveRows)){				
+				$this->DELV_mod->insertb($saveRows);						
 			}
 			$saveRows = [];
 			for ($i=0; $i<$PKGCount; $i++) {
