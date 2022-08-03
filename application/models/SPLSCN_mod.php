@@ -104,7 +104,7 @@ class SPLSCN_mod extends CI_Model {
         ,RTRIM(SPLSCN_ORDERNO) SPLSCN_ORDERNO
         ,UPPER(RTRIM(SPLSCN_LINE)) SPLSCN_LINE
         ,RTRIM(SPLSCN_FEDR) SPLSCN_FEDR
-        ,RTRIM(SPLSCN_ITMCD) SPLSCN_ITMCD,SPLSCN_QTY");
+        ,RTRIM(UPPER(SPLSCN_ITMCD)) SPLSCN_ITMCD,SPLSCN_QTY");
         $this->db->from($this->TABLENAME);
         $this->db->where_in("SPLSCN_DOC", $ppsn);
         $this->db->order_by('SPLSCN_DOC,SPLSCN_LINE,SPLSCN_FEDR,SPLSCN_LUPDT ASC');
