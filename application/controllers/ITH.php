@@ -2303,23 +2303,7 @@ class ITH extends CI_Controller {
 			}
 		}
 		die('{"data": '.json_encode($rschild).',"rsrcv2":'.json_encode($rsrcv2).',"icsdata":'.json_encode($rsicsused).'}');
-	}
-
-	public function deepSearch() {
-		header('Content-Type: application/json');
-		$rs = $this->SERD_mod->select_dedicateList();
-		foreach($rs as &$r) {
-			$rssub = $this->MSPP_mod->select_sub($r['SERD2_ITMCD'], $r['SER_ITMID']);
-			foreach($rssub as $k) {
-				$rsinc = $this->RCV_mod->select_do_formigration("'".$k['MSPP_SUBPN']."'", '2021-04-30');
-				if(count($rsinc)) {
-					$r['REMARK'] = "try ".$k['MSPP_SUBPN'];break;
-				}
-			}
-		}
-		unset($r);
-		die('{"data":'.json_encode($rs).'}');
-	}
+	}	
 
 	function form_st_itinventory() 
 	{
