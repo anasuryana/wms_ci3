@@ -4923,8 +4923,7 @@ class SER extends CI_Controller {
 			$rsrelabel = $this->LOGSER_mod->select_new_label($cid);
 			$rsrelabel_fix = [];
 			if(count($rsrelabel)){
-				foreach($rsrelabel as $r){
-					// echo "sini";
+				foreach($rsrelabel as $r){					
 					$ar = explode("|",$r['LOGSER_KEYS']);
 					if (count($ar) >1) {
 						$serid_new =  substr($ar[5],2,strlen($ar[5]));
@@ -4960,6 +4959,43 @@ class SER extends CI_Controller {
 			.', "jm":'.json_encode($rsjm)
 			.', "combine":'.json_encode($rscombine)
 			.'}');
+	}
+
+	function calculateCombinedJob() {
+		header('Content-Type: application/json');
+		$pser = $this->input->post('inunique');
+		$pserqty = $this->input->post('inunique_qty');
+		$pjob = $this->input->post('inunique_job');		
+		
+		#check the calculation
+		$rscombine = $this->SER_mod->select_combine($pser);
+		$rsUncalculated = $rsCalculated = $rsSummary = [];		
+		foreach($rscombine as $r) {
+			if(!$r->SERD2_SER) {
+				$rsUncalculated[] = $r;
+			} else {
+				$rsCalculated[] = $r->SERD2_SER;
+			}
+		}
+		if(empty($rsUncalculated)) {
+			$strCalculated = is_array($rsCalculated) ? "'".implode("','", $rsCalculated)."'" : "''";
+			$rsSummary = $this->SERD_mod->select_calculation_perID($strCalculated, $pser, $pjob, $pserqty);
+			if($this->SERD_mod->check_Primary_label(['SERD2_SER' => $pser])) {
+				$myar = ['cd' => 1, 'msg' => 'already inserted', 'msgreff' => 'Available'];
+			} else {
+				$this->SERD_mod->insertb2($rsSummary);
+				$myar = ['cd' => 1, 'msg' => 'OK', 'msgreff' => 'Available'];
+			}
+		} else {
+			#calculate first
+			$Calc_lib = new RMCalculator();
+			$calculationResult = [];
+			foreach($rsUncalculated as $r) {
+				$calculationResult[] = $Calc_lib->calculate_raw_material_resume([$r->SERC_COMID], [$r->SERC_COMQTY], [$r->SERC_COMJOB]);
+			}
+			$myar = ['cd' => 0, 'msg' => 'try again please', 'calculationResult' => $calculationResult];
+		}
+		die(json_encode(['status' => $myar, 'rsSummary' => $rsSummary, 'rsUncalculated' => $rsUncalculated]));
 	}
 
 	public function getchilds(){

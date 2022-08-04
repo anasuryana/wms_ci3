@@ -421,6 +421,36 @@
                         newrow = tableku2.insertRow(-1);
                         newcell = newrow.insertCell(0)
                         newcell.innerHTML = response.combine[i].SERC_COMID
+                        if(response.combine[i].SERC_COMJOB) {
+                            if(response.combine[i].SERC_COMJOB.toUpperCase().includes('-C') && !response.combine[i].SERD2_SER) {
+                                newcell.style.cssText = 'cursor:pointer'
+                                newcell.title = `this Child ID need to be calculate`                                    
+                                newcell.onclick = (e) => {
+                                    if(confirm('Are you sure ?')) {
+                                        tableku2.rows[e.target.parentNode.rowIndex-1].cells[5].innerText = `Please wait`
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "<?=base_url('SER/calculateCombinedJob')?>",
+                                            data: {inunique: response.combine[i].SERC_COMID,
+                                                inunique_qty: response.combine[i].SERC_COMQTY*1,  
+                                                inunique_job: response.combine[i].SERC_COMJOB
+                                            },
+                                            dataType: "json",
+                                            success: function (response) {
+                                                alertify.message(response.status.msg)
+                                                if(response.status.cd===1) {
+                                                    e.target.title = ''
+                                                    tableku2.rows[e.target.parentNode.rowIndex-1].cells[5].innerText = response.status.msgreff
+                                                }
+                                            }, error : function(xhr, xopt, xthrow){
+                                                tableku2.rows[e.target.parentNode.rowIndex-1].cells[5].innerText = `Not available`
+                                                alertify.error(xthrow);
+                                            }
+                                        })
+                                    }
+                                }
+                            }
+                        }
                         newcell = newrow.insertCell(1)
                         newcell.innerHTML = response.combine[i].SERC_COMJOB
                         newcell = newrow.insertCell(2)
