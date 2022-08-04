@@ -8031,6 +8031,107 @@ class DELV extends CI_Controller {
 		die('{"status" : '.json_encode($myar).'}');
 	}	
 
+	function test_posting25IDR(){
+		#respon from API
+		$rstemp = '[{
+			"status": true,
+			"data": [
+				{
+					"BC_TYPE": "27",
+					"BC_NUM": "153986",
+					"BC_AJU": "05094000658320220412000405",
+					"BC_DATE": "2019-04-11",
+					"BC_QTY": "200",
+					"BC_DO": "SHP-COBA",
+					"BC_ITEM": "E11239-04",
+					"QTY_SISA": 6000,
+					"RCV_KPPBC": "050900",
+					"RCV_HSCD": "85414010",
+					"RCV_ZNOURUT": null,
+					"RCV_PRPRC": ".028980",
+					"RCV_BM": ".0",
+					"MITM_ITMD1": "Deskripsi",
+					"MITM_STKUOM": "PCS",
+					"OUT_BCDATE": "2021-10-15",
+					"LOT": null,
+					"STOCK": "16000",
+					"REQ_REMAIN": 0,
+					"STOCK_REMAIN": 6000,
+					"SAVED_QTY": "10000",
+					"IS_EXCEEDED": false
+				}
+			],
+			"message": "Ex-BC Found."
+		},
+		{
+			"status": true,
+			"data": [
+				{
+					"BC_TYPE": "27",
+					"BC_NUM": "153986",
+					"BC_AJU": "05092701007020190411001646",
+					"BC_DATE": "2019-04-11",
+					"BC_QTY": "12000",
+					"BC_DO": "SHP-COBA",
+					"BC_ITEM": "E11239-04",
+					"QTY_SISA": 6000,
+					"RCV_KPPBC": "050900",
+					"RCV_HSCD": "85414010",
+					"RCV_ZNOURUT": null,
+					"RCV_PRPRC": ".028980",
+					"RCV_BM": ".0",
+					"MITM_ITMD1": "Deskripsi",
+					"MITM_STKUOM": "PCS",
+					"OUT_BCDATE": "2021-10-15",
+					"LOT": null,
+					"STOCK": "16000",
+					"REQ_REMAIN": 0,
+					"STOCK_REMAIN": 6000,
+					"SAVED_QTY": "10000",
+					"IS_EXCEEDED": false
+				}
+			],
+			"message": "Ex-BC Found."
+		}]';
+		$rsbc = json_decode($rstemp);
+		$rsbcnew = json_decode($rstemp);
+
+		#get unique aju list from respon
+		$ajuList = [];
+		if(!is_null($rsbc)){
+			if( !empty($rsbc) ){
+				foreach($rsbc as $o){
+					foreach($o->data as $v){						
+						if(!in_array($v->BC_AJU, $ajuList)) {
+							$ajuList[] = $v->BC_AJU;
+						}
+					}
+				}
+			}
+		}						
+		
+		#get currency using unique list
+		$ajustring = is_array($ajuList) ? "'".implode("','", $ajuList)."'" : "''";
+		$rsRCVCurrency = $this->RCV_mod->select_currency_byaju($ajustring);
+
+		#modify data from API
+		if(!empty($ajuList)) {
+			foreach($rsbcnew as $o){
+				foreach($o->data as $v){
+					foreach($rsRCVCurrency as $k) {
+						if($v->BC_AJU===$k['RCV_RPNO']) {
+							$v->CURRENCY = $k['MSUP_SUPCR'];
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		header('Content-Type: application/json');
+		die(json_encode(['databefore' => $rsbc, 'dataafter' => $rsbcnew]));
+	}
+
 	public function posting25(){
 		set_exception_handler([$this,'exception_handler']);
 		set_error_handler([$this, 'log_error']);
@@ -8252,8 +8353,7 @@ class DELV extends CI_Controller {
 			#handle multiprice
 			$t_HARGA_PENYERAHAN = $r['CIF']*$czharga_matauang;
 			$cz_h_CIF_FG += $r['CIF'];
-			$cz_h_NETTO += $r['NWG'];
-			// $cz_h_BRUTO += $r['GWG'];
+			$cz_h_NETTO += $r['NWG'];			
 			$cz_h_HARGA_PENYERAHAN_FG += $t_HARGA_PENYERAHAN;
 			$tpb_barang[] = [
 				'KODE_GUNA' => '3'
@@ -8362,8 +8462,34 @@ class DELV extends CI_Controller {
 					'qty' => $ary_qty,
 					'lot' => $ary_lot
 				];			
-				if(!is_null($rsbc)){					
+				if(!is_null($rsbc)){
 					if( count($rsbc)>0 ){
+						#assign currency
+						$ajuList = [];
+						foreach($rsbc as $o){
+							foreach($o->data as $v){
+								if(!in_array($v->BC_AJU, $ajuList)) {
+									$ajuList[] = $v->BC_AJU;
+								}
+							}
+						}		
+                        
+                        $ajustring = is_array($ajuList) ? "'".implode("','", $ajuList)."'" : "''";
+		                $rsRCVCurrency = $this->RCV_mod->select_currency_byaju($ajustring);
+                        if(!empty($ajuList)) {
+                            foreach($rsbc as $o){
+                                foreach($o->data as $v){
+                                    foreach($rsRCVCurrency as $k) {
+                                        if($v->BC_AJU===$k['RCV_RPNO']) {
+                                            $v->CURRENCY = $k['MSUP_SUPCR'];
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+						#end
+
 						foreach($rsbc as $o){
 							foreach($o->data as $v){
 								if($v->BC_QTY>0) {
@@ -8380,7 +8506,7 @@ class DELV extends CI_Controller {
 										$responseResume[] = ['ITEM' => strtoupper($v->BC_ITEM), 'QTY' => $v->BC_QTY, 'BALRES' => $v->BC_QTY];
 									}
 									//THE ADDITIONAL INFO						
-									$tCIF = substr($v->RCV_PRPRC,0,1)=='.' ? ('0'.$v->RCV_PRPRC* $v->BC_QTY) : ($v->RCV_PRPRC * $v->BC_QTY);
+									$tCIF = ($v->RCV_PRPRC * $v->BC_QTY);
 									$cz_h_totalCIF+= $tCIF;
 
 									$thehscode = '';
@@ -8404,6 +8530,13 @@ class DELV extends CI_Controller {
 										$thebm = $v->RCV_BM;
 									}
 									if($v->RCV_KPPBC!='-'){
+                                        if($v->CURRENCY==='RPH') {
+                                            $harga_perolehan = $v->BC_TYPE == '40' ? $tCIF/$cz_h_NDPBM : null;
+                                            $harga_penyerahan = $v->BC_TYPE == '40' ? $tCIF : null;
+                                        } else {
+                                            $harga_perolehan = $v->BC_TYPE == '40' ? $tCIF : null;
+                                            $harga_penyerahan = $v->BC_TYPE == '40' ? $tCIF*$cz_h_NDPBM : null;
+                                        }
 										$tpb_bahan_baku[] = [
 											'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE
 											,'NOMOR_DAFTAR_DOK_ASAL' => $v->BC_NUM
@@ -8425,8 +8558,8 @@ class DELV extends CI_Controller {
 											,'JUMLAH_SATUAN' => $v->BC_QTY
 											,'JENIS_SATUAN' => ($v->MITM_STKUOM=='PCS') ? 'PCE' : $v->MITM_STKUOM						
 											,'KODE_ASAL_BAHAN_BAKU' => ($v->BC_TYPE == '27' || $v->BC_TYPE == '23' ) ? '0' : '1'
-											,'HARGA_PEROLEHAN' => $v->BC_TYPE == '40' ? $tCIF : null
-											,'HARGA_PENYERAHAN' => $v->BC_TYPE == '40' ? $tCIF*$cz_h_NDPBM : null
+											,'HARGA_PEROLEHAN' => $harga_perolehan
+											,'HARGA_PENYERAHAN' => $harga_penyerahan
 					
 											,'RASSYCODE' => $k['XASSY']
 											,'RPRICEGROUP' => $k['XPRICE']
@@ -8959,77 +9092,7 @@ class DELV extends CI_Controller {
 			unset($v);
 		}		
 		return $result_resume;		
-	}
-
-	public function perprice_tes(){
-		header('Content-Type: application/json');
-		$sj  =  $this->input->get('insj');
-		$rsprice = [];
-		$rsprice[] = ['SSO2_MDLCD' => '05370748190A200', 'SISOQTY' => 5190, 'SISOQTY_X' => 0 ,'SSO2_SLPRC' => 0.90];
-		$rsprice[] = ['SSO2_MDLCD' => '2266381-4', 'SISOQTY' => 20, 'SISOQTY_X' => 0 ,'SSO2_SLPRC' => 0.95];
-		$rsrm = $this->DELV_mod->select_dlv_ser_rm($sj);
-		$result = [];
-		foreach($rsprice as &$r){
-			foreach($rsrm as &$ra){
-				if($r['SSO2_MDLCD']==$ra['SER_ITMID'] ){
-					if(intval($ra['SERD2_FGQTY'])>0){
-						$thereffno = $ra['SERD2_SER'];
-						$osreq = $r['SISOQTY'] - $r['SISOQTY_X'];
-						$plot = 0;
-						if($osreq>0){
-							foreach($rsrm as &$x){
-								if($thereffno==$x['SERD2_SER']){
-									if($osreq>$x['SERD2_FGQTY']){
-										$plot=$x['SERD2_FGQTY'];
-										$x['SERD2_FGQTY']=0;										
-									} else {
-										$plot=$osreq;
-										$x['SERD2_FGQTY']-=$osreq;
-									}
-									$x['PRICEFOR']=$r['SSO2_SLPRC'];
-									$x['QTYFOR']=$plot;
-									$x['PRICEGROUP']=$r['SSO2_SLPRC']*$r['SISOQTY'];
-									$result[] = $x;
-								}
-							}
-							unset($x);
-						}						
-						$r['SISOQTY_X'] += $plot;
-					}
-				}				
-			}
-			unset($ra);
-		}
-		unset($r);
-
-		$result_resume = [];
-		foreach($result as $r){
-			$isfound =false;
-			foreach($result_resume as &$v){
-				if($v['RITEMCD'] == $r['SERD2_ITMCD'] && $v['RLOTNO'] == $r['LOTNO'] 
-					&& $v['RASSYCODE'] == $r['SER_ITMID'] && $v['RPRICEGROUP'] == round($r['PRICEGROUP'],3)
-					){
-					$v['RQTY'] += ((int)$r['SERD2_QTPER'] * $r['QTYFOR'] );
-					$isfound =true;
-					break;
-				}
-			}
-			if(!$isfound){
-				$result_resume[] = [
-					'RASSYCODE' => $r['SER_ITMID']
-					,'RPRICEGROUP' => round($r['PRICEGROUP'],3)
-					,'RITEMCD' => $r['SERD2_ITMCD']
-					,'RLOTNO' => $r['LOTNO']
-					,'RQTY' => (int)$r['SERD2_QTPER'] * $r['QTYFOR']
-				];
-			}
-			unset($v);
-		}
-
-		die('{"data": '.json_encode($result)			
-			.',"data_resume" :'.json_encode($result_resume)
-			.'}');
-	}
+	}	
 
 	public function getadditional_infobc($bcno, $itemcd){
 		$rs = $this->RCV_mod->select_cols_where(
