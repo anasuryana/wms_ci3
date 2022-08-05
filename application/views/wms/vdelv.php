@@ -3739,7 +3739,7 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                             document.getElementById('txfg_txt_noaju').value=mnoaju.trim();
                             document.getElementById('txfg_fromoffice').value=mfromoffice;
                             document.getElementById('txfg_cmb_jenisTPB').value=mtpb_asal;
-                            document.getElementById('txfg_cmb_jenisTPBtujuan').value=mtpb_tujuan;
+                            document.getElementById('txfg_cmb_jenisTPBtujuan').value = (mtpb_tujuan=='-') ? '1' : mtpb_tujuan
                             document.getElementById('txfg_cmb_tujuanpengiriman').value=mpurpose;
                             document.getElementById('txfg_txt_nopen').value=mnopen.trim()
                             document.getElementById('txfg_txt_nokontrak').value=mcona
