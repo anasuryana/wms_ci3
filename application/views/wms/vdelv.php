@@ -2861,8 +2861,8 @@ $("#txfg_btn_new").click(function (e) {
     document.getElementById('txfg_fromoffice').value="-";
     document.getElementById('txfg_destoffice').value="-";
     document.getElementById('txfg_cmb_jenisTPB').value="-";
-    document.getElementById('txfg_cmb_jenisTPBtujuan').value="-";
-    document.getElementById('txfg_cmb_tujuanpengiriman').value="-";
+    document.getElementById('txfg_cmb_jenisTPBtujuan').value="1"
+    document.getElementById('txfg_cmb_tujuanpengiriman').value="-"
     document.getElementById('txfg_txt_nokontrak').value="";
     document.getElementById('txfg_txt_tglkontrak').value="";
     document.getElementById('txfg_txt_sppb27').value=""
