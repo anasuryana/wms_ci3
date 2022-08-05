@@ -8479,9 +8479,9 @@ class DELV extends CI_Controller {
                         if(!empty($ajuList)) {
                             foreach($rsbc as $o){
                                 foreach($o->data as $v){
-                                    foreach($rsRCVCurrency as $k) {
-                                        if($v->BC_AJU===$k['RCV_RPNO']) {
-                                            $v->CURRENCY = $k['MSUP_SUPCR'];
+                                    foreach($rsRCVCurrency as $r_) {
+                                        if($v->BC_AJU===$r_['RCV_RPNO']) {
+                                            $v->CURRENCY = $r_['MSUP_SUPCR'];
                                             break;
                                         }
                                     }
