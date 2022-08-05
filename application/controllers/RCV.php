@@ -1411,6 +1411,7 @@ class RCV extends CI_Controller {
 					, 'RETFG_NTCNO' => $ca_notice[$i]
 					, 'RETFG_SUPNO' => $supno
 					, 'RETFG_SUPCD' => $supcd
+					, 'RETFG_CONSIGN' => $cconsign
 				]
 				, ['RETFG_DOCNO' => $cdoc
 					, 'RETFG_LINE' => $ca_rowid[$i] 
