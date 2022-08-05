@@ -2671,7 +2671,7 @@ class ITH extends CI_Controller {
 				if(strtoupper($r['ITH_ITMCD']) == strtoupper($s['INV_ITMNUM'])){
 					if($r['STOCKQTY']*1 != $s['INV_QTY']*1) {
 						$WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];					
-						$ttlupdated+=$this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY']*1, 'INV_DATE' =>  $cdate], $WHERE );
+						$ttlupdated+=$this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY']*1, 'INV_DATE' =>  $date], $WHERE );
 					}
 					$isfound = true;
 					break;
