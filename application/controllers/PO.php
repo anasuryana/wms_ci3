@@ -1379,13 +1379,14 @@ class PO extends CI_Controller {
 						'PODISC_PONO' => $h_po,
 						'PODISC_REV' => 0,
 						'PODISC_DESC' => $dd_description[$i],
-						'PODISC_DISC' => $dd_disc[$i],
+						'PODISC_DISC' => str_replace(',','', $dd_disc[$i]),
 						'PODISC_LINE' => $line_discount++
 					];
 				} else {
 					$this->PO_mod->update_discount_where([
 						'PODISC_DESC' => $dd_description[$i],
-						'PODISC_DISC' => $dd_disc[$i]]
+						'PODISC_DISC' => str_replace(',','',$dd_disc[$i])
+						]
 						, ['PODISC_PONO' => $h_po, 'PODISC_LINE' => $dd_rowid[$i]]);
 				}
 			}
