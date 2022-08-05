@@ -91,6 +91,10 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <th class="text-center d-none">-</th>
+                                    <th class="text-center">Please wait. . .</th>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -186,90 +190,117 @@
             alertify.warning('select location first')
             return
         }
-        
+        const invDate = document.getElementById('stinventory_txt_date') 
         if(confirm('Are you sure ?')) {
-            let mtabel = document.getElementById("stinventory_tbl")            
-            let tableku2 = mtabel.getElementsByTagName("tbody")[0]
-            let newrow, newcell
-            tableku2.innerHTML=''
-            stinventory_a_BG.forEach((item, index) => {
-                newrow = tableku2.insertRow(-1)            
-                newcell = newrow.insertCell(0);            
-                newcell.innerHTML = item
-                newcell = newrow.insertCell(1)
-                newcell.classList.add('text-center')
-                newcell.innerHTML = 'Please wait'
-                newcell = newrow.insertCell(2)
-                newcell.onclick = (e) => {
-                    if(e.target.innerText!='done' && !e.target.innerText.includes('wait')) {
-                        if(confirm("Re-run process ?")) {
-
+            if(confirm('If any adjustment it will be adjusted on ' +  invDate.value + ' ?')) {
+                let mtabel = document.getElementById("stinventory_tbl")
+                let tableku2 = mtabel.getElementsByTagName("tbody")[0]
+                let newrow, newcell
+                
+                tableku2.innerHTML=''
+                stinventory_a_BG.forEach((item, index) => {
+                    newrow = tableku2.insertRow(-1)            
+                    newcell = newrow.insertCell(0);            
+                    newcell.innerHTML = item
+                    newcell = newrow.insertCell(1)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = 'Please wait'
+                    newcell = newrow.insertCell(2)
+                    newcell.onclick = (e) => {
+                        if(!e.target.innerText.includes('done') && !e.target.innerText.includes('wait')) {
+                            if(confirm("Re-run process ?")) {
+                                e.target.innerText = 'Please wait'
+                                $.ajax({
+                                    type: "POST",
+                                    url: "<?=base_url('ITH/upload_to_itinventory')?>",
+                                    data:{date: invDate.value, location : item},
+                                    dataType: "json",
+                                    success: function (response) {                                    
+                                        for(let i=0;i<stinventory_a_BG.length; i++) {
+                                            if(tableku2.rows[i].cells[0].innerText===response.status.reff) {
+                                                tableku2.rows[i].cells[2].innerHTML = `<span class="badge bg-success">${response.status.msg}</span>`
+                                                break;
+                                            }
+                                        }
+                                    }, error : function(xhr, xopt, xthrow){
+                                        alertify.error(xthrow)                                    
+                                        const thedata = new URLSearchParams(this.data)
+                                        for(let i=0;i<stinventory_a_BG.length; i++) {
+                                            if(tableku2.rows[i].cells[0].innerText===thedata.get('location')) {
+                                                tableku2.rows[i].cells[2].innerHTML = `<span class="badge bg-danger">${xthrow}</span>`
+                                                break;
+                                            }
+                                        }
+                                    }
+                                })
+                            }
                         }
                     }
-                }
-                newcell.classList.add('text-center')
-                newcell.innerHTML = 'Please wait'
-            })
-            const invDate = document.getElementById('stinventory_txt_date')           
-            let functionList = []
-            stinventory_a_BG.forEach((item, index) => {
-                functionList.push(
-                    $.ajax({
-                        type: "POST",
-                        url: "<?=base_url('ITH/testAdj_ParentBased')?>",
-                        data: {date: invDate.value, location : item},
-                        dataType: "JSON",
-                        success: function (response) {                                                        
-                            for(let i=0;i<stinventory_a_BG.length; i++) {
-                                if(tableku2.rows[i].cells[0].innerText===response.status.reff) {
-                                    tableku2.rows[i].cells[1].innerHTML = `<span class="badge bg-success">${response.status.msg}</span>`
-                                    break;
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = 'is waiting Adjustment Process'
+                })
+                          
+                let functionList = []
+                stinventory_a_BG.forEach((item, index) => {
+                    functionList.push(
+                        $.ajax({
+                            type: "POST",
+                            url: "<?=base_url('ITH/adjustment_ParentBased')?>",
+                            data: {date: invDate.value, location : item},
+                            dataType: "JSON",
+                            success: function (response) {
+                                for(let i=0;i<stinventory_a_BG.length; i++) {
+                                    if(tableku2.rows[i].cells[0].innerText===response.status.reff) {
+                                        tableku2.rows[i].cells[1].innerHTML = `<span class="badge bg-success">${response.status.msg}</span>`
+                                        break;
+                                    }
+                                }
+                            }, error : function(xhr, xopt, xthrow){
+                                alertify.error(xthrow)
+                                const thedata = new URLSearchParams(this.data)
+                                for(let i=0;i<stinventory_a_BG.length; i++) {
+                                    if(tableku2.rows[i].cells[0].innerText===thedata.get('location')) {
+                                        tableku2.rows[i].cells[1].innerHTML = `<span class="badge bg-danger">${xthrow}</span>`
+                                        break;
+                                    }
                                 }
                             }
-                        }, error : function(xhr, xopt, xthrow){
-                            alertify.error(xthrow)
-                            const thedata = new URLSearchParams(this.data)
-                            for(let i=0;i<stinventory_a_BG.length; i++) {
-                                if(tableku2.rows[i].cells[0].innerText===thedata.get('location')) {
-                                    tableku2.rows[i].cells[1].innerHTML = `<span class="badge bg-warning">${xthrow}</span>`
-                                    break;
+                        })
+                    )
+                })
+                $.when.apply($,functionList).then(function() {
+                    stinventory_a_BG.forEach((item, index) => {   
+                        tableku2.rows[index].cells[2].innerHTML = 'Please wait'
+                        $.ajax({
+                            type: "POST",
+                            url: "<?=base_url('ITH/upload_to_itinventory')?>",
+                            data: {date: invDate.value, location : item},
+                            dataType: "JSON",
+                            success: function (response) {
+                                p.disabled = false
+                                p.innerHTML = 'Upload'
+                                for(let i=0;i<stinventory_a_BG.length; i++) {
+                                    if(tableku2.rows[i].cells[0].innerText===response.status.reff) {
+                                        tableku2.rows[i].cells[2].innerHTML = `<span class="badge bg-success">${response.status.msg}</span>`
+                                        break;
+                                    }
+                                }
+                            }, error : function(xhr, xopt, xthrow){
+                                alertify.error(xthrow)
+                                p.disabled = false
+                                p.innerHTML = 'Upload'
+                                const thedata = new URLSearchParams(this.data)
+                                for(let i=0;i<stinventory_a_BG.length; i++) {
+                                    if(tableku2.rows[i].cells[0].innerText===thedata.get('location')) {
+                                        tableku2.rows[i].cells[2].innerHTML = `<span class="badge bg-danger">${xthrow}</span>`
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                    })
-                )
-            })
-            $.when.apply($,functionList).then(function() {                
-                stinventory_a_BG.forEach((item, index) => {                    
-                    $.ajax({
-                        type: "POST",
-                        url: "<?=base_url('ITH/upload_to_itinventory')?>",
-                        data: {date: invDate.value, location : item},
-                        dataType: "JSON",
-                        success: function (response) {
-                            p.disabled = false
-                            p.innerHTML = 'Upload'
-                            for(let i=0;i<stinventory_a_BG.length; i++) {
-                                if(tableku2.rows[i].cells[0].innerText===response.status.reff) {
-                                    tableku2.rows[i].cells[2].innerHTML = `<span class="badge bg-success">${response.status.msg}</span>`
-                                    break;
-                                }
-                            }
-                        }, error : function(xhr, xopt, xthrow){
-                            alertify.error(xthrow)
-                            p.disabled = false
-                            p.innerHTML = 'Upload'
-                            const thedata = new URLSearchParams(this.data)
-                            for(let i=0;i<stinventory_a_BG.length; i++) {
-                                if(tableku2.rows[i].cells[0].innerText===thedata.get('location')) {
-                                    tableku2.rows[i].cells[2].innerHTML = `<span class="badge bg-warning">${xthrow}</span>`
-                                    break;
-                                }
-                            }
-                        }
+                        })
                     })
                 })
-            })            
+            }
         }
     }
 </script>

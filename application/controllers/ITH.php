@@ -2367,12 +2367,10 @@ class ITH extends CI_Controller {
 	public function saveadjust_base_mega() {
 		$this->checkSession();
 		header('Content-Type: application/json');
-		date_default_timezone_set('Asia/Jakarta');
-		$current_datetime = date('Y-m-d H:i:s');
+		date_default_timezone_set('Asia/Jakarta');		
 		$cwh = $this->input->post('inwh');
 		$cdate = $this->input->post('indate');
-		$cpin = $this->input->post('inpin');
-		$usrid =  $this->session->userdata('nama');
+		$cpin = $this->input->post('inpin');		
 		$myar = [];
 		#validate PIN
 		if($cpin!='NAHCLOSING_SAVE') {
@@ -2451,7 +2449,7 @@ class ITH extends CI_Controller {
 				'cd' => "1"
 				, 'msg' => 'done, nothing changes'
 			];
-		}
+		}        
 		die('{"status":'.json_encode($myar).',"data":'.json_encode($rsadj).'}');
 	}
 
@@ -2591,24 +2589,122 @@ class ITH extends CI_Controller {
 		die('{"status":'.json_encode($myar).',"data":'.json_encode($rsadj).'}');
 	}
 
-	public function testAdj_ParentBased(){
+	public function adjustment_ParentBased(){
+        ini_set('max_execution_time', '-1');
 		header('Content-Type: application/json');
-		$RMLocation = ['AIWH1',	'ARWH0PD', 'ARWH1',	'ARWH2','ARWH9SC','NRWH2','PLANT_NA','PLANT1','PLANT2','QA'];
+		if ($this->session->userdata('status') != "login")
+        {
+			$myar = ["cd" => "0", "msg" => "Session is expired please reload page"];
+			die(json_encode(['status' => $myar]));
+        }
+		$whException = ['AFWH3','QAFG','AWIP1'];
 		$date = $this->input->post('date');
 		$location = $this->input->post('location');
-		$rs = in_array($location, $RMLocation) ? $this->XITRN_mod->select_stock($date, $location) : $this->XFTRN_mod->select_stock($date, $location);
-		$myar = !empty($rs) ? ['cd' => 1, 'msg' => 'done', 'reff' => $location] : 
-			['cd' => 0, 'msg' => 'not found', 'reff' => $location];
+		$usrid =  $this->session->userdata('nama');
+		$current_datetime = date('Y-m-d H:i:s');
+		if(!in_array($location, $whException)) {
+			$dateObj = new DateTime($date);
+			$dateObj->modify('+1 day');
+			$dateTosave = $dateObj->format('Y-m-d');
+			$dateTimeTosave = $dateObj->format('Y-m-d 06:59:59');
+			$dateformat = $dateObj->format('Ym');
+			$rs = $this->ITH_mod->select_compare_inventory($location,$date); 
+			$rsadj = [];
+			foreach($rs as $r) {
+				$balance = $r['STOCKQTY']-$r['MGAQTY'];
+				if( $balance != 0) {
+					if ($balance>0) {
+						$ith_form = 'ADJ-I-OUT';
+						$balance = -$balance;
+					} else {
+						$ith_form = 'ADJ-I-INC';
+						$balance = abs($balance);
+					}
+					$rsadj[] = [
+						'ITH_ITMCD' => $r['ITH_ITMCD'] ? $r['ITH_ITMCD'] : $r['ITRN_ITMCD'] ,
+						'ITH_QTY' => $balance,
+						'ITH_DATE' => $dateTosave,
+						'ITH_LUPDT' => $dateTimeTosave,
+						'ITH_WH' => $location,
+						'ITH_DOC' => 'DOCINV'.$dateformat,
+						'ITH_FORM' => $ith_form,
+						'ITH_USRID' => $usrid,
+						'ITH_REMARK' => 'do at '.$current_datetime
+					];
+				}
+			}
+			if(!empty($rsadj)) {
+				$this->ITH_mod->insertb($rsadj);
+				$myar = ['cd' => "1", 'msg' => 'done' , 'reff' => $location];
+			} else {
+				$myar = ['cd' => "0", 'msg' => 'done nothing adjusted', 'reff' => $location];
+			}
+		} else {
+            $myar = ['cd' => "0", 'msg' => 'done nothing adjusted...', 'reff' => $location];
+		}
 		die(json_encode(['status' => $myar]));
 	}
 
 	public function upload_to_itinventory() {
+        ini_set('max_execution_time', '-1');
 		header('Content-Type: application/json');
 		$date = $this->input->post('date');
 		$location = $this->input->post('location');
-		$rs =  $this->ITH_mod->select_psi_stock_date_wbg($location, '', $date);
-		$myar = !empty($rs) ?  ['cd' => 1, 'msg' => 'done', 'reff' => $location] : 
-		['cd' => 0, 'msg' => 'not found', 'reff' => $location];
+        $cwh_inv = $location == 'AFSMT' ? 'AFWH3' : $location;
+        $cwh_wms =  $location == 'AFWH3' ? 'AFSMT' : $location;
+        $dateObj = new DateTime($date);
+		$_MONTH = $dateObj->format('m');
+		$_YEAR = $dateObj->format('Y');
+		$WHERE = ['INV_MONTH' => $_MONTH, 'INV_YEAR' => $_YEAR, 'INV_WH' => $cwh_inv]; 
+        $rs = $this->ITH_mod->select_compare_inventory( $cwh_wms,$date);
+        $rssaved = $this->RPSAL_INVENTORY_mod->select_compare_where($WHERE);
+
+        $dateObj->modify('+1 day');		
+		$dateTimeTosave = $dateObj->format('Y-m-d 06:59:59');
+
+        $ttlupdated = 0;
+		$ttlsaved = 0;
+		$saverows = [];
+		foreach($rs as $r) {
+			$isfound = false;
+			foreach($rssaved as $s){
+				if(strtoupper($r['ITH_ITMCD']) == strtoupper($s['INV_ITMNUM'])){
+					if($r['STOCKQTY']*1 != $s['INV_QTY']*1) {
+						$WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];					
+						$ttlupdated+=$this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY']*1, 'INV_DATE' =>  $cdate], $WHERE );
+					}
+					$isfound = true;
+					break;
+				}
+			}
+			if(!$isfound){
+				$saverows[] = [
+					'INV_ITMNUM' => $r['ITH_ITMCD']
+					,'INV_MONTH' => $WHERE['INV_MONTH']
+					,'INV_YEAR' => $WHERE['INV_YEAR']
+					,'INV_WH' => $cwh_inv
+					,'INV_QTY' => $r['STOCKQTY']*1
+					,'INV_DATE' => $date
+					,'created_at' => $dateTimeTosave
+				];
+			}
+		}
+		if(count($saverows)){
+			$ttlsaved = $this->RPSAL_INVENTORY_mod->insertb($saverows);
+		}
+        if($ttlsaved > 0 || $ttlupdated > 0){
+			$myar = [
+				'cd' => "1"
+				,'msg' => 'done,'
+                ,'reff' => $location
+			];
+		} else {
+			$myar = [
+				'cd' => "1"
+				,'msg' => 'done, nothing changes'
+                ,'reff' => $location
+			];
+		}
 		die(json_encode(['status' => $myar]));
 	}
 
