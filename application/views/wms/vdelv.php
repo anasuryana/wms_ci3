@@ -4636,6 +4636,9 @@ function txfg_z_btn_save25_e_click(){
     }
 }
 
+document.getElementById('txfg_cmb_jenisTPBtujuan').value = '1'
+document.getElementById('txfg_cmb_tujuanpengiriman').value = '1'
+
 function txfg_z_btn_save_e_click(){    
     let msj = document.getElementById('txfg_txt_id').value;
     if(msj.trim()== ''){
@@ -4666,6 +4669,22 @@ function txfg_z_btn_save_e_click(){
         alertify.warning("Nomor pengajuan is also not valid");
         document.getElementById('txfg_txt_noaju').focus();
         return;
+    }
+    if(mjenis_tpb_tujuan!='1') {
+        if(confirm("Currently only for KAWASAN BERIKAT, are you sure want to continue ?")) {
+
+        } else {
+            return
+        }
+    }
+    if(!msj.includes('RTN')) {
+        if(mpurpose!='1') {
+            if(confirm("Currently only for DIJUAL, are you sure want to continue ?")) {
+
+            } else {
+                return
+            }
+        }
     }
     if(confirm("Are You sure ?")){
         $.ajax({
