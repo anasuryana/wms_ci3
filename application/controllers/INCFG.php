@@ -874,7 +874,7 @@ class INCFG extends CI_Controller {
                     $rstes = count($rstes) >0 ? reset($rstes) : ['ITH_WH' => '??'];
                     if($rstes['ITH_WH']==$cwh_out){
                         #check is already scanned by QC
-                        $result_out = $this->ITH_mod->insert([
+                        $this->ITH_mod->insert([
                             'ITH_ITMCD' => $rs_stktrn['SER_ITMID']
                             ,'ITH_DATE' => $currdate
                             ,'ITH_FORM' => $cfm_out
@@ -885,7 +885,7 @@ class INCFG extends CI_Controller {
                             ,'ITH_LUPDT' => $currrtime
                             ,'ITH_USRID' => $this->session->userdata('nama')
                         ]);
-                        $result_inc = $this->ITH_mod->insert([
+                        $this->ITH_mod->insert([
                             'ITH_ITMCD' => $rs_stktrn['SER_ITMID']
                             ,'ITH_DATE' => $currdate
                             ,'ITH_FORM' => $cfm_inc
@@ -1051,14 +1051,14 @@ class INCFG extends CI_Controller {
                         $datac['ITH_USRID'] = $this->session->userdata('nama');
                     }
                     if($strstatus){
-                        $toret = $this->ITH_mod->insert($datac);
+                        $this->ITH_mod->insert($datac);
                         $datac['ITH_FORM'] = $cfm_inc;
                         $datac['ITH_DATE'] = $currdate;				
                         $datac['ITH_QTY'] = $r['SER_QTY'];
                         $datac['ITH_WH'] = $cwh_inc;
                         $datac['ITH_LUPDT'] = $currrtime;
                         $datac['ITH_USRID'] = $this->session->userdata('nama');
-                        $toret = $this->ITH_mod->insert($datac);
+                        $this->ITH_mod->insert($datac);
                         echo "OK";
                     } else {
                         echo "Could not scan splitted Label";
@@ -1290,8 +1290,7 @@ class INCFG extends CI_Controller {
                 echo "OK";
             } else {
                 echo "Serial not found";
-            }
-            //$datac['ITH_']
+            }            
         }
     }
     
@@ -1319,14 +1318,7 @@ class INCFG extends CI_Controller {
         header('Content-Type: application/json');
         $rs = $this->ITH_mod->selecttodayscanwh();
         echo '{"data":'.json_encode($rs).'}';
-    }
-
-    public function change_incoming_date(){
-        $reffno = $this->input->post('reffno');
-        $olddate = $this->input->post('old_date');
-        $newdate = $this->input->post('new_date');
-
-    }
+    }   
 
     public function form_fgrtn_to_scr(){
         $this->load->view('wms/vfgrtn_scrap');
