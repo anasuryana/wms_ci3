@@ -395,7 +395,7 @@
                 <div class="col-md-6 mb-1">
                     <div class="input-group input-group-sm mb-1">                        
                         <label class="input-group-text">Jenis TPB Tujuan</label>                        
-                        <select class="form-select" id="txfg_cmb_jenisTPBtujuan">
+                        <select class="form-select" id="txfg_cmb_jenisTPBtujuan" disabled>
                             <option value="-">-</option>
                             <?php
                            $tohtml =""; 
