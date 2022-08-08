@@ -208,109 +208,7 @@ class RETPRD extends CI_Controller {
 		{
 			echo 'Caught exception: ',  $e->getMessage(), "\n";
 		}
-	}
-
-	public function tes(){
-		date_default_timezone_set('Asia/Jakarta');
-		$currdate = date('Ymd');
-		
-		$currrtime = date('Y-m-d H:i:s');
-		$cpsn = $this->input->post('inpsn');
-		$ccat = $this->input->post('incat');
-		$clne = $this->input->post('inline');
-		
-		$citm = $this->input->post('initmcd');
-		$crhs = $this->input->post('inrohs');
-		$cqbf = $this->input->post('inqtybef');
-		$cqaf = $this->input->post('inqtyaft');
-		$clot = $this->input->post('inlot');
-		$ccry = $this->input->post('incountry');
-		$cuser = $this->input->post('inuser');
-		$myar = [];
-			
-		$dataw = ['SPL_DOC' => $cpsn , 'SPL_CAT' => $ccat, 'SPL_LINE' => $clne,  'SPL_ITMCD' => $citm];
-		if($this->SPL_mod->check_Primary($dataw)>0){
-			//validate from SPLSCN_TBL
-			$datascn = [
-				'SPLSCN_DOC' => $cpsn, 'SPLSCN_CAT' => $ccat, 'SPLSCN_LINE' => $clne, 
-				'SPLSCN_ITMCD' => $citm, 'SPLSCN_LOTNO' => $clot
-			];
-			$ttldata_psnscan = $this->SPLSCN_mod->check_Primary($datascn);
-			if($ttldata_psnscan==0){
-				$myar[] = ['cd' => '01', 'msg' => 'PSN and label does not match'];
-				// die('{"status":'.json_encode($myar).'}');
-				die('PSN and label does not match');
-			}
-			//end validate
-
-			// validate ttlqty_psn_scan vs ttlqty_psn_ret
-			$rs_vrs = $this->SPLRET_mod->selectsp_vs_ret_nofr($cpsn, $ccat, $clne, $citm);
-			
-			$allow =false;
-			$orderno = '';
-			$fr = '';
-			foreach($rs_vrs as $r){
-				if((trim($r['SPLSCN_ITMCD'])==trim($citm)) && (trim($r['SPLSCN_LOTNO'])==trim($clot)) && ($r['SPLSCN_QTY']>=$cqbf) ){
-					if($r['SPLSCN_QTY']>=( $r['RETQTY'] + $cqaf) ){ # 
-						$orderno = $r['SPLSCN_ORDERNO'];
-						$fr = trim($r['SPLSCN_FEDR']);
-						$allow=true;
-						echo "sini";
-						break;
-					}
-				}
-			}
-			if(!$allow){
-				$allow2=false;
-				foreach($rs_vrs as $r){
-					if((trim($r['SPLSCN_ITMCD'])==trim($citm)) && (trim($r['SPLSCN_LOTNO'])==trim($clot))){
-						if($r['SPLSCN_QTY']>=($r['RETQTY'] + $cqaf) ){
-							$orderno = $r['SPLSCN_ORDERNO'];
-							$fr = trim($r['SPLSCN_FEDR']);
-							$allow2=true;
-							echo "sono";
-							break;
-						}
-					}
-				}
-				if(!$allow2){
-					// $myar[] = ['cd' => '02', 'msg' => 'could not add because the label is already returned'];
-					// // die('{"status":'.json_encode($myar).'}');
-					// die('could not add because the label is already returned');
-					$rs_vrs = $this->SPLRET_mod->select_balance_peritem($cpsn, $clne, $ccat, $citm);				
-					$rs_vrs = count($rs_vrs) >0 ? reset($rs_vrs) : ['BALQTY' => 0];
-					if($rs_vrs['BALQTY']>= $cqaf){
-						#GET FR , ORDERNO
-						$rsbefore = $this->SPLSCN_mod
-						->selectby_filter(['SPLSCN_DOC' => $cpsn, 'SPLSCN_CAT' => $ccat, 'SPLSCN_LINE' => $clne
-						 , 'SPLSCN_ITMCD' => $citm, 'SPLSCN_LOTNO' => $clot,'SPLSCN_QTY' => $cqbf
-						 ]);
-						#END
-						if(count($rsbefore)>0){							
-							$rsbefore = reset($rsbefore);							
-							// $datas = [
-							// 	'RETSCN_ID' =>  $newid, 'RETSCN_SPLDOC' => $cpsn, 'RETSCN_CAT' => $ccat, 'RETSCN_LINE' => $clne, 'RETSCN_FEDR' => $rsbefore['SPLSCN_FEDR'], 'RETSCN_ORDERNO' => $rsbefore['SPLSCN_ORDERNO'] ,
-							// 	'RETSCN_ITMCD' => $citm[0], 'RETSCN_LOT' => $lotasHome, 'RETSCN_QTYBEF' => $cqbf[0], 'RETSCN_QTYAFT' => $cqaf, 'RETSCN_CNTRYID' => $ccry, 
-							// 	'RETSCN_ROHS' => $crhs , 'RETSCN_LUPDT' => $currrtime, 'RETSCN_USRID' => $cuser
-							// ];
-							// $toret = $this->SPLRET_mod->insert($datas);
-							// if($toret>0){
-								$myar[] = ['cd' => '11' , 'msg' => 'Saved'];
-								die('{"status":'.json_encode($myar).'}');
-							// }
-						} else {
-							$myar[] = ['cd' => '00', 'msg' => 'could not get FR and ORDER NO'];	
-							die('{"status":'.json_encode($myar).'}');
-						}
-					} else {
-						$myar[] = ['cd' => '00', 'msg' => 'Balance Qty < Return Qty'];	
-						die('{"status":'.json_encode($myar).'}');				
-					}
-				}
-			}
-			echo $orderno;
-		}
-	}
+	}	
 	
 	public function save_desktop(){
 		date_default_timezone_set('Asia/Jakarta');
@@ -461,9 +359,7 @@ class RETPRD extends CI_Controller {
 						}
 					}
 				}
-				if(!$allow2){
-					// $myar[] = ['cd' => '02', 'msg' => 'could not add because the label is already returned'];
-					// die('{"status":'.json_encode($myar).'}');
+				if(!$allow2){					
 					$rs_vrs = $this->SPLRET_mod->select_balance_peritem($cpsn, $clne, $ccat, $citm);				
 					$rs_vrs = count($rs_vrs) >0 ? reset($rs_vrs) : ['BALQTY' => 0];
 					if($rs_vrs['BALQTY']>= $cqaf){
@@ -473,7 +369,7 @@ class RETPRD extends CI_Controller {
 						 , 'SPLSCN_ITMCD' => $citm, 'SPLSCN_LOTNO' => $clot,'SPLSCN_QTY' => $cqbf
 						 ]);
 						#END
-						if(count($rsbefore)>0){							
+						if(!empty($rsbefore)){
 							$rsbefore = reset($rsbefore);
 							$orderno = $rsbefore['SPLSCN_ORDERNO'];
 							$fr = trim($rsbefore['SPLSCN_FEDR']);																					
@@ -934,8 +830,7 @@ class RETPRD extends CI_Controller {
 		$host = gethostbyaddr($_SERVER['REMOTE_ADDR']);         
         $a_ser = str_replace(".","','",$pserial);
 		$a_ser = "'".$a_ser."'";
-		$rs = $this->SPLRET_mod->selectbyid_in($a_ser);		
-		//setcookie("CKPSI_IDRET", "sdf", time()-3600,"/");
+		$rs = $this->SPLRET_mod->selectbyid_in($a_ser);				
 
 		$pdf = new PDF_Code39e128('L','mm',[70,50]);					
 		$pdf->SetAutoPageBreak(true,1);
@@ -968,7 +863,7 @@ class RETPRD extends CI_Controller {
 			$pdf->Text(2, 26, $v1p);
 			$clebar = $pdf->GetStringWidth(trim($c1p))+10;
 			$pdf->Code128(2,26.5,trim($c1p),$clebar,5);
-			// $pdf->Code39(2, 26.5,$c1p);
+			
 			$pdf->Text(2, 34, 'PART NO : '.trim($r->MITM_SPTNO));
 			if($r->RETSCN_ROHS=='1'){
 				$pdf->Text(2, 36, 'RoHS Compliant');
@@ -1078,9 +973,7 @@ class RETPRD extends CI_Controller {
 		$ithdoc = $cpsn.'|'.$ccat.'|'.$cline.'|'.$cfr;
 		$citemcd 	= $this->input->post('initemcd');
 		$citemid = $this->input->post('inid');
-		$cqty = $this->input->post('inqty');
-		$cmch = $this->input->post('inmch');
-		$clot = $this->input->post('inlot');
+		$cqty = $this->input->post('inqty');		
 		$cdate = $this->input->post('indate');
 
 		$ttlrows = count($citemid);
@@ -1092,8 +985,7 @@ class RETPRD extends CI_Controller {
 				'RETSCN_SAVED' => '1'				
 			];
 			$toret = $this->SPLRET_mod->updatebyId($datau, $citemid[$i]);
-			if($toret>0){
-				// $this->gotoque($citemcd,$cpsn, $ccat, $cline, $cfr, $cmch[$i], $clot[$i]);
+			if($toret>0){				
 				$datas = [
 					'ITH_ITMCD' => $citemcd,
 					'ITH_DATE' => $cdate,
@@ -1164,8 +1056,7 @@ class RETPRD extends CI_Controller {
 				];
 				$toret = $this->SPLRET_mod->updatebyId($datau, $r['RETSCN_ID']);
 				if($toret>0){
-					$ithdoc = $cpsn.'|'.trim($r['RETSCN_CAT']).'|'.trim($r['RETSCN_LINE']).'|'.trim($r['RETSCN_FEDR']);
-					// $this->gotoque($citemcd[$b],$cpsn, trim($r['RETSCN_CAT']), trim($r['RETSCN_LINE']), trim($r['RETSCN_FEDR']), trim($r['RETSCN_ORDERNO']), trim($r['RETSCN_LOT']));
+					$ithdoc = $cpsn.'|'.trim($r['RETSCN_CAT']).'|'.trim($r['RETSCN_LINE']).'|'.trim($r['RETSCN_FEDR']);					
 					$datas = [
 						'ITH_ITMCD' => $citemcd[$b],
 						'ITH_DATE' => $cdate,
