@@ -6571,6 +6571,20 @@ class DELV extends CI_Controller {
         date_default_timezone_set('Asia/Jakarta');	
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
+        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $startTM = $now->format('Y-m-d H:i:s:v');
+        $rsUnfinished = $this->POSTING_mod->select_unfinished($csj);
+        if(empty($rsUnfinished)) {
+            $this->POSTING_mod->insert([
+                'POSTING_DOC' => $csj,
+                'POSTING_STATUS' => 1,
+                'POSTING_STARTED_AT' => $startTM,
+                'POSTING_BY' => $this->session->userdata('nama'),
+                'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
+            ]);
+        } else {
+            $myar[] = ['cd' => '130', 'msg' => 'there is another user posting this document'];
+        }
         $czsj = $csj;
         $rs_head_dlv = $this->DELV_mod->select_header_bydo($csj);		
         $rs_rm_null = $this->DELV_mod->select_rm_null($csj);
@@ -7311,6 +7325,18 @@ class DELV extends CI_Controller {
             }
         }
         ##N
+        
+        #set finished time
+        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $finishTM = $now->format('Y-m-d H:i:s:v');
+        $this->POSTING_mod->update_where(['POSTING_FINISHED_AT' => $finishTM],
+        [
+            'POSTING_DOC' => $csj,
+            'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
+            'POSTING_FINISHED_AT' => NULL
+        ]);
+        #end
+
         log_message('error', $_SERVER['REMOTE_ADDR'].',step4#, finish, INSERT TPB ');
         $this->DELV_mod->updatebyVAR(['DLV_POST' => $this->session->userdata('nama'), 'DLV_POSTTM' => $currentDate],['DLV_ID' => $csj]);		
         $this->setPrice(base64_encode($csj));
