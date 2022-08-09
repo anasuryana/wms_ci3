@@ -54,6 +54,7 @@ class DELV extends CI_Controller {
         $this->load->model('MSTLOCG_mod');
         $this->load->model('XITRN_mod');
         $this->load->model('DisposeDraft_mod');
+        $this->load->model('POSTING_mod');
         $this->load->model('refceisa/TPB_HEADER_imod');
         $this->load->model('refceisa/TPB_KEMASAN_imod');
         $this->load->model('refceisa/TPB_DOKUMEN_imod');
@@ -6507,6 +6508,59 @@ class DELV extends CI_Controller {
         die(json_encode(['itemcd' => $rsallitem_cd, 'itemcd_Qty' => $rsallitem_qty]));
     }
 
+
+    function testWhoFirst(){
+        date_default_timezone_set('Asia/Jakarta');
+        $who = $this->input->get('who');
+        $doc = $this->input->get('doc');
+        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $formattedTime = $now->format('Y-m-d H:i:s:v'); 
+        $rsUnfinished = $this->POSTING_mod->select_unfinished($doc);
+        $myar = [];
+        if(empty($rsUnfinished)) {
+            $this->POSTING_mod->insert([
+                'POSTING_DOC' => $doc,
+                'POSTING_STATUS' => 1,
+                'POSTING_STARTED_AT' => $formattedTime,
+                'POSTING_BY' => $who,
+                'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
+            ]);            
+            $now = DateTime::createFromFormat('U.u', microtime(true));
+            $finishedTime = $now->format('Y-m-d H:i:s:v'); 
+            
+            $ret = $this->POSTING_mod->update_where(['POSTING_FINISHED_AT' => $finishedTime],
+            [
+                'POSTING_DOC' => $doc,
+                'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
+                'POSTING_FINISHED_AT' => NULL
+            ]);
+            if($ret) {
+                $myar = ['cd' => '1', 'msg' => 'ok'];
+            } else {
+                $myar = ['cd' => '0', 'msg' => 'oops'];
+            }
+        } else {
+            $myar = ['cd' => '0', 'msg' => 'could not save'];
+        }
+        die(json_encode([
+            'who' => $who
+            , 'at2' => $formattedTime
+            , 'status' => $myar
+        ])
+        );
+        
+
+        // $dateTimesBin = date('Y-m-d H:i:s:v');        
+        // $now = DateTime::createFromFormat('U.u', microtime(true));
+        // $formattedTime = $now->format('Y-m-d H:i:s:v'); 
+        // die(json_encode([
+        //     'who' => $who
+        //     , 'at' => $dateTimesBin
+        //     , 'at2' => $formattedTime
+        // ])
+        // );
+    }
+
     public function posting27(){
         set_exception_handler([$this,'exception_handler']);
         set_error_handler([$this, 'log_error']);
@@ -7951,10 +8005,25 @@ class DELV extends CI_Controller {
         date_default_timezone_set('Asia/Jakarta');
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
+        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $startTM = $now->format('Y-m-d H:i:s:v');
+        $rsUnfinished = $this->POSTING_mod->select_unfinished($csj);
+        if(empty($rsUnfinished)) {
+            $this->POSTING_mod->insert([
+                'POSTING_DOC' => $csj,
+                'POSTING_STATUS' => 1,
+                'POSTING_STARTED_AT' => $startTM,
+                'POSTING_BY' => $this->session->userdata('nama'),
+                'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
+            ]);
+        } else {
+            $myar[] = ['cd' => '130', 'msg' => 'there is another user posting this document'];
+        }
+
         $czsj = $csj;
         $rs_head_dlv = $this->DELV_mod->select_header_bydo($csj);
         $rs_rm_null = $this->DELV_mod->select_rm_null($csj);
-        if(count($rs_rm_null)>0){			
+        if(count($rs_rm_null)>0){
             #check com job
             $ser_com_calcualted = [];
             foreach($rs_rm_null as $r){
@@ -8745,6 +8814,18 @@ class DELV extends CI_Controller {
                 }				
             }
         }
+
+        #set finished time
+        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $finishTM = $now->format('Y-m-d H:i:s:v');
+        $this->POSTING_mod->update_where(['POSTING_FINISHED_AT' => $finishTM],
+        [
+            'POSTING_DOC' => $csj,
+            'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
+            'POSTING_FINISHED_AT' => NULL
+        ]);
+        #end
+
         ##N
         if($consignee!='IEI'){
             $this->sendto_delivery_checking($csj);
