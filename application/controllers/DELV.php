@@ -7327,7 +7327,7 @@ class DELV extends CI_Controller {
         ##N
         
         #set finished time
-        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
         $finishTM = $now->format('Y-m-d H:i:s:v');
         $this->POSTING_mod->update_where(['POSTING_FINISHED_AT' => $finishTM],
         [
@@ -8842,7 +8842,7 @@ class DELV extends CI_Controller {
         }
 
         #set finished time
-        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
         $finishTM = $now->format('Y-m-d H:i:s:v');
         $this->POSTING_mod->update_where(['POSTING_FINISHED_AT' => $finishTM],
         [
