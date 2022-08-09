@@ -6512,19 +6512,19 @@ class DELV extends CI_Controller {
     function testWhoFirst(){
         date_default_timezone_set('Asia/Jakarta');
         $who = $this->input->get('who');
-        $doc = $this->input->get('doc');
-        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $doc = $this->input->get('doc');        
+        $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
         $formattedTime = $now->format('Y-m-d H:i:s:v'); 
         $rsUnfinished = $this->POSTING_mod->select_unfinished($doc);
         $myar = [];
         if(empty($rsUnfinished)) {
-            $this->POSTING_mod->insert([
-                'POSTING_DOC' => $doc,
-                'POSTING_STATUS' => 1,
-                'POSTING_STARTED_AT' => $formattedTime,
-                'POSTING_BY' => $who,
-                'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
-            ]);            
+            // $this->POSTING_mod->insert([
+            //     'POSTING_DOC' => $doc,
+            //     'POSTING_STATUS' => 1,
+            //     'POSTING_STARTED_AT' => $formattedTime,
+            //     'POSTING_BY' => $who,
+            //     'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
+            // ]);            
             $now = DateTime::createFromFormat('U.u', microtime(true));
             $finishedTime = $now->format('Y-m-d H:i:s:v'); 
             
@@ -6571,7 +6571,7 @@ class DELV extends CI_Controller {
         date_default_timezone_set('Asia/Jakarta');	
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
-        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
         $startTM = $now->format('Y-m-d H:i:s:v');
         $rsUnfinished = $this->POSTING_mod->select_unfinished($csj);
         if(empty($rsUnfinished)) {
@@ -8031,7 +8031,7 @@ class DELV extends CI_Controller {
         date_default_timezone_set('Asia/Jakarta');
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
-        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
         $startTM = $now->format('Y-m-d H:i:s:v');
         $rsUnfinished = $this->POSTING_mod->select_unfinished($csj);
         if(empty($rsUnfinished)) {
