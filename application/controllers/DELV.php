@@ -21,6 +21,7 @@ class DELV extends CI_Controller {
         $this->load->model('DLVCK_mod');
         $this->load->model('DLVSO_mod');
         $this->load->model('DLVPRC_mod');
+        $this->load->model('DLVSCR_mod');
         $this->load->model('SPL_mod');
         $this->load->model('SER_mod');
         $this->load->model('SPLSCN_mod');
@@ -2538,9 +2539,7 @@ class DELV extends CI_Controller {
                     }
                 }
             }			
-            die('{"data":'.json_encode($rs)
-                .', "datafocus": '.json_encode($rsrm_notOK)
-                .'}');
+            die(json_encode(['data' => $rs, 'datafocus' => $rsrm_notOK]));
         } else {
             $rs = $this->DELV_mod->select_det_byid_rm($cid);
             $rspkg = $this->DELV_mod->select_pkg($cid);
@@ -2548,10 +2547,12 @@ class DELV extends CI_Controller {
             ,'DLVRMDOC_DO','DLVRMDOC_AJU','DLVRMDOC_NOPEN','DLVRMDOC_PRPRC','DLVRMDOC_LINE','RCV_BCDATE','RCV_BCTYPE','DLVRMDOC_TYPE'], ['DLVRMDOC_TXID' => $cid]);
             $rsRMFromSO = $this->DLVRMSO_mod->select_where(['DLVRMSO_TXID','DLVRMSO_ITMID','DLVRMSO_ITMQT'
             ,'DLVRMSO_CPO','DLVRMSO_CPOLINE','DLVRMSO_PRPRC','DLVRMSO_LINE'], ['DLVRMSO_TXID' => $cid]);
-            die('{"data":'.json_encode($rs).',"data_pkg":'.json_encode($rspkg)
-                .',"data_rmdo":'.json_encode($rsRMFromDO)
-                .',"data_rmso":'.json_encode($rsRMFromSO)
-                .'}');
+            $rsscr = $this->DLVSCR_mod->select_where(['DLVSCR_TXID' => $cid]);
+            die(json_encode(['data' => $rs, 'data_rmdo' => $rsRMFromDO
+            , 'data_pkg' => $rspkg
+            , 'data_rmso' => $rsRMFromSO
+            , 'data_scr' => $rsscr
+            ]));
         }
     }
 

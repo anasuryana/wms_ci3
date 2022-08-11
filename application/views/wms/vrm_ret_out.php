@@ -516,7 +516,7 @@
                 <div class="col-md-12 mb-1">
                     <div class="input-group input-group-sm mb-1">                        
                         <label class="input-group-text">
-                        <input type="checkbox" class="form-check-input" checked id="retrm_out_ckperiod">
+                        <input type="checkbox" class="form-check-input" checked id="retrm_out_ckperiod" onclick="document.getElementById('retrm_out_txtxtsearch').focus()">
                         </label> 
                         <select id="retrm_out_monthfilter" class="form-select" onchange="document.getElementById('retrm_out_txtxtsearch').focus()">
                             <option value="01">January</option>
@@ -3444,6 +3444,39 @@
                 mydes.innerHTML=''
                 mydes.appendChild(myfrag)
 
+                ttlrows = response.data_scr.length
+                mydes = document.getElementById("retrm_out_limbah_barang_div");
+                myfrag = document.createDocumentFragment();
+                mtabel = document.getElementById("retrm_out_limbah_barang_tbl");
+                cln = mtabel.cloneNode(true);
+                myfrag.appendChild(cln);                    
+                tabell = myfrag.getElementById("retrm_out_limbah_barang_tbl");                    
+                tableku2 = tabell.getElementsByTagName("tbody")[0];                
+                tableku2.innerHTML=''
+                for (let i = 0; i<ttlrows; i++){
+                    newrow = tableku2.insertRow(-1)                    
+                    newcell = newrow.insertCell(0)
+                    newcell.classList.add('d-none')
+                    newcell.innerHTML = response.data_scr[i].DLVSCR_LINE
+                    newcell.contentEditable = true
+                    newcell = newrow.insertCell(1)
+                    newcell.innerHTML = response.data_scr[i].DLVSCR_ITMID
+                    newcell.contentEditable = true
+                    newcell = newrow.insertCell(2)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = response.data_scr[i].DLVSCR_ITMQT
+                    newcell.contentEditable = true
+                    newcell = newrow.insertCell(3)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(response.data_scr[i].DLVSCR_PRPRC).format(',')
+                    newcell.contentEditable = true
+                    newcell = newrow.insertCell(4)
+                    newcell.style.cssText = 'cursor:pointer'
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = '<span class="fas fa-trash text-danger"></span>'
+                }
+                mydes.innerHTML=''
+                mydes.appendChild(myfrag)
             }, error: function(xhr,xopt,xthrow){
                 alertify.error(xthrow)
             }
