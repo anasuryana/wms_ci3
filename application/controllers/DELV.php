@@ -2091,6 +2091,12 @@ class DELV extends CI_Controller {
         $armso_itmCPOLINE = $this->input->post('armso_itmCPOLINE');
         $armso_itmPRC = $this->input->post('armso_itmPRC');
         $armso_itmLINE = $this->input->post('armso_itmLINE');
+
+        $arscr_itmid = $this->input->post('armscr_itmID');
+        $armscr_itmQT = $this->input->post('armscr_itmQT');
+        $armscr_itmPRC = $this->input->post('armscr_itmPRC');
+        $armscr_itmLINE = $this->input->post('armscr_itmLINE');
+
         $cona = '';
         if($pknum41!='') {
             $cona = $pknum41;
@@ -2099,6 +2105,7 @@ class DELV extends CI_Controller {
         $PKGCount = is_array($aPKG_Line) ? count($aPKG_Line) : 0;
         $aRMDOCCount = is_array($armdoc_itmNOAJU) ? count($armdoc_itmNOAJU) : 0;
         $aRMSOCount = is_array($armso_itmID) ? count($armso_itmID) : 0;
+        $aRMSCRCount = is_array($arscr_itmid) ? count($arscr_itmid) : 0;
 
         $delcd_cust = '';
         $rsdelcd = $this->DELV_mod->selectDELCD_where(['MDEL_DELCD' => $consignee]);
@@ -2120,6 +2127,7 @@ class DELV extends CI_Controller {
             $newLine_pkg = $this->DELV_mod->select_lastline_pkg($doNum)+1;
             $newLine_rmFromDO = $this->DLVRMDOC_mod->select_lastline($doNum)+1;
             $newLine_rmFromSO = $this->DLVRMSO_mod->select_lastline($doNum)+1;
+            $newLine_rmFromSCR = $this->DLVSCR_mod->select_lastline($doNum)+1;
 
             #insert & update delivery
             if($rmbooked==0){
@@ -2338,6 +2346,28 @@ class DELV extends CI_Controller {
             }
             #end
 
+            $saveRows = [];
+            for ($i=0; $i<$aRMSCRCount; $i++) {
+                if($armscr_itmLINE[$i]==='') {
+                    $saveRows[] = [
+                        'DLVSCR_TXID' =>  $doNum
+                        ,'DLVSCR_ITMID' =>  $arscr_itmid[$i]
+                        ,'DLVSCR_ITMQT' =>  str_replace(',','',$armscr_itmQT[$i])
+                        ,'DLVSCR_PRPRC' =>  $armscr_itmPRC[$i]
+                        ,'DLVSCR_LINE' =>  $newLine_rmFromSCR++
+                    ];
+                } else {
+                    $this->DLVSCR_mod->updatebyVAR([
+                        'DLVSCR_ITMQT' => str_replace(',','',$armscr_itmQT[$i]),
+                        'DLVSCR_PRPRC' => $armscr_itmPRC[$i],
+                    ], 
+                    ['DLVSCR_TXID' => $doNum, 'DLVSCR_LINE' => $armscr_itmLINE[$i]]);
+                }
+            }
+            if(!empty($saveRows)) {
+                $this->DLVSCR_mod->insertb($saveRows);
+            }
+
             $myar[] = ['cd' => '11', 'msg' => 'Updated'];
             die('{"status":'.json_encode($myar).'}');
         } else {
@@ -2441,6 +2471,21 @@ class DELV extends CI_Controller {
             if(count($saveRows)){
                 $this->DLVRMSO_mod->insertb($saveRows);
             }
+
+            $saveRows = [];
+            for ($i=0; $i<$aRMSCRCount; $i++) {
+                $saveRows[] = [
+                    'DLVSCR_TXID' =>  $ctxid
+                    ,'DLVSCR_ITMID' =>  $arscr_itmid[$i]
+                    ,'DLVSCR_ITMQT' =>  str_replace(',','',$armscr_itmQT[$i])                                 
+                    ,'DLVSCR_PRPRC' =>  $armscr_itmPRC[$i]
+                    ,'DLVSCR_LINE' =>  $i+1
+                ];
+            }
+            if(count($saveRows)){
+                $this->DLVSCR_mod->insertb($saveRows);
+            }
+
             $myar[] = ['cd' => '1', 'msg' => 'Saved', 'dono' => $ctxid];
             die('{"status":'.json_encode($myar).'}');
         }

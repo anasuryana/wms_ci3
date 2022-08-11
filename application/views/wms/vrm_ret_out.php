@@ -3731,20 +3731,8 @@
             alertify.warning(`Please select consignee first`)
             consignee.focus()
             return
-        }
-        // if(transportNum.value==='-'){
-        //     alertify.warning(`Please select transportaion first`)
-        //     transportNum.focus()
-        //     return
-        // }
-        const aTransport = transportNum.value.split('_')
-
-        // if(mdokumenpab.value==='-'){
-        //     alertify.warning(`Please select customs document first`)
-        //     mdokumenpab.focus()
-        //     return
-        // }
-        
+        }        
+        const aTransport = transportNum.value.split('_')        
         if(retrm_out_inc_custcd==='-'){
             alertify.warning(`Please select customer first`)            
             return
@@ -3787,6 +3775,11 @@
         let armso_itmCPOLINE = []
         let armso_itmPRC = []
         let armso_itmLINE = []
+
+        let armscr_itmID = []
+        let armscr_itmQT = []        
+        let armscr_itmPRC = []
+        let armscr_itmLINE = []
     
         let iscontainScrap = false
         let mitemcode = ''
@@ -3862,6 +3855,17 @@
             armso_itmPRC.push(tableku2.rows[i].cells[5].innerText)
         }
 
+        mtbl = document.getElementById('retrm_out_limbah_barang_tbl')
+        tableku2 = mtbl.getElementsByTagName("tbody")[0]
+        mtbltr = tableku2.getElementsByTagName('tr')
+        ttlrows = mtbltr.length
+        
+        for(let i=0; i<ttlrows; i++){
+            armscr_itmLINE.push(tableku2.rows[i].cells[0].innerText)
+            armscr_itmID.push(tableku2.rows[i].cells[1].innerText)
+            armscr_itmQT.push(numeral(tableku2.rows[i].cells[2].innerText).value())
+            armscr_itmPRC.push(numeral(tableku2.rows[i].cells[3].innerText).value())
+        }
 
         if(mlocfrom.value==='-' && !iscontainScrap){
             alertify.warning('Location from is required')
@@ -3921,6 +3925,10 @@
                     ,armso_itmCPOLINE: armso_itmCPOLINE
                     ,armso_itmPRC: armso_itmPRC
                     ,armso_itmLINE: armso_itmLINE
+                    ,armscr_itmID: armscr_itmID
+                    ,armscr_itmQT: armscr_itmQT
+                    ,armscr_itmPRC: armscr_itmPRC
+                    ,armscr_itmLINE: armscr_itmLINE
                 },
                 dataType: "json",
                 success: function (response) {
