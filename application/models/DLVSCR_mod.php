@@ -43,4 +43,15 @@ class DLVSCR_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+
+    public function select_lastline($pdoc){
+        $qry = "SELECT MAX(DLVSCR_LINE) lser FROM ".$this->TABLENAME." WHERE DLVSCR_TXID=?";
+        $query = $this->db->query($qry, [$pdoc]);
+        if ($query->num_rows()>0){
+            $ret = $query->row();
+            return $ret->lser;
+        } else {
+            return 0;
+        }
+    }
 }
