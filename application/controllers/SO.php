@@ -12,6 +12,7 @@ class SO extends CI_Controller {
         $this->load->model('DELV_mod');
         $this->load->model('XSO_mod');
         $this->load->model('SO_mod');
+        $this->load->model('DLVSO_mod');
 	}
 	public function index()
 	{
@@ -60,40 +61,29 @@ class SO extends CI_Controller {
 		$cqty    = intval(str_replace(',','',$this->input->post('inqty'))) ;
 		$cdelsch    = $this->input->post('indelsch');
 				
-		$crowid    	= $this->input->post('inrowid');
-		$datac 		= ['SO_NO' => $cdo, 'SO_ORDRDT' => $corderdate, 'SO_ITEMCD' => $citemcode];
-        $myar 		= array();
-        // if($this->SO_mod->check_Primary($datac)==0){                      
-			$datas = [
-				'SO_NO' => $cdo
-				,'SO_ORDRDT' => $corderdate
-				,'SO_ORDRQT' => $cqty
-				,'SO_ITEMCD' => $citemcode
-				,'SO_BG' => $cbg
-				,'SO_CUSCD' => $ccust
-				,'SO_DELCD' => $cconsig
-				,'SO_DELSCH' => $cdelsch
-				,'SO_LINENO' => $cdo."-".$crowid
-				,'SO_LINE' => $crowid
-				,'SO_LUPDT' => $currrtime
-				,'SO_USRID' => $this->session->userdata('nama')
-            ];
-            $toret = $this->SO_mod->insert($datas);
-            
-			if($toret>0){
-				$anar = array("indx" => $crowid, "status"=> 'Saved');
-			} else {
-				$anar = array("indx" => $crowid, "status"=> 'Could not save');
-			}            
-        // } else {
-        //     $datau = ['SO_ORDRQT' => $cqty];
-        //     $retupdate = $this->SO_mod->updatebyId($datau, $datac);
-        //     if($retupdate>0){
-        //         $anar = array("indx" => $crowid, "status"=> 'updated');
-        //     } else {
-        //         $anar = array("indx" => $crowid, "status"=> 'could not update'); 
-        //     }
-        // }
+		$crowid    	= $this->input->post('inrowid');		
+        $myar 		= array();                           
+        $datas = [
+            'SO_NO' => $cdo
+            ,'SO_ORDRDT' => $corderdate
+            ,'SO_ORDRQT' => $cqty
+            ,'SO_ITEMCD' => $citemcode
+            ,'SO_BG' => $cbg
+            ,'SO_CUSCD' => $ccust
+            ,'SO_DELCD' => $cconsig
+            ,'SO_DELSCH' => $cdelsch
+            ,'SO_LINENO' => $cdo."-".$crowid
+            ,'SO_LINE' => $crowid
+            ,'SO_LUPDT' => $currrtime
+            ,'SO_USRID' => $this->session->userdata('nama')
+        ];
+        $toret = $this->SO_mod->insert($datas);
+        
+        if($toret>0){
+            $anar = array("indx" => $crowid, "status"=> 'Saved');
+        } else {
+            $anar = array("indx" => $crowid, "status"=> 'Could not save');
+        }
         array_push($myar, $anar);
         echo json_encode($myar);
     }
@@ -405,10 +395,7 @@ class SO extends CI_Controller {
         $items[] = $soitem;
         foreach($rs as $r) {
             $bg = $r['DLV_BSGRP'];
-            $cuscd = $r['DLV_CUSTCD'];            
-            // if(!in_array($r['SER_ITMID'], $items)) {
-            //     $items[] = $r['SER_ITMID'];
-            // }
+            $cuscd = $r['DLV_CUSTCD'];
         }
         $columns = ['RTRIM(SSO2_CPONO) SSO2_CPONO' , 'SSO2_ORDQT','SSO2_DELQT', 'SSO2_DELCD', 'RTRIM(SSO2_MDLCD) SSO2_MDLCD', 'SSO2_SLPRC','SSO2_SOLNO','(SSO2_ORDQT-SSO2_DELQT) BALQT'];
 		$where = ['SSO2_BSGRP' => $bg, 'SSO2_CUSCD' => $cuscd, 'SSO2_CPOTYPE' => 'CPO' , 'SSO2_COMFG' => '0', 'SSO2_CPONO' => $sono, 'SSO2_SOLNO' => $soline];
@@ -478,4 +465,14 @@ class SO extends CI_Controller {
         die(json_encode(['data' => $rsplot, "rs" => $rs, "rsos" => $rsos]));
     }
 
+    function cancel_soexim_plot()
+    {
+        header('Content-Type: application/json');
+        $doc = $this->input->post('doc');
+        $itemcode = $this->input->post('itemcode');
+        $myar = $this->DLVSO_mod->deletebyID(['DLVSO_DLVID' => $doc, 'DLVSO_ITMCD' => $itemcode]) ? 
+            ['cd' => '1', 'msg' => 'OK'] :
+            ['cd' => '0', 'msg' => 'Sorry'];
+        die(json_encode(['status' => $myar]));
+    }
 }

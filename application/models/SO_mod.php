@@ -70,6 +70,34 @@ class SO_mod extends CI_Model {
 		return $query->result_array();
     }
 
+    public function select_soeximplot_vs_dlv($pwhere){
+        $this->db->from('wms_v_soplot_vs_dlv');
+        $this->db->where($pwhere);
+        $this->db->order_by('TGLPEN');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
+    public function select_soexim_master($pwhere) {
+        $this->db->select("SO_ITEMCD,RTRIM(MITM_ITMD1) ITMD1,SUM(SO_ORDRQT) ORDQT");
+        $this->db->join("MITM_TBL","SO_ITEMCD=MITM_ITMCD");
+        $this->db->from($this->TABLENAME);
+        $this->db->where($pwhere);
+        $this->db->group_by("SO_ITEMCD,MITM_ITMD1");
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
+    function select_soexim_h_like($pLike){
+        $this->db->select("SO_NO,SO_ORDRDT,COUNT(*) TTLROWS");
+        $this->db->from($this->TABLENAME);
+        $this->db->join('MITM_TBL', "SO_ITEMCD=MITM_ITMCD", "LEFT");
+        $this->db->group_by("SO_NO,SO_ORDRDT");
+        $this->db->like($pLike);
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
     public function select_ost_withouttxid($pbg, $pcus, $pconsign, $ptxid) {
         $qry = "SELECT V1.*,ISNULL(TTLUSEQT,0) TTLUSEQT, (ORDQT-ISNULL(TTLUSEQT,0)) BALQT  FROM
         (select SO_NO,SO_BG,SO_CUSCD,SO_ITEMCD,SUM(SO_ORDRQT) ORDQT,SO_DELCD,MAX(SO_ORDRDT) SO_ORDRDT from SO_TBL
