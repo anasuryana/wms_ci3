@@ -1706,17 +1706,12 @@
     function txfg_btn_flagOK_eCK() {
         const sekarang = moment()
         const batas1 = moment('07:00:00', 'HH:mm:ss')
-        const batas2 = moment('16:00:00', 'HH:mm:ss')
-        // if(sekarang.isBetween(batas1, batas2)) {
-        //     alertify.message("it is not your time, for now")
-        //     return
-        // }
+        const batas2 = moment('16:00:00', 'HH:mm:ss')        
         if(!txfg_isRecalculateFunAlreadytried) {
             alertify.warning('Please try recalculate first')
             return
         }
-        const btnCK = document.getElementById('txfg_btn_recalculate')
-        // const btnFLG = document.getElementById('txfg_btn_flagOK')
+        const btnCK = document.getElementById('txfg_btn_recalculate')        
         let tabel_PLOT = document.getElementById("txfg_tbltxrm")
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0]
         const ttlrows = tabel_PLOT_body0.getElementsByTagName('tr').length
@@ -1760,8 +1755,7 @@
         }
     }
     function txfg_btn_recalculate_eCK() {
-        const btnCK = document.getElementById('txfg_btn_recalculate')
-        // const btnFLG = document.getElementById('txfg_btn_flagOK')
+        const btnCK = document.getElementById('txfg_btn_recalculate')        
         let tabel_PLOT = document.getElementById("txfg_tbltxrm")
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0]
         const ttlrows = tabel_PLOT_body0.getElementsByTagName('tr').length
@@ -1775,8 +1769,7 @@
         }
         if(serlist.length>0) {            
             if(confirm("Are you sure ?")) {
-                btnCK.disabled = true
-                // btnFLG.disabled = true
+                btnCK.disabled = true                
                 btnCK.innerHTML = "Please wait"
                 txfg_isRecalculateFunAlreadytried = true
                 $.ajax({
@@ -1786,15 +1779,13 @@
                     dataType: "JSON",
                     success: function (response) {
                         btnCK.innerHTML = "Recalculate"
-                        btnCK.disabled = false
-                        // btnFLG.disabled = false
+                        btnCK.disabled = false                        
                         $("#TXFG_MODRM").modal('hide')
                         const mtxid = document.getElementById("txfg_txt_id").value
                         txfg_f_getdetail(mtxid)
                     }, error(xhr, xopt, xthrow){
                         btnCK.innerHTML = "Recalculate"
-                        btnCK.disabled = false
-                        // btnFLG.disabled = false
+                        btnCK.disabled = false                        
                         alertify.error(xthrow)
                     }
                 })
