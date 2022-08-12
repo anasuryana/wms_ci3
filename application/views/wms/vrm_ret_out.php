@@ -2277,6 +2277,36 @@
             alertify.message('nothing will be deleted')
         }
     }
+    function retrm_out_soeximscr_remrow(rindex){
+        if(rindex>0){
+            const txid = document.getElementById('retrm_out_inc_txt_DO').value
+            const mytable = document.getElementById('retrm_out_limbah_barang_tbl').getElementsByTagName('tbody')[0]
+            const mtr = mytable.getElementsByTagName('tr')[rindex-1]
+            const mylineid = mtr.getElementsByTagName('td')[0].innerText.trim()
+            if(mylineid!==''){
+                if(confirm("Are you sure ?")) {
+                    $.ajax({
+                        type: "post",
+                        url: "<?=base_url('DELV/remove_delv_scr')?>",
+                        data: {txid: txid, line : mylineid},
+                        dataType: "JSON",
+                        success: function (response) {
+                            if(response.status[0].cd===1){
+                                alertify.success(response.status[0].msg)
+                                mtr.remove()
+                            } else {
+                                alertify.message(response.status[0].msg)
+                            }
+                        }
+                    })
+                }
+            } else {
+                mtr.remove()
+            }
+        } else {
+            alertify.message('nothing will be deleted')
+        }
+    }
 
     function retrm_out_doprc_selitem_eCH(){
         document.getElementById('retrm_out_txt_doprc_search').focus();
@@ -3430,11 +3460,8 @@
                     newcell.innerHTML = response.data_rmso[i].DLVRMSO_PRPRC.substr(0,1)=='.' ? '0'+response.data_rmso[i].DLVRMSO_PRPRC : response.data_rmso[i].DLVRMSO_PRPRC                    
                     newcell = newrow.insertCell(6)
                     newcell.onclick = function(event) {
-                        if(event.srcElement.tagName==='SPAN') {
-                            retrm_out_inc_selected_row = event.srcElement.parentElement.parentElement.rowIndex
-                        } else {                            
-                            retrm_out_inc_selected_row = event.srcElement.parentElement.rowIndex
-                        }
+                        retrm_out_inc_selected_row = event.srcElement.tagName==='SPAN' ? event.srcElement.parentElement.parentElement.rowIndex
+                        : event.srcElement.parentElement.rowIndex                        
                         retrm_out_soprc_remrow()
                     }
                     newcell.style.cssText = 'cursor:pointer'
@@ -3471,6 +3498,11 @@
                     newcell.innerHTML = numeral(response.data_scr[i].DLVSCR_PRPRC).format(',')
                     newcell.contentEditable = true
                     newcell = newrow.insertCell(4)
+                    newcell.onclick=(event)=> {     
+                        let gindex = event.srcElement.tagName==='SPAN' ? event.srcElement.parentElement.parentElement.rowIndex
+                        : event.srcElement.parentElement.rowIndex
+                        retrm_out_soeximscr_remrow(gindex)
+                    }
                     newcell.style.cssText = 'cursor:pointer'
                     newcell.classList.add('text-center')
                     newcell.innerHTML = '<span class="fas fa-trash text-danger"></span>'
@@ -3678,6 +3710,7 @@
         newcell.contentEditable = true
         newcell.title ='Item type'        
     }
+    
     function retrm_out_inc_btnadd(){        
         retrm_out_inc_addrow1()
         const mytbody = document.getElementById('retrm_out_inc_tbl').getElementsByTagName('tbody')[0]
@@ -4639,7 +4672,6 @@
             aItem.push(tableku2.rows[i].cells[0].innerText)
             aItemQTY.push(actqty)            
         }        
-        // document.getElementById('retrm_out_cmb_locfrom').value = wh
                 
         let newrow, newcell
         for(let i=0; i<ttlrows; i++){
@@ -4732,5 +4764,36 @@
                 }
             })
         }
+    }
+    function retrm_out_inc_addrow_scr(){
+        let mytbody = document.getElementById('retrm_out_limbah_barang_tbl').getElementsByTagName('tbody')[0]
+        let newrow , newcell        
+        newrow = mytbody.insertRow(-1)        
+        
+        newcell = newrow.insertCell(0)
+        newcell.classList.add('d-none')
+        newcell.innerHTML = ''
+
+        newcell = newrow.insertCell(1)        
+        newcell.contentEditable = true
+        newcell.focus()
+
+        newcell = newrow.insertCell(2)
+        newcell.contentEditable = true
+        newcell.classList.add('text-end')
+        newcell.innerHTML = '0'
+        
+        newcell = newrow.insertCell(3)
+        newcell.classList.add('text-end')
+        newcell.contentEditable = true
+        newcell.innerHTML = ''
+        
+        newcell = newrow.insertCell(4)
+        newcell.classList.add('text-center')
+        newcell.innerHTML = `<span class="fas fa-trash text-danger"></span>`
+        
+    }
+    function retrm_out_limbah_barang_tbl_add_eCK() {
+        retrm_out_inc_addrow_scr()
     }
 </script>

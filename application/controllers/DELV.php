@@ -2035,6 +2035,22 @@ class DELV extends CI_Controller {
         }
         die(json_encode(['status' => $myar]));
     }	
+    public function remove_delv_scr() {
+        header('Content-Type: application/json');
+        $txid = $this->input->post('txid');
+        $line = $this->input->post('line');
+        if($this->ZRPSTOCK_mod->check_Primary(['RPSTOCK_REMARK' => $txid])){
+            $myar[] = ['cd' => 0, 'msg' => 'Could not be deleted, it was already booked'];
+        } else {
+            $ret = $this->DLVSCR_mod->deletebyID(['DLVSCR_TXID' => $txid, 'DLVSCR_LINE' => $line]);
+            if($ret) {
+                $myar[] = ['cd' => 1, 'msg' => 'OK'];
+            } else {
+                $myar[] = ['cd' => 0, 'msg' => 'Could not be deleted'];
+            }
+        }
+        die(json_encode(['status' => $myar]));
+    }	
     
     public function set_rm(){
         header('Content-Type: application/json');
