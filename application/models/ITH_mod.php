@@ -1751,6 +1751,7 @@ class ITH_mod extends CI_Model {
 			AND ITH_DATEC<=?
 			AND ITH_ITMCD IN ($aItems)
 			AND ISNULL(SER_RMRK,'') not like '%scrap%'
+			AND ISNULL(SER_RMRK,'') not like '%sample%'
 			GROUP BY ITH_ITMCD
 		) V1
 		LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD";
