@@ -115,12 +115,12 @@ class User extends CI_Controller {
     
     function setnewpw()
     {
-        $datakey = array(
-            'lower(MSTEMP_ID)' => strtolower($this->input->get('inUID'))
-        );
-        $datanya = array(
-            'MSTEMP_PW' => hash('sha256',$this->input->get('inPw'))
-        );
+        $datakey = [
+            'lower(MSTEMP_ID)' => strtolower($this->input->post('inUID'))
+        ];
+        $datanya = [
+            'MSTEMP_PW' => hash('sha256',$this->input->post('inPw'))
+        ];
         $hasila = $this->Usr_mod->updatepassword($datanya,$datakey);
         if ($hasila>0){
             echo "berhasil";
