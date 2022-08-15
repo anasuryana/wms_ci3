@@ -75,17 +75,10 @@ class User extends CI_Controller {
     }
 
     function resetpassword(){
-        $newpw = $this->input->get('innewpw');
-        $theid = $this->input->get('inid');
-
-        $data2 = array(
-            'MSTEMP_PW' => hash('sha256', $newpw),
-			'MSTEMP_PWHT' => $newpw
-        );
-
-        $datakey = array(
-            'lower(MSTEMP_ID)' => strtolower($theid)
-        );
+        $newpw = $this->input->post('innewpw');
+        $theid = $this->input->post('inid');
+        $data2 = $this->input->post('apptype') === 'webapp' ?  [ 'MSTEMP_PW' => hash('sha256', $newpw) ] : [ 'MSTEMP_PWHT' => $newpw ];
+        $datakey = [ 'lower(MSTEMP_ID)' => strtolower($theid) ];
         $toret = $this->Usr_mod->updatepassword($data2, $datakey);
         echo $toret;
     }

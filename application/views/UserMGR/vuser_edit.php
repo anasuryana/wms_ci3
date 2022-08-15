@@ -23,24 +23,25 @@
                         <?php }          }?>
                     </select>
                 </div>
-            </div>                
+            </div>
             <div class="col-md-5 mb-1">
-                <div class="input-group input-group-sm mb-2">                    
-                    <span class="input-group-text" >Status</span>                    
+                <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text" >Status</span>
                     <select class="form-select" id="user_cmb_active" required>
                         <option value="1">Active</option>
                         <option value="0">Inactive</option>
                     </select>
                 </div>
-            </div>                
+            </div>
         </div>
-        <div class="row">				
+        <div class="row">
             <div class="col-md-12 mb-3 text-center">
                 <div class="btn-group btn-group-sm" role="group">
                     <button id="btnEditUser" class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Save</button>
-                    <button id="btnResetUser" class="btn btn-warning">Reset Password</button>
+                    <button id="btnResetUser" class="btn btn-outline-warning">Reset Password</button>
+                    <button id="btnResetUserht" class="btn btn-outline-warning" onclick="btnResetUserht_eClick()">Reset HT Password</button>
                 </div>
-            </div>					
+            </div>
         </div>
         <div class="row">
             <div class="col-md-12 mb-1">
@@ -79,19 +80,25 @@
         <div class="modal-body">
             <div class="col-md-12 order-md-1">
                 <div class="row">
-                    <div class="col-md-12 mb-1">
-                        <div class="input-group mb-1">                            
-                            <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>                            
-                            <input type="password" class="form-control" id="vuser_txtnewpassword" placeholder="Enter new Password here" maxlength="10">                           
+                    <div class="col-md-9 mb-1">
+                        <div class="input-group mb-1">
+                            <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>
+                            <input type="password" class="form-control" id="vuser_txtnewpassword" placeholder="Enter new Password here" onkeyup="vuser_txtnewpassword_eKeyUp(event)">
                         </div>
+                    </div>
+                    <div class="col-md-3 mb-1" id="vuser_newpw_div">
+                        
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 mb-1">
-                        <div class="input-group mb-1">                            
-                            <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>                            
-                            <input type="password" class="form-control" id="vuser_txtnewpassword_c" placeholder="Confirm new Password here" maxlength="10">
+                    <div class="col-md-9 mb-1">
+                        <div class="input-group mb-1">
+                            <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>
+                            <input type="password" class="form-control" id="vuser_txtnewpassword_c" placeholder="Confirm new Password here" >
                         </div>
+                    </div>
+                    <div class="col-md-3 mb-1">
+                        
                     </div>
                 </div>
             </div>         
@@ -105,39 +112,99 @@
       </div>
     </div>
 </div>
+<div class="modal fade" id="MDHRIS_EMPL_RESET_HT">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Reset Handy Terminal Password</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="col-md-12 order-md-1">
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <div class="input-group mb-1">                            
+                            <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>                            
+                            <input type="password" class="form-control" id="vuser_txtnewpassword_ht" placeholder="Enter new Password here">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <div class="input-group mb-1">                            
+                            <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>                            
+                            <input type="password" class="form-control" id="vuser_txtnewpassword_c_ht" placeholder="Confirm new Password here" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer text-center">
+            <button class="btn btn-secondary" id="btnresetpasswordnew_ht"><i class="fas fa-check"></i></button>
+        </div>
+        
+      </div>
+    </div>
+</div>
 <script>
 	var isEditMode_um=1;
 	var sourceArr = [];
     var cuserid = '';    
     var tableusr = $('#tblUserInfo').DataTable();
-    initdataUSRList();    
+    initdataUSRList()
+
+    function vuser_txtnewpassword_eKeyUp(e){
+        let statusPW = smtPWValidator(e.target.value)
+        if(statusPW.cd==='1') {
+            vuser_newpw_div.innerHTML = `<span class="badge bg-success">${statusPW.msg}</span>`
+        } else {
+            vuser_newpw_div.innerHTML = `<span class="badge bg-warning">${statusPW.msg}</span>`
+        }
+    }
     
     $("#btnResetUser").click(function(){
-        if(cuserid!=''){
+        if(cuserid!==''){
             $("#MDHRIS_EMPL_RESET").modal('show');
         } else {
             alert('please select user data first');
-        }        
-    });
+        }
+    })
+    function btnResetUserht_eClick() {
+        if(cuserid!==''){
+            $("#MDHRIS_EMPL_RESET_HT").modal('show');
+        } else {
+            alert('please select user data first');
+        }
+    }
     $("#btnresetpasswordnew").click(function(){
-        fvuser_reset();
-    });
-    function fvuser_reset(){
-        var newpw = $("#vuser_txtnewpassword").val();
-        var newpw_c = $("#vuser_txtnewpassword_c").val();
-        if(newpw!=newpw_c){
+        let newpw = $("#vuser_txtnewpassword").val();
+        let newpw_c = $("#vuser_txtnewpassword_c").val();
+        if(newpw!==newpw_c){
             alert('password does not match');
             $("#vuser_txtnewpassword_c").focus();
         } else {
-            var konfr = confirm('Are you sure ?');
-            if (konfr){
+            let statusPW = smtPWValidator(newpw)
+            if(statusPW.cd==='1') {
+                vuser_newpw_div.innerHTML = `<span class="badge bg-success">${statusPW.msg}</span>`
+            } else {
+                vuser_newpw_div.innerHTML = `<span class="badge bg-warning">${statusPW.msg}</span>`
+                vuser_txtnewpassword.focus()
+                return
+            }
+            if (confirm('Are you sure ?')){
                 jQuery.ajax({
-                    type: "get",
-                    url: "<?php echo base_url();?>" + "User/resetpassword",
-                    dataType: "json",
-                    data: {innewpw : newpw_c, inid: cuserid},
+                    type: "post",
+                    url: "<?=base_url("User/resetpassword")?>",
+                    dataType: "text",
+                    data: {innewpw : newpw_c, inid: cuserid , apptype: 'webapp'},
                     success:function(response) {
-                        if(response=='1'){                            
+                        if(response=='1'){
                             $("#MDHRIS_EMPL_RESET").modal('hide');
                             alertify.notify("password was reseted");
                         }
@@ -145,10 +212,41 @@
                     error:function(xhr,ajaxOptions, throwError) {
                         alert(throwError);
                     }
-                });
+                })
             }
         }
-    }
+    })   
+    $("#btnresetpasswordnew_ht").click(function(){
+        let newpw = $("#vuser_txtnewpassword_ht").val();
+        let newpw_c = $("#vuser_txtnewpassword_c_ht").val();
+        if(newpw!==newpw_c){
+            alert('password does not match');
+            $("#vuser_txtnewpassword_c_ht").focus();
+        } else {
+            if(newpw.length<7) {
+                alertify.warning('at least 7 character')
+                vuser_txtnewpassword_ht.focus()
+                return
+            }
+            if (confirm('Are you sure ?')){
+                jQuery.ajax({
+                    type: "post",
+                    url: "<?=base_url("User/resetpassword")?>",
+                    dataType: "text",
+                    data: {innewpw : newpw_c, inid: cuserid , apptype: 'htapp'},
+                    success:function(response) {
+                        if(response=='1'){
+                            $("#MDHRIS_EMPL_RESET_HT").modal('hide');
+                            alertify.notify("HT password was reseted");
+                        }
+                    },
+                    error:function(xhr,ajaxOptions, throwError) {
+                        alert(throwError);
+                    }
+                })
+            }
+        }
+    })   
     
     function initdataUSRList(){
         tableusr = $('#tblUserInfo').DataTable({
@@ -196,8 +294,8 @@
         }                
 		isEditMode_um=1;
 		
-        var pos = tableusr.row(this).index();
-        var row = tableusr.row(pos).data();
+        const pos = tableusr.row(this).index();
+        const row = tableusr.row(pos).data();
         cuserid = row["MSTEMP_ID"];
         $("#cmbGroup").val(row["MSTEMP_GRP"]);
         $("#txtUSR_nmf_e").val(row["MSTEMP_FNM"]);
@@ -205,19 +303,19 @@
         document.getElementById('user_cmb_active').value = row["MSTEMP_STS"];
     });
 	
-	$('#btnEditUser').click( function() {		
+	$('#btnEditUser').click( function() {
 		let nmf = $("#txtUSR_nmf_e").val();
 		let nml = $("#txtUSR_nml_e").val();
-        let grp = $("#cmbGroup").val();        
+        let grp = $("#cmbGroup").val();
         let sts = document.getElementById('user_cmb_active').value;
-        if(cuserid==""){
+        if(cuserid.length===0){
             alertify.warning("Select the data on the table below first");
             return;
-        }
+        }        
         if(confirm("Are you sure ?")){
             jQuery.ajax({
                 type: "get",
-                url: "<?php echo base_url();?>" + "User/change",
+                url: "<?=base_url("User/change")?>",
                 dataType: "text",
                 data: {inUsrid: cuserid , inNMF : nmf, inNML : nml, inUsrGrp: grp, insts: sts },
                 success:function(response) {
