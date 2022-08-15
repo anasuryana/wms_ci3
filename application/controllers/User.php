@@ -118,28 +118,28 @@ class User extends CI_Controller {
         $datakey = [
             'lower(MSTEMP_ID)' => strtolower($this->input->post('inUID'))
         ];
-        $datanya = [
-            'MSTEMP_PW' => hash('sha256',$this->input->post('inPw'))
-        ];
+        $datanya = $this->input->post('apptype') === 'webapp' ? 
+            [ 'MSTEMP_PW' => hash('sha256',$this->input->post('inPw')) ] 
+            : [ 'MSTEMP_PWHT' => $this->input->post('inPw') ];
         $hasila = $this->Usr_mod->updatepassword($datanya,$datakey);
         if ($hasila>0){
             echo "berhasil";
         } else {
             echo "belum berhasil";
         }
-    }
+    } 
 
     function getactivated(){
         date_default_timezone_set('Asia/Jakarta');
         $currrtime = date('Y-m-d H:i:s');
         $usrid = $this->input->get('inUsr');
         $group = $this->input->get('inGroup');
-        $data1 = array(
+        $data1 = [
             'MSTEMP_GRP' => $group,
             'MSTEMP_ACTSTS' => true,
             'MSTEMP_STS' => true,
             'MSTEMP_ACTTM' => $currrtime
-        );
+        ];
         $hasila = $this->Usr_mod->updatebyId($data1,$usrid);
         echo $hasila;
     }
@@ -152,14 +152,12 @@ class User extends CI_Controller {
     function register(){
         date_default_timezone_set('Asia/Jakarta');
         $currrtime = date('Y-m-d H:i:s');
-        $data = array(
-            'lower(MSTEMP_ID)' => strtolower($this->input->get('inUsrid'))
-        );
+        $data = ['lower(MSTEMP_ID)' => strtolower($this->input->get('inUsrid'))];
         if ($this->Usr_mod->check_Primary($data)>0)
         {
             echo "ada";
         } else {
-            $data2 = array(
+            $data2 = [
                 'MSTEMP_ID' => $this->input->get('inUsrid'),
                 'MSTEMP_PW' => hash('sha256',$this->input->get('inPW')),
                 'MSTEMP_PWHT' => $this->input->get('inPW'),
@@ -171,7 +169,7 @@ class User extends CI_Controller {
                 'MSTEMP_STS' => TRUE,
                 'MSTEMP_ACTTM' => $currrtime,
                 'MSTEMP_GRP' => $this->input->get('inUsrGrp')
-            );
+            ];
             $h = $this->Usr_mod->insert($data2);
             echo $h;
         }

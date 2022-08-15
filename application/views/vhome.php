@@ -76,12 +76,12 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="TabChildPWHT" role="tabpanel">
-                            <div class="container-fluid">								 
+                            <div class="container-fluid">
                                 <div class="row mt-3">
                                     <div class="col mb-1">
                                         <div class="input-group input-group-sm mb-1">
                                             <span class="input-group-text" >New Password</span>
-                                            <input type="password" class="form-control" id="txtnewpw_ht" required onkeyup="txtnewpw_ht_eKeyUp(event)">
+                                            <input type="password" class="form-control" id="txtnewpw_ht" required>
                                         </div>
                                     </div>
                                 </div>
@@ -185,7 +185,7 @@
         } else {
             newpwweb_div.innerHTML = `<span class="badge bg-warning">${statusPW.msg}</span>`
         }
-     }	
+     }
 
     function btncommit_changepw_e_click(){
         let a = getOldPW()
@@ -206,7 +206,7 @@
                         type: "POST",
                         url: "<?=base_url('user/setnewpw')?>",
                         dataType: "text",
-                        data: {inUID : uidnya,inPw: txtNewPW.value },
+                        data: {inUID : uidnya,inPw: txtNewPW.value,apptype : 'webapp' },
                         async: false,
                         success:function(response) {
                             alert(response);
@@ -216,13 +216,42 @@
                         }
                     })
                 }
-            } else {                
+            } else {
                 txtConfirmPW.focus()
                 alert('Password does not match with the confirmation');
             }
         } else {    
             alertify.message("Invalid old password");
             $('#txtoldpw').focus();    
+        }
+    }
+
+    function btncommit_changepw_ht_e_click() {
+        const txtNewPW = document.getElementById('txtnewpw_ht')
+        const txtConfirmPW = document.getElementById('txtconfirmpw_ht')
+        if(txtNewPW.value === txtConfirmPW.value){
+            if(txtNewPW.value.trim().length<7) {
+                alertify.warning(`at least 7 characters`)
+                return
+            }
+            if(confirm("Are you sure ?")){
+                $.ajax({
+                    type: "POST",
+                    url: "<?=base_url('user/setnewpw')?>",
+                    dataType: "text",
+                    data: {inUID : uidnya,inPw: txtNewPW.value, apptype: 'htapp' },
+                    async: false,
+                    success:function(response) {
+                        alert(response);
+                    },
+                    error:function(xhr,ajaxOptions, throwError) {
+                        alert(throwError);
+                    }
+                })
+            }
+        } else {
+            txtConfirmPW.focus()
+            alert('Password does not match with the confirmation');
         }
     }
 
