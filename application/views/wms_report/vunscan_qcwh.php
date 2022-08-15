@@ -91,7 +91,7 @@
                 let cln = mtabel.cloneNode(true);
                 myfrag.appendChild(cln);                    
                 let tabell = myfrag.getElementById("runscan_qcwh_tbl");                    
-                let tableku2 = tabell.getElementsByTagName("tbody")[0];//document.getElementById("rprod_tblwo").getElementsByTagName("tbody")[0];
+                let tableku2 = tabell.getElementsByTagName("tbody")[0]
                 let newrow, newcell, newText;
                 tableku2.innerHTML='';
                 let tmpnomor = '';
