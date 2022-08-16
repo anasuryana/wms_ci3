@@ -64,7 +64,7 @@
             </div>
             <div class="col-md-6 mb-3 text-end">
                 <div class="btn-group btn-group-sm">
-                    <button title="New" id="sup_btnsync" class="btn btn-primary" onclick="sup_sync(this)">Synchronize</button>
+                    <!-- <button title="New" id="sup_btnsync" class="btn btn-primary" onclick="sup_sync(this)">Synchronize</button> -->
                 </div>
             </div>
         </div>        
