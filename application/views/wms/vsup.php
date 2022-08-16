@@ -222,7 +222,7 @@
             $.ajax({
                 type: "post",
                 url: "<?=base_url('MSTSUP/set')?>",
-                data: {incd: mcd, incur: mcur, innm: mnm, inabbr: mabbr, inaddr: maddr,mphone: mphone, mfax: mfax },
+                data: {incd: mcd, incur: mcur, innm: mnm, inabbr: mabbr, inaddr: maddr,mphone: mphone, mfax: mfax, mtax: mtax },
                 dataType: "text",
                 success: function (response) {
                     alertify.message(response);
