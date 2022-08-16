@@ -16,6 +16,12 @@ class MSTSUP_mod extends CI_Model {
         $this->db->update($this->TABLENAME, $pdata);
         return $this->db->affected_rows();
     }
+	public function update_where($pdata, $pwhere)
+    {        
+        $this->db->where($pwhere);
+        $this->db->update($this->TABLENAME, $pdata);
+        return $this->db->affected_rows();
+    }
 	public function selectAll()
 	{
 		$this->db->select("MSUP_SUPCD,MSUP_SUPCR,MSUP_SUPNM,MSUP_ABBRV,MSUP_ADDR1");
