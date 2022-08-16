@@ -1676,7 +1676,7 @@ class SI extends CI_Controller {
                         
                                     $pdf->SetXY(7,$cY);
                                     $pdf->Cell(10,5, $todis_no ,1,0,'L');
-                                    $pdf->Cell(30,5, $todis ."|".$olditem_diff ,1,0,'L');					
+                                    $pdf->Cell(30,5, $todis ,1,0,'L');					
                                     $pdf->Cell(25,5, $olditem ,1,0,'L');
                                     $ttlwidth = $pdf->GetStringWidth($todis_nm);
                                     if($ttlwidth > 75){
