@@ -37,6 +37,7 @@ class RCV extends CI_Controller {
         $this->load->model('SERRC_mod');
         $this->load->model('PPO_mod');
         $this->load->model('MMDL_mod');
+        $this->load->model('CSMLOG_mod');
         $this->load->model('refceisa/REFERENSI_KEMASAN_imod');
         $this->load->model('refceisa/MTPB_mod');				
         $this->load->model('refceisa/ZOffice_mod');
@@ -916,6 +917,7 @@ class RCV extends CI_Controller {
 
         $myctr_edited = 0;
         $myctr_saved = 0;		
+        $lastLineLog = $this->CSMLOG_mod->select_lastLine($cdo, $caju)+1;
         if(is_array($cpo)){
             $ttlar = count($cpo);
             for($i=0;$i<$ttlar;$i++){
@@ -925,7 +927,7 @@ class RCV extends CI_Controller {
                     'RCV_ITMCD' => $citem[$i],
                     'RCV_GRLNO' => $cgrlno[$i]					
                 ];
-                if($this->RCV_mod->check_Primary($dataw)>0){					
+                if($this->RCV_mod->check_Primary($dataw)>0){
                     $datau = [
                         'RCV_RPNO' => $caju,
                         'RCV_RPDATE' => $cbcdate,
@@ -956,8 +958,9 @@ class RCV extends CI_Controller {
                         'RCV_INVNO' => $invoice
                     ];					
                     $cret = $this->RCV_mod->updatebyVAR($datau, $dataw);
-                    $myctr_edited += $cret;					
-                } else {
+                    $myctr_edited += $cret;
+                    
+                } else {                    
                     $datas = [
                         'RCV_PO' => $cpo[$i],
                         'RCV_DONO' => $cdo,
@@ -1071,6 +1074,27 @@ class RCV extends CI_Controller {
                 $myctr_saved +=  $cret;				
             }
         }
+        $msg = '';
+
+        if($myctr_saved>0) {
+            $msg.='add new transaction';
+            if($myctr_edited>0) {
+                $msg.=', update transaction';
+            }
+        } else {
+            if($myctr_edited>0) {
+                $msg.='update transaction';
+            }
+        }
+        $this->CSMLOG_mod->insert([
+            'CSMLOG_DOCNO' => $cdo,
+            'CSMLOG_SUPZAJU' => $caju,
+            'CSMLOG_SUPZNOPEN' => $cregno,
+            'CSMLOG_DESC' => $msg,
+            'CSMLOG_LINE' => $lastLineLog,
+            'CSMLOG_CREATED_AT' => $currrtime,
+            'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+        ]);
 
         $this->toITH(['DOC' => $cdo, 'WH' => $cwh[0]
         , 'DATE' => $cbcdate , 'LUPDT' => $cbcdate.' 07:01:00'
@@ -1082,7 +1106,7 @@ class RCV extends CI_Controller {
         , "msg" => $myctr_saved." saved, " .$myctr_edited." edited [".$catccc."]"
         , "extra" => trim($cwh[0])];
         echo json_encode($myar);
-    }
+    }   
 
     public function toITH($p){
         $rsdlv = $this->RCV_mod->select_itemtotal($p['DOC']);
@@ -2280,7 +2304,7 @@ class RCV extends CI_Controller {
             ];
         }
         if($cbg==='PSI1PPZIEP') {
-            $rs = $this->MSTSUP_mod->select_where_id_in(['M90002U', 'KKI056U','KIY001U','PEI208U']);
+            $rs = $this->MSTSUP_mod->select_where_id_in(['MUR407U', 'KKI056U','KIY001U','PEI208U']);
             foreach($rs as $r) {
                 $rs_j[] = [
                     'id' => $r['SUPCD']
