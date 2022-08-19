@@ -4201,7 +4201,13 @@ video {
                     }
                 }
                 document.getElementById('rcvcustoms_zsts_1').innerHTML = str
-                document.getElementById('rcvcustoms_zsts_1').focus()
+                if(c.value==='40') {
+                    rcvcustoms_zsts_1.disabled = true
+                } else {
+                    rcvcustoms_zsts_1.disabled = false
+                    document.getElementById('rcvcustoms_zsts_1').focus()
+                }
+
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
             }
