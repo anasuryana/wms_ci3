@@ -57,8 +57,8 @@ class PNDSCN_mod extends CI_Model {
         return $this->db->affected_rows();
     }    
 
-    public function selectunsaved($pdo){        
-        $qry = "SELECT * FROM $this->TABLENAME where (PNDSCN_DOC=?) AND (PNDSCN_SAVED IS NULL OR PNDSCN_SAVED='0' OR PNDSCN_SAVED='') ";
+    public function selectunsaved($pdo){
+        $qry = "SELECT * FROM $this->TABLENAME where (PNDSCN_DOC=?) AND (PNDSCN_SAVED='0' OR ISNULL(PNDSCN_SAVED,'')='') ";
         $query = $this->db->query($qry, array($pdo));
 		return $query->result_array();
     }
