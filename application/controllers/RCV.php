@@ -466,7 +466,9 @@ class RCV extends CI_Controller {
         $dataCount = count($d_itemcode);
         $myar = [];
         $ttlupdated = 0;
+        $ttlinserted = 0;
         $datas = [];
+        $lastLineLog = $this->CSMLOG_mod->select_lastLine($h_do, $h_aju)+1;
         if($this->RCV_mod->check_Primary(['RCV_DONO' => $h_do])) {
             $lastLine = $this->RCV_mod->select_lastLinePerDO($h_do)+1;
             for($i=0; $i<$dataCount; $i++) {
@@ -551,7 +553,7 @@ class RCV extends CI_Controller {
                     $lastLine++;
                 }
                 if(count($datas)) {
-                    $this->RCV_mod->insertb($datas);
+                    $ttlinserted = $this->RCV_mod->insertb($datas);
                     $myar[] = ['cd' => 1, 'msg' => 'Saved successfully'];
                 }
             }
@@ -599,7 +601,7 @@ class RCV extends CI_Controller {
                 ];
             }
             if(count($datas)) {
-                $this->RCV_mod->insertb($datas);
+                $ttlinserted = $this->RCV_mod->insertb($datas);
                 $myar[] = ['cd' => 1, 'msg' => 'Saved successfully'];
             }
         }
@@ -622,6 +624,29 @@ class RCV extends CI_Controller {
                 );
             }
         }
+
+        $msg = '';
+
+        if($ttlinserted>0) {
+            $msg.='add new transaction';
+            if($ttlupdated>0) {
+                $msg.=', update transaction';
+            }
+        } else {
+            if($ttlupdated>0) {
+                $msg.='update transaction';
+            }
+        }
+
+        $this->CSMLOG_mod->insert([
+            'CSMLOG_DOCNO' => $h_do,
+            'CSMLOG_SUPZAJU' => $h_aju,
+            'CSMLOG_SUPZNOPEN' => $h_nopen,
+            'CSMLOG_DESC' => $msg,
+            'CSMLOG_LINE' => $lastLineLog,
+            'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
+            'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+        ]);
 
         $this->toITH(['DOC' => $h_do, 'WH' => 'PSIEQUIP' 
         , 'DATE' => $h_date_bc , 'LUPDT' => $h_date_bc.' 07:01:00'
@@ -740,7 +765,9 @@ class RCV extends CI_Controller {
         $dataCount = count($d_itemcode);
         $myar = [];
         $ttlupdated = 0;
+        $ttlinserted = 0;
         $datas = [];
+        $lastLineLog = $this->CSMLOG_mod->select_lastLine($h_do, $h_aju)+1;
         if($this->RCV_mod->check_Primary(['RCV_DONO' => $h_do])) {
             $lastLine = $this->RCV_mod->select_lastLinePerDO($h_do)+1;
             for($i=0; $i<$dataCount; $i++) {
@@ -813,7 +840,7 @@ class RCV extends CI_Controller {
                     $lastLine++;
                 }
                 if(count($datas)) {
-                    $this->RCV_mod->insertb($datas);
+                    $ttlinserted = $this->RCV_mod->insertb($datas);
                     $myar[] = ['cd' => 1, 'msg' => 'Saved successfully'];
                 }
             }
@@ -854,10 +881,31 @@ class RCV extends CI_Controller {
                 ];
             }
             if(count($datas)) {
-                $this->RCV_mod->insertb($datas);
+                $ttlinserted = $this->RCV_mod->insertb($datas);
                 $myar[] = ['cd' => 1, 'msg' => 'Saved successfully'];
             }
         }
+        $msg = '';
+
+        if($ttlinserted>0) {
+            $msg.='add new transaction';
+            if($ttlupdated>0) {
+                $msg.=', update transaction';
+            }
+        } else {
+            if($ttlupdated>0) {
+                $msg.='update transaction';
+            }
+        }
+        $this->CSMLOG_mod->insert([
+            'CSMLOG_DOCNO' => $h_do,
+            'CSMLOG_SUPZAJU' => $h_aju,
+            'CSMLOG_SUPZNOPEN' => $h_nopen,
+            'CSMLOG_DESC' => $msg,
+            'CSMLOG_LINE' => $lastLineLog,
+            'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
+            'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+        ]);
         $this->toITH(['DOC' => $h_do, 'WH' => $h_warehouse
         , 'DATE' => $h_date_bc , 'LUPDT' => $h_date_bc.' 07:01:00'
         , 'USRID' => $this->session->userdata('nama')]);
