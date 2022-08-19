@@ -1,5 +1,114 @@
+<style>    
+ .screenshot-image {
+    width: 150px;
+    height: 90px;
+    border-radius: 4px;
+    border: 2px solid whitesmoke;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+    position: absolute;
+    bottom: 5px;
+    left: 10px;
+    background: white;
+    object-fit: contain;
+}
+
+.display-cover {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70%;
+    margin: 5% auto;
+    position: relative;
+}
+
+video {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.video-options {
+    position: absolute;
+    left: 20px;
+    top: 30px;
+}
+
+.controls {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    display: flex;
+}
+
+.controls > button {
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    border-radius: 100%;
+    margin: 0 6px;
+    background: transparent;
+}
+
+.controls > button:hover svg {
+    color: white !important;
+}
+
+@media (min-width: 300px) and (max-width: 400px) {
+    .controls {
+        flex-direction: column;
+    }
+
+    .controls button {
+        margin: 5px 0 !important;
+    }
+}
+
+.controls > button > svg {
+    height: 20px;
+    width: 18px;
+    text-align: center;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.controls button:nth-child(1) {
+    border: 2px solid #D2002E;
+}
+
+.controls button:nth-child(1) svg {
+    color: #D2002E;
+}
+
+.controls button:nth-child(2) {
+    border: 2px solid #008496;
+}
+
+.controls button:nth-child(2) svg {
+    color: #008496;
+}
+
+.controls button:nth-child(3) {
+    border: 2px solid #00B541;
+}
+
+.controls button:nth-child(3) svg {
+    color: #00B541;
+}
+
+.controls > button {
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    border-radius: 100%;
+    margin: 0 6px;
+    background: transparent;
+}
+
+.controls > button:hover svg {
+    color: white;
+}
+</style>
 <div style="padding: 10px">
-	<div class="container-fluid">
+    <div class="container-fluid">
         <div class="row" id="rcvcustoms_stack0">
             <div class="col-md-12 mb-1 text-center">
                 <div class="form-check form-check-inline">
@@ -42,7 +151,7 @@
                 <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">                    
                         <label class="input-group-text">Receiving Status</label>                    
-                        <select id="rcvcustoms_zsts" class="form-select">                                                         
+                        <select id="rcvcustoms_zsts" class="form-select">
                         </select>                    
                     </div>
                 </div>
@@ -50,13 +159,13 @@
             <div class="row" id="rcvcustoms_stack2">
                 <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">
-                        <label class="input-group-text" style="cursor:pointer" onclick="rcvcustoms_noaju_lbl_eCK()">NoAju</label>
+                        <label class="input-group-text" style="cursor:pointer" ondblclick="rcvcustoms_noaju_lbl_eCK()">NoAju</label>
                         <input type="text" class="form-control" id="rcvcustoms_noaju" maxlength="26" autocomplete="off">
                     </div>
                 </div>
                 <div class="col-md-2 mb-1">
                     <div class="input-group input-group-sm mb-1">
-                        <label class="input-group-text">NoPen</label>                    
+                        <label class="input-group-text" onclick="tesTese()">NoPen</label>                    
                         <input type="text" class="form-control" id="rcvcustoms_regno" maxlength="8">
                     </div>
                 </div>
@@ -75,7 +184,7 @@
             </div>
             <div class="row" id="rcvcustoms_stack3">
                 <div class="col-md-6 mb-1">
-                    <div class="input-group input-group-sm mb-1">                    
+                    <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">TPB Type</label>                    
                         <select id="rcvcustoms_typetpb" class="form-select">
                             <?php foreach($ltpb_type as $r) {?>
@@ -86,8 +195,7 @@
                 </div>
                 <div class="col-md-6 mb-1">
                     <div class="input-group input-group-sm mb-1">                    
-                        <label class="input-group-text">KPPBC</label>                    
-                        <!-- <input type="text" class="form-control" id="rcvcustoms_kppbc" maxlength="6"> -->
+                        <label class="input-group-text">KPPBC</label>                        
                         <select id="rcvcustoms_kppbc" class="form-select">
                             <?php 
                             $toprint = '';
@@ -241,9 +349,9 @@
                 <div class="col-md-6 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Tax Invoice</label>
-                        <input type="text" class="form-control" id="rcvcustoms_tax_invoice">
+                        <input type="text" class="form-control" id="rcvcustoms_tax_invoice" onkeyup="rcvcustoms_tax_invoice_eKeyUp(event)">
                     </div>
-                </div>
+                </div>                
                 <div class="col-md-6 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">NoAju</label>                    
@@ -1481,6 +1589,49 @@
       </div>
     </div>
 </div>
+<div class="modal fade" id="rcvcustoms_TESE">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content"> 
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Read from Image</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col">
+                    <div class="display-cover">
+                        <video autoplay></video>
+                        <canvas class="d-none"></canvas>                                   
+                    </div>
+                    <img id="rcvcustoms_img" class="screenshot-image" alt="" src="<?=base_url('assets/imgs/bc_sample.JPG')?>">
+                </div>                
+            </div>           
+        </div>
+        <div class="modal-footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group input-group-sm mb-1">                    
+                            <label class="input-group-text">Select camera</label>
+                            <select id="rcvcustoms_camlist" class="form-select">                                                             
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-primary btn-sm" id="rcvcustoms_qr_btntry" onclick="rcvcustoms_qr_btntry_eCK()">try</button>
+                            <button type="button" class="btn btn-primary btn-sm" id="rcvcustoms_qr_btntake" onclick="rcvcustoms_qr_btntake_eCK()">take</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
 <div id='rcvcustoms_contextmenu'></div>
 <script>
     var rcvcustoms_suppliercode = ''
@@ -2406,8 +2557,8 @@
         var firstSheet = workbook.SheetNames[0];			
         //Read all rows from First Sheet into an JSON array.
         var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
-		
-		        
+        
+                
         //Add the data rows from Excel file.
         rcvcustoms_ttlxls =excelRows.length;       
         rcvcustoms_ttlxls_savd=0;
@@ -2438,7 +2589,7 @@
                 }
             });            
         }         
-	};
+    };
     function rcvcustoms_e_save(){
         const mbctype = $("#rcvcustoms_typedoc").val()
         const mdate   = $("#rcvcustoms_dd").val()
@@ -4223,5 +4374,115 @@
                 alertify.error(xthrow);
             }
         });
+    }
+
+    async function getCameraSelection() {        
+        const cameraOptions = document.getElementById('rcvcustoms_camlist')
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');        
+        console.log(devices)
+        const options = videoDevices.map(videoDevice => {
+            return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`;
+        });        
+        cameraOptions.innerHTML = options.join('');        
+    };
+
+    function tesTese() {
+        if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {                            
+            navigator.mediaDevices.getUserMedia({audio: false, video: true})
+            .then(function(stream) {                
+                getCameraSelection()                
+                $("#rcvcustoms_TESE").modal('show')
+            })
+            .catch(function(err) {
+                alertify.message('could not access camera')                
+            });            
+        } else {
+            alertify.message('sorry we could not found your camera')
+        }
+    }
+
+    var video = document.querySelector('video');
+    var screenshotImage = document.getElementById('rcvcustoms_img');
+    var canvas = document.querySelector('canvas');
+
+    function rcvcustoms_qr_btntry_eCK() {
+        if (streamStarted) {
+            video.play();            
+            return;
+        }
+        const cameraOptions = document.getElementById('rcvcustoms_camlist')
+        if ('mediaDevices' in navigator && navigator.mediaDevices.getUserMedia) {
+            const updatedConstraints = {
+            ...constraints,
+            deviceId: {
+                exact: cameraOptions.value
+            }
+            };
+            startStream(updatedConstraints);
+        }      
+    }
+    var streamStarted = false;
+    var constraints = {
+        video: {
+            width: {
+            min: 1280,
+            ideal: 1920,
+            max: 2560,
+            },
+            height: {
+            min: 720,
+            ideal: 1080,
+            max: 1440
+            },
+        }
+    };
+    async function startStream (constraints) {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        handleStream(stream);
+    };
+    function handleStream (stream) {
+        video.srcObject = stream        
+        streamStarted = true;
+    };
+
+    function rcvcustoms_qr_btntake_eCK() {        
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width,canvas.height);
+        screenshotImage.src = canvas.toDataURL();       
+        console.log(Tesseract)                
+        const worker = Tesseract.createWorker({
+            logger: m => console.log(m), // Add logger here
+        });
+        (async () => {
+            await worker.load();
+            await worker.loadLanguage('eng');
+            await worker.initialize('eng');            
+            const { data: { text } } = await worker.recognize(canvas.toDataURL('image/png'));
+            console.log('datanya adalah')
+            const match = /\r|\n/.exec(text)
+            if(match){
+                const listdata = text.split(/\r?\n/)
+                console.log(listdata)
+            }
+            console.log(text);
+            await worker.terminate();
+        })();  
+    };
+
+    function rcvcustoms_tax_invoice_eKeyUp(e) {
+        if(rcvcustoms_typedoc_1.value==='40') {
+            switch(e.target.value.substr(0,2)) {
+                case '01':
+                    rcvcustoms_zsts_1.value = 4
+                    break;
+                case '07':
+                    rcvcustoms_zsts_1.value = 1
+                    break;
+                default:
+                    rcvcustoms_zsts_1.value = 5
+            }
+        }
     }
 </script>
