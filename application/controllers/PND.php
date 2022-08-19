@@ -98,91 +98,7 @@ class PND extends CI_Controller {
 					: ["cd" => 0, "msg" => "Could not save"];            
 			die('{"data":'.json_encode($myar).'}');
         }        
-	}
-
-	public function setser_trial(){
-		header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
-        $currrtime = date('Y-m-d H:i:s');
-        $currdate = date('Ymd');
-        $citem = $this->input->post('initem');
-        
-        $cqty = [
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			40.000,
-			27.000,
-			35.000
-					];
-        $cser = [
-			'FUQU7MY7XR1I3MTI',
-			'FUQU7MY7XT1I3U1O',
-			'FUQU7MY7XV1I2996',
-			'FUQU7MY7XX1IZWCA',
-			'FUQU7MY7Y01I1408',
-			'FUQU7MY7Y21I2CXF',
-			'FUQU7MY7Y41I360H',
-			'FUQU7MY7Y51IP5K0',
-			'FUR1GW5KIG1I1ZXW',
-			'FUR1GW5KIK1I3I6O',
-			'FUR1GW5KIM1I26UU',
-			'FUR1GW5KIO1I20AZ',
-			'FUR1GW5KIR1I2A9F',
-			'FUR1GW5KIT1I3CCP',
-			'FUR1GW5KIX1I3KO3',
-			'FUR1GW5KIY1I1DV3',
-			'FUR7V33XO71I2CZK',
-			'FUV5APDYD5IX2QJE'
-		];        
-        $cdate = $this->input->post('indate');
-        $ttldata = count($cser);
-        if($ttldata>0){
-            $mlastid = $this->PND_mod->lastserialidser();
-			$mlastid++;
-            $newid = 'PNDS'.$currdate.$mlastid;
-            $datas = array();
-            for($i=0;$i<$ttldata;$i++){
-                $datat = array(
-                    'PNDSER_DOC' => $newid,
-                    'PNDSER_DT' => $cdate,					
-                    'PNDSER_QTY' => $cqty[$i],
-                    'PNDSER_SER' => $cser[$i],
-                    'PNDSER_REMARK' => '',
-                    'PNDSER_LUPDT' => $currrtime,
-                    'PNDSER_USRID' => $this->session->userdata('nama')
-                );
-                array_push($datas, $datat);
-            }
-            $toret = $this->PND_mod->insertbser($datas);
-            $myar = array();
-            if($toret>0){
-				$datar = array("cd" => $toret, "msg" => "Saved successfully" , "ref" => $newid);
-				array_push($myar, $datar);
-				echo '{"data":';
-				echo json_encode($myar);
-				echo '}';
-			} else{
-				$datar = array("cd" => 0, "msg" => "Could not save" );
-				array_push($myar, $datar);
-				echo '{"data":';
-				echo json_encode($myar);
-				echo '}';
-			}
-        }
-	}
+	}	
 	
 	public function setser(){
         header('Content-Type: application/json');
@@ -496,7 +412,7 @@ class PND extends CI_Controller {
 		$flag_update = 0;
 		$rsunsaved = $this->PNDSCN_mod->selectunsaved($cdo);
 		foreach($rsunsaved as $r){
-			$datas 		= array(
+			$datas 	= array(
 				'ITH_ITMCD' => trim($r['PNDSCN_ITMCD']), 'ITH_WH' => $cwh_out,
 				'ITH_DOC' 	=> $cdo, 'ITH_DATE' => $currdate,
 				'ITH_FORM' 	=> $cfm_out, 'ITH_QTY' => -$r['PNDSCN_QTY'], 'ITH_LUPDT' => $currrtime,
@@ -514,83 +430,7 @@ class PND extends CI_Controller {
 			$datau = array('PNDSCN_SAVED' => '1');
 			$dataw = array('PNDSCN_ID' => $r['PNDSCN_ID']);
 			$toret = $this->PNDSCN_mod->updatebyId($datau,$dataw);
-		}
-		// for($i=0;$i<count($citem);$i++){
-		// 	//check to ith is already row
-		// 	$cwhere = array(
-		// 		'ITH_ITMCD' => $citem[$i], 
-		// 		'ITH_DOC' => $cdo
-		// 	);
-		// 	if( $this->ITH_mod->check_Primary($cwhere)>0 ){
-		// 		$cwhere_pdt = array(
-		// 			'ITH_ITMCD' => $citem[$i], 'ITH_FORM' => $cfm_out,
-		// 			'ITH_DOC' => $cdo, 'ITH_DATE' => $currdate
-		// 		);
-		// 		if($this->ITH_mod->check_Primary($cwhere_pdt)>0){
-		// 			$cqtysavedday = $this->ITH_mod->selectqtyperdocitemday($cdo,$citem[$i],$currdate, $cfm_out);					
-		// 			$qtytostore = $cqtysavedday+($cscanqty[$i] - $csaveqty[$i]);
-		// 			$datau = array(
-		// 				'ITH_QTY' => -$qtytostore, 'ITH_WH' => $cwh_out
-		// 			);
-        //             $toret = $this->ITH_mod->updatebyId($cwhere_pdt, $datau); 
-                    
-        //             $cwhere_pdt = array(
-        //                 'ITH_ITMCD' => $citem[$i], 'ITH_FORM' => $cfm_inc,
-        //                 'ITH_DOC' => $cdo, 'ITH_DATE' => $currdate
-        //             );
-        //             $datau = array(
-		// 				'ITH_QTY' => $qtytostore, 'ITH_WH' => $cwh_inc
-		// 			);
-        //             $toret = $this->ITH_mod->updatebyId($cwhere_pdt, $datau); 
-        //             $flag_update+=$toret;
-		// 		} else {
-		// 			$qtytostore = $cscanqty[$i] - $csaveqty[$i];
-		// 			if($qtytostore>0){
-		// 				$datas 		= array(
-		// 					'ITH_ITMCD' => $citem[$i], 'ITH_WH' => $cwh_out,
-		// 					'ITH_DOC' 	=> $cdo, 'ITH_DATE' => $currdate,
-		// 					'ITH_FORM' 	=> $cfm_out, 'ITH_QTY' => -$qtytostore, 'ITH_LUPDT' => $currrtime,
-		// 					'ITH_USRID' =>  $this->session->userdata('nama')
-		// 				);
-        //                 $toret 		= $this->ITH_mod->insert($datas);
-        //                 $datas 		= array(
-		// 					'ITH_ITMCD' => $citem[$i], 'ITH_WH' => $cwh_inc,
-		// 					'ITH_DOC' 	=> $cdo, 'ITH_DATE' => $currdate,
-		// 					'ITH_FORM' 	=> $cfm_inc, 'ITH_QTY' => $qtytostore, 'ITH_LUPDT' => $currrtime,
-		// 					'ITH_USRID' =>  $this->session->userdata('nama')
-		// 				);
-		// 				$toret 		= $this->ITH_mod->insert($datas);
-		// 				$flag_insert+=$toret;
-        //                 $dataup = array('PNDSCN_SAVED' => '1');
-        //                 $dataww = array(
-        //                     'PNDSCN_DOC' => $cdo, 'PNDSCN_ITMCD' => $citem[$i]
-        //                 );
-		// 				$toret = $this->PNDSCN_mod->updatebyId($dataup, $dataww);
-		// 			}					
-		// 		}
-		// 	} else {
-		// 		$datas = array(
-		// 			'ITH_ITMCD' => $citem[$i], 'ITH_WH' => $cwh_out , 
-		// 			'ITH_DOC' => $cdo, 'ITH_DATE' => $currdate,
-		// 			'ITH_FORM' => $cfm_out, 'ITH_QTY' => -$cscanqty[$i], 'ITH_LUPDT' => $currrtime,
-		// 			'ITH_USRID' =>  $this->session->userdata('nama')
-		// 		);
-		// 		$toret = $this->ITH_mod->insert($datas);
-		// 		$datas = array(
-		// 			'ITH_ITMCD' => $citem[$i], 'ITH_WH' => $cwh_inc , 
-		// 			'ITH_DOC' => $cdo, 'ITH_DATE' => $currdate,
-		// 			'ITH_FORM' => $cfm_inc, 'ITH_QTY' => $cscanqty[$i], 'ITH_LUPDT' => $currrtime,
-		// 			'ITH_USRID' =>  $this->session->userdata('nama')
-		// 		);
-		// 		$toret = $this->ITH_mod->insert($datas);
-		// 		$flag_insert+= $toret;
-        //         $dataup = array('PNDSCN_SAVED' => '1');
-        //         $dataww = array(
-        //             'PNDSCN_DOC' => $cdo, 'PNDSCN_ITMCD' => $citem[$i]
-        //         );
-        //         $toret = $this->PNDSCN_mod->updatebyId($dataup, $dataww);                
-		// 	}
-		// }
+		}		
 
 		if($flag_update>0 && $flag_insert>0){
 			echo "Saved and updated";
