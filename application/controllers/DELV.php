@@ -4762,9 +4762,9 @@ class DELV extends CI_Controller {
                 $myar[] = ["cd" => '00', "msg" => "Nomor Aju is already used" ] ;
                 die(json_encode($myar));
             }
-        }		
+        }
         $czidmodul ='';
-        $myar = [];				
+        $myar = [];
         foreach($rsaktivasi as $r){
             $czkantorasal = $r['KPPBC'];
             $czidmodul = substr('00000'.$r['ID_MODUL'],-6);
@@ -4777,6 +4777,7 @@ class DELV extends CI_Controller {
             $cz_ymd = date_format($ocustdate, 'Ymd');
             $znomor_aju = substr($czkantorasal,0,4).$czdocbctype.$czidmodul.$cz_ymd.$cnoaju;
             $ctpb_tgl_daftar = strlen(trim($ctpb_tgl_daftar))==10 ? $ctpb_tgl_daftar : NULL;
+            $lastLineLog = $this->CSMLOG_mod->select_lastLine($cid, $znomor_aju)+1;
             $keys = ['DLV_ID' => $cid];
             $vals = [
                 'DLV_NOPEN' => $cnopen, 'DLV_NOAJU' => $cnoaju , 'DLV_ZNOMOR_AJU' => $znomor_aju,
@@ -4787,6 +4788,16 @@ class DELV extends CI_Controller {
                 'DLV_ZID_MODUL' => $czidmodul, 'DLV_RPDATE' => $ctpb_tgl_daftar		
             ];
             $ret = $this->DELV_mod->updatebyVAR($vals, $keys);
+            $msg = $ret>0 ? 'update transaction' : '';
+            $this->CSMLOG_mod->insert([
+                'CSMLOG_DOCNO' => $cid,
+                'CSMLOG_SUPZAJU' => $znomor_aju,
+                'CSMLOG_SUPZNOPEN' => $ctpb_tgl_daftar,
+                'CSMLOG_DESC' => $msg,
+                'CSMLOG_LINE' => $lastLineLog,
+                'CSMLOG_CREATED_AT' => $crnt_dt,
+                'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+            ]);
             if(!empty($cnopen)){
                 $res = $this->gotoque($cid);
                 # for RPR transaction deduction start from here
