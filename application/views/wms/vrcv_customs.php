@@ -4013,34 +4013,36 @@ video {
                     for (let i = 0; i<ttlrows; i++){
                         let qtyreq = numeral(response.data[i].PO_QTY).value()
                         let qtybal = qtyreq-numeral(response.data[i].RCVQTY).value()
-                        newrow = tableku2.insertRow(-1)
-                        newcell = newrow.insertCell(0)                        
-                        newcell.innerHTML = response.data[i].PO_NO                        
-                        newcell = newrow.insertCell(1)
-                        newcell.innerHTML = response.data[i].MSUP_SUPNM 
-                        newcell = newrow.insertCell(2)
-                        newcell.innerHTML = response.data[i].PO_REQDT
-                        newcell = newrow.insertCell(3)
-                        newcell.innerHTML = response.data[i].PO_ISSUDT
-                        newcell = newrow.insertCell(4)
-                        newcell.innerHTML = response.data[i].PO_ITMCD
-                        newcell = newrow.insertCell(5)
-                        newcell.innerHTML = response.data[i].MITM_ITMD1
-                        newcell = newrow.insertCell(6)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = numeral(qtyreq).format('0,0.00')
-                        newcell = newrow.insertCell(7)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = numeral(qtybal).format('0,0.00')
-                        newcell = newrow.insertCell(8)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = response.data[i].PO_PRICE
-                        newcell = newrow.insertCell(9)
-                        newcell.classList.add('d-none')
-                        newcell.innerHTML = response.data[i].PO_SUPCD
-                        newcell = newrow.insertCell(10)
-                        newcell.classList.add('d-none')
-                        newcell.innerHTML = response.data[i].MITM_STKUOM
+                        if(qtybal>0) {
+                            newrow = tableku2.insertRow(-1)
+                            newcell = newrow.insertCell(0)                        
+                            newcell.innerHTML = response.data[i].PO_NO                        
+                            newcell = newrow.insertCell(1)
+                            newcell.innerHTML = response.data[i].MSUP_SUPNM 
+                            newcell = newrow.insertCell(2)
+                            newcell.innerHTML = response.data[i].PO_REQDT
+                            newcell = newrow.insertCell(3)
+                            newcell.innerHTML = response.data[i].PO_ISSUDT
+                            newcell = newrow.insertCell(4)
+                            newcell.innerHTML = response.data[i].PO_ITMCD
+                            newcell = newrow.insertCell(5)
+                            newcell.innerHTML = response.data[i].MITM_ITMD1
+                            newcell = newrow.insertCell(6)
+                            newcell.classList.add('text-end')
+                            newcell.innerHTML = numeral(qtyreq).format('0,0.00')
+                            newcell = newrow.insertCell(7)
+                            newcell.classList.add('text-end')
+                            newcell.innerHTML = numeral(qtybal).format('0,0.00')
+                            newcell = newrow.insertCell(8)
+                            newcell.classList.add('text-end')
+                            newcell.innerHTML = response.data[i].PO_PRICE
+                            newcell = newrow.insertCell(9)
+                            newcell.classList.add('d-none')
+                            newcell.innerHTML = response.data[i].PO_SUPCD
+                            newcell = newrow.insertCell(10)
+                            newcell.classList.add('d-none')
+                            newcell.innerHTML = response.data[i].MITM_STKUOM
+                        }
                     }
                     mydes.innerHTML=''
                     mydes.appendChild(myfrag)
@@ -4066,22 +4068,24 @@ video {
         let isexist = false
         let supplierName = ''
         for(let i=0; i<ttlrows; i++){
-            supplierName = tableku2.rows[i].cells[1].innerText
-            rcvcustoms_suppliercode = tableku2.rows[i].cells[9].innerText
-            isexist = true
-            aPO.push(tableku2.rows[i].cells[0].innerText)
-            aItem.push(tableku2.rows[i].cells[4].innerText)
-            aItemName.push(tableku2.rows[i].cells[5].innerText)
-            aqty.push(numeral(tableku2.rows[i].cells[7].innerText).value())
-            aprice.push(numeral(tableku2.rows[i].cells[8].innerText).value())
-            aUM.push(tableku2.rows[i].cells[10].innerText)
+            let qtynya = numeral(tableku2.rows[i].cells[7].innerText).value()
+            if(qtynya>0) {
+                supplierName = tableku2.rows[i].cells[1].innerText
+                rcvcustoms_suppliercode = tableku2.rows[i].cells[9].innerText
+                isexist = true
+                aPO.push(tableku2.rows[i].cells[0].innerText)
+                aItem.push(tableku2.rows[i].cells[4].innerText)
+                aItemName.push(tableku2.rows[i].cells[5].innerText)
+                aqty.push(qtynya)
+                aprice.push(numeral(tableku2.rows[i].cells[8].innerText).value())
+                aUM.push(tableku2.rows[i].cells[10].innerText)
+            }
         }
-        if(isexist) {            
+        if(isexist) {
             document.getElementById('rcvcustoms_supplier_1').value = supplierName
             let tabell = document.getElementById("rcvcustoms_tbl_1")
             let tableku2 = tabell.getElementsByTagName("tbody")[0]
-            let newrow, newcell
-            //tableku2.innerHTML = ''
+            let newrow, newcell            
             for(let i=0; i<ttlrows; i++){
                 newrow = tableku2.insertRow(-1)
                 newrow.onclick = (event) => {
