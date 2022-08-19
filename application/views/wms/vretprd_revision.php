@@ -120,7 +120,7 @@
         let moldactqty = numeral(document.getElementById('retrev_txtsel_befqty').value).value();
         let mnewactqty = numeral(document.getElementById('retrev_txtsel_qty').value).value();
         let midscan = document.getElementById('retrev_idscan').value;
-        if(mnewactqty<=0){
+        if(mnewactqty<0){
             alertify.warning("return "+mnewactqty+" ?");
             return;
         }
