@@ -111,7 +111,7 @@ class RETPRD extends CI_Controller {
         if(count($rs)>0){
             if($this->SPLRET_mod->updatebyVars(['RETSCN_QTYAFT' => $cqty], ['RETSCN_ID' => $cidscan, 'RETSCN_SPLDOC' => $cpsn])>0 ){				
                 $diff = $cqty - $coldactqty;
-                $datas = [
+                $datas[] = [
                     'ITH_ITMCD' => $citemcode,
                     'ITH_DATE' => $confirmdatetime == '' ? $currentDate : substr($confirmdatetime,0,10),
                     'ITH_FORM' => 'REV-RET',
@@ -122,7 +122,7 @@ class RETPRD extends CI_Controller {
                     'ITH_LUPDT' => $confirmdatetime == '' ? $currentDateTime : $confirmdatetime,
                     'ITH_USRID' => $this->session->userdata('nama')
                 ];
-                $datas = [
+                $datas[] = [
                     'ITH_ITMCD' => $citemcode,
                     'ITH_DATE' => $confirmdatetime == '' ? $currentDate : substr($confirmdatetime,0,10),
                     'ITH_FORM' => 'REV-RET',
