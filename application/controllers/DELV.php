@@ -3,8 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
-class DELV extends CI_Controller {
-    private $AROMAWI = ['I','II','III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI' , 'XII'];
+class DELV extends CI_Controller {    
     private $AMONTHPATRN = ['1','2','3', '4', '5', '6', '7', '8', '9', 'X', 'Y' , 'Z'];
     private $MSG_USERS = ['2200120','1190031','ane','206224','200993','28250','1160016','13221'];
     private $PATTERFLG = '2';
@@ -56,6 +55,7 @@ class DELV extends CI_Controller {
         $this->load->model('XITRN_mod');
         $this->load->model('DisposeDraft_mod');
         $this->load->model('POSTING_mod');
+        $this->load->model('CSMLOG_mod');
         $this->load->model('refceisa/TPB_HEADER_imod');
         $this->load->model('refceisa/TPB_KEMASAN_imod');
         $this->load->model('refceisa/TPB_DOKUMEN_imod');
@@ -71,7 +71,6 @@ class DELV extends CI_Controller {
 
     function exception_handler($exception) {
         echo $exception->getMessage();
-        
     }
     function fatal_handler() {
         $errfile = 'unknown file';
@@ -1538,7 +1537,7 @@ class DELV extends CI_Controller {
             if($ttlrows==0){
                 $qty = $ctxa_qty[$i];
                 $qty = str_replace(',','',$qty);
-                $datat = [
+                $datas[] = [
                     'DLV_ID' => $ctxid,
                     'DLV_CUSTDO' => $ctxcustDO,
                     'DLV_BCDATE' => $ctxdt,
@@ -1555,17 +1554,16 @@ class DELV extends CI_Controller {
                     'DLV_ISPTTRND' => $this->PATTERFLG,
                     'DLV_QTY' => $qty,
                     'DLV_RMRK' => $ctxremark,
-                    'DLV_DSCRPTN' => $ctxdescr,									
+                    'DLV_DSCRPTN' => $ctxdescr,
                     'DLV_CRTD' => $this->session->userdata('nama'),
                     'DLV_CRTDTM' => $crnt_dt,
                     'DLV_DATE' => $ctxdodt,	
                     'DLV_ITMCD' => ''
                 ];
-                $datas[]= $datat;
-            }			
+            }
         }
-
-        $ttlPostedRows = $this->DELV_mod->check_Primary(['DLV_ID' => $ctxid, 'DLV_POSTTM IS NOT NULL' => null]);
+        $lastLineLog = $this->CSMLOG_mod->select_lastLine($ctxid, '')+1;
+        $this->DELV_mod->check_Primary(['DLV_ID' => $ctxid, 'DLV_POSTTM IS NOT NULL' => null]);
         $dlvUpdated = 0;		
         #update docs properties
         $dlvUpdated = $this->DELV_mod->updatebyVAR(
@@ -1579,8 +1577,17 @@ class DELV extends CI_Controller {
             'DLV_CONSIGN' => $ctxconsig,
             'DLV_RMRK' => $ctxremark,				
         ], 
-        ['DLV_ID' => $ctxid]);							
+        ['DLV_ID' => $ctxid]);
         if(count($datas)>0){
+            $this->CSMLOG_mod->insert([
+                'CSMLOG_DOCNO' => $ctxid,
+                'CSMLOG_SUPZAJU' => '',
+                'CSMLOG_SUPZNOPEN' => '',
+                'CSMLOG_DESC' => 'update transaction, add new transaction',
+                'CSMLOG_LINE' => $lastLineLog,
+                'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
+                'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+            ]);
             $cret = $this->DELV_mod->insertb($datas);
             $myar[] = $cret>0 ? ["cd" => '11', "msg" => "Saved successfully" ] : ["cd" => '11', "msg" => "Could not add new Data" ];
         } else{
@@ -1845,11 +1852,13 @@ class DELV extends CI_Controller {
             $lastno = $this->DELV_mod->select_lastnodo_patterned_V3($mmonth, $myear, $monthroma)+1;
             $ctxid = $delcd_cust.$display_year.$monthroma.substr('0000'.$lastno,-4).$REMARKTXID;
         }
+        
                 
         $ttlrow = count($ctxa_ser);
         $datas = [];
         $serid_sample = '';
         $first_ret = 0;
+        $lastLineLog = $this->CSMLOG_mod->select_lastLine($ctxid, '')+1;
         for($i=0;$i<1;$i++){
             if($this->DELV_mod->check_Primary(['DLV_SER' => $ctxa_ser[$i]]) == 0){
                 $qty = $ctxa_qty[$i];
@@ -1888,6 +1897,7 @@ class DELV extends CI_Controller {
                 $serid_sample = $ctxa_ser[$i];
             }
         }
+        
         for($i=1;$i<$ttlrow;$i++){
             if($this->DELV_mod->check_Primary(['DLV_SER' => $ctxa_ser[$i]]) == 0){
                 $qty = $ctxa_qty[$i];
@@ -1917,9 +1927,20 @@ class DELV extends CI_Controller {
                 ];				
             }
         }
-        if(count($datas)>0 || $first_ret){			
+        
+        if(count($datas)>0 || $first_ret){
             $cret = count($datas) ?  $this->DELV_mod->insertb($datas) : $first_ret;
-            if($cret>0){		
+            if($cret>0){
+                $msg = 'add new transaction';       
+                $this->CSMLOG_mod->insert([
+                    'CSMLOG_DOCNO' => $ctxid,
+                    'CSMLOG_SUPZAJU' => '',
+                    'CSMLOG_SUPZNOPEN' => '',
+                    'CSMLOG_DESC' => $msg,
+                    'CSMLOG_LINE' => $lastLineLog,
+                    'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
+                    'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+                ]);
                 #SAVE SO OTHER/ NON MEGA
                 $setSODLV = [];
                 for ($i=0; $i<$soCount; $i++) {
@@ -9801,7 +9822,7 @@ class DELV extends CI_Controller {
             }
             unset($s);
         }
-        unset($k);
+        unset($k);        
         if($isready) {
             $this->DLVPRC_mod->insertb($rsPriceItemSer);
         }	
