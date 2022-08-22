@@ -191,7 +191,7 @@
             tmpitemPriceM = tmpitemPriceM.replace(',', '')
 
             if(isNaN(tmpitemQty)) {
-                alertify.warning('qty should be numerical value')
+                alertify.warning(`qty should be numerical value on line ${i}`)
                 return
             }
             if(tmpitemQty.length===0){
