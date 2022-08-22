@@ -186,9 +186,9 @@
             let tmpitemQty = rmtable.rows[i].cells[5].innerText.replace(/\n+/g, '')
             let tmpitemPrice = rmtable.rows[i].cells[6].innerText.replace(/\n+/g, '')
             let tmpitemPriceM = rmtable.rows[i].cells[10].innerText.replace(/\n+/g, '')
-            tmpitemQty = tmpitemQty.replace(',', '')
-            tmpitemPrice = tmpitemPrice.replace(',', '')
-            tmpitemPriceM = tmpitemPriceM.replace(',', '')
+            tmpitemQty = tmpitemQty.replace(/,/g, '')
+            tmpitemPrice = tmpitemPrice.replace(/,/g, '')
+            tmpitemPriceM = tmpitemPriceM.replace(/,/g, '')
 
             if(isNaN(tmpitemQty)) {
                 alertify.warning(`qty should be numerical value on line ${i}`)
