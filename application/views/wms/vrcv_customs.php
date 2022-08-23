@@ -386,7 +386,7 @@ video {
                         <label class="input-group-text">TPB Type</label>                    
                         <select id="rcvcustoms_typetpb_1" class="form-select">
                             <?php foreach($ltpb_type as $r) {?>
-                                <option value="<?=$r['KODE_JENIS_TPB']?>"><?=$r['URAIAN_JENIS_TPB']?></option>
+                                <option value="<?=trim($r['KODE_JENIS_TPB'])?>"><?=$r['URAIAN_JENIS_TPB']?></option>
                             <?php }?>
                         </select>
                     </div>
@@ -454,7 +454,7 @@ video {
                 <div class="col-md-3 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Contract</label>
-                        <input type="text" class="form-control" id="rcvcustoms_contractnum_1" >
+                        <input type="text" class="form-control" id="rcvcustoms_contractnum_1" onkeyup="rcvcustoms_contractnum_1_eKeyUp(event)" >
                     </div>
                 </div>
                 <div class="col-md-3 mb-1">
@@ -3033,7 +3033,7 @@ video {
                     newcell.innerHTML = response.data[i].RCV_PRPRC
                     newcell = newrow.insertCell(9)
                     newcell.classList.add('text-end','table-info')                    
-                    newcell.innerHTML = response.data[i].RCV_PRPRC*response.data[i].RCV_QTY
+                    newcell.innerHTML = numeral(response.data[i].RCV_PRPRC*response.data[i].RCV_QTY).format('0,0.00')
                     newcell = newrow.insertCell(10)
                     newcell.classList.add('text-end')
                     newcell.title = tabelHead.rows[0].cells[9].innerText
@@ -3161,7 +3161,7 @@ video {
                     newcell = newrow.insertCell(8)
                     newcell.classList.add('text-end')  
                     newcell.classList.add('table-info') 
-                    newcell.innerHTML = response.data[i].RCV_PRPRC*response.data[i].RCV_QTY
+                    newcell.innerHTML = numeral(response.data[i].RCV_PRPRC*response.data[i].RCV_QTY).format('0,0.00')
                     newcell = newrow.insertCell(9)
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_HSCD
@@ -3181,7 +3181,7 @@ video {
                 }
                 mydes.innerHTML=''
                 mydes.appendChild(myfrag)
-                document.getElementById('rcvcustoms_amount_2').value = ttlamount
+                document.getElementById('rcvcustoms_amount_2').value = numeral(ttlamount).format('0,0.00')
             }
         });
     }
@@ -4203,8 +4203,21 @@ video {
                 document.getElementById('rcvcustoms_zsts_1').innerHTML = str
                 if(c.value==='40') {
                     rcvcustoms_zsts_1.disabled = true
+                    rcvcustoms_typetpb_1.disabled = true
+                    rcvcustoms_typetpb_1.value = '1'
+                    switch(rcvcustoms_tax_invoice.value.substr(0,2)) {
+                        case '01':
+                            rcvcustoms_zsts_1.value = 4
+                            break;
+                        case '07':
+                            rcvcustoms_zsts_1.value = 1
+                            break;
+                        default:
+                            rcvcustoms_zsts_1.value = 5
+                    }
                 } else {
                     rcvcustoms_zsts_1.disabled = false
+                    rcvcustoms_typetpb_1.disabled = false
                     document.getElementById('rcvcustoms_zsts_1').focus()
                 }
 
@@ -4493,6 +4506,15 @@ video {
                 default:
                     rcvcustoms_zsts_1.value = 5
             }
+        }
+    }
+
+    function rcvcustoms_contractnum_1_eKeyUp(e)
+    {
+        if(rcvcustoms_typedoc_1.value === '40' && e.target.value.trim().length>0 && rcvcustoms_tax_invoice.value.trim().length===0) {
+            rcvcustoms_zsts_1.value = 2
+        } else {
+            rcvcustoms_zsts_1.value = 5
         }
     }
 </script>
