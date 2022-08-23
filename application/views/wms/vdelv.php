@@ -380,7 +380,7 @@
                 <div class="col-md-6 mb-1">
                     <div class="input-group input-group-sm mb-1">                        
                         <label class="input-group-text">Jenis TPB Asal</label>                        
-                        <select class="form-select" id="txfg_cmb_jenisTPB">
+                        <select class="form-select" id="txfg_cmb_jenisTPB" disabled>
                             <option value="-">-</option>
                             <?php
                            $tohtml =""; 
@@ -2850,8 +2850,8 @@ $("#txfg_btn_new").click(function (e) {
     document.getElementById('txfg_txt_nopen').value="";
     document.getElementById('txfg_txt_tglpen').value="";
     document.getElementById('txfg_fromoffice').value="-";
-    document.getElementById('txfg_destoffice').value="-";
-    document.getElementById('txfg_cmb_jenisTPB').value="-";
+    document.getElementById('txfg_destoffice').value="-";    
+    document.getElementById('txfg_cmb_jenisTPB').value="1"
     document.getElementById('txfg_cmb_jenisTPBtujuan').value="1"
     document.getElementById('txfg_cmb_tujuanpengiriman').value="-"
     document.getElementById('txfg_txt_nokontrak').value="";
@@ -3727,14 +3727,14 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                         }
                         
                         if(mbctype=='27'){
-                            document.getElementById('txfg_txt_noaju').value=mnoaju.trim();
-                            document.getElementById('txfg_fromoffice').value=mfromoffice;
-                            document.getElementById('txfg_cmb_jenisTPB').value=mtpb_asal;
-                            document.getElementById('txfg_cmb_jenisTPBtujuan').value = (mtpb_tujuan=='-') ? '1' : mtpb_tujuan
-                            document.getElementById('txfg_cmb_tujuanpengiriman').value=mpurpose;
-                            document.getElementById('txfg_txt_nopen').value=mnopen.trim()
-                            document.getElementById('txfg_txt_nokontrak').value=mcona
-                            document.getElementById('txfg_txt_sppb27').value=mrow.csppbdoc                            
+                            document.getElementById('txfg_txt_noaju').value = mnoaju.trim();
+                            document.getElementById('txfg_fromoffice').value = mfromoffice;
+                            document.getElementById('txfg_cmb_jenisTPB').value = (mtpb_asal==='-') ? '1' : mtpb_asal;
+                            document.getElementById('txfg_cmb_jenisTPBtujuan').value = (mtpb_tujuan==='-') ? '1' : mtpb_tujuan
+                            document.getElementById('txfg_cmb_tujuanpengiriman').value = mpurpose;
+                            document.getElementById('txfg_txt_nopen').value = mnopen.trim()
+                            document.getElementById('txfg_txt_nokontrak').value = mcona
+                            document.getElementById('txfg_txt_sppb27').value = mrow.csppbdoc                            
                             document.getElementById('txfg_txt_tglpen').value = mrow.cTglpen ? mrow.cTglpen : ''                            
                         } else if (mbctype=='25') {
                             document.getElementById('txfg_txt_noaju25').value=mnoaju.trim();
