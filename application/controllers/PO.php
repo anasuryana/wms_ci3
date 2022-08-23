@@ -156,8 +156,8 @@ class PO extends CI_Controller {
         $pdf->SetFont('Times','',9);
         $pdf->SetXY(6,83-$_y);
         $pdf->MultiCell(40,4,$supplier,0,'L');
-        // $pdf->MultiCell(40,4,"tes",1,'L');
-        $Yitu = $pdf->GetY();
+        
+        $pdf->GetY();
         $pdf->SetXY(46,83-$_y);
         $pdf->MultiCell(100,4,$supplier_address,0,"L");
         $pdf->SetXY(146,83-$_y);
@@ -332,11 +332,10 @@ class PO extends CI_Controller {
                 }
             }			
             $rowsneeded = $YExtra1>$YExtra2? $YExtra1: $YExtra2;
-            $_num+=$rowsneeded;
+            $_num+=$rowsneeded;            
         }
-        #end	
-
-        if($_num>13){
+        #end	                
+        if($_num>14){
             $MAXLENGTH_LINE_TO_BOTTOM = 195;
             $pdf->SetFont('Times','',9);
             $pdf->SetXY(6,104-$_y);
@@ -524,6 +523,7 @@ class PO extends CI_Controller {
                 $ttldiscount_price+=$discount_price;
                 $YStart+=(5+$YExtra);
             }
+            
             #footermain
             $total_amount-=$ttldiscount_priceSpecial;
             $ppn_price = $total_amount*$ppn/100;
@@ -542,8 +542,7 @@ class PO extends CI_Controller {
             foreach($adata_subject as $r){
                 $sdata_subject .= $r.",";
             }
-
-            // die($sdata_section."#".strlen($sdata_section));
+            
             $sdata_section = substr($sdata_section,0,strlen($sdata_section)-1);
             $sdata_department = substr($sdata_department,0,strlen($sdata_department)-1);
             $sdata_subject = substr($sdata_subject,0,strlen($sdata_subject)-1);
@@ -558,7 +557,7 @@ class PO extends CI_Controller {
                 $pdf->Cell(27.5,5, "(".number_format($ttldiscount_price+$ttldiscount_priceSpecial,2).")" ,0,0,'R');
                 $pdf->Cell(27.5,5, "(".number_format($ttldiscount_price+$ttldiscount_priceSpecial,2).")",0,0,'R');
             }            
-            #footer
+            // #footer
             $pdf->SetXY(6,180-$_y);
             $pdf->Cell(10,5,'',0,0,'C');
             $pdf->Cell(30,5,'',0,0,'C');
