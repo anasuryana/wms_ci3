@@ -6556,7 +6556,7 @@ class DELV extends CI_Controller {
         //     , 'at2' => $formattedTime
         // ])
         // );
-    }
+    }    
 
     public function posting27(){
         set_exception_handler([$this,'exception_handler']);
@@ -6682,7 +6682,7 @@ class DELV extends CI_Controller {
                 break;
             }
         }
-        
+            
         if($cztujuanpengiriman=='-'){
             $myar[] = ['cd' => 0 ,'msg' => 'please set TUJUAN PENGIRIMAN ('.$cztujuanpengiriman.')'];
             die('{"status" : '.json_encode($myar).'}');
@@ -6743,6 +6743,11 @@ class DELV extends CI_Controller {
             $myar[] = ['cd' => 0 ,'msg' => 'DO is not found'];
             die('{"status" : '.json_encode($myar).'}');
         }	
+
+        if($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $cnoaju])) {
+            $myar[] = ['cd' => 0 ,'msg' => 'Already posted'];
+            die('{"status" : '.json_encode($myar).'}');
+        }
         
         $rsdlv = $this->DELV_mod->select_det_byid_p($csj);
         $cz_JUMLAH_KEMASAN = count($rsdlv);
@@ -7525,7 +7530,7 @@ class DELV extends CI_Controller {
         if($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $cnoaju])>0){
             $myar[] = ['cd' => 0 ,'msg' => 'the NOMOR AJU is already posted'];
             die('{"status" : '.json_encode($myar).'}');
-        }				
+        }
         
         $rsdlv = $this->DELV_mod->select_det_byid_p($csj);
         $cz_JUMLAH_KEMASAN = count($rsdlv);
@@ -8205,6 +8210,11 @@ class DELV extends CI_Controller {
 
         if($this->DELV_mod->check_Primary(['DLV_ID' => $csj])==0){
             $myar[] = ['cd' => 0 ,'msg' => 'DO is not found'];
+            die('{"status" : '.json_encode($myar).'}');
+        }
+
+        if($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $cnoaju])) {
+            $myar[] = ['cd' => 0 ,'msg' => 'Already posted'];
             die('{"status" : '.json_encode($myar).'}');
         }
             
