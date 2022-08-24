@@ -160,7 +160,7 @@ video {
                 <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text" style="cursor:pointer" ondblclick="rcvcustoms_noaju_lbl_eCK()">NoAju</label>
-                        <input type="text" class="form-control" id="rcvcustoms_noaju" maxlength="26" autocomplete="off">
+                        <input type="text" class="form-control" id="rcvcustoms_noaju" maxlength="26" autocomplete="off" onkeyup="rcvcustoms_noaju_eKeyUp(event)">
                     </div>
                 </div>
                 <div class="col-md-2 mb-1">
@@ -3185,12 +3185,12 @@ video {
             }
         });
     }
-    $("#rcvcustoms_typedoc").change(function(){
-        let mid = document.getElementById('rcvcustoms_typedoc').value;
+    function rcvcustoms_initReceivingStatus(bctype)
+    {
         $.ajax({
             type: "get",
             url: "<?=base_url('RCV/zgetsts_rcv')?>",
-            data: {inid: mid},
+            data: {inid: bctype},
             dataType: "json",
             success: function (response) {
                 let str = '<option value="-">-</option>';
@@ -3205,8 +3205,12 @@ video {
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
             }
-        });        
-    });    
+        });
+    }
+    $("#rcvcustoms_typedoc").change(function(){        
+        rcvcustoms_initReceivingStatus(rcvcustoms_typedoc.value)                
+    })
+
     $("#rcvcustoms_typedoc_2").change(function(){
         const mid = document.getElementById('rcvcustoms_typedoc_2').value;
         $.ajax({
@@ -4506,6 +4510,16 @@ video {
                 default:
                     rcvcustoms_zsts_1.value = 5
             }
+        }
+    }
+
+    function rcvcustoms_noaju_eKeyUp(e)
+    {
+        if (e.target.value.trim().length>=6) 
+        {
+            const temp = e.target.value.trim().substr(4,2)
+            rcvcustoms_typedoc.value = temp
+            rcvcustoms_initReceivingStatus(rcvcustoms_typedoc.value)
         }
     }
 
