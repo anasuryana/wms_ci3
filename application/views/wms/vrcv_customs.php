@@ -3201,14 +3201,15 @@ video {
                     }
                 }
                 document.getElementById('rcvcustoms_zsts').innerHTML = str;
-                document.getElementById('rcvcustoms_zsts').focus();
+                
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
             }
         });
     }
     $("#rcvcustoms_typedoc").change(function(){        
-        rcvcustoms_initReceivingStatus(rcvcustoms_typedoc.value)                
+        rcvcustoms_initReceivingStatus(rcvcustoms_typedoc.value)
+        rcvcustoms_zsts.focus()
     })
 
     $("#rcvcustoms_typedoc_2").change(function(){
