@@ -2399,8 +2399,7 @@ class RCV extends CI_Controller {
         date_default_timezone_set('Asia/Jakarta');
         $currdate = date('d-m-Y');
         $cdoctype = isset($_COOKIE["RP_PAB_DOCTYPE"]) ? $_COOKIE["RP_PAB_DOCTYPE"] : '';
-        $ctpbtype = isset($_COOKIE["RP_PAB_TPBTYPE"]) ? $_COOKIE["RP_PAB_TPBTYPE"] : '';
-        $ctpbtypes = isset($_COOKIE["RP_PAB_TPBTYPES"]) ? $_COOKIE["RP_PAB_TPBTYPES"] : '';
+        $ctpbtype = isset($_COOKIE["RP_PAB_TPBTYPE"]) ? $_COOKIE["RP_PAB_TPBTYPE"] : '';        
         $citmcd = isset($_COOKIE["RP_PAB_ITMCD"]) ? $_COOKIE["RP_PAB_ITMCD"] : '';
         $csup = isset($_COOKIE["RP_PAB_SUP"]) ? $_COOKIE["RP_PAB_SUP"] : '';
         $cdate0 = isset($_COOKIE["RP_PAB_DATE0"]) ? $_COOKIE["RP_PAB_DATE0"] : '';
@@ -2452,12 +2451,14 @@ class RCV extends CI_Controller {
         $sheet->mergeCells('O6:P6');
         $sheet->setCellValueByColumnAndRow(15,6, 'ASAL PERUSAHAAN');
         $sheet->mergeCells('Q6:Q7');
-        $sheet->getStyle('B6:R7')->getAlignment()->setHorizontal('center')	;
-        $sheet->getStyle('B6:R7')->getAlignment()->setVertical('center');
         $sheet->setCellValueByColumnAndRow(17,6, 'Surat Jalan');
         
         $sheet->mergeCells('R6:R7');
-        $sheet->setCellValueByColumnAndRow(18,6, 'Keterangan');
+        $sheet->mergeCells('S6:S7');
+        $sheet->setCellValueByColumnAndRow(18,6, 'RA');
+        $sheet->setCellValueByColumnAndRow(19,6, 'Keterangan');
+        $sheet->getStyle('B6:S7')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('B6:S7')->getAlignment()->setVertical('center');
         
         $sheet->setCellValueByColumnAndRow(3,7, 'NOMOR');
         $sheet->setCellValueByColumnAndRow(4,7, 'TANGGAL DOKUMEN');
@@ -2501,7 +2502,6 @@ class RCV extends CI_Controller {
                 $flgcolor = 'w';
                 $mnomorin++;
                 $mnomordis = '';
-                //$mnomorpabdis = '';
                 $mdatepabdis = '';	
                 $mdatercv = '';					
                 if($mdo!=$r['RCV_DONO']){
@@ -2542,7 +2542,8 @@ class RCV extends CI_Controller {
             $sheet->setCellValueByColumnAndRow(15,$y, $msupdis);
             $sheet->setCellValueByColumnAndRow(16,$y, trim($malamdis));
             $sheet->setCellValueByColumnAndRow(17,$y, $mdodis);
-            $sheet->setCellValueByColumnAndRow(18,$y, $r['URAIAN_TUJUAN_PENGIRIMAN']);
+            $sheet->setCellValueByColumnAndRow(18,$y, $r['RCV_INVNO']);
+            $sheet->setCellValueByColumnAndRow(19,$y, $r['URAIAN_TUJUAN_PENGIRIMAN']);
             $y++;
         }
         
@@ -2567,14 +2568,14 @@ class RCV extends CI_Controller {
               ]
             ]
         ];
-        $sheet->getStyle('B6:R'.$y)->applyFromArray($BStyle);
+        $sheet->getStyle('B6:S'.$y)->applyFromArray($BStyle);
         $sheet->freezePane('F8');
         $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
-        foreach(range("C","R") as $r) {
+        foreach(range("C","S") as $r) {
             $sheet->getColumnDimension($r)->setAutoSize(true);
         }
-        $sheet->getStyle('B6:R7')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('d4d4d4');
+        $sheet->getStyle('B6:S7')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('d4d4d4');
         $sheet->removeColumn('A');
         $writer = new Xlsx($spreadsheet);		
         $filename='Export '.$stringjudul.date(' H i'); //save our workbook as this file name
