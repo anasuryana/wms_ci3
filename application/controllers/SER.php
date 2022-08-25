@@ -4001,6 +4001,7 @@ class SER extends CI_Controller {
                     if($retith>0){
                         if($this->PND_mod->updateserbyId(['PNDSER_SER' => $crawtext], ['PNDSER_SER' => $coldreff ]) > 0){							
                             if($this->PNDSCN_mod->updatebyId(['PNDSCN_SER' => $crawtext ], ['PNDSCN_SER' => $coldreff])>0){
+                                $this->RLS_mod->update_ser_where(['RLSSER_SER' => $crawtext, 'RLSSER_REFFSER' => $crawtext], ['RLSSER_SER' => $coldreff]);
                                 $myar[] = ["cd" => '1', "msg" => "ok, replaced,,,,"];
                                 exit('{"status":'.json_encode($myar).'}');
                             } else {
