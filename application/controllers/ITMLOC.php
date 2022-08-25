@@ -8,6 +8,7 @@ class ITMLOC extends CI_Controller {
 		parent::__construct();
         $this->load->model('ITMLOC_mod');
         $this->load->model('MSTLOCG_mod');
+        $this->load->model('MSTLOC_mod');
         $this->load->model('XBGROUP_mod');
         $this->load->helper('url');
         $this->load->helper('download');
@@ -51,6 +52,14 @@ class ITMLOC extends CI_Controller {
         } else {
             echo "The data is already added";
         }
+    }
+    
+    function search()
+    {
+        header('Content-Type: application/json');
+        $search = $this->input->get('search');
+        $rs = $this->MSTLOC_mod->select_subloc($search);
+        die(json_encode(['data' => $rs]));
     }
     
     public function getbyitemcd(){

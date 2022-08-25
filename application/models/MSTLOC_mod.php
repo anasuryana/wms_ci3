@@ -28,7 +28,16 @@ class MSTLOC_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
 	}
-
+	
+	function select_subloc($subloc)
+	{
+		$this->db->select("ITMLOC_BG,ITMLOC_ITM,RTRIM(MITM_SPTNO) SPTNO,RTRIM(MITM_ITMD1) ITMD1,MSTLOC_GRP,MSTLOC_CD");
+		$this->db->join("ITMLOC_TBL", "MSTLOC_CD=ITMLOC_LOC AND MSTLOC_GRP=ITMLOC_LOCG", "LEFT");
+		$this->db->join("MITM_TBL", "ITMLOC_ITM=MITM_ITMCD", "LEFT");
+		$this->db->like("MSTLOC_CD", $subloc);
+		$query = $this->db->get($this->TABLENAME);
+		return $query->result_array();
+	}
 
 	public function insert($data)
     {        

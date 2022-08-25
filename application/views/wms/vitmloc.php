@@ -1,5 +1,5 @@
 <div style="padding: 10px">
-	<div class="container-xxl">       
+	<div class="container-fluid">       
         <div class="row">				
             <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm mb-1">                    
@@ -50,11 +50,12 @@
                 </div>
             </div>
             <div class="col-md-4 mb-1">
-                <div class="input-group input-group-sm mb-1">                    
-                    <span class="input-group-text" >Sub Location</span>                    
+                <div class="input-group input-group-sm mb-1">
+                    <span class="input-group-text" >Sub Location</span>
                     <select class="form-select form-select-sm" id="itmloc_sel_subloc" >
                         <option value="-">-</option>
-                    </select>        
+                    </select>
+                    <button title="Find Item" class="btn btn-outline-secondary" type="button" id="itmloc_btnsubloc" data-bs-toggle="modal" data-bs-target="#ITMLOC_MODSEARCHSUB"><i class="fas fa-search"></i></button>
                 </div>
             </div>                  
         </div>
@@ -139,6 +140,49 @@
       </div>
     </div>
 </div>
+<div class="modal fade" id="ITMLOC_MODSEARCHSUB">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Sub Location List</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Sub location</span>
+                        <input type="text" class="form-control" id="itmloc_txtsearchsubloc" maxlength="44" required placeholder="..." onkeypress="itmloc_txtsearchsubloc_eKeyPress(event)">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="table-responsive" id="itmloc_tblsubloc_div">
+                        <table id="itmloc_tblsubloc" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Business</th>
+                                    <th>Item Code</th>
+                                    <th>SPT No.</th>
+                                    <th>Description</th>
+                                    <th>Location</th>
+                                    <th>Sub Location</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
 <div class="modal fade" id="ITMLOC_IMPORTDATA">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -185,6 +229,9 @@
 var itmloc_colidx = 0;
 $("#itmloc_btnfinditem").click(function(){
     $("#ITMLOC_MODITM").modal('show');
+});
+$("#ITMLOC_MODSEARCHSUB").on('shown.bs.modal', function(){
+    itmloc_txtsearchsubloc.focus()
 });
 $("#ITMLOC_MODITM").on('shown.bs.modal', function(){
     $("#itmloc_txtsearch").focus();
@@ -376,7 +423,7 @@ $("#itmloc_btn_startimport").click(function (e) {
         const regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
         if (regex.test(fileUpload.value.toLowerCase())) {                
                 if (typeof (FileReader) != "undefined") {
-                    var reader = new FileReader();
+                    const reader = new FileReader();
                     //For Browsers other than IE.
                     if (reader.readAsBinaryString) {
                         console.log('saya perambaan selain IE');
@@ -407,20 +454,20 @@ $("#itmloc_btn_startimport").click(function (e) {
 
     function itmloc_ProcessExcel(data) {
         //Read the Excel File data.
-        var workbook = XLSX.read(data, {
+        const workbook = XLSX.read(data, {
             type: 'binary'
         });
  
         //Fetch the name of First Sheet.
-        var firstSheet = workbook.SheetNames[0];			
+        const firstSheet = workbook.SheetNames[0];			
         //Read all rows from First Sheet into an JSON array.
-        var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+        const excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
 		
 
-		var dvExcel = $("#itmloc_tbl_import tbody");
-        var tohtml = '';
+		const dvExcel = $("#itmloc_tbl_import tbody");
+        let tohtml = '';
         //Add the data rows from Excel file.
-        for (var i = 0; i < excelRows.length; i++) {  			
+        for (let i = 0; i < excelRows.length; i++) {  			
             tohtml += '<tr style="cursor:pointer">'+
             '<td>'+excelRows[i].LOCATIONGROUP+'</td>'+
             '<td>'+excelRows[i].LOCATIONID+'</td>'+
@@ -429,23 +476,65 @@ $("#itmloc_btn_startimport").click(function (e) {
             '</tr>';										
         }
 		dvExcel.html(tohtml);
-        for (var i = 0; i < excelRows.length; i++) {
-            var mitem   = excelRows[i].ITEM;
-            var mloc    = excelRows[i].LOCATIONID;
-            var mlocg   = excelRows[i].LOCATIONGROUP;
+        for (let i = 0; i < excelRows.length; i++) {
+            const mitem   = excelRows[i].ITEM;
+            const mloc    = excelRows[i].LOCATIONID;
+            const mlocg   = excelRows[i].LOCATIONGROUP;
             $.ajax({
                 type: "post",
                 url: "<?=base_url('ITMLOC/import')?>",
                 data: {initem: mitem, inlocg: mlocg, inloc: mloc, inrowid: i},
                 dataType: "json",
                 success: function (response) {
-                    var table = $("#itmloc_tbl_import tbody");
+                    const table = $("#itmloc_tbl_import tbody");
                     table.find('tr').eq(response[0].indx).find('td').eq(3).text(response[0].status);
                 }, error: function(xhr,xopt,xthrow){
                     alertify.error(xthrow);
                 }
-            });
+            })
+        }        
+	}
+
+    function itmloc_txtsearchsubloc_eKeyPress(e)
+    {
+        if(e.key==='Enter')
+        {            
+            let mtabel = document.getElementById("itmloc_tblsubloc");
+            mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="6" class="text-center">Please wait...</td></tr>`
+            $.ajax({                
+                url: "<?=base_url('ITMLOC/search')?>",
+                data: {search: e.target.value},
+                dataType: "JSON",
+                success: function (response) {
+                    const ttlrows = response.length                    
+                    let mydes = document.getElementById("itmloc_tblsubloc_div");
+                    let myfrag = document.createDocumentFragment();
+                    let cln = mtabel.cloneNode(true);
+                    myfrag.appendChild(cln);                
+                    let tabell = myfrag.getElementById("itmloc_tblsubloc");
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    tableku2.innerHTML='';
+                    response.data.forEach((arrayItem) => {
+                        newrow = tableku2.insertRow(-1)
+                        newcell = newrow.insertCell(0)
+                        newcell.innerHTML = arrayItem['ITMLOC_BG']
+                        newcell = newrow.insertCell(1)
+                        newcell.innerHTML = arrayItem['ITMLOC_ITM']
+                        newcell = newrow.insertCell(2)
+                        newcell.innerHTML = arrayItem['SPTNO']
+                        newcell = newrow.insertCell(3)
+                        newcell.innerHTML = arrayItem['ITMD1']
+                        newcell = newrow.insertCell(4)
+                        newcell.innerHTML = arrayItem['MSTLOC_GRP']
+                        newcell = newrow.insertCell(5)
+                        newcell.innerHTML = arrayItem['MSTLOC_CD']
+                    })
+                    mydes.innerHTML=''
+                    mydes.appendChild(myfrag)
+                }, error: function(xhr,xopt,xthrow){
+                    alertify.error(xthrow);
+                }
+            })
         }
-        
-	};
+    }
 </script>
