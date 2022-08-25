@@ -80,6 +80,13 @@ class RLS_mod extends CI_Model {
         return $this->db->affected_rows();
     }
 
+    public function update_ser_where($pdata, $pwhere)
+    {        
+        $this->db->where($pwhere);
+        $this->db->update($this->TABLENAME, $pdata);
+        return $this->db->affected_rows();
+    }
+
     public function selectserAllg_byVAR($plike)
 	{
         $this->db->limit(10);
