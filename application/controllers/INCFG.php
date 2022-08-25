@@ -763,6 +763,10 @@ class INCFG extends CI_Controller {
                 $myar[] = ['cd' => 0, 'msg' => 'The serial is already at Finished Goods Warehouse'];
                 die('{"status":'.json_encode($myar).'}');				
             }
+            if($this->ITH_mod->check_Primary(["ITH_SER" => $ccode, "ITH_WH" => "ARSHP"])>0 ){
+                $myar[] = ['cd' => 0, 'msg' => 'The serial is already at Delivery Preparation Area'];
+                die('{"status":'.json_encode($myar).'}');				
+            }
             if(substr($ccode,0,1)=="3"){
                 $myar[] = ['cd' => 0, 'msg' => 'this menu is not for status label'];
                 die('{"status":'.json_encode($myar).'}');				
