@@ -3991,8 +3991,7 @@ class SER extends CI_Controller {
                     $ret3  = $this->SER_mod->updatebyId(["SER_ID" => $crawtext,"SER_RAWTXT" => $crawtext], $coldreff);
                 }
                 if($ret3>0){
-                    $this->SERD_mod->updatebyId(['SERD2_SER' => $crawtext], ['SERD2_SER' => $coldreff]);
-                    // $this->SERD_mod->deletebyID_label(['SERD2_SER' => $coldreff]);
+                    $this->SERD_mod->updatebyId(['SERD2_SER' => $crawtext], ['SERD2_SER' => $coldreff]);                    
                     //update ith
                     $cwhere = ["ITH_SER" => $coldreff];
                     $ctoupdate = ["ITH_SER" => $crawtext];
@@ -4046,7 +4045,7 @@ class SER extends CI_Controller {
                 if($ret1>0){
                     if($this->ITH_mod->check_Primary(['ITH_SER' => $cid]) > 0){
                         //bak transaction
-                        $retbin  = $this->ITH_mod->tobin($this->session->userdata('nama'),$cid );
+                        $this->ITH_mod->tobin($this->session->userdata('nama'),$cid );
                         ///start delete tx	
                                     
                         $ret2 = $this->ITH_mod->deletebyID( ['ITH_SER' => $cid, 'ITH_WH' => 'AFWH3']);
@@ -4077,7 +4076,7 @@ class SER extends CI_Controller {
                 if($ret1>0){
                     if($this->ITH_mod->check_Primary( ['ITH_SER' => $cid]) > 0){
                         //bak transaction
-                        $retbin  = $this->ITH_mod->tobin($this->session->userdata('nama'),$cid );
+                        $this->ITH_mod->tobin($this->session->userdata('nama'),$cid );
                         ///start delete tx					
                         $ret2 = $this->ITH_mod->deletebyID( ['ITH_SER' => $cid]);
                         if($ret2>0){

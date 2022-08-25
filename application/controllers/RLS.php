@@ -341,7 +341,8 @@ class RLS extends CI_Controller {
         #9#        
     }
 
-    public function searchby_pnddoc(){
+    public function searchby_pnddoc()
+    {
         header('Content-Type: application/json');
         $cdoc = $this->input->get('indoc');
         $rs = $this->RLS_mod->selectser_by(['RLSSER_REFFDOC' => $cdoc]);
