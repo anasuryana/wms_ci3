@@ -48,8 +48,7 @@
                                     <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">TX Status</span>                                        					
                                         <input type="text" class="form-control" id="txfg_status" required readonly>	                                        
-                                        <span class="input-group-text" id="txfg_lbl_status">
-                                                <!-- <i class="fas fa-check text-success"></i> -->
+                                        <span class="input-group-text" id="txfg_lbl_status">                                                
                                         </span>
                                     </div>
                                 </div>
@@ -75,7 +74,7 @@
                             <div class="row">
                                 <div class="col-md-5 mb-1 p-1">
                                     <div class="input-group input-group-sm">
-                                        <span class="input-group-text">Business Group</span>                                        				
+                                        <span class="input-group-text">Business Group</span>
                                         <select class="form-select" id="txfg_businessgroup" onchange="txfg_businessgroup_e_onchange()" required> 
                                         <option value="-">-</option>
                                         <?php
@@ -164,14 +163,17 @@
                                             </ul>
                                         </div>
                                         <button title="Print" class="btn btn-outline-primary" type="button" id="txfg_btn_print"><i class="fas fa-print"></i></button>
-                                        <div class="btn-group btn-group-sm" role="group">
+                                        <div class="btn-group btn-group-sm dropend" role="group">
                                             <button title="Export to ..." class="btn btn-outline-primary dropdown-toggle" type="button" id="txfg_btn_export" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-file-export"></i></button>
                                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                 <li><a class="dropdown-item" href="#" onclick="txfg_btn_torfid_e_click()"><i class="fas fa-copy"></i> RFID Clipboard</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="txfg_btn_toepro_e_click()">EPRO</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="txfg_btn_tobom_e_click()"><i class="fas fa-file-excel text-success"></i> BOM</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="txfg_btn_tomega_e_click()"><i class="fas fa-file-excel text-success"></i> to MEGA</a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="txfg_btn_tocustomscontrol_e_click()"><i class="fas fa-copy"></i> AKB Clipboard</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="txfg_btn_toepro_e_click()">EPRO</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item" href="#" onclick="txfg_btn_tobom_e_click()"><i class="fas fa-file-excel text-success"></i> BOM</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item" href="#" onclick="txfg_btn_changeprice_e_click()"><i class="fas fa-money-check text-success"></i> Change price</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="txfg_btn_tomega_e_click()"><i class="fas fa-file-excel text-success"></i> to MEGA</a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="txfg_btn_tostx_xls()"><i class="fas fa-file-excel text-success"></i> Invoice,PL,DO</a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="txfg_btn_toomi_xls()"><i class="fas fa-file-excel text-success"></i> OMI</a></li>                                                
                                             </ul>
@@ -228,7 +230,7 @@
                                 <th ></th>
                                 <th ></th>
                                 <th ></th>
-                                <th class="text-end"><span id="txfg_gt_rm" class="badge bg-info"></span></th>
+                                <th class="text-end"><span id="txfg_gt_rm" title="count of components" class="badge bg-info"></span></th>
                             </tr>
                             <tr class="second">                                
                                 <th>Box Type</th>
@@ -926,8 +928,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="txfg_btn_recalculate" onclick="txfg_btn_recalculate_eCK()">Recalculate</button>
-                <!-- <button type="button" class="btn btn-warning" id="txfg_btn_flagOK" onclick="txfg_btn_flagOK_eCK()">Set Flag OK</button>                 -->
+                <button type="button" class="btn btn-primary" id="txfg_btn_recalculate" onclick="txfg_btn_recalculate_eCK()">Recalculate</button>                
             </div>
         </div>
       </div>
@@ -1162,12 +1163,91 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            </tbody>                            
+                            </tbody>
                         </table>
                     </div>
-                </div>	                               	
-            </div>                           
-        </div>             
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="modal fade" id="TXFG_MODCHANGEPRICE">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">      
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Price Changes : <span id="txfg_modchangeprice_txid"></span></h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <h3 ><span class="badge bg-info">1 <i class="fas fa-hand-point-right" ></i></span> <span class="badge bg-info">select Item Code</span></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text" >Item Code</span>
+                            <select class="form-select" id="txfg_modchangeprice_txt_itemcode" onchange="txfg_modchangeprice_txt_itemcode_eChange(event)">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <h3 ><span class="badge bg-info">2 <i class="fas fa-hand-point-right" ></i></span> <span class="badge bg-info">select old price</span></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <div class="table-responsive" id="txfg_modchangeprice_tbl_div">
+                            <table id="txfg_modchangeprice_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;font-size:91%">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>CPO</th>
+                                        <th>SO Line</th>
+                                        <th class="text-end">Price</th>
+                                        <th class="d-none">FLine</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <h3 ><span class="badge bg-info">3 <i class="fas fa-hand-point-right" ></i></span> <span class="badge bg-info">select new price</span></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <div class="table-responsive" id="txfg_modchangeprice_new_tbl_div">
+                            <table id="txfg_modchangeprice_new_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;font-size:91%">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>CPO</th>
+                                        <th>SO Line</th>
+                                        <th class="text-end">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="txfg_modchangeprice_btn_save_eClick(this)">Save changes</button>
+        </div>
       </div>
     </div>
 </div>
@@ -1487,7 +1567,7 @@
         </div>
     </div>
 </div>
-<div id="txfg_context_menu" class="easyui-menu" style="width:120px;">         
+<div id="txfg_context_menu" class="easyui-menu" style="width:120px;">
     <div data-options="iconCls:'icon-cancel'" onclick="txfg_e_cancelitem()">Cancel</div>     
 </div>
 <div class="modal fade" id="TXFG_MODSO">
@@ -1672,6 +1752,8 @@
       </div>
     </div>
 </div>
+<input type="hidden" id="TXFG_hid_idx">
+<input type="hidden" id="TXFG_hid_idx2">
 <script>
     var txfg_starttime = moment().format('HH:mm:ss')
     var scr_txfg_cust = '';
@@ -3676,6 +3758,7 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                         document.getElementById("txfg_txt_remark").value = mremark
                         document.getElementById("txfg_txt_id").focus();
                         document.getElementById("txfg_txt_id").value=mtxid;
+                        txfg_modchangeprice_txid.innerText=mtxid;
                         document.getElementById("txfg_txt_id").readOnly=true;
                         document.getElementById('txfg_custname').value=mcusnm;
                         document.getElementById('txfg_custname').readOnly=true;
@@ -3865,6 +3948,8 @@ function txfg_f_getdetail (ptxid) {
             txfg_ar_item_job = [];
             txfg_ar_cnt_rm = [];
             let isASPItemCD = false;
+            let ar_itmid = ['-']
+            let str_itmid = ''
             for(let i=0;i<ttlcek;i++){
                 txfg_g_string = response.data[i].SI_OTHRMRK;
                 txfg_ar_item_ser.push(response.data[i].DLV_SER);
@@ -3879,9 +3964,17 @@ function txfg_f_getdetail (ptxid) {
                 if(response.data[i].SER_ITMID.includes("ASP")){
                     isASPItemCD = true;
                 }
+                if(!ar_itmid.includes(response.data[i].SER_ITMID)){                    
+                    ar_itmid.push(response.data[i].SER_ITMID)
+                }
             }
+            
+            ar_itmid.forEach((r) => {
+                str_itmid += `<option value='${r}'>${r}</option>`
+            })
 
-            if(ttlcek>0){        
+            txfg_modchangeprice_txt_itemcode.innerHTML = str_itmid
+            if(ttlcek>0){
                 btnSO.disabled = false
                 let tabell = document.getElementById("txfg_tbltx")
                 let tableku2 = tabell.getElementsByTagName("tbody")[0]
@@ -5163,4 +5256,165 @@ function txfg_btn_showweight_e_click(){
 }
 document.getElementById('txfg_fromoffice').value='050900';
 document.getElementById('txfg_cmb_jenisTPB').value='1';
+
+function txfg_btn_changeprice_e_click()
+{
+    if(txfg_txt_id.value.length>3) 
+    {
+        $("#TXFG_MODCHANGEPRICE").modal('show')
+    } else 
+    {
+        txfg_txt_id.focus()
+        alertify.message('TXID is required')
+    }
+}
+
+function txfg_modchangeprice_txt_itemcode_eChange(e)
+{
+    $.ajax({
+        type: "GET",
+        url: "<?=base_url('DELVHistory/priceFG')?>",
+        data: {itemcd: e.target.value, txid:txfg_txt_id.value },
+        dataType: "json",
+        success: function (response) {
+            let mydes = document.getElementById("txfg_modchangeprice_tbl_div");
+            let myfrag = document.createDocumentFragment();
+            let mtabel = document.getElementById("txfg_modchangeprice_tbl");
+            let cln = mtabel.cloneNode(true);
+            myfrag.appendChild(cln);                
+            let tabell = myfrag.getElementById("txfg_modchangeprice_tbl");                    
+            let tableku2 = tabell.getElementsByTagName("tbody")[0];
+            let newrow, newcell, newText;
+            tableku2.innerHTML='';
+            response.data.forEach((r, i) => {
+                newrow = tableku2.insertRow(-1);
+                newcell = newrow.insertCell(0);
+                newcell.innerHTML = r['SISO_CPONO']
+                newcell = newrow.insertCell(1)
+                newcell.innerHTML = r['SISO_SOLINE']
+                newcell = newrow.insertCell(2)
+                newcell.classList.add('text-end')
+                newcell.style.cssText = 'cursor:pointer'
+                newcell.innerHTML = `<strong>${r['SSO2_SLPRC']*1}</strong>`
+                newcell.onclick = () => {
+                    if (TXFG_hid_idx.value!='')
+                    {
+                        tableku2.rows[TXFG_hid_idx.value].classList.remove('table-info')
+                    }
+                    tableku2.rows[i].classList.add('table-info')
+                    TXFG_hid_idx.value = i
+                }
+                newcell = newrow.insertCell(3)
+                newcell.classList.add('d-none')
+                newcell.innerHTML = r['SISO_FLINE']
+            })
+            mydes.innerHTML='';
+            mydes.appendChild(myfrag);
+        }, error: function(xhr, xopt, xthrow){
+            alertify.error(xthrow);
+        }
+    })
+
+    $.ajax({
+        type: "POST",
+        url: "<?=base_url('SO/outstanding_mega')?>",
+        data: {bg: txfg_businessgroup.value, cuscd: scr_txfg_cust, itemcd:[e.target.value] },
+        dataType: "JSON",
+        success: function (response) {
+            let mydes = document.getElementById("txfg_modchangeprice_new_tbl_div");
+            let myfrag = document.createDocumentFragment();
+            let mtabel = document.getElementById("txfg_modchangeprice_new_tbl");
+            let cln = mtabel.cloneNode(true);
+            myfrag.appendChild(cln);                
+            let tabell = myfrag.getElementById("txfg_modchangeprice_new_tbl");                    
+            let tableku2 = tabell.getElementsByTagName("tbody")[0];
+            let newrow, newcell, newText;
+            tableku2.innerHTML='';
+            response.data.forEach((r, i) => {
+                newrow = tableku2.insertRow(-1);
+                newcell = newrow.insertCell(0);
+                newcell.innerHTML = r['SSO2_CPONO']
+                newcell = newrow.insertCell(1)
+                newcell.innerHTML = r['SSO2_SOLNO']
+                newcell = newrow.insertCell(2)
+                newcell.classList.add('text-end')
+                newcell.style.cssText = 'cursor:pointer'
+                newcell.innerHTML = `<strong>${r['SSO2_SLPRC']*1}</strong>`
+                newcell.onclick = () => {
+                    if (TXFG_hid_idx2.value!='')
+                    {
+                        tableku2.rows[TXFG_hid_idx2.value].classList.remove('table-info')
+                    }
+                    tableku2.rows[i].classList.add('table-info')
+                    TXFG_hid_idx2.value = i
+                }                
+            })
+            mydes.innerHTML='';
+            mydes.appendChild(myfrag);
+        }, error: function(xhr,xopt,xthrow){
+            alertify.error(xthrow)
+        }
+    })
+}
+
+function txfg_modchangeprice_btn_save_eClick(p)
+{    
+    if(txfg_modchangeprice_new_tbl.getElementsByTagName('tbody')[0].rows===0)
+    {
+        alertify.message('there is no new price selected')
+        return
+    }
+    let ttlrows = txfg_modchangeprice_tbl.getElementsByTagName('tbody')[0].rows.length
+    let isOneSelected = false
+    for(let i=0;i<ttlrows;i++)
+    {        
+        if(txfg_modchangeprice_tbl.getElementsByTagName('tbody')[0].rows[i].classList.contains('table-info'))
+        {
+            isOneSelected = true
+        }
+    }
+    if(!isOneSelected)
+    {
+        alertify.message('please select old price first')
+        return
+    }
+    ttlrows = txfg_modchangeprice_new_tbl.getElementsByTagName('tbody')[0].rows.length
+    isOneSelected = false
+    for(let i=0;i<ttlrows;i++)
+    {
+        if(txfg_modchangeprice_new_tbl.getElementsByTagName('tbody')[0].rows[i].classList.contains('table-info'))
+        {
+            isOneSelected = true
+        }
+    }
+    if(!isOneSelected)
+    {
+        alertify.message('please select new price first')
+        return
+    }
+    if(confirm('Are you sure ?'))
+    {        
+        const fline = txfg_modchangeprice_tbl.getElementsByTagName('tbody')[0].rows[TXFG_hid_idx.value].cells[3].innerText
+        const oldCPO = txfg_modchangeprice_tbl.getElementsByTagName('tbody')[0].rows[TXFG_hid_idx.value].cells[0].innerText
+        const oldSOLine = txfg_modchangeprice_tbl.getElementsByTagName('tbody')[0].rows[TXFG_hid_idx.value].cells[1].innerText
+        const newCPO = txfg_modchangeprice_new_tbl.getElementsByTagName('tbody')[0].rows[TXFG_hid_idx2.value].cells[0].innerText
+        const newSOLine = txfg_modchangeprice_new_tbl.getElementsByTagName('tbody')[0].rows[TXFG_hid_idx2.value].cells[1].innerText
+        p.disabled = true
+        $.ajax({
+            type: "POST",
+            url: "<?=base_url('SO/change_so_manually')?>",
+            data: {fline: fline, newCPO: newCPO, newSOLine: newSOLine,txid:txfg_txt_id.value
+            , oldSOLine:oldSOLine},
+            dataType: "JSON",
+            success: function (response) {
+                txfg_modchangeprice_txt_itemcode.value = '-'
+                p.disabled = false
+                alertify.message(response.status.msg)
+            }, error: function(xhr,xopt,xthrow){
+                p.disabled = false
+                alertify.error(xthrow)
+            }
+        })
+    }
+}
 </script>

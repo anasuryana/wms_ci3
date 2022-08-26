@@ -12,6 +12,7 @@ class SO extends CI_Controller {
         $this->load->model('DELV_mod');
         $this->load->model('XSO_mod');
         $this->load->model('SO_mod');
+        $this->load->model('SISO_mod');
         $this->load->model('DLVSO_mod');
 	}
 	public function index()
@@ -471,8 +472,42 @@ class SO extends CI_Controller {
         $doc = $this->input->post('doc');
         $itemcode = $this->input->post('itemcode');
         $myar = $this->DLVSO_mod->deletebyID(['DLVSO_DLVID' => $doc, 'DLVSO_ITMCD' => $itemcode]) ? 
-            ['cd' => '1', 'msg' => 'OK'] :
-            ['cd' => '0', 'msg' => 'Sorry'];
+        ['cd' => '1', 'msg' => 'OK'] :
+        ['cd' => '0', 'msg' => 'Sorry'];
+        die(json_encode(['status' => $myar]));
+    }
+    
+    function change_so_manually()
+    {
+        header('Content-Type: application/json');
+        if ($this->session->userdata('status') != "login")
+        {
+            $myar = ["cd" => "0", "msg" => "Session is expired please reload page"];            
+        } else {
+            $fline = $this->input->post('fline');            
+            $oldSOLine = $this->input->post('oldSOLine');
+            $newCPO = $this->input->post('newCPO');
+            $newSOLine = $this->input->post('newSOLine');
+            $txid = $this->input->post('txid');
+            $res = $this->SISO_mod->updatebyId(['SISO_CPONO' => $newCPO, 'SISO_SOLINE' => $newSOLine],['SISO_FLINE' => $fline]);
+            if($res)
+            {
+                $myar = ['cd' => '1', 'msg' => 'OK'];
+                $lastLineLog = $this->CSMLOG_mod->select_lastLine($txid, '')+1;
+                $this->CSMLOG_mod->insert([
+                    'CSMLOG_DOCNO' => $txid,
+                    'CSMLOG_SUPZAJU' => '',
+                    'CSMLOG_SUPZNOPEN' => '',
+                    'CSMLOG_DESC' => 'change price, from '.$oldSOLine .' to '.$newSOLine,
+                    'CSMLOG_LINE' => $lastLineLog,
+                    'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
+                    'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+                ]);
+            } else 
+            {
+                $myar = ['cd' => '0', 'msg' => 'could not be updated'];
+            }
+        }
         die(json_encode(['status' => $myar]));
     }
 }

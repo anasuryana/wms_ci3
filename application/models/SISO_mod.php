@@ -127,4 +127,13 @@ class SISO_mod extends CI_Model {
         $query =  $this->db->query($qry, [$pdoc,$pdoc]);    
 		return $query->result_array();
     }
+    public function select_currentPrice($txid, $itemcd){
+        $qry = "select SISO_TBL.*,SSO2_SLPRC from SISO_TBL left join XSSO2 on SISO_CPONO=SSO2_CPONO and SISO_SOLINE=XSSO2.SSO2_SOLNO where SISO_QTY>0 AND SISO_HLINE in (
+            select SISCN_LINENO from SISCN_TBL left join DLV_TBL on SISCN_SER=DLV_SER
+                left join SER_TBL on SISCN_SER=SER_ID
+                where DLV_ID=? and SER_ITMID=?
+            )";
+        $query =  $this->db->query($qry, [$txid,$itemcd]);
+		return $query->result_array();
+    }
 }
