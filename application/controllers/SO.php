@@ -500,6 +500,7 @@ class SO extends CI_Controller {
                     'CSMLOG_SUPZNOPEN' => '',
                     'CSMLOG_DESC' => 'change price, from '.$oldSOLine .' to '.$newSOLine,
                     'CSMLOG_LINE' => $lastLineLog,
+                    'CSMLOG_TYPE' => 'OUT',
                     'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
                     'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
                 ]);

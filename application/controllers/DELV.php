@@ -1585,6 +1585,7 @@ class DELV extends CI_Controller {
                 'CSMLOG_SUPZNOPEN' => '',
                 'CSMLOG_DESC' => 'update transaction, add new transaction',
                 'CSMLOG_LINE' => $lastLineLog,
+                'CSMLOG_TYPE' => 'OUT',
                 'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
                 'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
             ]);
@@ -1938,6 +1939,7 @@ class DELV extends CI_Controller {
                     'CSMLOG_SUPZNOPEN' => '',
                     'CSMLOG_DESC' => $msg,
                     'CSMLOG_LINE' => $lastLineLog,
+                    'CSMLOG_TYPE' => 'OUT',
                     'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
                     'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
                 ]);
@@ -4888,6 +4890,7 @@ class DELV extends CI_Controller {
                 'CSMLOG_SUPZNOPEN' => $ctpb_tgl_daftar,
                 'CSMLOG_DESC' => $msg,
                 'CSMLOG_LINE' => $lastLineLog,
+                'CSMLOG_TYPE' => 'OUT',
                 'CSMLOG_CREATED_AT' => $crnt_dt,
                 'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
             ]);

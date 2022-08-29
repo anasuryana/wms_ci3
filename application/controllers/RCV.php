@@ -644,6 +644,7 @@ class RCV extends CI_Controller {
             'CSMLOG_SUPZNOPEN' => $h_nopen,
             'CSMLOG_DESC' => $msg,
             'CSMLOG_LINE' => $lastLineLog,
+            'CSMLOG_TYPE' => 'INC',
             'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
             'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
         ]);
@@ -903,6 +904,7 @@ class RCV extends CI_Controller {
             'CSMLOG_SUPZNOPEN' => $h_nopen,
             'CSMLOG_DESC' => $msg,
             'CSMLOG_LINE' => $lastLineLog,
+            'CSMLOG_TYPE' => 'INC',
             'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
             'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
         ]);
@@ -1140,6 +1142,7 @@ class RCV extends CI_Controller {
             'CSMLOG_SUPZNOPEN' => $cregno,
             'CSMLOG_DESC' => $msg,
             'CSMLOG_LINE' => $lastLineLog,
+            'CSMLOG_TYPE' => 'INC',
             'CSMLOG_CREATED_AT' => $currrtime,
             'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
         ]);
