@@ -1744,9 +1744,13 @@ class ITH_mod extends CI_Model {
 			FROM v_ith_tblc
 			LEFT JOIN SER_TBL ON ITH_SER=SER_ID
 			WHERE ITH_WH IN ('ARPRD1','ARQA1','AFWH3','ARSHP','QAFG','AFQART','NFWH4RT','AFWH3RT','ARSHPRTN','ARSHPRTN2')
-			AND ITH_ITMCD IN (SELECT SSO2_MDLCD FROM XSSO2
+			AND ITH_ITMCD IN (
+				SELECT SSO2_MDLCD FROM XSSO2
 				WHERE SSO2_BSGRP=?
 				GROUP BY SSO2_MDLCD
+				union
+				select SER_ITMID SSO2_MDLCD from SER_TBL where SER_BSGRP=?
+				group by SER_ITMID
 				)
 			AND ITH_DATEC<=?
 			AND ITH_ITMCD IN ($aItems)
@@ -1755,7 +1759,7 @@ class ITH_mod extends CI_Model {
 			GROUP BY ITH_ITMCD
 		) V1
 		LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD";
-		$query =  $this->db->query($qry, [$bg,$date]);
+		$query =  $this->db->query($qry, [$bg,$bg,$date]);
 		return $query->result_array();
 	}
 
