@@ -3207,9 +3207,9 @@ video {
             }
         });
     }
-    $("#rcvcustoms_typedoc").change(function(){        
+    $("#rcvcustoms_typedoc").change(function(){                
         rcvcustoms_initReceivingStatus(rcvcustoms_typedoc.value)
-        rcvcustoms_zsts.focus()
+        rcvcustoms_zsts.focus()        
     })
 
     $("#rcvcustoms_typedoc_2").change(function(){
@@ -4191,7 +4191,11 @@ video {
         "rcvcustoms_reader", { fps: 10, qrbox: 250 });
     html5QrcodeScanner.render(onScanSuccess);
 
-    function rcvcustoms_typedoc_1_eChange(c){        
+    function rcvcustoms_typedoc_1_eChange(c){
+        if(c.value==='40')
+        {
+            rcvcustoms_kppbc_1.value = '050900'
+        }        
         $.ajax({
             type: "get",
             url: "<?=base_url('RCV/zgetsts_rcv')?>",
