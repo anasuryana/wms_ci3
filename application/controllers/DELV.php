@@ -4359,8 +4359,7 @@ class DELV extends CI_Controller {
             $clebar = $pdf->GetStringWidth($pid)+17;	
             $pdf->Code128(140,40,$pid,$clebar,5);
             $pdf->Text(155,59+7,$hinv_date);
-            $pdf->Text(16,70+10,$hinv_customer);
-            // $pdf->Text(16,70+4+10,$hinv_address);
+            $pdf->Text(16,70+10,$hinv_customer);            
             $pdf->SetXY(15,81);
             $pdf->MultiCell(85.67,4,trim($hinv_address),0);
             $pdf->Text(140,91+10,$hinv_inv);
@@ -4376,8 +4375,7 @@ class DELV extends CI_Controller {
             $dis_item = '';
             $dis_itemnm = '';
             $dis_no = '';			
-            $dis_qty = '';
-            // $ttlbrs=110;
+            $dis_qty = '';            
             if($ASPFLAG){
                 $rspickingres = $this->DELV_mod->select_serah_terima_asp($pid);
                 foreach($rspickingres as $r) {
@@ -4419,7 +4417,7 @@ class DELV extends CI_Controller {
                     $pdf->SetXY(32,$curY+2);
                     $pdf->Cell(63.73,4,$dis_item,0,0,'L');
                     $pdf->SetXY(90,$curY-3);
-                    $pdf->Cell(16.63,4, $dis_qty,0,0,'R'); #number_format($r['SISCN_SERQTY'] * $r['TTLBOX'])
+                    $pdf->Cell(16.63,4, $dis_qty,0,0,'R');
                     $pdf->SetXY(110,$curY-3);
                     $pdf->Cell(24.71,4, number_format($r['MITM_NWG'],2),0,0,'R');
                     $pdf->SetXY(137.07,$curY-3);
@@ -4565,8 +4563,7 @@ class DELV extends CI_Controller {
             $nourutDODis = 0;
             if($hinv_bctype==='41') {
                 if($h_tujuanPengiriman=='5'){
-                    $rs41 = $this->setPriceRS(base64_encode($pid));
-                    // die(json_encode($rs41));
+                    $rs41 = $this->setPriceRS(base64_encode($pid));                    
                     foreach($rs41 as $n) {
                         if($tempItem!=$n['SSO2_MDLCD']) {
                             $nourutDO++;
@@ -12375,14 +12372,11 @@ class DELV extends CI_Controller {
         $czinvoice = '';
         $ccustdate = '';
         $czdocbctype = '';
-        $nomoraju = '';
-        $cbusiness_group = '';
-        $ccustomer_do = '';
+        $nomoraju = '';        
         $deliveryDescription = '';
-
-        $czkantortujuan = '';
+        
         $cz_KODE_JENIS_TPB = '';		
-        $czidpenerima = ''; $cznmpenerima = '';	$czalamatpenerima = '';	$czizinpenerima = '';
+        $czidpenerima = ''; $cznmpenerima = '';	$czalamatpenerima = '';
         $cznamapengangkut = ''; $cznomorpolisi = '';
 
         $czinvoicedt = '';
@@ -12394,19 +12388,15 @@ class DELV extends CI_Controller {
             $czinvoice = trim($r['DLV_INVNO']);
             $ccustdate = $r['DLV_BCDATE'];
             $czdocbctype = $r['DLV_BCTYPE'];
-            $nomoraju = $r['DLV_NOAJU'];
-            $cbusiness_group = $r['DLV_BSGRP'];			
+            $nomoraju = $r['DLV_NOAJU'];            		
             $deliveryDescription = $r['DLV_DSCRPTN'];
             $czcurrency = trim($r['MCUS_CURCD']);
-
-            $czkantortujuan = $r['DLV_DESTOFFICE'];
-            $cz_KODE_JENIS_TPB = $r['DLV_ZJENIS_TPB_ASAL'];
-            $cz_KODE_TUJUAN_TPB = $r['DLV_ZJENIS_TPB_TUJUAN'];
+            
+            $cz_KODE_JENIS_TPB = $r['DLV_ZJENIS_TPB_ASAL'];            
             $czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);			
 
             $cznmpenerima = $r['MDEL_ZNAMA'];
             $czalamatpenerima = $r['MDEL_ADDRCUSTOMS'];
-            $czizinpenerima = $r['MDEL_ZSKEP'];
 
             $cznamapengangkut = $r['MSTTRANS_TYPE'];
             $cznomorpolisi = $r['DLV_TRANS'];
@@ -12512,22 +12502,14 @@ class DELV extends CI_Controller {
         #check price source
         $rsrmmanualDO = $this->DLVRMDOC_mod->select_invoice_posting($csj);
         $rsrm_fromSO =  $this->DLVRMSO_mod->select_invoice($csj);
-        $SERI_BARANG = 1;
-        $DATA_POST_TYPE = ''; /// 1=DO MANUAL, 2=SO, 3=AUTO 
-        $arx_item = [];
-        $arx_qty = [];
-        $arx_lot = [];
-        $arx_do = [];
+        $SERI_BARANG = 1;        
         if(count($rsrmmanualDO) && count($rsrm_fromSO) <=0) {
-            $DATA_POST_TYPE = 1;						
         } else {
             $rsrm_fromSO =  $this->DLVRMSO_mod->select_invoice($csj);
-            if(count($rsrm_fromSO)) {
-                $DATA_POST_TYPE = 2;								
+            if(count($rsrm_fromSO)) {                		
             } else {
                 $rsrm_fromDO = $this->DELV_mod->select_det_byid_rm($csj);
-                if(count($rsrm_fromDO)) {					
-                    $DATA_POST_TYPE = 3;
+                if(count($rsrm_fromDO)) {					                    
                     
                 } else {
                     $myar[] = ["cd" => "0", "msg" => "there is no data source"];
@@ -12743,7 +12725,7 @@ class DELV extends CI_Controller {
             $n['ID_HEADER'] = $ZR_TPB_HEADER;
         }
         unset($n);
-        $ZR_TPB_DOKUMEN = $this->TPB_DOKUMEN_imod->insertb($tpb_dokumen);
+        $this->TPB_DOKUMEN_imod->insertb($tpb_dokumen);
         ##N
         
         ##3 TPB KEMASAN
@@ -12751,7 +12733,7 @@ class DELV extends CI_Controller {
             $n['ID_HEADER'] = $ZR_TPB_HEADER;
         }
         unset($n);
-        $ZR_TPB_KEMASAN = $this->TPB_KEMASAN_imod->insertb($tpb_kemasan);
+        $this->TPB_KEMASAN_imod->insertb($tpb_kemasan);
         ##N
 
         ##4 TPB BARANG
@@ -12782,7 +12764,7 @@ class DELV extends CI_Controller {
             $ZR_TPB_BARANG = $this->TPB_BARANG_imod->insert($_barang);
             foreach($tpb_bahan_baku as $b){
                 if($n['KODE_BARANG']==$b['KODE_BARANG'] && $n['CIF'] == $b['CIF']){
-                    $ZR_TPB_BAHAN_BAKU = $this->TPB_BAHAN_BAKU_imod
+                    $this->TPB_BAHAN_BAKU_imod
                         ->insert([
                             'KODE_JENIS_DOK_ASAL' => $b['KODE_JENIS_DOK_ASAL']
                             ,'NOMOR_DAFTAR_DOK_ASAL' => $b['NOMOR_DAFTAR_DOK_ASAL']
@@ -12794,8 +12776,7 @@ class DELV extends CI_Controller {
 
                             
                             ,'HARGA_PENYERAHAN' => (str_replace(",","",$b['CIF'])*$czharga_matauang)
-                            
-                            // ,'KODE_BARANG' => substr($b['KODE_BARANG'],0,2) == 'PM' ? '-' : $b['KODE_BARANG']
+                                                        
                             ,'KODE_BARANG' => $b['KODE_BARANG']!= $b['ITMCDCUS']?  $b['ITMCDCUS'] : $b['KODE_BARANG']
                             ,'KODE_STATUS' => $b['KODE_STATUS']							
                             ,'URAIAN' => $b['URAIAN']
@@ -12968,16 +12949,13 @@ class DELV extends CI_Controller {
         $rsrmmanualDO = $this->DLVRMDOC_mod->select_invoice_posting($csj);
         $rsrm_fromSO =  $this->DLVRMSO_mod->select_invoice($csj);
         $SERI_BARANG = 1;	
-        if(count($rsrmmanualDO) && count($rsrm_fromSO) <=0) {
-            $DATA_POST_TYPE = 1;						
+        if(count($rsrmmanualDO) && count($rsrm_fromSO) <=0) {            				
         } else {
             $rsrm_fromSO =  $this->DLVRMSO_mod->select_invoice($csj);
-            if(count($rsrm_fromSO)) {
-                $DATA_POST_TYPE = 2;								
+            if(count($rsrm_fromSO)) {                		
             } else {
                 $rsrm_fromDO = $this->DELV_mod->select_det_byid_rm($csj);
-                if(count($rsrm_fromDO)) {					
-                    $DATA_POST_TYPE = 3;
+                if(count($rsrm_fromDO)) {
                     
                 } else {
                     $myar[] = ["cd" => "0", "msg" => "there is no data source"];
@@ -13240,7 +13218,7 @@ class DELV extends CI_Controller {
             $n['ID_HEADER'] = $ZR_TPB_HEADER;
         }
         unset($n);
-        $ZR_TPB_DOKUMEN = $this->TPB_DOKUMEN_imod->insertb($tpb_dokumen);
+        $this->TPB_DOKUMEN_imod->insertb($tpb_dokumen);
         ##N
         
         ##3 TPB KEMASAN
@@ -13248,7 +13226,7 @@ class DELV extends CI_Controller {
             $n['ID_HEADER'] = $ZR_TPB_HEADER;
         }
         unset($n);
-        $ZR_TPB_KEMASAN = $this->TPB_KEMASAN_imod->insertb($tpb_kemasan);
+        $this->TPB_KEMASAN_imod->insertb($tpb_kemasan);
         ##N
 
         ##4 TPB BARANG
