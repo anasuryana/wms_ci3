@@ -4358,9 +4358,11 @@ class DELV extends CI_Controller {
             unset($r);
             $clebar = $pdf->GetStringWidth($pid)+17;	
             $pdf->Code128(140,40,$pid,$clebar,5);
-            $pdf->Text(155,59+10,$hinv_date);
+            $pdf->Text(155,59+7,$hinv_date);
             $pdf->Text(16,70+10,$hinv_customer);
-            $pdf->Text(16,70+4+10,$hinv_address);
+            // $pdf->Text(16,70+4+10,$hinv_address);
+            $pdf->SetXY(15,81);
+            $pdf->MultiCell(85.67,4,trim($hinv_address),0);
             $pdf->Text(140,91+10,$hinv_inv);
             $curY = 110+15;
             $no =0;
