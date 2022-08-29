@@ -5259,9 +5259,15 @@ document.getElementById('txfg_cmb_jenisTPB').value='1';
 
 function txfg_btn_changeprice_e_click()
 {
-    if(txfg_txt_id.value.length>3) 
+    if(txfg_txt_id.value.length>3)
     {
-        $("#TXFG_MODCHANGEPRICE").modal('show')
+        if(txfg_gt_rm.innerText == 'Please wait')
+        {
+            alertify.warning('Please wait')
+        } else 
+        {
+            $("#TXFG_MODCHANGEPRICE").modal('show')            
+        }
     } else 
     {
         txfg_txt_id.focus()
