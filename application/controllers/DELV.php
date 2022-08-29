@@ -2642,6 +2642,8 @@ class DELV extends CI_Controller {
         $pid = ''; $pforms = '';
         if(isset($_COOKIE["CKPDLV_NO"])){
             $pid = $_COOKIE["CKPDLV_NO"];
+            $currency = $_COOKIE["CKPDLV_CURRENCY"];
+            $tglaju = $_COOKIE["CKPDLV_TGLAJU"];
         } else {
             exit('nothing to be printed');
         }
@@ -2656,6 +2658,66 @@ class DELV extends CI_Controller {
             //INVOICE			
             $rsrmdoc = $this->DLVRMDOC_mod->select_invoice($pid);
             $rsrmdocFromSO = $this->DLVRMSO_mod->select_invoice($pid);
+            $rs_rcv = $this->RCV_mod->select_for_rmrtn_bytxid($pid);
+            $MultipliedNumber = 1;
+            $shouldRound = false;
+            $isYEN = false;
+            foreach($rs_rcv as $a){
+                if($a['MSUP_SUPCR']!="RPH" && $currency=="RPH"){
+                    $shouldRound = true;
+                    $rscurrency = $this->MEXRATE_mod->selectfor_posting($tglaju, $a['MSUP_SUPCR']);
+                    if(count($rscurrency)==0){
+                        die('exchange rate is required '. $tglaju);
+                    } else {						
+                        foreach($rscurrency as $n){
+                            $MultipliedNumber = $n->MEXRATE_VAL;break;
+                        }
+                    }
+                } elseif($currency=="YEN"){
+                    $isYEN = true;
+                }
+                
+                break;
+            }
+            $rsfixINV = [];
+            foreach($rsrmdoc as &$r){
+                $r['PLOTQT'] = 0;
+                foreach($rs_rcv as &$x){
+                    if($r['DLVRMDOC_ITMID']==$x['RCV_ITMCD']
+                    && $r['DLVRMDOC_AJU']==$x['RCV_RPNO']
+                    && $r['DLVRMDOC_DO']==$x['RCV_DONO']
+                    && $x['RCV_QTY']>0
+                    && $r['PLOTQT']!=$r['ITMQT']
+                    ) {
+                        $reqbal = $r['ITMQT']-$r['PLOTQT'];
+                        $useqt = 0;
+                        if($reqbal>$x['RCV_QTY']){
+                            $useqt = $x['RCV_QTY'];
+                            $r['PLOTQT']+=$x['RCV_QTY'];
+                            $x['RCV_QTY']=0;
+                        } else {
+                            $useqt = $reqbal;
+                            $r['PLOTQT']+=$reqbal;
+                            $x['RCV_QTY']-=$reqbal;
+                        }
+                    $rsfixINV[] = [
+                        'ITMQT' => $useqt
+                        ,'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC']
+                        ,'DLV_ITMD1' => $r['DLV_ITMD1']
+                        ,'DLVRMDOC_TYPE' => $r['DLVRMDOC_TYPE']
+                        ,'MITM_STKUOM' => $r['MITM_STKUOM']
+                        ,'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC']
+                        ,'DLVRMDOC_ITMID' => $r['DLVRMDOC_ITMID']
+                        ];
+                        if($r['ITMQT']==$r['PLOTQT']){
+                            break;
+                        }
+                    }
+                }
+                unset($x);
+            }
+            unset($r);
+
             if(count($rsrmdoc) && count($rsrmdocFromSO)<=0){
                 $h_delnm = '';
                 $h_deladdress = '';
@@ -2683,14 +2745,34 @@ class DELV extends CI_Controller {
                                                                 
                 $inx = 7;
                 $no = 1;
-                foreach($rsrmdoc as $r) {
+                foreach($rsfixINV as $r) {
+                    switch(trim($r['MITM_STKUOM'])){
+                        case 'GMS':
+                            $uom = 'GRM';
+                            $isDecimal = true;
+                            break;
+                        case 'KG':
+                            $uom = 'KGM';
+                            $isDecimal = true;
+                            break;
+                        default:
+                            $uom = $r['MITM_STKUOM'];
+                            $isDecimal = false;
+                    }
+                    if($shouldRound){
+                        $amount_ = $r['ITMQT']*round($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
+                        $perprice_ = round($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
+                    } else {						
+                        $amount_ = $r['ITMQT']*($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
+                        $perprice_ = ($r['DLVRMDOC_PRPRC']*$MultipliedNumber);
+                    }
                     $sheet->setCellValueByColumnAndRow(1,$inx, $no);
                     $sheet->setCellValueByColumnAndRow(2,$inx, $r['DLV_ITMD1']);
                     $sheet->setCellValueByColumnAndRow(2,$inx+1, $r['DLVRMDOC_ITMID']);
-                    $sheet->setCellValueByColumnAndRow(3,$inx, $r['MITM_STKUOM']);
+                    $sheet->setCellValueByColumnAndRow(3,$inx, $uom);
                     $sheet->setCellValueByColumnAndRow(4,$inx, $r['ITMQT']);
-                    $sheet->setCellValueByColumnAndRow(5,$inx, $r['DLVRMDOC_PRPRC']);
-                    $sheet->setCellValueByColumnAndRow(6,$inx, $r['ITMQT']*$r['DLVRMDOC_PRPRC']);
+                    $sheet->setCellValueByColumnAndRow(5,$inx, $perprice_);
+                    $sheet->setCellValueByColumnAndRow(6,$inx, $amount_);
                     $inx+=2;
                     $no++;
                 }				
@@ -2733,7 +2815,13 @@ class DELV extends CI_Controller {
                     die('posting first to get price');
                 }
             }
-        
+            $sheet->setCellValueByColumnAndRow(4,$inx, "=SUM(D7:D".($inx-1).")");
+            $sheet->setCellValueByColumnAndRow(6,$inx, "=SUM(F7:F".($inx-1).")");
+            foreach(range('B','F') as $columnID) {
+                $sheet->getColumnDimension($columnID)
+                    ->setAutoSize(true);
+            }
+            $sheet->getStyle('B7:B'.($inx-1))->getAlignment()->setHorizontal('left');
         
             //PACKING LIST
             $sheet = $spreadsheet->createSheet();
