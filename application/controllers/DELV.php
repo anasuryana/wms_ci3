@@ -3792,6 +3792,8 @@ class DELV extends CI_Controller {
             $pdf->Text(140,91+8,$h_invno);
             $curY = 110+15;
             $TTLQTY=0;
+            $TTLNW=0;
+            $TTLGW=0;
             $nom = 1;
             foreach($rs as $r) {
                 switch(trim($r['MITM_STKUOM'])){
@@ -3842,16 +3844,20 @@ class DELV extends CI_Controller {
                 $pdf->Cell(31.17,4, $r['DLV_PKG_MEASURE'],0,0,'R');
                 $curY+=15+$YExtra;
                 $TTLQTY+= $r['DLV_PKG_QTY'];
+                $TTLNW+= $r['DLV_PKG_NWG'];
+                $TTLGW+= $r['DLV_PKG_GWG'];
                 $nom++;
             }
             $pdf->SetXY(32,235);
             $pdf->Cell(63.73,4, "Total",0,0,'L');
-            $pdf->SetXY(90,235);
+            $pdf->SetXY(92,235);
             if($isDecimal) {
                 $pdf->Cell(16.63,4, number_format($TTLQTY,2),0,0,'R');
             } else {
                 $pdf->Cell(16.63,4, number_format($TTLQTY),0,0,'R');
             }
+            $pdf->Cell(24.71,4, number_format($TTLNW,2),0,0,'R');
+            $pdf->Cell(29.33,4, number_format($TTLGW,2),0,0,'R');
         }
         if(substr($pforms,0,1)=='1'){
             //DELIVERY ORDER

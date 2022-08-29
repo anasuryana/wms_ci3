@@ -4530,6 +4530,8 @@
             return
         }        
         Cookies.set('CKPDLV_NO', txid , {expires:365})
+        Cookies.set('CKPDLV_CURRENCY', retrm_out_inc_curr.value , {expires:365})
+        Cookies.set('CKPDLV_TGLAJU', retrm_out_inc_customs_date.value , {expires:365})
         window.open("<?=base_url('delivery_doc_rm_as_xls')?>" ,'_blank')
     }
 
