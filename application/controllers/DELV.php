@@ -4325,9 +4325,7 @@ class DELV extends CI_Controller {
             unset($ar_price);
             $rspackinglist = $this->DELV_mod->select_packinglist_bydono($pid);
             $ar_item = [];
-            $ar_itemdesc = [];			
-            
-            
+            $ar_itemdesc = [];
 
             $ar_grup_item = [];
             $ar_grup_item_ttl = [];
@@ -4358,6 +4356,7 @@ class DELV extends CI_Controller {
                 }
             }
             unset($r);
+
             $clebar = $pdf->GetStringWidth($pid)+17;	
             $pdf->Code128(140,40,$pid,$clebar,5);
             $pdf->Text(155,59+7,$hinv_date);
@@ -4366,7 +4365,7 @@ class DELV extends CI_Controller {
             $pdf->MultiCell(85.67,4,trim($hinv_address),0);
             $pdf->Text(140,91+10,$hinv_inv);
             $curY = 110+15;
-            $no =0;
+            $no = 0;
         
             $TTLQTY = 0;
             $TTLNET = 0;
@@ -4377,15 +4376,17 @@ class DELV extends CI_Controller {
             $dis_item = '';
             $dis_itemnm = '';
             $dis_no = '';			
-            $dis_qty = '';            
+            $dis_qty = '';
             if($ASPFLAG){
                 $rspickingres = $this->DELV_mod->select_serah_terima_asp($pid);
                 foreach($rspickingres as $r) {
                     if($curY>200){
                         $pdf->AddPage();
-                        $pdf->Text(155,59+10,$hinv_date);
-                        $pdf->Text(16,70+10,$hinv_customer);
-                        $pdf->Text(16,70+4+10,$hinv_address);
+                        $pdf->Code128(140,40,$pid,$clebar,5);
+                        $pdf->Text(155,59+7,$hinv_date);
+                        $pdf->Text(16,70+10,$hinv_customer);            
+                        $pdf->SetXY(15,81);
+                        $pdf->MultiCell(85.67,4,trim($hinv_address),0);
                         $pdf->Text(140,91+10,$hinv_inv);
                         $curY = 110+15;
                     }
@@ -4447,9 +4448,11 @@ class DELV extends CI_Controller {
                 foreach($rspackinglist as $r) {
                     if($curY>200){
                         $pdf->AddPage();
-                        $pdf->Text(155,59+10,$hinv_date);
-                        $pdf->Text(16,70+10,$hinv_customer);
-                        $pdf->Text(16,70+4+10,$hinv_address);
+                        $pdf->Code128(140,40,$pid,$clebar,5);
+                        $pdf->Text(155,59+7,$hinv_date);
+                        $pdf->Text(16,70+10,$hinv_customer);            
+                        $pdf->SetXY(15,81);
+                        $pdf->MultiCell(85.67,4,trim($hinv_address),0);
                         $pdf->Text(140,91+10,$hinv_inv);
                         $curY = 110+15;
                     }
@@ -4496,8 +4499,7 @@ class DELV extends CI_Controller {
                     $TTLGRS+=$r['MITM_GWG'];
                     $TTLBOX+=$r['TTLBOX'];						
                     $curY+= $r['TTLBARIS']==1 ? 10: 5;
-                }
-                
+                }                
                 $pdf->SetXY(32,235);
                 $pdf->Cell(63.73,4, "Total",0,0,'L');
                 $pdf->SetXY(95.73,235);
@@ -4508,8 +4510,7 @@ class DELV extends CI_Controller {
                 $pdf->Cell(29.33,4, number_format($TTLGRS,2),0,0,'R');
                 $pdf->SetXY(166.4,235);
                 $pdf->Cell(31.17,4, number_format($TTLBOX),0,0,'R');
-            }
-            
+            }            
             //END OF PACKING LIST
         }
         
