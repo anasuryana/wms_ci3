@@ -334,8 +334,8 @@ class PO extends CI_Controller {
             $rowsneeded = $YExtra1>$YExtra2? $YExtra1: $YExtra2;
             $_num+=$rowsneeded;            
         }
-        #end	                
-        if($_num>14){
+        #end        
+        if($_num>15){
             $MAXLENGTH_LINE_TO_BOTTOM = 195;
             $pdf->SetFont('Times','',9);
             $pdf->SetXY(6,104-$_y);
