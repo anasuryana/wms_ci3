@@ -1016,8 +1016,7 @@ class ITH extends CI_Controller {
         header('Content-Type: application/json');
         $cwh = $this->input->get('inwh');
         $cdate = $this->input->get('indate');
-                
-        $rs = $this->ITH_mod->select_compare_inventory( $cwh,$cdate);
+        $rs = $cwh==='NFWH4RT' ? $this->ITH_mod->select_compare_inventory_fg_rtn($cwh,$cdate) : $this->ITH_mod->select_compare_inventory( $cwh,$cdate);
         echo '{"data":'.json_encode($rs).'}';		
     }
 
