@@ -471,9 +471,9 @@ class RCV extends CI_Controller {
         $lastLineLog = $this->CSMLOG_mod->select_lastLine($h_do, $h_aju)+1;
         if($this->RCV_mod->check_Primary(['RCV_DONO' => $h_do])) {
             $lastLine = $this->RCV_mod->select_lastLinePerDO($h_do)+1;
-            for($i=0; $i<$dataCount; $i++) {
+            for($i=0; $i<$dataCount; $i++) {                
                 $dataw = ['RCV_DONO' => $h_do, 'RCV_ITMCD' => $d_itemcode[$i],'RCV_GRLNO' => $d_grlno[$i] ];
-                if($this->RCV_mod->check_Primary($dataw) ) {
+                if($d_grlno[$i]!=='') {
                     $datau = [
                         'RCV_RPNO' => $h_aju,
                         'RCV_RPDATE' => $h_date_bc,
@@ -583,7 +583,7 @@ class RCV extends CI_Controller {
                     'RCV_PRNW' => ($d_prNW[$i]=='' || $d_prNW[$i]=='-'? NULL:$d_prNW[$i]),
                     'RCV_PRGW' => ($d_prGW[$i]=='' || $d_prGW[$i]=='-'? NULL:$d_prGW[$i]),
                     'RCV_KPPBC' => $h_kppbc,
-                    'RCV_GRLNO' => $i,
+                    'RCV_GRLNO' => $i+1,
                     'RCV_HSCD' => $d_hscode[$i],
                     'RCV_ZSTSRCV' => $h_bcstatus,
                     'RCV_BM' => is_numeric($d_bm[$i]) ? $d_bm[$i] :0 ,
