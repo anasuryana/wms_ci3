@@ -1027,7 +1027,7 @@ class ITH extends CI_Controller {
             default:
                 $rs = $this->ITH_mod->select_compare_inventory($cwh,$cdate);
         }
-        echo '{"data":'.json_encode($rs).'}';		
+        echo '{"data":'.json_encode($rs).'}';
     }
 
     public function tescat() {
@@ -2395,8 +2395,18 @@ class ITH extends CI_Controller {
         $WHERE = ['INV_MONTH' => $_MONTH, 'INV_YEAR' => $_YEAR, 'INV_WH' => $cwh_inv];
         $rssaved = $this->RPSAL_INVENTORY_mod->select_compare_where($WHERE);
         $dateObj->modify('+1 day');		
-        $dateTimeTosave = $dateObj->format('Y-m-d 06:59:59');		
-        $rs = $this->ITH_mod->select_compare_inventory( $cwh,$cdate); 
+        $dateTimeTosave = $dateObj->format('Y-m-d 06:59:59');
+        switch($cwh)
+        {
+            case 'NFWH4RT':
+                $rs = $this->ITH_mod->select_compare_inventory_fg_rtn($cwh,$cdate);
+                break;
+            case 'AFWH3RT':
+                $rs = $this->ITH_mod->select_compare_inventory_fg_rtn_asset($cwh,$cdate);
+                break;
+            default:
+                $rs = $this->ITH_mod->select_compare_inventory($cwh,$cdate);
+        }
         $rsadj = [];
         foreach($rs as $r) {
             $balance = $r['STOCKQTY']-$r['MGAQTY'];
@@ -2617,7 +2627,17 @@ class ITH extends CI_Controller {
             $dateTosave = $dateObj->format('Y-m-d');
             $dateTimeTosave = $dateObj->format('Y-m-d 06:59:59');
             $dateformat = $dateObj->format('Ym');
-            $rs = $this->ITH_mod->select_compare_inventory($location,$date); 
+            switch($location)
+            {
+                case 'NFWH4RT':
+                    $rs = $this->ITH_mod->select_compare_inventory_fg_rtn($location,$date);
+                    break;
+                case 'AFWH3RT':
+                    $rs = $this->ITH_mod->select_compare_inventory_fg_rtn_asset($location,$date);
+                    break;
+                default:
+                    $rs = $this->ITH_mod->select_compare_inventory($location,$date);
+            }
             $rsadj = [];
             foreach($rs as $r) {
                 $balance = $r['STOCKQTY']-$r['MGAQTY'];
