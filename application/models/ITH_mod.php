@@ -393,6 +393,26 @@ class ITH_mod extends CI_Model {
         $query = $this->db->query($qry);
         return $query->result_array();
     }
+    public function select_compare_inventory_fg_rtn_asset($wh, $pdate){
+        $qry = "SELECT VWMS.*,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
+            SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
+                (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
+                        WHERE ITH_WH IN ('$wh','AFQART') AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
+                        GROUP BY ITH_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VSTOCK		
+                LEFT JOIN
+                (select ITH_ITMCD,SUM(ITH_QTY) PRPQTY from v_ith_tblc a 
+                        WHERE ITH_WH='ARSHPRTN2' AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<= '$pdate'
+                        GROUP BY ITH_ITMCD) VPREP ON VSTOCK.ITH_ITMCD=VPREP.ITH_ITMCD) VWMS
+            LEFT JOIN (SELECT  RTRIM(FTRN_ITMCD) ITRN_ITMCD,SUM(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) MGAQTY
+            , RTRIM(MITM_SPTNO) MGMITM_SPTNO, RTRIM(MITM_STKUOM) MGMITM_STKUOM, RTRIM(MITM_ITMD1) MGMITM_ITMD1
+                    FROM XFTRN_TBL
+                    LEFT JOIN XMITM_V ON FTRN_ITMCD=MITM_ITMCD 
+                    WHERE FTRN_ISUDT<='$pdate' AND FTRN_LOCCD IN ('$wh') 
+                    GROUP BY FTRN_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VMEGA ON ITH_ITMCD=ITRN_ITMCD
+                    ORDER BY ITH_ITMCD ASC";        
+        $query = $this->db->query($qry);
+        return $query->result_array();
+    }
 
     public function select_psi_stock_date_wbg($wh, $item, $pdate){
         $qry = "wms_sp_std_stock_wbg ?, ?, ?";	
