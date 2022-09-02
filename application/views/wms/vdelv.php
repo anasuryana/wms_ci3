@@ -5277,6 +5277,8 @@ function txfg_btn_changeprice_e_click()
 
 function txfg_modchangeprice_txt_itemcode_eChange(e)
 {
+    txfg_modchangeprice_tbl.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center"><i>Please wait</i></td></tr>`
+    txfg_modchangeprice_new_tbl.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center"><i>Please wait</i></td></tr>`
     $.ajax({
         type: "GET",
         url: "<?=base_url('DELVHistory/priceFG')?>",
