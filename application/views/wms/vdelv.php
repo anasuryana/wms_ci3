@@ -5365,6 +5365,12 @@ function txfg_modchangeprice_txt_itemcode_eChange(e)
 
 function txfg_modchangeprice_btn_save_eClick(p)
 {    
+    if(txfg_modchangeprice_txt_itemcode.value==='-')
+    {
+        alertify.warning('Please select Item Code')
+        txfg_modchangeprice_txt_itemcode.focus()
+        return
+    }
     if(txfg_modchangeprice_new_tbl.getElementsByTagName('tbody')[0].rows===0)
     {
         alertify.message('there is no new price selected')
