@@ -14,6 +14,7 @@ class SO extends CI_Controller {
         $this->load->model('SO_mod');
         $this->load->model('SISO_mod');
         $this->load->model('DLVSO_mod');
+        $this->load->model('CSMLOG_mod');
 	}
 	public function index()
 	{
