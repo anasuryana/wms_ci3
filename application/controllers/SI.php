@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class SI extends CI_Controller {
     public function __construct()
     {
@@ -2065,5 +2068,96 @@ class SI extends CI_Controller {
             }
         }
         echo json_encode(['data' => $rs]);        
+    }	
+    public function get_outgoing_as_spreadsheet(){
+        $csearchby = $this->input->get('insearchby');	
+        $cdtfrom = $this->input->get('indate');	
+        $cdtto = $this->input->get('indate2');
+        $creport = $this->input->get('inreport');
+        $cassy = $this->input->get('inassy');
+        $cbsgroup = trim($this->input->get('inbsgrp'));
+        $dtto = '';		
+        if($cdtfrom==$cdtto){
+            if($creport=='a' || $creport == 'n'){
+                $thedate = strtotime($cdtfrom . '+1 days');
+                $dtto = date('Y-m-d', $thedate). " 06:59:00";			
+            } else {
+                $dtto = $cdtfrom. " 18:59:00";
+            }
+    
+            if($creport=='a' || $creport == 'm'){
+                $cdtfrom .= ' 07:00:00';
+            } else {
+                $cdtfrom .= ' 19:00:00';
+            }			
+        } else {		
+            $thedate = strtotime($cdtto. '+1 days');
+            $dtto = date('Y-m-d', $thedate). " 06:59:00";
+            $cdtfrom .= ' 07:00:00';
+        }
+        $rs = [];
+        if($cbsgroup==='-'){
+            
+        } else {
+            switch($csearchby){
+                case 'assy':
+                    $rs = $this->SI_mod->select_outgoing_wh_byassy_bg($cbsgroup,$cdtfrom,$dtto, $cassy);
+                    break;
+                case 'job':
+                    $rs = $this->SI_mod->select_outgoing_wh_byjob_bg($cbsgroup,$cdtfrom,$dtto, $cassy);
+                    break;
+                case 'reff':
+                    $rs = $this->SI_mod->select_outgoing_wh_byreff_bg($cbsgroup,$cdtfrom,$dtto, $cassy);
+                    break;
+                case 'si':
+                    $rs = $this->SI_mod->select_outgoing_wh_bySI_bg($cbsgroup,$cdtfrom,$dtto, $cassy);
+                    break;
+                case 'txid':
+                    $rs = $this->SI_mod->select_outgoing_wh_byTXID_bg($cbsgroup,$cdtfrom,$dtto, $cassy);
+                    break;
+            }
+        }
+        
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Outgoing Finished Goods');
+        $sheet->setCellValueByColumnAndRow(1,2, 'Assy Code');
+        $sheet->setCellValueByColumnAndRow(2,2, 'Model');
+        $sheet->setCellValueByColumnAndRow(3,2, 'SI');
+        $sheet->setCellValueByColumnAndRow(4,2, 'TX ID');
+        $sheet->setCellValueByColumnAndRow(5,2, 'Job Number');
+        $sheet->setCellValueByColumnAndRow(6,2, 'Qty');
+        $sheet->setCellValueByColumnAndRow(7,2, 'Reff. Number');
+        $sheet->setCellValueByColumnAndRow(8,2, 'ETA');
+        $sheet->setCellValueByColumnAndRow(9,2, 'Scanning Time');
+        $sheet->setCellValueByColumnAndRow(10,2, 'Plant');
+        $sheet->setCellValueByColumnAndRow(11,2, 'Business');
+        $sheet->freezePane('A3');
+        $y = 3;
+        foreach($rs as $r)
+        {
+            $sheet->setCellValueByColumnAndRow(1,$y, $r['SI_ITMCD']);
+            $sheet->setCellValueByColumnAndRow(2,$y, $r['MITM_ITMD1']);
+            $sheet->setCellValueByColumnAndRow(3,$y, $r['SI_DOC']);
+            $sheet->setCellValueByColumnAndRow(4,$y, $r['DLV_ID']);
+            $sheet->setCellValueByColumnAndRow(5,$y, $r['SER_DOC']);
+            $sheet->setCellValueByColumnAndRow(6,$y, $r['SISCN_SERQTY']);
+            $sheet->setCellValueByColumnAndRow(7,$y, $r['SISCN_SER']);
+            $sheet->setCellValueByColumnAndRow(8,$y, $r['ITH_LUPDT']);
+            $sheet->setCellValueByColumnAndRow(9,$y, $r['SISCN_LUPDT']);
+            $sheet->setCellValueByColumnAndRow(10,$y, $r['SI_OTHRMRK']);
+            $sheet->setCellValueByColumnAndRow(11,$y, $r['SI_BSGRP']);
+            $y++;
+        }
+        foreach(range('A', 'K') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+        $stringjudul = 'Outgoing FG '.$cbsgroup;
+        $writer = new Xlsx($spreadsheet);
+        $filename=$stringjudul; //save our workbook as this file name
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
     }	
 }

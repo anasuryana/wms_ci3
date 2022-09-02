@@ -61,7 +61,8 @@
             </div>
             <div class="col-md-6 mb-1">
                 <div class="btn-group btn-group-sm">
-                    <button class="btn btn-primary" type="button" id="routgoing_wh_btn_gen" onclick="routgoing_wh_btn_gen_e_click()">Search</button>                    
+                    <button class="btn btn-primary" type="button" id="routgoing_wh_btn_gen" onclick="routgoing_wh_btn_gen_e_click()">Search</button>
+                    <button class="btn btn-success" title="export to spreadsheet file" type="button" id="routgoing_wh_btn_spreadsheet" onclick="routgoing_wh_btn_spreadsheet_e_click(this)"><span class="fas fa-file-excel"></span> </button>
                 </div> 
             </div>
         </div>
@@ -145,7 +146,7 @@
                 let cln = mtabel.cloneNode(true);
                 myfrag.appendChild(cln);                    
                 let tabell = myfrag.getElementById("routgoing_wh_tbl");                    
-                let tableku2 = tabell.getElementsByTagName("tbody")[0];//document.getElementById("rprod_tblwo").getElementsByTagName("tbody")[0];
+                let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let newrow, newcell, newText;
                 tableku2.innerHTML='';
                 let tmpnomor = '';
@@ -154,56 +155,46 @@
                 for (let i = 0; i<ttlrows; i++){
                     ttlqty += numeral(response.data[i].SISCN_SERQTY).value();
                     newrow = tableku2.insertRow(-1);
-                    newcell = newrow.insertCell(0);            
-                    newText = document.createTextNode(response.data[i].SI_ITMCD);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(1);
-                    newText = document.createTextNode(response.data[i].MITM_ITMD1);
-                    newcell.appendChild(newText);
+                    newcell = newrow.insertCell(0);                                
+                    newcell.innerHTML = response.data[i].SI_ITMCD
+                    newcell = newrow.insertCell(1);                    
+                    newcell.innerHTML = response.data[i].MITM_ITMD1
                     
-                    newcell = newrow.insertCell(2);
-                    newText = document.createTextNode(response.data[i].SI_DOC);
+                    newcell = newrow.insertCell(2);                    
                     newcell.style.cssText= "white-space: nowrap";
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(3);
-                    newText = document.createTextNode(response.data[i].DLV_ID);
-                    newcell.style.cssText= "white-space: nowrap";
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SI_DOC
 
-                    newcell = newrow.insertCell(4);
-                    newText = document.createTextNode(response.data[i].SER_DOC);
+                    newcell = newrow.insertCell(3);                    
+                    newcell.style.cssText= "white-space: nowrap";
+                    newcell.innerHTML = response.data[i].DLV_ID
+
+                    newcell = newrow.insertCell(4);                    
                     newcell.style.cssText= "white-space: nowrap;text-align:center";
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SER_DOC
 
-                    newcell = newrow.insertCell(5);
-                    newText = document.createTextNode(numeral(response.data[i].SISCN_SERQTY).format(','));
+                    newcell = newrow.insertCell(5);                    
                     newcell.style.cssText= 'text-align:right';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = numeral(response.data[i].SISCN_SERQTY).format(',')
 
-                    newcell = newrow.insertCell(6);
-                    newText = document.createTextNode(response.data[i].SISCN_SER);
+                    newcell = newrow.insertCell(6);                    
                     newcell.style.cssText= 'text-align:center';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SISCN_SER
 
-                    newcell = newrow.insertCell(7);
-                    newText = document.createTextNode(response.data[i].ITH_LUPDT);//SI_DOCREFFETA
+                    newcell = newrow.insertCell(7);                    
                     newcell.style.cssText= 'text-align:center';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].ITH_LUPDT
 
-                    newcell = newrow.insertCell(8);
-                    newText = document.createTextNode(response.data[i].SISCN_LUPDT);
+                    newcell = newrow.insertCell(8);                    
                     newcell.style.cssText= 'text-align:center';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SISCN_LUPDT
 
-                    newcell = newrow.insertCell(9);
-                    newText = document.createTextNode(response.data[i].SI_OTHRMRK);
+                    newcell = newrow.insertCell(9);                    
                     newcell.style.cssText= 'text-align:center';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SI_OTHRMRK
                     
-                    newcell = newrow.insertCell(10);
-                    newText = document.createTextNode(response.data[i].SI_BSGRP);
+                    newcell = newrow.insertCell(10);                    
                     newcell.style.cssText= 'text-align:center';
-                    newcell.appendChild(newText);                    
+                    newcell.innerHTML = response.data[i].SI_BSGRP
                 }
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
@@ -213,5 +204,50 @@
                 alertify.error(xthrow);
             }
         });
+    }
+
+    function routgoing_wh_btn_spreadsheet_e_click(p)
+    {
+        let searchby = document.getElementById('routgoing_wh_seachby').value;
+        let dtfrom = document.getElementById('routgoing_wh_txt_dt').value;
+        let dtto = document.getElementById('routgoing_wh_txt_dt2').value;
+        let reporttype = $('input[name="routgoing_wh_typereport"]:checked').val();
+        let assyno = document.getElementById('routgoing_wh_txt_assy').value.trim();
+        let bsgroup = document.getElementById('routgoing_wh_bisgrup').value;
+        if(bsgroup=='-'){
+            alertify.message('Please select business group');
+            document.getElementById('routgoing_wh_bisgrup').focus()
+            return;
+        }
+        p.innerHTML = 'Please wait'
+        p.disabled = true
+        $.ajax({
+            type: "GET",
+            url: "<?=base_url('SI/get_outgoing_as_spreadsheet')?>",
+            data: {indate: dtfrom,indate2: dtto, inreport: reporttype, inassy: assyno, insearchby : searchby, inbsgrp: bsgroup },
+            success: function (response) {                       
+                const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                const fileName = `Outgoing FG ${bsgroup}.xlsx`
+                saveAs(blob, fileName)                
+                p.innerHTML = '<span class="fas fa-file-excel"></span>'
+                p.disabled = false
+                alertify.success('Done')
+            },
+            xhr: function () {
+                const xhr = new XMLHttpRequest()
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 2) {
+                        if (xhr.status == 200) {
+                            xhr.responseType = "blob";
+                        } else {
+                            p.innerHTML = '<span class="fas fa-file-excel"></span>'
+                            p.disabled = false
+                            xhr.responseType = "text";
+                        }
+                    }
+                }
+                return xhr
+            },
+        })
     }
 </script>
