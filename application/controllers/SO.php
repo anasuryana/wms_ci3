@@ -485,6 +485,7 @@ class SO extends CI_Controller {
         {
             $myar = ["cd" => "0", "msg" => "Session is expired please reload page"];            
         } else {
+            date_default_timezone_set('Asia/Jakarta');
             $fline = $this->input->post('fline');            
             $oldSOLine = $this->input->post('oldSOLine');
             $newCPO = $this->input->post('newCPO');
