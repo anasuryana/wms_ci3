@@ -10,7 +10,7 @@
             </div>
             <div class="col-md-6 mb-1 text-end">
                 <div class="btn-group btn-group-sm">
-                    <button class="btn btn-outline-info" id="mprocd_btn_new" onclick="mprocd_btn_history_eC()" title="History"><i class="fas fa-clock-rotate-left"></i></button>                    
+                    <button class="btn btn-outline-info" id="mprocd_btn_new" title="History"><i class="fas fa-clock-rotate-left"></i></button>                    
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <h6>Selected model</h6>
+                    <h6>Selected models : </h6>
                 </div>
             </div>
             <div class="row">
@@ -71,7 +71,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Open</button>
+            <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal" onclick="mrpcd_getdetails()" >Open</button>
         </div>
       </div>
     </div>
@@ -267,7 +267,7 @@ function mprocd_txtsearch_eKP(e) {
     if(e.key==='Enter') {
         e.target.readOnly = true
         $.ajax({
-            url: "<?=base_url('MPROCD/search')?>",
+            url: "<?=base_url('MPROCDHistory/search')?>",
             data: {search: e.target.value},
             dataType: "json",
             success: function (response) {
@@ -285,7 +285,7 @@ function mprocd_txtsearch_eKP(e) {
                 for (let i = 0; i<ttlrows; i++){
                     newrow = tableku2.insertRow(-1)
                     newcell = newrow.insertCell(0)
-                    newcell.innerHTML = response.data[i].MPROCD_MDLTYP
+                    newcell.innerHTML = response.data[i].MPROCD_CD
                     newcell = newrow.insertCell(1)
                     newcell.innerHTML = response.data[i].MITM_ITMCD
                     newcell = newrow.insertCell(2)
@@ -318,11 +318,9 @@ function mprocd_toDisplay() {
     mprocd_selected_item.innerHTML = strElem
 }
 
-function mprocd_cancel(p) {
-    console.log(p)
+function mprocd_cancel(p) {    
     for(let i=0; i < mprocd_selected_models.length; i++) {
-        if(mprocd_selected_models[i]===p.innerText) {
-            console.log('oooy')
+        if(mprocd_selected_models[i]===p.innerText) {            
             mprocd_selected_models.splice(i, 1)
             i--
         }
@@ -338,5 +336,50 @@ function mprocd_btn_new_eC() {
     mprocd_sso.setData([[],[],[],[],[]])
     mprocd_selected_models = []
     mprocd_selected_item.innerHTML = ``
+}
+
+function mrpcd_getdetails() {
+    const assy_codes = mprocd_selected_item.innerText.split(' ')
+    if(assy_codes.length>0) {
+        $.ajax({
+            type: "POST",
+            url: "<?=base_url('MPROCDHistory/toHTMLSpreadsheet')?>",
+            data: {assycodes: assy_codes},
+            dataType: "json",
+            success: function (response) {
+                let mdata = []
+                response.data.forEach((arrayItem) => {
+                    mdata.push([
+                        arrayItem.MODEL,
+                        arrayItem.ASSY_CODE,
+                        arrayItem.ASSY_TYPE,
+                        arrayItem.P1,
+                        arrayItem.P2,
+                        arrayItem.P3,
+                        arrayItem.P4,
+                        arrayItem['SMT-AV#LINE'],
+                        arrayItem['SMT-AV#CT'],
+                        arrayItem['SMT-RD#LINE'],
+                        arrayItem['SMT-RD#CT'],
+                        arrayItem['HDP#LINE'],
+                        arrayItem['HDP#CT'],
+                        arrayItem['PROCESS1#LINE'],
+                        arrayItem['PROCESS1#CT'],
+                        arrayItem['PROCESS2#LINE'],
+                        arrayItem['PROCESS2#CT'],
+                        arrayItem['SMT-HW#LINE'],
+                        arrayItem['SMT-HW#CT'],
+                        arrayItem['SMT-HWADD#LINE'],
+                        arrayItem['SMT-HWADD#CT'],
+                        arrayItem['SMT-SP#LINE'],
+                        arrayItem['SMT-SP#CT'],                        
+                    ])
+                })
+                mprocd_sso.setData(mdata)
+            }, error:function(xhr,ajaxOptions, throwError) {
+                alertify.error(throwError)
+            }
+        })
+    }
 }
 </script>

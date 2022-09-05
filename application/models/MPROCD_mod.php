@@ -27,13 +27,31 @@ class MPROCD_mod extends CI_Model {
 	}
 
     function select_header($plike){
-        $this->db->select("RTRIM(MPROCD_MDLCD) MITM_ITMCD
+        $this->db->select("        
+        RTRIM(MPROCD_MDLCD) MITM_ITMCD
         ,RTRIM(MITM_ITMD1) ITMD1
-        ,MAX(MPROCD_MDLTYP) MPROCD_MDLTYP");
+        ,MAX(MPROCD_CD) MPROCD_CD
+        ");
         $this->db->join("MITM_TBL", "MITM_ITMCD=MPROCD_MDLCD");
 		$this->db->where('MITM_MODEL', '1')->like($plike);
         $this->db->group_by("MPROCD_MDLCD,MITM_ITMD1");
 		$this->db->order_by("MITM_ITMCD");
+		$query = $this->db->get($this->TABLENAME);
+		return $query->result_array();
+    }
+
+    function select_row($assy_codes)
+    {
+        $this->db->select("MPROCD_MDLCD ASSY_CODE,MPROCD_MDLRW");
+        $this->db->where('MPROCD_ISACTIVE', '1')->where_in("MPROCD_MDLCD", $assy_codes);
+        $this->db->group_by("MPROCD_MDLCD,MPROCD_MDLRW");
+		$query = $this->db->get($this->TABLENAME);
+		return $query->result_array();
+    }
+
+    function select_active($assy_codes)
+    {
+        $this->db->where('MPROCD_ISACTIVE', '1')->where_in("MPROCD_MDLCD", $assy_codes);
 		$query = $this->db->get($this->TABLENAME);
 		return $query->result_array();
     }
