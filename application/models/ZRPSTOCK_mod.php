@@ -27,6 +27,14 @@ class ZRPSTOCK_mod extends CI_Model {
         return $query->result_array();
     }
 
+    public function select_columns_where($columns,$pwhere){
+        $this->db->select($columns);
+		$this->db->from("ZRPSAL_BCSTOCK");
+		$this->db->where($pwhere);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function select_all_where_imod($pwhere){
         $DBUse = $this->load->database('rpcust',TRUE);        
         $DBUse->from("RPSAL_BCSTOCK");
