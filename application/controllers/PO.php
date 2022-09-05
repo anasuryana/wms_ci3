@@ -334,8 +334,9 @@ class PO extends CI_Controller {
             $rowsneeded = $YExtra1>$YExtra2? $YExtra1: $YExtra2;
             $_num+=$rowsneeded;            
         }
-        #end        
-        if($_num>15){
+        #end      
+        
+        if($_num>15){            
             $MAXLENGTH_LINE_TO_BOTTOM = 195;
             $pdf->SetFont('Times','',9);
             $pdf->SetXY(6,104-$_y);
@@ -419,8 +420,7 @@ class PO extends CI_Controller {
                     $pdf->Cell(27.5,10,'',1,0,'C');
                     $pdf->SetFont('Times','',9);
                     $pdf->SetXY(6,83-$_y);
-                    $pdf->MultiCell(40,4,$supplier,0,'L');
-                    // $pdf->MultiCell(40,4,"tes",1,'L');
+                    $pdf->MultiCell(40,4,$supplier,0,'L');                    
                     $Yitu = $pdf->GetY();
                     $pdf->SetXY(46,83-$_y);
                     $pdf->MultiCell(100,4,$supplier_address,0,"L");
@@ -523,7 +523,123 @@ class PO extends CI_Controller {
                 $ttldiscount_price+=$discount_price;
                 $YStart+=(5+$YExtra);
             }
-            
+            $pdf->AddPage();
+            #company
+            $pdf->SetFont('Arial','B',7);
+            $pdf->SetXY(90,15-$_y);
+            $pdf->Cell(15,4,'Page '.$pdf->PageNo().' / {nb}',0,0,'C');
+            $pdf->SetFont('Arial','B',10);
+            $pdf->SetXY(6,22-$_y);
+            $pdf->SetTextColor(0, 0, 240);
+            $pdf->Cell(50,4,'PT. SMT INDONESIA',0,0,'L');
+            $pdf->SetTextColor(0,0,0);
+            $pdf->SetFont('Times','IB',9);
+            $pdf->SetXY(6,26-$_y);
+            $pdf->Cell(50,4,'EJIP Industrial Park Plot 5C - 2',0,0,'L');
+            $pdf->SetXY(6,30-$_y);
+            $pdf->Cell(80,4,'Cikarang Selatan, Bekasi 17550 INDONESIA',0,0,'L');
+            $pdf->SetXY(6,34-$_y);
+            $pdf->Cell(80,4,'Tel.    : +62-21-8970-567 (Hunting), 468,469,470',0,0,'L');		
+            $pdf->SetFont('Times','IB',8);
+            $pdf->SetXY(6,38-$_y);
+            $pdf->Cell(98,4,'Fax.    : +62-21-8970-577 (Purchasing Department / Accounting & Financial Dept)',0,0,'L');
+            $pdf->SetFont('Times','IB',9);
+            $pdf->SetXY(6,42-$_y);
+            $pdf->Cell(80,4,'Fax.   : +62-21-8975-333 (Manufacturing Department)',0,0,'L');
+            #end company
+            $pdf->SetFont('Times','B',7);
+            $pdf->SetXY(160,18-$_y);
+            $pdf->Cell(21,4,'FORM-FPI-04-01',0,0,'L');
+            $pdf->SetXY(160,22-$_y);
+            $pdf->Cell(21,4,'REV.02',0,0,'R');
+            $pdf->SetFont('Times','IB',9);
+            $pdf->SetXY(146,30-$_y);
+            $pdf->Cell(35,4,'Copy : Accounting Dept.',0,0,'R');
+            $pdf->SetFont('Times','B',9);
+            $pdf->SetXY(115,45-$_y);
+            $pdf->Cell(85,7,'   P / O No. : '.$pser,1,0,'L');
+            $pdf->SetFont('Times','B',9);
+            $pdf->SetXY(115,52-$_y);
+            $pdf->Cell(85,4,'DATE / Tanggal : '.$trans_date,0,0,'C');
+
+            $pdf->SetFont('Times','BU',13);
+            $pdf->SetXY(80,60-$_y);
+            $pdf->Cell(40,4,'PURCHASE ORDER',0,0,'L');
+
+            $pdf->SetFont('Times','B',9);
+            $pdf->SetXY(6,68-$_y);
+            $pdf->setFillColor($Rcolor,$Gcolor,$Bcolor);
+            $pdf->Cell(40,5,'Requested By : ( Name )',1,0,'C',1);
+            $pdf->Cell(60,5,'Ship / Delivery Via',1,0,'C',1);
+            $pdf->Cell(40,5,'Currency',1,0,'C',1);
+            $pdf->Cell(55,5,'Payment Terms',1,0,'C',1);
+            $pdf->SetFont('Times','',9);
+            $pdf->SetXY(6,73-$_y);
+            $pdf->Cell(40,5,$requsted_by,1,0,'C');
+            $pdf->Cell(60,5,$shipment,1,0,'C');
+            $pdf->Cell(40,5,$currency,1,0,'C');
+            $pdf->Cell(55,5,$payment_term,1,0,'C');
+            $pdf->SetFont('Times','B',9);
+            $pdf->SetXY(6,78-$_y);
+            $pdf->Cell(40,5,'Supplier Name',1,0,'C',1);
+            $pdf->Cell(100,5,'Address',1,0,'C',1);
+            $pdf->Cell(27.5,5,'Phone No.',1,0,'C',1);
+            $pdf->Cell(27.5,5,'Fax. No.',1,0,'C',1);
+            $pdf->SetXY(6,83-$_y);
+            $pdf->Cell(40,10,'',1,0,'C');
+            $pdf->Cell(100,10,'',1,0,'C');
+            $pdf->Cell(27.5,10,'',1,0,'C');
+            $pdf->Cell(27.5,10,'',1,0,'C');
+            $pdf->SetFont('Times','',9);
+            $pdf->SetXY(6,83-$_y);
+            $pdf->MultiCell(40,4,$supplier,0,'L');                    
+            $Yitu = $pdf->GetY();
+            $pdf->SetXY(46,83-$_y);
+            $pdf->MultiCell(100,4,$supplier_address,0,"L");
+            $pdf->SetXY(146,83-$_y);
+            $pdf->MultiCell(27.5,4,$supplier_telno,0);
+            $pdf->SetXY(173.5,83-$_y);
+            $pdf->MultiCell(27.5,4,$supplier_faxno,0);
+
+            $pdf->SetFont('Times','B',9);
+            $pdf->SetXY(6,94-$_y);
+            $pdf->setFillColor($Rcolor,$Gcolor,$Bcolor);
+            $pdf->Cell(10,10,'',1,0,'C',1); #item
+            $pdf->Cell(30,10,'',1,0,'C',1); #part number
+            $pdf->Cell(60,10,'',1,0,'C',1); #part name
+            $pdf->Cell(15,10,'',1,0,'C',1); #unit measure
+            $pdf->Cell(25,10,'',1,0,'C',1); #qty
+            $pdf->Cell(27.5,10,'',1,0,'C',1); #unit price
+            $pdf->Cell(27.5,10,'',1,0,'C',1); #amount
+
+            $pdf->SetXY(6,94-$_y);
+            $pdf->Cell(10,5,'Item',0,0,'C');
+            $pdf->Cell(30,5,'Part Number',0,0,'C');
+            $pdf->Cell(60,5,'Part Name / Description',0,0,'C'); #part name
+            $pdf->Cell(15,5,'Unit',0,0,'C'); #unit measure
+            $pdf->Cell(25,5,'Qty',0,0,'C'); #qty
+            $pdf->Cell(27.5,5,'Unit Price',0,0,'C'); #unit price
+            $pdf->Cell(27.5,5,'Amount',0,0,'C'); #amount
+
+            $pdf->SetFont('Times','BI',9);
+            $pdf->SetXY(6,98-$_y);
+            $pdf->Cell(10,5,'No',0,0,'C');
+            $pdf->Cell(30,5,'Nomor Barang',0,0,'C');
+            $pdf->Cell(60,5,'Nama Barang / Keterangan',0,0,'C'); #part name
+            $pdf->Cell(15,5,'Satuan',0,0,'C'); #unit measure
+            $pdf->Cell(25,5,'Jumlah',0,0,'C'); #qty
+            $pdf->Cell(27.5,5,'Harga per satuan',0,0,'C'); #unit price
+            $pdf->Cell(27.5,5,'Jumlah',0,0,'C'); #amount
+
+            $pdf->SetFont('Times','',9);
+            $pdf->SetXY(6,104-$_y);
+            $pdf->Cell(10,75,'',1,0,'C');
+            $pdf->Cell(30,75,'',1,0,'C');
+            $pdf->Cell(60,75,'',1,0,'C'); #part name
+            $pdf->Cell(15,75,'',1,0,'C'); #unit measure
+            $pdf->Cell(25,75,'',1,0,'C'); #qty
+            $pdf->Cell(27.5,75,'',1,0,'C'); #unit price
+            $pdf->Cell(27.5,75,'',1,0,'C'); #amount
             #footermain
             $total_amount-=$ttldiscount_priceSpecial;
             $ppn_price = $total_amount*$ppn/100;
