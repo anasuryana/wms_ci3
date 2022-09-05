@@ -301,7 +301,7 @@ class ITH_mod extends CI_Model {
         $whout = $wh=='AFWH3'  || $wh=='AFSMT'  ? 'ARSHP' : $wh;				
         $whclosing = $wh=='AFSMT' ? 'AFWH3' : $wh;
         $closingcolumn= $wh=='AFSMT' ? "(STOCKQTY+ISNULL(PRPQTY,0))" : "STOCKQTY";
-        $qry = "SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,BEFQTY,INQTY, PRPQTY,abs(OUTQTY) OUTQTY, $closingcolumn STOCKQTY, MITM_STKUOM,ISNULL(MITM_NCAT,'') MITM_NCAT FROM
+        $qry = "SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,BEFQTY,INQTY, PRPQTY,abs(OUTQTY) OUTQTY, $closingcolumn STOCKQTY, MITM_STKUOM,UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT FROM
         (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM,MITM_NCAT from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD
                 left join v_mitm_bsgroup on ITH_ITMCD=PDPP_MDLCD
                 WHERE ITH_WH='$whclosing' AND ITH_ITMCD like '%$item%' and PDPP_BSGRP IN ($pbg) 

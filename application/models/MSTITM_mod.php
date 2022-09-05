@@ -412,7 +412,7 @@ class MSTITM_mod extends CI_Model {
 	}
 
 	public function select_category(){
-		$this->db->select("ISNULL(MITM_NCAT,'') MITM_NCAT");
+		$this->db->select("UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT");
 		$this->db->group_by('MITM_NCAT');
 		$this->db->order_by("MITM_NCAT");
 		$query = $this->db->get($this->TABLENAME);
