@@ -12361,6 +12361,290 @@ class DELV extends CI_Controller {
         }
     }	
 
+    function dispose_report()
+    {
+        header('Content-Type: application/json');
+        $date = '2022-03-18';
+        $rsRM = $this->DisposeDraft_mod->select_detail_fg($date);
+        $rsEXBC = $this->ZRPSTOCK_mod->select_columns_where(["rtrim(RPSTOCK_ITMNUM) ITMNUM","ABS(RPSTOCK_QTY) BCQTY","RPSTOCK_DOC"
+        ,"RPSTOCK_NOAJU","RPSTOCK_BCNUM"
+        ,"RPSTOCK_BCDATE","RPSTOCK_BCTYPE"]
+        , ["RPSTOCK_REMARK" => "DISD2206_FG"]);
+        $rsfix = [];
+        foreach($rsRM as &$r)
+        {
+            $r['QTYPLOT'] = 0;
+            foreach($rsEXBC as &$k)
+            {
+                $reqPlot = $r['QTY']-$r['QTYPLOT'];
+                if($r['PART_CODE'] === $k['ITMNUM'] && $reqPlot>0 && $k['BCQTY'] > 0)
+                {
+                    $theqty = $reqPlot;
+                    if($reqPlot>$k['BCQTY'])
+                    {
+                        $r['QTYPLOT']+=$k['BCQTY'];
+                        $theqty = $k['BCQTY'];
+                        $k['BCQTY']=0;
+                    } else 
+                    {
+                        $k['BCQTY']-=$reqPlot;
+                        $r['QTYPLOT']+=$reqPlot;
+                    }
+                    $rsfix[] = [
+                        'ASSYDESC' => $r['FGDESC'],
+                        'ASSYCODE' => $r['ITH_ITMCD'],
+                        'ASSYQT' => $r['STOCKQTY'],
+                        'ASSYREFF' => $r['ITH_SER'],
+                        'ASSYUOM' => $r['FGUOM'],
+                        'RMDESC' => $r['RMDESC'],
+                        'RMCODE' => $r['PART_CODE'],                    
+                        'USE' => $r['QTY']/$r['STOCKQTY'],
+                        'RMUOM' => $r['RMUOM'],
+                        'BCQT' => $theqty,
+                        'BCTYPE' => $k['RPSTOCK_BCTYPE'],
+                        'BCNO' => $k['RPSTOCK_BCNUM'],
+                        'BCDATE' => $k['RPSTOCK_BCDATE'],
+                    ];
+                    if($r['QTY']==$r['QTYPLOT']){
+                        break;
+                    }
+                    
+                }                
+            }
+            unset($k);
+        }
+        unset($r);
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('DISD2206_FG');
+        $sheet->setCellValueByColumnAndRow(1,2, 'Assy Name');
+        $sheet->setCellValueByColumnAndRow(2,2, 'Assy Code');
+        $sheet->setCellValueByColumnAndRow(3,2, 'Assy Qty');
+        $sheet->setCellValueByColumnAndRow(4,2, 'Assy UM');
+        $sheet->setCellValueByColumnAndRow(5,2, 'Part Name');
+        $sheet->setCellValueByColumnAndRow(6,2, 'Part Code');
+        $sheet->setCellValueByColumnAndRow(7,2, 'Use');
+        $sheet->setCellValueByColumnAndRow(8,2, 'Part UM');
+        $sheet->setCellValueByColumnAndRow(9,2, 'BC Qty');
+        $sheet->setCellValueByColumnAndRow(10,2, 'BC Type');
+        $sheet->setCellValueByColumnAndRow(11,2, 'BC No');
+        $sheet->setCellValueByColumnAndRow(12,2, 'BC Date');
+        $y=3;
+        $passycode = '';
+        $passyname = '';
+        $passyqty = '';
+        $passyuom = '';
+        $tempSER = '';
+        foreach($rsfix as $r)
+        {
+            if($tempSER!=$r['ASSYREFF'])
+            {
+                $tempSER=$r['ASSYREFF'];
+                $passycode = $r['ASSYCODE'];
+                $passyname = $r['ASSYDESC'];
+                $passyqty = $r['ASSYQT'];
+                $passyuom = $r['ASSYUOM'];
+            } else 
+            {
+                $passycode = '';
+                $passyname = '';
+                $passyqty = '';
+                $passyuom = '';
+            }
+            $sheet->setCellValueByColumnAndRow(1,$y, $passyname);
+            $sheet->setCellValueByColumnAndRow(2,$y, $passycode);
+            $sheet->setCellValueByColumnAndRow(3,$y, $passyqty);
+            $sheet->setCellValueByColumnAndRow(4,$y, $passyuom);
+            $sheet->setCellValueByColumnAndRow(5,$y, $r['RMDESC']);
+            $sheet->setCellValueByColumnAndRow(6,$y, $r['RMCODE']);
+            $sheet->setCellValueByColumnAndRow(7,$y, $r['USE']);
+            $sheet->setCellValueByColumnAndRow(8,$y, $r['RMUOM']);
+            $sheet->setCellValueByColumnAndRow(9,$y, $r['BCQT']);
+            $sheet->setCellValueByColumnAndRow(10,$y, $r['BCTYPE']);
+            $sheet->setCellValueByColumnAndRow(11,$y, $r['BCNO']);
+            $sheet->setCellValueByColumnAndRow(12,$y, $r['BCDATE']);
+            $y++;
+        }
+        foreach(range('A', 'L') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+        $sheet->freezePane('A3');
+        $stringjudul = "DISD2206_FG";
+        $writer = new Xlsx($spreadsheet);
+        $filename=$stringjudul; //save our workbook as this file name
+        
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        // die(json_encode(['data'=>$rsfix]));
+    }
+    function dispose_report2()
+    {
+        header('Content-Type: application/json');
+        
+        $str = "'FRGO02OOTCMC2D8Z',
+        'FRGO02OOTEMC1X83',
+        'FRGO02OOTFMC2TKU',
+        'FRGO02OOTHMC2GSZ',
+        'FRGO02OOTJMC23DP',
+        'FRGO02OOTKMC1TCR',
+        'FRGO02OOTMMC37OI',
+        'FRGO02OOTOMC5MTB',
+        'FRGO02OOTPMC2ZRK',
+        'FRGO02OOTRMC3TWI',
+        'FRGO02OOTTMC3G82',
+        'FRGO02OOTUMC1MVW',
+        'FRGO02OOTWMC2O4G',
+        'FRGO02OOTYMC3W03',
+        'FRGO02OOTZMC389H',
+        'FRGO02OOU1MCZAMA',
+        'FRGO02OOU3MC1ZWU',
+        'FRGO02OOU4MC3O6Q',
+        'FRGO02OOU6MCZHG0',
+        'FRGO02OOU8MCN3KT',
+        'FRGO02OOU9MC3VOP',
+        'FRGO02OOUBMC2JGD',
+        'FRGO02OOUCMC3DXU',
+        'FRGO02OOUEMC19E9',
+        'FRGO02OOUMMC2CEO',
+        'FRGO02OOUOMCAKBK',
+        'FU25FT7TH7MC3U82',
+        'G7RARQW5B8MC1ENZ',
+        'G7RARQW5BBMC4IS5',
+        'G7RARQW5BCMC37Y6',
+        'G7RARQW5BEMC20Z1',
+        'G7RARQW5BHMC8IGZ',
+        'G7RARQW5BIMC2RF5',
+        'G7RARQW5BKMC1WEE',
+        'G7RARQW5BLMC1HIX',
+        'G7RARQW5BMMC1IXN',
+        'G7RARQW5BOMC27J5',
+        'G7RARQW5BQMCGKKY',
+        'G0AGEPYKIZ1I2TF0',
+        'G0KQVA2S6A2A3UEW',
+        'FHTJV266RWMC2QRK',
+        'I07020211114239030',
+        'G7F0W5EJO2MCRZ7N',
+        'G1L0JKV28H1I2VX0',
+        'G1L0JZ2D6K1I2TCB',
+        'FY39AJ8CJO1I36S9',
+        'FY39AVJ2OY1I3C39'";
+        $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($str);
+        $rsEXBC = $this->ZRPSTOCK_mod->select_columns_where(["rtrim(RPSTOCK_ITMNUM) ITMNUM","ABS(RPSTOCK_QTY) BCQTY","RPSTOCK_DOC"
+        ,"RPSTOCK_NOAJU","RPSTOCK_BCNUM"
+        ,"RPSTOCK_BCDATE","RPSTOCK_BCTYPE"]
+        , ["RPSTOCK_REMARK" => "DISD2206_FG_2"]);
+        $rsfix = [];
+        foreach($rsRM as &$r)
+        {
+            $r['QTYPLOT'] = 0;
+            foreach($rsEXBC as &$k)
+            {
+                $reqPlot = $r['QTY']-$r['QTYPLOT'];
+                if($r['PART_CODE'] === $k['ITMNUM'] && $reqPlot>0 && $k['BCQTY'] > 0)
+                {
+                    $theqty = $reqPlot;
+                    if($reqPlot>$k['BCQTY'])
+                    {
+                        $r['QTYPLOT']+=$k['BCQTY'];
+                        $theqty = $k['BCQTY'];
+                        $k['BCQTY']=0;
+                    } else 
+                    {
+                        $k['BCQTY']-=$reqPlot;
+                        $r['QTYPLOT']+=$reqPlot;
+                    }
+                    $rsfix[] = [
+                        'ASSYDESC' => $r['FGDESC'],
+                        'ASSYCODE' => $r['ITH_ITMCD'],
+                        'ASSYQT' => $r['STOCKQTY'],
+                        'ASSYREFF' => $r['ITH_SER'],
+                        'ASSYUOM' => $r['FGUOM'],
+                        'RMDESC' => $r['RMDESC'],
+                        'RMCODE' => $r['PART_CODE'],                    
+                        'USE' => $r['QTY']/$r['STOCKQTY'],
+                        'RMUOM' => $r['RMUOM'],
+                        'BCQT' => $theqty,
+                        'BCTYPE' => $k['RPSTOCK_BCTYPE'],
+                        'BCNO' => $k['RPSTOCK_BCNUM'],
+                        'BCDATE' => $k['RPSTOCK_BCDATE'],
+                    ];
+                    if($r['QTY']==$r['QTYPLOT']){
+                        break;
+                    }
+                    
+                }                
+            }
+            unset($k);
+        }
+        unset($r);
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('DISD2206_FG_2');
+        $sheet->setCellValueByColumnAndRow(1,2, 'Assy Name');
+        $sheet->setCellValueByColumnAndRow(2,2, 'Assy Code');
+        $sheet->setCellValueByColumnAndRow(3,2, 'Assy Qty');
+        $sheet->setCellValueByColumnAndRow(4,2, 'Assy UM');
+        $sheet->setCellValueByColumnAndRow(5,2, 'Part Name');
+        $sheet->setCellValueByColumnAndRow(6,2, 'Part Code');
+        $sheet->setCellValueByColumnAndRow(7,2, 'Use');
+        $sheet->setCellValueByColumnAndRow(8,2, 'Part UM');
+        $sheet->setCellValueByColumnAndRow(9,2, 'BC Qty');
+        $sheet->setCellValueByColumnAndRow(10,2, 'BC Type');
+        $sheet->setCellValueByColumnAndRow(11,2, 'BC No');
+        $sheet->setCellValueByColumnAndRow(12,2, 'BC Date');
+        $y=3;
+        $passycode = '';
+        $passyname = '';
+        $passyqty = '';
+        $passyuom = '';
+        $tempSER = '';
+        foreach($rsfix as $r)
+        {
+            if($tempSER!=$r['ASSYREFF'])
+            {
+                $tempSER=$r['ASSYREFF'];
+                $passycode = $r['ASSYCODE'];
+                $passyname = $r['ASSYDESC'];
+                $passyqty = $r['ASSYQT'];
+                $passyuom = $r['ASSYUOM'];
+            } else 
+            {
+                $passycode = '';
+                $passyname = '';
+                $passyqty = '';
+                $passyuom = '';
+            }
+            $sheet->setCellValueByColumnAndRow(1,$y, $passyname);
+            $sheet->setCellValueByColumnAndRow(2,$y, $passycode);
+            $sheet->setCellValueByColumnAndRow(3,$y, $passyqty);
+            $sheet->setCellValueByColumnAndRow(4,$y, $passyuom);
+            $sheet->setCellValueByColumnAndRow(5,$y, $r['RMDESC']);
+            $sheet->setCellValueByColumnAndRow(6,$y, $r['RMCODE']);
+            $sheet->setCellValueByColumnAndRow(7,$y, $r['USE']);
+            $sheet->setCellValueByColumnAndRow(8,$y, $r['RMUOM']);
+            $sheet->setCellValueByColumnAndRow(9,$y, $r['BCQT']);
+            $sheet->setCellValueByColumnAndRow(10,$y, $r['BCTYPE']);
+            $sheet->setCellValueByColumnAndRow(11,$y, $r['BCNO']);
+            $sheet->setCellValueByColumnAndRow(12,$y, $r['BCDATE']);
+            $y++;
+        }
+        foreach(range('A', 'L') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+        $sheet->freezePane('A3');
+        $stringjudul = "DISD2206_FG_2";
+        $writer = new Xlsx($spreadsheet);
+        $filename=$stringjudul; //save our workbook as this file name
+        
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        // die(json_encode(['data'=>$rsfix]));
+    }
+
     public function posting_rm41(){
         set_exception_handler([$this,'exception_handler']);
         set_error_handler([$this, 'log_error']);
@@ -14049,7 +14333,7 @@ class DELV extends CI_Controller {
                 $where['MITM_MODEL'] = $itemtype;
                 $rs = $this->DELV_mod->select_out_pabean($where);
             }
-        } else {
+        } else {            
             $rs = $this->DELV_mod->select_out_pabean($where);
         }				
         die(json_encode(['data' => $rs]));
