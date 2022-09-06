@@ -159,7 +159,7 @@
                     <button title="Save" class="btn btn-primary" type="button" id="retrm_out_btn_save" onclick="retrm_out_btn_save_eC()"><i class="fas fa-save"></i></button>
                     <button title="Approve" class="btn btn-success" type="button" id="retrm_out_btn_appr" onclick="retrm_out_btn_appr_eC()">Approve</button>                    
                     <div class="btn-group btn-group-sm" role="group">
-                        <button title="TPB Operations" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >TPB</button>
+                        <button title="TPB Operations" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="retrm_out_btn_tpb" >TPB</button>
                         <ul class="dropdown-menu" aria-labelledby="retrm_out_tpb_btn">
                             <li><a id="retrm_out_btn_post" class="dropdown-item" href="#" onclick="retrm_out_btn_book_eC()">EXBC Booking</a></li>
                             <li><a id="retrm_out_btn_post" class="dropdown-item" href="#" onclick="retrm_out_btn_post_eC()"><i class="fas fa-clone"></i> Posting</a></li>
@@ -223,15 +223,12 @@
                             <div class="row mt-1">
                                 <div class="col-md-6 mb-1">
                                     <div class="btn-group btn-group-sm" role="group" >
-                                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Shortcut</button>
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" id="retrm_out_inc_btn_shortcut">Shortcut</button>
                                         <ul class="dropdown-menu" >
                                             <li><a id="retrm_out_inc_btn_add_fromMega" class="dropdown-item" href="#" onclick="retrm_out_inc_btn_add_fromMega_eCK()">Add from MEGA</a></li>
                                             <li><a id="retrm_out_inc_btn_add_fromPK" class="dropdown-item" href="#" onclick="retrm_out_inc_btn_add_fromPK_eCK()">Add from PK</a></li>
                                             <li><a id="retrm_out_inc_btn_add_fromSCR" class="dropdown-item" href="#" onclick="retrm_out_inc_btn_add_fromSCR_eCK()">Add from Scrap</a></li>
                                         </ul>
-                                        
-                                        <!-- <button type="button" class="btn btn-primary" id="retrm_out_inc_btn_add_fromMega" onclick="retrm_out_inc_btn_add_fromMega_eCK()">Add from MEGA</button>
-                                        <button type="button" class="btn btn-outline-primary" id="retrm_out_inc_btn_add_fromPK" onclick="retrm_out_inc_btn_add_fromPK_eCK()" title="Contract Agreement">Add from PK</button> -->
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-1 text-end">
@@ -548,7 +545,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>TX ID</th><!-- 0 -->
-                                    <th>TX Date</th><!-- 1 -->
+                                    <th class="d-none">TX Date</th><!-- 1 -->
                                     <th>Description</th><!-- 2 -->
                                     <th class="d-none">Customer ID</th><!-- 3 -->
                                     <th>3rd Party Name</th><!-- 4 -->
@@ -2861,6 +2858,22 @@
         const cmbbg = document.getElementById('retrm_out_inc_cmb_bg')
         cmbbg.value = '-'
         cmbbg.disabled = false
+        retrm_out_btn_save.disabled = false
+        retrm_out_inc_btnfindmodcust.disabled = false
+        retrm_out_btn_appr.disabled = false
+        retrm_out_btn_tpb.disabled = false
+        retrm_out_inc_z_btn_save.disabled = false
+        retrm_out_inc_z_btn_save41.disabled = false
+        retrm_out_inc_z_btn_save261.disabled = false
+        retrm_out_inc_z_btn_save30.disabled = false
+        retrm_out_inc_z_btn_save25.disabled = false
+        retrm_out_inc_btn_shortcut.disabled = false
+        retrm_out_inc_btncopyFromResume.disabled = false
+        retrm_out_inc_btn_add_packing.disabled = false
+        retrm_out_inc_btn_min_packing.disabled = false
+        retrm_out_donprc_fifo.disabled = false
+        retrm_out_donprc_tbl_add.disabled = false
+        retrm_out_so_tbl_add.disabled = false
         
         document.getElementById('retrm_out_inc_custname').value = ''
         document.getElementById('retrm_out_inc_curr').value = ''
@@ -2920,12 +2933,15 @@
                             newrow = tableku2.insertRow(-1)
                             newcell = newrow.insertCell(0)
                             newcell.innerHTML = response.data[i].DLV_ID
+
                             newcell = newrow.insertCell(1)
+                            newcell.classList.add('d-none')
                             newcell.innerHTML = response.data[i].DLV_DATE
-                            newcell = newrow.insertCell(2)                                                     
+
+                            newcell = newrow.insertCell(2)
                             newcell.innerHTML = response.data[i].DLV_DSCRPTN
 
-                            newcell = newrow.insertCell(3);                            
+                            newcell = newrow.insertCell(3);
                             newcell.style.cssText = 'display:none';
                             newcell.innerHTML = response.data[i].DLV_CUSTCD                      
 
@@ -3076,7 +3092,13 @@
 
                                 }
                             } else {
-                                mstatus="Posted"
+                                if(response.data[i].DLV_NOPEN!='')
+                                {
+                                    mstatus="Closed"                                    
+                                } else 
+                                {
+                                    mstatus="Posted"
+                                }
                             }
 
                             newcell = newrow.insertCell(38)
@@ -3125,6 +3147,7 @@
                                 ,crparentdoc : response.data[i].DLV_PARENTDOC
                                 ,cdocbcout : response.data[i].RPSTOCK_REMARK
                                 ,DLV_ZNOMOR_AJU : response.data[i].DLV_ZNOMOR_AJU
+                                ,cstatus : mstatus
                             }
                             newrow.onclick = () => {retrm_out_cclick_hnd(pdata)}
                         }
@@ -3163,7 +3186,48 @@
         let mskb  = mrow.cskb
         let mnama_pengangkut = mrow.cnamapengangkut
         let mskb_tgl = mrow.cskbdt
-        const mcona = mrow.ccona        
+        const mcona = mrow.ccona  
+        
+        if(mrow.cstatus=='Closed')
+        {
+            retrm_out_btn_save.disabled = true
+            retrm_out_inc_btnfindmodcust.disabled = true
+            retrm_out_btn_appr.disabled = true
+            retrm_out_btn_tpb.disabled = true
+            retrm_out_inc_z_btn_save.disabled = true
+            retrm_out_inc_z_btn_save41.disabled = true
+            retrm_out_inc_z_btn_save261.disabled = true
+            retrm_out_inc_z_btn_save30.disabled = true
+            retrm_out_inc_z_btn_save25.disabled = true
+            retrm_out_inc_btn_shortcut.disabled = true
+            retrm_out_inc_btn_add.disabled = true
+            retrm_out_inc_btn_minus.disabled = true
+            retrm_out_inc_btncopyFromResume.disabled = true
+            retrm_out_inc_btn_add_packing.disabled = true
+            retrm_out_inc_btn_min_packing.disabled = true
+            retrm_out_donprc_fifo.disabled = true
+            retrm_out_donprc_tbl_add.disabled = true
+            retrm_out_so_tbl_add.disabled = true
+        } else {
+            retrm_out_btn_save.disabled = false
+            retrm_out_inc_btnfindmodcust.disabled = false
+            retrm_out_btn_appr.disabled = false
+            retrm_out_btn_tpb.disabled = false
+            retrm_out_inc_z_btn_save.disabled = false
+            retrm_out_inc_z_btn_save41.disabled = false
+            retrm_out_inc_z_btn_save261.disabled = false
+            retrm_out_inc_z_btn_save30.disabled = false
+            retrm_out_inc_z_btn_save25.disabled = false
+            retrm_out_inc_btn_shortcut.disabled = false
+            retrm_out_inc_btn_add.disabled = false
+            retrm_out_inc_btn_minus.disabled = false
+            retrm_out_inc_btncopyFromResume.disabled = false
+            retrm_out_inc_btn_add_packing.disabled = false
+            retrm_out_inc_btn_min_packing.disabled = false            
+            retrm_out_donprc_fifo.disabled = false
+            retrm_out_donprc_tbl_add.disabled = false
+            retrm_out_so_tbl_add.disabled = false
+        }
 
         document.getElementById("retrm_out_inc_txt_DO").focus()
         document.getElementById("retrm_out_inc_txt_DO").value = mrow.ctxid
@@ -3192,9 +3256,9 @@
         document.getElementById('retrm_out_inc_txt_postedby').value=( (mposted=='null') || (mposted.trim()=='') ? '': mposted);
         document.getElementById('retrm_out_inc_txt_postedtime').value=( (mpostedtime=='null') || (mpostedtime.trim()=='') ? '': mpostedtime);
 
-        if((mposted=='null') || (mposted.trim()=='')){
+        if(mrow.cstatus!='Posted'){
             if(mrow.cdocbcout) {
-                document.getElementById('retrm_out_status').value="Booked";
+                document.getElementById('retrm_out_status').value=mrow.cstatus;
                 document.getElementById('retrm_out_btn_post_cancel').classList.remove('disabled')
             } else {
                 document.getElementById('retrm_out_btn_post_cancel').classList.add('disabled')
@@ -3202,15 +3266,14 @@
                     if((mcreated=='null') || (mcreated.trim()=='')){
     
                     } else {
-                        document.getElementById('retrm_out_status').value="Saved";
+                        document.getElementById('retrm_out_status').value=mrow.cstatus;
                     }
                 } else {
-                    document.getElementById('retrm_out_status').value="Approved";
+                    document.getElementById('retrm_out_status').value=mrow.cstatus;
                 }
-
             }
         } else {
-            document.getElementById('retrm_out_status').value="Posted"
+            document.getElementById('retrm_out_status').value=mrow.cstatus
             document.getElementById('retrm_out_btn_post_cancel').classList.remove('disabled')
         }
         document.getElementById('retrm_out_inc_txt_nopen').value=''
@@ -3990,8 +4053,7 @@
                     } else if (response.status[0].cd==='11') {
                         alertify.message(response.status[0].msg)
                         retrm_out_f_getdetail(docno)
-                    }
-                    else {
+                    } else {
                         alertify.warning(response.status[0].msg);
                     }
                 }, error:function(xhr,ajaxOptions, throwError) {
