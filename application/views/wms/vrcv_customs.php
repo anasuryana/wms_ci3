@@ -132,7 +132,7 @@ video {
         <div id="rcvcustoms_div_mode0" class="rcvcustoms_div_mode">
             <div class="row" id="rcvcustoms_stack1">
                 <div class="col-md-5 mb-1">
-                    <div class="input-group input-group-sm mb-1">                    
+                    <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">DO Number</label>                    
                         <input type="text" class="form-control" id="rcvcustoms_docnoorigin" ondblclick="rcvcustoms_docnoorigin_eDC()" readonly>                    
                         <button class="btn btn-primary" id="rcvcustoms_btnmod"><i class="fas fa-search"></i></button>                    
@@ -144,12 +144,12 @@ video {
                         <select id="rcvcustoms_typedoc" class="form-select">
                             <option value="23">BC 2.3</option>
                             <option value="27">BC 2.7</option>
-                            <option value="40">BC 4.0</option>                                        
+                            <option value="40">BC 4.0</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-md-4 mb-1">
-                    <div class="input-group input-group-sm mb-1">                    
+                    <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Receiving Status</label>                    
                         <select id="rcvcustoms_zsts" class="form-select">
                         </select>                    
@@ -2692,9 +2692,21 @@ video {
         }
         if(mnoaju.trim().length!=26){
             alertify.warning('NoAju must be 26 digit');
-            document.getElementById('rcvcustoms_noaju').focus()
+            rcvcustoms_noaju.focus()
             return;
         }
+        if(rcvcustoms_zsts.value==='-' && rcvcustoms_typedoc.value!=='23')
+        {
+            alertify.warning('Receiving Status could not be empty')
+            rcvcustoms_zsts.focus()
+            return
+        }
+        if(mnoaju.substr(4,2)!=rcvcustoms_typedoc.value)
+        {
+            alertify.warning("Document type is not equal with nomor aju")
+            return
+        }
+
         if(mnopen.trim().length==6){
             let mymodal = new bootstrap.Modal(document.getElementById("RCVCUSTOMS_PROGRESS"), {backdrop: 'static', keyboard: false});
             mymodal.show();
@@ -2801,6 +2813,7 @@ video {
             });
         }
     });
+    var rcvcustoms_rcv_status = '-'
     $('#rcvcustoms_tbldono tbody').on( 'click', 'tr', function () { 
         if ( $(this).hasClass('table-active') ) {
             $(this).removeClass('table-active');
@@ -2835,8 +2848,7 @@ video {
                     }
                 }
                 document.getElementById('rcvcustoms_zsts').innerHTML = str;
-                document.getElementById('rcvcustoms_zsts').value = response.status[0].reff;
-                document.getElementById('rcvcustoms_zsts').focus();
+                document.getElementById('rcvcustoms_zsts').value = response.status[0].reff;                
 
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
@@ -2861,11 +2873,12 @@ video {
                     
                     document.getElementById('rcvcustoms_contractnum').value = response[0].RCV_CONA
                     if(response[0].RCV_ZSTSRCV) {
-                        mstsrcv = response[0].RCV_ZSTSRCV
+                        mstsrcv = response[0].RCV_ZSTSRCV                        
                         vrcv_e_getstsrcv(response[0].RCV_BCTYPE,mstsrcv )
                     } else {
                         mstsrcv ='-'
                     }
+                    rcvcustoms_rcv_status = mstsrcv
                     for(let i=0;i<ttlrows;i++){
                         if(response[i].RCV_NW){
                             m_nw = response[i].RCV_NW.substring(0,1)=='.' ? '0'+response[i].RCV_NW : response[i].RCV_NW;
@@ -4522,9 +4535,14 @@ video {
     {
         if (e.target.value.trim().length>=6) 
         {
-            const temp = e.target.value.trim().substr(4,2)
+            const temp = e.target.value.trim().substr(4,2)            
             rcvcustoms_typedoc.value = temp
-            rcvcustoms_initReceivingStatus(rcvcustoms_typedoc.value)
+            if(rcvcustoms_rcv_status==='-')
+            {
+                rcvcustoms_initReceivingStatus(rcvcustoms_typedoc.value)
+            } else {
+                vrcv_e_getstsrcv(temp,rcvcustoms_rcv_status )
+            }            
         }
     }
 
