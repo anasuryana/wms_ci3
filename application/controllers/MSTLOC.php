@@ -58,8 +58,7 @@ class MSTLOC extends CI_Controller {
     }
     public function setloc_d(){
         date_default_timezone_set('Asia/Jakarta');
-        $currrtime  = date('Y-m-d H:i:s');
-        $cid        = $this->input->post('inid');
+        $currrtime  = date('Y-m-d H:i:s');        
         $cgroup     = $this->input->post('ingroup');
         $crack      = $this->input->post('inrack');
         
@@ -74,11 +73,7 @@ class MSTLOC extends CI_Controller {
             $datac = array(
                 'MSTLOC_CD' => $ccd, 'MSTLOC_GRP' => $cgroup
             ); 
-            if($this->MSTLOC_mod->check_Primary($datac)==0){
-                // $lastid = $this->MSTLOC_mod->selectLastOne();            
-                // $lastid =(int)$lastid;
-                // $lastid++;
-                // $lastid = 'LCD'.$lastid;
+            if($this->MSTLOC_mod->check_Primary($datac)==0){                
                 $datas = array(
                     'MSTLOC_CD' => $ccd,
                     'MSTLOC_GRP' => $cgroup, 'MSTLOC_RACK' => $crack,
@@ -177,7 +172,7 @@ class MSTLOC extends CI_Controller {
     }
 
     public function downloadtemplate(){
-        $theurl = 'assets/userxls_template/tmpl_location.xls' ;//base_url("assets/userdata_templates/tmp_wip.xlsx");
+        $theurl = 'assets/userxls_template/tmpl_location.xls' ;
         force_download($theurl , null );
         echo $theurl;
     }
