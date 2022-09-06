@@ -2073,7 +2073,7 @@ class DELV extends CI_Controller {
             }
         }
         die(json_encode(['status' => $myar]));
-    }	
+    }   
     
     public function set_rm(){
         header('Content-Type: application/json');
@@ -2152,14 +2152,19 @@ class DELV extends CI_Controller {
             $delcd_cust = $r['MDEL_TXCD'];
         }
         if($delcd_cust==='') {
-            $datar = ["cd" => '00', "msg" => "Please define customer code" ];
-            $myar[] = $datar;
-            die(json_encode($myar));
+            $myar[] = ["cd" => '00', "msg" => "Please define customer code" ];
+            die(json_encode(['status' => $myar]));
         }
         $this->txbridge->syncParentDocument(['DOC' => $megadoc]);
 
         $rmbooked = $this->ZRPSTOCK_mod->check_Primary(['RPSTOCK_REMARK' => $doNum]);
         if($this->DELV_mod->check_Primary(['DLV_ID' => $doNum])){
+            $ttlrow = $this->DELV_mod->check_Primary(['DLV_ID' => $doNum, "ISNULL(DLV_NOPEN,'')" => '' ]);
+            if($ttlrow===0)
+            {
+                $myar[] = ["cd" => '00', "msg" => "Read-Only"];
+                die(json_encode(['status' => $myar]));
+            }
             $ttlUpdated = 0;
             $ttlSaved = 0;
             $newLine = $this->DELV_mod->select_lastline($doNum)+1;
@@ -3213,11 +3218,11 @@ class DELV extends CI_Controller {
         $sheet->setCellValueByColumnAndRow(7,5, 'BC '.$hinv_bctype.' : '.$hinv_nopen);
         $sheet->setCellValueByColumnAndRow(7,6, 'INV NO : '.$hinv_inv);
         
-        $ar_po = array();
-        $ar_item= array();
-        $ar_itemdesc = array();
-        $ar_itemUM = array();
-        $ar_qty= array();
+        $ar_po = [];
+        $ar_item= [];
+        $ar_itemdesc = [];
+        $ar_itemUM = [];
+        $ar_qty= [];
         $rsdo = $this->DLVSO_mod->select_for_DO($pid);
         foreach($rs as $r){
             $isexist =false;
@@ -4520,11 +4525,11 @@ class DELV extends CI_Controller {
             unset($ar_itemdesc);
             unset($ar_qty);
             unset($ar_itemUM);
-            $ar_po = array();
-            $ar_item= array();
-            $ar_itemdesc = array();
-            $ar_itemUM = array();
-            $ar_qty= array();
+            $ar_po = [];
+            $ar_item= [];
+            $ar_itemdesc = [];
+            $ar_itemUM = [];
+            $ar_qty = [];
             $rsdo = $this->DLVSO_mod->select_for_DO($pid);
             foreach($rs as $r){
                 $isexist =false;
@@ -6600,60 +6605,7 @@ class DELV extends CI_Controller {
                 }			
             }			
         die(json_encode(['itemcd' => $rsallitem_cd, 'itemcd_Qty' => $rsallitem_qty]));
-    }
-
-
-    function testWhoFirst(){
-        date_default_timezone_set('Asia/Jakarta');
-        $who = $this->input->get('who');
-        $doc = $this->input->get('doc');        
-        $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
-        $formattedTime = $now->format('Y-m-d H:i:s:v'); 
-        $rsUnfinished = $this->POSTING_mod->select_unfinished($doc);
-        $myar = [];
-        if(empty($rsUnfinished)) {
-            // $this->POSTING_mod->insert([
-            //     'POSTING_DOC' => $doc,
-            //     'POSTING_STATUS' => 1,
-            //     'POSTING_STARTED_AT' => $formattedTime,
-            //     'POSTING_BY' => $who,
-            //     'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
-            // ]);            
-            $now = DateTime::createFromFormat('U.u', microtime(true));
-            $finishedTime = $now->format('Y-m-d H:i:s:v'); 
-            
-            $ret = $this->POSTING_mod->update_where(['POSTING_FINISHED_AT' => $finishedTime],
-            [
-                'POSTING_DOC' => $doc,
-                'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
-                'POSTING_FINISHED_AT' => NULL
-            ]);
-            if($ret) {
-                $myar = ['cd' => '1', 'msg' => 'ok'];
-            } else {
-                $myar = ['cd' => '0', 'msg' => 'oops'];
-            }
-        } else {
-            $myar = ['cd' => '0', 'msg' => 'could not save'];
-        }
-        die(json_encode([
-            'who' => $who
-            , 'at2' => $formattedTime
-            , 'status' => $myar
-        ])
-        );
-        
-
-        // $dateTimesBin = date('Y-m-d H:i:s:v');        
-        // $now = DateTime::createFromFormat('U.u', microtime(true));
-        // $formattedTime = $now->format('Y-m-d H:i:s:v'); 
-        // die(json_encode([
-        //     'who' => $who
-        //     , 'at' => $dateTimesBin
-        //     , 'at2' => $formattedTime
-        // ])
-        // );
-    }    
+    }  
 
     public function posting27(){
         set_exception_handler([$this,'exception_handler']);
