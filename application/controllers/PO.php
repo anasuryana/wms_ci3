@@ -334,9 +334,8 @@ class PO extends CI_Controller {
             $rowsneeded = $YExtra1>$YExtra2? $YExtra1: $YExtra2;
             $_num+=$rowsneeded;            
         }
-        #end      
-        
-        if($_num>15){            
+        #end
+        if($_num>15){
             $MAXLENGTH_LINE_TO_BOTTOM = 195;
             $pdf->SetFont('Times','',9);
             $pdf->SetXY(6,104-$_y);
@@ -819,9 +818,9 @@ class PO extends CI_Controller {
             $nomor_urut = 1;
             $YStart = (104-$_y)-5+5;
             $YExtra = 0;
-            $total_amount_test = 0;
+            $total_amount_test = 0;            
             foreach($rs as $r){
-                if($pdf->GetY()>=159) {
+                if($pdf->GetY()>=164) {
                     $pdf->AddPage();
                     #company
                     $pdf->SetFont('Arial','B',10);
