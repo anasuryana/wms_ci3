@@ -446,6 +446,7 @@ class RCV extends CI_Controller {
         $h_supcd = $this->input->post('h_supcd');
         $h_minvNo = $this->input->post('h_minvNo');
         $h_tax_invoice = $this->input->post('h_tax_invoice');
+        $h_pl_num = $this->input->post('h_pl_num');
         $d_grlno = $this->input->post('d_grlno');
         $d_nourut = $this->input->post('d_nourut');
         $d_pono = $this->input->post('d_pono');
@@ -605,13 +606,13 @@ class RCV extends CI_Controller {
                 $myar[] = ['cd' => 1, 'msg' => 'Saved successfully'];
             }
         }
-        $newLine = $this->RCVPKG_mod->select_maxline($h_do, $h_aju)+1;
+        $newLine = $this->RCVPKG_mod->select_maxline($h_pl_num, $h_aju)+1;
         for($i=0;$i<$ttlrowsPKG; $i++){
             if(trim($d_pkg_idrow[$i])===''){
                 $this->RCVPKG_mod->insert([
                     'RCVPKG_AJU' => $h_aju,
                     'RCVPKG_LINE' => $newLine++,
-                    'RCVPKG_DOC' => $h_do,
+                    'RCVPKG_DOC' => $h_pl_num,
                     'RCVPKG_JUMLAH_KEMASAN' => $d_pkg_jml[$i],
                     'RCVPKG_KODE_JENIS_KEMASAN' => $d_pkg_kd[$i],
                     'RCVPKG_CREATED_AT' => date('Y-m-d H:i:s'),
@@ -620,7 +621,7 @@ class RCV extends CI_Controller {
             } else {
                 $this->RCVPKG_mod->updatebyId(
                     ['RCVPKG_JUMLAH_KEMASAN' => $d_pkg_jml[$i],	'RCVPKG_KODE_JENIS_KEMASAN' => $d_pkg_kd[$i]],
-                    ['RCVPKG_AJU' => $h_aju, 'RCVPKG_DOC' => $h_do,'RCVPKG_LINE' => $d_pkg_idrow[$i]]
+                    ['RCVPKG_AJU' => $h_aju, 'RCVPKG_DOC' => $h_pl_num,'RCVPKG_LINE' => $d_pkg_idrow[$i]]
                 );
             }
         }
@@ -1824,8 +1825,8 @@ class RCV extends CI_Controller {
             ,'RCV_ASSETNUM'
         ];
         $rs = $this->RCV_mod->select_where($columns, ['RCV_DONO' => $do, 'RCV_SUPCD' => $supcd]);
-        $rsPKG = $this->RCVPKG_mod->select_where(["RCVPKG_LINE","RCVPKG_JUMLAH_KEMASAN","RCVPKG_KODE_JENIS_KEMASAN", "URAIAN_KEMASAN"]
-            ,['RCVPKG_AJU' => $nomorAju, 'RCVPKG_DOC' => $do]);
+        $rsPKG = $this->RCVPKG_mod->select_where(["RCVPKG_LINE","RCVPKG_JUMLAH_KEMASAN","RCVPKG_KODE_JENIS_KEMASAN", "URAIAN_KEMASAN",'RCVPKG_DOC']
+            ,['RCVPKG_AJU' => $nomorAju]);
         die(json_encode(['data' => $rs, 'pkg' => $rsPKG]));
     }
     public function GetDODetail2(){
@@ -3432,7 +3433,7 @@ class RCV extends CI_Controller {
                 $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "380", "NOMOR_DOKUMEN" => $nomorInvoice , "TANGGAL_DOKUMEN" => $dodate, "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => $seridokumen++];
             }
             if(!empty($nomorInvoice)){
-                $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "388", "NOMOR_DOKUMEN" => $fakturPajak ,"TANGGAL_DOKUMEN" => null,  "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => $seridokumen++];
+                $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "388", "NOMOR_DOKUMEN" => $fakturPajak ,"TANGGAL_DOKUMEN" => $dodate,  "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => $seridokumen++];
             }
             $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "640", "NOMOR_DOKUMEN" => $donumber , "TANGGAL_DOKUMEN" => $dodate, "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => 1];
 

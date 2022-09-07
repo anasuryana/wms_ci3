@@ -1513,12 +1513,20 @@ video {
       <div class="modal-content"> 
         <!-- Modal Header -->
         <div class="modal-header">
-            <h4 class="modal-title">PO List</h4>
+            <h4 class="modal-title">Kemasan</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         
         <!-- Modal body -->
         <div class="modal-body">
+            <div class="row">
+                <div class="col">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Nomor</span>                        
+                        <input type="text" class="form-control" id="rcvcustoms_pkg_nomor"  required>                        
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">
@@ -1530,7 +1538,7 @@ video {
                     </div>
                 </div>
                 <div class="col">
-                <button type="button" class="btn btn-primary btn-sm" id="rcvcustoms_pkg_btnuse" onclick="rcvcustoms_pkg_btnuse_eCK()"><i class="fas fa-plus"></i> </button>
+                    <button type="button" class="btn btn-primary btn-sm" id="rcvcustoms_pkg_btnuse" onclick="rcvcustoms_pkg_btnuse_eCK()"><i class="fas fa-plus"></i> </button>
                 </div>
             </div>           
             <div class="row">
@@ -1540,7 +1548,7 @@ video {
                             <thead class="table-light">
                                 <tr>
                                     <th class="d-none">idrow</th>
-                                    <th>Jumlah</th>
+                                    <th class="text-end">Jumlah</th>
                                     <th>Kode</th>
                                     <th>Uraian</th>
                                 </tr>
@@ -1768,6 +1776,7 @@ video {
                     ,h_mconaDueDate: mconaDueDate
                     ,h_minvNo: minvNo
                     ,h_tax_invoice: mtax_invoice
+                    ,h_pl_num: rcvcustoms_pkg_nomor.value
                     ,d_grlno : d_grlno
                     ,d_nourut : d_nourut
                     ,d_pono : d_pono
@@ -3090,6 +3099,10 @@ video {
                 tabelHead = tabell.getElementsByTagName('thead')[0]
                 tableku2 = tabell.getElementsByTagName("tbody")[0]
                 tableku2.innerHTML=''
+                if(ttlrows>0)
+                {
+                    rcvcustoms_pkg_nomor.value = response.pkg[0].RCVPKG_DOC
+                }
                 for (let i = 0; i<ttlrows; i++){
                     newrow = tableku2.insertRow(-1)
                     newrow.addEventListener("contextmenu", function(e){
@@ -4341,7 +4354,7 @@ video {
         } else {
             const tbl = document.getElementById('rcvcustoms_pkg_tbl').getElementsByTagName('tbody')[0]
             let newrow = tbl.insertRow(-1)
-            newrow.addEventListener("contextmenu", function(e){
+            newrow.addEventListener("contextmenu", function(e){                
                 rcvcustoms_rowsObj.ridx = e.target.parentNode.rowIndex
                 rcvcustoms_rowsObj.ids = e.target.parentNode.cells[0].innerText                
                 rcvcustoms_contextMenu.open(e)
@@ -4351,12 +4364,14 @@ video {
             newcell.classList.add('d-none')
             newcell = newrow.insertCell(1)
             newcell.innerText = txJumlah.value
+            newcell.classList.add('text-end')
             newcell = newrow.insertCell(2)
             newcell.innerText = cmbKodeJenis.value
             newcell = newrow.insertCell(3)
             newcell.innerText = cmbKodeJenis.options[cmbKodeJenis.selectedIndex].text
         }
     }
+
     var rcvcustoms_rowsObj = {}
     var rcvcustoms_contextMenu = jSuites.contextmenu(document.getElementById('rcvcustoms_contextmenu'), {
         items:[
