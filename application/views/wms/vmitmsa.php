@@ -21,6 +21,14 @@
             </div>
         </div>
         <div class="row">
+            <div class="col-md-12 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text">Remark</label>
+                    <input type="text" class="form-control" id="mitmsa_txtRemark" onkeypress="mitmsa_txtRemark_eKP(event)">
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-6 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-primary" id="mitmsa_btn_new" onclick="mitmsa_btn_new_eC()"><i class="fas fa-file"></i></button>
@@ -46,6 +54,7 @@
                             <th>Part Code SA</th>
                             <th>Part Name</th>
                             <th>Part Name SA</th>
+                            <th>Remark</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -124,7 +133,8 @@
                 { "data": 'MITMSA_ITMCD'},
                 { "data": 'MITMSA_ITMCDS'},                
                 { "data": 'SPTNO'},
-                { "data": 'SPTNOS'}
+                { "data": 'SPTNOS'},
+                { "data": 'MITMSA_RMRK'},
             ]
         })
         mitmsa_pub_tbl.on('select', function(e, dt, type, indexes) {
@@ -135,6 +145,7 @@
                 document.getElementById('mitmsa_assyold').value = mitmsa_pub_tbl.rows(indexes).data().pluck('FG')[0]
                 document.getElementById('mitmsa_partold').value = mitmsa_pub_tbl.rows(indexes).data().pluck('MITMSA_ITMCD')[0]
                 document.getElementById('mitmsa_partsaold').value = mitmsa_pub_tbl.rows(indexes).data().pluck('MITMSA_ITMCDS')[0]
+                document.getElementById('mitmsa_txtRemark').value = mitmsa_pub_tbl.rows(indexes).data().pluck('MITMSA_RMRK')[0]
             }
         })
     }
@@ -254,6 +265,7 @@
         document.getElementById('mitmsa_assyold').value= ''
         document.getElementById('mitmsa_partold').value= ''
         document.getElementById('mitmsa_partsaold').value= ''
+        mitmsa_txtRemark.value= ''
     }
     function mitmsa_txtAssycd_eKP(e) {
         if (e.key === 'Enter') {
@@ -267,7 +279,12 @@
     }
     function mitmsa_txtItemcdSA_eKP(e) {
         if (e.key === 'Enter') {
-            document.getElementById('mitmsa_btn_save').focus()
+            document.getElementById('mitmsa_txtRemark').focus()
+        }
+    }
+    function mitmsa_txtRemark_eKP(e) {
+        if (e.key === 'Enter') {
+            mitmsa_btn_save.focus()
         }
     }
     function mitmsa_btn_save_eC() {
@@ -310,6 +327,7 @@
                 , newassy : assyCD.value
                 , newpart : partCD.value
                 , newpartSA : partCDSA.value
+                , remark : mitmsa_txtRemark.value
                 },
                 dataType: "JSON",
                 success: function (response) {

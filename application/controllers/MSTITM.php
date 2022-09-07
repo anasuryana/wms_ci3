@@ -518,19 +518,15 @@ class MSTITM extends CI_Controller {
         if(strlen($itemcd)==0){
             if(strlen($itmconsignee)==0){
                 $myar[] = ['cd' => 0, 'msg' => 'Consignee is required'];
-            } else {
-                // if($this->MSTITM_mod->check_Primary(['MITM_ITMD1' => $itmnm])) {
-                // 	$myar[] = ['cd' => 0, 'msg' => 'the item name is already registered'];
-                // } else {
-                    $lastno = $this->MSTITM_mod->select_lastnopm($itmconsignee);
-                    $newitem = 'PM'.$itmconsignee.date('Y').'-'.substr('000000'.$lastno,-6);
-                    $insert = $this->MSTITM_mod->insert([
+            } else {                
+                $lastno = $this->MSTITM_mod->select_lastnopm($itmconsignee);
+                $newitem = 'PM'.$itmconsignee.date('Y').'-'.substr('000000'.$lastno,-6);
+                    $this->MSTITM_mod->insert([
                         'MITM_ITMCD' => $newitem ,'MITM_ITMD1' => $itmnm, 'MITM_ITMCDCUS' => $itemcd
                         , 'MITM_MODEL' => '6', 'MITM_STKUOM' => $itmunitmeasure, 'MITM_PMNO' =>  $lastno
                         ,'MITM_ITMCDCUS' => $itmcd_ext, 'MITM_PMREGDT' => $current_Date, 'MITM_PMCONSIGN' => $itmconsignee
                     ]);
-                    $myar[] = ['cd' => 1, 'msg' => 'registered successfully', 'newcd' =>  $newitem];
-                // }
+                $myar[] = ['cd' => 1, 'msg' => 'registered successfully', 'newcd' =>  $newitem];                
             }
         } else {
             if($this->MSTITM_mod->check_Primary(['MITM_ITMCD' => $itemcd])){
@@ -601,10 +597,9 @@ class MSTITM extends CI_Controller {
             $datas = ['MITM_HSCD' => trim($r['MITM_HSCD']) , 'MITM_ITMD1' => trim($r['MITM_ITMD1'])
             , 'MITM_SPTNO' => trim($r['MITM_SPTNO']), 'MITM_STKUOM' => trim($r['MITM_STKUOM'])
             ];
-            $resitm = $this->MSTITM_mod->updatebyId($datas, trim($r['MITM_ITMCD']));
+            $this->MSTITM_mod->updatebyId($datas, trim($r['MITM_ITMCD']));
         }
-        echo "ok";
-        // echo json_encode($rs);
+        echo "ok";        
     }
 
     public function uploadSA(){
@@ -617,29 +612,11 @@ class MSTITM extends CI_Controller {
         curl_setopt($ch, CURLOPT_POST, true);		
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 3600);
-        $data = '[
-            {
-              "FIELD1": "221430901",
-              "FIELD2": 202189800,
-              "FIELD3": 221779900
-            },
-            {
-              "FIELD1": "221430901KD",
-              "FIELD2": 202189800,
-              "FIELD3": 221779900
-            },
-            {
-              "FIELD1": "221431001",
-              "FIELD2": 202189800,
-              "FIELD3": 221779900
-            }			
-        ]';
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3600);       
         $ttlrows = 0;
         if(is_array($arm_assycd)) {
             $ttlrows = count($arm_assycd);
-        }
-        $rs = json_decode($data);
+        }        
         $aresult = [];
         if($ttlrows) {
             for($i=0;$i<$ttlrows; $i++) {
@@ -657,28 +634,9 @@ class MSTITM extends CI_Controller {
                 }
                 $aresult[] = $fields;	
             }		
-        }
-        // foreach($rs as $r) {
-        // 	$fields = [
-        // 		'newassy' => $r->FIELD1,
-        // 		'newpart' => $r->FIELD2,
-        // 		'newpartSA' => $r->FIELD3
-        // 	];
-        // 	$fields_string = http_build_query($fields);
-        // 	curl_setopt($ch, CURLOPT_POSTFIELDS,$fields_string);					
-        // 	$data = curl_exec($ch);
-        // 	$datad = json_decode($data);
-        // 	foreach($datad->status as $n) {
-        // 		$fields['status'] = $n->msg;
-        // 		// echo $n->msg;
-        // 	}
-        // 	$aresult[] = $fields;
-        // 	// echo $datad;
-        // }		
+        }        
         echo json_encode(['data' => $aresult]);
         curl_close($ch);
-        // return json_decode($data);
-        
     }
 
     public function saveSA() {
@@ -692,6 +650,7 @@ class MSTITM extends CI_Controller {
         $newassy = $this->input->post('newassy');
         $newpart = $this->input->post('newpart');
         $newpartSA = $this->input->post('newpartSA');
+        $remark = $this->input->post('remark');
                 
         if ($this->MSTITM_mod->check_Primary(['MITM_ITMCD' => $newassy]) == 0) {
             $myar[] = ['cd' => '0', 'msg' => 'Assy Code is not found'];
@@ -708,7 +667,7 @@ class MSTITM extends CI_Controller {
         $data = [
             'MITMSA_ITMCD' => trim($newpart)
             , 'MITMSA_ITMCDS' => $newpartSA
-            , 'MITMSA_MDLCD' => $newassy
+            , 'MITMSA_MDLCD' => $newassy            
         ];
         if ($this->MITMSA_mod->check_Primary($data)) {
             $myar[] = ['cd' => '0', 'msg' => 'The data is already exist'];
@@ -716,6 +675,7 @@ class MSTITM extends CI_Controller {
         } else {
             $data['MITMSA_LUPDT'] = $currrtime;
             $data['MITMSA_USRID'] = $this->session->userdata('nama');
+            $data['MITMSA_RMRK'] = $remark;
             $this->MITMSA_mod->insert($data);
             $myar[] = ['cd' => '1', 'msg' => 'Saved successfully'];
             die('{"status":'.json_encode($myar).'}');
