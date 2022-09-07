@@ -3415,7 +3415,10 @@ class RCV extends CI_Controller {
                 "KODE_JENIS_TPB" => 1 ,  "KODE_TUJUAN_PENGIRIMAN" => $statusPengiriman,
                 
                 "KODE_ID_PENGUSAHA" => "1", "ID_PENGUSAHA" => $czidpengusaha, "NAMA_PENGUSAHA" => $cznmpengusaha,
-                "ALAMAT_PENGUSAHA" => $czalamatpengusaha, "NOMOR_IJIN_TPB" => $czizinpengusaha , 
+                "ALAMAT_PENGUSAHA" => $czalamatpengusaha, "NOMOR_IJIN_TPB" => $czizinpengusaha ,
+                 
+                "ID_PEMILIK" => $statusPengiriman=='2' ? $idPengirim : $czidpengusaha,
+                "KODE_ID_PEMILIK" => "1",
     
                 "KODE_ID_PENGIRIM" => "1", "ID_PENGIRIM" => $idPengirim	, "NAMA_PENGIRIM" => $namaPengirim,
                 "ALAMAT_PENGIRIM" => $alamatPengirim,

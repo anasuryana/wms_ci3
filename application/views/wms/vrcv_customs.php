@@ -230,7 +230,7 @@ video {
                 </div>
                 <div class="col-md-3 mb-1">
                     <div class="input-group input-group-sm mb-1">                    
-                        <label class="input-group-text">Gross Weight</label>                    
+                        <label class="input-group-text">Gross Weight</label>
                         <input type="text" class="form-control" id="rcvcustoms_GW">
                     </div>
                 </div>
@@ -1523,7 +1523,7 @@ video {
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">
                         <span class="input-group-text" >Jumlah</span>                        
-                        <input type="text" class="form-control" id="rcvcustoms_pkg_jumlah" maxlength="2" required>
+                        <input type="text" class="form-control" id="rcvcustoms_pkg_jumlah" maxlength="3" required>
                         <select class="form-select" id="rcvcustoms_pkg_kodejenis" required onchange="document.getElementById('rcvcustoms_pkg_btnuse').focus()">
                             <?=$lkemasan?> 
                         </select>

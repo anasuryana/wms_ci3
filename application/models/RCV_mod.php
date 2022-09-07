@@ -1129,9 +1129,9 @@ class RCV_mod extends CI_Model {
 		return $query->result_array();
 	}
 
-    public function select_for_posting($pwhere){        
+    public function select_for_posting($pwhere){
         $this->db->from($this->TABLENAME);
-        $this->db->join('(select MSUP_SUPCD,MAX(MSUP_SUPNM) SUPNM, MAX(MSUP_ADDR1) ADDR,MAX(MSUP_TAXREG) MSUP_TAXREG from v_supplier_customer_union
+        $this->db->join('(select MSUP_SUPCD,MAX(MSUP_SUPNM) SUPNM, MAX(MSUP_ADDR1) ADDR,MAX(MSUP_TAXREG) MSUP_TAXREG from MSUP_TBL
         GROUP BY MSUP_SUPCD) VSUP',"RCV_SUPCD=MSUP_SUPCD","LEFT");
         $this->db->join("MITM_TBL", "RCV_ITMCD=MITM_ITMCD","LEFT");
         $this->db->where($pwhere);
