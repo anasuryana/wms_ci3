@@ -381,13 +381,29 @@ class INCFG extends CI_Controller {
                                 , "jobyearmonth" => $jobyearmonth
                                 , "_interval" => $_interval
                                 ];
-                                exit(json_encode($myar));
+                                die(json_encode($myar));
                             }
                             #end new rule
                             if($flgclose==1){
                                 $myar[] = ["cd" => "0", "msg" => "The JOB is closed ,.,"];
                                 exit(json_encode($myar));
                             }
+
+                            #new rule : consider Supplied PCB
+                            $rsShortAgeSupply = $this->SPL_mod->select_ppsn2_xwo($cjob);
+                            foreach($rsShortAgeSupply as $sas)
+                            {
+                                if($ostqty>$sas['OSTSUPQTY'])
+                                {
+                                    if($cqty>$sas['OSTSUPQTY'])
+                                    {
+                                        $myar[] = ["cd" => "0", "msg" => "PCB is not enough, try use another JOB"];
+                                        die(json_encode($myar));
+                                    }
+                                }
+                            }
+                            #end new rule
+
                             if(count($rsser)>0){
                                 $datac = ['ITH_FORM' => 'INC-PRD-FG', 'ITH_SER' => $creffcd];
                                 if($this->ITH_mod->check_Primary($datac)==0){

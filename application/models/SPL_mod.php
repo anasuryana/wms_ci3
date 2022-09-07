@@ -128,9 +128,30 @@ class SPL_mod extends CI_Model {
     }
 
     public function selectWOITEM_open($pwo, $pitem){
-        $qry = "select CONVERT(bigint,(PDPP_WORQT-coalesce(LBLTTL,0))) OSTQTY,PDPP_BSGRP,PDPP_CUSCD,PDPP_WORQT,PDPP_GRNQT,PDPP_COMFG,CONVERT(bigint,(PDPP_WORQT-PDPP_GRNQT)) OSTQTYMG,PDPP_ISUDT,PDPP_WONO from
-        XWO a LEFT JOIN  ( select SER_DOC,SUM(SER_QTYLOT) LBLTTL from SER_TBL x WHERE SER_ITMID LIKE ? and SER_DOC = ? AND SER_ID=ISNULL(SER_REFNO,SER_ID)
-        GROUP BY SER_DOC ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_MDLCD LIKE ? and PDPP_WONO = ? and ( PDPP_COMFG='0') ORDER BY PDPP_WONO DESC";
+        $qry = "SELECT CONVERT(BIGINT, (PDPP_WORQT - coalesce(LBLTTL, 0))) OSTQTY
+                    ,PDPP_BSGRP
+                    ,PDPP_CUSCD
+                    ,PDPP_WORQT
+                    ,PDPP_GRNQT
+                    ,PDPP_COMFG
+                    ,CONVERT(BIGINT, (PDPP_WORQT - PDPP_GRNQT)) OSTQTYMG
+                    ,PDPP_ISUDT
+                    ,PDPP_WONO
+                FROM XWO a
+                LEFT JOIN (
+                    SELECT SER_DOC
+                        ,SUM(SER_QTYLOT) LBLTTL
+                    FROM SER_TBL x
+                    WHERE SER_ITMID LIKE ?
+                        AND SER_DOC = ?
+                        AND SER_ID = ISNULL(SER_REFNO, SER_ID)
+                    GROUP BY SER_DOC
+                    ) v2 ON PDPP_WONO = v2.SER_DOC
+                WHERE PDPP_MDLCD LIKE ?
+                    AND PDPP_WONO = ?
+                    AND (PDPP_COMFG = '0')
+                ORDER BY PDPP_WONO DESC
+                ";
 		$query = $this->db->query($qry, ["%".$pitem."%", $pwo,"%".$pitem."%", $pwo]);
 		return $query->result_array();
     }    
@@ -982,6 +1003,15 @@ class SPL_mod extends CI_Model {
         $qry = "SELECT RTRIM(PPSN1_PSNNO) PSN,RTRIM(PPSN1_WONO) WONO FROM XPPSN1 WHERE PPSN1_WONO IN ($pWO)
         GROUP BY PPSN1_PSNNO,PPSN1_WONO";
         $query = $this->db->query($qry);
+        return $query->result_array();
+    }
+
+    function select_ppsn2_xwo($wo)
+    {
+        # returned column 
+        # PPSN1_PSNNO	PPSN1_WONO	PPSN2_ITMCAT	PPSN2_SUBPN	PPSN2_REQQT	PPSN2_ACTQT	PDPP_WORQT
+        $qry = "sp_ppsn2_xwo ?";
+        $query = $this->db->query($qry,[$wo]);
         return $query->result_array();
     }
    
