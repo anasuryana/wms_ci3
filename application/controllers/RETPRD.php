@@ -1085,6 +1085,9 @@ class RETPRD extends CI_Controller {
         $citemcd  = $this->input->post('initemcd');
         $cuser  = $this->input->post('inuser');
         $thetime = '07:01:00';
+        if(!is_array($citemcd)) {
+            die('there is no part code returned');
+        }
         $ttlitem = count($citemcd);
         $cwh_out = '';
         if($ttlitem>0){
