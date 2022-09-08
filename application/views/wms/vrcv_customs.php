@@ -4388,7 +4388,7 @@ video {
                         $.ajax({
                             type: "POST",
                             url: "<?=base_url('RCV/remove_pkg')?>",
-                            data: {doc: txtdoc.value, rowid: rcvcustoms_rowsObj.ids, aju: txtAju.value},
+                            data: {rowid: rcvcustoms_rowsObj.ids, aju: txtAju.value},
                             dataType: "json",
                             success: function (response) {
                                 if(response.status[0].cd==1){

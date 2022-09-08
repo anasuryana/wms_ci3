@@ -3333,10 +3333,9 @@ class RCV extends CI_Controller {
 
     public function remove_pkg(){
         header('Content-Type: application/json');
-        $rowid = $this->input->post("rowid");
-        $doc = $this->input->post("doc");
+        $rowid = $this->input->post("rowid");        
         $aju = $this->input->post("aju");
-        $rtn = $this->RCVPKG_mod->deletebyID(['RCVPKG_AJU' => $aju, 'RCVPKG_LINE' => $rowid, 'RCVPKG_DOC' => $doc]);
+        $rtn = $this->RCVPKG_mod->deletebyID(['RCVPKG_AJU' => $aju, 'RCVPKG_LINE' => $rowid]);
         $myar = [];
         $myar[] = $rtn ? ['cd' => '1', 'msg' => 'deleted'] : ['cd' => '0', 'msg' => 'could not be deleted'];
         die(json_encode(['status' => $myar]));
