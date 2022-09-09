@@ -1870,4 +1870,11 @@ class ITH_mod extends CI_Model {
         $query =  $this->db->query($qry);
         return $query->result_array();
     }
+
+    function select_unconfirmed_psn($psn)
+    {
+        $qry = "wms_sp_unconfirmed_psn ?";
+        $query =  $this->db->query($qry, [$psn]);
+        return $query->result_array();
+    }
 }

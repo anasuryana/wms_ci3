@@ -1075,11 +1075,73 @@ class RETPRD extends CI_Controller {
         echo $rowaff." row(s) updated ".$ithrowaff." row(s) saved";
     }
 
+    function auto_confirm()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $current_date = date('Y-m');
+        $psn_last_month = date('Y-m', strtotime("first day of previous month"));
+        $psn_current_month = date('Y-m-d');
+
+        $rspsn_last_month = $this->ITH_mod->select_unconfirmed_psn($psn_last_month);
+        $rspsn_current_month = $this->ITH_mod->select_unconfirmed_psn($psn_current_month);        
+        
+        $rspsn_union = array_merge($rspsn_last_month,$rspsn_current_month);
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8081/wms/RETPRD/editing_byitempsn_desktop');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3600);
+
+        foreach($rspsn_union as &$r)
+        {
+            $rstemp = $this->SPLRET_mod->selectspl_sup_ret_psnonly($r['PPSN2_PSNNO']);
+            if(!empty($rstemp))
+            {                
+                $aitem = [];
+                foreach($rstemp as $k)
+                {
+                    $aitem[] = $k->SPL_ITMCD;
+                }
+                $fields = [
+                    'inpsn' => $r['PPSN2_PSNNO'],
+                    'indate' => $r['ISUDT'],
+                    'initemcd' => $aitem,
+                ];
+                $fields_string = http_build_query($fields);
+                curl_setopt($ch, CURLOPT_POSTFIELDS,$fields_string);
+                $status = curl_exec($ch);
+                $r['status'] = $status;
+                log_message('error', $r['PPSN2_PSNNO'].', status:'.$status);
+            }
+        }
+        unset($r);
+        curl_close($ch);
+
+        header('Content-Type: application/json');
+        die(json_encode(
+            ['param' => 
+                [
+                    'current_date' => $current_date ,
+                    'psn_last_month' => $psn_last_month,
+                    'psn_current_month' => $psn_current_month,
+                ]
+            ,'data' =>
+                [
+                    'rs_last_month' => $rspsn_last_month
+                    ,'rs_current_month' => $rspsn_current_month
+                ]
+            ,'data_detail' => $rspsn_union
+            ]
+        ));
+    }
+
     public function editing_byitempsn_desktop(){
         date_default_timezone_set('Asia/Jakarta');	
         $rowaff = 0;
         $ithrowaff = 0;
-        $cwh_inc = $this->input->post('inwh');
+        $cwh_inc = '';
         $cpsn  = $this->input->post('inpsn');
         $cdate  = $this->input->post('indate');
         $citemcd  = $this->input->post('initemcd');
