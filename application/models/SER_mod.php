@@ -217,9 +217,9 @@ class SER_mod extends CI_Model {
 		return $query->result_array();
     }
 
-    public function select_sususan_bahan_baku(){
-        $qry = "sp_check_sususan_bahan_baku";
-		$query = $this->db->query($qry);
+    public function select_sususan_bahan_baku($location){
+        $qry = "sp_check_sususan_bahan_baku ?";
+		$query = $this->db->query($qry, [$location]);
 		return $query->result_array();
     }
     public function select_sususan_bahan_baku_by_job($pdoc){

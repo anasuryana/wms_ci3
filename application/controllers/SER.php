@@ -5171,14 +5171,18 @@ class SER extends CI_Controller {
         $searchby = $this->input->get('insearchby');
         $searchval = $this->input->get('insearchval');
         $rs = [];
-        if($searchby=='wh'){
-            $rs = $this->SER_mod->select_sususan_bahan_baku();
-        } elseif($searchby=='tx'){
-            $rs = $this->SER_mod->select_sususan_bahan_baku_by_txid($searchval);
-        } elseif($searchby=='job'){
-            $rs = $this->SER_mod->select_sususan_bahan_baku_by_job($searchval);
-        }		
-        die('{"data":'.json_encode($rs).'}');
+        switch($searchby)
+        {
+            case 'wh':
+                $rs = $this->SER_mod->select_sususan_bahan_baku('AFWH3');break;
+            case 'tx':
+                $rs = $this->SER_mod->select_sususan_bahan_baku_by_txid($searchval);break;
+            case 'job':
+                $rs = $this->SER_mod->select_sususan_bahan_baku_by_job($searchval);break;
+            case 'us_qc':
+                $rs = $this->SER_mod->select_sususan_bahan_baku('ARPRD1');break;
+        }
+        die(json_encode(['data' => $rs]));        
     }
     public function get_check_susuan_bb_filter(){
         header('Content-Type: application/json');
@@ -5188,14 +5192,14 @@ class SER extends CI_Controller {
         if(count($cjobs)>0){
             if($citems_c>0){
                 $rs = $this->SER_mod->select_sususan_bahan_baku_filter_jobsitems($cjobs, $citems);
-            } else {				
+            } else {
                 $rs = $this->SER_mod->select_sususan_bahan_baku_filter_jobs($cjobs);
             }
         } else {
             if($citems_c>0){
                 $rs = $this->SER_mod->select_sususan_bahan_baku_filter_items($citems);
             } else {
-                $rs = $this->SER_mod->select_sususan_bahan_baku();
+                $rs = $this->SER_mod->select_sususan_bahan_baku('AFWH3');
             }
         }
         die('{"data":'.json_encode($rs).'}');

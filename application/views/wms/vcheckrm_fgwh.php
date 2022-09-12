@@ -1,6 +1,6 @@
 <div style="padding: 10px">
     <div class="container-fluid">
-        <div class="row" id="checksbb_stack1">            
+        <div class="row" id="checksbb_stack1">
             <div class="col-md-12 mb-1 text-center">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text" >Search by</span>
@@ -8,6 +8,7 @@
                         <option value="wh">AFWH3 Only</option>
                         <option value="tx">TX ID</option>
                         <option value="job">Job</option>
+                        <option value="us_qc">Unscanned QC</option>
                     </select>
                     <input type="text" class="form-control" id="checksbb_txt_search" readonly>
                 </div>
@@ -588,7 +589,7 @@
         const txtsearch = document.getElementById('checksbb_txt_search');
         const cmbsearch = document.getElementById('checksbb_cmb_filter');
         txtsearch.value='';
-        if(cmbsearch.value=='wh'){
+        if(cmbsearch.value=='wh' || cmbsearch.value=='us_qc'){
             txtsearch.readOnly = true;
         } else {
             txtsearch.readOnly = false;
