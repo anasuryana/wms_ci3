@@ -505,8 +505,9 @@ class SPL_mod extends CI_Model {
     public function select_jobper_wmscal_byseruse($pwo, $pser, $pttluse){
         $qry = "SELECT SERD2_JOB,SUM(SERD2_QTPER) SERD2_QTPER,max(SERD2_SER) SERD2_SER,max(SERD2_FGQTY) SERD2_FGQTY, RTRIM(ISNULL(MAX(SER_RMUSE_COMFG),'-')) SER_RMUSE_COMFG  FROM vserd2_cims SERDA         
         left join SER_TBL ON SERD2_SER=SER_ID
-        where SERD2_JOB=? and SERD2_SER = ?        
-        group by SERD2_JOB HAVING SUM(SERD2_QTPER)=?";
+        where SERD2_JOB=? and SERD2_SER = ?
+        group by SERD2_JOB 
+        HAVING CONVERT(VARCHAR,SUM(SERD2_QTPER))=?";
         $query = $this->db->query($qry, [$pwo, $pser,$pttluse] );
         return $query->result_array();
     }
