@@ -3011,13 +3011,15 @@ class RMCalculator {
         $pserqty = $post_serqty;
         $pjob = $post_job;
         $myar = [];
-        $strser = '';
         $showed_cols = ['SERD2_FGQTY'];
         if(is_array($pser)){
             $cnt = count($pser);
             if($cnt>0){
-                for($u=0;$u<$cnt; $u++){				
-                    $strser .= "'".trim($pser[$u])."',";				
+                for($u=0;$u<$cnt; $u++){
+                    if($this->CI->SER_mod->check_Primary(['SER_ID' => $pser[$u], 'SER_QTY' => $pserqty[$u]])==0) {
+                        $myar[] = ['cd' => 1, 'msg' => 'REFF NOT and REFF QTY is not match', 'reffno' => $pser[$u]];
+                        return json_encode(['status' => $myar]);
+                    }
                     if($this->CI->SERD_mod->check_Primary(['SERD_JOB' => $pjob[$u]]) ==0){
                         $res0 = $this->get_usage_rm_perjob($pjob[$u]);
                         $res = json_decode($res0);
@@ -3146,13 +3148,17 @@ class RMCalculator {
         $pserqty = $post_serqty;
         $pjob = $post_job;
         $myar = [];
-        $rsusage = [];			
-        $kittingnull = [];		
+        $rsusage = [];
+        $kittingnull = [];
         if(is_array($pser)){
-            $cnt = count($pser);			
+            $cnt = count($pser);
             if($cnt>0){
                 $rsqty = $this->CI->SERD_mod->select_fgqty_in($pser);
-                for($u=0;$u<$cnt; $u++){									
+                for($u=0;$u<$cnt; $u++){
+                    if($this->CI->SER_mod->check_Primary(['SER_ID' => $pser[$u], 'SER_QTY' => $pserqty[$u]])==0) {
+                        $myar[] = ['cd' => 1, 'msg' => 'REFF NOT and REFF QTY is not match', 'reffno' => $pser[$u]];
+                        return json_encode(['status' => $myar, 'data' => $rsusage , 'data2' => $kittingnull]);
+                    }
                     if($this->CI->SERD_mod->check_Primary(['SERD_JOB' => $pjob[$u]]) ==0){
                         $res0 = $this->get_usage_rm_perjob($pjob[$u]);
                         $res = json_decode($res0);
@@ -3160,7 +3166,7 @@ class RMCalculator {
                             $__isfound = false;
                             foreach($rsqty as $q){
                                 if($q['SERD2_SER']==$pser[$u]){ $__isfound = true; break;}
-                            }
+                            } 
                             if($__isfound){
                                 $issame = true;
                                 foreach($rsqty as $r){
@@ -3213,7 +3219,7 @@ class RMCalculator {
                             $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser[$u], $pserqty[$u], $pjob[$u]));								
                             $myar[] = $res2->status[0]->cd!=0 ?  ['cd' => 1, 'msg' => 'recalculated ok.', 'reffno' => $pser[$u] ] : 
                                         ['cd' => 0, 'msg' => 'calculating is failed...', 'reffno' => $pser[$u] ];
-                        }						
+                        }
                     }
                     #CHECK IS SUB ASSY
                     if($this->CI->SERML_mod->check_Primary(['SERML_NEWID' => $pser[$u] ])){
@@ -3303,7 +3309,7 @@ class RMCalculator {
                                     }
                                 }
                                 if(!$issame){
-                                    $retdel = $this->CI->SERD_mod->deletebyID_label(['SERD2_SER' => $pser[$u]]);
+                                    $this->CI->SERD_mod->deletebyID_label(['SERD2_SER' => $pser[$u]]);
                                     $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser[$u], $pserqty[$u], $pjob[$u]));
                                     if($res2->status[0]->cd!=0){
                                         $myar[] = ['cd' => 1, 'msg' => 'recalculated ok', 'reffno' => $pser[$u]];								
@@ -3337,7 +3343,7 @@ class RMCalculator {
                                 }
                             }
                             if(!$issame){
-                                $retdel = $this->CI->SERD_mod->deletebyID_label(['SERD2_SER' => $pser[$u]]);
+                                $this->CI->SERD_mod->deletebyID_label(['SERD2_SER' => $pser[$u]]);
                                 $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser[$u], $pserqty[$u], $pjob[$u]));
                                 if($res2->status[0]->cd!=0){
                                     $myar[] = ['cd' => 1, 'msg' => 'recalculated, ok.', 'reffno' => $pser[$u]];								
@@ -3433,7 +3439,7 @@ class RMCalculator {
                         }
                     }
                     if(!$issame){
-                        $retdel = $this->CI->SERD_mod->deletebyID_label(['SERD2_SER' => $pser]);
+                        $this->CI->SERD_mod->deletebyID_label(['SERD2_SER' => $pser]);
                         $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob));
                         if($res2->status[0]->cd!=0){
                             $myar[] = ['cd' => 1, 'msg' => 'recalculated ok'];
@@ -3468,7 +3474,7 @@ class RMCalculator {
                     }
                 }
                 if(!$issame){
-                    $retdel = $this->CI->SERD_mod->deletebyID_label(['SERD2_SER' => $pser]);
+                    $this->CI->SERD_mod->deletebyID_label(['SERD2_SER' => $pser]);
                     $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob));
                     if($res2->status[0]->cd!=0){
                         $myar[] = ['cd' => 1, 'msg' => 'recalculated, ok.'];
@@ -3582,7 +3588,7 @@ class RMCalculator {
         }		
         return('{"status": '.json_encode($myar).'}');
     }
-      
+
     #integrator
     public function sync_item_description1(){
         $affect = $this->CI->MSTITM_mod->update_all_d1();
