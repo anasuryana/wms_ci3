@@ -5349,15 +5349,7 @@ class SER extends CI_Controller {
                 ,'SERD2_USRID' => 'ane'
                 ,'SERD2_LUPDT' => $current_datetime
             ];			
-        }
-        // header('Content-Type: application/json');
-        // die(json_encode(['data' => $rssave]));
-        // if(count($rssave)){
-        // 	$this->SERD_mod->insertb2($rssave);
-        // 	echo 'inserted '.$current_datetime;
-        // } else {
-        // 	echo 'done '.$current_datetime;
-        // }
+        }       
     }
 
     public function resetcalculation(){
@@ -5366,19 +5358,25 @@ class SER extends CI_Controller {
         $cser = $this->input->post('inser');
         $cqty = $this->input->post('inqty');
         $myar = [];
+        $WOExceptionList = [
+            '21-YE13-216168400',
+            '21-YE15-216168400',
+            '21-YH17-216168700',
+            '21-YI17-216168800',
+            '21-YJ15-217902100',
+            '21-YE16-216168400',
+            '21-YE17-216168400',
+            '21-YE19-216168400'
+        ];
         
         $countser = count($cser);
         $jobunique = array_unique($cjob);
         foreach($jobunique as $r) {
-            if($r=='21-YE13-216168400' || $r== '21-YE15-216168400'
-                || $r=='21-YH17-216168700' || $r=='21-YI17-216168800'
-                || $r=='21-YJ15-217902100' || $r=='21-YE16-216168400'
-                || $r=='21-YE17-216168400' || $r=='21-YE19-216168400'
-                ) {
-                    # simulation of the job is not ok
-                    $myar[] = ['cd' => 0, 'msg' => 'could reset calculation for this job'];
-                    die(json_encode(['status' => $myar]));
-                }
+            if(in_array($r,$WOExceptionList)) {
+                # simulation of the job is not ok
+                $myar[] = ['cd' => 0, 'msg' => 'could reset calculation for this job'];
+                die(json_encode(['status' => $myar]));
+            }
         }
         foreach($jobunique as $r) {
             $this->SERD_mod->deletebyID(['SERD_JOB' => $r]);
@@ -5553,8 +5551,7 @@ class SER extends CI_Controller {
                         'SER_ID' => $aReffNo[$i]
                         ,'SER_DOC' => $aNewJob[$i]
                         ,'SER_ITMID' => $aNewItem[$i]
-                        ,'SER_QTY' => $aReffQty[$i]
-                        // ,'SER_QTYLOT' => $aReffQty[$i] //because of there is "over" notif when create new label 2021-11-27
+                        ,'SER_QTY' => $aReffQty[$i]                        
                         ,'SER_LOTNO' => $aLotNo[$i]
                         ,'SER_REFNO' => 'SN'
                         ,'SER_LUPDT' => $current_datetime
@@ -5589,11 +5586,11 @@ class SER extends CI_Controller {
                                     ,'SERC_USRID' => $userid
                                     ,'SERC_LUPDT' => $current_datetime
                                 ];
-                                $retrs = $Calc_lib->calculate_later([$aID[$i]], [$aINTQty[$i]], [$aOldJob[$i]]);
+                                $Calc_lib->calculate_later([$aID[$i]], [$aINTQty[$i]], [$aOldJob[$i]]);
                             }
                         }
                     } else {
-                        $retrs = $Calc_lib->calculate_later([$r['SER_ID']], [$r['SER_QTY']], [$r['SER_DOC']]);
+                        $Calc_lib->calculate_later([$r['SER_ID']], [$r['SER_QTY']], [$r['SER_DOC']]);
                     }
                 }
                 if(count($rscjt)>0){
