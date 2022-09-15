@@ -14113,8 +14113,7 @@ class DELV extends CI_Controller {
             $bctype = $r['DLV_BCTYPE'];
             $nomoraju = $r['DLV_ZNOMOR_AJU'];
         }
-        
-        $myar[] = ['cd' => 1, 'msg' => 'OK'];
+                
         $id_header = '';
         $tanggal_daftar = NULL;
         $rsceisa = $this->TPB_HEADER_imod->select_where(['ID', 'TANGGAL_DAFTAR'],['NOMOR_AJU' => $nomoraju ]);
@@ -14127,6 +14126,7 @@ class DELV extends CI_Controller {
             $myar[] = ['cd' => 0, 'msg' => 'Could not cancel, because NOMOR PENDAFTARAN is already exist'];
             die(json_encode(['status' => $myar]));
         }
+        $myar[] = ['cd' => 1, 'msg' => 'OK'];
 
         $param = ['pbctype' => $bctype , 'pnomor_aju' => $nomoraju, 'id_header' => $id_header];
         switch($bctype) {
