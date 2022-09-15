@@ -6,11 +6,10 @@ class MPROCD extends CI_Controller {
     {
         parent::__construct();
         $this->load->helper('url');
-        $this->load->library('session');
-        $this->load->model('MPROCD_mod');
+        $this->load->library('session');        
     }
     function form()
     {
-        $this->load->view('wms/vmprocd');
+        $this->load->view('scrap_report/vform_mprocess');
     }
 }
