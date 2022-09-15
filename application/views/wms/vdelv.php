@@ -2842,14 +2842,22 @@ $("#txfg_btn_customs").click(function (e) {
             document.getElementById('txfg_cmb_bcdoc').focus();
             break;
         case '25':
-            $("#TXFG_CUSTOMSMOD25").modal('show');            
+            $("#TXFG_CUSTOMSMOD25").modal('show');
             break;
-        case '27':            
-            $("#TXFG_CUSTOMSMOD").modal('show');            
-            break; 
+        case '27':
+            if(txfg_txt_id.value.includes('RTN')) {
+                txfg_cmb_tujuanpengiriman.disabled = false
+            } else {
+                txfg_cmb_tujuanpengiriman.disabled = true
+                txfg_cmb_tujuanpengiriman.value = '1'
+            }
+            txfg_fromoffice.value = '050900' //bekasi
+            txfg_fromoffice.disabled = true
+            $("#TXFG_CUSTOMSMOD").modal('show');
+            break;
         case '41':
             $("#TXFG_CUSTOMSMOD41").modal('show')
-            txfg_findContract_41()            
+            txfg_findContract_41()
             break
     }    
 })
