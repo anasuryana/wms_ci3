@@ -9101,17 +9101,18 @@ class DELV extends CI_Controller {
         header('Content-Type: application/json');
         $cinsj = $this->input->get('insj');
         $rs_head_dlv = $this->DELV_mod->select_header_bydo($cinsj);
-        $czkantorasal ='-';		
+        $czkantorasal ='-';
         $myar = [];
         $result_data = [];
         $response_data = [];
-        foreach($rs_head_dlv as $r){
+        foreach($rs_head_dlv as $r)
+        {
             $czkantorasal = $r['DLV_FROMOFFICE'];				
             $nomorajufull = $r['DLV_ZNOMOR_AJU'];
-        }			
+        }
         if($czkantorasal=='-'){
             $myar[] = ['cd' => 0, 'msg' => 'Please set KANTOR ASAL first !'];
-        } else {			
+        } else {
             $result_data = $this->TPB_HEADER_imod->select_where(
                 ["TANGGAL_DAFTAR" ,"coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
                 ['NOMOR_AJU' => $nomorajufull]
@@ -14093,7 +14094,7 @@ class DELV extends CI_Controller {
         $myar[] = ['cd' => 1 ,'msg' => 'Done, check your TPB' ];
         $this->gotoque($csj);
         die('{"status" : '.json_encode($myar).'}');
-    }
+    }    
 
     function cancelposting() {
         header('Content-Type: application/json');
@@ -14105,7 +14106,7 @@ class DELV extends CI_Controller {
             $myar[] = ['cd' => 0, 'msg' => 'It was already delivered'];
             die(json_encode(['status' => $myar]));
         }
-
+             
         $bctype = '';
         $nomoraju = '';
         foreach($rs as $r) {
@@ -14115,10 +14116,18 @@ class DELV extends CI_Controller {
         
         $myar[] = ['cd' => 1, 'msg' => 'OK'];
         $id_header = '';
-        $rsceisa = $this->TPB_HEADER_imod->select_where(['ID'],['NOMOR_AJU' => $nomoraju ]);
+        $tanggal_daftar = NULL;
+        $rsceisa = $this->TPB_HEADER_imod->select_where(['ID', 'TANGGAL_DAFTAR'],['NOMOR_AJU' => $nomoraju ]);
         foreach($rsceisa as $r) {
             $id_header = $r['ID'];
+            $tanggal_daftar = $r['TANGGAL_DAFTAR'];
         }
+        if(!empty($tanggal_daftar))
+        {
+            $myar[] = ['cd' => 0, 'msg' => 'Could not cancel, because NOMOR PENDAFTARAN is already exist'];
+            die(json_encode(['status' => $myar]));
+        }
+
         $param = ['pbctype' => $bctype , 'pnomor_aju' => $nomoraju, 'id_header' => $id_header];
         switch($bctype) {
             case '27':
