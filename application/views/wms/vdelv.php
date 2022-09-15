@@ -2471,8 +2471,7 @@
 
     function txfg_e_calculate_raw_material_resume(){
         if(txfg_ar_item_ser.length>0){
-            document.getElementById('txfg_gt_rm').innerText= "Initializing RM";
-            // document.getElementById('txfg_btn_post').disabled = true;
+            document.getElementById('txfg_gt_rm').innerText= "Initializing RM";            
             document.getElementById('txfg_btn_post').classList.add('disabled')
             $.ajax({
                 type: "post",
@@ -2480,7 +2479,6 @@
                 data: {inunique :txfg_ar_item_ser, inunique_qty : txfg_ar_item_qty, inunique_job: txfg_ar_item_job },
                 dataType: "json",
                 success: function (response) {
-                    // document.getElementById('txfg_btn_post').disabled = false;
                     document.getElementById('txfg_btn_post').classList.remove('disabled')
                     const ttlrows = response.data.length;
                     const ttlselected = txfg_ar_item_ser.length;
@@ -3397,8 +3395,9 @@ $("#txfg_btn_save").click(function (e) {
    
     if(txfg_isedit_mode){        
         if(confirm("Are you sure ?")) {
+            txfg_btn_save.disabled = true
             $.ajax({
-                type: "post",
+                type: "POST",
                 url: "<?=base_url('DELV/edit')?>",
                 data: {intxid: mtxid, intxdt: mtxdt, ininv: mtxinv, ininvsmt: mtxinvsmt, inconsig: mtxconsig, incus: scr_txfg_cust,
                 incustdo: mtxcustomerDO,
@@ -3408,6 +3407,7 @@ $("#txfg_btn_save").click(function (e) {
                 ,xa_qty: aXQty, xa_so: aXSO, xa_soline: aXSOLine, xa_siline: aXSILine },
                 dataType: "json",
                 success: function (response) {
+                    txfg_btn_save.disabled = false
                     switch(response[0].cd){
                         case '00':
                             alertify.warning(response[0].msg);
@@ -3417,22 +3417,25 @@ $("#txfg_btn_save").click(function (e) {
                             break;
                     }
                 }, error: function(xhr,xopt,xthrow){
-                    alertify.error(xthrow);
+                    alertify.error(xthrow)
+                    txfg_btn_save.disabled = false
                 }
             })
         }
     } else {        
         if(confirm("Are You sure ?")){
+            txfg_btn_save.disabled = true
             $.ajax({
-                type: "post",
+                type: "POST",
                 url: "<?=base_url('DELV/set')?>",
                 data: {intxid: mtxid, intxdt: mtxdt, ininv: mtxinv, ininvsmt: mtxinvsmt, inconsig: mtxconsig, incus: scr_txfg_cust,
-                incustdo: mtxcustomerDO,incustoms_doc: mcustomdoc,
+                incustdo: mtxcustomerDO,incustoms_doc: mcustomdoc, iconfirmation: 'n',
                 intrans: mtxtransport, indescr: mtxdescription, inremark: mtxremark, inbg: mbg,
                 ina_ser: txfg_ar_item_ser, ina_qty: txfg_ar_item_qty, ina_si: txfg_ar_si, ina_so: txfg_ar_so, indodt:  mtxdodt
                 ,ina_sono: aSO, ina_soitem: aItem, ina_soqty: aQty},
                 dataType: "json",
-                success: function (response) {                    
+                success: function (response) {  
+                    txfg_btn_save.disabled = false
                     switch(response[0].cd){
                         case '00':
                             alertify.warning(response[0].msg);
@@ -3442,9 +3445,44 @@ $("#txfg_btn_save").click(function (e) {
                             txfg_f_getdetail(response[0].dono);
                             alertify.success(response[0].msg);
                             break;
+                        case '22':
+                            if(confirm(response[0].msg))
+                            {
+                                txfg_btn_save.disabled = true
+                                $.ajax({
+                                    type: "POST",
+                                    url: "<?=base_url('DELV/set')?>",
+                                    data: {intxid: mtxid, intxdt: mtxdt, ininv: mtxinv, ininvsmt: mtxinvsmt, inconsig: mtxconsig, incus: scr_txfg_cust,
+                                    incustdo: mtxcustomerDO,incustoms_doc: mcustomdoc, iconfirmation: 'y',
+                                    intrans: mtxtransport, indescr: mtxdescription, inremark: mtxremark, inbg: mbg,
+                                    ina_ser: txfg_ar_item_ser, ina_qty: txfg_ar_item_qty, ina_si: txfg_ar_si, ina_so: txfg_ar_so, indodt:  mtxdodt
+                                    ,ina_sono: aSO, ina_soitem: aItem, ina_soqty: aQty},
+                                    dataType: "json",
+                                    success: function (response) {
+                                        txfg_btn_save.disabled = false
+                                        switch(response[0].cd){
+                                            case '00':
+                                                alertify.warning(response[0].msg);
+                                                break;
+                                            case '11':
+                                                document.getElementById('txfg_txt_id').value=response[0].dono; 
+                                                txfg_f_getdetail(response[0].dono);
+                                                alertify.success(response[0].msg);
+                                                break;
+                                            default:
+                                                alertify.warning(response[0].msg);
+                                        }
+                                    }, error: function(xhr,xopt,xthrow){
+                                        alertify.error(xthrow)
+                                        txfg_btn_save.disabled = false
+                                    }
+                                })
+                            }
+                            break;
                     }
                 }, error: function(xhr,xopt,xthrow){
                     alertify.error(xthrow)
+                    txfg_btn_save.disabled = false
                 }
             })
         }
@@ -5259,7 +5297,7 @@ document.getElementById('txfg_cmb_jenisTPB').value='1';
 
 function txfg_btn_changeprice_e_click()
 {
-    if(txfg_txt_id.value.length>3)
+    if(txfg_ar_item_ser.length>3)
     {
         if(txfg_gt_rm.innerText == 'Please wait')
         {
@@ -5271,7 +5309,7 @@ function txfg_btn_changeprice_e_click()
     } else 
     {
         txfg_txt_id.focus()
-        alertify.message('TXID is required')
+        alertify.message('there is no data to be processed')
     }
 }
 
@@ -5280,9 +5318,9 @@ function txfg_modchangeprice_txt_itemcode_eChange(e)
     txfg_modchangeprice_tbl.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center"><i>Please wait</i></td></tr>`
     txfg_modchangeprice_new_tbl.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center"><i>Please wait</i></td></tr>`
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: "<?=base_url('DELVHistory/priceFG')?>",
-        data: {itemcd: e.target.value, txid:txfg_txt_id.value },
+        data: {itemcd: e.target.value, reffno: txfg_ar_item_ser },
         dataType: "json",
         success: function (response) {
             let mydes = document.getElementById("txfg_modchangeprice_tbl_div");
@@ -5355,7 +5393,7 @@ function txfg_modchangeprice_txt_itemcode_eChange(e)
                     }
                     tableku2.rows[i].classList.add('table-info')
                     TXFG_hid_idx2.value = i
-                }                
+                }
             })
             mydes.innerHTML='';
             mydes.appendChild(myfrag);

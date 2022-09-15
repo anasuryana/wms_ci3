@@ -18,9 +18,10 @@ class DELVHistory extends CI_Controller {
 	function priceFG()
 	{
 		header('Content-Type: application/json');
-		$itemcd = $this->input->get('itemcd');
-		$txid = $this->input->get('txid');
-		$rs = $this->SISO_mod->select_currentPrice($txid, $itemcd);
+		$itemcd = $this->input->post('itemcd');
+		$reffno = $this->input->post('reffno');
+		$reffnostring =  is_array($reffno) ? "'".implode("','", $reffno)."'" : "''";		
+		$rs = $this->SISO_mod->select_currentPrice_byReffno($reffnostring, $itemcd);
 		die(json_encode(['data' => $rs]));
 	}
 }

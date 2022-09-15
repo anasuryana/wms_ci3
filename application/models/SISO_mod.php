@@ -136,4 +136,27 @@ class SISO_mod extends CI_Model {
         $query =  $this->db->query($qry, [$txid,$itemcd]);
 		return $query->result_array();
     }
+    public function select_currentPrice_byReffno($reffno, $itemcd){
+        $qry = "select SISO_TBL.*,SSO2_SLPRC from SISO_TBL left join XSSO2 on SISO_CPONO=SSO2_CPONO and SISO_SOLINE=XSSO2.SSO2_SOLNO where SISO_QTY>0 AND SISO_HLINE in (
+            select SISCN_LINENO from SISCN_TBL
+                left join SER_TBL on SISCN_SER=SER_ID
+                where SISCN_SER IN ($reffno) and SER_ITMID=?
+            )";
+        $query =  $this->db->query($qry, [$itemcd]);
+		return $query->result_array();
+    }
+
+    public function select_currentDiffPrice_byReffno($reffno, $month)
+    {
+        $qry = "select SISO_TBL.*,SI_ITMCD,SISCN_SER,SISCN_SERQTY,SSO2_SLPRC,SSO2_ISUDT from SI_TBL LEFT JOIN SISCN_TBL ON SI_LINENO=SISCN_LINENO
+                LEFT JOIN SISO_TBL ON SISCN_LINENO=SISO_HLINE
+                LEFT JOIN XSSO2 ON SISO_CPONO=SSO2_CPONO AND SISO_SOLINE=SSO2_SOLNO
+                WHERE SI_BSGRP='PSI1PPZIEP'                
+                AND SISO_QTY>0
+                AND MONTH(SSO2_ISUDT) != ?
+                AND SSO2_CUSCD!='IEP001U'
+                AND SISCN_SER IN ($reffno)";
+        $query =  $this->db->query($qry, [$month]);
+        return $query->result_array();
+    }
 }
