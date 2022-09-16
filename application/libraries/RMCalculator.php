@@ -20,6 +20,7 @@ class RMCalculator {
         $this->CI->load->model('SPLREFF_mod');
         $this->CI->load->model('MSTSUP_mod');
         $this->CI->load->model('TECPRTSUB_mod');
+        $this->CI->load->model('RESIM_mod');
     }	
 
     public function tobexported_list_for_serd($parpsn = []){
@@ -459,7 +460,7 @@ class RMCalculator {
         #END
         
         return $rsfix;
-    }
+    }   
 
     public function get_usage_rm_perjob($pjob){
         #version : 1.4
@@ -474,8 +475,7 @@ class RMCalculator {
         $strdocno = '';
         $apsn = [];
         $strmdlcd = '';
-        $BSGRP = '';
-        $deletedSimulation = ['22-6AG28-222011501','21-XA08-221093101ES'];
+        $BSGRP = '';        
         foreach($rspsn as $r){
             $strpsn .= "'".$r['PPSN1_PSNNO']."',";
             $apsn[] = $r['PPSN1_PSNNO'];
@@ -490,7 +490,8 @@ class RMCalculator {
             $rsSpecial = $this->CI->MITMSA_mod->select_where(['RTRIM(MITMSA_ITMCD) MITMSA_ITMCD', 'RTRIM(MITMSA_ITMCDS) MITMSA_ITMCDS'], ['MITMSA_MDLCD' => $strmdlcd,'MITMSA_DELDT' => NULL]);
             $rsTECSUB = $this->CI->TECPRTSUB_mod->select_where(['RTRIM(PRTCD) MITMSA_ITMCD', 'RTRIM(SUBCD) MITMSA_ITMCDS'], ['ITMCD' => $strmdlcd]);
             $rsSpecial = array_merge($rsSpecial,$rsTECSUB);
-            $rspsnjob_req = in_array($pjob, $deletedSimulation) ? $this->CI->SPL_mod->select_psnjob_req_from_CIMS($pjob, $strmdlcd)
+            $rspsnjob_req = $this->CI->RESIM_mod->check_Primary(['RESIM_WONO' => $pjob]) ? 
+                $this->CI->SPL_mod->select_psnjob_req_from_CIMS($pjob, $strmdlcd)
                 : $this->CI->SPL_mod->select_psnjob_req($strdocno, $pjob);
             $rsWOM = $this->CI->PWOP_mod->select_mainsub($pjob);
             $rsSPLREFF = $this->CI->SPLREFF_mod->select_mainsub($apsn);
@@ -3016,9 +3017,14 @@ class RMCalculator {
             $cnt = count($pser);
             if($cnt>0){
                 for($u=0;$u<$cnt; $u++){
-                    if($this->CI->SER_mod->check_Primary(['SER_ID' => $pser[$u], 'SER_QTY' => $pserqty[$u]])==0) {
-                        $myar[] = ['cd' => 1, 'msg' => 'REFF NOT and REFF QTY is not match', 'reffno' => $pser[$u]];
-                        return json_encode(['status' => $myar]);
+                    $rssser = $this->CI->SER_mod->selectbyVAR_with_cols(['SER_ID' => $pser[$u]], ['SER_QTY']);
+                    foreach($rssser as $n)
+                    {
+                        if($pserqty[$u]!=$n['SER_QTY'] && $n['SER_QTY']>0)
+                        {
+                            $myar[] = ['cd' => 1, 'msg' => 'REFF NOT and REFF QTY is not match', 'reffno' => $pser[$u]];
+                            return json_encode(['status' => $myar]);
+                        }
                     }
                     if($this->CI->SERD_mod->check_Primary(['SERD_JOB' => $pjob[$u]]) ==0){
                         $res0 = $this->get_usage_rm_perjob($pjob[$u]);
@@ -3155,9 +3161,14 @@ class RMCalculator {
             if($cnt>0){
                 $rsqty = $this->CI->SERD_mod->select_fgqty_in($pser);
                 for($u=0;$u<$cnt; $u++){
-                    if($this->CI->SER_mod->check_Primary(['SER_ID' => $pser[$u], 'SER_QTY' => $pserqty[$u]])==0) {
-                        $myar[] = ['cd' => 1, 'msg' => 'REFF NOT and REFF QTY is not match', 'reffno' => $pser[$u]];
-                        return json_encode(['status' => $myar, 'data' => $rsusage , 'data2' => $kittingnull]);
+                    $rssser = $this->CI->SER_mod->selectbyVAR_with_cols(['SER_ID' => $pser[$u]], ['SER_QTY']);
+                    foreach($rssser as $n)
+                    {
+                        if($pserqty[$u]!=$n['SER_QTY'] && $n['SER_QTY']>0)
+                        {
+                            $myar[] = ['cd' => 1, 'msg' => 'REFF NOT and REFF QTY is not match', 'reffno' => $pser[$u]];
+                            return json_encode(['status' => $myar]);
+                        }
                     }
                     if($this->CI->SERD_mod->check_Primary(['SERD_JOB' => $pjob[$u]]) ==0){
                         $res0 = $this->get_usage_rm_perjob($pjob[$u]);
