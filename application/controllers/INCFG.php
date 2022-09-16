@@ -881,6 +881,14 @@ class INCFG extends CI_Controller {
             $myar[] = ['cd' => 0, 'msg' => 'denied, because the serial is in pending area'];
             die('{"status":'.json_encode($myar).'}');
         } else {
+            $rsrtn = $this->SER_mod->select_fgrtn_oldassy_newassy($ccode);
+            foreach($rsrtn as $n)
+            {
+                if($n['NEWFG']!=$n['OLDFG'])
+                {
+                    $cfm_inc = 'INC-WHRTN-FG-C';
+                }
+            }
             $rs_stktrn = $this->SER_mod->select_whcd_rtn($ccode);
             $rs_stktrn = count($rs_stktrn) >0 ? reset($rs_stktrn) : ['STKTRND1_LOCCDFR' => '??'];
             $cwh_inc = $rs_stktrn['STKTRND1_LOCCDFR'];

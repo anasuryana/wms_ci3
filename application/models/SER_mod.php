@@ -351,6 +351,15 @@ class SER_mod extends CI_Model {
 		return $query->result_array();
     }
 
+    function select_fgrtn_oldassy_newassy($newReff)
+    {
+        $qry = "SELECT V1.*,RTRIM(SER_ITMID) OLDFG FROM
+        (SELECT RTRIM(SER_ITMID) NEWFG,SER_REFNO FROM SER_TBL WHERE SER_ID=?) V1
+        LEFT JOIN SER_TBL ON V1.SER_REFNO=SER_TBL.SER_ID";
+        $query = $this->db->query($qry, [$newReff]);
+		return $query->result_array();
+    }
+
     public function select_jm($preffno){
         $this->db->select("WMS_ChkPcb.*, CONCAT(MSTEMP_FNM, ' ', MSTEMP_LNM) FULLNM");
         $this->db->from('WMS_ChkPcb');
