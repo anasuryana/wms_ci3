@@ -4,6 +4,16 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class SER extends CI_Controller {
     private $AROMAWI = ['I','II','III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI' , 'XII'];
+    private $WOExceptionList = [
+        '21-YE13-216168400',
+        '21-YE15-216168400',
+        '21-YH17-216168700',
+        '21-YI17-216168800',
+        '21-YJ15-217902100',
+        '21-YE16-216168400',
+        '21-YE17-216168400',
+        '21-YE19-216168400'
+    ];
     public function __construct()
     {
         parent::__construct();
@@ -17,6 +27,7 @@ class SER extends CI_Controller {
         $this->load->model('SPL_mod');
         $this->load->model('ITH_mod');
         $this->load->model('RCV_mod');
+        $this->load->model('RESIM_mod');
         $this->load->model('TXROUTE_mod');
         $this->load->model('MSTLOC_mod');
         $this->load->model('RLS_mod');
@@ -24,13 +35,13 @@ class SER extends CI_Controller {
         $this->load->model('LOGSER_mod');
         $this->load->model('SERC_mod');
         $this->load->model('XBGROUP_mod');
-        $this->load->model('PND_mod');
-        $this->load->model('PNDSCN_mod');
+        $this->load->model(['PND_mod', 'PNDSCN_mod']);        
         $this->load->model('SERD_mod');
         $this->load->model('PWOP_mod');
         $this->load->model('SERRC_mod');
         $this->load->model('MSPP_mod');
         $this->load->model('C3LC_mod');
+        $this->load->model('XWO_mod');
         $this->load->model('refceisa/TPB_HEADER_imod');
     }
     public function index()
@@ -1219,13 +1230,13 @@ class SER extends CI_Controller {
                 if($toret>0){
                     $this->ITH_mod->insert([
                         'ITH_ITMCD' => $citemcd[$i]
-                        ,'ITH_DATE' => $current_date
+                        ,'ITH_DATE' => $cproddt
                         ,'ITH_FORM' => 'INC'
                         ,'ITH_DOC' => $cjob
                         ,'ITH_QTY' => $cqty[$i]
                         ,'ITH_WH' => 'AFQART'
                         ,'ITH_SER' => $newid
-                        ,'ITH_LUPDT' => $currrtime
+                        ,'ITH_LUPDT' => $cproddt." 07:30:00"
                         ,'ITH_USRID' => $this->session->userdata('nama')
                         ]);						
                 }
@@ -5358,21 +5369,11 @@ class SER extends CI_Controller {
         $cser = $this->input->post('inser');
         $cqty = $this->input->post('inqty');
         $myar = [];
-        $WOExceptionList = [
-            '21-YE13-216168400',
-            '21-YE15-216168400',
-            '21-YH17-216168700',
-            '21-YI17-216168800',
-            '21-YJ15-217902100',
-            '21-YE16-216168400',
-            '21-YE17-216168400',
-            '21-YE19-216168400'
-        ];
-        
+                
         $countser = count($cser);
         $jobunique = array_unique($cjob);
         foreach($jobunique as $r) {
-            if(in_array($r,$WOExceptionList)) {
+            if(in_array($r,$this->WOExceptionList)) {
                 # simulation of the job is not ok
                 $myar[] = ['cd' => 0, 'msg' => 'could reset calculation for this job'];
                 die(json_encode(['status' => $myar]));
@@ -6024,5 +6025,46 @@ class SER extends CI_Controller {
         }
         $this->SERD_mod->insertb2($data);
         die(json_encode($data));
+    }
+
+    function resimulate()
+    {
+        $this->checkSession();
+        date_default_timezone_set('Asia/Jakarta');
+        $current_time = date('Y-m-d H:i:s');
+        header('Content-Type: application/json');
+        $reffno = $this->input->post('reffno'); #array
+        $wono = $this->input->post('wono'); #array
+        $qty = $this->input->post('qty'); #array
+        $assycode = $this->input->post('assycode'); #array
+        $remark = $this->input->post('remark'); #string
+        $Calc_lib = new RMCalculator();
+        if(!is_array($wono)) 
+        {
+            $myar[] = ['cd' => '0', 'msg' => 'could not process'];
+        } else {
+            $wono_unique = array_values(array_unique($wono));
+            $rsWO = $this->XWO_mod->select_cols_where_wono_in(['PDPP_WONO','PDPP_MDLCD', 'PDPP_BOMRV'], $wono_unique);
+            foreach($rsWO as $r)
+            {
+                if($this->RESIM_mod->check_Primary(['RESIM_WONO' => $r['PDPP_WONO']]))
+                {
+                    $this->SER_mod->insert([
+                        'RESIM_WONO' => $r['PDPP_WONO'],
+                        'RESIM_MDLCD' => $r['PDPP_MDLCD'],
+                        'RESIM_BOMRV' => $r['PDPP_BOMRV'],
+                        'RESIM_CREATED_AT' => $current_time,
+                        'RESIM_CREATED_BY' => $this->session->userdata('nama'),
+                        'RESIM_REMARK' => $remark
+                    ]);
+                }
+            }
+            $Calc_lib->calculate_only_raw_material_resume($reffno,$qty,$wono);
+            $myar[] = ['cd' => '1', 'msg' => 'done'];
+        }
+        die(json_encode([
+            'status' => $myar
+            ,'status_d' => []
+        ]));
     }
 }
