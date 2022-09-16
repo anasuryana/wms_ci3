@@ -2684,8 +2684,18 @@ class ITH extends CI_Controller {
         $dateObj = new DateTime($date);
         $_MONTH = $dateObj->format('m');
         $_YEAR = $dateObj->format('Y');
-        $WHERE = ['INV_MONTH' => $_MONTH, 'INV_YEAR' => $_YEAR, 'INV_WH' => $cwh_inv]; 
-        $rs = $this->ITH_mod->select_compare_inventory( $cwh_wms,$date);
+        $WHERE = ['INV_MONTH' => $_MONTH, 'INV_YEAR' => $_YEAR, 'INV_WH' => $cwh_inv];        
+        switch($location)
+        {
+            case 'NFWH4RT':
+                $rs = $this->ITH_mod->select_compare_inventory_fg_rtn($cwh_wms,$date);
+                break;
+            case 'AFWH3RT':
+                $rs = $this->ITH_mod->select_compare_inventory_fg_rtn_asset($cwh_wms,$date);
+                break;
+            default:
+                $rs = $this->ITH_mod->select_compare_inventory($cwh_wms,$date);
+        }
         $rssaved = $this->RPSAL_INVENTORY_mod->select_compare_where($WHERE);
 
         $dateObj->modify('+1 day');		
