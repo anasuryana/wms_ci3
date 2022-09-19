@@ -1035,7 +1035,7 @@ class ITH_mod extends CI_Model {
         ORDER BY ITRN_ITMCD";
         $query = $this->db->query($qry, [$passy,$passy]);
         return $query->result_array();
-    }
+    }    
     public function select_txhistory_bef_parent_fg_with_additional_wh($pwh, $passy, $pdt1, $awh){
         $additional_wh = "'".implode("','", $awh)."'";
         $qry = "select VMEGA.*,WQT from
