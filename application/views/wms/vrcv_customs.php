@@ -4565,8 +4565,6 @@ video {
     {
         if(rcvcustoms_typedoc_1.value === '40' && e.target.value.trim().length>0 && rcvcustoms_tax_invoice.value.trim().length===0) {
             rcvcustoms_zsts_1.value = 2
-        } else {
-            rcvcustoms_zsts_1.value = 5
         }
     }
 </script>
