@@ -663,7 +663,6 @@ class SER extends CI_Controller {
         $rs_ext_u = [];
         $rs_ser_tbl = [];
         $rs_out = [];
-        $rs_inc = [];
         date_default_timezone_set('Asia/Jakarta');
         $currrtime = date('Y-m-d H:i:s');
         $current_date = date('Y-m-d');
@@ -711,7 +710,7 @@ class SER extends CI_Controller {
                 $rs_out[] = [
                     'ITH_ITMCD' => $r['SER_ITMID']
                     ,'ITH_DATE' => $current_date
-                    ,'ITH_FORM' => 'OUT'
+                    ,'ITH_FORM' => $r['SER_ITMID']==$r['SERRC_NASSYCD'] ? 'OUT' : 'OUT-C'
                     ,'ITH_DOC' => $r['SER_DOC']
                     ,'ITH_QTY' => $r['SERRC_SERXQTY'] > $r['SER_QTY'] ? -$r['SER_QTY'] : -$r['SERRC_SERXQTY']
                     ,'ITH_WH' => 'AFQART'
@@ -732,7 +731,7 @@ class SER extends CI_Controller {
                 $rs_out[] = [
                     'ITH_ITMCD' => $r['SER_ITMID']
                     ,'ITH_DATE' => $current_date
-                    ,'ITH_FORM' => 'OUT'
+                    ,'ITH_FORM' => $r['SER_ITMID']==$r['SERRC_NASSYCD'] ? 'OUT' : 'OUT-C'
                     ,'ITH_DOC' => $r['SER_DOC']
                     ,'ITH_QTY' => -$r['OUTQTY']
                     ,'ITH_WH' => 'AFQART'
@@ -756,7 +755,7 @@ class SER extends CI_Controller {
                     }
                 }
                             
-                if(count($rs_ser_val)>0){								
+                if(count($rs_ser_val)>0){
                     $this->SER_mod->insertb($rs_ser_val);
                     #2 filter inc
                     foreach($rs_ser_val as $s){						
@@ -6034,17 +6033,16 @@ class SER extends CI_Controller {
         $current_time = date('Y-m-d H:i:s');
         header('Content-Type: application/json');
         $reffno = $this->input->post('reffno'); #array
-        $wono = $this->input->post('wono'); #array
+        $wono = $this->input->post('wono'); #string
         $qty = $this->input->post('qty'); #array
-        $assycode = $this->input->post('assycode'); #array
         $remark = $this->input->post('remark'); #string
         $Calc_lib = new RMCalculator();
-        if(!is_array($wono)) 
+        $result = null;
+        if(!is_array($reffno)) 
         {
             $myar[] = ['cd' => '0', 'msg' => 'could not process'];
-        } else {
-            $wono_unique = array_values(array_unique($wono));
-            $rsWO = $this->XWO_mod->select_cols_where_wono_in(['PDPP_WONO','PDPP_MDLCD', 'PDPP_BOMRV'], $wono_unique);
+        } else {            
+            $rsWO = $this->XWO_mod->select_cols_where_wono_in(['PDPP_WONO','PDPP_MDLCD', 'PDPP_BOMRV'], [$wono]);
             foreach($rsWO as $r)
             {
                 if($this->RESIM_mod->check_Primary(['RESIM_WONO' => $r['PDPP_WONO']]))
@@ -6059,12 +6057,23 @@ class SER extends CI_Controller {
                     ]);
                 }
             }
-            $Calc_lib->calculate_only_raw_material_resume($reffno,$qty,$wono);
+            foreach($reffno as $r)
+            {
+                if(strlen($r)>5)
+                {
+                    if($this->SERD_mod->deletebyID_label_undelivered($r))
+                    {
+                        $this->SER_mod->updatebyId(['SER_SIMBASE' => 3], $r);
+                    }
+                }
+            }
+            $result = $Calc_lib->calculate_only_raw_material_resume($reffno,$qty,$wono);
             $myar[] = ['cd' => '1', 'msg' => 'done'];
         }
         die(json_encode([
             'status' => $myar
             ,'status_d' => []
+            ,'result' => $result
         ]));
     }
 }

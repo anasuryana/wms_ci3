@@ -111,11 +111,11 @@ class SERRC_mod extends CI_Model {
     }
 
     public function select_out_usage($pdoc){
-        $qry = "select SERRC_SER,count(*) OUTQTY,SER_DOC,SERRC_SERX,SER_ITMID from 
-		(select SERRC_SER,SERRC_JM,SERRC_SERX from SERRC_TBL where SERRC_DOCST = ?
-		group by SERRC_SER,SERRC_JM,SERRC_SERX) vjm
+        $qry = "select SERRC_SER,count(*) OUTQTY,SER_DOC,SERRC_SERX,SER_ITMID,SERRC_NASSYCD from 
+		(select SERRC_SER,SERRC_JM,SERRC_SERX,SERRC_NASSYCD from SERRC_TBL where SERRC_DOCST = ?
+		group by SERRC_SER,SERRC_JM,SERRC_SERX,SERRC_NASSYCD) vjm
 		left join SER_TBL ON SERRC_SER=SER_ID
-		group by SERRC_SER,SER_DOC,SERRC_SERX,SER_ITMID";
+		group by SERRC_SER,SER_DOC,SERRC_SERX,SER_ITMID,SERRC_NASSYCD";
         $query = $this->db->query($qry, [$pdoc]);
 		return $query->result_array();
     }
