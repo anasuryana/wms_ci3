@@ -5368,11 +5368,12 @@ class SER extends CI_Controller {
         $cser = $this->input->post('inser');
         $cqty = $this->input->post('inqty');
         $myar = [];
-                
-        $countser = count($cser);
+                        
         $jobunique = array_unique($cjob);
-        foreach($jobunique as $r) {
-            if(in_array($r,$this->WOExceptionList)) {
+        foreach($jobunique as $r) 
+        {
+            if ( in_array($r,$this->WOExceptionList) ) 
+            {
                 # simulation of the job is not ok
                 $myar[] = ['cd' => 0, 'msg' => 'could reset calculation for this job'];
                 die(json_encode(['status' => $myar]));
@@ -5381,9 +5382,17 @@ class SER extends CI_Controller {
         foreach($jobunique as $r) {
             $this->SERD_mod->deletebyID(['SERD_JOB' => $r]);
         }
-        for($i=0; $i<$countser; $i++){
-            if(strlen($cser[$i])>5) {
-                $this->SERD_mod->deletebyID_label_undelivered($cser[$i]);
+        foreach($cser as $r)
+        {
+            if(strlen($r)>5) 
+            {
+                if($r[0]=='3')
+                {
+                    $this->SERD_mod->deletebyID_label_unused($r);
+                } else 
+                {
+                    $this->SERD_mod->deletebyID_label_undelivered($r);
+                }
             }
         }
         $Calc_lib = new RMCalculator();
@@ -6038,6 +6047,7 @@ class SER extends CI_Controller {
         $remark = $this->input->post('remark'); #string
         $Calc_lib = new RMCalculator();
         $result = null;
+        $wono_a = [];
         if(!is_array($reffno)) 
         {
             $myar[] = ['cd' => '0', 'msg' => 'could not process'];
@@ -6045,9 +6055,9 @@ class SER extends CI_Controller {
             $rsWO = $this->XWO_mod->select_cols_where_wono_in(['PDPP_WONO','PDPP_MDLCD', 'PDPP_BOMRV'], [$wono]);
             foreach($rsWO as $r)
             {
-                if($this->RESIM_mod->check_Primary(['RESIM_WONO' => $r['PDPP_WONO']]))
+                if(!$this->RESIM_mod->check_Primary(['RESIM_WONO' => $r['PDPP_WONO']]))
                 {
-                    $this->SER_mod->insert([
+                    $this->RESIM_mod->insert([
                         'RESIM_WONO' => $r['PDPP_WONO'],
                         'RESIM_MDLCD' => $r['PDPP_MDLCD'],
                         'RESIM_BOMRV' => $r['PDPP_BOMRV'],
@@ -6056,6 +6066,7 @@ class SER extends CI_Controller {
                         'RESIM_REMARK' => $remark
                     ]);
                 }
+                $this->SERD_mod->deletebyID(['SERD_JOB' => $wono]);             
             }
             foreach($reffno as $r)
             {
@@ -6063,16 +6074,22 @@ class SER extends CI_Controller {
                 {
                     if($this->SERD_mod->deletebyID_label_undelivered($r))
                     {
-                        $this->SER_mod->updatebyId(['SER_SIMBASE' => 3], $r);
+                        if($r[0]=='3')
+                        {
+                            $this->SERD_mod->deletebyID_label_unused($r);
+                        } else 
+                        {
+                            $this->SER_mod->updatebyId(['SER_SIMBASE' => 3], $r);
+                        }
                     }
                 }
+                $wono_a[] = $wono;
             }
-            $result = $Calc_lib->calculate_only_raw_material_resume($reffno,$qty,$wono);
+            $result = $Calc_lib->calculate_only_raw_material_resume($reffno,$qty,$wono_a);
             $myar[] = ['cd' => '1', 'msg' => 'done'];
         }
         die(json_encode([
-            'status' => $myar
-            ,'status_d' => []
+            'status' => $myar            
             ,'result' => $result
         ]));
     }

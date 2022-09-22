@@ -15,12 +15,17 @@
             </div>
         </div>
         <div class="row" id="checksbb_stack2">            
-            <div class="col-md-12 mb-1 text-center">
+            <div class="col-md-6 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" type="button" id="checksbb_btn_sync" onclick="checksbb_btn_sync_e_click()" title="Refresh"><i class="fas fa-sync"></i></button>
                     <button class="btn btn-primary" type="button" id="checksbb_btn_calc" onclick="checksbb_btn_calc_e_click()" >Calculate selected data</button>
                 </div>
                 <span id="checksbb_lblinfo" class="badge bg-info"></span>
+            </div>
+            <div class="col-md-6 mb-1 text-end">
+                <div class="btn-group btn-group-sm">                    
+                    <button class="btn btn-warning" type="button" id="checksbb_btn_simulate" onclick="checksbb_btn_simulate_e_click()" >Resimulation</button>
+                </div>
             </div>            
         </div>
         <div class="row">
@@ -476,7 +481,7 @@
             </div>
             <div class="row">
                 <div class="col-md-6 mb-1 p-1">
-                    <div class="input-group input-group-sm">                        
+                    <div class="input-group input-group-sm">
                         <span class="input-group-text" >Old Qty</span>
                         <input type="text" class="form-control" id="checksbb_oldqty" readonly>
                     </div>
@@ -523,7 +528,70 @@
       </div>
     </div>
 </div>
-
+<div class="modal fade" id="checksbb_MODRESIMULATE">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Resimulation</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-12 mb-1 p-1">                    
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text" >Job</span>
+                        <input type="text" class="form-control" id="checksbb_jobno" onkeypress="checksbb_jobno_eKP(event)" maxlength="50">
+                        <button class="btn btn-primary btn-sm" id="checksbb_btn_prepare_resim" onclick="checksbb_resimulate_wo_sync(this)"><i class="fas fa-sync"></i></button>
+                    </div>                    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <div class="table-responsive" id="checksbb_tbl2_div">
+                        <table id="checksbb_tbl2" class="table table-striped table-bordered table-sm table-hover" style="font-size:85%">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="cursor:pointer" class="align-middle">Job Number</th>
+                                    <th style="cursor:pointer" class="align-middle">Item Code</th>
+                                    <th class="align-middle">Item Name</th>
+                                    <th class="align-middle text-center">ID</th>
+                                    <th class="align-middle text-end">Qty</th>
+                                    <th class="align-middle text-center"><input type="checkbox" class="form-check-input" id="checksbb_ckall" ></th>
+                                </tr>
+                            </thead>
+                            <tbody>                        
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div> 
+        </div>
+        <div class="modal-footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text" >Reason</span>
+                            <select class="form-select" id="checksbb_cmb_remark">
+                                <option value="-">-</option>
+                                <option value="SIMULATION WAS DELETED">SIMULATION WAS DELETED</option>
+                                <option value="CIMS DATA UPDATE">CIMS DATA UPDATE</option>
+                                <option value="OTHER">OTHER</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-1">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="checksbb_e_resimulate(this)">Resimulate</button>
+                    </div>
+                </div>            
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
 <div class="modal fade" id="checksbb_Emergency">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">      
@@ -641,8 +709,7 @@
     -document.getElementById('checksbb_stack1').offsetHeight 
     -document.getElementById('checksbb_stack2').offsetHeight    
     -100);
-    function checksbb_cksi_e_click(e,elem,pjob){
-        // if(e.ctrlKey){
+    function checksbb_cksi_e_click(e,elem,pjob){        
         if(elem.checked){
             let tabel_PLOT = document.getElementById("checksbb_tbl");                    
             let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
@@ -938,7 +1005,7 @@
     }
 
     function checksbb_btn_calc_e_click(){
-        let tabel_PLOT = document.getElementById("checksbb_tbl");                    
+        let tabel_PLOT = document.getElementById("checksbb_tbl");
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
         let ttlrows = tabel_PLOT_body0.getElementsByTagName('tr').length;
         let aser = [];
@@ -984,6 +1051,8 @@
             } else {
                 alertify.warning("Maximum data to be calculated is 67");
             }
+        } else {
+            alertify.message('there is no selected data')
         }
     }
 
@@ -1993,4 +2062,135 @@
             })
         }
     }
+
+    function checksbb_btn_simulate_e_click()
+    {
+        $("#checksbb_MODRESIMULATE").modal('show')
+    }
+
+    function checksbb_e_resimulate(p)
+    {        
+        if(checksbb_cmb_remark.value==='-')
+        {
+            alertify.message('Reason is required')
+            checksbb_cmb_remark.focus()
+            return
+        }
+        
+        let tabel_PLOT_body0 = checksbb_tbl2.getElementsByTagName("tbody")[0];
+        let ttlrows = tabel_PLOT_body0.getElementsByTagName('tr').length;
+        let reffno_l = []
+        let qty_l = []
+        for(let i=0; i<ttlrows; i++)
+        {
+            let qty = numeral(tabel_PLOT_body0.rows[i].cells[4].innerText).value()
+            if(qty>0 && tabel_PLOT_body0.rows[i].cells[5].getElementsByTagName('input')[0].checked)
+            {
+                reffno_l.push(tabel_PLOT_body0.rows[i].cells[3].innerText)
+                qty_l.push(qty)
+            }
+        }
+        
+        if(checksbb_jobno.value.trim().length===0)
+        {
+            checksbb_jobno.focus()
+            alertify.message('Job is required')
+            return
+        }
+        if(reffno_l.length===0)
+        {
+            alertify.message('Please select ID first')
+            return
+        }
+        if( confirm('Are you sure ?') )
+        {
+            p.innerHTML = `<i class="fas fa-spinner fa-spin-pulse"></i>`
+            p.disabled = true
+            $.ajax({
+                type: "post",
+                url: "<?=base_url('SER/resimulate')?>",
+                data: {reffno: reffno_l, wono : checksbb_jobno.value, qty:qty_l,remark: checksbb_cmb_remark.value },
+                dataType: "json",
+                success: function (response) {
+                    checksbb_tbl2.getElementsByTagName('tbody')[0].innerHTML = ''
+                    p.innerHTML = 'Resimulate'
+                    p.disabled = false
+                    alertify.message(response.status[0].msg)
+                }, error:function(xhr,ajaxOptions, throwError) {
+                    alert(throwError)
+                    p.disabled = false
+                    p.innerHTML = 'Resimulate'
+                }
+            })
+        }
+    }
+
+    function checksbb_resimulate_wo_sync(p)
+    {
+        p.disabled = true
+        $.ajax({
+            type: "get",
+            url: "<?=base_url('SER/get_check_susuan_bb')?>",
+            data: {insearchby: 'job', insearchval: checksbb_jobno.value},
+            dataType: "json",
+            success: function (response) {
+                p.disabled = false;
+                const ttlrows = response.data.length;
+                let mydes = document.getElementById("checksbb_tbl2_div");
+                let myfrag = document.createDocumentFragment();
+                let mtabel = document.getElementById("checksbb_tbl2");
+                let cln = mtabel.cloneNode(true);
+                myfrag.appendChild(cln); 
+                let tabell = myfrag.getElementById("checksbb_tbl2");                    
+                let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                let newrow, newcell;
+                let ck_all = myfrag.getElementById('checksbb_ckall')
+                ck_all.onclick = () => {
+                    let ttlrows = tableku2.getElementsByTagName('tr').length;                    
+                    for(let i=0;i<ttlrows;i++){
+                        if(numeral(tableku2.rows[i].cells[4].innerText).value()>0) 
+                        {
+                            tableku2.rows[i].cells[5].getElementsByTagName('input')[0].checked = ck_all.checked
+                        }
+                    }
+                }
+                tableku2.innerHTML=''
+                for(let i=0; i<ttlrows; i++){                    
+                    newrow = tableku2.insertRow(-1);
+                    newcell = newrow.insertCell(0);
+                    newcell.innerHTML = response.data[i].SER_DOC
+                    newcell = newrow.insertCell(1);                    
+                    newcell.innerHTML = response.data[i].SER_ITMID
+                    newcell = newrow.insertCell(2);                    
+                    newcell.innerHTML = response.data[i].MITM_ITMD1
+                    newcell = newrow.insertCell(3);
+                    newcell.style.cssText = "text-align:center";
+                    newcell.innerHTML = response.data[i].ITH_SER                    
+                    newcell = newrow.insertCell(4);
+                    newcell.style.cssText = "text-align:right";
+                    newcell.innerHTML = numeral(response.data[i].SER_QTY).format(',')                    
+                    newcell = newrow.insertCell(5)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = `<input type="checkbox" class="form-check-input">`
+                }                
+                mydes.innerHTML=''
+                mydes.appendChild(myfrag)                            
+            }, error(xhr, xopt, xthrow){
+                alertify.error(xthrow);                
+                document.getElementById('checksbb_btn_sync').disabled = false;
+            }
+        });
+    }
+    $("#checksbb_MODRESIMULATE").on('shown.bs.modal', function(){
+        $("#checksbb_jobno").focus();
+    });
+
+    function checksbb_jobno_eKP(e)
+    {
+        if (e.key==='Enter')
+        {
+            checksbb_btn_prepare_resim.focus()
+        }
+    }
+    
 </script>

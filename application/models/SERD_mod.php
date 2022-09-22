@@ -34,6 +34,14 @@ class SERD_mod extends CI_Model {
 		$this->db->query($qry, [$pSER, $pSER]);
         return $this->db->affected_rows();
     }
+    public function deletebyID_label_unused($pSER) {
+        $qry = "DELETE SERD2_TBL where SERD2_SER = ?
+        and SERD2_SER not in (
+        select ITH_SER from ITH_TBL where ITH_SER=? and ITH_WH='AWIP1' AND ITH_QTY<0 AND ITH_FORM='OUT-USE'
+        GROUP BY ITH_SER )";
+		$this->db->query($qry, [$pSER, $pSER]);
+        return $this->db->affected_rows();
+    }
     public function deletebyID($parr){        
         $this->db->where($parr);
         $this->db->delete($this->TABLENAME);
