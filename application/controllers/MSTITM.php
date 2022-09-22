@@ -824,5 +824,18 @@ class MSTITM extends CI_Controller {
         $myar = [];
         $myar[] = $ret ? ['cd' => 1, 'msg' => 'OK', 'reff' => $i*1] : ['cd' => 0, 'msg' => 'not ok', 'reff' => $i*1];
         die(json_encode(['status' => $myar]));
-    }	
+    }
+    
+    function import_hscode()
+    {
+        header('Content-Type: application/json');
+        $itemcode = $this->input->post('itemcode');
+        $hscode = $this->input->post('hscode');
+        if(!empty($hscode))
+        {
+            $affected = $this->MSTITM_mod->updatebyId(['MITM_HSCD' => $hscode], $itemcode);
+            $myar[] = $affected ? ['cd' => '1', 'msg' => 'ok'] : ['cd' => '0', 'msg' => 'could not update'];
+        }
+        die(json_encode(['status' => $myar]));
+    }
 }
