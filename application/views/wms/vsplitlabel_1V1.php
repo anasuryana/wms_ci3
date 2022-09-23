@@ -882,6 +882,7 @@
         const lblcat = document.getElementById('splitlabel1V1_lbl_cat')
         lblcat.classList.remove(...lblcat.classList)
         lblcat.classList.add('fas','fa-circle-info')
+        splitlabel1V1_typereg.checked = true
     }
 
     $("#splitlabel1V1_btn_save").click(function (e) { 
@@ -943,6 +944,7 @@
                     ,ina_remark: aremark, ina_rawtxt: arawtxt},
                     dataType: "json",
                     success: function (response) {
+                        splitlabel1V1_typereg.checked = true
                         if(response.status[0].cd!='0'){
                             alertify.success(response.status[0].msg);
                             splitlabel1V1_e_new();
@@ -956,7 +958,6 @@
             }
         } else {
             alertify.warning('Total QTY must be same');
-        }
-        
+        }        
     });
 </script>
