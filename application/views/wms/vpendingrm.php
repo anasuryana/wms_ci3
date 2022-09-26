@@ -1,5 +1,5 @@
 <div style="padding: 10px">
-	<div class="container-xxl">
+	<div class="container-fluid">
         <div class="row">
             <div class="col-md-2 mb-1">
                 <div class="btn-group btn-group-sm">
@@ -224,11 +224,22 @@
         $("#pnd_tbl tbody").empty();
         document.getElementById('pnd_txt_doc').value='';
     });
-    $("#pnd_btnmins").click(function (e) { 
-        let konf = confirm("Are you sure want to delete ?");
-        if(konf){
+    $("#pnd_btnmins").click(function (e) {
+        if(confirm("Are you sure want to delete ?")){
             let table = $("#pnd_tbl tbody");
-            let mitem = table.find('tr').eq(pnd_tblrowindexsel).find('td').eq(1).find('input').val();                
+            let mitem = table.find('tr').eq(pnd_tblrowindexsel).find('td').eq(1).find('input').val();
+            let mitemlot = table.find('tr').eq(pnd_tblrowindexsel).find('td').eq(2).find('input').val();
+            $.ajax({
+                type: "POST",
+                url: "<?=base_url('PND/remove_pnd_doc')?>",
+                data: {doc:pnd_txt_doc.value, itemcd: mitem, itemlot:  mitemlot},
+                dataType: "json",
+                success: function (response) {
+                    alertify.message(response.status.msg)
+                }, error(xhr, xopt, xthrow){
+                    alertify.error(xthrow);
+                }
+            });
             table.find('tr').eq(pnd_tblrowindexsel).remove();
             pnd_renumberrow();
         }        
