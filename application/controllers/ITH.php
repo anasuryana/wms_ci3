@@ -3504,5 +3504,30 @@ class ITH extends CI_Controller {
         } else {
             echo "done";
         }
-    }	
+    }
+
+    function change_kitting_date()
+    {
+        header('Content-Type: application/json');
+        $doc = $this->input->get('doc');
+		$date = $this->input->get('date');
+		$rs = $this->ITH_mod->select_doc_vs_datec($doc, $date);
+		$tmpTime = strtotime($date.' +1 days');
+		$date0 = date('Y-m-d', $tmpTime);
+        $affectedRows = 0;
+		foreach($rs as &$r)
+		{
+			$r['TIME'] = substr($r['ITH_LUPDT'],11,8);
+			if($r['TIME']>='00:00:00' && $r['TIME']<='07:00:00') {
+				$r['TO_LUPDT'] = $date0." ".$r['TIME'];
+			} else 
+			{
+				$r['TO_LUPDT'] = $date." ".$r['TIME'];
+			}
+            $affectedRows += $this->ITH_mod->update_kitting_date($doc, $date, $date0
+                , $r['TO_LUPDT'], $r['ITH_LUPDT'], $r['ITH_ITMCD']);
+		}
+		unset($r);
+        die(json_encode(['status' => ['cd' => '1', 'msg' => $affectedRows.' row(s) updated']]));
+    }
 }

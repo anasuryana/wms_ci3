@@ -1472,6 +1472,29 @@ class ITH_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
     }
+
+    function select_doc_vs_datec($pDoc, $pDate)
+    {
+        $this->db->from('v_ith_tblc');
+        $this->db->like("ITH_DOC", $pDoc, 'after')
+        ->where_not_in("ITH_FORM", ['INC-RET','OUT-RET'])
+        ->where("ITH_DATEC !=", $pDate);        
+        $this->db->order_by("ITH_LUPDT");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    function update_kitting_date($PSN, $requireddate, $newDate, $newDateTime,$oldDateTime, $itemcd)
+    {
+        $qry = "UPDATE ITH_TBL SET ITH_DATE=?,ITH_LUPDT=? where ITH_DOC LIKE ?
+        AND ITH_FORM NOT IN ('INC-RET','OUT-RET')
+        AND ITH_DATEC!=?
+        AND ITH_LUPDT=?
+        AND ITH_ITMCD=?";
+        $query = $this->db->query($qry, [$newDate, $newDateTime, $PSN.'%', $requireddate, $oldDateTime, $itemcd]);
+        return $query->result_array();
+    }
+
     public function select_fordispose_fromfg($pdate0){
         $qry = "SELECT RTRIM(SERD2_ITMCD) ITH_ITMCD,MITMGRP_ITMCD,SUM(RMQT) STKQTY FROM
         (SELECT ITH_SER,SUM(ITH_QTY) FGQT FROM v_ith_tblc WHERE ITH_DATEC<=? AND ITH_WH='AFWH9SC'

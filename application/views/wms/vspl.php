@@ -74,11 +74,13 @@
                     <span class="input-group-text" >Lot No</span>                    
                     <input type="text" class="form-control" id="psn_txt_itmlot" required readonly>
                 </div>
-            </div>           
+            </div>
         </div>
         <div class="row">
             <div class="col-md-4 mb-1" >
-                Selected warehouse : <strong><span id="spl_selwh" class="text-info"></span></strong>
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-outline-warning" id="psn_btn_change_issue_date" data-bs-toggle="modal" data-bs-target="#SPL_CHANGE_ISSUE_MOD" >Change Kitting Date</button>
+                </div>
             </div>
             <div class="col-md-4 mb-1 text-center">
                 <div class="btn-group btn-group-sm">
@@ -355,38 +357,6 @@
       </div>
     </div>
 </div>
-<div class="modal fade" id="FOOTER_MODWHKITTING">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <!-- Modal Header -->
-        <div class="modal-header">
-            <h4 class="modal-title">Set Warehouse</h4>
-            <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
-        </div>
-        
-        <!-- Modal body -->
-        <div class="modal-body">
-            <div class="row">
-                <div class="col mb-1">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Warehouse</span>                        
-                        <select id="FOOTER_MODWH_selwhkitting" class="form-select">
-                           <option value="ARWH1">Warehouse Material For IEI</option>
-                           <option value="ARWH2">Warehouse Material For Other</option>
-                           <option value="NRWH2">Warehouse Material Non Asset</option>
-                        </select>                  
-                    </div>
-                </div>
-            </div>           
-            <div class="row">
-                <div class="col mb-1">
-                    <button type="button" class="btn btn-sm btn-primary" id="FOOTER_MODWH_btnsavekitting"><i class="fas fa-save"></i></button>
-                </div>
-            </div>           
-        </div>                   
-      </div>
-    </div>
-</div>
 <div class="modal fade" id="SPL_DOCINFO">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">      
@@ -415,6 +385,61 @@
                 </div>
             </div>                                   
         </div>             
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="SPL_CHANGE_ISSUE_MOD">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">      
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Change Kitting Date</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">            
+            <div class="row">
+                <div class="col">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >PSN</span>
+                        <input type="text" class="form-control" id="spl_cid_txtpsn" maxlength="25">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Required Date</span>
+                        <input type="text" class="form-control" id="spl_cid_txtdate" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="table-responsive" id="spl_cid_tbldetissu_div">
+                        <table id="spl_cid_tbldetissu" class="table table-hover table-sm table-bordered caption-top">
+                            <caption>Affected data will be like the table below <span class="fas fa-arrow-turn-down"></span></caption>
+                            <thead class="table-light">
+                                <tr>
+                                    <th rowspan="2">Item Code</th>
+                                    <th rowspan="2" class="text-end">Qty</th>
+                                    <th colspan="2" class="text-center">Date time</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">From</th>
+                                    <th class="text-center">To</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-primary" id="spl_cid_save">Save changes</button>
+        </div>
       </div>
     </div>
 </div>
@@ -619,16 +644,6 @@
             }
         });
     }
-    $("#FOOTER_MODWH_btnsavekitting").click(function (e) { 
-        e.preventDefault();
-        let mwh = document.getElementById("FOOTER_MODWH_selwhkitting").value;
-        Cookies.set('CKPSI_WH', mwh, {expires:365});
-        $("#FOOTER_MODWHKITTING").modal('hide'); 
-        alertify.message('Saved');
-        document.getElementById('spl_selwh').innerText = mwh;
-    });
-    var mymodal = new bootstrap.Modal(document.getElementById("FOOTER_MODWHKITTING"), {backdrop: 'static', keyboard: false});
-    mymodal.show();      
     
     $("#psn_btn_new").click(function (e) { 
         e.preventDefault();
@@ -820,12 +835,7 @@
                 document.getElementById('psn_txt_psn').focus();
                 alertify.message('Please fill PSN No');
                 return;
-            }
-            // if(mcat.trim()==''){
-            //     document.getElementById('psn_txt_cat').focus();
-            //     alertify.message('Please fill Category');
-            //     return;
-            // }
+            }            
             if(mline.trim()==''){
                 document.getElementById('psn_txt_line').focus();
                 alertify.message('Please fill Line');
@@ -882,12 +892,7 @@
                 document.getElementById('psn_txt_psn').focus();
                 alertify.message('Please fill PSN No');
                 return;
-            }
-            // if(mcat.trim()==''){
-            //     document.getElementById('psn_txt_cat').focus();
-            //     alertify.message('Please fill Category');
-            //     return;
-            // }
+            }          
             if(mline.trim()==''){
                 document.getElementById('psn_txt_line').focus();
                 alertify.message('Please fill Line');
@@ -1307,8 +1312,13 @@
         format: 'yyyy-mm-dd',
         autoclose:true
     });
+    $("#spl_cid_txtdate").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true
+    });
     $("#spl_txt_dt").datepicker('update', new Date());
     $("#spl_txt_dt2").datepicker('update', new Date());
+    $("#spl_cid_txtdate").datepicker('update', new Date());
 
     $("#psn_btn_export").click(function (e) {
         $("#SPL_EXPORTISSU").modal('show');        
@@ -1371,6 +1381,9 @@
         }
         
     });
+    $("#SPL_CHANGE_ISSUE_MOD").on('shown.bs.modal', function(){
+        spl_cid_txtpsn.focus()
+    })
     $("#SPL_PROGRESS").on('shown.bs.modal', function(){
         let mpsn = document.getElementById("psn_txt_psn").value;
         $.ajax({
@@ -1463,4 +1476,79 @@
     function psn_btn_close_eCK() {        
         $("#SPL_DETISSU_UNFIXED").modal('hide')
     }
+
+    spl_cid_txtpsn.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter')
+        {
+            spl_cid_load()
+        }
+    })
+
+    function spl_cid_load()
+    {
+        spl_cid_tbldetissu_div.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center"><i>Please wait</i></td></tr>`
+        $.ajax({            
+            url: "<?=base_url('ITHHistory/ith_doc_vs_date')?>",
+            data: {doc: spl_cid_txtpsn.value, date: spl_cid_txtdate.value},
+            dataType: "json",
+            success: function (response) {
+                const ttlrows = response.data.length
+                let mydes = document.getElementById("spl_cid_tbldetissu_div");
+                let myfrag = document.createDocumentFragment();
+                let mtabel = document.getElementById("spl_cid_tbldetissu");
+                let cln = mtabel.cloneNode(true);
+                myfrag.appendChild(cln);                    
+                let tabell = myfrag.getElementById("spl_cid_tbldetissu");
+                let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                let newrow, newcell;
+                tableku2.innerHTML=''
+                for (let i = 0; i<ttlrows; i++){
+                    newrow = tableku2.insertRow(-1)
+                    newcell = newrow.insertCell(0)
+                    newcell.innerHTML = response.data[i].ITH_ITMCD
+                    newcell = newrow.insertCell(1)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(response.data[i].ITH_QTY).format(',')
+                    newcell = newrow.insertCell(2)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = response.data[i].ITH_LUPDT
+                    newcell = newrow.insertCell(3)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = response.data[i].TO_LUPDT
+                }
+                mydes.innerHTML=''
+                mydes.appendChild(myfrag)
+            }, error: (xhr, xopt, xthrow) => {
+                alertify.error(xthrow)
+            }
+        })
+    }   
+
+    $('#spl_cid_txtdate').datepicker()
+    .on('changeDate', function(e) {
+        spl_cid_load()
+    });
+
+    spl_cid_save.addEventListener('click', () => {
+        if(confirm('Are you sure ?'))
+        {
+            spl_cid_save.innerText = `Please wait`
+            spl_cid_save.disable = true
+            $.ajax({
+                type: "POST",
+                url: "<?=base_url('ITH/change_kitting_dates')?>",
+                data: {doc: spl_cid_txtpsn.value, date: spl_cid_txtdate.value},
+                dataType: "json",
+                success: function (response) {
+                    spl_cid_save.innerText = `Save changes`
+                    spl_cid_save.disable = false
+                    alertify.message(response.status.msg)
+                }, error: (xhr, xopt, xthrow) => {
+                    spl_cid_save.innerText = `Save changes`
+                    alertify.error(xthrow)
+                    spl_cid_save.disable = false
+                }
+            })
+        }
+    })
 </script>
