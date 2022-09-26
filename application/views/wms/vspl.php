@@ -1486,42 +1486,49 @@
 
     function spl_cid_load()
     {
-        spl_cid_tbldetissu_div.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center"><i>Please wait</i></td></tr>`
-        $.ajax({            
-            url: "<?=base_url('ITHHistory/ith_doc_vs_date')?>",
-            data: {doc: spl_cid_txtpsn.value, date: spl_cid_txtdate.value},
-            dataType: "json",
-            success: function (response) {
-                const ttlrows = response.data.length
-                let mydes = document.getElementById("spl_cid_tbldetissu_div");
-                let myfrag = document.createDocumentFragment();
-                let mtabel = document.getElementById("spl_cid_tbldetissu");
-                let cln = mtabel.cloneNode(true);
-                myfrag.appendChild(cln);                    
-                let tabell = myfrag.getElementById("spl_cid_tbldetissu");
-                let tableku2 = tabell.getElementsByTagName("tbody")[0];
-                let newrow, newcell;
-                tableku2.innerHTML=''
-                for (let i = 0; i<ttlrows; i++){
-                    newrow = tableku2.insertRow(-1)
-                    newcell = newrow.insertCell(0)
-                    newcell.innerHTML = response.data[i].ITH_ITMCD
-                    newcell = newrow.insertCell(1)
-                    newcell.classList.add('text-end')
-                    newcell.innerHTML = numeral(response.data[i].ITH_QTY).format(',')
-                    newcell = newrow.insertCell(2)
-                    newcell.classList.add('text-center')
-                    newcell.innerHTML = response.data[i].ITH_LUPDT
-                    newcell = newrow.insertCell(3)
-                    newcell.classList.add('text-center')
-                    newcell.innerHTML = response.data[i].TO_LUPDT
+        if(spl_cid_txtpsn.value.trim().length>7)
+        {
+            spl_cid_tbldetissu_div.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center"><i>Please wait</i></td></tr>`
+            $.ajax({
+                url: "<?=base_url('ITHHistory/ith_doc_vs_date')?>",
+                data: {doc: spl_cid_txtpsn.value, date: spl_cid_txtdate.value},
+                dataType: "json",
+                success: function (response) {
+                    const ttlrows = response.data.length
+                    let mydes = document.getElementById("spl_cid_tbldetissu_div");
+                    let myfrag = document.createDocumentFragment();
+                    let mtabel = document.getElementById("spl_cid_tbldetissu");
+                    let cln = mtabel.cloneNode(true);
+                    myfrag.appendChild(cln);                    
+                    let tabell = myfrag.getElementById("spl_cid_tbldetissu");
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    let newrow, newcell;
+                    tableku2.innerHTML=''
+                    for (let i = 0; i<ttlrows; i++){
+                        newrow = tableku2.insertRow(-1)
+                        newcell = newrow.insertCell(0)
+                        newcell.innerHTML = response.data[i].ITH_ITMCD
+                        newcell = newrow.insertCell(1)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(response.data[i].ITH_QTY).format(',')
+                        newcell = newrow.insertCell(2)
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = response.data[i].ITH_LUPDT
+                        newcell = newrow.insertCell(3)
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = response.data[i].TO_LUPDT
+                    }
+                    mydes.innerHTML=''
+                    mydes.appendChild(myfrag)
+                }, error: (xhr, xopt, xthrow) => {
+                    alertify.error(xthrow)
                 }
-                mydes.innerHTML=''
-                mydes.appendChild(myfrag)
-            }, error: (xhr, xopt, xthrow) => {
-                alertify.error(xthrow)
-            }
-        })
+            })
+        } else 
+        {
+            alertify.warning('PSN is required')
+            spl_cid_txtpsn.focus()
+        }        
     }   
 
     $('#spl_cid_txtdate').datepicker()
@@ -1530,25 +1537,32 @@
     });
 
     spl_cid_save.addEventListener('click', () => {
-        if(confirm('Are you sure ?'))
+        if(spl_cid_txtpsn.value.trim().length>7)
         {
-            spl_cid_save.innerText = `Please wait`
-            spl_cid_save.disable = true
-            $.ajax({
-                type: "POST",
-                url: "<?=base_url('ITH/change_kitting_dates')?>",
-                data: {doc: spl_cid_txtpsn.value, date: spl_cid_txtdate.value},
-                dataType: "json",
-                success: function (response) {
-                    spl_cid_save.innerText = `Save changes`
-                    spl_cid_save.disable = false
-                    alertify.message(response.status.msg)
-                }, error: (xhr, xopt, xthrow) => {
-                    spl_cid_save.innerText = `Save changes`
-                    alertify.error(xthrow)
-                    spl_cid_save.disable = false
-                }
-            })
+            if(confirm('Are you sure ?'))
+            {
+                spl_cid_save.innerText = `Please wait`
+                spl_cid_save.disable = true
+                $.ajax({
+                    type: "POST",
+                    url: "<?=base_url('ITH/change_kitting_dates')?>",
+                    data: {doc: spl_cid_txtpsn.value, date: spl_cid_txtdate.value},
+                    dataType: "json",
+                    success: function (response) {
+                        spl_cid_save.innerText = `Save changes`
+                        spl_cid_save.disable = false
+                        alertify.message(response.status.msg)
+                    }, error: (xhr, xopt, xthrow) => {
+                        spl_cid_save.innerText = `Save changes`
+                        alertify.error(xthrow)
+                        spl_cid_save.disable = false
+                    }
+                })
+            }
+        } else 
+        {
+            alertify.warning('PSN is required')
+            spl_cid_txtpsn.focus()
         }
     })
 </script>

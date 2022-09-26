@@ -1477,6 +1477,7 @@ class ITH_mod extends CI_Model {
     {
         $this->db->from('v_ith_tblc');
         $this->db->like("ITH_DOC", $pDoc, 'after')
+        ->like("ITH_DOC", 'SP-')
         ->where_not_in("ITH_FORM", ['INC-RET','OUT-RET'])
         ->where("ITH_DATEC !=", $pDate);        
         $this->db->order_by("ITH_LUPDT");
