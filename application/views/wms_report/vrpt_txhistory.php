@@ -71,7 +71,8 @@
                                 <th rowspan="2" class="align-middle">Warehouse</th>                                
                                 <th rowspan="2" class="align-middle">Event</th>
                                 <th rowspan="2" class="align-middle text-center">Document</th>
-                                <th  class="text-center" colspan="3">QTY</th>                                
+                                <th  class="text-center" colspan="3">QTY</th>
+                                <th rowspan="2" class="align-middle text-center">UOM</th>
                             </tr>
                             <tr class="second">
                                 <th class="text-center">IN</th>
@@ -145,11 +146,13 @@
                     let newrow, newcell, newText;
                     tableku2.innerHTML='';
                     let mhead = false;
+                    let uom = '';
                     for(let i=0; i< ttlrows; i++){                        
                         newrow = tableku2.insertRow(-1);
                         if(response.data[i].ITH_FORM==''){
                             newrow.classList.add("table-primary");
                             mhead = true;
+                            uom = response.data[i].UOM
                         } else {                           
                             mhead = false;
                         }                      
@@ -181,7 +184,10 @@
                             newcell.title = "BAL Bef.";
                         }
                         newcell.style.cssText = "text-align:right"  
-                        newcell.innerHTML = numeral(response.data[i].ITH_BAL).format(',')       
+                        newcell.innerHTML = numeral(response.data[i].ITH_BAL).format(',')
+
+                        newcell = newrow.insertCell(9);
+                        newcell.innerHTML = uom
                     }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);

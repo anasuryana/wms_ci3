@@ -989,17 +989,17 @@ class ITH_mod extends CI_Model {
     }
 
     public function select_txhistory_bef($pwh, $passy, $pdt1){
-        $qry = "SELECT UPPER(V2.ITH_ITMCD) ITH_ITMCD,RTRIM(V2.MITM_ITMD1) MITM_ITMD1,ISNULL(BALQTY,0) BALQTY FROM
-        (select ITH_ITMCD,MITM_ITMD1,SUM(ITH_QTY) BALQTY
-                    from v_ith_tblc LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
+        $qry = "SELECT UPPER(V2.ITH_ITMCD) ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,ISNULL(BALQTY,0) BALQTY,RTRIM(MITM_STKUOM) UOM FROM
+        (SELECT ITH_ITMCD,SUM(ITH_QTY) BALQTY
+                FROM v_ith_tblc                     
                 WHERE ITH_WH=? and ITH_ITMCD like ? and ITH_DATEC < ?
-                GROUP BY ITH_ITMCD, MITM_ITMD1) V1
+                GROUP BY ITH_ITMCD) V1
         RIGHT JOIN (
-        select ITH_ITMCD,MITM_ITMD1 from v_ith_tblc
-        LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
-        WHERE ITH_WH=? and ITH_ITMCD like ?
-        GROUP BY ITH_ITMCD,MITM_ITMD1
+            SELECT ITH_ITMCD from v_ith_tblc        
+            WHERE ITH_WH=? and ITH_ITMCD like ?
+            GROUP BY ITH_ITMCD
         ) V2 ON V1.ITH_ITMCD=V2.ITH_ITMCD
+        LEFT JOIN MITM_TBL ON V2.ITH_ITMCD=MITM_ITMCD
         WHERE V2.ITH_ITMCD!=''
         ORDER BY V2.ITH_ITMCD";	
         $query = $this->db->query($qry, [$pwh,"%$passy%", $pdt1,$pwh,"%$passy%"]);
@@ -1080,13 +1080,14 @@ class ITH_mod extends CI_Model {
     }
 
     public function select_txhistory($pwh, $passy, $pdt1, $pdt2 ){	
-        $qry = "select UPPER(ITH_ITMCD) ITH_ITMCD,rtrim(MITM_ITMD1) MITM_ITMD1,ITH_FORM,ITH_DOC,FORMAT(ITH_DATEC,'dd-MMM-yy') ITH_DATEKU,
-        ISNULL(SUM(CASE WHEN ITH_QTY>0 THEN ITH_QTY END),0) INCQTY ,
-        ISNULL(SUM(CASE WHEN ITH_QTY<0 THEN ITH_QTY END),0) OUTQTY 
-                , 0 ITH_BAL,MAX(ITH_LUPDT) ITH_LUPDT,MIN(ITH_REMARK) ITH_REMARK from v_ith_tblc LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
-                WHERE ITH_WH=? and ITH_ITMCD like ? AND  ITH_DATEC between ? and ?
+        $qry = "SELECT UPPER(ITH_ITMCD) ITH_ITMCD,rtrim(MITM_ITMD1) MITM_ITMD1,ITH_FORM,ITH_DOC,FORMAT(ITH_DATEC,'dd-MMM-yy') ITH_DATEKU,
+                ISNULL(SUM(CASE WHEN ITH_QTY>0 THEN ITH_QTY END),0) INCQTY ,
+                ISNULL(SUM(CASE WHEN ITH_QTY<0 THEN ITH_QTY END),0) OUTQTY , 
+                0 ITH_BAL,MAX(ITH_LUPDT) ITH_LUPDT,MIN(ITH_REMARK) ITH_REMARK 
+            FROM v_ith_tblc LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
+            WHERE ITH_WH=? and ITH_ITMCD like ? AND  ITH_DATEC between ? and ?
                 GROUP BY ITH_ITMCD, rtrim(MITM_ITMD1),ITH_DATEC,ITH_FORM,ITH_DOC,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm')
-                ORDER BY ITH_ITMCD,ITH_DATEC ,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm'), 6 desc";				
+                ORDER BY ITH_ITMCD,ITH_DATEC ,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm'), 6 DESC";				
         $query = $this->db->query($qry, [$pwh, "%$passy%", $pdt1, $pdt2]);
         return $query->result_array();
     }

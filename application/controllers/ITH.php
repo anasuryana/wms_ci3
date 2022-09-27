@@ -1390,7 +1390,7 @@ class ITH extends CI_Controller {
         $myar = [];
         if(count($rsbef) >0){
             foreach($rsbef as $t){
-                $rstoret[] = ['ITH_ITMCD' => $t['ITH_ITMCD'], 'MITM_ITMD1' => $t['MITM_ITMD1'] , 'ITH_FORM' => '', 'ITH_DOC' => '', 'ITH_DATEKU' => '' , 'INCQTY' => '', 'OUTQTY' => '',  'ITH_BAL' => $t['BALQTY']];				
+                $rstoret[] = ['ITH_ITMCD' => $t['ITH_ITMCD'], 'MITM_ITMD1' => $t['MITM_ITMD1'] , 'ITH_FORM' => '', 'ITH_DOC' => '', 'ITH_DATEKU' => '' , 'INCQTY' => '', 'OUTQTY' => '',  'ITH_BAL' => $t['BALQTY'], 'UOM' => $t['UOM']];
                 foreach($rs as $r){
                     if($r['ITH_ITMCD'] == $t['ITH_ITMCD']) {
                         $rstoret[]= $r;
