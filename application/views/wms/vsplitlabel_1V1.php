@@ -948,7 +948,7 @@
                 oldqty = numeral(oldqty).value();
                 $.ajax({
                     type: "post",
-                    url: "<?=base_url('SER/xprc_splitplant1')?>",
+                    url: "<?=base_url('SER/prc_splitplant1')?>",
                     data: {inoldreff: oldreff, inolditem: olditem, inoldjob: oldjob, inoldqty: oldqty
                     ,ina_reff: areff, ina_fgtype : afgtype, ina_itmcd: aitemcd
                     ,ina_lot: alot, ina_qty: aqty, ina_isok: aisok
