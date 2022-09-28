@@ -2714,12 +2714,254 @@ class SER extends CI_Controller {
         }
     }
 
-    public function prc_splitplant1(){
+    public function test_prc_splitplant1(){
+        header('Content-Type: application/json');
         $this->checkSession();
         date_default_timezone_set('Asia/Jakarta');			
         $currrtime	= date('Y-m-d H:i:s');
         $currdate	= date('Y-m-d');
         $myar = array();
+        $coldreff = $this->input->post('inoldreff');
+        $colditem = $this->input->post('inolditem');
+        $coldqty = $this->input->post('inoldqty');
+        $coldqty = intval(str_replace(',','',$coldqty));
+        $coldjob = $this->input->post('inoldjob');
+
+        $ca_reff = $this->input->post('ina_reff');		
+        $ca_itmcd = $this->input->post('ina_itmcd');
+        $ca_lot = $this->input->post('ina_lot');
+        $ca_qty = $this->input->post('ina_qty');
+        $ca_ok = $this->input->post('ina_isok');
+        $ca_remark = $this->input->post('ina_remark');
+        $ca_rawtxt = $this->input->post('ina_rawtxt');
+        $ca_count  = count($ca_reff);
+
+        $CUSERID = $this->session->userdata('nama');
+
+        if($this->SER_mod->check_Primary(['SER_ID' => $coldreff]) ==0){
+            $myar[] = ["cd" => '0', "msg" => "Old Label not found {$coldreff} or may be already splitted"];			
+            exit('{"status":'.json_encode($myar).'}');
+        }
+
+        if($this->SER_mod->check_Primary(['SER_ID' => $coldreff , 'SER_QTY >0' => null]) ==0){
+            $myar[] = ["cd" => '0', "msg" => "qty old label = 0"];
+            exit('{"status":'.json_encode($myar).'}');
+        }
+
+        //get last warehouse , location ....
+        if($this->SISCN_mod->check_Primary(['SISCN_SER' => $coldreff]) >0){
+            $myar[] = ["cd" => '0', "msg" => "could not split delivered item label"];
+            exit('{"status":'.json_encode($myar).'}');
+        } else {
+            $rsactive = $this->ITH_mod->select_active_ser($coldreff);
+            $rsser = $this->SER_mod->selectbyVAR(['SER_ID' => $coldreff]);
+            $bsgrp = '';
+            foreach($rsser as $r){
+                $bsgrp = $r['SER_BSGRP'];break;
+            }
+            $rsactive_wh =  $rsactive_loc = $rsactive_time = $rsactive_form = $rsactive_date =''  ;
+            foreach($rsactive as $r){
+                $rsactive_wh = trim($r['ITH_WH']);
+                $rsactive_loc = trim($r['ITH_LOC']);
+                $rsactive_date = trim($r['ITH_DATE']);
+                $rsactive_time = trim($r['ITH_LUPDT']);
+                $rsactive_form = trim($r['ITH_FORM']);
+            }
+            if($rsactive_wh=='QAFG'){
+                $myar[] = ["cd" => '0', "msg" => "could not split using this menu, ask MR. H or Mr. Z"]; //07 OKT 2020
+                exit('{"status":'.json_encode($myar).'}');
+            }
+            // if($this->SER_mod->updatebyId(["SER_QTY" => 0, "SER_LUPDT" => $currrtime, "SER_USRID" => $CUSERID, "SER_CAT" => NULL ], $coldreff) >0){
+            //     $this->SERD_mod->deletebyID_label(['SERD2_SER' => $coldreff]);
+                $ser_insert_ok = 0;
+                $test_newreff = [];
+                for($i=0; $i<$ca_count ; $i++){
+                    $preparedStatement = [
+                        "SER_ID" => $ca_reff[$i],
+                        "SER_DOC" => $coldjob,
+                        "SER_ITMID" => strtoupper($ca_itmcd[$i]),
+                        "SER_QTY" => $ca_qty[$i],						
+                        "SER_LOTNO" => $ca_lot[$i],
+                        "SER_REFNO" => $coldreff,
+                        "SER_RAWTXT" => $ca_rawtxt[$i],
+                        "SER_GORNG" => $ca_ok[$i],
+                        "SER_LUPDT" => $currrtime,
+                        "SER_BSGRP" => ($rsactive_wh=='AFWH3') ?  NULL: $bsgrp,
+                        "SER_USRID" => $this->session->userdata('nama')
+                    ];
+                    if($ca_ok[$i]==='0'){
+                        $preparedStatement['SER_CAT'] = '2';
+                        $preparedStatement['SER_RMRK'] = $ca_remark[$i];
+                    }
+                    $test_newreff[] = $preparedStatement;
+                    // $ser_insert_ok += $this->SER_mod->insert($preparedStatement);
+                }
+                // if($ser_insert_ok==$ca_count){
+                    if(empty($rsactive)){
+                        $myar[] = ["cd" => "1", "msg" => "ok ok" ];
+                        exit('{"status":'.json_encode($myar).'}');
+                    }
+                    if($rsactive_form=="INC-QA-FG" && $rsactive_wh=="ARQA1"){
+                        echo 'lokasi arqa1';
+                    } elseif($rsactive_wh=="ARPRD1") {
+                        echo 'lokasi arprd1';
+                    } elseif($rsactive_wh=="AFWH3") { 
+                        #insert minus transaction
+                        #need to separate row [split,split-convert]
+                        $_tmp =  [
+                            "ITH_ITMCD" => $colditem,
+                            "ITH_DATE" => $currdate,
+                            "ITH_FORM" => 'SPLIT-FG-LBL',
+                            "ITH_DOC" => $coldjob,
+                            "ITH_QTY" => -$coldqty,
+                            "ITH_SER" => $coldreff,
+                            "ITH_WH" => $rsactive_wh,
+                            "ITH_LOC" => $rsactive_loc,
+                            "ITH_LUPDT" => $currrtime,
+                            "ITH_REMARK" => "WIL-SPLIT",
+                            "ITH_USRID" => $CUSERID
+                        ];
+                        $ret_min = 0;# $this->ITH_mod->insert($_tmp);
+                        #enhance out
+                        $uniqueAssy = array_values(array_unique($ca_itmcd));
+                        $test_out_tx = [];
+                        foreach($uniqueAssy as $u)
+                        {
+                            for($i=0; $i<$ca_count ; $i++)
+                            {
+                                if(strtoupper($u)===strtoupper($ca_itmcd[$i]))
+                                {
+                                    $isfound = false;
+                                    foreach($test_out_tx as &$s)
+                                    {
+                                        if( $s['ITH_ITMCD']===strtoupper($u) )
+                                        {
+                                            $s['ITH_QTY']-=$ca_qty[$i];
+                                            $isfound = true;
+                                            break;
+                                        }
+                                    }
+                                    unset($s);
+
+                                    if( !$isfound )
+                                    {
+                                        $test_out_tx[] = [
+                                            "ITH_ITMCD" => strtoupper($u),
+                                            "ITH_DATE" => $currdate,
+                                            "ITH_FORM" => strtoupper($u)===strtoupper($colditem) ? 'SPLIT-FG-LBL' : 'SPLIT-CNV-FG-OUT',
+                                            "ITH_DOC" => $coldjob,
+                                            "ITH_QTY" => -$ca_qty[$i],
+                                            "ITH_SER" => $coldreff,
+                                            "ITH_WH" => $rsactive_wh,
+                                            "ITH_LOC" => $rsactive_loc,
+                                            "ITH_LUPDT" => $currrtime,
+                                            "ITH_REMARK" => "WIL-SPLIT",
+                                            "ITH_USRID" => $CUSERID
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+                        #end
+                        if($ret_min>0){ 
+                            $ith_insert_ok = 0;
+                            for($i=0; $i<$ca_count ; $i++){								
+                                if((strpos(strtoupper($colditem),'KD') !== false || 
+                                    strpos(strtoupper($colditem),'ASP') !== false 
+                                    ) && (!strpos(strtoupper($ca_itmcd[$i]),'KD') !==false &&
+                                    !strpos(strtoupper($ca_itmcd[$i]),'ASP') !==false
+                                    )
+                                ) {										
+                                    //echo "TRANSFER TO PRD";
+                                    // $ith_insert_ok += $this->ITH_mod->insert(
+                                    //     [
+                                    //         "ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
+                                    //         "ITH_DATE" => $currdate,
+                                    //         "ITH_FORM" => 'SPLIT-FG-LBL',
+                                    //         "ITH_DOC" => $coldjob,
+                                    //         "ITH_QTY" => $ca_qty[$i],
+                                    //         "ITH_SER" => $ca_reff[$i],
+                                    //         "ITH_WH" => 'ARPRD1',
+                                    //         "ITH_LOC" => 'TEMP',
+                                    //         "ITH_LUPDT" => $currrtime,
+                                    //         "ITH_REMARK" => "AFT-SPLIT",
+                                    //         "ITH_USRID" => $CUSERID
+                                    //     ]
+                                    // );
+                                } else {
+                                    if((!strpos(strtoupper($colditem),'KD') !== false && 
+                                        !strpos(strtoupper($colditem),'ASP') !== false 
+                                        ) && (strpos(strtoupper($ca_itmcd[$i]),'KD') !==false || 
+                                        strpos(strtoupper($ca_itmcd[$i]),'ASP') !==false
+                                        )
+                                    ) {
+                                        // $ith_insert_ok += $this->ITH_mod->insert(
+                                        //     [
+                                        //         "ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
+                                        //         "ITH_DATE" => $currdate,
+                                        //         "ITH_FORM" => 'SPLIT-FG-LBL',
+                                        //         "ITH_DOC" => $coldjob,
+                                        //         "ITH_QTY" => $ca_qty[$i],
+                                        //         "ITH_SER" => $ca_reff[$i],
+                                        //         "ITH_WH" => 'ARPRD1',
+                                        //         "ITH_LOC" => 'TEMP',
+                                        //         "ITH_LUPDT" => $currrtime,
+                                        //         "ITH_REMARK" => "AFT-SPLIT",
+                                        //         "ITH_USRID" => $CUSERID
+                                        //     ]
+                                        // );
+                                    } else {
+                                        //TO SAME WAREHOUSE
+                                        // $ith_insert_ok += $this->ITH_mod->insert(
+                                        //     [
+                                        //         "ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
+                                        //         "ITH_DATE" => $currdate,
+                                        //         "ITH_FORM" => 'SPLIT-FG-LBL',
+                                        //         "ITH_DOC" => $coldjob,
+                                        //         "ITH_QTY" => $ca_qty[$i],
+                                        //         "ITH_SER" => $ca_reff[$i],
+                                        //         "ITH_WH" => $rsactive_wh,
+                                        //         "ITH_LOC" => $rsactive_loc,
+                                        //         "ITH_LUPDT" => $currrtime,
+                                        //         "ITH_REMARK" => "AFT-SPLIT",
+                                        //         "ITH_USRID" => $CUSERID
+                                        //     ]
+                                        // );											
+                                    }										
+                                }
+                            }
+                            if($ith_insert_ok==$ca_count){
+                                $myar[] = ["cd" => "1", "msg" => "ok .." ];								
+                                exit('{"status":'.json_encode($myar).'}');
+                            } else {
+                                $myar[] = ["cd" => "0", "msg" => "Not All label add to transaction FG, please contact Admin"];								
+                                exit('{"status":'.json_encode($myar).'}');
+                            }
+                        } else {
+                            $myar[] = ["cd" => "0", "msg" => "Could not minus transaction FG, please contact Admin"];							
+                            die(json_encode(['status' => $myar, '$test_newreff' => $test_newreff, '$test_out_tx' => $test_out_tx]));
+                        }
+                    } else {
+                        $myar[] = ["cd" => "0", "msg" => "Could not process to transaction, please contact Admin"];						
+                        die(json_encode(['status' => $myar, '$test_newreff' => $test_newreff]));
+                    }
+                // } else {
+                //     $myar[] = ["cd" => "0", "msg" => "Not All label registered, please contact Admin"];	
+                //     die(json_encode(['status' => $myar, '$test_newreff' => $test_newreff]));                    
+                // }
+            // } else {
+            //     $myar[] = ["cd" => "0", "msg" => "Could not update old reff data "];				
+            //     exit('{"status":'.json_encode($myar).'}');
+            // }
+        }
+    }
+
+    public function prc_splitplant1(){
+        $this->checkSession();
+        date_default_timezone_set('Asia/Jakarta');			
+        $currrtime = date('Y-m-d H:i:s');
+        $currdate = date('Y-m-d');
+        $myar = [];
         $coldreff = $this->input->post('inoldreff');
         $colditem = $this->input->post('inolditem');
         $coldqty = $this->input->post('inoldqty');
@@ -2793,7 +3035,8 @@ class SER extends CI_Controller {
                     }
                     $ser_insert_ok += $this->SER_mod->insert($preparedStatement);
                 }
-                if($ser_insert_ok==$ca_count){
+                if($ser_insert_ok==$ca_count)
+                {
                     if(count($rsactive)==0){
                         $myar[] = ["cd" => "1", "msg" => "ok ok" ];
                         exit('{"status":'.json_encode($myar).'}');
@@ -2891,31 +3134,58 @@ class SER extends CI_Controller {
                             exit('{"status":'.json_encode($myar).'}');
                         }
                     } elseif($rsactive_wh=="AFWH3") { 
-                        $ret_min = $this->ITH_mod->insert(
-                            [
-                                "ITH_ITMCD" => $colditem,
-                                "ITH_DATE" => $currdate,
-                                "ITH_FORM" => 'SPLIT-FG-LBL',
-                                "ITH_DOC" => $coldjob,
-                                "ITH_QTY" => -$coldqty,
-                                "ITH_SER" => $coldreff,
-                                "ITH_WH" => $rsactive_wh,
-                                "ITH_LOC" => $rsactive_loc,
-                                "ITH_LUPDT" => $currrtime,
-                                "ITH_REMARK" => "WIL-SPLIT",
-                                "ITH_USRID" => $CUSERID
-                            ]
-                        );
-                        if($ret_min>0){ 
+                        #Resume Out Transaction
+                        $uniqueAssy = array_values(array_unique($ca_itmcd));
+                        $test_out_tx = [];
+                        foreach($uniqueAssy as $u)
+                        {
+                            for($i=0; $i<$ca_count; $i++)
+                            {
+                                if( strtoupper($u) === strtoupper($ca_itmcd[$i]) )
+                                {
+                                    $isfound = false;
+                                    foreach($test_out_tx as &$s)
+                                    {
+                                        if( $s['ITH_ITMCD'] === strtoupper($u) )
+                                        {
+                                            $s['ITH_QTY']-=$ca_qty[$i];
+                                            $isfound = true;
+                                            break;
+                                        }
+                                    }
+                                    unset($s);
+
+                                    if( !$isfound )
+                                    {
+                                        $test_out_tx[] = [
+                                            "ITH_ITMCD" => strtoupper($u),
+                                            "ITH_DATE" => $currdate,
+                                            "ITH_FORM" => strtoupper($u)===strtoupper($colditem) ? 'SPLIT-FG-LBL' : 'SPLIT-CNV-FG-OUT',
+                                            "ITH_DOC" => $coldjob,
+                                            "ITH_QTY" => -$ca_qty[$i],
+                                            "ITH_SER" => $coldreff,
+                                            "ITH_WH" => $rsactive_wh,
+                                            "ITH_LOC" => $rsactive_loc,
+                                            "ITH_LUPDT" => $currrtime,
+                                            "ITH_REMARK" => "WIL-SPLIT",
+                                            "ITH_USRID" => $CUSERID
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+                        $ret_min = $this->ITH_mod->insertb($test_out_tx);
+                       
+                        if($ret_min>0)
+                        { 
                             $ith_insert_ok = 0;
                             for($i=0; $i<$ca_count ; $i++){								
                                 if((strpos(strtoupper($colditem),'KD') !== false || 
                                     strpos(strtoupper($colditem),'ASP') !== false 
-                                    ) && (!strpos(strtoupper($ca_itmcd[$i]),'KD') !==false &&
-                                    !strpos(strtoupper($ca_itmcd[$i]),'ASP') !==false
+                                    ) && (!strpos(strtoupper($ca_itmcd[$i]),'KD') !== false &&
+                                    !strpos(strtoupper($ca_itmcd[$i]),'ASP') !== false
                                     )
-                                ) {										
-                                    //echo "TRANSFER TO PRD";
+                                ) {
                                     $ith_insert_ok += $this->ITH_mod->insert(
                                         [
                                             "ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
@@ -2934,8 +3204,8 @@ class SER extends CI_Controller {
                                 } else {
                                     if((!strpos(strtoupper($colditem),'KD') !== false && 
                                         !strpos(strtoupper($colditem),'ASP') !== false 
-                                        ) && (strpos(strtoupper($ca_itmcd[$i]),'KD') !==false || 
-                                        strpos(strtoupper($ca_itmcd[$i]),'ASP') !==false
+                                        ) && (strpos(strtoupper($ca_itmcd[$i]),'KD') !== false || 
+                                        strpos(strtoupper($ca_itmcd[$i]),'ASP') !== false
                                         )
                                     ) {
                                         $ith_insert_ok += $this->ITH_mod->insert(

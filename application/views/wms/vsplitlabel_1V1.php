@@ -911,6 +911,17 @@
             let aisok = [];
             let aremark = [];
             let arawtxt = [];
+
+            if( ttlrows===1 )
+            {
+                if( olditem!==tableku2.rows[0].cells[2].innerText )
+                {
+                    alertify.warning(`Please use Convert Menu`)
+                } else {
+                    alertify.warning(`Please use Relable Menu`)
+                }
+                return 
+            }
             for(let i=0;i<ttlrows;i++){ 
                 areff.push(tableku2.rows[i].cells[0].innerText); 
                 afgtype.push(tableku2.rows[i].cells[1].innerText); 
@@ -937,7 +948,7 @@
                 oldqty = numeral(oldqty).value();
                 $.ajax({
                     type: "post",
-                    url: "<?=base_url('SER/prc_splitplant1')?>",
+                    url: "<?=base_url('SER/xprc_splitplant1')?>",
                     data: {inoldreff: oldreff, inolditem: olditem, inoldjob: oldjob, inoldqty: oldqty
                     ,ina_reff: areff, ina_fgtype : afgtype, ina_itmcd: aitemcd
                     ,ina_lot: alot, ina_qty: aqty, ina_isok: aisok
