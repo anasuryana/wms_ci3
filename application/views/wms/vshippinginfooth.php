@@ -1188,11 +1188,7 @@
                                 case '01':
                                     shpfgoth_e_removebysiindex(shpfgoth_tblrowindexsel);
                                     alertify.message(response.data[0].msg);break;
-                                case '11':
-                                    // let table = $("#shpfgoth_tbl tbody");
-                                    // table.find('tr').eq(shpfgoth_tblrowindexsel).remove();                                
-                                    // shpfgoth_renumberrow();
-                                    // shpfgoth_e_removebysiline(response.data[0].siline);
+                                case '11':                                   
                                     $("#shpfgoth_tbl tbody").empty();
                                     alertify.success(response.data[0].msg);
                                     alertify.message('Please reload document SI to see the changes');

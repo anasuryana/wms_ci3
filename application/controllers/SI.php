@@ -126,8 +126,7 @@ class SI extends CI_Controller {
                         $list .= "'$a_diff[$i]',";
                     }
                     $list = substr($list,0, strlen($list)-1);
-                    $rs_mst_price = $wh=='NFWH4RT' ? $this->XSO_mod->select_latestprice($cbg, $ccustomer,$list) : $this->XSO_mod->select_latestprice_period($cbg, $ccustomer,$list, $fixY,$fixM);
-                    // $rs_mst_price =  $this->XSO_mod->select_latestprice($cbg, $ccustomer,$list) ; 2022-01-10 mega get error , so that this line of ode was used
+                    $rs_mst_price = $wh=='NFWH4RT' ? $this->XSO_mod->select_latestprice($cbg, $ccustomer,$list) : $this->XSO_mod->select_latestprice_period($cbg, $ccustomer,$list, $fixY,$fixM);                    
                     foreach($rs_mst_price as $r){
                         $rs[] = ['SSO2_CPONO' => $cpo
                                 ,'SSO2_ORDQT' => 1
@@ -143,7 +142,7 @@ class SI extends CI_Controller {
                 
             } else {
                 $rs = $this->XSO_mod->selectbyVAR_inmodel_lastso($columns, $citems);
-                if(count($rs)>0){
+                if(!empty($rs)){
                     foreach($rs as &$r){
                         $r['SSO2_ORDQT'] = 1;
                         $r['SSO2_DELQT'] = 0;
@@ -208,10 +207,8 @@ class SI extends CI_Controller {
                 $mlastid++;
                 $newid = 'SI'.$currdate.$mlastid;
                 $datas = [];
-                // echo $cstrloc_u[$u];
                 for($i=0;$i<$ttlitem;$i++){
-                    if($cstrloc_u[$u] == $cstrloc[$i]){						
-                        
+                    if($cstrloc_u[$u] == $cstrloc[$i]){
                         for($k=0;$k<$ttlplot;$k++){
                             if($cp_idx[$k]==strval($i)){
                                 $datap = ['SISO_HLINE' => $newid."-".($i+1),
@@ -221,7 +218,7 @@ class SI extends CI_Controller {
                                     'SISO_LINE' => $k,
                                     'SISO_QTY' => $cp_soqty[$k]
                                 ];
-                                $datasiso = $this->SISO_mod->insert($datap);
+                                $this->SISO_mod->insert($datap);
                             }
                         }
                         $datas[] = [
@@ -246,9 +243,9 @@ class SI extends CI_Controller {
                             'SI_BSGRP' => 'PSI1PPZIEP',
                             'SI_WH' => $cwh,
                             'SI_LUPDT' => $currrtime,
+                            'SI_CREATEDAT' => $currrtime,
                             'SI_USRID' => $this->session->userdata('nama')
-                        ];						 
-                        // }
+                        ];
                     }
                 }
                 $toret += $this->SI_mod->insertb($datas);				
@@ -314,7 +311,7 @@ class SI extends CI_Controller {
                             'SISO_LINE' => $k,
                             'SISO_QTY' => $cp_soqty[$k]
                         ];
-                        $datasiso = $this->SISO_mod->insert($datap);
+                        $this->SISO_mod->insert($datap);
                     }
                 }
                 $datas[] = [
@@ -334,6 +331,7 @@ class SI extends CI_Controller {
                     'SI_LINE' => ($i+1),
                     'SI_WH' => $cwh,
                     'SI_LUPDT' => $currrtime,
+                    'SI_CREATEDAT' => $currrtime,
                     'SI_USRID' => $this->session->userdata('nama')
                 ];				 
             }
@@ -353,24 +351,20 @@ class SI extends CI_Controller {
         header('Content-Type: application/json');
         $csi = $this->input->get('insi');
         $myar = [];
-        $ttlrows = $this->SI_mod->check_Primary(['SI_DOC' => $csi]);
-        if($ttlrows>0){
-            $myar[] = ["cd" => $ttlrows, "msg" => "GO AHEAD"];
-        } else {
-            $myar[] = ["cd" => $ttlrows, "msg" => "SI Doc not found"];
-        }
+        $ttlrows = $this->SI_mod->check_Primary(['SI_DOC' => $csi]);        
+        $myar[] = $ttlrows>0 ? ["cd" => $ttlrows, "msg" => "GO AHEAD"] : ["cd" => $ttlrows, "msg" => "SI Doc not found"];
         die(json_encode($myar));
     }
 
     function checkSIItem(){
-        header('Content-Type: application/json');
-        $csi = $this->input->get('insi');
+        header('Content-Type: application/json');        
         $citem = $this->input->get('initem');
         $myar = [];
         $ttlrows = $this->SI_mod->check_Primary(['SI_LINENO' => $citem]);
         $rssug = [];
         $cwh_out = $_COOKIE["CKPSI_WH"];
-        if($ttlrows>0){
+        if($ttlrows>0)
+        {
             $rsitem = $this->SI_mod->selectItem_by(['SI_LINENO' => $citem]);
             foreach ($rsitem as  $r){
                 $citem = trim($r['SI_ITMCD']);
@@ -379,12 +373,8 @@ class SI extends CI_Controller {
             $myar[] = ["cd" => $ttlrows, "msg" => "GO AHEAD" , "ITMCD" => $citem , "WH" => $cwh_out];
         } else {
             $myar[] = ["cd" => $ttlrows, "msg" => "The item is not found"];
-        }		
-        die('{"data":'.
-        json_encode($myar).
-        ',"datasug":'.
-        json_encode($rssug).
-        '}');
+        }
+        die(json_encode(['data' => $myar, 'datasug' => $rssug]));        
     }
 
     public function search(){
@@ -395,20 +385,11 @@ class SI extends CI_Controller {
         $cby = $this->input->get('inby');
         $clist = $this->input->get('inlist');
         
-        if($clist=='today'){
-            if($cby=='si'){
-                $rs = $this->SI_mod->selectAllg_byDATEVAR($currdt, $ckey);
-            } else {
-                $rs = $this->SI_mod->selectAllg_byDATEVARCUS($currdt, $ckey);
-            }
-        } else {
-            if($cby=='si'){
-                $datal = ['SI_DOC' => $ckey];
-                $rs = $this->SI_mod->selectAllg_byVAR($datal);
-            } else {
-                $datal = ['MCUS_CUSNM' => $ckey];
-                $rs = $this->SI_mod->selectAllg_byVAR($datal);
-            }
+        if($clist=='today'){            
+            $rs = $cby=='si' ? $this->SI_mod->selectAllg_byDATEVAR($currdt, $ckey) : $this->SI_mod->selectAllg_byDATEVARCUS($currdt, $ckey);
+        } else {            
+            $datal = $cby=='si' ? ['SI_DOC' => $ckey] : ['MCUS_CUSNM' => $ckey];            
+            $rs = $this->SI_mod->selectAllg_byVAR($datal);
         }
         echo json_encode($rs);
     }
@@ -420,18 +401,10 @@ class SI extends CI_Controller {
         $cby = $this->input->get('inby');
         $clist = $this->input->get('inlist');
         
-        if($clist=='today'){			
-            if($cby=='si'){							
-                $rs = $this->SI_mod->selectAllg_byDATEVARoth($currdt, $ckey);
-            } else {				
-                $rs = $this->SI_mod->selectAllg_byDATEVARCUSoth($currdt, $ckey);
-            }
-        } else {
-            if($cby=='si'){
-                $rs = $this->SI_mod->selectAllg_byVARoth(['SI_DOC' => $ckey]);
-            } else {
-                $rs = $this->SI_mod->selectAllg_byVARoth(['MCUS_CUSNM' => $ckey	]);
-            }
+        if($clist=='today'){            
+            $rs = $cby=='si' ? $this->SI_mod->selectAllg_byDATEVARoth($currdt, $ckey) : $this->SI_mod->selectAllg_byDATEVARCUSoth($currdt, $ckey);            
+        } else {            
+            $rs = $cby=='si' ? $this->SI_mod->selectAllg_byVARoth(['SI_DOC' => $ckey]) : $this->SI_mod->selectAllg_byVARoth(['MCUS_CUSNM' => $ckey	]);            
         }
         echo json_encode($rs);
     }
@@ -496,8 +469,7 @@ class SI extends CI_Controller {
         }
         $pdf = new PDF_Code39e128('L','mm','A4');
         $pdf->AddPage();
-        $hgt_p = $pdf->GetPageHeight();
-        $wid_p = $pdf->GetPageWidth();
+        $hgt_p = $pdf->GetPageHeight();        
         $pdf->SetAutoPageBreak(true,1);
         $pdf->SetMargins(0,0);
         $pdf->SetFont('Arial','B',8);
@@ -517,11 +489,9 @@ class SI extends CI_Controller {
         $pdf->Cell(50,5,'Model',1,0,'C');
         $pdf->Cell(25,5,'ETA',1,0,'C');
         $pdf->Cell(15,5,'QTY',1,0,'C');
-        $pdf->Cell(15,5,'Stock',1,0,'C');
-        // $pdf->Cell(15,5,'Box',1,0,'C');
+        $pdf->Cell(15,5,'Stock',1,0,'C');        
         $pdf->Cell(35,5,'Location',1,0,'C');		
-        $clebar = $pdf->GetStringWidth($pser)+13;
-        //$pdf->Code39(12,4,$pser);		
+        $clebar = $pdf->GetStringWidth($pser)+13;        
         $pdf->Code128(12, 4,trim($pser),$clebar,4);
         $pdf->Text(12,12,$pser);
         
@@ -551,11 +521,9 @@ class SI extends CI_Controller {
                 $pdf->Cell(50,5,'Model',1,0,'C');
                 $pdf->Cell(25,5,'ETA',1,0,'C');
                 $pdf->Cell(15,5,'QTY',1,0,'C');
-                $pdf->Cell(15,5,'Stock',1,0,'C');
-                // $pdf->Cell(15,5,'Box',1,0,'C');
+                $pdf->Cell(15,5,'Stock',1,0,'C');                
                 $pdf->Cell(35,5,'Location',1,0,'C');					
-                $clebar = $pdf->GetStringWidth($pser)+13;
-                //$pdf->Code39(12,4,$pser);
+                $clebar = $pdf->GetStringWidth($pser)+13;                
                 $pdf->Code128(12, 4,trim($pser),$clebar,4);
                 $pdf->Text(12,12,$pser);
                 $pdf->Text(70,12,$myplant);
@@ -589,14 +557,12 @@ class SI extends CI_Controller {
                     $ttlwidth=$pdf->GetStringWidth(trim($r['MITM_ITMD1']));
                     $ukuranfont = $ukuranfont - 0.5;
                 }
-            }
-            //$pdf->SetFont('Arial','',7);
+            }            
             $pdf->Cell(50,$h_content,trim($r['MITM_ITMD1']),1,0,'L');
             $pdf->SetFont('Arial','',8);
             $pdf->Cell(25,$h_content,date_format($mreqdate,"d/m/Y")." ".substr($creqdt[1],0,5),1,0,'C');
             $pdf->Cell(15,$h_content,number_format($r['SI_QTY']),1,0,'R');
-            $pdf->Cell(15,$h_content,number_format($r['STOCKQTY']),1,0,'R');
-            // $pdf->Cell(15,$h_content,'?',1,0,'C');			
+            $pdf->Cell(15,$h_content,number_format($r['STOCKQTY']),1,0,'R');            		
             $thelok = $this->getlocation(trim($r['SI_ITMCD']), $whcode);
             $ttlwidth = $pdf->GetStringWidth($thelok);
             if($ttlwidth > 35){
@@ -667,8 +633,7 @@ class SI extends CI_Controller {
         $pdf->Cell(50,5,'Model',1,0,'C');
         $pdf->Cell(25,5,'ETA',1,0,'C');
         $pdf->Cell(15,5,'QTY',1,0,'R');
-        $pdf->Cell(15,5,'Stock',1,0,'C');
-        // $pdf->Cell(22,5,'Box',1,0,'C');
+        $pdf->Cell(15,5,'Stock',1,0,'C');        
         $pdf->Cell(35,5,'Location',1,0,'C');				
         $clebar = $pdf->GetStringWidth($pser)+10;
         $pdf->Code39(12,4,$pser,0.75);
@@ -700,8 +665,7 @@ class SI extends CI_Controller {
                 $pdf->Cell(50,5,'Model',1,0,'C');
                 $pdf->Cell(25,5,'ETA',1,0,'C');
                 $pdf->Cell(15,5,'QTY',1,0,'R');
-                $pdf->Cell(15,5,'Stock',1,0,'C');
-                // $pdf->Cell(22,5,'Box',1,0,'C');
+                $pdf->Cell(15,5,'Stock',1,0,'C');                
                 $pdf->Cell(35,5,'Location',1,0,'C');				
                 $clebar = $pdf->GetStringWidth($pser)+10;
                 $pdf->Code39(12,4,$pser,0.75);
@@ -741,8 +705,7 @@ class SI extends CI_Controller {
             $pdf->SetFont('Arial','',8);
             $pdf->Cell(25,$h_content,date_format($mreqdate,"d/m/Y")." ".substr($creqdt[1],0,5),1,0,'C');
             $pdf->Cell(15,$h_content,number_format($r['SI_QTY']),1,0,'R');
-            $pdf->Cell(15,$h_content,number_format($r['STOCKQTY']),1,0,'R');
-            // $pdf->Cell(22,$h_content,'?',1,0,'C');		
+            $pdf->Cell(15,$h_content,number_format($r['STOCKQTY']),1,0,'R');            
             $thelok = $this->getlocation(trim($r['SI_ITMCD']), $whcode);
             $ttlwidth = $pdf->GetStringWidth($thelok);
             if($ttlwidth > 35){
@@ -814,8 +777,6 @@ class SI extends CI_Controller {
         $ttlitem = count($citem);
         $ADDAFF = 0;
         $EDITAFF = 0;
-        $sini = '';
-        $sini2 = '';
 
         if($ttlitem>0){	
             $this->SI_mod->updatebyId(['SI_BSGRP' => $cbg,'SI_CUSCD' => $ccus ], ['SI_DOC' => $csi] );
@@ -831,8 +792,9 @@ class SI extends CI_Controller {
                     'SI_QTY' => str_replace(',','',$creqqty[$i]),
                     'SI_REQDT' => $creqdate[$i],
                     'SI_RMRK' => $crmrk[$i],
-                    'SI_HRMRK' => $cplant[$i]
-                    ,'SI_WH' => $cwh
+                    'SI_HRMRK' => $cplant[$i],
+                    'SI_LUPDT' => $currrtime,
+                    'SI_WH' => $cwh
                 ];
                 
                 $tempscannedqty = 0;
@@ -855,8 +817,7 @@ class SI extends CI_Controller {
                     for($k=0;$k<$ttlplot;$k++){
                         $lastsisoline = $this->SISO_mod->select_lastsisoline($csi."-".($ttldata+1));
                         $lastsisoline++;
-                        if($cp_idx[$k]==strval($i) and $csiline[$k]==''){
-                            $sini2.="[$i$k] sino";
+                        if($cp_idx[$k]==strval($i) and $csiline[$k]==''){                            
                             $datap = ['SISO_HLINE' => $csi."-".($ttldata+1),
                                 'SISO_CPONO' => $cp_so[$k],
                                 'SISO_SOLINE' => $cp_soline[$k],
@@ -864,7 +825,7 @@ class SI extends CI_Controller {
                                 'SISO_LINE' => $lastsisoline,
                                 'SISO_QTY' => $cp_soqty[$k]
                             ];
-                            $datasiso = $this->SISO_mod->insert($datap);
+                            $this->SISO_mod->insert($datap);
                         }
                     }
                     
@@ -890,6 +851,7 @@ class SI extends CI_Controller {
                         'SI_LINE' => ($ttldata+1),
                         'SI_WH' => $cwh,
                         'SI_LUPDT' => $currrtime,
+                        'SI_CREATEDAT' => $currrtime,
                         'SI_USRID' => $this->session->userdata('nama')
                     ];
                     $toret = $this->SI_mod->insert($datas);
@@ -897,8 +859,7 @@ class SI extends CI_Controller {
                 } else {									
                     for($k=0;$k<$ttlplot;$k++){
                         $lastsisoline = $this->SISO_mod->select_lastsisoline($clineno[$i]);
-                        $lastsisoline++;
-                        $sini.=" ". $cp_idx[$k]."==".$i."[".$csiline[$k]."]";
+                        $lastsisoline++;                        
                         if($cp_idx[$k]==strval($i) and $csiline[$k]==''){
                             $datap = ['SISO_HLINE' => $clineno[$i],
                                 'SISO_CPONO' => $cp_so[$k],
@@ -907,39 +868,29 @@ class SI extends CI_Controller {
                                 'SISO_LINE' => $lastsisoline,
                                 'SISO_QTY' => $cp_soqty[$k]
                             ];
-                            $datasiso = $this->SISO_mod->insert($datap);
-                            $sini2.="[$i$k] sini $datasiso";
+                            $this->SISO_mod->insert($datap);                            
                         }
                     }					
                 }
             }
             
             $myar = [];
-
             if(($ADDAFF>0) || ($EDITAFF>0)){
                 $toret=1;
-                $datar = ["cd" => $toret, "msg" => "Updated ($EDITAFF), Saved ($ADDAFF)" , "ref" => $csi];
-                array_push($myar, $datar);
-                echo '{"data":';
-                echo json_encode($myar);
-                echo '}';
+                $datar = ["cd" => $toret, "msg" => "Updated ($EDITAFF), Saved ($ADDAFF)" , "ref" => $csi];                
             } else{
                 $datar = ["cd" => 0, "msg" => "Could not Update"];
-                array_push($myar, $datar);
-                echo '{"data":';
-                echo json_encode($myar);
-                echo '}';
             }
+            $myar[] = $datar;
+            die(json_encode(['data' => $myar]));
         }
     }
 
     public function scanbalancing(){
         header('Content-Type: application/json');
         $csi = $this->input->get('insi');
-        $rs= $this->SI_mod->selectScanbySI($csi);
-        echo '{"data":';
-        echo json_encode($rs);
-        echo '}';
+        $rs = $this->SI_mod->selectScanbySI($csi);
+        die(json_encode(['data' => $rs]));        
     }	
 
     public function scanlabel(){
@@ -1145,37 +1096,25 @@ class SI extends CI_Controller {
     public function remove(){
         $csi = $this->input->get('insi');
         $line = $this->input->get('inline');
-        $cdocreff = $this->input->get('indocreff');
-        $citem = $this->input->get('initem');		
         $datac = ['SISCN_LINENO' => $line];
         $rssiscan = $this->SISCN_mod->selectAll_by($datac);
-        $myar = array();
+        $myar = [];
         $ttlscan = count($rssiscan);
-        if($ttlscan>0){
-            $datar = array("cd" => "00", "msg" => "Could not delete, because the item is already scanned" );
-            array_push($myar, $datar);
-            echo '{"data":';
-            echo json_encode($myar);
-            echo '}';
+        if($ttlscan>0){            
+            $myar[] = ["cd" => "00", "msg" => "Could not delete, because the item is already scanned"]; 
+            die(json_encode(['data' => $myar]));
         } else {			
             $datac = ['SI_LINENO' => $line];
             $toret = $this->SI_mod->deleteby_filter($datac);
             if($toret>0){
                 $toret_plot = $this->SISO_mod->deleteby_filter(['SISO_HLINE' => $line]);
-                $additionalinfo = ($toret_plot>0) ? '.' : '';				
-                $datar = ["cd" => "11", "msg" => "Deleted ".$additionalinfo , "ref" => $csi, "siline" => $line];
-                
-                array_push($myar, $datar);
-                echo '{"data":';
-                echo json_encode($myar);
-                echo '}';
-            } else {
-                $datar = array("cd" => "01", "msg" => "Could not be deleted " , "ref" => $csi);
-                array_push($myar, $datar);
-                echo '{"data":';
-                echo json_encode($myar);
-                echo '}';
-            }			
+                $additionalinfo = ($toret_plot>0) ? '.' : '';
+                $myar[] = ["cd" => "11", "msg" => "Deleted ".$additionalinfo , "ref" => $csi, "siline" => $line]; 
+                die(json_encode(['data' => $myar]));
+            } else {                
+                $myar[] = ["cd" => "01", "msg" => "Could not be deleted " , "ref" => $csi]; 
+                die(json_encode(['data' => $myar]));
+            }
         }
     }
 
@@ -1207,8 +1146,10 @@ class SI extends CI_Controller {
                     $itemListStr = substr($itemListStr,0,strlen($itemListStr)-1);
                 }
                 $rs_mst_price = $this->XSO_mod->select_latestprice($cbg, $ccus,$itemListStr);
-                foreach ($rs as &$r){ 
-                    if($r['SISO_SOLINE']=='X'){ 
+                foreach ($rs as &$r) 
+                {
+                    if($r['SISO_SOLINE']==='X' && !$r['SISO_SOLINE'])
+                    {
                         foreach($rs_mst_price as $k){ 
                             $r['SI_DOCREFFPRC'] = substr($k['MSPR_SLPRC'],0,1) =='.' ? '0'.$k['MSPR_SLPRC'] : $k['MSPR_SLPRC'];
                         }
@@ -1251,9 +1192,7 @@ class SI extends CI_Controller {
                 }
                 break;
         }
-        echo '{"data":';	
-        echo json_encode($rs);
-        echo '}';
+        die(json_encode(['data' => $rs]));        
     }
 
     public function print_pickingdoc(){
@@ -1272,8 +1211,7 @@ class SI extends CI_Controller {
                 $rspickingres = $this->SISCN_mod->select_serah_terima($pser);
                 $pdf = new PDF_Code39e128('P','mm','A4');
                 $pdf->AliasNbPages();
-                $pdf->AddPage();
-                $hgt_p = $pdf->GetPageHeight();
+                $pdf->AddPage();                
                 $wid_p = $pdf->GetPageWidth();
                 $pdf->SetAutoPageBreak(true,1);
                 $pdf->SetMargins(0,0);
@@ -1435,8 +1373,7 @@ class SI extends CI_Controller {
         
                         $cY = 30;
                     }
-
-                    $cellWidth = 30;
+                    
                     $cellHeight = 5;
                     $line = 1;
         

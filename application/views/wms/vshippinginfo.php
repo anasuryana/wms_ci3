@@ -850,7 +850,7 @@
             if(tabelplotebody0.rows[i].cells[0].innerText.trim()==pso 
                 && tabelplotebody0.rows[i].cells[1].innerText.trim()==pso_line.toString()
                 && tabelplotebody0.rows[i].cells[2].innerText.trim()==passycode
-                ){//&& tabelplotebody0.rows[i].cells[6].innerText.trim()==''
+                ){
                     qtyplot += numeral(tabelplotebody0.rows[i].cells[5].innerText).value();
                 }
         }        
@@ -900,7 +900,7 @@
                     let cln = mtabel.cloneNode(true);
                     myfrag.appendChild(cln);                    
                     let tabell = myfrag.getElementById("shpfg_tbosso");                    
-                    let tableku2 = tabell.getElementsByTagName("tbody")[0];//document.getElementById("rprod_tblwo").getElementsByTagName("tbody")[0];
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0]
                     let newrow, newcell, newText;
                     tableku2.innerHTML='';
                     let ttlrows = response.data.length;
@@ -969,15 +969,13 @@
                                 mloc = tableku2.rows[i].cells[11].innerText.trim();                                
                                 if(mitem == itemcd && mloc==mstrloc && mqty > 0){
                                     tableku2.rows[i].cells[3].classList.add('anastylesel');
-                                    mcnt_sel++;
-                                    // e.target.classList.add('anastylesel');
+                                    mcnt_sel++;                                    
                                 }
                             }
                             if(mcnt_sel==1){
                                 for(let i=0;i<ttlrows;i++){
                                     tableku2.rows[i].cells[3].classList.remove('anastylesel');                                   
-                                }
-                                
+                                }                                
                             }
                         }                        
                     }
@@ -1015,8 +1013,7 @@
                 tableku2.rows[temp_index[0]].cells[3].classList.remove('anastylesel');
                 for(let i=1; i< cnt_sel; i++){
                     tableku2.rows[temp_index[i]].cells[8].innerText = 0;
-                    tableku2.rows[temp_index[i]].cells[3].classList.remove('anastylesel');
-                    //tableku2.deleteRow(temp_index[i]);
+                    tableku2.rows[temp_index[i]].cells[3].classList.remove('anastylesel');                    
                 }
                 shpfg_reinitsort();
             }
@@ -1201,8 +1198,7 @@
                                 } else{
                                     alertify.message(response.data[0].msg);
                                     document.getElementById('shpfg_txt_doc').value=response.data[0].ref;
-                                    $("#shpfg_tbl tbody").empty();
-                                    // document.getElementById('shpfg_btnsave').disabled = false;
+                                    $("#shpfg_tbl tbody").empty();                                    
                                     document.getElementById('shpfg_isedit').value="y";                                    
                                 }
                             }, error:function(xhr,xopt,xthrow){
@@ -1230,10 +1226,8 @@
         let tabell = document.getElementById("shpfg_tbl");                    
         let tableku2 = tabell.getElementsByTagName("tbody")[0];
         let ttlrowsv = tableku2.getElementsByTagName("tr").length;
-        for(let v=0;v<ttlrowsv;v++){
-            // console.log('getindex : '+v +', with si : '+psiline);
-            if (tableku2.rows[v].cells[14].innerText==psiline){
-                // console.log('getindex found : '+v +', with si : '+psiline);
+        for(let v=0;v<ttlrowsv;v++){            
+            if (tableku2.rows[v].cells[14].innerText==psiline){                
                 toret= v;break;
             }
         }
@@ -1380,41 +1374,33 @@
     function shpfg_e_kdown (event){
         if (event.ctrlKey) { 
             switch(event.keyCode){
-                case 78:
-                    //if ($("#shpfg_tbl").length>0){
-                        shpfg_btnadd();
-                    //}
+                case 78:                    
+                    shpfg_btnadd();                    
                     break;
-                case 68:
-                    //if ($("#shpfg_tbl").length>0){
-                        $("#shpfg_tbl tbody").find('tr').eq(shpfg_tblrowindexsel).remove();                        
-                    //}
+                case 68:                    
+                    $("#shpfg_tbl tbody").find('tr').eq(shpfg_tblrowindexsel).remove();
                     break;
             }
         } else {            
             let merow =$('#shpfg_tbl tbody');
             let meselcell= merow.find("tr").eq(shpfg_tblrowindexsel).find("td").eq(shpfg_tblcolindexsel).attr("contentEditable"); 
             switch(event.keyCode){
-                case 40: //arrow down            
-                    // if (typeof(elem) != 'undefined' && elem != null){ //$("#shpfg_tbl").length>0
-                        if(shpfg_tblrowindexsel<(shpfg_tbllength-1)){     
-                            merow.find('tr').eq(shpfg_tblrowindexsel).find('td').removeClass('mycellactive');                   
-                            shpfg_tblrowindexsel++;
-                            merow.find('tr').eq(shpfg_tblrowindexsel).find('td').eq(shpfg_tblcolindexsel).addClass('mycellactive');
-                        }
-                    // }
+                case 40: //arrow down
+                    if(shpfg_tblrowindexsel<(shpfg_tbllength-1)){     
+                        merow.find('tr').eq(shpfg_tblrowindexsel).find('td').removeClass('mycellactive');                   
+                        shpfg_tblrowindexsel++;
+                        merow.find('tr').eq(shpfg_tblrowindexsel).find('td').eq(shpfg_tblcolindexsel).addClass('mycellactive');
+                    }                    
                     break;
-                case 38: //arrow up
-                    // if (typeof(elem) != 'undefined' && elem != null){ //$("#shpfg_tbl").length>0
-                        if(shpfg_tblrowindexsel>0){     
-                            merow.find('tr').eq(shpfg_tblrowindexsel).find('td').removeClass('mycellactive');                   
-                            --shpfg_tblrowindexsel;
-                            merow.find('tr').eq(shpfg_tblrowindexsel).find('td').eq(shpfg_tblcolindexsel).addClass('mycellactive');
-                        }
-                    // }
+                case 38: //arrow up                    
+                    if(shpfg_tblrowindexsel>0){     
+                        merow.find('tr').eq(shpfg_tblrowindexsel).find('td').removeClass('mycellactive');                   
+                        --shpfg_tblrowindexsel;
+                        merow.find('tr').eq(shpfg_tblrowindexsel).find('td').eq(shpfg_tblcolindexsel).addClass('mycellactive');
+                    }                    
                     break;
                 case 39: //arrow right
-                    if (typeof meselcell === 'undefined'){ //$("#shpfg_tbl").length>0
+                    if (typeof meselcell === 'undefined'){
                         merow.find('tr').eq(shpfg_tblrowindexsel).find('td').removeClass('mycellactive');                   
                         if(shpfg_tblcolindexsel<13){     
                             shpfg_tblcolindexsel++;
@@ -1427,7 +1413,7 @@
                     break;
                 case 37: //arrow left
                                       
-                    if (typeof meselcell === 'undefined'){ //$("#shpfg_tbl").length>0
+                    if (typeof meselcell === 'undefined'){
                         merow.find('tr').eq(shpfg_tblrowindexsel).find('td').removeClass('mycellactive');                   
                         if(shpfg_tblcolindexsel>0){     
                             --shpfg_tblcolindexsel;
@@ -1462,9 +1448,7 @@
     });
     $('#shpfg_tbl tbody').on( 'click', 'td', function () {            
         shpfg_tblcolindexsel = $(this).index();         
-    });
-
-  
+    });  
 
     shpfg_e_col1 = function (e) { 
         e = e || window.event;
@@ -1579,7 +1563,7 @@
                     shpfg_btnadd();
                 }
             }
-            //console.log("startin:"+ startin);
+            
             let b = 0;
             for(let i=startin;i<(mytrlength);i++){                
                 let ttlcol = mytbody.getElementsByTagName('tr')[i].getElementsByTagName('td').length;               
