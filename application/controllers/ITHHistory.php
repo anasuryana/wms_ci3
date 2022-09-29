@@ -48,4 +48,31 @@ class ITHHistory extends CI_Controller {
 		die(json_encode(['data' => $rsTobeSaved]));
 	}
 
+	function inventory_saldo_awal()
+	{
+		header('Content-Type: application/json');
+		$date = $this->input->get('date');
+		$itemcode = $this->input->get('itemcode');
+		$rs = $this->ITH_mod->select_inventory_saldo_awal($date, $itemcode);
+		die(json_encode(['data' => $rs]));
+	}
+	function inventory_pemasukan()
+	{
+		header('Content-Type: application/json');
+		$datefrom = $this->input->get('date_from');
+		$dateto = $this->input->get('date_to');
+		$itemcode = $this->input->get('itemcode');
+		$rs = $this->ITH_mod->select_inventory_pemasukan($datefrom, $dateto, $itemcode);
+		die(json_encode(['data' => $rs]));
+	}	
+	function inventory_pengeluaran()
+	{
+		header('Content-Type: application/json');
+		$datefrom = $this->input->get('date_from');
+		$dateto = $this->input->get('date_to');
+		$itemcode = $this->input->get('itemcode');
+		$rs = $this->ITH_mod->select_inventory_pengeluaran($datefrom, $dateto, $itemcode);
+		die(json_encode(['data' => $rs]));
+	}	
+
 }

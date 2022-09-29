@@ -1902,4 +1902,106 @@ class ITH_mod extends CI_Model {
         $query =  $this->db->query($qry, [$psn]);
         return $query->result_array();
     }
+
+    function select_inventory_saldo_awal($date, $itemcode)
+    {
+        $qry = "SELECT 
+                            it3a.ITH_ITMCD,
+                            convert(integer,COALESCE(SUM(it3a.ITH_QTY),0)) AS ITH_QTY,
+                            ITH_WH
+                        FROM PSI_WMS.dbo.v_ith_tblc it3a
+                        WHERE it3a.ITH_DATEC < ?
+                        and ITH_ITMCD=?
+                        AND it3a.ITH_WH IN (
+                            'AFWH3',
+                            'QAFG',
+                            'AWIP1',
+                            'ARSHP',
+                            'ARSHPRTN',
+                            'ARSHPRTN2',
+                            'AFQART',
+                            'AFWH3RT',
+                            'NFWH4RT')
+                        GROUP BY 
+                            it3a.ITH_ITMCD,ITH_WH";
+        $query =  $this->db->query($qry, [ $date,$itemcode]);
+        return $query->result_array();
+    }
+
+    function select_inventory_pemasukan($datefrom, $dateto, $itemcode)
+    {
+        $qry = "SELECT 
+                    it3a.ITH_ITMCD,
+                    COALESCE(SUM(it3a.ITH_QTY),0) AS ITH_QTY,
+                    ITH_WH
+                FROM PSI_WMS.dbo.v_ith_tblc it3a
+                WHERE it3a.ITH_DATEC >= ? AND it3a.ITH_DATEC <= ?
+                AND it3a.ITH_QTY > 0
+                AND it3a.ITH_WH IN ('AFWH3','AWIP1','AFQART')
+                AND it3a.ITH_FORM IN (
+                    'INC-WH-FG',
+                    'CONVERT-IN',
+			        'INC',
+			        'ADJ-INC',
+			        'ADJ-I-INC',
+			        'ADJ-IN',
+			        'INC-WHRTN-FG-C'
+                )
+                AND (
+                    CASE WHEN it3a.ITH_FORM = 'SPLIT-FG-LBL'
+                    THEN 
+                        CASE WHEN it3a.ITH_REMARK = 'AFT-SPLIT'
+                        THEN 1
+                        ELSE 0 END
+                    ELSE 1 END
+                ) = 1 
+                AND ITH_ITMCD=?
+                GROUP BY 
+                    it3a.ITH_ITMCD,ITH_WH";
+        $query =  $this->db->query($qry, [ $datefrom, $dateto,$itemcode]);
+        return $query->result_array();
+    }
+
+    function select_inventory_pengeluaran($datefrom, $dateto, $itemcode)
+    {
+        $qry = "SELECT it3a.ITH_ITMCD,
+                        COALESCE(SUM(it3a.ITH_QTY),0) AS ITH_QTY,
+                        ITH_WH
+                    FROM PSI_WMS.dbo.v_ith_tblc it3a
+                    WHERE it3a.ITH_DATEC >= ? AND it3a.ITH_DATEC <= ?
+                    AND it3a.ITH_WH IN (
+                        'AFWH3',
+                        'AFQART',
+                        'AWIP1',
+                        'QAFG',
+                        'ARSHP',
+                        'ARSHPRTN',
+                        'ARSHPRTN2',
+                        'AFWH4RT',
+                        'NFWH4RT'
+                    )
+                    AND it3a.ITH_FORM IN (
+                        'CONVERT-OUT',
+                        'OUT-PEN-FG',
+                        'OUT-USE',
+                        'OUT-SHP-FG',
+                        'ADJ-OUT',
+                        'ADJ-I-OUT',
+                        'SPLIT-CNV-FG-OUT',
+                        'OUT-C'
+                    )
+                    AND (
+                        CASE WHEN it3a.ITH_FORM = 'SPLIT-FG-LBL'
+                        THEN 
+                            CASE WHEN it3a.ITH_REMARK = 'AFT-SPLIT'
+                            THEN 1
+                            ELSE 0 END
+                        ELSE 1 END
+                    ) = 1 
+                    and ITH_ITMCD=?
+                    GROUP BY 
+                        it3a.ITH_ITMCD,ITH_WH";
+        $query =  $this->db->query($qry, [ $datefrom, $dateto,$itemcode]);
+        return $query->result_array();
+    }
 }
