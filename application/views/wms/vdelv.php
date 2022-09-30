@@ -3408,7 +3408,7 @@ $("#txfg_btn_save").click(function (e) {
                 type: "POST",
                 url: "<?=base_url('DELV/edit')?>",
                 data: {intxid: mtxid, intxdt: mtxdt, ininv: mtxinv, ininvsmt: mtxinvsmt, inconsig: mtxconsig, incus: scr_txfg_cust,
-                incustdo: mtxcustomerDO,
+                incustdo: mtxcustomerDO,  iconfirmation: 'n',
                 intrans: mtxtransport, indescr: mtxdescription, inremark: mtxremark, inbg: mbg, incustoms_doc: mcustomdoc,
                 ina_ser: txfg_ar_item_ser, ina_qty: txfg_ar_item_qty, ina_si: txfg_ar_si, ina_so: txfg_ar_so, indodt:  mtxdodt
                 ,ina_sono: aSO, ina_soitem: aItem, ina_soqty: aQty
@@ -3422,6 +3422,41 @@ $("#txfg_btn_save").click(function (e) {
                             break;
                         case '11':
                             alertify.success(response[0].msg);
+                            break;
+                        case '22':
+                            if(confirm(response[0].msg))
+                            {
+                                txfg_btn_save.disabled = true
+                                $.ajax({
+                                    type: "POST",
+                                    url: "<?=base_url('DELV/edit')?>",
+                                    data: {intxid: mtxid, intxdt: mtxdt, ininv: mtxinv, ininvsmt: mtxinvsmt, inconsig: mtxconsig, incus: scr_txfg_cust,
+                                            incustdo: mtxcustomerDO,iconfirmation: 'y',
+                                            intrans: mtxtransport, indescr: mtxdescription, inremark: mtxremark, inbg: mbg, incustoms_doc: mcustomdoc,
+                                            ina_ser: txfg_ar_item_ser, ina_qty: txfg_ar_item_qty, ina_si: txfg_ar_si, ina_so: txfg_ar_so, indodt:  mtxdodt
+                                            ,ina_sono: aSO, ina_soitem: aItem, ina_soqty: aQty
+                                            ,xa_qty: aXQty, xa_so: aXSO, xa_soline: aXSOLine, xa_siline: aXSILine},
+                                    dataType: "json",
+                                    success: function (response) {
+                                        txfg_btn_save.disabled = false
+                                        switch(response[0].cd){
+                                            case '00':
+                                                alertify.warning(response[0].msg);
+                                                break;
+                                            case '11':
+                                                document.getElementById('txfg_txt_id').value=response[0].dono; 
+                                                txfg_f_getdetail(response[0].dono);
+                                                alertify.success(response[0].msg);
+                                                break;
+                                            default:
+                                                alertify.warning(response[0].msg);
+                                        }
+                                    }, error: function(xhr,xopt,xthrow){
+                                        alertify.error(xthrow)
+                                        txfg_btn_save.disabled = false
+                                    }
+                                })
+                            }
                             break;
                     }
                 }, error: function(xhr,xopt,xthrow){
@@ -5305,7 +5340,7 @@ document.getElementById('txfg_cmb_jenisTPB').value='1';
 
 function txfg_btn_changeprice_e_click()
 {
-    if(txfg_ar_item_ser.length>3)
+    if(txfg_ar_item_ser.length>0)
     {
         if(txfg_gt_rm.innerText == 'Please wait')
         {

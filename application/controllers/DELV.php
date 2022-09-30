@@ -1497,6 +1497,7 @@ class DELV extends CI_Controller {
         $ctxa_sono = $this->input->post('ina_sono');
         $ctxa_soitem = $this->input->post('ina_soitem');
         $ctxa_soqty = $this->input->post('ina_soqty');
+        $cconfirmation = $this->input->post('iconfirmation');
         $soCount = 0;
         if(isset($ctxa_sono)) {
             if(is_array($ctxa_sono)) {
@@ -1517,6 +1518,23 @@ class DELV extends CI_Controller {
                 die(json_encode($myar)) ;
             }
         }
+
+        /* 
+            context : compare selected do and issue date Sales Order
+            purpose : to warn user if they select the right Sales Order
+            */
+            if($cbg==='PSI1PPZIEP')
+            {
+                $monthOfDO = explode('-',$ctxdodt)[1];
+                $reffnoStr = is_array($ctxa_ser) ? "'".implode("','", $ctxa_ser)."'" : "''";
+                $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO );
+                if(!empty($rssiso) && $cconfirmation==='n')
+                {
+                    $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
+                                Are you sure want to continue ?" ];                     
+                    die(json_encode($myar)) ;
+                }
+            }
 
         $xa_qty = $this->input->post('xa_qty');
         $xa_so = $this->input->post('xa_so');
