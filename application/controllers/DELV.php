@@ -1519,7 +1519,9 @@ class DELV extends CI_Controller {
             }
         }
 
-        /* 
+        if( substr($ctxid,-3) != 'RTN')
+        {
+            /* 
             context : compare selected do and issue date Sales Order
             purpose : to warn user if they select the right Sales Order
             */
@@ -1535,6 +1537,7 @@ class DELV extends CI_Controller {
                     die(json_encode($myar)) ;
                 }
             }
+        }
 
         $xa_qty = $this->input->post('xa_qty');
         $xa_so = $this->input->post('xa_so');
