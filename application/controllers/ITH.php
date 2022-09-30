@@ -1053,7 +1053,7 @@ class ITH extends CI_Controller {
         $sheet->setCellValueByColumnAndRow(6,1, 'Unit Measurement');
         $sheet->setCellValueByColumnAndRow(7,1, 'ID');	
         $sheet->fromArray($rs, NULL, 'A2');
-        $stringjudul = "stock  ".$dt;
+        $stringjudul = "stock $wh at ".$dt;
         $writer = new Xlsx($spreadsheet);
         $filename=$stringjudul; //save our workbook as this file name
         
@@ -1135,7 +1135,7 @@ class ITH extends CI_Controller {
             }
         }
 
-        $stringjudul = "stock ".$dt;
+        $stringjudul = "stock $wh at ".$dt;
         $writer = new Xlsx($spreadsheet);
         $filename=$stringjudul; //save our workbook as this file name
         
@@ -1390,7 +1390,7 @@ class ITH extends CI_Controller {
         $myar = [];
         if(count($rsbef) >0){
             foreach($rsbef as $t){
-                $rstoret[] = ['ITH_ITMCD' => $t['ITH_ITMCD'], 'MITM_ITMD1' => $t['MITM_ITMD1'] , 'ITH_FORM' => '', 'ITH_DOC' => '', 'ITH_DATEKU' => '' , 'INCQTY' => '', 'OUTQTY' => '',  'ITH_BAL' => $t['BALQTY'], 'UOM' => $t['UOM']];
+                $rstoret[] = ['ITH_ITMCD' => $t['ITH_ITMCD'], 'MITM_ITMD1' => $t['MITM_ITMD1'] , 'ITH_FORM' => '', 'ITH_DOC' => '', 'ITH_DATEKU' => '' , 'INCQTY' => '', 'OUTQTY' => '',  'ITH_BAL' => $t['BALQTY'], 'UOM' => $t['UOM'], 'ITH_DATEC' => ''];
                 foreach($rs as $r){
                     if($r['ITH_ITMCD'] == $t['ITH_ITMCD']) {
                         $rstoret[]= $r;
@@ -3529,5 +3529,25 @@ class ITH extends CI_Controller {
 		}
 		unset($r);
         die(json_encode(['status' => ['cd' => '1', 'msg' => $affectedRows.' row(s) updated']]));
+    }
+
+    function raw_ith_remove()
+    {
+        header('Content-Type: application/json');
+		$item_code = $this->input->post('item_code');
+		$item_location = $this->input->post('item_location');
+		$item_event = $this->input->post('item_event');		
+		$item_qty = $this->input->post('item_qty');
+		$datetime_tx = $this->input->post('datetime_tx'); 
+        $where = [
+            'ITH_ITMCD' => $item_code,
+            'ITH_WH' => $item_location,
+            'ITH_FORM' => $item_event,            
+            'ITH_QTY' => $item_qty,
+            'ITH_LUPDT' => $datetime_tx,
+        ];
+        $affectedRows = $this->ITH_mod->deletebyID($where);
+        $myar[] = $affectedRows ? ['cd' => '1', 'msg' => 'ok'] : ['cd' => '0', 'msg' => 'could not be deleted'];
+        die(json_encode(['status' => $myar, 'filter' => $where]));
     }
 }

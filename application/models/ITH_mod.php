@@ -46,6 +46,17 @@ class ITH_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
     }
+    public function select_view_all_by($pwhere)
+    {			
+        $this->db->select("a.*,b.*,CONCAT(MSTEMP_FNM , ' ', MSTEMP_LNM) PIC");
+        $this->db->from('v_ith_tblc a');
+        $this->db->join('MITM_TBL b', 'a.ITH_ITMCD=b.MITM_ITMCD');  
+        $this->db->join('MSTEMP_TBL c', 'ITH_USRID=MSTEMP_ID','left');
+        $this->db->where($pwhere);
+        $this->db->order_by('ITH_LUPDT ASC,ITH_FORM DESC,ITH_WH, ITH_QTY ASC');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
     
     public function insert($data)
     {
@@ -962,6 +973,7 @@ class ITH_mod extends CI_Model {
         $this->db->query($qry, array($info,$puser,$pser));
         return $this->db->affected_rows();
     }	
+    
 
     public function select_fg_location_ploc($pitem){
         $qry = "select ITH_LOC,SER_ITMID,SUM(ITH_QTY) TTLQTY, COUNT(*) TTLLBL, MAX(LTS_TIME) XTIME from vr_vis_fg
@@ -1083,7 +1095,8 @@ class ITH_mod extends CI_Model {
         $qry = "SELECT UPPER(ITH_ITMCD) ITH_ITMCD,rtrim(MITM_ITMD1) MITM_ITMD1,ITH_FORM,ITH_DOC,FORMAT(ITH_DATEC,'dd-MMM-yy') ITH_DATEKU,
                 ISNULL(SUM(CASE WHEN ITH_QTY>0 THEN ITH_QTY END),0) INCQTY ,
                 ISNULL(SUM(CASE WHEN ITH_QTY<0 THEN ITH_QTY END),0) OUTQTY , 
-                0 ITH_BAL,MAX(ITH_LUPDT) ITH_LUPDT,MIN(ITH_REMARK) ITH_REMARK 
+                0 ITH_BAL,MAX(ITH_LUPDT) ITH_LUPDT,MIN(ITH_REMARK) ITH_REMARK ,
+                ITH_DATEC
             FROM v_ith_tblc LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
             WHERE ITH_WH=? and ITH_ITMCD like ? AND  ITH_DATEC between ? and ?
                 GROUP BY ITH_ITMCD, rtrim(MITM_ITMD1),ITH_DATEC,ITH_FORM,ITH_DOC,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm')

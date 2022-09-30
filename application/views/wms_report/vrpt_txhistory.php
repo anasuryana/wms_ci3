@@ -88,6 +88,44 @@
         </div>           	
     </div>
 </div>
+<div class="modal fade" id="rhistory_detail_tx_mod">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Detail Transaction</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col">
+                    <div class="table-responsive" id="rhistory_tbldetail_div">
+                        <table id="rhistory_tbldetail" class="table table-hover table-sm table-bordered caption-top">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item Code</th>
+                                    <th class="text-center">Warehouse</th>
+                                    <th class="text-center">Event</th>
+                                    <th class="text-center">Date time</th>
+                                    <th class="text-end">Qty</th>
+                                    <th class="text-center">.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            
+        </div>
+      </div>
+    </div>
+</div>
 <script>
     $("#rhistory_divku").css('height', $(window).height()   
     -document.getElementById('rhistory_stack1').offsetHeight 
@@ -157,14 +195,33 @@
                             mhead = false;
                         }                      
                         newcell = newrow.insertCell(0);
-                        newcell.innerHTML = response.data[i].ITH_DATEKU                        
-                        newcell = newrow.insertCell(1)                        
+                        newcell.innerHTML = response.data[i].ITH_DATEKU
+                        newcell = newrow.insertCell(1)
                         newcell.innerHTML = response.data[i].ITH_ITMCD
                         newcell = newrow.insertCell(2)
-                        newcell.innerHTML = response.data[i].MITM_ITMD1                        
+                        newcell.innerHTML = response.data[i].MITM_ITMD1
                         newcell = newrow.insertCell(3);
-                        newcell.innerHTML = wh                        
+                        newcell.innerHTML = wh
                         newcell = newrow.insertCell(4);
+                        if(response.data[i].ITH_FORM)
+                        {
+                            if(response.data[i].ITH_FORM.includes('ADJ'))
+                            {
+                                newcell.style.cssText = 'cursor:pointer'
+                                newcell.onclick = () => {
+                                    rhistory_fun_get_detail_tx(
+                                        {
+                                            item_code : response.data[i].ITH_ITMCD,
+                                            item_location : wh,
+                                            item_event : response.data[i].ITH_FORM,
+                                            item_date : response.data[i].ITH_DATEC,
+                                        }
+                                    )
+                                    let mymodal = new bootstrap.Modal(document.getElementById("rhistory_detail_tx_mod"), {backdrop: 'static', keyboard: false})
+                                    mymodal.show()                                    
+                                }
+                            }
+                        }
                         newcell.innerHTML = response.data[i].ITH_FORM                        
                         newcell = newrow.insertCell(5);
                         if(!mhead){newcell.title = response.data[i].ITH_REMARK}                        
@@ -201,4 +258,74 @@
             }
         });
     });
+
+    function rhistory_fun_get_detail_tx(pFilter)
+    {
+        let mtabel = document.getElementById("rhistory_tbldetail");
+        mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="6" class="text-center"><i>Please wait. . .</i></td></tr>`
+        $.ajax({
+            url: "<?=base_url('ITHHistory/raw_ith')?>",
+            data: pFilter,
+            dataType: "json",
+            success: function (response) {
+                let ttlrows = response.data.length;                
+                let mydes = document.getElementById("rhistory_tbldetail_div");
+                let myfrag = document.createDocumentFragment();
+                let cln = mtabel.cloneNode(true);
+                myfrag.appendChild(cln);
+                let tabell = myfrag.getElementById("rhistory_tbldetail");                    
+                let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                let newrow, newcell;
+                tableku2.innerHTML = '';
+                for(let i=0; i< ttlrows; i++)
+                {
+                    newrow = tableku2.insertRow(-1);
+                    newcell = newrow.insertCell(0);
+                    newcell.innerHTML = response.data[i].ITH_ITMCD
+                    newcell = newrow.insertCell(1)
+                    newcell.innerHTML = response.data[i].ITH_WH
+                    newcell = newrow.insertCell(2)
+                    newcell.innerHTML = response.data[i].ITH_FORM
+                    newcell = newrow.insertCell(3)
+                    newcell.innerHTML = response.data[i].ITH_LUPDT
+                    newcell = newrow.insertCell(4)
+                    newcell.innerHTML = response.data[i].ITH_QTY
+                    newcell = newrow.insertCell(5)
+                    newcell.style.cssText = 'cursor:pointer'
+                    newcell.classList.add('bg-danger')
+                    newcell.onclick = (event) => {
+                        event.preventDefault()                        
+                        let _rowindex = event.target.parentNode.rowIndex                        
+                        rhistory_tbldetail.getElementsByTagName('tbody')[0].rows[(_rowindex-1)].remove()
+                        pFilter.item_qty = response.data[i].ITH_QTY
+                        pFilter.datetime_tx = response.data[i].ITH_LUPDT
+                        rhistory_fun_remove(
+                            pFilter
+                        )
+                    }
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = `Remove`
+                }
+                mydes.innerHTML='';
+                mydes.appendChild(myfrag);
+            }, error : function(xhr, xopt, xthrow){                
+                alertify.error(xthrow)
+            }
+        })
+    }
+
+    function rhistory_fun_remove(pFilter)
+    {
+        $.ajax({
+            type: "POST",
+            url: "<?=base_url('ITH/raw_ith_remove')?>",
+            data: pFilter,
+            dataType: "json",
+            success: function (response) {
+                alertify.message(response.status[0].msg)
+            }, error : function(xhr, xopt, xthrow){                
+                alertify.error(xthrow)
+            }
+        });
+    }
 </script>

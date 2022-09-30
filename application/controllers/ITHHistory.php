@@ -73,6 +73,23 @@ class ITHHistory extends CI_Controller {
 		$itemcode = $this->input->get('itemcode');
 		$rs = $this->ITH_mod->select_inventory_pengeluaran($datefrom, $dateto, $itemcode);
 		die(json_encode(['data' => $rs]));
-	}	
+	}
+	
+	function raw_ith()
+	{
+		header('Content-Type: application/json');
+		$item_code = $this->input->get('item_code');
+		$item_location = $this->input->get('item_location');
+		$item_event = $this->input->get('item_event');
+		$item_date = $this->input->get('item_date');
+
+		$rs = $this->ITH_mod->select_view_all_by([
+			'ITH_ITMCD' => $item_code,
+			'ITH_WH' => $item_location,
+			'ITH_FORM' => $item_event,
+			'ITH_DATEC' => $item_date,
+		]);
+		die(json_encode(['data' => $rs]));
+	}
 
 }
