@@ -115,7 +115,7 @@ class SERRC_mod extends CI_Model {
 		(select SERRC_SER,SERRC_JM,SERRC_SERX,SERRC_NASSYCD from SERRC_TBL where SERRC_DOCST = ?
 		group by SERRC_SER,SERRC_JM,SERRC_SERX,SERRC_NASSYCD) vjm
 		left join SER_TBL ON SERRC_SER=SER_ID
-        LEFT JOIN XVU_RTN SER_DOC=STKTRND1_DOCNO 
+        LEFT JOIN XVU_RTN ON SER_DOC=STKTRND1_DOCNO 
 		group by SERRC_SER,SER_DOC,SERRC_SERX,SER_ITMID,SERRC_NASSYCD";
         $query = $this->db->query($qry, [$pdoc]);
 		return $query->result_array();
