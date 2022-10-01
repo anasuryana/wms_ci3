@@ -1933,6 +1933,7 @@ class ITH_mod extends CI_Model {
                             'ARSHPRTN',
                             'ARSHPRTN2',
                             'AFQART',
+                            'AFQART2',
                             'AFWH3RT',
                             'NFWH4RT')
                         GROUP BY 
@@ -1950,7 +1951,7 @@ class ITH_mod extends CI_Model {
                 FROM PSI_WMS.dbo.v_ith_tblc it3a
                 WHERE it3a.ITH_DATEC >= ? AND it3a.ITH_DATEC <= ?
                 AND it3a.ITH_QTY > 0
-                AND it3a.ITH_WH IN ('AFWH3','AWIP1','AFQART')
+                AND it3a.ITH_WH IN ('AFWH3','AWIP1','AFQART','AFQART2')
                 AND it3a.ITH_FORM IN (
                     'INC-WH-FG',
                     'CONVERT-IN',
@@ -1985,6 +1986,7 @@ class ITH_mod extends CI_Model {
                     AND it3a.ITH_WH IN (
                         'AFWH3',
                         'AFQART',
+                        'AFQART2',
                         'AWIP1',
                         'QAFG',
                         'ARSHP',

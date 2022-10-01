@@ -74,6 +74,22 @@ class ITHHistory extends CI_Controller {
 		$rs = $this->ITH_mod->select_inventory_pengeluaran($datefrom, $dateto, $itemcode);
 		die(json_encode(['data' => $rs]));
 	}
+
+	function inventory_all()
+	{
+		header('Content-Type: application/json');
+		$datefrom = $this->input->get('date_from');
+		$dateto = $this->input->get('date_to');
+		$itemcode = $this->input->get('itemcode');
+		$rs_saldo_awal = $this->ITH_mod->select_inventory_saldo_awal($datefrom, $itemcode);
+		$rs_pemasukan = $this->ITH_mod->select_inventory_pemasukan($datefrom, $dateto, $itemcode);
+		$rs_pengeluaran = $this->ITH_mod->select_inventory_pengeluaran($datefrom, $dateto, $itemcode);
+		die(json_encode([
+			'saldo_awal' => $rs_saldo_awal
+			, 'pemasukan' => $rs_pemasukan
+			, 'pengeluaran' => $rs_pengeluaran
+		]));
+	}
 	
 	function raw_ith()
 	{
@@ -91,5 +107,4 @@ class ITHHistory extends CI_Controller {
 		]);
 		die(json_encode(['data' => $rs]));
 	}
-
 }
