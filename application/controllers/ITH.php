@@ -1425,6 +1425,9 @@ class ITH extends CI_Controller {
             if($cwh==='NFWH4RT') {
                 $rsbef = $this->ITH_mod->select_txhistory_bef_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, [$cwh,'ARSHPRTN','AFQART']);
                 $rs = $this->ITH_mod->select_txhistory_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, $cdate2,[$cwh,'ARSHPRTN','AFQART']);
+            } elseif($cwh==='AFWH3RT') {
+                $rsbef = $this->ITH_mod->select_txhistory_bef_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, [$cwh,'ARSHPRTN2','AFQART2']);
+                $rs = $this->ITH_mod->select_txhistory_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, $cdate2,[$cwh,'ARSHPRTN2','AFQART2']);
             } elseif($cwh==='AFWH3') {
                 $rsbef = $this->ITH_mod->select_txhistory_bef_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, [$cwh,'ARSHP']);
                 $rs = $this->ITH_mod->select_txhistory_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, $cdate2,[$cwh,'ARSHP']);
@@ -1806,6 +1809,9 @@ class ITH extends CI_Controller {
         if($location==='NFWH4RT') {
             $rsChild = $this->ITH_mod->select_view_where_and_locationIn(['ITH_DATEC' => $date, 'ITH_ITMCD' => $item],
             [$location,'ARSHPRTN','AFQART']);
+        } elseif($location==='AFWH3RT') {
+            $rsChild = $this->ITH_mod->select_view_where_and_locationIn(['ITH_DATEC' => $date, 'ITH_ITMCD' => $item],
+            [$location,'ARSHPRTN2','AFQART2']);
         } elseif($location==='AFWH3') {
             $rsChild = $this->ITH_mod->select_view_where_and_locationIn(['ITH_DATEC' => $date, 'ITH_ITMCD' => $item],
             [$location,'ARSHP']);
