@@ -39,6 +39,7 @@ class SER extends CI_Controller {
         $this->load->model('SERD_mod');
         $this->load->model('PWOP_mod');
         $this->load->model('SERRC_mod');
+        $this->load->model('RETFG_mod');
         $this->load->model('MSPP_mod');
         $this->load->model('C3LC_mod');
         $this->load->model('XWO_mod');
