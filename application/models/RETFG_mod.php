@@ -64,6 +64,14 @@ class RETFG_mod extends CI_Model {
         return $this->db->affected_rows();
     }
 
+    public function select_XVU_RTN($where)
+    {
+        $this->db->from('XVU_RTN')
+        ->where($where);
+        $query = $this->db->get();
+		return $query->result_array();
+    }
+
     public function select_lastnodo_patterned($pmonth, $pyear){
         $qry = "select ISNULL(MAX(CONVERT(INT,SUBSTRING(RETFG_STRDOC,1,4))),0)  lser
         from RETFG_TBL where MONTH(RETFG_STRDT) =? and YEAR(RETFG_STRDT)=? ";

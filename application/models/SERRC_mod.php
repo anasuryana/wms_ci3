@@ -111,10 +111,11 @@ class SERRC_mod extends CI_Model {
     }
 
     public function select_out_usage($pdoc){
-        $qry = "select SERRC_SER,count(*) OUTQTY,SER_DOC,SERRC_SERX,SER_ITMID,SERRC_NASSYCD from 
+        $qry = "select SERRC_SER,count(*) OUTQTY,SER_DOC,SERRC_SERX,SER_ITMID,SERRC_NASSYCD,RTRIM(MAX(STKTRND1_LOCCDFR)) STKTRND1_LOCCDFR from 
 		(select SERRC_SER,SERRC_JM,SERRC_SERX,SERRC_NASSYCD from SERRC_TBL where SERRC_DOCST = ?
 		group by SERRC_SER,SERRC_JM,SERRC_SERX,SERRC_NASSYCD) vjm
 		left join SER_TBL ON SERRC_SER=SER_ID
+        LEFT JOIN XVU_RTN SER_DOC=STKTRND1_DOCNO 
 		group by SERRC_SER,SER_DOC,SERRC_SERX,SER_ITMID,SERRC_NASSYCD";
         $query = $this->db->query($qry, [$pdoc]);
 		return $query->result_array();
@@ -123,7 +124,7 @@ class SERRC_mod extends CI_Model {
     public function select_where_group($pwhere){
         $this->db->group_by("SERRC_SERX,SERRC_SER,SERRC_NASSYCD,SERRC_SERXQTY,SERRC_SERXRAWTXT,SER_DOC,SER_ITMID,SER_QTY");
         $this->db->select("SERRC_SERX,SERRC_SER,SERRC_NASSYCD,ISNULL(SERRC_SERXQTY,0) SERRC_SERXQTY,SERRC_SERXRAWTXT,SER_DOC,SER_ITMID,SER_QTY,RTRIM(min(SERRC_JM)) SERRC_JM
-        ,MAX(XVU_RTN.MBSG_BSGRP) MBSG_BSGRP");//,
+        ,MAX(XVU_RTN.MBSG_BSGRP) MBSG_BSGRP,RTRIM(MAX(STKTRND1_LOCCDFR)) STKTRND1_LOCCDFR");//,
         $this->db->from($this->TABLENAME.' a');
         $this->db->join("SER_TBL", "SERRC_SER=SER_ID");
         $this->db->join("XVU_RTN", "SER_DOC=STKTRND1_DOCNO", "LEFT");

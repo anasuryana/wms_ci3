@@ -318,104 +318,7 @@ class SER extends CI_Controller {
         die('{"data":'.json_encode($rs).'}');
     }
 
-    public function tes(){
-        header('Content-Type: application/json');
-        $pser = '023/II/2021 RTN';
-        #SAVE TO TRANSACTION
-        $rsc = $this->SERRC_mod->select_where_group(['SERRC_DOCST' => $pser, "SERRC_SERX is NOT null" => NULL]);		
-        $rs_ext_u = [];
-        $rs_ser_tbl = [];
-        $rs_out = [];
-        $rs_inc = [];
-        date_default_timezone_set('Asia/Jakarta');		
-        $currrtime = date('Y-m-d H:i:s');
-        $current_date = date('Y-m-d');
-        $myar = [];
-        foreach($rsc as $r){
-            $isfound = false;
-            foreach($rs_ext_u as $n){
-                if($n['SER_ID'] == $r['SERRC_SERX'] ){
-                    $isfound = true; 
-                    break;
-                }
-            }
-            if(!$isfound){
-                $astr = explode("|", $r['SERRC_SERXRAWTXT']);
-                $clot = $astr[2];
-                $clot = substr($clot,2,strlen($clot));
-                $rs_ext_u[] = [
-                    "SER_ID" => $r['SERRC_SERX']
-                    ,"SER_DOC" => $r['SER_DOC']
-                    ,"SER_REFNO" => $r['SERRC_SER']
-                    , "SER_ITMID" => $r['SERRC_NASSYCD']
-                    ,"SER_LOTNO" => $clot 
-                    ,"SER_QTY" => $r['SERRC_SERXQTY'] 
-                    ,"SER_RAWTXT" => $r['SERRC_SERXRAWTXT']
-                    , "SER_LUPDT" => $currrtime
-                    , "SER_USRID" => $this->session->userdata('nama')
-                    , "SER_ITMIDOLD" => $r['SER_ITMID']
-                ];
-                $rs_ser_tbl[] = [
-                    "SER_ID" => $r['SERRC_SERX']
-                    , "SER_DOC" => $r['SER_DOC']
-                    ,"SER_REFNO" => $r['SERRC_SER']
-                    , "SER_ITMID" => $r['SERRC_NASSYCD']
-                    ,"SER_LOTNO" => $clot 
-                    ,"SER_QTY" => $r['SERRC_SERXQTY'] 
-                    ,"SER_RAWTXT" => $r['SERRC_SERXRAWTXT']
-                    , "SER_LUPDT" => $currrtime
-                    , "SER_USRID" => $this->session->userdata('nama')
-                ];
-            }
-            $rs_out[] = [
-                'ITH_ITMCD' => $r['SER_ITMID']
-                ,'ITH_DATE' => $current_date
-                ,'ITH_FORM' => 'OUT'
-                ,'ITH_DOC' => $r['SER_DOC']
-                ,'ITH_QTY' => $r['SERRC_SERXQTY'] > $r['SER_QTY'] ? -$r['SER_QTY'] : -$r['SERRC_SERXQTY']
-                ,'ITH_WH' => 'AFQART'
-                ,'ITH_SER' => $r['SERRC_SER']
-                ,'ITH_REMARK' => $r['SERRC_SERX']
-                ,'ITH_LUPDT' => $currrtime
-                ,'ITH_USRID' => $this->session->userdata('nama')
-            ];
-        }
-
-        if(count($rs_ext_u)>0){
-            $shouldcontinue = true;
-            // foreach($rs_ext_u as $r){
-            // 	if($this->SER_mod->check_Primary(['SER_ID' => $r['SER_ID']])){
-            // 		$shouldcontinue = false;
-            // 		break;
-            // 	}
-            // }
-            if($shouldcontinue){
-                // $this->SER_mod->insertb($rs_ser_tbl);
-                foreach($rs_ext_u as $r){
-                    
-                    $rs_inc[] = [
-                    'ITH_ITMCD' => $r['SER_ITMID']
-                    ,'ITH_DATE' => $current_date
-                    ,'ITH_FORM' => 'INC-RCRTN-FG'
-                    ,'ITH_DOC' => $r['SER_DOC']
-                    ,'ITH_QTY' => $r['SER_QTY']
-                    ,'ITH_WH' => 'ARRCRT'
-                    ,'ITH_SER' => $r['SER_ID']
-                    ,'ITH_LUPDT' => $currrtime
-                    ,'ITH_USRID' => $this->session->userdata('nama')
-                    ];
-                }
-                // $this->ITH_mod->insertb($rs_out);
-                // $this->ITH_mod->insertb($rs_inc);
-                $myar[] = ['cd' => 1, 'msg' => 'OK'];
-            } else {
-                $myar[] = ['cd' => 0, 'msg' => 'should not continue'];
-            }
-        } else {
-            $myar[] = ['cd' => 0, 'msg' => 'nothing ext label will be registered'];
-        }
-        die('{"status":'.json_encode($myar).', "data_out": '.json_encode($rs_out).', "data_in":'.json_encode($rs_inc).'}');
-    }
+    
 
     public function print_st_rcqc(){
         $pser = '';
@@ -713,7 +616,7 @@ class SER extends CI_Controller {
                     ,'ITH_FORM' => $r['SER_ITMID']==$r['SERRC_NASSYCD'] ? 'OUT' : 'OUT-C'
                     ,'ITH_DOC' => $r['SER_DOC']
                     ,'ITH_QTY' => $r['SERRC_SERXQTY'] > $r['SER_QTY'] ? -$r['SER_QTY'] : -$r['SERRC_SERXQTY']
-                    ,'ITH_WH' => 'AFQART'
+                    ,'ITH_WH' => $r['STKTRND1_LOCCDFR']==='NFWH4RT' ? 'AFQART' : 'AFQART2'
                     ,'ITH_SER' => $r['SERRC_SER']
                     ,'ITH_REMARK' => $r['SERRC_SERX']
                     ,'ITH_LUPDT' => $currrtime
@@ -734,7 +637,7 @@ class SER extends CI_Controller {
                     ,'ITH_FORM' => $r['SER_ITMID']==$r['SERRC_NASSYCD'] ? 'OUT' : 'OUT-C'
                     ,'ITH_DOC' => $r['SER_DOC']
                     ,'ITH_QTY' => -$r['OUTQTY']
-                    ,'ITH_WH' => 'AFQART'
+                    ,'ITH_WH' => $r['STKTRND1_LOCCDFR']==='NFWH4RT' ? 'AFQART' : 'AFQART2'
                     ,'ITH_SER' => $r['SERRC_SER']
                     ,'ITH_REMARK' => $r['SERRC_SERX']
                     ,'ITH_LUPDT' => $currrtime
@@ -1195,8 +1098,7 @@ class SER extends CI_Controller {
     public function setfg_return(){
         $this->checkSession();
         date_default_timezone_set('Asia/Jakarta');			
-        $currrtime = date('Y-m-d H:i:s');
-        $current_date = date('Y-m-d');
+        $currrtime = date('Y-m-d H:i:s');        
         $cproddt = $this->input->post('indate');
         $cjob = $this->input->post('indoc');
         $citemcd = $this->input->post('initemcd');
@@ -1206,6 +1108,11 @@ class SER extends CI_Controller {
         $pMonthdis	= $this->getMonthDis($pMonth);
         $cmdl = '4';				
         $ttldata = count($citemcd);
+        $rsLocation = $this->RETFG_mod->select_XVU_RTN(['STKTRND1_DOCNO' => $cjob]);
+        $mega_location = '';
+        foreach($rsLocation as $r){
+            $mega_location = rtrim($r['STKTRND1_LOCCDFR']);
+        }
         for($i=0; $i<$ttldata; $i++){
             if($this->SER_mod->check_Primary(["SER_DOC" => $cjob, "SER_ITMID" => $citemcd[$i], "SER_PRDLINE" => $cline[$i] ]) == 0){
                 $newid = $this->SER_mod->lastserialid_ihour($cmdl, $cproddt);
@@ -1233,7 +1140,7 @@ class SER extends CI_Controller {
                         ,'ITH_FORM' => 'INC'
                         ,'ITH_DOC' => $cjob
                         ,'ITH_QTY' => $cqty[$i]
-                        ,'ITH_WH' => 'AFQART'
+                        ,'ITH_WH' => $mega_location==='NFWH4RT' ?  'AFQART' : 'AFQART2'
                         ,'ITH_SER' => $newid
                         ,'ITH_LUPDT' => $cproddt." 07:30:00"
                         ,'ITH_USRID' => $this->session->userdata('nama')

@@ -2617,12 +2617,13 @@ class ITH extends CI_Controller {
     public function adjustment_ParentBased(){
         ini_set('max_execution_time', '-1');
         header('Content-Type: application/json');
+        date_default_timezone_set('Asia/Jakarta');
         if ($this->session->userdata('status') != "login")
         {
             $myar = ["cd" => "0", "msg" => "Session is expired please reload page"];
             die(json_encode(['status' => $myar]));
         }
-        $whException = ['AFWH3','QAFG','AWIP1','AFWH9SC'];
+        $whException = ['AFWH3','QAFG','AWIP1','AFWH9SC','AFWH3RT'];
         $date = $this->input->post('date');
         $location = $this->input->post('location');
         $usrid =  $this->session->userdata('nama');
@@ -2671,6 +2672,72 @@ class ITH extends CI_Controller {
             if(!empty($rsadj)) {
                 $this->ITH_mod->insertb($rsadj);
                 $myar = ['cd' => "1", 'msg' => 'done' , 'reff' => $location];
+            } else {
+                $myar = ['cd' => "0", 'msg' => 'done nothing adjusted', 'reff' => $location];
+            }
+        } else {
+            $myar = ['cd' => "0", 'msg' => 'done nothing adjusted...', 'reff' => $location];
+        }
+        die(json_encode(['status' => $myar]));
+    }
+    public function tes_adjustment_ParentBased(){
+        ini_set('max_execution_time', '-1');
+        header('Content-Type: application/json');
+        date_default_timezone_set('Asia/Jakarta');
+        if ($this->session->userdata('status') != "login")
+        {
+            $myar = ["cd" => "0", "msg" => "Session is expired please reload page"];
+            die(json_encode(['status' => $myar]));
+        }
+        $whException = ['AFWH3','QAFG','AWIP1','AFWH9SC'];
+        $date = $this->input->post('date');
+        $location = $this->input->post('location');
+        $usrid =  $this->session->userdata('nama');
+        $current_datetime = date('Y-m-d H:i:s');
+        if(!in_array($location, $whException)) {
+            $dateObj = new DateTime($date);
+            $dateObj->modify('+1 day');
+            $dateTosave = $dateObj->format('Y-m-d');
+            $dateTimeTosave = $dateObj->format('Y-m-d 06:59:59');
+            $dateformat = $dateObj->format('Ym');
+            switch($location)
+            {
+                case 'NFWH4RT':                    
+                    $rs = $this->ITH_mod->select_compare_inventory_fg_rtn($location,$date);
+                    break;
+                case 'AFWH3RT':
+                    $rs = $this->ITH_mod->select_compare_inventory_fg_rtn_asset($location,$date);
+                    break;
+                default:
+                    $rs = $this->ITH_mod->select_compare_inventory($location,$date);
+            }
+            $rsadj = [];
+            foreach($rs as $r) {
+                $balance = $r['STOCKQTY']-$r['MGAQTY'];
+                if( $balance != 0) {
+                    if ($balance>0) {
+                        $ith_form = 'ADJ-I-OUT';
+                        $balance = -$balance;
+                    } else {
+                        $ith_form = 'ADJ-I-INC';
+                        $balance = abs($balance);
+                    }
+                    $rsadj[] = [
+                        'ITH_ITMCD' => $r['ITH_ITMCD'] ? $r['ITH_ITMCD'] : $r['ITRN_ITMCD'] ,
+                        'ITH_QTY' => $balance,
+                        'ITH_DATE' => $dateTosave,
+                        'ITH_LUPDT' => $dateTimeTosave,
+                        'ITH_WH' => $location,
+                        'ITH_DOC' => 'DOCINV'.$dateformat,
+                        'ITH_FORM' => $ith_form,
+                        'ITH_USRID' => $usrid,
+                        'ITH_REMARK' => 'do at '.$current_datetime
+                    ];
+                }
+            }
+            if(!empty($rsadj)) {
+                // $this->ITH_mod->insertb($rsadj);
+                $myar = ['cd' => "1", 'msg' => 'done' , 'reff' => $location, 'adj' => $rsadj, 'rs' => $rs];
             } else {
                 $myar = ['cd' => "0", 'msg' => 'done nothing adjusted', 'reff' => $location];
             }
