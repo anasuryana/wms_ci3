@@ -1024,6 +1024,9 @@ class ITH extends CI_Controller {
             case 'QAFG':                
                 $rs = $this->ITH_mod->select_compare_inventory_fg_qa($cwh,$cdate);
                 break;
+            case 'AWIP1':
+                $rs = $this->ITH_mod->select_compare_inventory_fg_qa($cwh,$cdate);
+                break;
             case 'AFWH3RT':
                 $rs = $this->ITH_mod->select_compare_inventory_fg_rtn_asset($cwh,$cdate);
                 break;
@@ -1419,7 +1422,7 @@ class ITH extends CI_Controller {
     }
     public function gettxhistory_parent(){
         header('Content-Type: application/json');
-        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT'];
+        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT','AWIP1'];
         $cwh = $this->input->get('inwh');
         $citemcd = trim($this->input->get('initemcode'));
         $cdate1 = $this->input->get('indate1');
@@ -1431,14 +1434,17 @@ class ITH extends CI_Controller {
             } elseif($cwh==='AFWH3RT') {
                 $rsbef = $this->ITH_mod->select_txhistory_bef_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, [$cwh,'ARSHPRTN2','AFQART2']);
                 $rs = $this->ITH_mod->select_txhistory_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, $cdate2,[$cwh,'ARSHPRTN2','AFQART2']);
+            } elseif($cwh==='AWIP1') {                
+                $rsbef = $this->ITH_mod->select_txhistory_bef_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, [$cwh]);
+                $rs = $this->ITH_mod->select_txhistory_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, $cdate2,[$cwh]);
             } elseif($cwh==='AFWH3') {
                 $rsbef = $this->ITH_mod->select_txhistory_bef_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, [$cwh,'ARSHP']);
                 $rs = $this->ITH_mod->select_txhistory_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, $cdate2,[$cwh,'ARSHP']);
-            } else {
+            } else {                
                 $rsbef = $this->ITH_mod->select_txhistory_bef_parent_fg($cwh, $citemcd, $cdate1);
                 $rs = $this->ITH_mod->select_txhistory_parent_fg($cwh, $citemcd, $cdate1, $cdate2);
             }
-        } else {
+        } else {            
             $rsbef = $this->ITH_mod->select_txhistory_bef_parent($cwh, $citemcd, $cdate1);
             $rs = $this->ITH_mod->select_txhistory_parent($cwh, $citemcd, $cdate1, $cdate2);
         }
@@ -3631,5 +3637,5 @@ class ITH extends CI_Controller {
         $affectedRows = $this->ITH_mod->deletebyID($where);
         $myar[] = $affectedRows ? ['cd' => '1', 'msg' => 'ok'] : ['cd' => '0', 'msg' => 'could not be deleted'];
         die(json_encode(['status' => $myar, 'filter' => $where]));
-    }
+    }    
 }
