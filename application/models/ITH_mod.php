@@ -365,14 +365,11 @@ class ITH_mod extends CI_Model {
                         ORDER BY ITH_ITMCD ASC";
         } else {			
             $qry = "SELECT VWMS.*,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
-                SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, $closingcolumn STOCKQTY, MITM_STKUOM FROM
+                SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM FROM
                     (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
                             WHERE ITH_WH='$whclosing' AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
                             GROUP BY ITH_ITMCD,ITH_WH,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VSTOCK		
-                    LEFT JOIN
-                    (select ITH_ITMCD,SUM(ITH_QTY) PRPQTY from v_ith_tblc a 
-                            WHERE ITH_WH='ARSHP' AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<= '$pdate'
-                            GROUP BY ITH_ITMCD) VPREP ON VSTOCK.ITH_ITMCD=VPREP.ITH_ITMCD) VWMS
+                    ) VWMS
                             FULL OUTER JOIN (SELECT  RTRIM(ITRN_ITMCD) ITRN_ITMCD,SUM(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE 0-ITRN_TRNQT END) MGAQTY
                 , RTRIM(MITM_SPTNO) MGMITM_SPTNO, RTRIM(MITM_STKUOM) MGMITM_STKUOM, RTRIM(MITM_ITMD1) MGMITM_ITMD1
                         FROM XITRN_TBL 
@@ -388,12 +385,9 @@ class ITH_mod extends CI_Model {
         $qry = "SELECT VWMS.*,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
             SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
                 (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
-                        WHERE ITH_WH IN ('$wh','AFQART') AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
+                        WHERE ITH_WH IN ('$wh','AFQART','ARSHPRTN') AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
                         GROUP BY ITH_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VSTOCK		
-                LEFT JOIN
-                (select ITH_ITMCD,SUM(ITH_QTY) PRPQTY from v_ith_tblc a 
-                        WHERE ITH_WH='ARSHPRTN' AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<= '$pdate'
-                        GROUP BY ITH_ITMCD) VPREP ON VSTOCK.ITH_ITMCD=VPREP.ITH_ITMCD) VWMS
+            ) VWMS
             LEFT JOIN (SELECT  RTRIM(FTRN_ITMCD) ITRN_ITMCD,SUM(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) MGAQTY
             , RTRIM(MITM_SPTNO) MGMITM_SPTNO, RTRIM(MITM_STKUOM) MGMITM_STKUOM, RTRIM(MITM_ITMD1) MGMITM_ITMD1
                     FROM XFTRN_TBL
@@ -408,12 +402,9 @@ class ITH_mod extends CI_Model {
         $qry = "SELECT VWMS.*,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
             SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
                 (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
-                        WHERE ITH_WH IN ('$wh','AFQART2') AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
+                        WHERE ITH_WH IN ('$wh','AFQART2','ARSHPRTN2') AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
                         GROUP BY ITH_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VSTOCK		
-                LEFT JOIN
-                (select ITH_ITMCD,SUM(ITH_QTY) PRPQTY from v_ith_tblc a 
-                        WHERE ITH_WH='ARSHPRTN2' AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<= '$pdate'
-                        GROUP BY ITH_ITMCD) VPREP ON VSTOCK.ITH_ITMCD=VPREP.ITH_ITMCD) VWMS
+            ) VWMS
             LEFT JOIN (SELECT  RTRIM(FTRN_ITMCD) ITRN_ITMCD,SUM(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) MGAQTY
             , RTRIM(MITM_SPTNO) MGMITM_SPTNO, RTRIM(MITM_STKUOM) MGMITM_STKUOM, RTRIM(MITM_ITMD1) MGMITM_ITMD1
                     FROM XFTRN_TBL
@@ -1951,7 +1942,7 @@ class ITH_mod extends CI_Model {
                 FROM PSI_WMS.dbo.v_ith_tblc it3a
                 WHERE it3a.ITH_DATEC >= ? AND it3a.ITH_DATEC <= ?
                 AND it3a.ITH_QTY > 0
-                AND it3a.ITH_WH IN ('AFWH3','AWIP1','AFQART','AFQART2')
+                AND it3a.ITH_WH IN ('AFWH3','AWIP1','AFQART','AFQART2','NFWH4RT')
                 AND it3a.ITH_FORM IN (
                     'INC-WH-FG',
                     'CONVERT-IN',
@@ -2002,6 +1993,7 @@ class ITH_mod extends CI_Model {
                         'OUT-SHP-FG',
                         'ADJ-OUT',
                         'ADJ-I-OUT',
+                        'OUT-SCR-RTN',
                         'SPLIT-CNV-FG-OUT',
                         'OUT-C'
                     )
