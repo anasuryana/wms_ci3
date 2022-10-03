@@ -1021,6 +1021,9 @@ class ITH extends CI_Controller {
             case 'NFWH4RT':
                 $rs = $this->ITH_mod->select_compare_inventory_fg_rtn($cwh,$cdate);
                 break;
+            case 'QAFG':                
+                $rs = $this->ITH_mod->select_compare_inventory_fg_qa($cwh,$cdate);
+                break;
             case 'AFWH3RT':
                 $rs = $this->ITH_mod->select_compare_inventory_fg_rtn_asset($cwh,$cdate);
                 break;
@@ -2629,7 +2632,7 @@ class ITH extends CI_Controller {
             $myar = ["cd" => "0", "msg" => "Session is expired please reload page"];
             die(json_encode(['status' => $myar]));
         }
-        $whException = ['AFWH3','QAFG','AWIP1','AFWH9SC'];
+        $whException = ['AFWH3','AWIP1','AFWH9SC'];
         $date = $this->input->post('date');
         $location = $this->input->post('location');
         $usrid =  $this->session->userdata('nama');
@@ -2644,6 +2647,9 @@ class ITH extends CI_Controller {
             {
                 case 'NFWH4RT':
                     $rs = $this->ITH_mod->select_compare_inventory_fg_rtn($location,$date);
+                    break;
+                case 'QAFG':
+                    $rs = $this->ITH_mod->select_compare_inventory_fg_qa($location,$date);
                     break;
                 case 'AFWH3RT':
                     $rs = $this->ITH_mod->select_compare_inventory_fg_rtn_asset($location,$date);
@@ -2768,6 +2774,9 @@ class ITH extends CI_Controller {
         {
             case 'NFWH4RT':
                 $rs = $this->ITH_mod->select_compare_inventory_fg_rtn($cwh_wms,$date);
+                break;
+            case 'QAFG':
+                $rs = $this->ITH_mod->select_compare_inventory_fg_qa($cwh_wms,$date);
                 break;
             case 'AFWH3RT':
                 $rs = $this->ITH_mod->select_compare_inventory_fg_rtn_asset($cwh_wms,$date);
