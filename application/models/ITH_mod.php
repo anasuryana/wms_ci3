@@ -392,7 +392,7 @@ class ITH_mod extends CI_Model {
             , RTRIM(MITM_SPTNO) MGMITM_SPTNO, RTRIM(MITM_STKUOM) MGMITM_STKUOM, RTRIM(MITM_ITMD1) MGMITM_ITMD1
                     FROM XFTRN_TBL
                     LEFT JOIN XMITM_V ON FTRN_ITMCD=MITM_ITMCD 
-                    WHERE FTRN_ISUDT<='2021-10-01' AND FTRN_LOCCD IN ('$wh') 
+                    WHERE FTRN_ISUDT<='$pdate' AND FTRN_LOCCD IN ('$wh') 
                     GROUP BY FTRN_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VMEGA ON ITH_ITMCD=ITRN_ITMCD
                     ORDER BY ITH_ITMCD ASC";        
         $query = $this->db->query($qry);
