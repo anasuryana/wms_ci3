@@ -4871,6 +4871,26 @@ class DELV extends CI_Controller {
         die(json_encode($myar));
     }
 
+    function relink_it_inventory()
+    {
+        header('Content-Type: application/json');
+        $cid = $this->input->post('doc');
+        $rs = $this->DELV_mod->select_top1_with_columns_where(["ISNULL(DLV_NOPEN,'') DLV_NOPEN"],['DLV_ID' => $cid]);
+        $nomor_pendaftaran = '';
+        foreach($rs as $r)
+        {
+            $nomor_pendaftaran = $r['DLV_NOPEN'];
+        }
+        if(empty($nomor_pendaftaran))
+        {
+            $myar[] =  ["cd" => '0', "msg" => "Nomor Pendaftaran is empty"];
+        } else {
+            $res = $this->gotoque($cid);
+            $myar[] =  ["cd" => '1', "msg" => "Done, please check IT Inventory" , "res" => $res];
+        }
+        die(json_encode(['status' => $myar]));
+    }
+
     public function change27(){
         date_default_timezone_set('Asia/Jakarta');		
         $crnt_dt = date('Y-m-d H:i:s');		

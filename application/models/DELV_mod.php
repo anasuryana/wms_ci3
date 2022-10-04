@@ -1136,6 +1136,16 @@ class DELV_mod extends CI_Model {
 		return $query->result_array();
     }
 
+    function select_top1_with_columns_where($pColumns,$pWhere)
+    {
+        $this->db->limit(1);
+        $this->db->select($pColumns);
+        $this->db->from($this->TABLENAME);
+        $this->db->where($pWhere);
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
     public function select_aftersales($pdoc, $pfg){
         $qry = "select vdet.*,DELQT, RMQT/DELQT*3 STKQTY,MITMGRP_ITMCD from
         (select DLV_ID,SER_ITMID,SERD2_ITMCD ITH_ITMCD,sum(SERD2_QTY) RMQT FROM DLV_TBL LEFT JOIN SER_TBL ON DLV_SER=SER_ID

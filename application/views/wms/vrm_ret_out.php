@@ -970,8 +970,17 @@
                 </div>                
             </div>                 
         </div>
-        <div class="modal-footer">            
-            <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save" onclick="retrm_out_inc_z_btn_save_e_click()">Save changes</button>
+        <div class="modal-footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_relink" onclick="retrm_out_inc_z_btn_relink_e_click(this)">Re-link IT Inventory</button>
+                    </div>
+                    <div class="col text-end">                        
+                        <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save" onclick="retrm_out_inc_z_btn_save_e_click()">Save changes</button>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -1077,7 +1086,16 @@
             </div>                 
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save41" onclick="retrm_out_inc_z_btn_save41_e_click()">Save changes</button>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_relink41" onclick="retrm_out_inc_z_btn_relink_e_click(this)">Re-link IT Inventory</button>
+                    </div>
+                    <div class="col text-end">
+                        <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save41" onclick="retrm_out_inc_z_btn_save41_e_click()">Save changes</button>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -1316,8 +1334,17 @@
                 </div>
             </div>
         </div>
-        <div class="modal-footer">            
-            <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save25" onclick="retrm_out_inc_z_btn_save25_e_click()">Save changes</button>
+        <div class="modal-footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_relink25" onclick="retrm_out_inc_z_btn_relink_e_click(this)">Re-link IT Inventory</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save25" onclick="retrm_out_inc_z_btn_save25_e_click()">Save changes</button>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -4859,5 +4886,32 @@
     }
     function retrm_out_limbah_barang_tbl_add_eCK() {
         retrm_out_inc_addrow_scr()
+    }
+
+    function retrm_out_inc_z_btn_relink_e_click(pThis)
+    {
+        pThis.innerHTML = `Please wait`
+        pThis.disabled = true
+        const txid = retrm_out_inc_txt_DO.value.trim()
+        if(txid.length===0)
+        {
+            alertify.warning('TX ID is required')
+            return
+        }
+        $.ajax({
+            type: "POST",
+            url: "<?=base_url('DELV/relink_it_inventory')?>",
+            data: {doc: txid},
+            dataType: "json",
+            success: function (response) {
+                pThis.innerHTML = `Re-link IT Inventory`
+                pThis.disabled = false
+                alertify.message(response.status[0].msg)
+            }, error:function(xhr,ajaxOptions, throwError) {
+                pThis.innerHTML = `Re-link IT Inventory`
+                pThis.disabled = false
+                alert(throwError);                
+            }
+        });
     }
 </script>
