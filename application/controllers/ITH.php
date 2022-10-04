@@ -1422,7 +1422,7 @@ class ITH extends CI_Controller {
     }
     public function gettxhistory_parent(){
         header('Content-Type: application/json');
-        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT','AWIP1'];
+        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT','AWIP1','QAFG'];
         $cwh = $this->input->get('inwh');
         $citemcd = trim($this->input->get('initemcode'));
         $cdate1 = $this->input->get('indate1');
@@ -1435,6 +1435,9 @@ class ITH extends CI_Controller {
                 $rsbef = $this->ITH_mod->select_txhistory_bef_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, [$cwh,'ARSHPRTN2','AFQART2']);
                 $rs = $this->ITH_mod->select_txhistory_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, $cdate2,[$cwh,'ARSHPRTN2','AFQART2']);
             } elseif($cwh==='AWIP1') {                
+                $rsbef = $this->ITH_mod->select_txhistory_bef_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, [$cwh]);
+                $rs = $this->ITH_mod->select_txhistory_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, $cdate2,[$cwh]);
+            } elseif($cwh==='QAFG') {
                 $rsbef = $this->ITH_mod->select_txhistory_bef_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, [$cwh]);
                 $rs = $this->ITH_mod->select_txhistory_parent_fg_with_additional_wh($cwh, $citemcd, $cdate1, $cdate2,[$cwh]);
             } elseif($cwh==='AFWH3') {
@@ -1802,7 +1805,7 @@ class ITH extends CI_Controller {
     public function transaction() 
     {
         header('Content-Type: application/json');
-        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT'];
+        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT','QAFG'];
         $date = $this->input->get('date');
         $item = $this->input->get('item');
         $location = $this->input->get('location');
