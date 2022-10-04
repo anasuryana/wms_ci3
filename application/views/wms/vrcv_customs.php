@@ -1856,6 +1856,12 @@ video {
                 return
             }
             if(itmcode.length) {
+                if(numeral(price).value()===0)
+                {
+                    alertify.warning("Price could not be 0")
+                    mytable.rows[i].cells[7].focus()
+                    return
+                }
                 d_grlno.push(mytable.rows[i].cells[0].innerText.replace(/\n+/g, ''))
                 d_nourut.push(mytable.rows[i].cells[1].innerText.replace(/\n+/g, ''))
                 d_pono.push(mytable.rows[i].cells[2].innerText.replace(/\n+/g, ''))
@@ -1868,6 +1874,8 @@ video {
                 d_pph.push(mytable.rows[i].cells[12].innerText.replace(/\n+/g, ''))
             }
         }
+        console.log('aku')
+        return
         if(d_itemcode.length==0) {
             alertify.message('there is no item')
             return
@@ -3492,7 +3500,7 @@ video {
     });
     
     
-    $('#rcvcustoms_fg_supfilter').change(function(){ //on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+    $('#rcvcustoms_fg_supfilter').change(function(){
         document.getElementById('rcvcustoms_fg_txt_search').focus();
     });
     $("#rcvcustoms_fg_datefilter").datepicker({
