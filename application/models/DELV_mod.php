@@ -3,7 +3,7 @@
 class DELV_mod extends CI_Model {
 	private $TABLENAME = "DLV_TBL";
     private $VIEWUNION = "(select * from wms_v_outpabean where isnull(NOMPEN,'')!='' union 
-    select * from wms_v_outpabean_rtn where isnull(NOMPEN,'')!='' union 
+    select * from wms_v_outpabean_rtn where SER_ITMID is not null and isnull(NOMPEN,'')!='' union 
     select * from wms_v_outpabean_oth where isnull(NOMPEN,'')!='' union 
     select * from wms_v_outpabean_scr where isnull(NOMPEN,'')!='') v1";
 	public function __construct()
