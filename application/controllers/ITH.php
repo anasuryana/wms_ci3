@@ -1805,7 +1805,7 @@ class ITH extends CI_Controller {
     public function transaction() 
     {
         header('Content-Type: application/json');
-        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT','QAFG'];
+        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT','QAFG','AWIP1'];
         $date = $this->input->get('date');
         $item = $this->input->get('item');
         $location = $this->input->get('location');
