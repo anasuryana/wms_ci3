@@ -490,9 +490,7 @@ class RMCalculator {
             $rsSpecial = $this->CI->MITMSA_mod->select_where(['RTRIM(MITMSA_ITMCD) MITMSA_ITMCD', 'RTRIM(MITMSA_ITMCDS) MITMSA_ITMCDS'], ['MITMSA_MDLCD' => $strmdlcd,'MITMSA_DELDT' => NULL]);
             $rsTECSUB = $this->CI->TECPRTSUB_mod->select_where(['RTRIM(PRTCD) MITMSA_ITMCD', 'RTRIM(SUBCD) MITMSA_ITMCDS'], ['ITMCD' => $strmdlcd]);
             $rsSpecial = array_merge($rsSpecial,$rsTECSUB);
-            $rspsnjob_req = $this->CI->RESIM_mod->check_Primary(['RESIM_WONO' => $pjob]) ? 
-                $this->CI->SPL_mod->select_psnjob_req_from_CIMS($pjob, $strmdlcd)
-                : $this->CI->SPL_mod->select_psnjob_req($strdocno, $pjob);
+            $rspsnjob_req = $this->CI->SPL_mod->select_psnjob_req($strdocno, $pjob);
             $rsWOM = $this->CI->PWOP_mod->select_mainsub($pjob);
             $rsSPLREFF = $this->CI->SPLREFF_mod->select_mainsub($apsn);
             #Is SubAssy ?
