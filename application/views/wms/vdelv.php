@@ -3444,8 +3444,6 @@ $("#txfg_btn_save").click(function (e) {
                                                 alertify.warning(response[0].msg);
                                                 break;
                                             case '11':
-                                                document.getElementById('txfg_txt_id').value=response[0].dono; 
-                                                txfg_f_getdetail(response[0].dono);
                                                 alertify.success(response[0].msg);
                                                 break;
                                             default:
