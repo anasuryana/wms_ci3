@@ -1506,6 +1506,18 @@ class ITH_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
     }
+    function select_doc_vs_datec_withIn_items($pDoc, $pDate, $pItems)
+    {
+        $this->db->from('v_ith_tblc');
+        $this->db->like("ITH_DOC", $pDoc, 'after')
+        ->like("ITH_DOC", 'SP-')
+        ->where_not_in("ITH_FORM", ['INC-RET','OUT-RET'])
+        ->where("ITH_DATEC !=", $pDate)
+        ->where_in("ITH_ITMCD", $pItems);
+        $this->db->order_by("ITH_LUPDT");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 
     function update_kitting_date($PSN, $requireddate, $newDate, $newDateTime,$oldDateTime, $itemcd)
     {

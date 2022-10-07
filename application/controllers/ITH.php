@@ -2769,6 +2769,95 @@ class ITH extends CI_Controller {
     }
 
     public function upload_to_itinventory() {
+        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');
+        header('Content-Type: application/json');
+        $date = $this->input->post('date');
+        $location = $this->input->post('location');
+        $cwh_inv = $location == 'AFSMT' ? 'AFWH3' : $location;
+        $cwh_wms =  $location == 'AFWH3' ? 'AFSMT' : $location;
+        $dateObj = new DateTime($date);
+        $_MONTH = $dateObj->format('m');
+        $_YEAR = $dateObj->format('Y');
+        $WHERE = ['INV_MONTH' => $_MONTH, 'INV_YEAR' => $_YEAR, 'INV_WH' => $cwh_inv];
+        switch($cwh_wms)
+        {
+            case 'NFWH4RT':
+                $rs = $this->ITH_mod->select_compare_inventory_fg_rtn($cwh_wms,$date);
+                break;
+            case 'QAFG':
+                $rs = $this->ITH_mod->select_compare_inventory_fg_qa($cwh_wms,$date);
+                break;
+            case 'AFWH3RT':
+                $rs = $this->ITH_mod->select_compare_inventory_fg_rtn_asset($cwh_wms,$date);
+                break;
+            default:
+                $rs = $this->ITH_mod->select_compare_inventory($cwh_wms,$date);
+        }
+        $rssaved = $this->RPSAL_INVENTORY_mod->select_compare_where($WHERE);
+
+        $dateObj->modify('+1 day');		
+        $dateTimeTosave = $dateObj->format('Y-m-d 06:59:59');
+
+        $ttlupdated = 0;
+        $ttlsaved = 0;
+        $saverows = [];
+        foreach($rs as $r) {
+            $isfound = false;
+            foreach($rssaved as $s){
+                if(strtoupper($r['ITH_ITMCD']) == strtoupper($s['INV_ITMNUM'])){
+                    if($r['STOCKQTY']*1 != $s['INV_QTY']*1) {
+                        $WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];					
+                        $ttlupdated+=$this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY']*1, 'INV_DATE' =>  $date], $WHERE );
+                    }
+                    $isfound = true;
+                    break;
+                }
+            }
+            if(!$isfound){
+                $saverows[] = [
+                    'INV_ITMNUM' => $r['ITH_ITMCD']
+                    ,'INV_MONTH' => $WHERE['INV_MONTH']
+                    ,'INV_YEAR' => $WHERE['INV_YEAR']
+                    ,'INV_WH' => $cwh_inv
+                    ,'INV_QTY' => $r['STOCKQTY']*1
+                    ,'INV_DATE' => $date
+                    ,'created_at' => $dateTimeTosave
+                ];
+            }
+        }
+        if(count($saverows)){
+            $ttlsaved = $this->RPSAL_INVENTORY_mod->insertb($saverows);
+        }
+        if($ttlsaved > 0 || $ttlupdated > 0){
+            $myar = [
+                'cd' => "1"
+                ,'msg' => 'done,'
+                ,'reff' => $location
+            ];
+        } else {
+            $myar = [
+                'cd' => "1"
+                ,'msg' => 'done, nothing changes'
+                ,'reff' => $location
+            ];
+        }
+        die(json_encode(['status' => $myar]));
+    }
+
+    function check_uploaded_data_itinventory()
+    {
+        header('Content-Type: application/json');
+        $date = $this->input->post('date');
+        $location = $this->input->post('location');
+        $cwh_inv = $location == 'AFSMT' ? 'AFWH3' : $location;
+        $cwh_wms =  $location == 'AFWH3' ? 'AFSMT' : $location;
+        $dateObj = new DateTime($date);
+        $_MONTH = $dateObj->format('m');
+        $_YEAR = $dateObj->format('Y');
+        
+    }
+    public function upload_physical_to_itinventory() {
         ini_set('max_execution_time', '-1');
         header('Content-Type: application/json');
         $date = $this->input->post('date');
@@ -2806,7 +2895,7 @@ class ITH extends CI_Controller {
             foreach($rssaved as $s){
                 if(strtoupper($r['ITH_ITMCD']) == strtoupper($s['INV_ITMNUM'])){
                     if($r['STOCKQTY']*1 != $s['INV_QTY']*1) {
-                        $WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];					
+                        $WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];
                         $ttlupdated+=$this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY']*1, 'INV_DATE' =>  $date], $WHERE );
                     }
                     $isfound = true;
@@ -3600,9 +3689,10 @@ class ITH extends CI_Controller {
     function change_kitting_date()
     {
         header('Content-Type: application/json');
-        $doc = $this->input->get('doc');
-		$date = $this->input->get('date');
-		$rs = $this->ITH_mod->select_doc_vs_datec($doc, $date);
+        $doc = $this->input->post('doc');
+		$date = $this->input->post('date');
+		$items = $this->input->post('items');
+		$rs = $this->ITH_mod->select_doc_vs_datec_withIn_items($doc, $date, $items);
 		$tmpTime = strtotime($date.' +1 days');
 		$date0 = date('Y-m-d', $tmpTime);
         $affectedRows = 0;
@@ -3619,7 +3709,10 @@ class ITH extends CI_Controller {
                 , $r['TO_LUPDT'], $r['ITH_LUPDT'], $r['ITH_ITMCD']);
 		}
 		unset($r);
-        die(json_encode(['status' => ['cd' => '1', 'msg' => $affectedRows.' row(s) updated']]));
+        die(json_encode([
+            'status' => ['cd' => '1', 'msg' => $affectedRows.' row(s) updated']
+            ,'data' => $rs    
+        ]));
     }
 
     function raw_ith_remove()

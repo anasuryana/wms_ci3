@@ -399,7 +399,7 @@
         </div>
         
         <!-- Modal body -->
-        <div class="modal-body">            
+        <div class="modal-body">
             <div class="row">
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">
@@ -424,6 +424,7 @@
                                     <th rowspan="2">Item Code</th>
                                     <th rowspan="2" class="text-end">Qty</th>
                                     <th colspan="2" class="text-center">Date time</th>
+                                    <th rowspan="2" class="text-center"><input class="form-check-input" type="checkbox" id="spl_cid_ckall"></th>
                                 </tr>
                                 <tr>
                                     <th class="text-center">From</th>
@@ -1488,7 +1489,7 @@
     {
         if(spl_cid_txtpsn.value.trim().length>7)
         {
-            spl_cid_tbldetissu_div.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center"><i>Please wait</i></td></tr>`
+            spl_cid_tbldetissu_div.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="5" class="text-center"><i>Please wait</i></td></tr>`
             $.ajax({
                 url: "<?=base_url('ITHHistory/ith_doc_vs_date')?>",
                 data: {doc: spl_cid_txtpsn.value, date: spl_cid_txtdate.value},
@@ -1502,6 +1503,14 @@
                     myfrag.appendChild(cln);                    
                     let tabell = myfrag.getElementById("spl_cid_tbldetissu");
                     let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    let myCB = myfrag.getElementById('spl_cid_ckall')
+                    myCB.onclick = () => {                        
+                        let ttlrows = tableku2.rows.length
+                        for (let i = 0; i<ttlrows; i++) 
+                        {
+                            tableku2.rows[i].cells[4].getElementsByTagName('input')[0].checked = myCB.checked
+                        }
+                    }
                     let newrow, newcell;
                     tableku2.innerHTML=''
                     for (let i = 0; i<ttlrows; i++){
@@ -1517,6 +1526,9 @@
                         newcell = newrow.insertCell(3)
                         newcell.classList.add('text-center')
                         newcell.innerHTML = response.data[i].TO_LUPDT
+                        newcell = newrow.insertCell(4)
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = `<input class="form-check-input" type="checkbox">`
                     }
                     mydes.innerHTML=''
                     mydes.appendChild(myfrag)
@@ -1537,16 +1549,31 @@
     });
 
     spl_cid_save.addEventListener('click', () => {
-        if(spl_cid_txtpsn.value.trim().length>7)
+        if(spl_cid_txtpsn.value.trim().length>7 )
         {
-            if(confirm('Are you sure ?'))
+            const ttlrows = spl_cid_tbldetissu.getElementsByTagName('tbody')[0].rows.length
+            if(ttlrows===0)
+            {
+                alertify.message('there is nothing to be saved')
+                return
+            }
+            let aItems = []
+            for(let i=0;i<ttlrows;i++)
+            {
+                if(spl_cid_tbldetissu.getElementsByTagName('tbody')[0].rows[i].cells[4].getElementsByTagName('input')[0].checked)
+                {
+                    aItems.push(spl_cid_tbldetissu.getElementsByTagName('tbody')[0].rows[i].cells[0].innerText)
+                }
+            }
+
+            if(confirm(`Are you sure want to execute ${aItems.length} item(s) ?`))
             {
                 spl_cid_save.innerText = `Please wait`
                 spl_cid_save.disable = true
                 $.ajax({
                     type: "POST",
-                    url: "<?=base_url('ITH/change_kitting_dates')?>",
-                    data: {doc: spl_cid_txtpsn.value, date: spl_cid_txtdate.value},
+                    url: "<?=base_url('ITH/change_kitting_date')?>",
+                    data: {doc: spl_cid_txtpsn.value, date: spl_cid_txtdate.value, items: aItems },
                     dataType: "json",
                     success: function (response) {
                         spl_cid_save.innerText = `Save changes`

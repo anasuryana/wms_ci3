@@ -1008,14 +1008,14 @@ class SPL extends CI_Controller {
                     'SPL_DOC' 		=> trim($r['PPSN2_PSNNO']),
                     'SPL_DOCNO'		=> trim($r['PPSN2_DOCNO']),						
                     'SPL_LINE' 		=> trim($r['PPSN2_LINENO']),
-                    'SPL_CAT' 		=> $r['PPSN2_ITMCAT'],
+                    'SPL_CAT' 		=> trim($r['PPSN2_ITMCAT']),
                     'SPL_PROCD' 	=> trim($r['PPSN2_PROCD']),
-                    'SPL_FEDR' 		=> $r['PPSN2_FR'],
+                    'SPL_FEDR' 		=> trim($r['PPSN2_FR']),
                     'SPL_MC' 	=> trim($r['PPSN2_MC']),
                     'SPL_ORDERNO' 	=> trim($r['PPSN2_MCZ']),
                     'SPL_ITMCD' 	=> trim($r['PPSN2_SUBPN']),
                     'SPL_MS' 		=> trim($r['PPSN2_MSFLG']),
-                    'SPL_BG' 		=> $r['PPSN2_BSGRP']
+                    'SPL_BG' 		=> trim($r['PPSN2_BSGRP'])
                 ];
                 if($this->SPL_mod->check_Primary($datac)==0){										
                     $datac['SPL_RACKNO']= trim($r['ITMLOC_LOC']);					
@@ -2526,17 +2526,17 @@ class SPL extends CI_Controller {
                         } else {
                             $pdf->Cell(20,$td_h,$r['SPL_RACKNO'],1,0,'L');
                         }
-                        $lebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO']))+17;
-                        $clebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO']))+16;
+                        $lebar =  $pdf->GetStringWidth( $r['SPL_ORDERNO'])+17;
+                        $clebar =  $pdf->GetStringWidth( $r['SPL_ORDERNO'])+16;
                         $strx =$wd2col - ($lebar+3);
-                        if(($i%2)>0){							
-                            $pdf->Code128($wd2col -80 +2 ,$cury+1.5,trim($r['SPL_ORDERNO']),$clebar,3);
+                        if(($i%2)>0){
+                            $pdf->Code128($wd2col -80 +2 ,$cury+1.5,$r['SPL_ORDERNO'],$clebar,3);
                             $pdf->Cell(80,$td_h,$r['SPL_ORDERNO'],1,0,'R');
                             $pdf->SetFont('Arial','',4);
                             $pdf->Text($wd2col -5, $cury+1.5,$r['SPL_PROCD']);
                             $pdf->SetFont('Arial','',8);
                         } else {							
-                            $pdf->Code128($strx,$cury+1.5,trim($r['SPL_ORDERNO']),$clebar,3);
+                            $pdf->Code128($strx,$cury+1.5, $r['SPL_ORDERNO'] ,$clebar,3);
                             $pdf->Cell(80,$td_h,$r['SPL_ORDERNO'],1,0,'L');
                             $pdf->SetFont('Arial','',4);
                             $pdf->Text($wd2col -79, $cury+1.5,$r['SPL_PROCD']);
