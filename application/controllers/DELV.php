@@ -2664,6 +2664,9 @@ class DELV extends CI_Controller {
                             $rsrm_notOK[] = $r;
                         }
                     }
+                } elseif($r['CALPER']>0 && abs($r['CALPER'] - $r['MYPER'])>1 )
+                {
+                    $rsrm_notOK[] = $r;
                 }
             }			
             die(json_encode(['data' => $rs, 'datafocus' => $rsrm_notOK]));
