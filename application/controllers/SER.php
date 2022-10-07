@@ -43,6 +43,7 @@ class SER extends CI_Controller {
         $this->load->model('MSPP_mod');
         $this->load->model('C3LC_mod');
         $this->load->model('XWO_mod');
+        $this->load->model('ZRPSTOCK_mod');
         $this->load->model('refceisa/TPB_HEADER_imod');
     }
     public function index()
@@ -6139,77 +6140,33 @@ class SER extends CI_Controller {
         }
         die(json_encode(['data' => $myar]));
     }
+       
+    function fix_ng_transaction()
+    {
+        header('Content-Type: application/json');
+        $wo = $this->input->get('wo');
+        $partcode = $this->input->get('partcode');
+        $okid = $this->input->get('okid');
 
-    public function addserd2(){
-        $reffno = $this->input->get('reffno');
-        $fgqty = $this->input->get('qty');
-        $job = $this->input->get('job');
-        $json = '[
+        $rs = $this->ZRPSTOCK_mod->select_doubled_transaction($partcode, $wo, $okid);
+        foreach($rs as &$r)
+        {
+            $where = ['RPSTOCK_REMARK' => $r['DLV_ID'], 'RPSTOCK_ITMNUM' => $partcode ];
+            $rs_ = $this->ZRPSTOCK_mod->select_columns_where(['*'], $where);
+            $r['COUNT_ROWS'] = count($rs_);
+            if($r['COUNT_ROWS']===1)
             {
-                "PartCode": "206478200",
-                "PartName": "EVQPLHA15",
-                "UsedQty": "1",
-                "QtyReq": "1,596",
-                "QtyIssue": "5,000",
-                "LotNo": "V1197A15F016"
-            },
-            {
-                "PartCode": "208726900",
-                "PartName": "EMK105BJ104KV-F",
-                "UsedQty": "1",
-                "QtyReq": "1,596",
-                "QtyIssue": "2,480",
-                "LotNo": "RL991507246"
-            },
-            {
-                "PartCode": "211031200",
-                "PartName": "04 6232 104 903 800+",
-                "UsedQty": "1",
-                "QtyReq": "1,596",
-                "QtyIssue": "2,000",
-                "LotNo": "5A1JP1"
-            },
-            {
-                "PartCode": "216309800",
-                "PartName": "MCR03ERTJ161",
-                "UsedQty": "1",
-                "QtyReq": "1,596",
-                "QtyIssue": "2,000",
-                "LotNo": "123C000PR070"
-            },
-            {
-                "PartCode": "217972500",
-                "PartName": "SMLMN2WB1GW1",
-                "UsedQty": "1",
-                "QtyReq": "1,596",
-                "QtyIssue": "1,596",
-                "LotNo": "125L3561D031"
+                foreach($rs_ as $k)
+                {
+                    $r['SHOULD_EXECUTE'] = true;
+                    $r['EXBCSHOULDBE'] = $k['RPSTOCK_QTY']*1+$r['DIFF'];
+                    $r['STATUS'] = $this->ZRPSTOCK_mod->updatebyId($where, ['RPSTOCK_QTY' => $k['RPSTOCK_QTY']*1+$r['DIFF'] ]);
+                }
+            } else {
+                $r['SHOULD_EXECUTE'] = false;
             }
-        ]';
-        $rs = json_decode($json,true);
-        $data = [];
-        foreach($rs as $r){
-            $data[] = [
-                'SERD2_PSNNO' => '',
-                'SERD2_LINENO' => '',
-                'SERD2_PROCD' => '',
-                'SERD2_CAT' => '',
-                'SERD2_FR' => '',
-                'SERD2_SER' => $reffno,
-                'SERD2_FGQTY' => $fgqty,
-                'SERD2_JOB' => $job,
-                'SERD2_QTPER' => $r['UsedQty'],
-                'SERD2_MC' => '',
-                'SERD2_MCZ' => '',
-                'SERD2_ITMCD' => $r['PartCode'],
-                'SERD2_QTY' => $fgqty*$r['UsedQty'],
-                'SERD2_LOTNO' => '',				
-                'SERD2_REMARK' => '',
-                'SERD2_USRID' => 'ane',
-                'SERD2_LUPDT' => '2022-01-22 01:01:01',
-            ];
         }
-        $this->SERD_mod->insertb2($data);
-        die(json_encode($data));
-    }    
+        unset($r);
+        die(json_encode(['partcode' => $partcode,'data' => $rs ]));
+    }
 }
