@@ -3688,6 +3688,7 @@ class ITH extends CI_Controller {
 
     function change_kitting_date()
     {
+        date_default_timezone_set('Asia/Jakarta');
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
 		$date = $this->input->post('date');
@@ -3695,17 +3696,19 @@ class ITH extends CI_Controller {
 		$rs = $this->ITH_mod->select_doc_vs_datec_withIn_items($doc, $date, $items);
 		$tmpTime = strtotime($date.' +1 days');
 		$date0 = date('Y-m-d', $tmpTime);
+        $thedate = $date;
         $affectedRows = 0;
 		foreach($rs as &$r)
 		{
 			$r['TIME'] = substr($r['ITH_LUPDT'],11,8);
 			if($r['TIME']>='00:00:00' && $r['TIME']<='07:00:00') {
 				$r['TO_LUPDT'] = $date0." ".$r['TIME'];
+                $thedate = $date0;
 			} else 
 			{
 				$r['TO_LUPDT'] = $date." ".$r['TIME'];
 			}
-            $affectedRows += $this->ITH_mod->update_kitting_date($doc, $date, $date0
+            $affectedRows += $this->ITH_mod->update_kitting_date($doc, $thedate
                 , $r['TO_LUPDT'], $r['ITH_LUPDT'], $r['ITH_ITMCD']);
 		}
 		unset($r);

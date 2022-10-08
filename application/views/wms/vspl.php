@@ -418,7 +418,7 @@
                 <div class="col">
                     <div class="table-responsive" id="spl_cid_tbldetissu_div">
                         <table id="spl_cid_tbldetissu" class="table table-hover table-sm table-bordered caption-top">
-                            <caption>Affected data will be like the table below <span class="fas fa-arrow-turn-down"></span></caption>
+                            <caption>Preview <span class="fas fa-arrow-turn-down"></span></caption>
                             <thead class="table-light">
                                 <tr>
                                     <th rowspan="2">Item Code</th>
@@ -1579,6 +1579,7 @@
                         spl_cid_save.innerText = `Save changes`
                         spl_cid_save.disable = false
                         alertify.message(response.status.msg)
+                        spl_cid_load()
                     }, error: (xhr, xopt, xthrow) => {
                         spl_cid_save.innerText = `Save changes`
                         alertify.error(xthrow)
