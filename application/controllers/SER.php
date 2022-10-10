@@ -4259,16 +4259,21 @@ class SER extends CI_Controller {
         $this->checkSession();
         $cid = $this->input->post('inid');
         $myar = [];
-        if($this->ITH_mod->check_Primary( ['ITH_SER' => $cid, 'ITH_WH' => 'AFWH3']) == 0){
-            if($this->SER_mod->check_Primary(['SER_ID' => $cid]) > 0 ){
+        if($this->ITH_mod->check_Primary( ['ITH_SER' => $cid, 'ITH_WH' => 'AFWH3']) == 0)
+        {
+            if($this->SER_mod->check_Primary(['SER_ID' => $cid]) > 0 )
+            {
                 $ret1 = $this->SER_mod->deletebyID(['SER_ID' => $cid]);
-                if($ret1>0){
+                if($ret1>0)
+                {
                     if($this->ITH_mod->check_Primary( ['ITH_SER' => $cid]) > 0){
                         //bak transaction
                         $this->ITH_mod->tobin($this->session->userdata('nama'),$cid );
                         ///start delete tx					
                         $ret2 = $this->ITH_mod->deletebyID( ['ITH_SER' => $cid]);
-                        if($ret2>0){
+                        if($ret2>0)
+                        {
+                            $this->SERD_mod->deletebyID_label_undelivered($cid);
                             $myar[] = ["cd" => '1', "msg" => "Deleted.."];						 
                         }
                     } else {
@@ -4277,7 +4282,8 @@ class SER extends CI_Controller {
                 } else {
                     $myar[] = ["cd" => '0', "msg" => "Could not delete the label"];				
                 }
-            } else {
+            } else 
+            {
                 $myar[] = ["cd" => '0', "msg" => "the label not found"];
             }
         } else {
