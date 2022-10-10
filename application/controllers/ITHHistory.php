@@ -1,11 +1,14 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class ITHHistory extends CI_Controller {
 
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('ITH_mod');		
+		$this->load->model('ITH_mod');
+		$this->load->model('RPSAL_INVENTORY_mod');
 	}
 
 	public function index()
@@ -94,11 +97,11 @@ class ITHHistory extends CI_Controller {
 	function raw_ith()
 	{
 		header('Content-Type: application/json');
-		$item_code = $this->input->get('item_code');
 		$item_location = $this->input->get('item_location');
+		$item_code = $this->input->get('item_code');
 		$item_event = $this->input->get('item_event');
 		$item_date = $this->input->get('item_date');
-
+		
 		$rs = $this->ITH_mod->select_view_all_by([
 			'ITH_ITMCD' => $item_code,
 			'ITH_WH' => $item_location,
@@ -107,4 +110,69 @@ class ITHHistory extends CI_Controller {
 		]);
 		die(json_encode(['data' => $rs]));
 	}
+	
+	function check_inventory_it_inventory()
+	{
+		header('Content-Type: application/json');
+		$date = $this->input->get('date');
+		$type = strtoupper($this->input->get('type'));
+		$aDate = explode('-', $date);
+		$vYear = $aDate[0];
+		$vMonth = $aDate[1];
+		$rs = $this->RPSAL_INVENTORY_mod->select_column_group_where([ $type==='P' ? 'INV_PHY_DATE' : 'INV_DATE'], ['INV_YEAR' => $vYear, 'INV_MONTH' => $vMonth]);
+		$myar = [];
+		if(count($rs)===1)
+		{
+			foreach($rs as $r)
+			{
+				if($type==='P')
+				{
+					if($r['INV_PHY_DATE']===$date || !$r['INV_PHY_DATE'])
+					{
+						$myar[] = ['cd' => '1', 'msg' => 'OK'];
+					} else {
+						$myar[] = ['cd' => '0', 'msg' => 'NOT OK'];
+					}
+				} else {
+					if($r['INV_DATE']===$date || !$r['INV_DATE'])
+					{
+						$myar[] = ['cd' => '1', 'msg' => 'OK'];						
+					} else {
+						$myar[] = ['cd' => '0', 'msg' => 'NOT OK'];
+					}
+				}
+			}
+		} else {
+			$myar[] = ['cd' => '0', 'msg' => 'NOT OK'];
+		}
+		die(json_encode(['status' => $myar, 'data' => $rs, 'reff_type' => $type]));
+	}
+
+	public function get_stock_detail_as_xls(){
+        ini_set('max_execution_time', '-1');        
+        $wh = $_COOKIE["CKPSI_WH"];
+        $dt = $_COOKIE["CKPSI_DATE"];
+        $thewh = $wh =="AFSMT" ? "AFWH3" : $wh;
+        $rs = $this->ITH_mod->select_psi_stock_date_wbg_detail($thewh, $dt);
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('stock_detail');	
+        $sheet->setCellValueByColumnAndRow(1,1, 'Warehouse');
+        $sheet->setCellValueByColumnAndRow(2,1, 'Item Code');		
+        $sheet->setCellValueByColumnAndRow(3,1, 'Item Name');
+        $sheet->setCellValueByColumnAndRow(4,1, 'SPTNO');
+        $sheet->setCellValueByColumnAndRow(5,1, 'End Qty');
+        $sheet->setCellValueByColumnAndRow(6,1, 'Unit Measurement');
+        $sheet->setCellValueByColumnAndRow(7,1, 'ID');	
+        $sheet->setCellValueByColumnAndRow(9,1, 'Job Number');	
+        $sheet->fromArray($rs, NULL, 'A2');
+        $stringjudul = "stock $wh at ".$dt;
+        $writer = new Xlsx($spreadsheet);
+        $filename=$stringjudul; //save our workbook as this file name
+        
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
 }

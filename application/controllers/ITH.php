@@ -1034,40 +1034,9 @@ class ITH extends CI_Controller {
                 $rs = $this->ITH_mod->select_compare_inventory($cwh,$cdate);
         }
         echo '{"data":'.json_encode($rs).'}';
-    }
+    }   
 
-    public function tescat() {
-        $rs =$this->MSTITM_mod->select_category();
-        die(json_encode($rs));
-    }
-
-    public function get_stock_detail_as_xls(){
-        ini_set('max_execution_time', '-1');
-        $bg = $_COOKIE["CKPSI_BG"];
-        $wh = $_COOKIE["CKPSI_WH"];
-        $dt = $_COOKIE["CKPSI_DATE"];
-        $thewh = $wh =="AFSMT" ? "AFWH3" : $wh;
-        $rs = $this->ITH_mod->select_psi_stock_date_wbg_detail($thewh, $dt);
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('stock_detail');	
-        $sheet->setCellValueByColumnAndRow(1,1, 'Warehouse');
-        $sheet->setCellValueByColumnAndRow(2,1, 'Item Code');		
-        $sheet->setCellValueByColumnAndRow(3,1, 'Item Name');
-        $sheet->setCellValueByColumnAndRow(4,1, 'SPTNO');
-        $sheet->setCellValueByColumnAndRow(5,1, 'End Qty');
-        $sheet->setCellValueByColumnAndRow(6,1, 'Unit Measurement');
-        $sheet->setCellValueByColumnAndRow(7,1, 'ID');	
-        $sheet->fromArray($rs, NULL, 'A2');
-        $stringjudul = "stock $wh at ".$dt;
-        $writer = new Xlsx($spreadsheet);
-        $filename=$stringjudul; //save our workbook as this file name
-        
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output');
-    }
+    
     public function get_stock_recap_as_xls(){
         ini_set('max_execution_time', '-1');
         $bg = $_COOKIE["CKPSI_BG"];
@@ -2644,6 +2613,8 @@ class ITH extends CI_Controller {
         $whException = ['AFWH3','AWIP1','AFWH9SC'];
         $date = $this->input->post('date');
         $location = $this->input->post('location');
+        $adjtype = $this->input->post('adjtype');
+        $form_prefix = $adjtype==='P' ? 'ADJ-I-' : 'ADJ-O-';
         $usrid =  $this->session->userdata('nama');
         $current_datetime = date('Y-m-d H:i:s');
         if(!in_array($location, $whException)) {
@@ -2671,10 +2642,10 @@ class ITH extends CI_Controller {
                 $balance = $r['STOCKQTY']-$r['MGAQTY'];
                 if( $balance != 0) {
                     if ($balance>0) {
-                        $ith_form = 'ADJ-I-OUT';
+                        $ith_form = $form_prefix.'OUT';
                         $balance = -$balance;
                     } else {
-                        $ith_form = 'ADJ-I-INC';
+                        $ith_form = $form_prefix.'INC';
                         $balance = abs($balance);
                     }
                     $rsadj[] = [
@@ -2691,10 +2662,10 @@ class ITH extends CI_Controller {
                 }
             }
             if(!empty($rsadj)) {
-                $this->ITH_mod->insertb($rsadj);
-                $myar = ['cd' => "1", 'msg' => 'done' , 'reff' => $location];
+                // $this->ITH_mod->insertb($rsadj);
+                $myar = ['cd' => "1", 'msg' => 'done testing' , 'reff' => $location, 'rsadj' => $rsadj];
             } else {
-                $myar = ['cd' => "0", 'msg' => 'done nothing adjusted', 'reff' => $location];
+                $myar = ['cd' => "0", 'msg' => 'done nothing adjusted', 'reff' => $location , 'rsadj' => $rsadj];
             }
         } else {
             $myar = ['cd' => "0", 'msg' => 'done nothing adjusted...', 'reff' => $location];
