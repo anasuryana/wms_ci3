@@ -1560,13 +1560,15 @@ class RCV extends CI_Controller {
             } else {
                 $rswh = $this->ITH_mod->selectstock_ser($reffid);
                 $rswh = count($rswh)>0 ? reset($rswh) : ['ITH_WH' => '??'];
-                if($rswh['ITH_WH']=='AFQART'){
+                //$rswh['ITH_WH']=='AFQART'
+                if(in_array($rswh['ITH_WH'],['AFQART','AFQART2']))
+                {
                     $af = $this->RETFG_mod->delete_where(['RETFG_DOCNO' => $cdoc, 'RETFG_LINE' => $cline]);
                     $this->SER_mod->deletebyID(['SER_DOC' => $cdoc, 'SER_PRDLINE' => $cline]);			
                     $myar = [];
                     if($af>0){
                         if($this->ITH_mod->deletebyID(['ITH_SER' => $reffid])){
-                            $myar[] = ['cd' => 1, 'msg' => 'Deleted'];					
+                            $myar[] = ['cd' => 1, 'msg' => 'Deleted'];
                         } else {
                             $myar[] = ['cd' => 1, 'msg' => 'Deleted..'];
                         }
@@ -1878,7 +1880,7 @@ class RCV extends CI_Controller {
                 } else {
                     if($csup!='-'){
                         $rs = $this->RCV_mod->MGSelectDOSup_return_fg($ckey, $csup);
-                    } else {					
+                    } else {
                         $rs = $cdatefilter !='' ? $this->RCV_mod->MGSelectDO_date_return_fg($ckey, $cdate1, $cdate2) :
                          $this->RCV_mod->MGSelectDO_return_fg($ckey);
                     }
