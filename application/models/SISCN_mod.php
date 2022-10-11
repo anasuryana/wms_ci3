@@ -205,7 +205,7 @@ class SISCN_mod extends CI_Model {
                         ,ITH_DOC
                         ,min(ITH_ITMCD) OLDITEM
                     FROM ITH_TBL
-                    WHERE ITH_QTY < 0 AND ITH_WH='AFQART'
+                    WHERE ITH_QTY < 0 AND ITH_WH in ('AFQART','AFQART2')
                     GROUP BY ITH_REMARK
                         ,ITH_DOC
                     ) VMAP ON SISCN_SER = EXTLBL	
