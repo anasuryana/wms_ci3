@@ -14220,7 +14220,7 @@ class DELV extends CI_Controller {
             if($k['SISO_SOLINE']=='X'){ 
                 $rs_mst_price = $this->XSO_mod->select_latestprice($k['DLV_BSGRP'], $k['DLV_CUSTCD'], "'".$k['SER_ITMID']."'" );
                 foreach($rs_mst_price as $r){
-                    $k['SSO2_SLPRC'] = substr($r['MSPR_SLPRC'],0,1) =='.' ? '0'.$r['MSPR_SLPRC'] : $r['MSPR_SLPRC'];									
+                    $k['SSO2_SLPRC'] = substr($r['MSPR_SLPRC'],0,1) =='.' ? '0'.$r['MSPR_SLPRC'] : $r['MSPR_SLPRC'];
                 }
             }
         }
