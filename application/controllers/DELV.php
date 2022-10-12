@@ -4891,7 +4891,8 @@ class DELV extends CI_Controller {
             $cnopen = '';
         }
         if(strlen($cnoaju)>2){
-            if($this->DELV_mod->check_Primary(['DLV_ID !=' => $cid, 'DLV_NOAJU' => $cnoaju, 'DLV_BCTYPE' => $czdocbctype, 'YEAR(DLV_BCDATE)' => $customsyear])) {
+            $where = ['DLV_ID !=' => $cid, 'DLV_NOAJU' => $cnoaju, 'DLV_BCTYPE' => $czdocbctype, 'YEAR(DLV_BCDATE)' => $customsyear, 'DLV_BCDATE' => $ccustdate];
+            if($this->DELV_mod->check_Primary($where)) {
                 $myar[] = ["cd" => '00', "msg" => "Nomor Aju is already used" ] ;
                 die(json_encode($myar));
             }

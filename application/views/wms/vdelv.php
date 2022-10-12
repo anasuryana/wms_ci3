@@ -443,10 +443,19 @@
                         <input type="text" id="txfg_txt_tglkontrak" class="form-control" readonly>
                     </div>
                 </div>                
-            </div>                 
+            </div>
         </div>
-        <div class="modal-footer">            
-            <button type="button" class="btn btn-primary btn-sm" id="txfg_z_btn_save" onclick="txfg_z_btn_save_e_click()">Save changes</button>
+        <div class="modal-footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="txfg_z_btn_relink" onclick="txfg_z_btn_relink_e_click(this)">Re-link IT Inventory</button>
+                    </div>
+                    <div class="col text-end">
+                        <button type="button" class="btn btn-primary btn-sm" id="txfg_z_btn_save" onclick="txfg_z_btn_save_e_click(this)">Save changes</button>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -4802,7 +4811,8 @@ function txfg_z_btn_save25_e_click(){
 document.getElementById('txfg_cmb_jenisTPBtujuan').value = '1'
 document.getElementById('txfg_cmb_tujuanpengiriman').value = '1'
 
-function txfg_z_btn_save_e_click(){    
+function txfg_z_btn_save_e_click(pThis){
+    pThis.innerText = 'Please wait'
     let msj = document.getElementById('txfg_txt_id').value;
     if(msj.trim()== ''){
         document.getElementById('txfg_txt_id').focus()        
@@ -4850,22 +4860,27 @@ function txfg_z_btn_save_e_click(){
         }
     }
     if(confirm("Are You sure ?")){
+        pThis.disabled = true
         $.ajax({
             type: "get",
             url: "<?=base_url('DELV/change27')?>",
             data: {inid : msj, innopen: mnopen, inaju: mnoaju, 
                 infromoffice: mfromoffice,indestoffice: mdestoffice , inpurpose: mpurpose
-            ,injenis_tpb_asal: mjenis_tpb_asal, injenis_tpb_tujuan: mjenis_tpb_tujuan,
-            intgldaftar: mtglpen,incona: mcona, sppbdoc: sppbdoc
-             },
+                ,injenis_tpb_asal: mjenis_tpb_asal, injenis_tpb_tujuan: mjenis_tpb_tujuan,
+                intgldaftar: mtglpen,incona: mcona, sppbdoc: sppbdoc
+            },
             dataType: "json",
             success: function (response) {
+                pThis.innerText = 'Save changes'
+                pThis.disabled = false
                 if(response[0].cd=='11'){
                     alertify.success(response[0].msg);
                 } else {
                     alertify.error(response[0].msg);
                 }
             }, error: function(xhr, xopt, xthrow){
+                pThis.innerText = 'Save changes'
+                pThis.disabled = false
                 alertify.error(xthrow);
             }
         });
@@ -4915,8 +4930,6 @@ function txfg_z_btn_save41_e_click(){
             success: function (response) {
                 if(response[0].cd='11'){
                     alertify.success(response[0].msg);
-                } else {
-                    //alertify.error(response[0].msg);
                 }
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
@@ -5509,5 +5522,32 @@ function txfg_modchangeprice_btn_save_eClick(p)
             }
         })
     }
+}
+
+function txfg_z_btn_relink_e_click(pThis)
+{
+    pThis.innerHTML = `Please wait`
+    pThis.disabled = true
+    const txid = txfg_txt_id.value.trim()
+    if(txid.length===0)
+    {
+        alertify.warning('TX ID is required')
+        return
+    }
+    $.ajax({
+        type: "POST",
+        url: "<?=base_url('DELV/relink_it_inventory')?>",
+        data: {doc: txid},
+        dataType: "json",
+        success: function (response) {
+            pThis.innerHTML = `Re-link IT Inventory`
+            pThis.disabled = false
+            alertify.message(response.status[0].msg)
+        }, error:function(xhr,ajaxOptions, throwError) {
+            pThis.innerHTML = `Re-link IT Inventory`
+            pThis.disabled = false
+            alert(throwError);                
+        }
+    });
 }
 </script>
