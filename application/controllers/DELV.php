@@ -3032,21 +3032,20 @@ class DELV extends CI_Controller {
         //start of data base
         $hinv_date ='';
         $hdlv_date ='';
-        $hinv_inv ='';
-        $hinv_smtinv ='';
+        $hinv_inv ='';        
         $hinv_nopen ='';
         $hinv_customer ='';
         $hinv_address ='';
         
         $hinv_currency ='';		
         $hinv_bctype ='';
-        $hinv_noaju ='';
+        
         $ar_item = [];
         $ar_itemdesc = [];
         $ar_itemUM = [];
         $ar_qty = [];
-        $ar_price = [];
-        $customer_hasPO = '';
+        
+        
         $ATTN = '';
 
         foreach($rs as $r){
@@ -3056,15 +3055,12 @@ class DELV extends CI_Controller {
             $hdlv_date = $r['DLV_DATE'];
             $hdlv_date = date_create($hdlv_date);
             $hdlv_date = date_format($hdlv_date, "d/m/Y");
-            $hinv_inv = $r['DLV_INVNO'];
-            $hinv_smtinv = $r['DLV_SMTINVNO'];
+            $hinv_inv = $r['DLV_INVNO'];            
             $hinv_nopen = $r['DLV_NOPEN'];
             $hinv_address = $r['MDEL_ADDRCUSTOMS'];
             $hinv_currency = $r['MCUS_CURCD'];		
             $hinv_customer = $r['MDEL_DELNM'];
-            $hinv_bctype = $r['DLV_BCTYPE'];
-            $hinv_noaju = $r['DLV_NOAJU'];
-            $customer_hasPO = $r['MCUS_CUSNM'];
+            $hinv_bctype = $r['DLV_BCTYPE'];            
             $ATTN = $r['ATTN'];
             break;
         }
@@ -3336,22 +3332,11 @@ class DELV extends CI_Controller {
         //start of data base
         $hinv_date ='';
         $hdlv_date ='';
-        $hinv_inv ='';
-        $hinv_smtinv ='';
-        $hinv_nopen ='';
-        $hinv_customer ='';
-        $hinv_address ='';
-        
-        $hinv_currency ='';		
+        $hinv_inv ='';                
+        $hinv_customer ='';        
+                		
         $hinv_bctype ='';
-        $hinv_noaju ='';
-        $ar_item = [];
-        $ar_itemdesc = [];
-        $ar_itemUM = [];
-        $ar_qty = [];
-        $ar_price = [];
-        $customer_hasPO = '';
-        $ATTN = '';
+        $hinv_noaju ='';        
 
         foreach($rs as $r){
             $hinv_date = $r['DLV_INVDT'];
@@ -3360,16 +3345,10 @@ class DELV extends CI_Controller {
             $hdlv_date = $r['DLV_DATE'];
             $hdlv_date = date_create($hdlv_date);
             $hdlv_date = date_format($hdlv_date, "d/m/Y");
-            $hinv_inv = $r['DLV_INVNO'];
-            $hinv_smtinv = $r['DLV_SMTINVNO'];
-            $hinv_nopen = $r['DLV_NOPEN'];
-            $hinv_address = $r['MDEL_ADDRCUSTOMS'];
-            $hinv_currency = $r['MCUS_CURCD'];		
+            $hinv_inv = $r['DLV_INVNO'];          
             $hinv_customer = $r['MDEL_DELNM'];
             $hinv_bctype = $r['DLV_BCTYPE'];
             $hinv_noaju = $r['DLV_NOAJU'];
-            $customer_hasPO = $r['MCUS_CUSNM'];
-            $ATTN = $r['ATTN'];
             break;
         }
 
@@ -7840,13 +7819,15 @@ class DELV extends CI_Controller {
             if(count($listNeedExBC)>0){
                 $this->inventory_cancelDO($csj);
                 $myar[] = ['cd' => 110 ,'msg' => 'EX-BC for '.count($listNeedExBC). ' item(s) is not found. ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman ];
-                die('{"status" : '.json_encode($myar).', "data":'.json_encode($listNeedExBC)
-                    .',"rawdata":'.json_encode($rstemp)
-                    .',"czdocbctype":'.$czdocbctype
-                    .',"cztujuanpengiriman":'.$cztujuanpengiriman
-                    .',"responseTemparray":'.json_encode($responseTemparray)
-                    .',"requestResume":'.json_encode($requestResume)
-                    .',"responresume":'.json_encode($responseResume).'}');
+                die(json_encode(['status' => $myar
+                    ,'data' => $listNeedExBC
+                    ,'rawdata' => $rstemp
+                    ,'czdocbctype' => $czdocbctype
+                    ,'cztujuanpengiriman' => $cztujuanpengiriman
+                    ,'responseTemparray' => $responseTemparray
+                    ,'requestResume' => $requestResume
+                    ,'responresume' => $responseResume
+                ]));
             }
             #clear
             $ary_item = [];
@@ -8014,108 +7995,7 @@ class DELV extends CI_Controller {
         $myar[] = ['cd' => 1 ,'msg' => 'Done, check your TPB' ];
         $this->setPrice(base64_encode($csj));		
         die('{"status" : '.json_encode($myar).'}');
-    }	
-
-    function test_posting25IDR(){
-        #respon from API
-        $rstemp = '[{
-            "status": true,
-            "data": [
-                {
-                    "BC_TYPE": "27",
-                    "BC_NUM": "153986",
-                    "BC_AJU": "05094000658320220412000405",
-                    "BC_DATE": "2019-04-11",
-                    "BC_QTY": "200",
-                    "BC_DO": "SHP-COBA",
-                    "BC_ITEM": "E11239-04",
-                    "QTY_SISA": 6000,
-                    "RCV_KPPBC": "050900",
-                    "RCV_HSCD": "85414010",
-                    "RCV_ZNOURUT": null,
-                    "RCV_PRPRC": ".028980",
-                    "RCV_BM": ".0",
-                    "MITM_ITMD1": "Deskripsi",
-                    "MITM_STKUOM": "PCS",
-                    "OUT_BCDATE": "2021-10-15",
-                    "LOT": null,
-                    "STOCK": "16000",
-                    "REQ_REMAIN": 0,
-                    "STOCK_REMAIN": 6000,
-                    "SAVED_QTY": "10000",
-                    "IS_EXCEEDED": false
-                }
-            ],
-            "message": "Ex-BC Found."
-        },
-        {
-            "status": true,
-            "data": [
-                {
-                    "BC_TYPE": "27",
-                    "BC_NUM": "153986",
-                    "BC_AJU": "05092701007020190411001646",
-                    "BC_DATE": "2019-04-11",
-                    "BC_QTY": "12000",
-                    "BC_DO": "SHP-COBA",
-                    "BC_ITEM": "E11239-04",
-                    "QTY_SISA": 6000,
-                    "RCV_KPPBC": "050900",
-                    "RCV_HSCD": "85414010",
-                    "RCV_ZNOURUT": null,
-                    "RCV_PRPRC": ".028980",
-                    "RCV_BM": ".0",
-                    "MITM_ITMD1": "Deskripsi",
-                    "MITM_STKUOM": "PCS",
-                    "OUT_BCDATE": "2021-10-15",
-                    "LOT": null,
-                    "STOCK": "16000",
-                    "REQ_REMAIN": 0,
-                    "STOCK_REMAIN": 6000,
-                    "SAVED_QTY": "10000",
-                    "IS_EXCEEDED": false
-                }
-            ],
-            "message": "Ex-BC Found."
-        }]';
-        $rsbc = json_decode($rstemp);
-        $rsbcnew = json_decode($rstemp);
-
-        #get unique aju list from respon
-        $ajuList = [];
-        if(!is_null($rsbc)){
-            if( !empty($rsbc) ){
-                foreach($rsbc as $o){
-                    foreach($o->data as $v){						
-                        if(!in_array($v->BC_AJU, $ajuList)) {
-                            $ajuList[] = $v->BC_AJU;
-                        }
-                    }
-                }
-            }
-        }						
-        
-        #get currency using unique list
-        $ajustring = is_array($ajuList) ? "'".implode("','", $ajuList)."'" : "''";
-        $rsRCVCurrency = $this->RCV_mod->select_currency_byaju($ajustring);
-
-        #modify data from API
-        if(!empty($ajuList)) {
-            foreach($rsbcnew as $o){
-                foreach($o->data as $v){
-                    foreach($rsRCVCurrency as $k) {
-                        if($v->BC_AJU===$k['RCV_RPNO']) {
-                            $v->CURRENCY = $k['MSUP_SUPCR'];
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        header('Content-Type: application/json');
-        die(json_encode(['databefore' => $rsbc, 'dataafter' => $rsbcnew]));
-    }
+    }    
 
     public function posting25(){
         set_exception_handler([$this,'exception_handler']);
@@ -13817,13 +13697,7 @@ class DELV extends CI_Controller {
         $rs = $this->DLVCK_mod->select_display_header(['DLVCK_TXID' => $ptxid]);
         die(json_encode(['data' => $rs]));
     }
-
-    public function test()
-    {
-        $currentDate = date('Y-m-d H:i:s');
-        echo $currentDate;
-    }
-
+    
     function cancelposting() {
         header('Content-Type: application/json');
         $txid = $this->input->post('msj');
@@ -13855,30 +13729,81 @@ class DELV extends CI_Controller {
             die(json_encode(['status' => $myar]));
         }
         $myar[] = ['cd' => 1, 'msg' => 'OK'];
-
         $param = ['pbctype' => $bctype , 'pnomor_aju' => $nomoraju, 'id_header' => $id_header];
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step0#, start cancel posting DO:'.$txid);
+        
         switch($bctype) {
             case '27':
                 break;
             case '25':
+                log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, start cancel posting DO:'.$txid.' [BARANG_TARIF]');
                 $this->TPB_BARANG_TARIF_imod->deleteby_filter(['ID_HEADER' => $id_header]);														
+                log_message('error', $_SERVER['REMOTE_ADDR'].', step1#, finish cancel posting DO:'.$txid.' [BARANG_TARIF]');
+                
+                log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, start cancel posting DO:'.$txid.' [BILLING]');
                 $this->TPB_NPWP_BILLING_imod->deleteby_filter(['ID_HEADER' => $id_header]);
+                log_message('error', $_SERVER['REMOTE_ADDR'].', step2#, finish cancel posting DO:'.$txid.' [BILLING]');
+                
+                log_message('error', $_SERVER['REMOTE_ADDR'].', step3#, start cancel posting DO:'.$txid.' [PUNGUTAN]');
                 $this->TPB_PUNGUTAN_imod->deleteby_filter(['ID_HEADER' => $id_header]);
+                log_message('error', $_SERVER['REMOTE_ADDR'].', step3#, finish cancel posting DO:'.$txid.' [PUNGUTAN]');
                 break;
             case '41':
                 break;
         }
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step4#, start cancel posting DO:'.$txid.' [DETIL_STATUS]');
         $this->TPB_DETIL_STATUS_imod->deleteby_filter(['ID_HEADER' => $id_header]);
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step4#, start cancel posting DO:'.$txid.' [DETIL_STATUS]');
+        
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step5#, start cancel posting DO:'.$txid.' [RESPON]');
         $this->TPB_RESPON_imod->deleteby_filter(['ID_HEADER' => $id_header]);
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step5#, finish cancel posting DO:'.$txid.' [RESPON]');
+        
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step6#, start cancel posting DO:'.$txid.' [BAHAN_BAKU_TARIF]');
         $this->TPB_BAHAN_BAKU_TARIF_imod->deleteby_filter(['ID_HEADER' => $id_header]);
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step6#, finish cancel posting DO:'.$txid.' [BAHAN_BAKU_TARIF]');
+        
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step7#, start cancel posting DO:'.$txid.' [BAHAN_BAKU]');
         $this->TPB_BAHAN_BAKU_imod->deleteby_filter(['ID_HEADER' => $id_header]);
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step7#, finish cancel posting DO:'.$txid.' [BAHAN_BAKU]');
+        
+        
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step8#, start cancel posting DO:'.$txid.' [BARANG]');
         $this->TPB_BARANG_imod->deleteby_filter(['ID_HEADER' => $id_header]);
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step8#, finish cancel posting DO:'.$txid.' [BARANG]');
+        
+        
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step9#, start cancel posting DO:'.$txid.' [KEMASAN]');
         $this->TPB_KEMASAN_imod->deleteby_filter(['ID_HEADER' => $id_header]);
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step9#, finish cancel posting DO:'.$txid.' [KEMASAN]');
+        
+        
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step10#, start cancel posting DO:'.$txid.' [DOKUMEN]');
         $this->TPB_DOKUMEN_imod->deleteby_filter(['ID_HEADER' => $id_header]);
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step10#, finish cancel posting DO:'.$txid.' [DOKUMEN]');
+        
+        
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step11#, start cancel posting DO:'.$txid.' [HEADER]');
         $this->TPB_HEADER_imod->deleteby_filter(['ID' => $id_header]);
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step11#, finish cancel posting DO:'.$txid.' [HEADER]');
+        
+        
+        
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step12#, start cancel posting DO:'.$txid.' [DLVPRC]');
         $this->DLVPRC_mod->deleteby_filter(['DLVPRC_TXID' => $txid]);
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step12#, finish cancel posting DO:'.$txid.' [DLVPRC]');
+        
+        
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step13#, start cancel posting DO:'.$txid.' [API]');
         $respon = $this->inventory_cancelDO($txid);
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step13#, finish cancel posting DO:'.$txid.' [API]');
+        
+        
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step14#, start cancel posting DO:'.$txid.' [DLV]');
         $this->DELV_mod->updatebyVAR(['DLV_POST' => NULL, 'DLV_POSTTM' => null],['DLV_ID' => $txid]);
+        log_message('error', $_SERVER['REMOTE_ADDR'].', step14#, finish cancel posting DO:'.$txid.' [DLV]');
+
+
         die(json_encode(['status' => $myar, 'param' => $param, 'api' => $respon]));
     }
 
