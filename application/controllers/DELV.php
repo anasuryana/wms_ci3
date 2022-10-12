@@ -67,6 +67,7 @@ class DELV extends CI_Controller {
         $this->load->model('refceisa/TPB_PUNGUTAN_imod');
         $this->load->model('refceisa/TPB_DETIL_STATUS_imod');
         $this->load->model('refceisa/TPB_RESPON_imod');
+        date_default_timezone_set('Asia/Jakarta');
     }	
 
     function exception_handler($exception) {
@@ -388,8 +389,7 @@ class DELV extends CI_Controller {
         $this->load->view('wms/vrm_ret_out', $data);
     }
 
-    public function get_usage_rmwelcat_perjob($pjob){
-        date_default_timezone_set('Asia/Jakarta');
+    public function get_usage_rmwelcat_perjob($pjob){        
         $crnt_dt = date('Y-m-d H:i:s');	
         $cuserid = $this->session->userdata('nama');
         $rspsn = $this->SPL_mod->select_z_getpsn_byjob("'".$pjob."'");
@@ -982,8 +982,7 @@ class DELV extends CI_Controller {
     }
         
 
-    public function get_usage_rm_perjob_peruniq($pser,$pserqty,$pjob){
-        date_default_timezone_set('Asia/Jakarta');
+    public function get_usage_rm_perjob_peruniq($pser,$pserqty,$pjob){        
         $currrtime = date('Y-m-d H:i:s');
         $rsjobrm_d = $this->SERD_mod->selectd_byjob($pjob);
         $pserqty = str_replace(",", "", $pserqty);
@@ -1085,8 +1084,7 @@ class DELV extends CI_Controller {
     }
 
     public function get_newdono(){
-        header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');        
         $cip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
         $cuserid = $this->session->userdata('nama');
         $myar = [];
@@ -1151,8 +1149,7 @@ class DELV extends CI_Controller {
         $this->load->view('wms/vdelv', $data);
     }
 
-    public function print_pickingdoc(){
-        date_default_timezone_set('Asia/Jakarta');
+    public function print_pickingdoc(){        
         $Year = date('Y');
         $Month = intval(date('m'));
         $pser = '';
@@ -1473,8 +1470,7 @@ class DELV extends CI_Controller {
         {
             $myar [] = ["cd" => "00", "msg" => "Session is expired please reload page"];			
             exit(json_encode($myar));
-        }
-        date_default_timezone_set('Asia/Jakarta');		
+        }        	
         $crnt_dt = date('Y-m-d H:i:s');
         $ctxid = $this->input->post('intxid');
         $ctxcustDO = $this->input->post('incustdo');
@@ -1760,8 +1756,7 @@ class DELV extends CI_Controller {
         {
             $myar [] = ["cd" => "00", "msg" => "Session is expired please reload page"];			
             exit(json_encode($myar));
-        }
-        date_default_timezone_set('Asia/Jakarta');
+        }        
         $crnt_dt = date('Y-m-d H:i:s');
         $ctxid = $this->input->post('intxid');
         $ctxcustDO = $this->input->post('incustdo');
@@ -2114,8 +2109,7 @@ class DELV extends CI_Controller {
     }   
     
     public function set_rm(){
-        header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');        
         $currentDate = date('Y-m-d H:i:s');
         $doNum = $this->input->post('indoc');
         $indescription = $this->input->post('indescription');
@@ -2198,7 +2192,7 @@ class DELV extends CI_Controller {
         $rmbooked = $this->ZRPSTOCK_mod->check_Primary(['RPSTOCK_REMARK' => $doNum]);
         if($this->DELV_mod->check_Primary(['DLV_ID' => $doNum])){
             $ttlrow = $this->DELV_mod->check_Primary(['DLV_ID' => $doNum, "ISNULL(DLV_NOPEN,'')" => '' ]);
-            if($ttlrow===0)
+            if($ttlrow===0 && $indescription!=='DISPOSE')
             {
                 $myar[] = ["cd" => '00', "msg" => "Read-Only"];
                 die(json_encode(['status' => $myar]));
@@ -4796,8 +4790,7 @@ class DELV extends CI_Controller {
         }
         $pdf->Output('I','Delivery Docs '.date("d-M-Y").'.pdf');
     }
-    public function change25(){
-        date_default_timezone_set('Asia/Jakarta');		
+    public function change25(){        	
         $crnt_dt = date('Y-m-d H:i:s');		
         $cid = $this->input->get('inid');		
         $cnoaju = $this->input->get('inaju');
@@ -4894,8 +4887,7 @@ class DELV extends CI_Controller {
         die(json_encode(['status' => $myar]));
     }
 
-    public function change27(){
-        date_default_timezone_set('Asia/Jakarta');		
+    public function change27(){        	
         $crnt_dt = date('Y-m-d H:i:s');		
         $cid = $this->input->get('inid');
         $cnoaju = $this->input->get('inaju');
@@ -5030,8 +5022,7 @@ class DELV extends CI_Controller {
         return $resith;
     }
 
-    public function change41(){
-        date_default_timezone_set('Asia/Jakarta');
+    public function change41(){        
         $crnt_dt = date('Y-m-d H:i:s');
         $cid = $this->input->get('inid');
         $cnoaju = $this->input->get('inaju');
@@ -5099,8 +5090,7 @@ class DELV extends CI_Controller {
         }
         die(json_encode($myar));
     }
-    public function change261(){
-        date_default_timezone_set('Asia/Jakarta');		
+    public function change261(){        
         $crnt_dt = date('Y-m-d H:i:s');		
         $cid = $this->input->get('inid');
         $cnoaju = $this->input->get('inaju');
@@ -5172,8 +5162,7 @@ class DELV extends CI_Controller {
         }
         die(json_encode($myar));
     }
-    public function change30(){
-        date_default_timezone_set('Asia/Jakarta');		
+    public function change30(){        
         $crnt_dt = date('Y-m-d H:i:s');		
         $cid = $this->input->get('inid');
         $cnoaju = $this->input->get('inaju');
@@ -5210,8 +5199,7 @@ class DELV extends CI_Controller {
     }
 
     public function approve(){
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');		
+        $this->checkSession();        	
         $crnt_dt = date('Y-m-d H:i:s');
         $cid = $this->input->post('inid');
         $cdata = ['DLV_APPRV' =>  $this->session->userdata('nama'),	'DLV_APPRVTM' => $crnt_dt];
@@ -5420,8 +5408,7 @@ class DELV extends CI_Controller {
         register_shutdown_function([$this, 'fatal_handler']);
 
         header('Content-Type: application/json');
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');	
+        ini_set('max_execution_time', '-1');        
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
         $czsj = $csj;
@@ -6023,8 +6010,7 @@ class DELV extends CI_Controller {
         register_shutdown_function([$this, 'fatal_handler']);
 
         header('Content-Type: application/json');
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');	
+        ini_set('max_execution_time', '-1');        
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
         $czsj = $csj;
@@ -6674,8 +6660,7 @@ class DELV extends CI_Controller {
         register_shutdown_function([$this, 'fatal_handler']);
 
         header('Content-Type: application/json');
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');	
+        ini_set('max_execution_time', '-1');        
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
         $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
@@ -7504,8 +7489,7 @@ class DELV extends CI_Controller {
         register_shutdown_function([$this, 'fatal_handler']);
 
         header('Content-Type: application/json');
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');        
         $currentDate = date('Y-m-d H:i:s');	
         $csj = $this->input->get('insj');
         $czsj = $csj;
@@ -8139,8 +8123,7 @@ class DELV extends CI_Controller {
         register_shutdown_function([$this, 'fatal_handler']);
 
         header('Content-Type: application/json');
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');        
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
         $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
@@ -9395,8 +9378,7 @@ class DELV extends CI_Controller {
 
     public function confirm_delivery(){
         $this->checkSession();
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');        
         header('Content-Type: application/json');
         $ITHLUPDT = date('Y-m-d H:i:s');
         $ITHDATE = date('Y-m-d');
@@ -9461,8 +9443,7 @@ class DELV extends CI_Controller {
     public function setPrice_BAK($pdoc = ''){
         header('Content-Type: application/json');
         $doc = base64_decode($pdoc);
-        $this->DLVPRC_mod->deleteby_filter(['DLVPRC_TXID' => $doc]);
-        date_default_timezone_set('Asia/Jakarta');
+        $this->DLVPRC_mod->deleteby_filter(['DLVPRC_TXID' => $doc]);        
         $createdAT = date('Y-m-d H:i:s');
         $rs = $this->SISCN_mod->select_forsetPrice($doc);
         $rsPriceItem = [];
@@ -9803,8 +9784,7 @@ class DELV extends CI_Controller {
     public function setPrice($pdoc = ''){
         header('Content-Type: application/json');
         $doc = base64_decode($pdoc);
-        $this->DLVPRC_mod->deleteby_filter(['DLVPRC_TXID' => $doc]);
-        date_default_timezone_set('Asia/Jakarta');
+        $this->DLVPRC_mod->deleteby_filter(['DLVPRC_TXID' => $doc]);        
         $createdAT = date('Y-m-d H:i:s');
         $rs = $this->SISCN_mod->select_forsetPrice($doc);
         $rscurrentPrice_plot = $this->SISO_mod->select_currentPlot($doc);	
@@ -9961,8 +9941,7 @@ class DELV extends CI_Controller {
     }	
 
     public function book_rm27(){
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');        
         $csj = $this->input->get('insj');
         if($this->ZRPSTOCK_mod->check_Primary(['RPSTOCK_REMARK' => $csj]))
         {
@@ -10209,8 +10188,7 @@ class DELV extends CI_Controller {
         die('{"status" : '.json_encode($myar).'}');
     }
     public function book_rm25(){
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');        
         $csj = $this->input->get('insj');
         if($this->ZRPSTOCK_mod->check_Primary(['RPSTOCK_REMARK' => $csj]))
         {
@@ -10454,8 +10432,7 @@ class DELV extends CI_Controller {
         die('{"status" : '.json_encode($myar).'}');
     }
     public function book_rm41(){
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');        
         $csj = $this->input->get('insj');
         if($this->ZRPSTOCK_mod->check_Primary(['RPSTOCK_REMARK' => $csj]))
         {
@@ -10699,8 +10676,7 @@ class DELV extends CI_Controller {
         die('{"status" : '.json_encode($myar).'}');
     }
     public function book_rm261(){
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');        
         $csj = $this->input->get('insj');
         if($this->ZRPSTOCK_mod->check_Primary(['RPSTOCK_REMARK' => $csj]))
         {
@@ -10951,8 +10927,7 @@ class DELV extends CI_Controller {
         set_error_handler([$this, 'log_error']);
         register_shutdown_function([$this, 'fatal_handler']);
         header('Content-Type: application/json');
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');        
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
         $rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
@@ -11559,8 +11534,7 @@ class DELV extends CI_Controller {
         set_error_handler([$this, 'log_error']);
         register_shutdown_function([$this, 'fatal_handler']);
         header('Content-Type: application/json');
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');        
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
         $rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
@@ -12664,8 +12638,7 @@ class DELV extends CI_Controller {
         set_error_handler([$this, 'log_error']);
         register_shutdown_function([$this, 'fatal_handler']);
         header('Content-Type: application/json');
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');        
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
         $rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
@@ -13109,8 +13082,7 @@ class DELV extends CI_Controller {
     }
     public function posting_rm261(){		
         header('Content-Type: application/json');
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+        ini_set('max_execution_time', '-1');        
         $currentDate = date('Y-m-d H:i:s');
         $csj = $this->input->get('insj');
         $rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
@@ -13846,299 +13818,11 @@ class DELV extends CI_Controller {
         die(json_encode(['data' => $rs]));
     }
 
-    public function posting_rm41_old(){
-        set_exception_handler([$this,'exception_handler']);
-        set_error_handler([$this, 'log_error']);
-        register_shutdown_function([$this, 'fatal_handler']);
-        header('Content-Type: application/json');
-        ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
-        $csj = $this->input->get('insj');
-        $czsj = $csj;
-        $rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
-        $rsplotrm = $this->DELV_mod->selectRMForPostingCeisa($csj);
-        $tpb_barang = [];
-        $SERI_BARANG = 1;
-        $czdocbctype = '';
-        $cztujuanpengiriman = '';
-        $ccustdate = '';
-        $czConaNo = '';
-        $czkantorasal = '';
-        $cz_h_NETTO = 0;
-        $cz_h_BRUTO = 0;
-        $requestResume = [];
-        $responseResume = [];
-        $arx_item = [];
-        $arx_qty = [];
-        $arx_lot = [];
-        foreach($rsaktivasi as $r){
-            $czkantorasal = $r['KPPBC'];
-            $czidmodul = substr('00000'.$r['ID_MODUL'],-6);
-            $czidmodul_asli = $r['ID_MODUL'];
-            $czidpengusaha = $r['NPWP'];
-            $cznmpengusaha = $r['NAMA_PENGUSAHA'];
-            $czalamatpengusaha = $r['ALAMAT_PENGUSAHA'];
-            $czizinpengusaha = $r['NOMOR_SKEP'];		
-        }
-        foreach($rsplotrm as $r){
-            #set basic data
-            $czdocbctype = $r['DLV_BCTYPE'];
-            $cztujuanpengiriman = $r['DLV_PURPOSE'];
-            $ccustdate = $r['DLV_BCDATE'];
-            $czConaNo = $r['DLV_CONA'];
-            $czConaDate = $r['MCONA_DATE'];
-            $cnoaju = $r['DLV_ZNOMOR_AJU'];
-            $cz_KODE_JENIS_TPB = $r['DLV_ZJENIS_TPB_ASAL'];
-            $czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);			
-            $cznmpenerima = $r['MDEL_ZNAMA'];
-            $czalamatpenerima = $r['MDEL_ADDRCUSTOMS'];
-            $cznamapengangkut = $r['MSTTRANS_TYPE'];
-            $cznomorpolisi = $r['DLV_TRANS'];
-            $cz_h_NETTO += $r['NWG'];
-            $cz_h_BRUTO += $r['GWG'];
-            $czinvoice = trim($r['DLV_INVNO']);
-            $czinvoicedt = $r['DLV_INVDT'];
-            #end
-
-            #set request data
-            $arx_item[] = $r['DLV_ITMCD'];
-            $arx_qty[] = $r['DLV_QTY'];
-            $arx_lot[] = '';
-            $isfound = false;
-            foreach($requestResume as &$n){
-                if($n['ITEM'] == $r['DLV_ITMCD']){
-                    $n['QTY'] += $r['DLV_QTY'];
-                    $isfound = true;
-                }
-            }
-            unset($n);
-            if(!$isfound){
-                $requestResume[] = ['ITEM' => $r['DLV_ITMCD'], 'QTY' => $r['DLV_QTY']];
-            }
-            #end
-
-            #set barang for ceisa
-            $tpb_barang[] = [
-                'KODE_BARANG' => $r['DLV_ITMCD']
-                ,'POS_TARIF' => $r['MITM_HSCD']
-                ,'URAIAN' => $r['MITM_ITMD1']
-                ,'JUMLAH_SATUAN' => $r['DLV_QTY']
-                ,'KODE_SATUAN' => $r['MITM_STKUOM']=='PCS' ? 'PCE' : $r['MITM_STKUOM']
-                ,'NETTO' => $r['NWG']
-                ,'HARGA_PENYERAHAN' => 0
-                ,'SERI_BARANG' => $SERI_BARANG
-                ,'KODE_STATUS' => '02'
-            ];
-            #end
-        }
-        #BAHAN BAKU
-        $tpb_bahan_baku = [];
-        try {
-            $rstemp = $this->inventory_getstockbc_v2($czdocbctype,$cztujuanpengiriman,$csj, $arx_item, $arx_qty, $arx_lot, $ccustdate, $czConaNo);
-            $rsbc = json_decode($rstemp);
-            if(!is_null($rsbc)){
-                if( count($rsbc)>0 ){ 
-                    foreach($rsbc as $o){
-                        foreach($o->data as $v){
-                            $isfound = false;
-                            foreach($responseResume as &$n){
-                                if($n['ITEM'] == $v->BC_ITEM){
-                                    $n['QTY'] += $v->BC_QTY;
-                                    $isfound = true;
-                                }
-                            }
-                            unset($n);
-                            if(!$isfound){
-                                $responseResume[] = ['ITEM' => $v->BC_ITEM, 'QTY' => $v->BC_QTY];
-                            }
-                            //THE ADDITIONAL INFO						
-                            if($v->RCV_KPPBC!='-'){
-                                $tpb_bahan_baku[] = [
-                                    'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE
-                                    ,'NOMOR_DAFTAR_DOK_ASAL' => $v->BC_NUM
-                                    ,'TANGGAL_DAFTAR_DOK_ASAL' => $v->BC_DATE
-                                    ,'KODE_KANTOR' => $v->RCV_KPPBC
-                                    ,'NOMOR_AJU_DOK_ASAL' => $v->BC_AJU
-                                    ,'SERI_BARANG_DOK_ASAL' => $v->RCV_ZNOURUT
-                                    ,'HARGA_PENYERAHAN' => substr($v->RCV_PRPRC,0,1)=='.' ? ('0'.$v->RCV_PRPRC* $v->BC_QTY) : ($v->RCV_PRPRC * $v->BC_QTY)
-                                    ,'KODE_BARANG' => $v->BC_ITEM
-                                    ,'KODE_STATUS' => "02"
-                                    ,'URAIAN' => $v->MITM_ITMD1
-                                    ,'JUMLAH_SATUAN' => $v->BC_QTY
-                                    ,'JENIS_SATUAN' => ($v->MITM_STKUOM=='PCS') ? 'PCE' : $v->MITM_STKUOM
-                                    ,'KODE_ASAL_BAHAN_BAKU' => 1
-                                    ,'RBM' => substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM)
-                                ];
-                            } else {
-                                $tpb_bahan_baku[] = [
-                                    'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE
-                                    ,'NOMOR_DAFTAR_DOK_ASAL' => $v->BC_NUM
-                                    ,'TANGGAL_DAFTAR_DOK_ASAL' => $v->BC_DATE
-                                    ,'KODE_KANTOR' => NULL
-                                    ,'NOMOR_AJU_DOK_ASAL' => $v->BC_AJU
-                                    ,'SERI_BARANG_DOK_ASAL' => $v->RCV_ZNOURUT
-                                    ,'HARGA_PENYERAHAN' => 0
-                                    ,'KODE_BARANG' => $v->BC_ITEM 
-                                    ,'KODE_STATUS' => "02"
-                                    ,'URAIAN' => $v->MITM_ITMD1
-                                    ,'JUMLAH_SATUAN' => $v->BC_QTY
-                                    ,'JENIS_SATUAN' => 'PCE'
-                                    ,'KODE_ASAL_BAHAN_BAKU' => 1
-                                    ,'RBM' => 0
-                                ];
-                            }
-                        }
-                    }
-                    $listNeedExBC = [];
-                    foreach($requestResume as $r){
-                        $isfound = false;
-                        foreach($responseResume as $n){
-                            if($r['ITEM'] == $n['ITEM']){
-                                $isfound = true;
-                                if($r['QTY']!= $n['QTY']){
-                                    $listNeedExBC[] = ['ITMCD' => $r['ITEM'], 'QTY' => $r['QTY']-$n['QTY'] , 'LOTNO' => '?'];
-                                }		
-                            }
-                        }
-                        if(!$isfound){
-                            $listNeedExBC[] = ['ITMCD' => $r['ITEM'], 'QTY' => $r['QTY'], 'LOTNO' => '?'];
-                        }
-                    }
-                    if(count($listNeedExBC)>0){
-                        $this->inventory_cancelDO($czsj);
-                        $myar[] = ['cd' => 110 ,'msg' => 'EX-BC for '.count($listNeedExBC). ' item(s) is not found. ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman ];
-                        die('{"status" : '.json_encode($myar).', "data":'.json_encode($listNeedExBC).',"rawdata":'.json_encode($tpb_bahan_baku).'}');
-                    }
-                } else {
-                    $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !"];
-                    die('{"status":'.json_encode($myar).'}');
-                }
-            } else {
-                $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin"];
-                die('{"status":'.json_encode($myar).'}');
-            }
-        } catch (Exception $e) {
-            $this->inventory_cancelDO($czsj);
-            $myar[] = ['cd' => 110 ,'msg' => $e->getMessage()];
-            die('{"status" : '.json_encode($myar).'"}');
-        }
-        $tpb_header = [
-            "NOMOR_AJU" => $cnoaju, "KODE_KANTOR" => $czkantorasal , 
-            "KODE_JENIS_TPB" => $cz_KODE_JENIS_TPB ,  "KODE_TUJUAN_PENGIRIMAN" => $cztujuanpengiriman,
-            
-            "KODE_ID_PENGUSAHA" => "1", "ID_PENGUSAHA" => $czidpengusaha, "NAMA_PENGUSAHA" => $cznmpengusaha,
-            "ALAMAT_PENGUSAHA" => $czalamatpengusaha, "NOMOR_IJIN_TPB" => $czizinpengusaha , 
-
-            "KODE_ID_PENERIMA_BARANG" => "1", "ID_PENERIMA_BARANG" => $czidpenerima,
-            "NAMA_PENERIMA_BARANG" => $cznmpenerima , "ALAMAT_PENERIMA_BARANG" => $czalamatpenerima,
-                        
-            "HARGA_PENYERAHAN" => 0,
-
-            "NAMA_PENGANGKUT" => $cznamapengangkut, "NOMOR_POLISI" => $cznomorpolisi,
-            "BRUTO" => $cz_h_BRUTO , "NETTO" => $cz_h_NETTO, "JUMLAH_BARANG" => count($rsplotrm),
-
-            "KOTA_TTD" => "CIKARANG", "TANGGAL_TTD" =>$ccustdate, 
-            "KODE_DOKUMEN_PABEAN" => $czdocbctype, "ID_MODUL" => $czidmodul_asli, "VERSI_MODUL" => NULL,
-            "VOLUME" => 0, "KODE_STATUS" => '00'
-        ];
-        $tpb_kemasan[] = ["JUMLAH_KEMASAN" => 1 ,"KODE_JENIS_KEMASAN" => "BX"];
-        $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "380", "NOMOR_DOKUMEN" => $czinvoice , "TANGGAL_DOKUMEN" => $czinvoicedt, "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => 1]; //invoice		
-        $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "217", "NOMOR_DOKUMEN" => $czinvoice , "TANGGAL_DOKUMEN" => $czinvoicedt, "TIPE_DOKUMEN" => "02","SERI_DOKUMEN" => 2]; //packing list
-        $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "640", "NOMOR_DOKUMEN" => $czsj ,  "TANGGAL_DOKUMEN" =>  $ccustdate , "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => 3 ]; //surat jalan		
-        $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "315", "NOMOR_DOKUMEN" => $czConaNo ,  "TANGGAL_DOKUMEN" =>  $czConaDate , "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => 4 ]; //kontrak
-
-        #set exbc list
-        $tpb_dokumen_40 = [];
-        $tpb_dokumen_40_tgl = [];
-        foreach($tpb_bahan_baku as $k){
-            if(!in_array($k['NOMOR_DAFTAR_DOK_ASAL'], $tpb_dokumen_40)){
-                $tpb_dokumen_40[] = $k['NOMOR_DAFTAR_DOK_ASAL'];
-                $tpb_dokumen_40_tgl[] = $k['TANGGAL_DAFTAR_DOK_ASAL'];
-            }
-        }
-        
-        $noseri = 5;
-        $cO_exBC = count($tpb_dokumen_40);
-        for($i=0; $i<$cO_exBC; $i++){
-            $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "40"
-                                ,"NOMOR_DOKUMEN" => $tpb_dokumen_40[$i] 
-                                ,"TANGGAL_DOKUMEN" =>  $tpb_dokumen_40_tgl[$i]
-                                ,"TIPE_DOKUMEN" => "01"
-                                ,"SERI_DOKUMEN" => $noseri
-                            ];
-            $noseri++;
-        }
-        #end
-
-        #INSERT CEISA
-        ##1 TPB HEADER
-        $ZR_TPB_HEADER = $this->TPB_HEADER_imod->insert($tpb_header);		
-        #end
-
-        ##2 TPB DOKUMEN
-        foreach($tpb_dokumen as &$n){
-            $n['ID_HEADER'] = $ZR_TPB_HEADER;
-        }
-        unset($n);
-        $this->TPB_DOKUMEN_imod->insertb($tpb_dokumen);
-        #end
-
-        ##3 TPB KEMASAN
-        foreach($tpb_kemasan as &$n){
-            $n['ID_HEADER'] = $ZR_TPB_HEADER;
-        }
-        unset($n);
-        $this->TPB_KEMASAN_imod->insertb($tpb_kemasan);
-        #end
-
-        ##4 TPB BARANG
-        foreach($tpb_barang as &$n){
-            $n['ID_HEADER'] = $ZR_TPB_HEADER;
-            $n['JUMLAH_BAHAN_BAKU']=1;			
-        }
-        unset($n);		
-        #end
-
-        ##4 TPB BARANG & BAHAN BAKU
-        foreach($tpb_barang as $n){
-            $ZR_TPB_BARANG = $this->TPB_BARANG_imod->insert($n);			
-            foreach($tpb_bahan_baku as $b){
-                if($n['KODE_BARANG']==$b['KODE_BARANG']){
-                    $this->TPB_BAHAN_BAKU_imod
-                        ->insert([
-                            'KODE_JENIS_DOK_ASAL' => $b['KODE_JENIS_DOK_ASAL']
-                            ,'NOMOR_DAFTAR_DOK_ASAL' => $b['NOMOR_DAFTAR_DOK_ASAL']
-                            ,'TANGGAL_DAFTAR_DOK_ASAL' => $b['TANGGAL_DAFTAR_DOK_ASAL']
-                            ,'KODE_KANTOR' => $b['KODE_KANTOR']
-                            ,'NOMOR_AJU_DOK_ASAL' => $b['NOMOR_AJU_DOK_ASAL']
-                            ,'SERI_BARANG_DOK_ASAL' => $b['SERI_BARANG_DOK_ASAL']
-                            
-                            ,'HARGA_PENYERAHAN' => $b['HARGA_PENYERAHAN']
-                            
-                            ,'KODE_BARANG' => $b['KODE_BARANG']
-                            ,'KODE_STATUS' => $b['KODE_STATUS']							
-                            ,'URAIAN' => $b['URAIAN']
-                            
-                            ,'JUMLAH_SATUAN' => $b['JUMLAH_SATUAN']
-                            ,'JENIS_SATUAN' => $b['JENIS_SATUAN']
-                                                        
-                            
-                            ,'KODE_ASAL_BAHAN_BAKU'	=> $b['KODE_ASAL_BAHAN_BAKU']
-                            ,'NETTO' => 0
-                            ,'SERI_BAHAN_BAKU' => $b['SERI_BAHAN_BAKU']
-                            ,'SERI_BARANG' => $n['SERI_BARANG']
-                            ,'ID_BARANG' => $ZR_TPB_BARANG
-                            ,'ID_HEADER' => $ZR_TPB_HEADER
-                        ]);
-                }
-            }
-        }
-        #end
-
-        $myar[] = ['cd' => 1 ,'msg' => 'Done, check your TPB' ];
-        $this->gotoque($csj);
-        die('{"status" : '.json_encode($myar).'}');
-    }    
+    public function test()
+    {
+        $currentDate = date('Y-m-d H:i:s');
+        echo $currentDate;
+    }
 
     function cancelposting() {
         header('Content-Type: application/json');
@@ -14229,8 +13913,7 @@ class DELV extends CI_Controller {
     }
 
     function setflag(){		
-        header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');        
         $crnt_dt = date('Y-m-d H:i:s');
         $serlist = $this->input->post('inser');
         $inpin = $this->input->post('inpin');
@@ -14361,8 +14044,7 @@ class DELV extends CI_Controller {
         die(json_encode(['data' => $rs]));
     }
 
-    public function dr_pab_out_as_excel(){
-        date_default_timezone_set('Asia/Jakarta');		
+    public function dr_pab_out_as_excel(){        
         $bctype = isset($_COOKIE["RP_PAB_DOCTYPE"]) ? $_COOKIE["RP_PAB_DOCTYPE"] : '';
         $jenis_tpb_tujuan = isset($_COOKIE["RP_PAB_TPBTYPE"]) ? $_COOKIE["RP_PAB_TPBTYPE"] : '';		
         $itemcd = isset($_COOKIE["RP_PAB_ITMCD"]) ? $_COOKIE["RP_PAB_ITMCD"] : '';		

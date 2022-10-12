@@ -4914,4 +4914,38 @@
             }
         });
     }
+
+    function retrm_out_limbah_barang_tbl_copy_eCK()
+    {
+        const source_tbody = retrm_out_inc_tbl.getElementsByTagName('tbody')[0]
+        const destin_tbody = retrm_out_limbah_barang_tbl.getElementsByTagName('tbody')[0]
+        const source_total = source_tbody.rows.length
+        let newrow , newcell
+        for(let i=0; i < source_total; i++)
+        {
+            newrow = destin_tbody.insertRow(-1)
+            const itemcode = source_tbody.rows[i].cells[1].innerText
+            const itemqty = source_tbody.rows[i].cells[2].innerText
+            newcell = newrow.insertCell(0)
+            newcell.classList.add('d-none')
+            newcell.innerHTML = ''
+            
+            newcell = newrow.insertCell(1)
+            newcell.innerText = itemcode
+            newcell.contentEditable = true
+            
+            newcell = newrow.insertCell(2)
+            newcell.classList.add('text-end')
+            newcell.innerText = itemqty
+            newcell.contentEditable = true
+            
+            newcell = newrow.insertCell(3)
+            newcell.classList.add('text-end')
+            newcell.contentEditable = true
+            
+            newcell = newrow.insertCell(4)
+            newcell.classList.add('text-center')
+            newcell.innerHTML = `<span class="fas fa-trash text-danger"></span>`
+        }
+    }
 </script>
