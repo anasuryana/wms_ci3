@@ -24,14 +24,13 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-5 mb-1">
+            <div class="col-md-5 mb-1">              
                 <div class="input-group input-group-sm mb-2">
-                    <span class="input-group-text" >Status</span>
-                    <select class="form-select" id="user_cmb_active" required>
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
-                </div>
+                    <label class="input-group-text">Status</label>
+                    <div class="input-group-text">
+                        <input class="form-check-input" type="checkbox" id="user_cmb_active">
+                    </div>                    
+                </div>                
             </div>
         </div>
         <div class="row">
@@ -300,38 +299,41 @@
         $("#cmbGroup").val(row["MSTEMP_GRP"]);
         $("#txtUSR_nmf_e").val(row["MSTEMP_FNM"]);
         $("#txtUSR_nml_e").val(row["MSTEMP_LNM"]);
-        document.getElementById('user_cmb_active').value = row["MSTEMP_STS"];
+        user_cmb_active.checked = row["MSTEMP_STS"]===1 ? true  : false        
     });
 	
 	$('#btnEditUser').click( function() {
-		let nmf = $("#txtUSR_nmf_e").val();
-		let nml = $("#txtUSR_nml_e").val();
-        let grp = $("#cmbGroup").val();
-        let sts = document.getElementById('user_cmb_active').value;
+		let nmf = txtUSR_nmf_e.value;
+		let nml = txtUSR_nml_e.value;
+        let grp = cmbGroup.value
+        let sts = user_cmb_active.checked ? '1' : '0'
         if(cuserid.length===0){
             alertify.warning("Select the data on the table below first");
             return;
-        }        
+        }
         if(confirm("Are you sure ?")){
+            btnEditUser.disabled = true
             jQuery.ajax({
-                type: "get",
+                type: "post",
                 url: "<?=base_url("User/change")?>",
-                dataType: "text",
+                dataType: "json",
                 data: {inUsrid: cuserid , inNMF : nmf, inNML : nml, inUsrGrp: grp, insts: sts },
                 success:function(response) {
+                    btnEditUser.disabled = false
                     cuserid = "";
-                    document.getElementById('txtUSR_nmf_e').value="";
-                    document.getElementById('txtUSR_nml_e').value="";
-                    initdataUSRList();                
+                    txtUSR_nmf_e.value = ''
+                    txtUSR_nml_e.value = ''
+                    initdataUSRList();   
                     swal.fire({
                         title : 'Good',
-                        html : response,
+                        html : response.status.msg,
                         icon :'success',
                         timer : 1000
                     });
                     
                 },
                 error:function(xhr,ajaxOptions, throwError) {
+                    btnEditUser.disabled = false
                     alert(throwError);
                 }
             });

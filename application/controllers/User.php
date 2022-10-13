@@ -8,7 +8,8 @@ class User extends CI_Controller {
         $this->load->model('Usergroup_mod');        
         $this->load->helper('url_helper'); 
         $this->load->library('session');
-        $this->load->helper('security');        
+        $this->load->helper('security');
+        date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
@@ -24,13 +25,13 @@ class User extends CI_Controller {
     }
 
     function change(){
-        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');        
         $currrtime = date('Y-m-d H:i:s');
-        $usrid      = $this->input->get('inUsrid');
-        $firstname  = $this->input->get('inNMF');
-        $lastname   = $this->input->get('inNML');
-        $usrgrp     = $this->input->get('inUsrGrp');
-        $status     = $this->input->get('insts');
+        $usrid      = $this->input->post('inUsrid');
+        $firstname  = $this->input->post('inNMF');
+        $lastname   = $this->input->post('inNML');
+        $usrgrp     = $this->input->post('inUsrGrp');
+        $status     = $this->input->post('insts');
         $data2      = [
             'MSTEMP_FNM' => $firstname,
             'MSTEMP_LNM' => $lastname,
@@ -41,25 +42,19 @@ class User extends CI_Controller {
             $data2['MSTEMP_DACTTM'] = $currrtime;
         }
         $hasil = $this->Usr_mod->updatebyId($data2, $usrid);
-        if($hasil==1){
-            echo "Updated successfully";
-        } else {
-            echo "mmm";
-        }
+        $myar = $hasil==1 ? ['cd' => '1', 'msg' => 'Updated successfully'] : ['cd' => '0', 'msg' => 'Could not be updated'];
+        die(json_encode(['status' => $myar]));
     }
 
     function set()
-    {
-        date_default_timezone_set('Asia/Jakarta');
+    {        
         $currrtime = date('Y-m-d H:i:s');
-        $data = array(
-            'lower(MSTEMP_ID)' => strtolower($this->input->post('inUID'))
-        );
+        $data = ['lower(MSTEMP_ID)' => strtolower($this->input->post('inUID'))];
         if ($this->Usr_mod->check_Primary($data)>0)
         {
             echo "ada";
         } else {
-            $data2 = array(
+            $data2 = [
                 'MSTEMP_ID' => $this->input->post('inUID'),
                 'MSTEMP_PW' => hash('sha256',$this->input->post('inPW')),  
 				'MSTEMP_PWHT' => $this->input->post('inPW'),  
@@ -68,7 +63,7 @@ class User extends CI_Controller {
                 'MSTEMP_REGTM' => $currrtime,
                 'MSTEMP_IP' => $this->input->ip_address(),
                 'MSTEMP_STS' => FALSE
-            );
+            ];
             $this->Usr_mod->insert($data2);
             echo json_encode($data);
         }
@@ -208,9 +203,7 @@ class User extends CI_Controller {
         }
         $muser = "'".$puser."'";
         $dataItem = $this->Usr_mod->selectNameMany($muser);
-        echo '{"data":';
-        echo json_encode($dataItem);
-        echo '}';
+        die(json_encode(['data' => $dataItem]));        
     }
 
     function setgroup(){
