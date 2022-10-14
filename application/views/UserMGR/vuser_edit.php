@@ -141,13 +141,10 @@
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Modal footer -->
+        </div>                
         <div class="modal-footer text-center">
             <button class="btn btn-secondary" id="btnresetpasswordnew_ht"><i class="fas fa-check"></i></button>
-        </div>
-        
+        </div>        
       </div>
     </div>
 </div>
@@ -249,6 +246,7 @@
     
     function initdataUSRList(){
         tableusr = $('#tblUserInfo').DataTable({
+            select: true,
             destroy: true,
             scrollX: true,
             ajax: '<?=base_url("User/viewAll_reged")?>',
