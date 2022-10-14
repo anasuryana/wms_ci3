@@ -84,7 +84,7 @@
                                 <th  class="align-middle">Job Number</th>
                                 <th  class="text-right">Qty</th>
                                 <th  class="text-center">Reff. Number</th>
-                                <th  class="text-center">ETA</th>
+                                <th  class="text-center">ETD</th>
                                 <th  class="text-center">Scanning Time</th>                                
                                 <th  class="align-middle">Plant</th>
                                 <th  class="align-middle">Business</th>
