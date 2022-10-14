@@ -1848,8 +1848,21 @@ video {
             return
         }
         for(let i=0;i<mtrlength; i++) {
+            const nomorUrut = mytable.rows[i].cells[1].innerText.trim().replace(/\n+/g, '')
             const itmcode = mytable.rows[i].cells[3].innerText.trim().replace(/\n+/g, '')
             const price = mytable.rows[i].cells[7].innerText.replace(/\n+/g, '')
+            if(nomorUrut.length===0)
+            {
+                alertify.warning("Nomor Urut is required")
+                mytable.rows[i].cells[1].focus()
+                return
+            }
+            if(numeral(nomorUrut).value()<=0)
+            {
+                alertify.warning("Nomor Urut is not valid")
+                mytable.rows[i].cells[1].focus()
+                return
+            }
             if(price==='-'){
                 alertify.warning("Price value should be numerical")
                 mytable.rows[i].cells[7].focus()
@@ -1874,8 +1887,6 @@ video {
                 d_pph.push(mytable.rows[i].cells[12].innerText.replace(/\n+/g, ''))
             }
         }
-        console.log('aku')
-        return
         if(d_itemcode.length==0) {
             alertify.message('there is no item')
             return
@@ -2698,6 +2709,26 @@ video {
         });
     }
     $("#rcvcustoms_save").click(function(){
+        let mytable = document.getElementById('rcvcustoms_tbl').getElementsByTagName('tbody')[0]
+        const mtrlength = mytable.getElementsByTagName('tr').length
+        if(mtrlength<=10)
+        {
+            for(let i=0;i<mtrlength; i++) {
+                const nomorUrut = mytable.rows[i].cells[1].innerText.trim().replace(/\n+/g, '')
+                if(nomorUrut.length===0)
+                {
+                    alertify.warning("Nomor Urut is required")
+                    mytable.rows[i].cells[1].focus()
+                    return
+                }
+                if(numeral(nomorUrut).value()<=0)
+                {
+                    alertify.warning("Nomor Urut is not valid")
+                    mytable.rows[i].cells[1].focus()
+                    return
+                }
+            }
+        }
         let dono = document.getElementById('rcvcustoms_docnoorigin').value;
         let mnoaju = document.getElementById('rcvcustoms_noaju').value;
         let mnopen = document.getElementById('rcvcustoms_regno').value;
@@ -2731,7 +2762,7 @@ video {
             alertify.warning('NoPen must be 6 digit');
             document.getElementById('rcvcustoms_regno').focus()
             return;
-        }               
+        }
     });
       
     $('#rcvcustoms_supfilter').change(function(){
@@ -4124,7 +4155,7 @@ video {
             document.getElementById('rcvcustoms_supplier_1').value = supplierName
             let tabell = document.getElementById("rcvcustoms_tbl_1")
             let tableku2 = tabell.getElementsByTagName("tbody")[0]
-            let newrow, newcell            
+            let newrow, newcell;      
             for(let i=0; i<ttlrows; i++){
                 newrow = tableku2.insertRow(-1)
                 newrow.onclick = (event) => {
@@ -4167,7 +4198,6 @@ video {
 
                 newcell = newrow.insertCell(8)
                 newcell.classList.add('text-end')
-                newcell.contentEditable = true
                 newcell.innerHTML = aprice[i]
 
                 newcell = newrow.insertCell(9)
