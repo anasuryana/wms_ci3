@@ -2065,7 +2065,7 @@ class SI extends CI_Controller {
         $sheet->setCellValueByColumnAndRow(5,2, 'Job Number');
         $sheet->setCellValueByColumnAndRow(6,2, 'Qty');
         $sheet->setCellValueByColumnAndRow(7,2, 'Reff. Number');
-        $sheet->setCellValueByColumnAndRow(8,2, 'ETA');
+        $sheet->setCellValueByColumnAndRow(8,2, 'ETD');
         $sheet->setCellValueByColumnAndRow(9,2, 'Scanning Time');
         $sheet->setCellValueByColumnAndRow(10,2, 'Plant');
         $sheet->setCellValueByColumnAndRow(11,2, 'Business');
