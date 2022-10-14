@@ -2649,7 +2649,7 @@ class DELV extends CI_Controller {
         $ctype = $this->input->get('intype');
         if ($ctype==='1') {
             $rs = $this->DELV_mod->select_det_byid($cid);			
-            $rsrm_checker = $this->SER_mod->select_sususan_bahan_baku_by_txid($cid);
+            $rsrm_checker = $this->SER_mod->select_sususan_bahan_baku_by_txid_nonmcz($cid);
             $rsrm_notOK = [];
             foreach($rsrm_checker as $r){
                 if($r['CALPER']==0 || $r['CALPER'] < $r['MYPER']) {
@@ -2662,7 +2662,7 @@ class DELV extends CI_Controller {
                 {
                     $rsrm_notOK[] = $r;
                 }
-            }			
+            }
             die(json_encode(['data' => $rs, 'datafocus' => $rsrm_notOK]));
         } else {
             $rs = $this->DELV_mod->select_det_byid_rm($cid);
@@ -7104,11 +7104,25 @@ class DELV extends CI_Controller {
                                 $theppn = '';
                                 $thepph = '';
                                 $thebm = '';
-                                                                
-                                $thehscode = $v->RCV_HSCD;
-                                $theppn = $v->RCV_PPN;
-                                $thepph = $v->RCV_PPH;
-                                $thebm = substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM);                                						
+
+                                
+                                if(!empty($v->RCV_HSCD))
+                                {
+                                    $thehscode = $v->RCV_HSCD;
+                                    $theppn = $v->RCV_PPN;
+                                    $thepph = $v->RCV_PPH;
+                                    $thebm = substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM);
+                                } else {
+                                    for($h=0;$h<$count_rsallitem; $h++){ 
+                                        if($v->BC_ITEM==$rsallitem_cd[$h]) {
+                                            $thehscode = $rsallitem_hscd[$h];
+                                            $theppn = $rsallitem_ppn[$h];
+                                            $thepph = $rsallitem_pph[$h];
+                                            $thebm = $rsallitem_bm[$h];
+                                            break;
+                                        }
+                                    }
+                                }
                                 
                                 if($v->RCV_KPPBC!='-'){
                                     $tpb_bahan_baku[] = [

@@ -4179,6 +4179,13 @@ function txfg_f_getdetail (ptxid) {
                                 });                        
                             }
                         };
+                        newcell.onclick = (event) => {
+                            if(event.ctrlKey) {
+                                if(event.target.tagName.toLowerCase()=='td'){
+                                    alertify.message('coming soon, insyaAlloh')
+                                }
+                            }
+                        }
                         newcell.classList.add('txfg_cell');
                     }
                     newText = document.createTextNode(dspitem);
@@ -4460,8 +4467,7 @@ function txfg_e_last_resume(){
 }
 
 function txfg_e_getpsn_list(pjob){
-    $('#txfg_w_psnjob').window('open');
-    // document.getElementById('txfg_detpsn_job').value=pjob;
+    $('#txfg_w_psnjob').window('open');    
     $("#txfg_tbldetailpsn tbody").empty();    
     $("#txfg_tbljoblist tbody").html("<td colspan='3'>Please wait...</td>");
     $.ajax({
@@ -5110,6 +5116,17 @@ function txfg_e_posting(){
 }
 
 $("#txfg_btn_post").click(function (e) {    
+    if(txfg_gt_rm.innerText == 'Please wait')
+    {
+        alertify.warning('Please wait')
+        return
+    } else {
+        if(numeral(txfg_gt_rm.innerText).value()>700)
+        {
+            alertify.warning('Maximum RM 700 per Document')
+            return
+        }
+    }
     let mapprovby = document.getElementById("txfg_txt_apprby").value;
     const txid = document.getElementById('txfg_txt_id').value
     if(mapprovby.trim()==''){
@@ -5120,6 +5137,7 @@ $("#txfg_btn_post").click(function (e) {
         alertify.warning("Raw material need to be fixed first !");
         return
     }
+    
     if(!confirm('Are you sure ?')){
         return;
     }

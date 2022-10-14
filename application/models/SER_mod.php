@@ -232,6 +232,11 @@ class SER_mod extends CI_Model {
 		$query = $this->db->query($qry, [$pdoc]);
 		return $query->result_array();
     }
+    public function select_sususan_bahan_baku_by_txid_nonmcz($pdoc){
+        $qry = "sp_check_sususan_bahan_baku_by_txid_nonmcz ?";
+		$query = $this->db->query($qry, [$pdoc]);
+		return $query->result_array();
+    }
     public function select_sususan_bahan_baku_filter_items($pwhere){
         $this->db->from('vcheck_sususan_bahan_baku');
         $this->db->where_in('SER_ITMID', $pwhere);
