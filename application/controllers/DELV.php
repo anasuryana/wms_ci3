@@ -7104,22 +7104,11 @@ class DELV extends CI_Controller {
                                 $theppn = '';
                                 $thepph = '';
                                 $thebm = '';
-                                
-                                for($h=0;$h<$count_rsallitem; $h++){ 
-                                    if($v->BC_ITEM==$rsallitem_cd[$h]) {
-                                        $thehscode = $rsallitem_hscd[$h];
-                                        $theppn = $rsallitem_ppn[$h];
-                                        $thepph = $rsallitem_pph[$h];
-                                        $thebm = $rsallitem_bm[$h];
-                                        break;
-                                    }
-                                }
-                                if(trim($thehscode)==''){
-                                    $thehscode = $v->RCV_HSCD;
-                                    $theppn = $v->RCV_PPN;
-                                    $thepph = $v->RCV_PPH;
-                                    $thebm = substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM);
-                                }								
+                                                                
+                                $thehscode = $v->RCV_HSCD;
+                                $theppn = $v->RCV_PPN;
+                                $thepph = $v->RCV_PPH;
+                                $thebm = substr($v->RCV_BM,0,1) == '.' ? ('0'.$v->RCV_BM) : ($v->RCV_BM);                                						
                                 
                                 if($v->RCV_KPPBC!='-'){
                                     $tpb_bahan_baku[] = [
