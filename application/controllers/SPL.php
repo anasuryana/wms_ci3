@@ -1984,8 +1984,7 @@ class SPL extends CI_Controller {
         }
         unset($d);
 
-        $rsfinal = [];
-        
+        $rsfinal = [];        
         foreach($rsfix as $r){
             if($r['ISOK'] == 1){
                 $rsfinal[] = $r;
@@ -1993,20 +1992,14 @@ class SPL extends CI_Controller {
                 if(!in_array($r['SPLSCN_FEDR'], $frdistinct)) $frdistinct[] = $r['SPLSCN_FEDR'];
             }
         }
-        foreach($frdistinct as $n){
-            // $this->gotoque($itemdistinct, $cpsn, $ccat, $cline, $n );
-        }
-        
-        
-        $myar = count($rsfinal)>0 ?  ["cd" => "1", "msg" => "Go ahead"] : ["cd" => "0", "msg" => "data not found"];		
-        echo '{"data":'
-        .json_encode($rsfinal)
-        .',"ppsn2" : '.json_encode($rsbase)
-        .',"scanned" : '.json_encode($rsscn)
-        .',"status" : '.json_encode($myar)
-        .',"dataku" : '.json_encode($itemdistinct)
-        .',"dataku2" : '.json_encode($frdistinct)
-        .'}';
+        $myar = count($rsfinal)>0 ?  ["cd" => "1", "msg" => "Go ahead"] : ["cd" => "0", "msg" => "data not found"];
+        die(json_encode(['data' => $rsfinal
+            , 'ppsn2' => $rsbase
+            ,'scanned' => $rsscn
+            ,'status' => $myar
+            ,'dataku' => $itemdistinct
+            ,'dataku2' => $frdistinct
+        ]));
     }
 
     public function export_to_spreadsheet(){
@@ -6039,27 +6032,7 @@ class SPL extends CI_Controller {
             $myar[] = ['cd' => 0, 'msg' => 'Not found'];
         }
         die(json_encode(['status' => $myar]));
-    }
-
-    public function gotoque($p_item, $p_psn, $p_cat,$p_line, $p_fr){	
-        $fields = [
-            'item' => $p_item,
-            'psn' => $p_psn,
-            'cat' => $p_cat,
-            'line' => $p_line,
-            'feeder' => $p_fr
-        ];
-        $fields_string = http_build_query($fields);	
-        $ch = curl_init();		
-        // curl_setopt($ch, CURLOPT_URL, "http://192.168.0.29:8081/api_inventory/api/stock/onKitting/$p_item/$p_psn/$p_cat/$p_line/$p_fr");
-        curl_setopt($ch, CURLOPT_URL, "http://192.168.0.29:8081/api-report-custom/api/stock/onKittingMultiItem");
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$fields_string);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_exec($ch);	
-        curl_close($ch);		
-    }
+    }    
 
     public function info(){
         $psnno = $this->input->get('psnno');
@@ -6200,10 +6173,7 @@ class SPL extends CI_Controller {
                 'ITH_LUPDT' => $bookdate." 09:00:00",
                 'ITH_USRID' => $this->session->userdata('nama')
             ];
-        }
-        // if(count($ith_data)){
-        // 	$this->ITH_mod->insertb($ith_data);
-        // }
+        }   
         die(json_encode(['status' => $myar, 'data' => $ith_data]));
     }
 
