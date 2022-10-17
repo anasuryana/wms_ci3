@@ -3329,6 +3329,17 @@ $("#txfg_sibtngetselected").click(function (e) {
 });
 
 $("#txfg_btn_save").click(function (e) {
+    if(txfg_gt_rm.innerText == 'Please wait')
+    {
+        alertify.warning('Please wait')
+        return
+    } else {
+        if(numeral(txfg_gt_rm.innerText).value()>700)
+        {
+            alertify.warning('Maximum RM 700 per Document')
+            return
+        }
+    }
     let mtxid = document.getElementById('txfg_txt_id').value;
     let mtxcustomerDO = document.getElementById('txfg_txt_customerDO').value;
     let mtxdt = document.getElementById('txfg_txt_custdate').value;
