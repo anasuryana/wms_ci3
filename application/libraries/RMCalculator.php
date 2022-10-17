@@ -464,6 +464,41 @@ class RMCalculator {
         return $rsfix;
     }   
 
+    function generate_total_use($pjob)
+    {
+        $crnt_dt = date('Y-m-d H:i:s');
+        $rspsn = $this->CI->SPL_mod->select_z_getpsn_byjob("'".$pjob."'");
+        $strdocno = '';
+        foreach($rspsn as $r){            
+            $strdocno = $r['PPSN1_DOCNO'];
+        }
+
+        $rspsnjob_req = $this->CI->SPL_mod->select_psnjob_req($strdocno, $pjob);
+        $msg = '';
+        if(empty($rspsnjob_req))
+        {
+            $msg = 'WO or Psn not match';
+        } else {
+            $ttluse = 0;
+            foreach($rspsnjob_req as &$n){            
+                $ttluse += $n['MYPER'];
+            }
+            unset($n);
+    
+            $woh = ['WOH_CD' => $pjob];            
+            if($this->CI->WOH_mod->check_Primary($woh)){
+                $this->CI->WOH_mod->updatebyId($woh, ['WOH_TTLUSE' => $ttluse, 'WOH_LUPDT' => $crnt_dt]);
+                $msg = ['WOH updated'];
+            } else {
+                $woh['WOH_TTLUSE'] = $ttluse;
+                $woh['WOH_CREATEDAT'] = $crnt_dt;
+                $this->CI->WOH_mod->insert($woh);
+                $msg = ['WOH created'];
+            }
+        }
+        return ['cd' => '1' , 'msg' => $msg];
+    }
+
     public function get_usage_rm_perjob($pjob){
         #version : 1.4
         #-two ways SA Part

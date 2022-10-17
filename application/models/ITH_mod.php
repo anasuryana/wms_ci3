@@ -347,7 +347,7 @@ class ITH_mod extends CI_Model {
         $whclosing = $wh=='AFSMT' ? 'AFWH3' : $wh;
         $closingcolumn= $wh=='AFSMT' ? "(STOCKQTY+ISNULL(PRPQTY,0))" : "STOCKQTY";
         if($whclosing=='AFWH9SC' || $whclosing=='AFWH3' || $whclosing=='AWIP1' || $whclosing =='QAFG' || $whclosing== 'NFWH9SC' || $whclosing=='NFWH4RT') {
-            $qry = "SELECT VWMS.*,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
+            $qry = "SELECT ITH_WH,ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
                 SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, $closingcolumn STOCKQTY, MITM_STKUOM FROM
                     (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
                             WHERE ITH_WH='$whclosing' AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
@@ -363,8 +363,8 @@ class ITH_mod extends CI_Model {
                         WHERE FTRN_ISUDT<='$pdate' AND FTRN_LOCCD='$whclosing'  
                         GROUP BY FTRN_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VMEGA ON ITH_ITMCD=ITRN_ITMCD
                         ORDER BY ITH_ITMCD ASC";
-        } else {			
-            $qry = "SELECT VWMS.*,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
+        } else {
+            $qry = "SELECT ITH_WH,ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
                 SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM FROM
                     (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
                             WHERE ITH_WH='$whclosing' AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
@@ -382,7 +382,7 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
     public function select_compare_inventory_fg_rtn($wh, $pdate){
-        $qry = "SELECT VWMS.*,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
+        $qry = "SELECT ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD ,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
             SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
                 (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
                         WHERE ITH_WH IN ('$wh','AFQART','ARSHPRTN') AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
@@ -398,8 +398,25 @@ class ITH_mod extends CI_Model {
         $query = $this->db->query($qry);
         return $query->result_array();
     }
+    public function select_compare_inventory_fg_fresh($wh, $pdate){
+        $qry = "SELECT ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD ,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
+            SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
+                (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
+                        WHERE ITH_WH IN ('$wh','ARSHP') AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
+                        GROUP BY ITH_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VSTOCK		
+            ) VWMS
+            FULL JOIN (SELECT  RTRIM(FTRN_ITMCD) ITRN_ITMCD,SUM(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) MGAQTY
+            , RTRIM(MITM_SPTNO) MGMITM_SPTNO, RTRIM(MITM_STKUOM) MGMITM_STKUOM, RTRIM(MITM_ITMD1) MGMITM_ITMD1
+                    FROM XFTRN_TBL
+                    LEFT JOIN XMITM_V ON FTRN_ITMCD=MITM_ITMCD 
+                    WHERE FTRN_ISUDT<='$pdate' AND FTRN_LOCCD IN ('$wh') 
+                    GROUP BY FTRN_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VMEGA ON ITH_ITMCD=ITRN_ITMCD
+                    ORDER BY ITH_ITMCD ASC";        
+        $query = $this->db->query($qry);
+        return $query->result_array();
+    }
     public function select_compare_inventory_fg_qa($wh, $pdate){
-        $qry = "SELECT VWMS.*,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
+        $qry = "SELECT ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
             SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
                 (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
                         WHERE ITH_WH IN ('$wh') AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
@@ -416,7 +433,7 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
     public function select_compare_inventory_fg_rtn_asset($wh, $pdate){
-        $qry = "SELECT VWMS.*,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
+        $qry = "SELECT ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
             SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
                 (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
                         WHERE ITH_WH IN ('$wh','AFQART2','ARSHPRTN2') AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
@@ -1025,6 +1042,21 @@ class ITH_mod extends CI_Model {
         WHERE V2.ITH_ITMCD!=''
         ORDER BY V2.ITH_ITMCD";	
         $query = $this->db->query($qry, [$pwh,"%$passy%", $pdt1,$pwh,"%$passy%"]);
+        return $query->result_array();
+    }
+
+    function select_available_wo($pDate, $pLocation)
+    {
+        $qry = "SELECT SER_DOC FROM
+        (select ITH_SER, sum(ITH_QTY) STKQT from v_ith_tblc
+        where ITH_DATEC<=?
+        and ITH_WH=?
+        group by ITH_SER
+        having sum(ITH_QTY) > 0
+        ) VITH LEFT JOIN SER_TBL ON ITH_SER=SER_ID
+        GROUP BY SER_DOC
+        ORDER BY SER_DOC";
+        $query = $this->db->query($qry, [$pDate,$pLocation]);
         return $query->result_array();
     }
     

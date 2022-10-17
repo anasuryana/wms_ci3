@@ -2648,8 +2648,8 @@ class DELV extends CI_Controller {
         $cid = $this->input->get('intxid');
         $ctype = $this->input->get('intype');
         if ($ctype==='1') {
-            $rs = $this->DELV_mod->select_det_byid($cid);			
-            $rsrm_checker = $this->SER_mod->select_sususan_bahan_baku_by_txid_nonmcz($cid);
+            $rs = $this->DELV_mod->select_det_byid($cid);
+            $rsrm_checker = $this->SER_mod->select_sususan_bahan_baku_by_txid_v2($cid);
             $rsrm_notOK = [];
             foreach($rsrm_checker as $r){
                 if($r['CALPER']==0 || $r['CALPER'] < $r['MYPER']) {
@@ -2678,6 +2678,35 @@ class DELV extends CI_Controller {
             , 'data_scr' => $rsscr
             ]));
         }
+    }
+
+    function generate_total_use()
+    {
+        header('Content-Type: application/json');
+        ini_set('max_execution_time', '1200');
+        $date = date('Y-m-d');
+        $location = $this->input->post('location');
+        $wo = $this->input->post('wo');
+        $rs_wo = [];
+        $by = '';
+        if(is_array($wo))
+        {
+            $by = 'wo';
+            foreach($wo as $w)
+            {
+                $rs_wo[] = ['SER_DOC' => $w];
+            }
+        } else {
+            $by = 'location';
+            $rs_wo = $this->ITH_mod->select_available_wo($date, $location);
+        }
+        $Calc_lib = new RMCalculator();
+        foreach($rs_wo as &$r)
+        {
+            $r['status'] = $Calc_lib->generate_total_use($r['SER_DOC']);
+        }
+        unset($r);
+        die(json_encode(['data' => $rs_wo, 'by' => $by]));
     }
 
     public function doc_rm_as_xls(){
@@ -4769,7 +4798,7 @@ class DELV extends CI_Controller {
         }
         $pdf->Output('I','Delivery Docs '.date("d-M-Y").'.pdf');
     }
-    public function change25(){        	
+    public function change25(){
         $crnt_dt = date('Y-m-d H:i:s');		
         $cid = $this->input->get('inid');		
         $cnoaju = $this->input->get('inaju');
@@ -5325,61 +5354,6 @@ class DELV extends CI_Controller {
         header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
-    }	
-
-    public function posting27_combinejob(){
-        $csj = $this->input->get('insj');
-        $rs_rm_null = $this->DELV_mod->select_rm_null($csj);
-        $ser_com_calcualted = [];
-        if(count($rs_rm_null)>0){
-            #check com job
-            $ser_com_calcualted = [];
-            foreach($rs_rm_null as $r){
-                $rs_def = $this->SERC_mod->select_cols_where_id(['SERC_COMID','SERC_COMJOB','SERC_COMQTY'], $r['DLV_SER']); #detail combined ser				
-                if(count($rs_def)) {
-                    foreach($rs_def as $k){
-                        $countrm_ = $this->SERD_mod->select_perlabel_resume_item($k['SERC_COMID']); #detail combined ser -> rm count
-                        if($countrm_ == 0 ){
-                            $ser_com_calcualted[] = ['NEWID' => $r['DLV_SER'], 'COMID' => $k['SERC_COMID'], 'RM' => $countrm_ ];
-                        }
-                    }
-                } else {					
-                    $rs_def = $this->SERC_mod->select_cols_where_id(['SERC_COMID','SERC_COMJOB','SERC_COMQTY'], $r['SER_REFNO']); #detail combined ser
-                    foreach($rs_def as $k){						
-                        $countrm_ = $this->SERD_mod->select_perlabel_resume_item($k['SERC_COMID']); #detail combined ser -> rm count
-                        if($countrm_ == 0 ){
-                            $ser_com_calcualted[] = ['NEWID' => $r['DLV_SER'], 'COMID' => $k['SERC_COMID'], 'RM' => $countrm_ ];
-                        }
-                    }
-                }
-                
-            }
-
-            #filter rs_rm_null 
-            $rs_filtered = [];
-            foreach($rs_rm_null as $r){
-                foreach($ser_com_calcualted as $n){
-                    if($r['DLV_SER'] == $n['NEWID']){
-                        $isfound = false;
-                        foreach($rs_filtered as $n){
-                            if($n['DLV_SER'] == $r['DLV_SER']){
-                                $isfound=true;break;
-                            }
-                        }
-                        if(!$isfound){
-                            $rs_filtered[] = $r;
-                        }
-                    }
-                }
-            }
-            if(count($rs_filtered)>0){
-                $myar[] = ['cd' => 100 ,'msg' => 'RM is null, please check again data in the table below'];
-                die('{"status" : '.json_encode($myar).', "data": '.json_encode($rs_filtered).'}');
-            } else {
-                #go ahead				
-            }
-        }
-        die(json_encode(['datacalcombine' => $ser_com_calcualted]));
     }
 
     public function posting27rtn(){
@@ -6585,54 +6559,7 @@ class DELV extends CI_Controller {
         ,  'tpb_bahan_baku' => $tpb_bahan_baku
         , 'rsitem_p_price' => $rsitem_p_price ];
         die(json_encode(['status' => $myar]));		
-    }
-
-    public function tesBB(){
-        $csj = $this->input->get('doc');
-        $rsRMOnly = $this->DELV_mod->select_pertxid_rmOnly($csj);
-            $rsSubOnly = $this->DELV_mod->select_pertxid_subOnly($csj);
-            $rsnull = $this->DELV_mod->select_dlv_ser_rm_null_v1($csj);
-            $rs = array_merge($rsRMOnly, $rsSubOnly);
-            foreach($rsnull as $r){
-                $rscomb_d = $this->SERC_mod->select_cols_where_id(['SERC_COMID'], $r['DLV_SER']);
-                $serlist = [];
-                if(count($rscomb_d)) {
-                    foreach($rscomb_d as $n){
-                        $serlist[] = $n['SERC_COMID'];
-                    }
-                    if(count($serlist)>0){
-                        $rscom = $this->DELV_mod->select_pertxid_byser($serlist);
-                        $rs = array_merge($rs, $rscom);
-                    }
-                } else {
-                    $rscomb_d = $this->SERC_mod->select_cols_where_id(['SERC_COMID'], $r['SER_REFNO']);
-                    foreach($rscomb_d as $n){
-                        $serlist[] = $n['SERC_COMID'];
-                    }
-                    if(count($serlist)>0){
-                        $rscom = $this->DELV_mod->select_pertxid_byser($serlist);								
-                        $rs = array_merge($rs, $rscom);
-                    }
-                }
-            }
-            $rsallitem_cd = [];
-            $rsallitem_hscd = [];
-            $rsallitem_qty = [];
-            $rsallitem_qtyplot = [];		
-            foreach($rs as $r){
-                $itemtosend = $r['ITMGR'] == '' ? trim($r['SERD2_ITMCD']) : $r['ITMGR'];
-                $i = array_search($itemtosend, $rsallitem_cd);
-                if($i!==false){
-                    $rsallitem_qty[$i]+=$r['DLVQT'];
-                } else {
-                    $rsallitem_cd[] = $itemtosend;
-                    $rsallitem_hscd[] = '';
-                    $rsallitem_qty[] = $r['DLVQT'];
-                    $rsallitem_qtyplot[] = 0;
-                }			
-            }			
-        die(json_encode(['itemcd' => $rsallitem_cd, 'itemcd_Qty' => $rsallitem_qty]));
-    }  
+    }    
 
     public function posting27(){
         set_exception_handler([$this,'exception_handler']);
