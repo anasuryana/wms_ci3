@@ -21,6 +21,8 @@ class RMCalculator {
         $this->CI->load->model('MSTSUP_mod');
         $this->CI->load->model('TECPRTSUB_mod');
         $this->CI->load->model('RESIM_mod');
+        $this->CI->load->model('WOH_mod');
+        date_default_timezone_set('Asia/Jakarta');
     }	
 
     public function tobexported_list_for_serd($parpsn = []){
@@ -465,8 +467,7 @@ class RMCalculator {
     public function get_usage_rm_perjob($pjob){
         #version : 1.4
         #-two ways SA Part
-        #version : 1.3
-        date_default_timezone_set('Asia/Jakarta');
+        #version : 1.3        
         $crnt_dt = date('Y-m-d H:i:s');
         $cuserid = $this->CI->session->userdata('nama');
         $rspsn = $this->CI->SPL_mod->select_z_getpsn_byjob("'".$pjob."'");
@@ -548,16 +549,27 @@ class RMCalculator {
                 $rspsn_sup = $this->tobexported_list_for_serd($apsn);
             }
             
-            if(count($rspsnjob_req)==0){				
+            if(count($rspsnjob_req)==0){
                 $myar[] = ['cd' => 0, 'msg' => 'pis3 null'];
-                return('{"status": '.json_encode($myar).'}');				
+                return('{"status": '.json_encode($myar).'}');
             }
+            $ttluse = 0;
             foreach($rspsnjob_req as &$n){
                 if(!array_key_exists("SUPQTY", $n)){
                     $n["SUPQTY"] = 0;
                 }
+                $ttluse += $n['MYPER'];
             }
-            unset($n);			 
+            unset($n);
+            $woh = ['WOH_CD' => $pjob];
+            if($this->CI->WOH_mod->check_Primary($woh)){
+                $this->CI->WOH_mod->updatebyId($woh, ['WOH_TTLUSE' => $ttluse, 'WOH_LUPDT' => $crnt_dt]);
+            } else {
+                $woh['WOH_TTLUSE'] = $ttluse;
+                $woh['WOH_CREATEDAT'] = $crnt_dt;
+                $this->CI->WOH_mod->insert($woh);
+            }
+
             $rsused = $this->CI->SERD_mod->selectall_where_psn_in($apsn);			
                 
             #decrease usage by Used RM of another JOB
@@ -3509,8 +3521,7 @@ class RMCalculator {
     }
 
     public function get_usage_rm_perjob_peruniq($pser,$pserqty,$pjob){
-        #version : 3
-        date_default_timezone_set('Asia/Jakarta');
+        #version : 3        
         $currrtime = date('Y-m-d H:i:s');
         $rsjobrm_d = $this->CI->SERD_mod->selectd_byjob($pjob);
         $pserqty = str_replace(",", "", $pserqty);
