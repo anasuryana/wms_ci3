@@ -473,6 +473,11 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
+    function select_double_unique_tx()
+    {
+        return $this->db->from('wms_v_double_unique_tx')->get()->result_array();
+    }
+
     public function select_psi_stock_date_wbg_query($wh, $item, $pdate){
         $outwh = $wh==='AFWH3' || $wh==='AFSMT' ? 'ARSHP' : $wh;
         $closingwh = $wh === 'AFSMT' ? 	'AFWH3' : $wh;

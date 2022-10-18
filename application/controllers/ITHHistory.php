@@ -121,31 +121,38 @@ class ITHHistory extends CI_Controller {
 		$vMonth = $aDate[1];
 		$rs = $this->RPSAL_INVENTORY_mod->select_column_group_where([ $type==='P' ? 'INV_PHY_DATE' : 'INV_DATE'], ['INV_YEAR' => $vYear, 'INV_MONTH' => $vMonth]);
 		$myar = [];
-		if(count($rs)===1)
+		if(count($rs)<=1)
 		{
-			foreach($rs as $r)
+			if(empty($rs))
 			{
-				if($type==='P')
+				$myar[] = ['cd' => '1', 'msg' => 'OK'];
+			} else 
+			{
+				foreach($rs as $r)
 				{
-					if($r['INV_PHY_DATE']===$date || !$r['INV_PHY_DATE'])
+					if($type==='P')
 					{
-						$myar[] = ['cd' => '1', 'msg' => 'OK'];
+						if($r['INV_PHY_DATE']===$date || !$r['INV_PHY_DATE'])
+						{
+							$myar[] = ['cd' => '1', 'msg' => 'OK'];
+						} else {
+							$myar[] = ['cd' => '0', 'msg' => 'NOT OK'];
+						}
 					} else {
-						$myar[] = ['cd' => '0', 'msg' => 'NOT OK'];
-					}
-				} else {
-					if($r['INV_DATE']===$date || !$r['INV_DATE'])
-					{
-						$myar[] = ['cd' => '1', 'msg' => 'OK'];						
-					} else {
-						$myar[] = ['cd' => '0', 'msg' => 'NOT OK'];
+						if($r['INV_DATE']===$date || !$r['INV_DATE'])
+						{
+							$myar[] = ['cd' => '1', 'msg' => 'OK'];						
+						} else {
+							$myar[] = ['cd' => '0', 'msg' => 'NOT OK.'];
+						}
 					}
 				}
 			}
+			
 		} else {
-			$myar[] = ['cd' => '0', 'msg' => 'NOT OK'];
+			$myar[] = ['cd' => '0', 'msg' => 'NOT OK..'];
 		}
-		die(json_encode(['status' => $myar, 'data' => $rs, 'reff_type' => $type]));
+		die(json_encode(['status' => $myar, 'data' => $rs, 'reff_type' => $type, 'countrs' => count($rs)]));
 	}
 
 	public function get_stock_detail_as_xls(){
@@ -174,5 +181,12 @@ class ITHHistory extends CI_Controller {
         header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
+    }
+
+	function double_unique_tx()
+	{
+        header('Content-Type: application/json');
+        $rs = $this->ITH_mod->select_double_unique_tx();
+        die( json_encode(['data' => $rs]) );
     }
 }
