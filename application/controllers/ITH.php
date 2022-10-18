@@ -2672,7 +2672,7 @@ class ITH extends CI_Controller {
             }
             if(!empty($rsadj)) {
                 $this->ITH_mod->insertb($rsadj);
-                $myar = ['cd' => "1", 'msg' => 'done testing' , 'reff' => $location, 'rsadj' => $rsadj];
+                $myar = ['cd' => "1", 'msg' => 'done' , 'reff' => $location, 'rsadj' => $rsadj];
             } else {
                 $myar = ['cd' => "0", 'msg' => 'done nothing adjusted', 'reff' => $location , 'rsadj' => $rsadj];
             }
