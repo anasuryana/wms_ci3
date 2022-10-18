@@ -1681,8 +1681,8 @@ video {
         const zstsrcv = document.getElementById('rcvcustoms_zsts_1').value
         const mnoaju  = $("#rcvcustoms_noaju_1").val()
         const mregno  = $("#rcvcustoms_regno_1").val()
-        const mdate = $("#rcvcustoms_dd_1").val()
-        const mrcvdate = $("#rcvcustoms_rcvdate_1").val()
+        const mdate = rcvcustoms_dd_1.value
+        const mrcvdate = rcvcustoms_rcvdate_1.value
         const mtpb = $("#rcvcustoms_typetpb_1").val()
         const mkppbc   = $("#rcvcustoms_kppbc_1").val()
         const m_amt   = numeral($("#rcvcustoms_amount_1").val()).value()
@@ -1695,6 +1695,11 @@ video {
         const minvNo = document.getElementById('rcvcustoms_invoicenum_1').value
         const mtax_invoice = document.getElementById('rcvcustoms_tax_invoice').value
         const supplier = rcvcustoms_suppliercode
+        if(mrcvdate < mdate)
+        {
+            alertify.warning('receive date could not be less than document date')
+            return
+        }
         if (mdo.length == 0) {
             alertify.message("DO number could not be empty")
             return
