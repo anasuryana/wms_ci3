@@ -1311,7 +1311,7 @@ class DELV extends CI_Controller {
                     if (strpos($r['SI_ITMCD'], 'ASP') !== false) {
                         $ASPFLAG = true;
                     } else {
-                        $ASPFLAG = false;						
+                        $ASPFLAG = false;
                     }
                     if (strpos($r['SI_ITMCD'], 'KD') !== false) {						
                         $KDFLAG = true;
@@ -1319,29 +1319,24 @@ class DELV extends CI_Controller {
                         $KDFLAG = false;
                     }
                     if($no==$ttlrows_perplant){
-                        if($ASPFLAG || $KDFLAG){
-                            if($ASPFLAG){
-                                $image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r['TTLQTY'],0,"","")." BOX ".$cpono;
-                            } else {
-                                $image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r['REMARK'],0,"","")." BOX ".$cpono;
-                            }
-                            $image_name = str_replace(["KD","ASP"], "", $image_name);													
+                        if($ASPFLAG || $KDFLAG)
+                        {
+                            $image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r[$ASPFLAG ? 'TTLQTY' : 'REMARK'],0,"","")." BOX ".$cpono;
+                            $image_name = str_replace(["KD","ASP"], "", $image_name);
                         } else {
                             $image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r['REMARK'],0,"","")." BOX ".$cpono." RFID" ;
                         }
-                        $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" 2 ");						
+                        $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" 1 ");
                     } else {
-                        if($ASPFLAG || $KDFLAG){
-                            if($ASPFLAG){
-                                $image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r['TTLQTY'],0,"","")." BOX";								
-                            } else {								
-                                $image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r['REMARK'],0,"","")." BOX";
-                            }
-                            $image_name = str_replace(["KD","ASP"], "", $image_name);							
-                        } else {
+                        if($ASPFLAG || $KDFLAG)
+                        {
+                            $image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r[$ASPFLAG ? 'TTLQTY' : 'REMARK' ],0,"","")." BOX";
+                            $image_name = str_replace(["KD","ASP"], "", $image_name);
+                        } else 
+                        {
                             $image_name = trim($r['SI_ITMCD'])."\t\t\t\t\t".number_format($r['TTLQTY'],0,"","")."\t".number_format($r['REMARK'],0,"","")." BOX";
                         }
-                        $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" 2 ");				
+                        $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" 1 ");
                     }
                     $op = shell_exec($cmd);					
                     $image_name = str_replace("/","xxx", $image_name);
@@ -13881,23 +13876,28 @@ class DELV extends CI_Controller {
         }
         $like = [];
         $rs=[];
+        $trace = '';
         if($itemtype!='-'){
             if($itemtype=='10'){
+                $trace = '#1';
                 $where['MITM_MODEL'] = '1';
                 $like['DLV_ID'] = 'RTN';
                 $rs = $this->DELV_mod->select_out_pabean_like($where, $like);
             } elseif($itemtype=='11'){
+                $trace = '#2';
                 $where['MITM_MODEL'] = '1';
                 $like['DLV_ID'] = 'RTN';
                 $rs = $this->DELV_mod->select_out_pabean_notlike($where, $like);
             } else {
+                $trace = '#3';
                 $where['MITM_MODEL'] = $itemtype;
                 $rs = $this->DELV_mod->select_out_pabean($where);
             }
         } else {            
+            $trace = '#4';
             $rs = $this->DELV_mod->select_out_pabean($where);
         }				
-        die(json_encode(['data' => $rs]));
+        die(json_encode(['data' => $rs, 'trace' => $trace]));
     }
 
     public function dr_pab_out_as_excel(){        
