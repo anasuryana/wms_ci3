@@ -55,7 +55,7 @@ class DELV extends CI_Controller {
         $this->load->model('XITRN_mod');
         $this->load->model('DisposeDraft_mod');
         $this->load->model('POSTING_mod');
-        $this->load->model('CSMLOG_mod');
+        $this->load->model(['CSMLOG_mod','DLVH_mod']);
         $this->load->model('refceisa/TPB_HEADER_imod');
         $this->load->model('refceisa/TPB_KEMASAN_imod');
         $this->load->model('refceisa/TPB_DOKUMEN_imod');
@@ -1475,8 +1475,7 @@ class DELV extends CI_Controller {
         $ctxinvsmt = $this->input->post('ininvsmt');
         $ctxconsig = $this->input->post('inconsig');
         $ctxcus = $this->input->post('incus');        
-        $ctxtrans = $this->input->post('intrans');
-        $ctxdescr = $this->input->post('indescr');
+        $ctxtrans = $this->input->post('intrans');        
         $ctxremark = $this->input->post('inremark');        
         $ctxcustomsdoc = $this->input->post('incustoms_doc');        
         $ctxa_ser = $this->input->post('ina_ser');        
@@ -1565,8 +1564,7 @@ class DELV extends CI_Controller {
                     'DLV_SER' => $ctxa_ser[$i],
                     'DLV_ISPTTRND' => $this->PATTERFLG,
                     'DLV_QTY' => $qty,
-                    'DLV_RMRK' => $ctxremark,
-                    'DLV_DSCRPTN' => $ctxdescr,
+                    'DLV_RMRK' => $ctxremark,                    
                     'DLV_CRTD' => $this->session->userdata('nama'),
                     'DLV_CRTDTM' => $crnt_dt,
                     'DLV_DATE' => $ctxdodt,	
@@ -1763,8 +1761,7 @@ class DELV extends CI_Controller {
         $ctxconsig = $this->input->post('inconsig');
         $ctxcus = $this->input->post('incus');
         $ctxbg = $this->input->post('inbg');
-        $ctxtrans = $this->input->post('intrans');
-        $ctxdescr = $this->input->post('indescr');
+        $ctxtrans = $this->input->post('intrans');        
         $ctxremark = $this->input->post('inremark');
         $ctxa_ser = $this->input->post('ina_ser');        
         $ctxa_qty = $this->input->post('ina_qty');        
@@ -1889,6 +1886,11 @@ class DELV extends CI_Controller {
         $first_ret = 0;
         $lastLineLog = $this->CSMLOG_mod->select_lastLine($ctxid, '')+1;
         for($i=0;$i<1;$i++){
+            $dlvh = ['DLVH_ID' => $ctxid];
+            if($this->DLVH_mod->checkPrimary($dlvh))
+            {
+                $this->DLVH_mod->insert($dlvh);
+            }
             if($this->DELV_mod->check_Primary(['DLV_SER' => $ctxa_ser[$i]]) == 0){
                 $qty = $ctxa_qty[$i];
                 $qty = str_replace(',','',$qty);
@@ -1907,8 +1909,7 @@ class DELV extends CI_Controller {
                     'DLV_SER' => $ctxa_ser[$i],
                     'DLV_ISPTTRND' => $this->PATTERFLG,
                     'DLV_QTY' => $qty,
-                    'DLV_RMRK' => $ctxremark,
-                    'DLV_DSCRPTN' => $ctxdescr,
+                    'DLV_RMRK' => $ctxremark,                    
                     'DLV_BCTYPE' => $ctxbctype,					
                     'DLV_BCDATE' => $ctxdt, #AJU
                     'DLV_CRTD' => $this->session->userdata('nama'),
@@ -1946,8 +1947,7 @@ class DELV extends CI_Controller {
                     'DLV_SER' => $ctxa_ser[$i],
                     'DLV_ISPTTRND' => $this->PATTERFLG,
                     'DLV_QTY' => $qty,
-                    'DLV_RMRK' => $ctxremark,
-                    'DLV_DSCRPTN' => $ctxdescr,
+                    'DLV_RMRK' => $ctxremark,                    
                     'DLV_BCTYPE' => $ctxbctype,					
                     'DLV_BCDATE' => $ctxdt, #AJU
                     'DLV_CRTD' => $this->session->userdata('nama'),
@@ -4804,6 +4804,8 @@ class DELV extends CI_Controller {
         $cskb = $this->input->get('inskb');
         $cskb_tgl = $this->input->get('inskb_tgl');
         $sppbdoc = $this->input->get('sppbdoc');
+        $pemberitahu = $this->input->get('inPemberitahu');
+        $jabatan = $this->input->get('inJabatan');
         $cjenis_sarana_pengangkut = $this->input->get('injenis_sarana');		
         $rs_head_dlv = $this->DELV_mod->select_header_bydo($cid);
         $customsyear = '';
@@ -4832,6 +4834,16 @@ class DELV extends CI_Controller {
         if($czidmodul==''){
             $myar[] = ["cd" => '00', "msg" => "Please check Aktivasi CEISA Data" ];
         } else {
+            # set value, pemberitahu & jabatan
+            if($this->DLVH_mod->checkPrimary(['DLVH_ID' => $cid]))
+            {
+                $this->DLVH_mod->updatebyVAR(['DLVH_PEMBERITAHU' => $pemberitahu, 'DLVH_JABATAN' => $jabatan],['DLVH_ID' => $cid]);
+            } else 
+            {
+                $this->DLVH_mod->insert(['DLVH_PEMBERITAHU' => $pemberitahu, 'DLVH_JABATAN' => $jabatan, 'DLVH_ID' => $cid]);
+            }
+            # end set
+
             $ocustdate = date_create($ccustdate);
             $cz_ymd = date_format($ocustdate, 'Ymd');
             $znomor_aju = substr($czkantorasal,0,4).$czdocbctype.$czidmodul.$cz_ymd.$cnoaju;
@@ -4901,6 +4913,8 @@ class DELV extends CI_Controller {
         $ctpb_asal = $this->input->get('injenis_tpb_asal');
         $ctpb_tujuan = $this->input->get('injenis_tpb_tujuan');
         $ctpb_tgl_daftar = $this->input->get('intgldaftar');
+        $pemberitahu = $this->input->get('inPemberitahu');
+        $jabatan = $this->input->get('inJabatan');
         $cona = $this->input->get('incona');
         $sppbdoc = $this->input->get('sppbdoc');
         $rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
@@ -4931,6 +4945,16 @@ class DELV extends CI_Controller {
         if($czidmodul==''){
             $myar[] = ["cd" => '00', "msg" => "Please check Aktivasi CEISA Data" ];
         } else {
+            # set value, pemberitahu & jabatan
+            if($this->DLVH_mod->checkPrimary(['DLVH_ID' => $cid]))
+            {
+                $this->DLVH_mod->updatebyVAR(['DLVH_PEMBERITAHU' => $pemberitahu, 'DLVH_JABATAN' => $jabatan],['DLVH_ID' => $cid]);
+            } else 
+            {
+                $this->DLVH_mod->insert(['DLVH_PEMBERITAHU' => $pemberitahu, 'DLVH_JABATAN' => $jabatan, 'DLVH_ID' => $cid]);
+            }
+            # end set
+
             $ocustdate = date_create($ccustdate);
             $cz_ymd = date_format($ocustdate, 'Ymd');
             $znomor_aju = substr($czkantorasal,0,4).$czdocbctype.$czidmodul.$cz_ymd.$cnoaju;
@@ -4957,7 +4981,8 @@ class DELV extends CI_Controller {
                 'CSMLOG_CREATED_AT' => $crnt_dt,
                 'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
             ]);
-            if(!empty($cnopen)){
+            if(!empty($cnopen))
+            {
                 $res = $this->gotoque($cid);
                 # for RPR transaction deduction start from here
                 if($ctpb_tgl_daftar) {
@@ -5026,7 +5051,8 @@ class DELV extends CI_Controller {
         return $resith;
     }
 
-    public function change41(){        
+    public function change41()
+    {
         $crnt_dt = date('Y-m-d H:i:s');
         $cid = $this->input->get('inid');
         $cnoaju = $this->input->get('inaju');
@@ -5037,6 +5063,8 @@ class DELV extends CI_Controller {
         $ctpb_tgl_daftar = $this->input->get('intgldaftar');
         $cona = $this->input->get('incona');
         $sppbdoc = $this->input->get('sppbdoc');
+        $pemberitahu = $this->input->get('inPemberitahu');
+        $jabatan = $this->input->get('inJabatan');
         $rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
         $rs_head_dlv = $this->DELV_mod->select_header_bydo($cid);
         $ttlPostedRows = $this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_POSTTM IS NOT NULL' => null]);
@@ -5073,6 +5101,15 @@ class DELV extends CI_Controller {
         if($czidmodul==''){
             $myar[] = ["cd" => '00', "msg" => "Please check Aktivasi CEISA Data" ];
         } else {
+            # set value, pemberitahu & jabatan
+            if($this->DLVH_mod->checkPrimary(['DLVH_ID' => $cid]))
+            {
+                $this->DLVH_mod->updatebyVAR(['DLVH_PEMBERITAHU' => $pemberitahu, 'DLVH_JABATAN' => $jabatan],['DLVH_ID' => $cid]);
+            } else 
+            {
+                $this->DLVH_mod->insert(['DLVH_PEMBERITAHU' => $pemberitahu, 'DLVH_JABATAN' => $jabatan, 'DLVH_ID' => $cid]);
+            }
+            # end set
             $ocustdate = date_create($ccustdate);
             $cz_ymd = date_format($ocustdate, 'Ymd');
             $znomor_aju = substr($czkantorasal,0,4).$czdocbctype.$czidmodul.$cz_ymd.$cnoaju;

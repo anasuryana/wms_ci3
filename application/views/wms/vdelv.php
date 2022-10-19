@@ -136,15 +136,21 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-1 p-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Description</span>                                        
-                                        <input type="text" class="form-control" id="txfg_txt_description" required >                                                           
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-1 p-1">
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-text" >Remark</span> 
                                         <input type="text" class="form-control" id="txfg_txt_remark" maxlength="50">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-1 p-1">
+                                    <div class="input-group input-group-sm">                                        
+                                        <span class="input-group-text">Customs Document</span>                                        
+                                        <select class="form-select" id="txfg_cmb_bcdoc">
+                                            <option value="-">-</option>
+                                            <option value="25">BC 2.5</option>
+                                            <option value="27">BC 2.7</option>
+                                            <option value="41">BC 4.1</option>
+                                        </select>
+                                        <button class="btn btn-primary btn-sm" id="txfg_btn_customs"><i class="fas fa-book text-warning"></i></button>                                        
                                     </div>
                                 </div>
                             </div>
@@ -181,15 +187,11 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-1 p-1 text-end">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Customs Document</span>                                        
-                                        <select class="form-select" id="txfg_cmb_bcdoc">
-                                            <option value="-">-</option>
-                                            <option value="25">BC 2.5</option>
-                                            <option value="27">BC 2.7</option>
-                                            <option value="41">BC 4.1</option>
-                                        </select>                                        
-                                        <button class="btn btn-primary btn-sm" id="txfg_btn_customs"><i class="fas fa-book text-warning"></i></button>                                        
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-info" id="txfg_btn_rmstatus" title="Raw Material Status" onclick="txfg_btn_rmstatus_eC()"><i class="fas fa-box"></i></button>
+                                        <button class="btn btn-outline-info" id="txfg_btn_showprice" onclick="txfg_btn_showprice_e_click()" title="Detail Price"><i class="fas fa-money-check"></i></button>
+                                        <button class="btn btn-outline-info" id="txfg_btn_showweight" onclick="txfg_btn_showweight_e_click()" title="Detail Weight"><i class="fas fa-weight"></i></button>
+                                        <button class="btn btn-outline-info" id="txfg_btn_showinfo" onclick="txfg_btn_showinfo_e_click()" title="User's log"><i class="fas fa-info-circle"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -207,12 +209,7 @@
                                     </div>                                 
                                 </div>
                                 <div class="col-md-5 mb-0 text-end">
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-info" id="txfg_btn_rmstatus" title="Raw Material Status" onclick="txfg_btn_rmstatus_eC()"><i class="fas fa-box"></i></button>
-                                        <button class="btn btn-outline-info" id="txfg_btn_showprice" onclick="txfg_btn_showprice_e_click()" title="Detail Price"><i class="fas fa-money-check"></i></button>
-                                        <button class="btn btn-outline-info" id="txfg_btn_showweight" onclick="txfg_btn_showweight_e_click()" title="Detail Weight"><i class="fas fa-weight"></i></button>
-                                        <button class="btn btn-outline-info" id="txfg_btn_showinfo" onclick="txfg_btn_showinfo_e_click()" title="User's log"><i class="fas fa-info-circle"></i></button>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -444,6 +441,20 @@
                     </div>
                 </div>                
             </div>
+            <div class="row">
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Pemberitahu</label>
+                        <input type="text" id="txfg_txt_pemberitahu27" class="form-control" maxlength="50" value="GUSTI AYU KETUT Y">
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Jabatan</label>
+                        <input type="text" id="txfg_txt_jabatan27" class="form-control" maxlength="50" value="J.SUPERVISOR">
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <div class="container-fluid">
@@ -560,7 +571,21 @@
                         </datalist>
                     </div>
                 </div>                
-            </div>                 
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Pemberitahu</label>
+                        <input type="text" id="txfg_txt_pemberitahu41" class="form-control" maxlength="50" value="GUSTI AYU KETUT Y">
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Jabatan</label>
+                        <input type="text" id="txfg_txt_jabatan41" class="form-control" maxlength="50" value="J.SUPERVISOR">
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-primary btn-sm" id="txfg_z_btn_save41" onclick="txfg_z_btn_save41_e_click()">Save changes</button>
@@ -666,6 +691,20 @@
                             echo $tohtml;
                            ?>
                         </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Pemberitahu</label>
+                        <input type="text" id="txfg_txt_pemberitahu25" class="form-control" maxlength="50" value="GUSTI AYU KETUT Y">
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Jabatan</label>
+                        <input type="text" id="txfg_txt_jabatan25" class="form-control" maxlength="50" value="J.SUPERVISOR">
                     </div>
                 </div>
             </div>
@@ -2910,8 +2949,7 @@ $("#txfg_btn_new").click(function (e) {
     $("#txfg_curr").val(''); 
     document.getElementById('txfg_btn_SO').disabled = true
     
-    document.getElementById("txfg_txt_transport").value= "-";    
-    document.getElementById("txfg_txt_description").value='';
+    document.getElementById("txfg_txt_transport").value= "-";
     document.getElementById('txfg_cmb_bcdoc').value='-';
     document.getElementById('txfg_txt_invsmt').value='';
     document.getElementById('txfg_txt_invno').value='';
@@ -2954,6 +2992,8 @@ $("#txfg_btn_new").click(function (e) {
     document.getElementById('txfg_txt_nokontrak').value="";
     document.getElementById('txfg_txt_tglkontrak').value="";
     document.getElementById('txfg_txt_sppb27').value=""
+    document.getElementById('txfg_txt_pemberitahu27').value = ""
+    document.getElementById('txfg_txt_jabatan27').value = ""
 
     //DOKUMEN BC25
     document.getElementById('txfg_txt_noaju25').value="";
@@ -2967,12 +3007,17 @@ $("#txfg_btn_new").click(function (e) {
     document.getElementById('txfg_businessgroup').disabled=false;
     document.getElementById('txfg_businessgroup').value='-';
     document.getElementById('txfg_custname').value='';
+    document.getElementById('txfg_txt_pemberitahu25').value = ''
+    document.getElementById('txfg_txt_jabatan25').value = ''
 
     scr_txfg_cust="-";
     document.getElementById('txfg_consignee').value='-'
 
     //DOKUMEN BC41
+    document.getElementById('txfg_txt_nopen41').value=''
     document.getElementById('txfg_txt_sppb41').value=""
+    document.getElementById('txfg_txt_pemberitahu41').value = ''
+    document.getElementById('txfg_txt_jabatan41').value = ''
 
 
     let btnrm =  document.getElementById('txfg_btn_rmstatus');
@@ -3346,8 +3391,7 @@ $("#txfg_btn_save").click(function (e) {
     let mtxinv = document.getElementById('txfg_txt_invno').value;
     let mtxdodt = document.getElementById('txfg_txt_DOdate').value;
     let mtxconsig = document.getElementById('txfg_consignee').value;    
-    let mtxtransport = document.getElementById('txfg_txt_transport').value;
-    let mtxdescription = document.getElementById('txfg_txt_description').value;
+    let mtxtransport = document.getElementById('txfg_txt_transport').value;    
     let mtxinvsmt = document.getElementById('txfg_txt_invsmt').value;
     let mtxremark = document.getElementById('txfg_txt_remark').value;
     let mbg = document.getElementById('txfg_businessgroup').value;
@@ -3429,7 +3473,7 @@ $("#txfg_btn_save").click(function (e) {
                 url: "<?=base_url('DELV/edit')?>",
                 data: {intxid: mtxid, intxdt: mtxdt, ininv: mtxinv, ininvsmt: mtxinvsmt, inconsig: mtxconsig, incus: scr_txfg_cust,
                 incustdo: mtxcustomerDO,  iconfirmation: 'n',
-                intrans: mtxtransport, indescr: mtxdescription, inremark: mtxremark, inbg: mbg, incustoms_doc: mcustomdoc,
+                intrans: mtxtransport, inremark: mtxremark, inbg: mbg, incustoms_doc: mcustomdoc,
                 ina_ser: txfg_ar_item_ser, ina_qty: txfg_ar_item_qty, ina_si: txfg_ar_si, ina_so: txfg_ar_so, indodt:  mtxdodt
                 ,ina_sono: aSO, ina_soitem: aItem, ina_soqty: aQty
                 ,xa_qty: aXQty, xa_so: aXSO, xa_soline: aXSOLine, xa_siline: aXSILine },
@@ -3452,7 +3496,7 @@ $("#txfg_btn_save").click(function (e) {
                                     url: "<?=base_url('DELV/edit')?>",
                                     data: {intxid: mtxid, intxdt: mtxdt, ininv: mtxinv, ininvsmt: mtxinvsmt, inconsig: mtxconsig, incus: scr_txfg_cust,
                                             incustdo: mtxcustomerDO,iconfirmation: 'y',
-                                            intrans: mtxtransport, indescr: mtxdescription, inremark: mtxremark, inbg: mbg, incustoms_doc: mcustomdoc,
+                                            intrans: mtxtransport, inremark: mtxremark, inbg: mbg, incustoms_doc: mcustomdoc,
                                             ina_ser: txfg_ar_item_ser, ina_qty: txfg_ar_item_qty, ina_si: txfg_ar_si, ina_so: txfg_ar_so, indodt:  mtxdodt
                                             ,ina_sono: aSO, ina_soitem: aItem, ina_soqty: aQty
                                             ,xa_qty: aXQty, xa_so: aXSO, xa_soline: aXSOLine, xa_siline: aXSILine},
@@ -3491,7 +3535,7 @@ $("#txfg_btn_save").click(function (e) {
                 url: "<?=base_url('DELV/set')?>",
                 data: {intxid: mtxid, intxdt: mtxdt, ininv: mtxinv, ininvsmt: mtxinvsmt, inconsig: mtxconsig, incus: scr_txfg_cust,
                 incustdo: mtxcustomerDO,incustoms_doc: mcustomdoc, iconfirmation: 'n',
-                intrans: mtxtransport, indescr: mtxdescription, inremark: mtxremark, inbg: mbg,
+                intrans: mtxtransport, inremark: mtxremark, inbg: mbg,
                 ina_ser: txfg_ar_item_ser, ina_qty: txfg_ar_item_qty, ina_si: txfg_ar_si, ina_so: txfg_ar_so, indodt:  mtxdodt
                 ,ina_sono: aSO, ina_soitem: aItem, ina_soqty: aQty},
                 dataType: "json",
@@ -3515,7 +3559,7 @@ $("#txfg_btn_save").click(function (e) {
                                     url: "<?=base_url('DELV/set')?>",
                                     data: {intxid: mtxid, intxdt: mtxdt, ininv: mtxinv, ininvsmt: mtxinvsmt, inconsig: mtxconsig, incus: scr_txfg_cust,
                                     incustdo: mtxcustomerDO,incustoms_doc: mcustomdoc, iconfirmation: 'y',
-                                    intrans: mtxtransport, indescr: mtxdescription, inremark: mtxremark, inbg: mbg,
+                                    intrans: mtxtransport, inremark: mtxremark, inbg: mbg,
                                     ina_ser: txfg_ar_item_ser, ina_qty: txfg_ar_item_qty, ina_si: txfg_ar_si, ina_so: txfg_ar_so, indodt:  mtxdodt
                                     ,ina_sono: aSO, ina_soitem: aItem, ina_soqty: aQty},
                                     dataType: "json",
@@ -3811,9 +3855,10 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                             ,cskbdt : response.data[i].DLV_ZTANGGAL_SKB
                             ,ccona : response.data[i].DLV_CONA
                             ,csppbdoc : response.data[i].DLV_SPPBDOC
+                            ,cPemberitahu : response.data[i].DLVH_PEMBERITAHU
+                            ,cJabatan : response.data[i].DLVH_JABATAN
                         }
-
-                        newrow.onclick = function(){cclick_hnd(pdata)};
+                        newrow.onclick = () => cclick_hnd(pdata)
                     }
                     function cclick_hnd(mrow){ 
                         txfg_isRecalculateFunAlreadytried = false                       
@@ -3821,15 +3866,15 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                         let mtxdt = mrow.ctxdt;
                         let mdescript = mrow.cdescription;
                         scr_txfg_cust = mrow.ccustcd;
-                        let mcusnm    = mrow.ccustnm;
-                        let minv    = mrow.cinv;
-                        let minvsmt    = mrow.cinvsmt;
-                        let mtrans    = mrow.ctrans;
-                        let mremark    = mrow.cremark;
-                        let mcurrency    = mrow.ccurrency;
-                        let mtrans_type  = mrow.ctranstype;
-                        let mconsign  = mrow.cconsign;
-                        let mfromoffice  = mrow.cfromoffice;
+                        let mcusnm = mrow.ccustnm;
+                        let minv = mrow.cinv;
+                        let minvsmt = mrow.cinvsmt;
+                        let mtrans = mrow.ctrans;
+                        let mremark = mrow.cremark;
+                        let mcurrency = mrow.ccurrency;
+                        let mtrans_type = mrow.ctranstype;
+                        let mconsign = mrow.cconsign;
+                        let mfromoffice = mrow.cfromoffice;
                         let mcreated  = mrow.ccreatedby;
                         let mcreatedtime  = mrow.ccreateddt;
                         let mupdated  = mrow.cupdatedby ? mrow.cupdatedby : '';
@@ -3862,7 +3907,6 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                         document.getElementById('txfg_custname').value=mcusnm;
                         document.getElementById('txfg_custname').readOnly=true;
                         document.getElementById("txfg_curr").value=mcurrency;
-                        document.getElementById("txfg_txt_description").value=mdescript;                        
                         document.getElementById('txfg_txt_invno').value=minv;
                         document.getElementById('txfg_txt_invsmt').value=minvsmt;
                         document.getElementById('txfg_txt_transport').value=mtrans+'_'+mtrans_type;
@@ -3916,18 +3960,34 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                             document.getElementById('txfg_cmb_tujuanpengiriman').value = mpurpose;
                             document.getElementById('txfg_txt_nopen').value = mnopen.trim()
                             document.getElementById('txfg_txt_nokontrak').value = mcona
-                            document.getElementById('txfg_txt_sppb27').value = mrow.csppbdoc                            
-                            document.getElementById('txfg_txt_tglpen').value = mrow.cTglpen ? mrow.cTglpen : ''                            
+                            document.getElementById('txfg_txt_sppb27').value = mrow.csppbdoc
+                            document.getElementById('txfg_txt_tglpen').value = mrow.cTglpen ? mrow.cTglpen : ''
+                            if(mrow.cPemberitahu)
+                            {
+                                document.getElementById('txfg_txt_pemberitahu27').value = mrow.cPemberitahu
+                            }
+                            if(mrow.cJabatan)
+                            {
+                                document.getElementById('txfg_txt_jabatan27').value = mrow.cJabatan
+                            }
                         } else if (mbctype=='25') {
                             document.getElementById('txfg_txt_noaju25').value=mnoaju.trim();
                             document.getElementById('txfg_fromoffice25').value=mfromoffice;
                             document.getElementById('txfg_cmb_jenisTPB25').value=mtpb_asal;
-                            document.getElementById('txfg_txt_noskb').value=mskb;                            
+                            document.getElementById('txfg_txt_noskb').value=mskb;
                             $("#txfg_txt_noskb_tgl").datepicker('update', mskb_tgl );
                             document.getElementById('txfg_jenis_saranapengangkut25').value=mnama_pengangkut;
                             document.getElementById('txfg_txt_nopen25').value=mnopen.trim()
-                            document.getElementById('txfg_txt_sppb25').value=mrow.csppbdoc                            
-                            document.getElementById('txfg_txt_tglpen25').value = mrow.cTglpen ? mrow.cTglpen : ''                            
+                            document.getElementById('txfg_txt_sppb25').value=mrow.csppbdoc
+                            document.getElementById('txfg_txt_tglpen25').value = mrow.cTglpen ? mrow.cTglpen : ''
+                            if(mrow.cPemberitahu)
+                            {
+                                document.getElementById('txfg_txt_pemberitahu25').value = mrow.cPemberitahu
+                            }
+                            if(mrow.cJabatan)
+                            {
+                                document.getElementById('txfg_txt_jabatan25').value = mrow.cJabatan
+                            }
                         } else if (mbctype=='41') {
                             document.getElementById('txfg_txt_noaju41').value=mnoaju.trim();
                             document.getElementById('txfg_fromoffice41').value=mfromoffice;
@@ -3935,10 +3995,17 @@ $("#txfg_txtxtsearch").keypress(function (e) {
                             document.getElementById('txfg_cmb_tujuanpengiriman41').value=mpurpose;
                             document.getElementById('txfg_txt_nokontrak41').value=mcona
                             document.getElementById('txfg_txt_nopen41').value=mnopen.trim()
-                            document.getElementById('txfg_txt_sppb41').value=mrow.csppbdoc     
-                            document.getElementById('txfg_txt_tglpen41').value = mrow.cTglpen ? mrow.cTglpen : ''                            
+                            document.getElementById('txfg_txt_sppb41').value=mrow.csppbdoc
+                            document.getElementById('txfg_txt_tglpen41').value = mrow.cTglpen ? mrow.cTglpen : ''
+                            if(mrow.cPemberitahu)
+                            {
+                                document.getElementById('txfg_txt_pemberitahu41').value = mrow.cPemberitahu
+                            }
+                            if(mrow.cJabatan)
+                            {
+                                document.getElementById('txfg_txt_jabatan41').value = mrow.cJabatan
+                            }
                         }
-                        
                         $("#TXFG_MODSAVED").modal('hide');
                         txfg_getconsignee(scr_txfg_cust,mconsign);
                         txfg_f_getdetail(mtxid);                        
@@ -4883,8 +4950,9 @@ function txfg_z_btn_save_e_click(pThis){
             url: "<?=base_url('DELV/change27')?>",
             data: {inid : msj, innopen: mnopen, inaju: mnoaju, 
                 infromoffice: mfromoffice,indestoffice: mdestoffice , inpurpose: mpurpose
-                ,injenis_tpb_asal: mjenis_tpb_asal, injenis_tpb_tujuan: mjenis_tpb_tujuan,
-                intgldaftar: mtglpen,incona: mcona, sppbdoc: sppbdoc
+                ,injenis_tpb_asal: mjenis_tpb_asal, injenis_tpb_tujuan: mjenis_tpb_tujuan
+                ,intgldaftar: mtglpen,incona: mcona, sppbdoc: sppbdoc
+                ,inPemberitahu : txfg_txt_pemberitahu27.value, inJabatan: txfg_txt_jabatan27
             },
             dataType: "json",
             success: function (response) {
