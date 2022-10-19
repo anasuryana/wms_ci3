@@ -120,6 +120,7 @@
                                     <th>Document</th>
                                     <th class="text-end">QTY</th>
                                     <th>Remark</th>
+                                    <th>Key</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -325,6 +326,8 @@
                     newcell.innerHTML = numeral(response.child[i].ITH_QTY).format(',')
                     newcell = newrow.insertCell(4)
                     newcell.innerHTML = response.child[i].ITH_REMARK
+                    newcell = newrow.insertCell(5)
+                    newcell.innerHTML = response.child[i].ITH_SER
                 }
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
