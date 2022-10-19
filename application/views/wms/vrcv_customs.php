@@ -3804,7 +3804,7 @@ video {
                     "<td class='text-end'>"+strpirce+"</td>"+
                     "<td class='text-end'>"+stramt+"</td>"+
                     "<td class='d-none'>"+response[i].STKTRND1_LOCCDFR+"</td>"+
-                    "<td class='d-none'></td>"+
+                    "<td class='d-none'>"+response[i].THELINE+"</td>"+
                     "<td contenteditable='true'>"+response[i].HSCD+"</td>"+
                     "<td contenteditable='true'>"+response[i].BEAMASUK+"</td>"+
                     "<td contenteditable='true'>"+response[i].PPN+"</td>"+
