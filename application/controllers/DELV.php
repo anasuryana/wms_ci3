@@ -6690,6 +6690,8 @@ class DELV extends CI_Controller {
         $czkantortujuan = '';
         $czConaNo = '';
         $czConaDate = '';
+        $czPemberitahu = '';
+        $czJabatan = '';
         foreach($rs_head_dlv as $r){
             if($r['DLV_BCDATE']){
                 $consignee = $r['DLV_CONSIGN'];
@@ -6713,6 +6715,8 @@ class DELV extends CI_Controller {
                 $czkantortujuan = $r['DLV_DESTOFFICE'];
                 $czConaNo = $r['DLV_CONA'];
                 $czConaDate = $r['MCONA_DATE'];
+                $czPemberitahu = $r['DLVH_PEMBERITAHU'];
+                $czJabatan = $r['DLVH_JABATAN'];
                 break;
             }
         }
@@ -7247,7 +7251,7 @@ class DELV extends CI_Controller {
 
             "BRUTO" => $cz_h_BRUTO , "NETTO" => $cz_h_NETTO, "JUMLAH_BARANG" => $cz_h_JUMLAH_BARANG,
 
-            "KOTA_TTD" => "CIKARANG", "TANGGAL_TTD" =>$ccustdate, 
+            "KOTA_TTD" => "CIKARANG", "TANGGAL_TTD" =>$ccustdate, "NAMA_TTD" => $czPemberitahu, "JABATAN_TTD" => $czJabatan,
 
             "KODE_DOKUMEN_PABEAN" => $czdocbctype, "ID_MODUL" => $czidmodul_asli, "VERSI_MODUL" => NULL,
 
@@ -7497,6 +7501,8 @@ class DELV extends CI_Controller {
         $cztujuanpengiriman = '-';
         $czConaNo = '';
         $czConaDate = '';
+        $czPemberitahu = '';
+        $czJabatan = '';
         foreach($rs_head_dlv as $r){
             if($r['DLV_BCDATE']){
                 $consignee = $r['DLV_CONSIGN'];
@@ -7515,6 +7521,8 @@ class DELV extends CI_Controller {
                 $cztujuanpengiriman = $r['DLV_PURPOSE'];
                 $czConaNo = $r['DLV_CONA'];
                 $czConaDate = $r['MCONA_DATE'];
+                $czPemberitahu = $r['DLVH_PEMBERITAHU'];
+                $czJabatan = $r['DLVH_JABATAN'];
                 break;
             }
         }
@@ -7839,7 +7847,7 @@ class DELV extends CI_Controller {
 
             "BRUTO" => $cz_h_BRUTO , "NETTO" => $cz_h_NETTO, "JUMLAH_BARANG" => $cz_h_JUMLAH_BARANG,
 
-            "KOTA_TTD" => "CIKARANG", "TANGGAL_TTD" =>$ccustdate, 
+            "KOTA_TTD" => "CIKARANG", "TANGGAL_TTD" =>$ccustdate, "NAMA_TTD" => $czPemberitahu, "JABATAN_TTD" => $czJabatan,
 
             "KODE_DOKUMEN_PABEAN" => $czdocbctype, "ID_MODUL" => $czidmodul_asli, "VERSI_MODUL" => NULL,
 
@@ -8043,7 +8051,8 @@ class DELV extends CI_Controller {
         $czinvoicedt = '';
         $czidpenerima = '';
         $cz_h_NDPBM = 0;
-        
+        $czPemberitahu = '';
+        $czJabatan = '';
         foreach($rs_head_dlv as $r){
             if($r['DLV_BCDATE']){
                 $consignee = $r['DLV_CONSIGN'];
@@ -8060,7 +8069,9 @@ class DELV extends CI_Controller {
                 $czKODE_CARA_ANGKUT = $r['DLV_ZKODE_CARA_ANGKUT'];
                 $czSKB = $r['DLV_ZSKB'];
                 $czinvoicedt = $r['DLV_INVDT'];
-                $czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);				
+                $czidpenerima = str_replace([".","-"],"",$r['MCUS_TAXREG']);
+                $czPemberitahu = $r['DLVH_PEMBERITAHU'];
+                $czJabatan = $r['DLVH_JABATAN'];				
                 break;
             }
         }
@@ -8624,7 +8635,7 @@ class DELV extends CI_Controller {
 
             "KODE_LOKASI_BAYAR" => 1, "KODE_PEMBAYAR" => 1,
 
-            "KOTA_TTD" => "CIKARANG", "TANGGAL_TTD" =>$ccustdate, 
+            "KOTA_TTD" => "CIKARANG", "TANGGAL_TTD" =>$ccustdate, "NAMA_TTD" => $czPemberitahu, "JABATAN_TTD" => $czJabatan, 
 
             "KODE_DOKUMEN_PABEAN" => $czdocbctype, "ID_MODUL" => $czidmodul_asli, "VERSI_MODUL" => NULL,
 
