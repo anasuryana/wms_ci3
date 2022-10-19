@@ -381,6 +381,17 @@ class ITH_mod extends CI_Model {
         $query = $this->db->query($qry);
         return $query->result_array();
     }
+    public function select_compare_inventory_machine($wh, $pdate){        
+        $qry = "SELECT ITH_WH,RTRIM(ITH_ITMCD) ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM FROM(
+            SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM FROM
+                (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
+                        WHERE ITH_WH='$wh' AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
+                        GROUP BY ITH_ITMCD,ITH_WH,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VSTOCK		
+                ) VWMS                        
+                    ORDER BY ITH_ITMCD ASC";        
+        $query = $this->db->query($qry);
+        return $query->result_array();
+    }
     public function select_compare_inventory_fg_rtn($wh, $pdate){
         $qry = "SELECT ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD ,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
             SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
@@ -1961,6 +1972,8 @@ class ITH_mod extends CI_Model {
         UNION
         select RTRIM(FTRN_LOCCD) LOCATIONCD from XFTRN_TBL
         group by FTRN_LOCCD
+        UNION
+        SELECT RTRIM(MSTLOCG_ID) LOCATIONCD FROM MSTLOCG_TBL WHERE MSTLOCG_ID='PSIEQUIP'
         ) A LEFT JOIN MSTLOCG_TBL ON LOCATIONCD=MSTLOCG_ID
         ORDER BY 1";
         $query =  $this->db->query($qry);
@@ -2016,6 +2029,7 @@ class ITH_mod extends CI_Model {
 			        'INC',
 			        'ADJ-INC',
 			        'ADJ-I-INC',
+			        'ADJ-O-INC',
 			        'ADJ-IN',
 			        'INC-WHRTN-FG-C'
                 )
@@ -2060,6 +2074,7 @@ class ITH_mod extends CI_Model {
                         'OUT-SHP-FG',
                         'ADJ-OUT',
                         'ADJ-I-OUT',
+                        'ADJ-O-OUT',
                         'OUT-SCR-RTN',
                         'SPLIT-CNV-FG-OUT',
                         'OUT-C'

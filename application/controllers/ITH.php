@@ -2616,7 +2616,7 @@ class ITH extends CI_Controller {
             $myar = ["cd" => "0", "msg" => "Session is expired please reload page"];
             die(json_encode(['status' => $myar]));
         }
-        $whException = ['AFWH3','AWIP1','AFWH9SC'];
+        $whException = ['AFWH3','AWIP1','AFWH9SC','PSIEQUIP'];
         $date = $this->input->post('date');
         $location = $this->input->post('location');
         $adjtype = $this->input->post('adjtype');
@@ -2707,6 +2707,9 @@ class ITH extends CI_Controller {
                 break;
             case 'AFWH3RT':
                 $rs = $this->ITH_mod->select_compare_inventory_fg_rtn_asset($cwh_wms,$date);
+                break;
+            case 'PSIEQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms,$date);
                 break;
             default:
                 $rs = $this->ITH_mod->select_compare_inventory($cwh_wms,$date);
