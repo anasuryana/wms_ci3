@@ -4835,7 +4835,7 @@ class DELV extends CI_Controller {
             $myar[] = ["cd" => '00', "msg" => "Please check Aktivasi CEISA Data" ];
         } else {
             # set value, pemberitahu & jabatan
-            if($this->DLVH_mod->checkPrimary(['DLVH_ID' => $cid]))
+            if($this->DLVH_mod->check_Primary(['DLVH_ID' => $cid]))
             {
                 $this->DLVH_mod->updatebyVAR(['DLVH_PEMBERITAHU' => $pemberitahu, 'DLVH_JABATAN' => $jabatan],['DLVH_ID' => $cid]);
             } else 
