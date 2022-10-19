@@ -1887,7 +1887,7 @@ class DELV extends CI_Controller {
         $lastLineLog = $this->CSMLOG_mod->select_lastLine($ctxid, '')+1;
         for($i=0;$i<1;$i++){
             $dlvh = ['DLVH_ID' => $ctxid];
-            if($this->DLVH_mod->checkPrimary($dlvh))
+            if($this->DLVH_mod->check_Primary($dlvh))
             {
                 $this->DLVH_mod->insert($dlvh);
             }
@@ -4946,7 +4946,7 @@ class DELV extends CI_Controller {
             $myar[] = ["cd" => '00', "msg" => "Please check Aktivasi CEISA Data" ];
         } else {
             # set value, pemberitahu & jabatan
-            if($this->DLVH_mod->checkPrimary(['DLVH_ID' => $cid]))
+            if($this->DLVH_mod->check_Primary(['DLVH_ID' => $cid]))
             {
                 $this->DLVH_mod->updatebyVAR(['DLVH_PEMBERITAHU' => $pemberitahu, 'DLVH_JABATAN' => $jabatan],['DLVH_ID' => $cid]);
             } else 
@@ -5102,7 +5102,7 @@ class DELV extends CI_Controller {
             $myar[] = ["cd" => '00', "msg" => "Please check Aktivasi CEISA Data" ];
         } else {
             # set value, pemberitahu & jabatan
-            if($this->DLVH_mod->checkPrimary(['DLVH_ID' => $cid]))
+            if($this->DLVH_mod->check_Primary(['DLVH_ID' => $cid]))
             {
                 $this->DLVH_mod->updatebyVAR(['DLVH_PEMBERITAHU' => $pemberitahu, 'DLVH_JABATAN' => $jabatan],['DLVH_ID' => $cid]);
             } else 

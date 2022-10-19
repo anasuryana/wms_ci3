@@ -4876,7 +4876,8 @@ function txfg_z_btn_save25_e_click(){
                 infromoffice: mfromoffice,injenis_tpb_asal: mjenis_tpb_asal,
                 inskb: mSKB_pph, inskb_tgl: mSKB_pph_tgl,
                 injenis_sarana: mjenis_sarana_pengangkut,
-                innopen : mnopen, intglpen: mtglpen, sppbdoc: sppbdoc
+                innopen : mnopen, intglpen: mtglpen, sppbdoc: sppbdoc,
+                inPemberitahu : txfg_txt_pemberitahu25.value, inJabatan: txfg_txt_jabatan25.value
              },
             dataType: "json",
             success: function (response) {
@@ -4952,7 +4953,7 @@ function txfg_z_btn_save_e_click(pThis){
                 infromoffice: mfromoffice,indestoffice: mdestoffice , inpurpose: mpurpose
                 ,injenis_tpb_asal: mjenis_tpb_asal, injenis_tpb_tujuan: mjenis_tpb_tujuan
                 ,intgldaftar: mtglpen,incona: mcona, sppbdoc: sppbdoc
-                ,inPemberitahu : txfg_txt_pemberitahu27.value, inJabatan: txfg_txt_jabatan27
+                ,inPemberitahu : txfg_txt_pemberitahu27.value, inJabatan: txfg_txt_jabatan27.value
             },
             dataType: "json",
             success: function (response) {
@@ -5010,7 +5011,8 @@ function txfg_z_btn_save41_e_click(){
             data: {inid : msj, innopen: mnopen, inaju: mnoaju, 
                 infromoffice: mfromoffice,inpurpose: mpurpose
             ,injenis_tpb_asal: mjenis_tpb_asal, intgldaftar: mtglpen
-            ,incona: mcona, sppbdoc: sppbdoc },
+            ,incona: mcona, sppbdoc: sppbdoc
+            ,inPemberitahu : txfg_txt_pemberitahu41.value, inJabatan: txfg_txt_jabatan41.value },
             dataType: "json",
             success: function (response) {
                 if(response[0].cd='11'){
