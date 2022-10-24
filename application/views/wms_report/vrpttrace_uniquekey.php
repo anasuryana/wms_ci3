@@ -24,7 +24,7 @@
                             <tr>
                                 <th  class="align-middle">ID</th>
                                 <th  class="align-middle">Parent ID</th>
-                                <th  class="align-middle">Assy Code</th>
+                                <th  class="align-middle">Item Code</th>
                                 <th  class="align-middle">Job Number</th>
                                 <th  class="text-end">Label Qty</th>
                                 <th  class="text-end">LotQty</th>
@@ -53,6 +53,7 @@
                         <thead class="table-light">                           
                             <tr>
                                 <th  class="align-middle">ID</th>
+                                <th  class="align-middle">Item Code</th>
                                 <th  class="text-end">Label Qty</th>
                                 <th  class="text-end">LotQty</th>
                                 <th  ></th>
@@ -196,7 +197,7 @@
                         <table id="vtraceuniq_tblhistory" class="table table-hover table-sm table-bordered" style="font-size:75%">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Assy Code</th>                                    
+                                    <th>Item Code</th>                                    
                                     <th>Event</th>
                                     <th>Date</th>
                                     <th>Document</th>
@@ -579,14 +580,16 @@
                         newText = document.createTextNode(response.data[i].SER_ID);
                         newcell.appendChild(newText);                        
                         newcell = newrow.insertCell(1);
+                        newcell.innerHTML = response.data[i].SER_ITMID
+                        newcell = newrow.insertCell(2);
                         newcell.style.cssText='text-align:right';
                         newText = document.createTextNode(numeral(response.data[i].SER_QTY).format(','));
                         newcell.appendChild(newText);
-                        newcell = newrow.insertCell(2);
+                        newcell = newrow.insertCell(3);
                         newcell.style.cssText='text-align:right';
                         newText = document.createTextNode(response.data[i].SER_QTYLOT);
                         newcell.appendChild(newText);                                               
-                        newcell = newrow.insertCell(3);
+                        newcell = newrow.insertCell(4);
                         newcell.style.cssText='text-align:center;cursor:pointer;';
                         newcell.classList.add('bg-primary');
                         newcell.classList.add('text-white');
