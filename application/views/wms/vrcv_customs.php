@@ -2716,7 +2716,7 @@ video {
     $("#rcvcustoms_save").click(function(){
         let mytable = document.getElementById('rcvcustoms_tbl').getElementsByTagName('tbody')[0]
         const mtrlength = mytable.getElementsByTagName('tr').length
-        if(mtrlength<=10)
+        if(mtrlength<=5)
         {
             for(let i=0;i<mtrlength; i++) {
                 const nomorUrut = mytable.rows[i].cells[1].innerText.trim().replace(/\n+/g, '')
