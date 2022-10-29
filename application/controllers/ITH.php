@@ -1396,7 +1396,7 @@ class ITH extends CI_Controller {
     }
     public function gettxhistory_parent(){
         header('Content-Type: application/json');
-        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT','AWIP1','QAFG'];
+        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT','AWIP1','QAFG','AFWH9SC'];
         $cwh = $this->input->get('inwh');
         $citemcd = trim($this->input->get('initemcode'));
         $cdate1 = $this->input->get('indate1');
@@ -1779,7 +1779,7 @@ class ITH extends CI_Controller {
     public function transaction() 
     {
         header('Content-Type: application/json');
-        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT','QAFG','AWIP1'];
+        $fg_wh = ['AFWH3','AFWH3RT','NFWH4','NFWH4RT','QAFG','AWIP1','AFWH9SC'];
         $date = $this->input->get('date');
         $item = $this->input->get('item');
         $location = $this->input->get('location');
