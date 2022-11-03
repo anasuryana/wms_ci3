@@ -86,17 +86,28 @@ class SER_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     } 
-    
-    public function select_checklistprintstatus_label($pjob, $pitem){
-        // $qry = "select SER_TBL.*, convert(int,SER_QTY+isnull(ITH_QTY,0)) BALQTY from SER_TBL 
-        // left join
-		// (SELECT * FROM ITH_TBL WHERE isnull(ITH_WH,'')='AWIP1' and isnull(ITH_FORM,'')='OUT-USE') V1 on SER_ID=ITH_SER
-        // where SUBSTRING(SER_ID,1,1)='3' AND SER_DOC=? and SER_ITMID=? ORDER BY SER_ID";
-        // $qry = "select SER_TBL.*, convert(int,SER_QTY-isnull(ITH_QTY,0)) BALQTY from SER_TBL 
-        // left join
-		// (SELECT ITH_SER,ITH_QTY FROM ITH_TBL WHERE isnull(ITH_WH,'')='AWIP1' and isnull(ITH_QTY,0)>0 ) V1 on SER_ID=ITH_SER
-        // where SUBSTRING(SER_ID,1,1)='3' AND SER_DOC=? and SER_ITMID=? ORDER BY SER_ID";
 
+    function select_tools_ser($pSer_id)
+    {
+        $qry = "SELECT SER_ITMID, SER_QTY,ITH_QTY,SER_ID FROM SER_TBL 
+        LEFT JOIN (SELECT DISTINCT ITH_SER, ABS(ITH_QTY) ITH_QTY FROM ITH_TBL WHERE ITH_REMARK='AFT-SPLIT') V1 ON SER_ID=ITH_SER
+        WHERE SER_REFNO=? AND SER_REFNO!=SER_ID";
+        $query = $this->db->query($qry, [$pSer_id]);
+		return $query->result_array();
+
+    }
+    public function select_joinITH_byVAR_with_cols($pwhere, $pcols)
+	{   
+        $this->db->select($pcols);
+        $this->db->from($this->TABLENAME);
+        $this->db->join("(SELECT DISTINCT ITH_SER, ABS(ITH_QTY) ITH_QTY FROM ITH_TBL WHERE ITH_REMARK='AFT-SPLIT') V1", "SER_ID=ITH_SER", "LEFT");
+        $this->db->like($pwhere);
+		$query = $this->db->get();
+		return $query->result_array();
+    } 
+    
+    public function select_checklistprintstatus_label($pjob, $pitem)
+    {
         $qry = "select SER_TBL.*, convert(int,SER_QTY-isnull(v1.ITH_QTY,0)) BALQTY, convert(int,SER_QTY+isnull(v2.ITH_QTY,0)) BALJNTQTY,VLOC.ITH_WH from SER_TBL 
         left join
 		(SELECT ITH_SER,ITH_QTY FROM ITH_TBL WHERE isnull(ITH_WH,'')='AWIP1' and isnull(ITH_QTY,0)>0 ) V1 on SER_ID=v1.ITH_SER
@@ -400,5 +411,23 @@ class SER_mod extends CI_Model {
         $this->db->where('SER_ID', $preffno);        
 		$query = $this->db->get();
 		return $query->result();
+    }
+
+    function select_split_need_fix($pYear, $pMonth)
+    {
+        $qry = "SELECT * FROM ITH_TBL WHERE ITH_SER IN (
+            SELECT ITH_SER FROM
+                (
+                    SELECT * FROM v_ith_tblc WHERE YEAR(ITH_DATEC) = ?
+                    AND MONTH(ITH_DATEC) = ?
+                    AND ITH_FORM LIKE '%SPLIT%' AND ITH_REMARK='WIL-SPLIT'
+                    AND ITH_WH='AFWH3'
+                ) V1 LEFT JOIN SER_TBL ON ITH_SER=SER_REFNO
+                WHERE ITH_ITMCD!=SER_ITMID
+                GROUP BY ITH_SER
+            ) AND ITH_FORM LIKE '%SPLIT%' AND ITH_REMARK='WIL-SPLIT'
+                    AND ITH_WH='AFWH3'";
+         $query = $this->db->query($qry, [$pYear, $pMonth]);
+         return $query->result_array();
     }
 }

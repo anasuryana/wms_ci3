@@ -3782,116 +3782,7 @@ class SER extends CI_Controller {
         }
         
     }
-
-    public function split_label_status_backup(){
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
-        $currrtime	= date('Y-m-d H:i:s');
-        $myar = [];
-        $cproddt = $this->input->post('inprddt');
-        $coldreff = $this->input->post('inoldreff');
-        $cjob = $this->input->post('inoldjob');
-        $citem = $this->input->post('inolditem');
-        $coldqty = $this->input->post('inoldqty');		
-        $cqty = $this->input->post('innewqty');		
-        $cline = $this->input->post('inline');
-        $cshift = $this->input->post('inshift');
-        $crestqty = $coldqty - $cqty;		
     
-        $cmdl = 3;
-        $pYear = substr($cproddt,2,2); $pMonth = substr($cproddt,5,2); $pDay = substr($cproddt, -2);
-        $pMonthdis = $this->getMonthDis($pMonth);		
-        $newid = $this->SER_mod->lastserialid($cmdl, $cproddt);
-        $newid++;
-        $newid = $cmdl.$pYear.$pMonthdis.$pDay.substr('000000000'.$newid, -10);
-        if($this->SISCN_mod->check_Primary(['SISCN_SER' => $coldreff]) >0){
-            $myar[] = ["cd" => '0', "msg" => "could not split delivered item label"];			 
-            exit('{"status":'.json_encode($myar).'}');
-        } else {
-            $rsactive = $this->ITH_mod->select_active_ser($coldreff);
-            $rsactive_wh =  $rsactive_loc  =''  ;
-            foreach($rsactive as $r){
-                $rsactive_wh = trim($r['ITH_WH']);
-                $rsactive_loc = trim($r['ITH_LOC']);				
-            }
-            $datas = [
-                'SER_ID' => $newid,
-                'SER_REFNO' => $coldreff,
-                'SER_DOC' => $cjob,
-                'SER_DOCTYPE' => '1',
-                'SER_ITMID' => $citem,
-                'SER_QTY' => $cqty,
-                'SER_QTYLOT' => $cqty,
-                'SER_SHEET' =>'',
-                'SER_PRDDT' => $cproddt,
-                'SER_PRDLINE' => $cline,
-                'SER_PRDSHFT' => $cshift,
-                'SER_LUPDT' => $currrtime,
-                'SER_USRID' => $this->session->userdata('nama')
-            ];
-            if($this->SER_mod->insert($datas)>0){
-                $ret3 = $this->SER_mod->updatebyId(["SER_QTY" => $crestqty,"SER_QTYLOT" => $crestqty, "SER_LUPDT" => $currrtime], $coldreff);
-                $this->SERD_mod->deletebyID_label(['SERD2_SER' => $coldreff ]);
-                if($ret3>0){
-                    if(count($rsactive) == 0 ){ // handle if serial is not included in tx yet
-                        $myar[] = ["cd" => "1", "msg" => "OK" , "reffcode" => $newid];
-                        exit('{"status":'.json_encode($myar).'}');
-                    } else { // handle if serial is already included in tx
-                        //start minus
-                        $currdate	= date('Y-m-d');
-                        $ret4 = $this->ITH_mod->insert(
-                            [
-                                "ITH_ITMCD" => $citem,
-                                "ITH_DATE" => $currdate,
-                                "ITH_FORM" => 'SPLIT-STS-LBL',
-                                "ITH_DOC" => $cjob,
-                                "ITH_QTY" => -$cqty,
-                                "ITH_SER" => $coldreff,
-                                "ITH_WH" => $rsactive_wh,
-                                "ITH_LOC" => $rsactive_loc,
-                                "ITH_LUPDT" => $currrtime,
-                                "ITH_REMARK" => "WIL-SPLIT",
-                                "ITH_USRID" => $this->session->userdata('nama')
-                            ]
-                        );						
-                        if($ret4>0){						
-                            $ret5 = $this->ITH_mod->insert(
-                                [
-                                    "ITH_ITMCD" => $citem,
-                                    "ITH_DATE" => $currdate,
-                                    "ITH_FORM" => "SPLIT-STS-LBL",
-                                    "ITH_DOC" => $cjob,
-                                    "ITH_QTY" => $cqty,
-                                    "ITH_SER" => $newid,
-                                    "ITH_WH" => $rsactive_wh,
-                                    "ITH_LOC" => $rsactive_loc,
-                                    "ITH_LUPDT" => $currrtime,
-                                    "ITH_REMARK" => "AFT-SPLIT",
-                                    "ITH_USRID" => $this->session->userdata('nama')
-                                ]
-                            );
-                            if($ret5>0){
-                                $myar[] = ["cd" => "1", "msg" => "ok WH" , "reffcode" => $newid];
-                                exit('{"status":'.json_encode($myar).'}');
-                            } else {
-                                $myar[] = ["cd" => "0", "msg" => "not ok WH"];
-                                exit('{"status":'.json_encode($myar).'}');
-                            }
-                        } else {
-                            $myar[] = ["cd" => '0', "msg" => "could not minus old label, please contact admin"];							
-                            exit('{"status":'.json_encode($myar).'}');
-                        }
-                    }				
-                } else {
-                    $myar[] = ["cd" => '0', "msg" => "could not update old label, please contact admin"];
-                    exit('{"status":'.json_encode($myar).'}');	
-                }
-            } else {
-                $myar[] = ["cd" => '0', "msg" => "could not create new lable, please contact admin"];
-                exit('{"status":'.json_encode($myar).'}');
-            }
-        }		
-    }
     public function split_label_status(){
         $this->checkSession();
         date_default_timezone_set('Asia/Jakarta');			
@@ -6174,5 +6065,86 @@ class SER extends CI_Controller {
         }
         unset($r);
         die(json_encode(['partcode' => $partcode,'data' => $rs ]));
+    }    
+
+    function refix_split_tx()
+    {
+        header('Content-Type: application/json');
+        $year = $this->input->get('year');
+        $month = $this->input->get('month');
+        $rsNeedFix = $this->SER_mod->select_split_need_fix($year,$month);
+        $rsFocus = [];      
+        foreach($rsNeedFix as &$r)
+        {
+            $rsReff = $this->SER_mod->select_tools_ser($r['ITH_SER']);
+            $itemcode_distinct = [];
+            $RowShouldBeUpdated = [];
+            $RowShouldBeAdded = [];
+            foreach($rsReff as $s)
+            {
+                if(!in_array($s['SER_ITMID'], $itemcode_distinct))
+                {
+                    $itemcode_distinct[] = $s['SER_ITMID'];
+                }
+                if($r['ITH_ITMCD']!=$s['SER_ITMID'])
+                {
+                    if(empty($RowShouldBeUpdated))
+                    {
+                        $RowShouldBeUpdated = $r;
+                        $RowShouldBeUpdated['ITH_QTY'] = -$s['ITH_QTY'];
+                        $RowShouldBeUpdated['ITH_FORM'] = 'SPLIT-CNV-FG-OUT';
+                    } else {
+                        $RowShouldBeUpdated['ITH_QTY'] -= $s['ITH_QTY'];
+                    }
+                } else 
+                {
+                    $RowShouldBeAdded = $r;
+                }
+            }
+            
+            $RowShouldBeAdded['ITH_QTY'] = -($RowShouldBeUpdated['ITH_QTY']+abs((int)$r['ITH_QTY']));
+            if(count($itemcode_distinct)==1)
+            {
+                $r['STATUS'] = 'OK FULL CONVERT';
+                $r['datareff'] = [$RowShouldBeUpdated];
+                $rsFocus[] = $r;
+            } else {
+                $r['STATUS'] = 'Should be refixed';
+                $r['datareff'] = [$RowShouldBeUpdated,$RowShouldBeAdded];                
+            }
+        }
+        unset($r);
+        foreach($rsFocus as &$r)
+        {
+            if($r['STATUS']==='OK FULL CONVERT')
+            {
+                # update ITH_FORM only
+                foreach($r['datareff'] as &$s)
+                {
+                    // $this->ITH_mod->updatebyId(['ITH_SER' => $s['ITH_SER'], 'ITH_REMARK' => 'WIL-SPLIT'], ['ITH_FORM' => 'SPLIT-CNV-FG-OUT']);
+                    $s['EXECUTE'] = 'UPDATE';                    
+                }
+                unset($s);
+            } else {
+                foreach($r['datareff'] as &$s)
+                {
+                    if ($s['ITH_FORM'] === 'SPLIT-CNV-FG-OUT')
+                    {
+                        #insert
+                        // $this->ITH_mod->insert($s);
+                        $s['EXECUTE'] = 'INSERT';
+                    } else 
+                    {
+                        # update ITH_QTY
+                        // $this->ITH_mod->updatebyId(['ITH_SER' => $s['ITH_SER'], 'ITH_REMARK' => 'WIL-SPLIT'], ['ITH_QTY' => $s['ITH_QTY']]);
+                        $s['EXECUTE'] = 'UPDATE';
+                    }
+                }
+                unset($s);
+            }
+                        
+        }
+        unset($r);
+        die(json_encode(['data_need_fix' => $rsFocus]));
     }
 }
