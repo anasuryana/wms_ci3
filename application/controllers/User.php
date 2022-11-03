@@ -69,10 +69,11 @@ class User extends CI_Controller {
         }
     }
 
-    function resetpassword(){
+    function resetpassword()
+    {
         $newpw = $this->input->post('innewpw');
         $theid = $this->input->post('inid');
-        $data2 = $this->input->post('apptype') === 'webapp' ?  [ 'MSTEMP_PW' => hash('sha256', $newpw) ] : [ 'MSTEMP_PWHT' => $newpw ];
+        $data2 = $this->input->post('apptype') === 'webapp' ?  [ 'MSTEMP_PW' => hash('sha256', $newpw), 'MSTEMP_LCHGPWDT' => date('Y-m-d H:i:s')] : [ 'MSTEMP_PWHT' => $newpw ];
         $datakey = [ 'lower(MSTEMP_ID)' => strtolower($theid) ];
         $toret = $this->Usr_mod->updatepassword($data2, $datakey);
         echo $toret;
@@ -107,7 +108,7 @@ class User extends CI_Controller {
             'lower(MSTEMP_ID)' => strtolower($this->input->post('inUID'))
         ];
         $datanya = $this->input->post('apptype') === 'webapp' ? 
-            [ 'MSTEMP_PW' => hash('sha256',$this->input->post('inPw')) ] 
+            [ 'MSTEMP_PW' => hash('sha256',$this->input->post('inPw')), 'MSTEMP_LCHGPWDT' => date('Y-m-d H:i:s') ] 
             : [ 'MSTEMP_PWHT' => $this->input->post('inPw') ];
         $hasila = $this->Usr_mod->updatepassword($datanya,$datakey);
         if ($hasila>0){
