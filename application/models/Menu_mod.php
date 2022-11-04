@@ -18,7 +18,7 @@ class Menu_mod extends CI_Model {
     {
         $this->db->select("*, '0' USED");
         $this->db->from('MENU_TBL');
-		$this->db->where('MENU_APP', 'WMS')->where("MENU_ID !=", "XB");
+		$this->db->where('MENU_APP', 'WMS')->where_not_in("MENU_ID", ["XB","XD"]);
         $this->db->order_by('MENU_ID ASC');
         $query = $this->db->get();
         return $query->result_array();

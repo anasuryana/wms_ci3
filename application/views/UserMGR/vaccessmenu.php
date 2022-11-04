@@ -1,5 +1,5 @@
 <div style="padding:5px">
-	<div class="container-fluid">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-md-6 mb-3">
                 <div class="col-md-12 order-md-1">
@@ -10,11 +10,11 @@
                                 <select class="form-select" id="cmbgroup" required>
                                     <option value="_">Choose...</option>									
                                     <?php foreach ($lusergroup as $r) { 
-										 if( $r['MSTGRP_ID']=='ADMIN') {
-											 if($this->session->userdata('gid')=='ADMIN') {?>
-                                    		<option value="<?php echo $r['MSTGRP_ID']; ?>"> <?php echo $r['MSTGRP_NM']; ?> </option>
-									<?php }} else {?>
-										<option value="<?php echo $r['MSTGRP_ID']; ?>"> <?php echo $r['MSTGRP_NM']; ?> </option>
+                                         if( $r['MSTGRP_ID']=='ADMIN') {
+                                             if($this->session->userdata('gid')=='ADMIN') {?>
+                                            <option value="<?php echo $r['MSTGRP_ID']; ?>"> <?php echo $r['MSTGRP_NM']; ?> </option>
+                                    <?php }} else {?>
+                                        <option value="<?php echo $r['MSTGRP_ID']; ?>"> <?php echo $r['MSTGRP_NM']; ?> </option>
                                     <?php } }?> 
                                 </select>                                
                                 <button id="vacc_btn_showmod" class="btn btn-primary" title="Add new group"><i class="fas fa-plus"></i></button>                                
@@ -41,7 +41,7 @@
                 <button id="btnSave" title="Save changes" class="btn btn-primary btn-block" type="submit"><i class="fas fa-save"></i></button>										
             </div>				
         </div>			
-	</div>
+    </div>
 </div>
 <div class="modal fade" id="VACC_MOD">
     <div class="modal-dialog">
@@ -79,138 +79,146 @@
     </div>
 </div>
 <script>
-	var tangkai 		= [];
-	var lgroupid 		= [];
-	var lmenuid 		= [];
-	var lmenudefault	= [];
-	$("#divroles").css('height', $(window).height()*76/100);
-	$('#cmbgroup').change(function(){
-		const a = $(this).val();		
-		for( let i = 0;i<lmenudefault.length;i++){			
-			const node = $('#mmenu2').tree('find', lmenudefault[i]);
-			$('#mmenu2').tree('uncheck', node.target);
-		}
-		for( let i = 1;i<lgroupid.length;i++){
-			if (lgroupid[i]==a) {
-				let node = $('#mmenu2').tree('find', lmenuid[i]);
-				$('#mmenu2').tree('check', node.target);
-			}
-		}
-		$('#mmenu2').tree('expandAll');
-	});
+    var tangkai 		= [];
+    var lgroupid 		= [];
+    var lmenuid 		= [];
+    var lmenudefault	= [];
+    $("#divroles").css('height', $(window).height()*76/100);
+    $('#cmbgroup').change(function(){
+        const a = $(this).val();		
+        for( let i = 0;i<lmenudefault.length;i++){			
+            const node = $('#mmenu2').tree('find', lmenudefault[i]);
+            $('#mmenu2').tree('uncheck', node.target);
+        }
+        for( let i = 1;i<lgroupid.length;i++){
+            if (lgroupid[i]==a) {
+                let node = $('#mmenu2').tree('find', lmenuid[i]);
+                $('#mmenu2').tree('check', node.target);
+            }
+        }
+        $('#mmenu2').tree('expandAll');
+    });
 
-	$('#btnSave').click(function(){
-		tangkai.length = 0
-		const nodes = $('#mmenu2').tree('getChecked')
-		let s2 = ''
-		let grpid = $('#cmbgroup').val()
-		if (grpid=='_'){
-			return
-		}
-		for(let i=0; i<nodes.length ; i++) {
-			s2 = nodes[i].id.toString()		
-			insertTangkai(s2)
-			if (s2.length>1) {
-				let tanda = s2
-				let jalan = true
-				let percobaan = 1
-				let cnode = $('#mmenu2').tree('getParent', nodes[i].target)
-				
-				insertTangkai(cnode.id.toString());
-				while(jalan){
-					if (cnode != null) {
-						tanda = cnode.id.toString();
-						insertTangkai(tanda);
-						if(tanda.length>0){
-							cnode = $('#mmenu2').tree('getParent',cnode.target);
-							if(cnode != null) {
-								insertTangkai(cnode.id.toString());								
-							}						
-						} else{
-							jalan=false;
-						}
-					} else {
-						jalan=false;
-					}
-				}
-			}		
-		}		
-		
-		s2 = ''
-		for(var i=0;i<tangkai.length;i++){
-			s2 += ''+tangkai[i]+','
-		}
-		s2=s2.substr(0,s2.length-1)		
-	
-		jQuery.ajax({
-			type: "get",
-			url: "<?=base_url('Menu/setaccess')?>",
-			dataType: "text",
-			data: {inID : grpid, inNM : s2 },
-			success:function(response) {
-				swal.fire(
-					'Good',
-					'Saved successfully',
-					'success'
-				);
-				getAllAM()				
-			},
-			error:function(xhr,ajaxOptions, throwError) {
-			    alertify.error(throwError);
-			}
-		});
-	});
-
-	function insertTangkai(punik){
-		let notAdded =true;
-		for(let u=0;u<=tangkai.length;u++){
-			if (tangkai[u]==punik){
-				notAdded=false;break;
-			}
-		}
-		if (notAdded){
-			tangkai.push(''+punik+'');
-		}
-	}
-	getAllAM();
-	function getAllAM(){
-		jQuery.ajax({
-			type: "GET",
-			url: "<?=base_url('Menu/getall')?>",
-			dataType: "json",
-			success:function(response) {
-				lgroupid.length=0;
-				lmenuid.length=0;
-				for (let i=0;i<response.length;i++){					
-					lgroupid.push(''+response[i].EMPACCESS_GRPID+'');
-					lmenuid.push(''+response[i].EMPACCESS_MENUID+'');
-				}
-			},
-			error:function(xhr,ajaxOptions, throwError) {
+    $('#btnSave').click(function(){
+        tangkai.length = 0
+        const nodes = $('#mmenu2').tree('getChecked')
+        let s2 = ''
+        let grpid = $('#cmbgroup').val()
+        if (grpid=='_'){
+            return
+        }
+        for(let i=0; i<nodes.length ; i++) {
+            s2 = nodes[i].id.toString()		
+            insertTangkai(s2)
+            if (s2.length>1) {
+                let tanda = s2
+                let jalan = true
+                let percobaan = 1
+                let cnode = $('#mmenu2').tree('getParent', nodes[i].target)
+                
+                insertTangkai(cnode.id.toString());
+                while(jalan)
+                {
+                    if (cnode != null) 
+                    {
+                        tanda = cnode.id.toString();
+                        insertTangkai(tanda);
+                        if(tanda.length>0)
+                        {
+                            cnode = $('#mmenu2').tree('getParent',cnode.target);
+                            if(cnode != null) {
+                                insertTangkai(cnode.id.toString());								
+                            }						
+                        } else{
+                            jalan=false;
+                        }
+                    } else {
+                        jalan=false;
+                    }
+                }
+            }		
+        }		
+        
+        s2 = ''
+        for(let i=0;i<tangkai.length;i++){
+            s2 += ''+tangkai[i]+','
+        }
+        s2=s2.substr(0,s2.length-1)
+    
+        jQuery.ajax({
+            type: "get",
+            url: "<?=base_url('Menu/setaccess')?>",
+            dataType: "text",
+            data: {inID : grpid, inNM : s2 },
+            success:function(response) {
+                swal.fire(
+                    'Good',
+                    'Saved successfully',
+                    'success'
+                );
+                getAllAM()				
+            },
+            error:function(xhr,ajaxOptions, throwError) {
                 alertify.error(throwError);
-			}
-		})
-	}
+            }
+        });
+    });
 
-	getDefaultMenu()
+    function insertTangkai(punik){
+        let notAdded =true;
+        for(let u=0;u<=tangkai.length;u++)
+        {
+            if (tangkai[u]==punik)
+            {
+                notAdded=false;break;
+            }
+        }
+        if (notAdded)
+        {
+            tangkai.push(''+punik+'');
+        }
+    }
+    getAllAM();
+    function getAllAM(){
+        jQuery.ajax({
+            type: "GET",
+            url: "<?=base_url('Menu/getall')?>",
+            dataType: "json",
+            success:function(response) {
+                lgroupid.length=0;
+                lmenuid.length=0;
+                for (let i=0;i<response.length;i++)
+                {					
+                    lgroupid.push(''+response[i].EMPACCESS_GRPID+'');
+                    lmenuid.push(''+response[i].EMPACCESS_MENUID+'');
+                }
+            },
+            error:function(xhr,ajaxOptions, throwError) {
+                alertify.error(throwError);
+            }
+        })
+    }
 
-	function getDefaultMenu(){
-		jQuery.ajax({
-			type: "GET",
-			url: "<?=base_url('Menu/getdefault')?>",
-			dataType: "json",
-			success:function(response) {
-				lmenudefault.length=0;				
-				for (let i=0;i<response.length;i++){					
-					lmenudefault.push(''+response[i].MENU_ID+'');
-				}
-			},
-			error:function(xhr,ajaxOptions, throwError) {
-			    alertify.error(throwError);
-			}
-		});
-	}
-	$("#vacc_btn_showmod").click(function (e) { 
+    getDefaultMenu()
+
+    function getDefaultMenu(){
+        jQuery.ajax({
+            type: "GET",
+            url: "<?=base_url('Menu/getdefault')?>",
+            dataType: "json",
+            success:function(response) {
+                lmenudefault.length=0;
+                for (let i=0;i<response.length;i++)
+                {
+                    lmenudefault.push(''+response[i].MENU_ID+'');
+                }
+            },
+            error:function(xhr,ajaxOptions, throwError) {
+                alertify.error(throwError);
+            }
+        });
+    }
+    $("#vacc_btn_showmod").click(function (e) { 
         e.preventDefault();
         $("#VACC_MOD").modal('show');
     });
@@ -227,14 +235,14 @@
             url: "<?=base_url('User/setgroup')?>",
             data: {inid: mid, innm: mnm},
             dataType: "json",
-            success: function (response) {                             
-                if(response[0].cd=='1'){
+            success: function (response) {
+                if(response[0].cd=='1')
+                {
                     $("#cmbgroup").append(new Option(mnm,mid ));
                 }
                 alertify.message(response[0].dsc);
                 $("#vacc_txt_id").val('');
                 $("#vacc_txt_nm").val('');
-                
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
             }

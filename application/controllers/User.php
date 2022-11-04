@@ -192,8 +192,12 @@ class User extends CI_Controller {
         } else 
         {
             echo '[]';
-        }
-        
+        }        
+    }
+
+    function form_policy()
+    {
+        $this->load->view('UserMGR/vpassword_policy');
     }
 
     function getName($puser = null){
