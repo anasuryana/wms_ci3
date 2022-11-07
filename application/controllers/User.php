@@ -5,7 +5,8 @@ class User extends CI_Controller {
     {
         parent::__construct();
         $this->load->model('Usr_mod');
-        $this->load->model('Usergroup_mod');        
+        $this->load->model('Usergroup_mod');
+        $this->load->model('PWPOL_mod');
         $this->load->helper('url_helper'); 
         $this->load->library('session');
         $this->load->helper('security');
@@ -24,8 +25,9 @@ class User extends CI_Controller {
         $this->load->view('UserMGR/vuser_edit',$data);
     }
 
-    function change(){
-        header('Content-Type: application/json');        
+    function change()
+    {
+        header('Content-Type: application/json');
         $currrtime = date('Y-m-d H:i:s');
         $usrid      = $this->input->post('inUsrid');
         $firstname  = $this->input->post('inNMF');
@@ -47,7 +49,7 @@ class User extends CI_Controller {
     }
 
     function set()
-    {        
+    {
         $currrtime = date('Y-m-d H:i:s');
         $data = ['lower(MSTEMP_ID)' => strtolower($this->input->post('inUID'))];
         if ($this->Usr_mod->check_Primary($data)>0)
@@ -110,12 +112,8 @@ class User extends CI_Controller {
         $datanya = $this->input->post('apptype') === 'webapp' ? 
             [ 'MSTEMP_PW' => hash('sha256',$this->input->post('inPw')), 'MSTEMP_LCHGPWDT' => date('Y-m-d H:i:s') ] 
             : [ 'MSTEMP_PWHT' => $this->input->post('inPw') ];
-        $hasila = $this->Usr_mod->updatepassword($datanya,$datakey);
-        if ($hasila>0){
-            echo "berhasil";
-        } else {
-            echo "belum berhasil";
-        }
+        $hasila = $this->Usr_mod->updatepassword($datanya,$datakey);        
+        echo $hasila>0 ? "berhasil" : "belum berhasil";
     } 
 
     function getactivated(){
@@ -200,6 +198,37 @@ class User extends CI_Controller {
         $this->load->view('UserMGR/vpassword_policy');
     }
 
+    function password_policy()
+    {        
+        header('Content-Type: application/json');
+        $rs = $this->PWPOL_mod->select();
+        die(json_encode(['data' => $rs]));
+    }
+
+    function set_password_policy()
+    {
+        header('Content-Type: application/json');
+        $key = $this->input->post('key');
+        $value = $this->input->post('value');
+        $result = 0;
+        $newvalue = [];
+        switch($key)
+        {
+            case 'history':
+                $newvalue = ['PWPOL_HISTORY' => $value];                
+                break;
+            case 'max_age':
+                $newvalue = ['PWPOL_MAXAGE' => $value];                
+                break;
+            case 'min_length':
+                $newvalue = ['PWPOL_LENGTH' => $value];
+                break;
+        }
+        $result = $this->PWPOL_mod->updatebyId($newvalue, ['PWPOL_LINE' => 'A']);
+        $respon = $result ? ['cd' => '1', 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'Failed'];
+        die(json_encode(['status' => $respon]));
+    }
+
     function getName($puser = null){
         header('Content-Type: application/json');
         if($puser!='-'){
@@ -214,14 +243,17 @@ class User extends CI_Controller {
     function setgroup(){
         $cid = $this->input->post('inid');
         $cnm = $this->input->post('innm');
-        $datac = array('MSTGRP_ID' => strtoupper($cid), 'MSTGRP_NM' => $cnm);
-        $sts_o = array();
-        if($this->Usergroup_mod->check_Primary($datac)>0){            
-            array_push($sts_o, array('cd'=> 0, 'dsc' => 'The data is already registered'));            
-        } else {
+        $datac = ['MSTGRP_ID' => strtoupper($cid), 'MSTGRP_NM' => $cnm];
+        $sts_o = [];
+        if($this->Usergroup_mod->check_Primary($datac)>0)
+        {            
+            $sts_o[] = ['cd'=> 0, 'dsc' => 'The data is already registered'];
+        } else 
+        {
             $toret = $this->Usergroup_mod->insert($datac);
-            if($toret >0 ){
-                array_push($sts_o, array('cd'=> 1, 'dsc' => 'Added successfully'));                     
+            if($toret >0 )
+            {
+                $sts_o[] = ['cd'=> 1, 'dsc' => 'Added successfully'];
             }
         }
         echo json_encode($sts_o);
