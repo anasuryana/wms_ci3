@@ -58,8 +58,14 @@ class PSV_mod extends CI_Model
    function delete_stock()
    {
       $qry = "DELETE FROM STK_TBL
-               WHERE AS_OF_DATE_TIME=(SELECT min(AS_OF_DATE_TIME) FROM STK_TBL)
-            ";
+              WHERE AS_OF_DATE_TIME=(SELECT min(AS_OF_DATE_TIME) FROM STK_TBL)";
+      $this->DBUse->query($qry);
+      return $this->DBUse->affected_rows();
+   }
+
+   function truncate_stock()
+   {
+      $qry = "TRUNCATE TABLE ".$this->TABLENAME;
       $this->DBUse->query($qry);
       return $this->DBUse->affected_rows();
    }
@@ -67,8 +73,7 @@ class PSV_mod extends CI_Model
    function reindex()
    {
       $qry = "ALTER INDEX PK__STK_TBL__0837B678E48BF5BC on STK_TBL
-               REBUILD
-            ";
+               REBUILD";
       $this->DBUse->query($qry);
    }
 }

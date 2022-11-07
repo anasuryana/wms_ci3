@@ -33,4 +33,29 @@ class PSV extends CI_Controller
         $response = ['cd' => '1', 'msg' => 'done, reindex'];
         die(json_encode(['data' => $response]));
     }
+
+    function truncate()
+    {
+        ini_set('max_execution_time', '-1');
+        header('Content-Type: application/json');
+        $this->PSV_mod->truncate_stock();
+        $response = ['cd' => '1', 'msg' => 'done, truncate'];
+        die(json_encode(['data' => $response]));
+    }  
+    
+    function delete_stock()
+    {
+        ini_set('max_execution_time', '-1');
+        header('Content-Type: application/json');
+        $this->PSV_mod->delete_stock();
+        $response = ['cd' => '1', 'msg' => 'done, delete'];
+        die(json_encode(['data' => $response]));        
+    }
+    
+    function data()
+    {
+        header('Content-Type: application/json');
+        $rs = $this->PSV_mod->selectAll();
+        die(json_encode(['data' => $rs]));
+    }
 }
