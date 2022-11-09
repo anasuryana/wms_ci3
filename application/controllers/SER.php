@@ -122,14 +122,31 @@ class SER extends CI_Controller {
         $cser = $this->input->get('inid');
         $cdocst = $this->input->get('indocst');
         $rs = $this->SER_mod->select_SER_byVAR(['SER_ID' => $cser]);
-        $rsbalance = $this->SERRC_mod->select_xbalance_v1($cser, $cdocst);		
-        foreach($rsbalance as &$r) {
-            foreach($rs as $s) {
+        $rsbalance = $this->SERRC_mod->select_xbalance_v1($cser, $cdocst);
+        $rslocation = $this->ITH_mod->selectstock_ser($cser);
+        foreach($rsbalance as &$r) 
+        {
+            foreach($rs as $s) 
+            {
                 $r['BALQTY'] = ($s['SER_QTY']*1) - $r['BALQTY'];
             }			
         }
-        unset($r);		
-        $myar[] = count($rs)>0 ?  ['cd' => 1, 'msg' => 'Go ahead'] : ['cd' => 0, 'msg' => 'ID is not found'];		
+        unset($r);
+        $isExist = false;
+        foreach($rslocation as $r)
+        {
+            if($r['ITH_WH']==='AFQART' || $r['ITH_WH']==='AFQART2')
+            {
+                $isExist = true;
+            }
+        }
+        if(empty($rs))
+        {
+            $myar[] = ['cd' => 0, 'msg' => 'ID is not found'];
+        } else 
+        {
+            $myar[] = $isExist ? ['cd' => 1, 'msg' => 'Go ahead'] : ['cd' => 0, 'msg' => 'the ID is already used fully'];
+        }        
         die('{"status":'.json_encode($myar).', "data":'.json_encode($rs).',"data_bal": '.json_encode($rsbalance).'}');
     }
 
