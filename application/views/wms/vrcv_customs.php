@@ -3900,7 +3900,7 @@ video {
             const myear = document.getElementById('rcvcustoms_year_1').value
             const mmonth = document.getElementById('rcvcustoms_monthfilter_1').value
             const tbl = document.getElementById('rcvcustoms_tbldono_1').getElementsByTagName('tbody')[0]
-            tbl.innerHTML = `<tr><td colspan="10" class="text-center">Please wait</td></tr>`
+            tbl.innerHTML = `<tr><td colspan="12" class="text-center">Please wait</td></tr>`
             $.ajax({
                 type: "GET",
                 url: "<?=base_url('RCV/GetDO1')?>",
