@@ -7,6 +7,7 @@ class User extends CI_Controller {
         $this->load->model('Usr_mod');
         $this->load->model('Usergroup_mod');
         $this->load->model('PWPOL_mod');
+        $this->load->model('CHGPW_mod');
         $this->load->helper('url_helper'); 
         $this->load->library('session');
         $this->load->helper('security');
@@ -198,11 +199,79 @@ class User extends CI_Controller {
         $this->load->view('UserMGR/vpassword_policy');
     }
 
-    function password_policy()
+    function form_change_password()
+    {
+        $this->load->view('UserMGR/vchange_password_periodic');
+    }
+
+    function change_password_periodic()
+    {
+        header('Content-Type: application/json');
+    }
+
+    function set_new_password()
     {        
         header('Content-Type: application/json');
         $rs = $this->PWPOL_mod->select();
-        die(json_encode(['data' => $rs]));
+        $userid = base64_decode($this->input->post('userid'));
+        $confirmed_pw = $this->input->post('npw');
+        $confirmed_pw_decrypt = hash('sha256',$confirmed_pw);
+        $rschanges_history = $this->CHGPW_mod->select_unpassed($userid);
+        $respon = [];
+        foreach($rs as $r)
+        {
+            # validate length
+            if(strlen($confirmed_pw)<$r['PWPOL_LENGTH'] && $r['PWPOL_LENGTH']>0)
+            {
+                $respon = ['cd' => 0, 'msg' => 'at least '.$r['PWPOL_LENGTH']. ' characters required'];
+            } else {
+                # validate history
+                if($r['PWPOL_HISTORY']>0)
+                {
+                    foreach($rschanges_history as $h)
+                    {
+                        if($h['CHGPW_VALUE']===$confirmed_pw_decrypt)
+                        {
+                            $respon = ['cd' => 0, 'msg' => 'please use another password'];
+                            break;
+                        }
+                    }
+                    if(empty($respon) )
+                    {
+                        $respon = ['cd' => 1, 'msg' => 'OK'];
+                    }
+                } else 
+                {                    
+                    $respon = ['cd' => 1, 'msg' => 'OK'];
+                }
+            }                                    
+        }
+        if(!empty($respon))
+        {
+            if($respon['cd']===1)
+            {
+                # set new password
+                $this->Usr_mod->updatebyId(['MSTEMP_PW' => $confirmed_pw_decrypt, 'MSTEMP_LCHGPWDT' => date('Y-m-d H:i:s')], $userid);
+
+                # update passed history
+                if(count($rschanges_history)===$r['PWPOL_HISTORY'])
+                {
+                    $this->CHGPW_mod->updatebyId(['CHGPW_USR' => $userid, 'CHGPW_PASSPERIOD' => '0'], ['CHGPW_PASSPERIOD' => '1']);
+                }
+
+                # log history
+                $newline = $this->CHGPW_mod->lastserialid($userid)+1;
+                $this->CHGPW_mod->insert([
+                    'CHGPW_USR' => $userid
+                    ,'CHGPW_CREATEDAT' => date('Y-m-d H:i:s')
+                    ,'CHGPW_CREATEDBY' => $userid
+                    ,'CHGPW_VALUE' => $confirmed_pw_decrypt
+                    ,'CHGPW_PASSPERIOD' => '0'
+                    ,'CHGPW_LINE' => $newline
+                ]);
+            }
+        }
+        die(json_encode(['status' => $respon]));
     }
 
     function set_password_policy()
@@ -218,7 +287,7 @@ class User extends CI_Controller {
                 $newvalue = ['PWPOL_HISTORY' => $value];                
                 break;
             case 'max_age':
-                $newvalue = ['PWPOL_MAXAGE' => $value];                
+                $newvalue = ['PWPOL_MAXAGE' => $value];
                 break;
             case 'min_length':
                 $newvalue = ['PWPOL_LENGTH' => $value];

@@ -35,6 +35,7 @@ class Usr_mod extends CI_Model {
 
     public function cek_login($where)
     {
+        $this->db->select("*,DATEDIFF(DAY,MSTEMP_LCHGPWDT,GETDATE()) DAY_AFTER_CHANGE_PW");
         $query = $this->db->get_where($this->TABLENAME,$where);
         return $query->result_array();
     }

@@ -2,14 +2,12 @@
 
 class Pages extends CI_Controller {    
     private $m_grupid='';
-    // private $m_userid='';
-    // private $m_userid='';
-    // private $m_userid='';
     public function __construct()
     {
         parent::__construct();
         $this->load->model('Usr_mod');
         $this->load->model('Usrlog_mod');
+        $this->load->model('PWPOL_mod');
         $this->load->helper('url_helper');
         $this->load->helper('form');
         $this->load->helper('security');
@@ -71,29 +69,24 @@ class Pages extends CI_Controller {
     }
 
     public function login()
-    {
-        
+    {        
         date_default_timezone_set('Asia/Jakarta');
         $currrtime = date('Y-m-d H:i:s');
         $this->form_validation->set_rules('inputUserid', 'Username', 'trim|required|xss_clean');
         $this->form_validation->set_rules('inputPassword', 'inPass', 'trim|required|xss_clean');
         if ($this->form_validation->run() == FALSE)
-        {            
-            $data = array(
-                'error_message' => 'wOOow'
-            );                    
+        {
             redirect(base_url("Home"));
         } else {
-            
             $username = $this->input->post('inputUserid');
             $this->m_userid=$username;
             $password = $this->input->post('inputPassword');
-            $where = array(
+            $where = [
                 'MSTEMP_ID' => $username,
                 'MSTEMP_PW' => hash('sha256',$password),
                 'MSTEMP_ACTSTS' => true,
                 'MSTEMP_STS' => true
-            );
+            ];
             echo json_encode($where)."<br>";
           
             $dlogses  = $this->Usr_mod->cek_login($where);
@@ -101,9 +94,11 @@ class Pages extends CI_Controller {
             $fname    = '';
             
             $idlog    = '';
-            foreach ($dlogses as $dlog) {
-                $fname = $dlog['MSTEMP_FNM'];
-                $this->m_grupid = $dlog['MSTEMP_GRP'];
+            $day_after_change_pw = 0;
+            foreach ($dlogses as $r) {
+                $fname = $r['MSTEMP_FNM'];
+                $day_after_change_pw = $r['DAY_AFTER_CHANGE_PW'];
+                $this->m_grupid = $r['MSTEMP_GRP'];
             }
             foreach ($dloghis as $dloghis) {
                 $idlog = $dloghis['idnew'];
@@ -119,22 +114,24 @@ class Pages extends CI_Controller {
 
             
             if(strlen($fname) > 0) {
-                $this->Usrlog_mod->insert($data_log);
-                $data_session = array(
-                'nama' => $username,
-                'status' => "login",
-                'sfname' => $fname,
-                'gid' => $this->m_grupid
-                );
-                
+                $rsPWPolicy = $this->PWPOL_mod->select();
+                foreach($rsPWPolicy as $r)
+                {
+                    if($day_after_change_pw>$r['PWPOL_MAXAGE'])
+                    {                        
+                        redirect(base_url("change_password?uid=".base64_encode($username)));
+                    }
+                }
+                $this->Usrlog_mod->insert($data_log);                
+                $data_session = [
+                    'nama' => $username,
+                    'status' => "login",
+                    'sfname' => $fname,
+                    'gid' => $this->m_grupid
+                ];                
                 $this->session->set_userdata($data_session);
                 redirect(base_url("home"));
             } else {
-                
-                $data = array(
-                    'error_message' => 'Invalid Username or Password'
-                );
-                //$this->load->view('halaman/vface', $data);
                 redirect(base_url("home"));
             }
         }
@@ -146,8 +143,8 @@ class Pages extends CI_Controller {
             header("Access-Control-Allow-Origin: ".$_SERVER['HTTP_ORIGIN']);
         }
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-        header('Access-Control-Allow-Headers: X-Requested-With, Content-Type, Accept');        
-        date_default_timezone_set('Asia/Jakarta');        
+        header('Access-Control-Allow-Headers: X-Requested-With, Content-Type, Accept');
+        date_default_timezone_set('Asia/Jakarta');
         $post = json_decode($this->security->xss_clean($this->input->raw_input_stream));
         $username = $post->userid;
         $password = $post->userpassword;
@@ -156,19 +153,16 @@ class Pages extends CI_Controller {
             'MSTEMP_PW' => hash('sha256',$password),
             'MSTEMP_ACTSTS' => true,
             'MSTEMP_STS' => true
-        ];        
+        ];
         
         $dlogses  = $this->Usr_mod->cek_login($where);              
-        $fname    = '';                
+        $fname    = '';
         foreach ($dlogses as $dlog) {
             $fname = $dlog['MSTEMP_FNM'];
             $this->m_grupid = $dlog['MSTEMP_GRP'];
-        }        
-        if(strlen($fname) > 0) {            
-            $response = ['cd' => 1, 'msg' => 'go ahead', 'userinfo' =>['FIRSTNAME' => $fname, 'GROUP' => $this->m_grupid, 'USERID' => $username] ];
-        } else {
-            $response = ['cd' => 0, 'msg' => 'not found', 'post' => $post];
-        }
+        }                       
+        $response = strlen($fname) > 0 ? ['cd' => 1, 'msg' => 'go ahead', 'userinfo' =>['FIRSTNAME' => $fname, 'GROUP' => $this->m_grupid, 'USERID' => $username] ] 
+            : ['cd' => 0, 'msg' => 'not found', 'post' => $post];        
         die(json_encode(['status' => $response]));
     }
 	
@@ -189,14 +183,14 @@ class Pages extends CI_Controller {
         foreach ($dloghis as $dloghis) {
             $idlog = $dloghis['idnew'];
         }
-        $data_log = array(
+        $data_log = [
             'USRLOG_ID' => $idlog,
             'USRLOG_USR' => $this->session->userdata('nama'),
             'USRLOG_GRP' => $this->session->userdata('gid'),
             'USRLOG_TYP' => 'LGOUT',
             'USRLOG_TM' => $currrtime,
             'USRLOG_IP' => $_SERVER['REMOTE_ADDR']
-        );
+        ];
         $this->Usrlog_mod->insert($data_log);
         $this->session->unset_userdata('status');
         redirect(base_url(""));

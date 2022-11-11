@@ -81,6 +81,7 @@ $route['laporan_pembukuan_keluar_xlsx'] = 'DELV/dr_pab_out_as_excel';
 $route['logx'] = 'ITH/getlogexport';
 $route['return_from_plant'] = 'RETPRD/getconfirmation_xls';
 $route['smtstock'] = 'ITH/smtstock';
+$route['change_password'] = 'User/form_change_password';
 $route['smtdelivered_rm'] = 'ITH/getRMFromDeliveredFG';
 $route['ex_stock_recap'] = 'ITH/get_stock_recap_as_xls';
 $route['ex_stock_detail'] = 'ITHHistory/get_stock_detail_as_xls';
