@@ -202,11 +202,13 @@ class User extends CI_Controller {
     function form_change_password()
     {
         $this->load->view('UserMGR/vchange_password_periodic');
-    }
-
-    function change_password_periodic()
+    }    
+    
+    function password_policy()
     {
         header('Content-Type: application/json');
+        $rs = $this->PWPOL_mod->select();
+        die(json_encode(['data' => $rs]));
     }
 
     function set_new_password()
