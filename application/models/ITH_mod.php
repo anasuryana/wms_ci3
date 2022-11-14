@@ -78,8 +78,8 @@ class ITH_mod extends CI_Model {
     public function insert_incdo($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LINE,ITH_LUPDT,ITH_USRID) 
-        VALUES(?,?,?,?,?,?,dbo.fun_ithline(),GETDATE(),?)";
+        ITH_WH,ITH_LUPDT,ITH_USRID) 
+        VALUES(?,?,?,?,?,?,GETDATE(),?)";
         $this->db->query($qry , [$data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
         $data['ITH_WH'],   $data['ITH_USRID']] );
         return $this->db->affected_rows();
@@ -88,8 +88,8 @@ class ITH_mod extends CI_Model {
     public function insert_spl($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LINE,ITH_LUPDT,ITH_USRID,ITH_REMARK) 
-        VALUES(?,CONVERT(DATE,GETDATE()),?,?,?,?,dbo.fun_ithline(),GETDATE(),?,?)";
+        ITH_WH,ITH_LUPDT,ITH_USRID,ITH_REMARK) 
+        VALUES(?,CONVERT(DATE,GETDATE()),?,?,?,?,GETDATE(),?,?)";
         $this->db->query($qry , [$data['ITH_ITMCD'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
         $data['ITH_WH'],   $data['ITH_USRID'], $data['ITH_REMARK']] );
         return $this->db->affected_rows();
@@ -107,8 +107,8 @@ class ITH_mod extends CI_Model {
     public function insert_pending($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LINE,ITH_LUPDT,ITH_USRID) 
-        VALUES(?,?,?,?,?,?,dbo.fun_ithline(),GETDATE(),?)";
+        ITH_WH,ITH_LUPDT,ITH_USRID) 
+        VALUES(?,?,?,?,?,?,GETDATE(),?)";
         $this->db->query($qry , array($data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
         $data['ITH_WH'],   $data['ITH_USRID']) );
         return $this->db->affected_rows();
@@ -116,8 +116,8 @@ class ITH_mod extends CI_Model {
     public function insert_rls($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LINE,ITH_SER,ITH_LUPDT,ITH_USRID) 
-        VALUES(?,?,?,?,?,?,dbo.fun_ithline(),?,GETDATE(),?)";
+        ITH_WH,ITH_SER,ITH_LUPDT,ITH_USRID) 
+        VALUES(?,?,?,?,?,?,?,GETDATE(),?)";
         $this->db->query($qry , array($data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
         $data['ITH_WH'],$data['ITH_SER'],  $data['ITH_USRID']) );
         return $this->db->affected_rows();
@@ -125,8 +125,8 @@ class ITH_mod extends CI_Model {
     public function insert_disposerm($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LINE,ITH_LUPDT,ITH_USRID) 
-        VALUES(?,?,?,?,?,?,dbo.fun_ithline(),getdate(),?)";
+        ITH_WH,ITH_LUPDT,ITH_USRID) 
+        VALUES(?,?,?,?,?,?,getdate(),?)";
         $this->db->query($qry , array($data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
         $data['ITH_WH'], $data['ITH_USRID']) );
         return $this->db->affected_rows();
@@ -134,8 +134,8 @@ class ITH_mod extends CI_Model {
     public function insert_disposefg($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_SER,ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LINE,ITH_LUPDT,ITH_USRID) 
-        VALUES(?,?,?,?,?,?,?,dbo.fun_ithline(),getdate(),?)";
+        ITH_WH,ITH_LUPDT,ITH_USRID) 
+        VALUES(?,?,?,?,?,?,?,getdate(),?)";
         $this->db->query($qry , array($data['ITH_SER'],$data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
         $data['ITH_WH'], $data['ITH_USRID']) );
         return $this->db->affected_rows();
@@ -143,8 +143,8 @@ class ITH_mod extends CI_Model {
     public function insert_delivery($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_SER,ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LINE,ITH_LUPDT,ITH_USRID) 
-        VALUES(?,?,?,?,?,?,?,dbo.fun_ithline(),getdate(),?)";
+        ITH_WH,ITH_LUPDT,ITH_USRID) 
+        VALUES(?,?,?,?,?,?,?,getdate(),?)";
         $this->db->query($qry , array($data['ITH_SER'],$data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
         $data['ITH_WH'], $data['ITH_USRID']) );
         return $this->db->affected_rows();
@@ -153,8 +153,8 @@ class ITH_mod extends CI_Model {
     public function insert_cancel_kitting_out($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LINE,ITH_LUPDT,ITH_USRID) 
-        VALUES(?,?,'CANCELING-RM-PSN-OUT',?,?,?,dbo.fun_ithline(),getdate(),?)";
+        ITH_WH,ITH_LUPDT,ITH_USRID) 
+        VALUES(?,?,'CANCELING-RM-PSN-OUT',?,?,?,getdate(),?)";
         $this->db->query($qry , array($data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_DOC'], $data['ITH_QTY'], $data['ITH_WH'],
         $data['ITH_USRID']) );
         return $this->db->affected_rows();
@@ -164,9 +164,9 @@ class ITH_mod extends CI_Model {
     public function insert_cancel_kitting_in($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LINE,ITH_LUPDT,ITH_USRID) 
+        ITH_WH,ITH_LUPDT,ITH_USRID) 
         VALUES(?,?,'CANCELING-RM-PSN-IN',?,?,
-        ?,dbo.fun_ithline(),getdate(),?)";
+        ?,getdate(),?)";
         $this->db->query($qry , array($data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_DOC'], $data['ITH_QTY'], 
         $data['ITH_WH'], $data['ITH_USRID']) );
         return $this->db->affected_rows();
