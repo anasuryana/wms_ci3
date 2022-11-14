@@ -10,6 +10,7 @@ class PSV extends CI_Controller
         $this->load->helper('download');
         $this->load->library('session');
         $this->load->model('PSV_mod');
+        date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
@@ -20,16 +21,20 @@ class PSV extends CI_Controller
     public function store()
     {
         header('Content-Type: application/json');
+        log_message('error', $_SERVER['REMOTE_ADDR'].',PSV,start Store');
         $result = $this->PSV_mod->insert_stock();
+        log_message('error', $_SERVER['REMOTE_ADDR'].',PSV,finish Store');
         $response = $result ? ['cd' => '1', 'msg' => 'Stored successfully'] : ['cd' => '0', 'msg' => 'Failed to store'];
         die(json_encode(['data' => $response]));
     }
-
+    
     function reindex()
     {
         ini_set('max_execution_time', '-1');
+        log_message('error', $_SERVER['REMOTE_ADDR'].',PSV,start Reindex');
         header('Content-Type: application/json');
         $this->PSV_mod->reindex();
+        log_message('error', $_SERVER['REMOTE_ADDR'].',PSV,finish Reindex');
         $response = ['cd' => '1', 'msg' => 'done, reindex'];
         die(json_encode(['data' => $response]));
     }
@@ -41,15 +46,17 @@ class PSV extends CI_Controller
         $this->PSV_mod->truncate_stock();
         $response = ['cd' => '1', 'msg' => 'done, truncate'];
         die(json_encode(['data' => $response]));
-    }  
+    }
     
     function delete_stock()
     {
         ini_set('max_execution_time', '-1');
         header('Content-Type: application/json');
+        log_message('error', $_SERVER['REMOTE_ADDR'].',PSV,start delete');
         $this->PSV_mod->delete_stock();
+        log_message('error', $_SERVER['REMOTE_ADDR'].',PSV,finish delete');
         $response = ['cd' => '1', 'msg' => 'done, delete'];
-        die(json_encode(['data' => $response]));        
+        die(json_encode(['data' => $response]));
     }
     
     function data()

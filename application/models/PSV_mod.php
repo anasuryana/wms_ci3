@@ -38,7 +38,7 @@ class PSV_mod extends CI_Model
 
    public function insert_stock()
    {
-      $qry = "INSERT INTO [SRV-E-LVL].PSV.dbo.STK_TBL
+      $qry = "INSERT INTO SRVPSV.PSV.dbo.STK_TBL
                SELECT 
                GETDATE() AS_OF_DATE_TIME,
                RTRIM(FTRN_ITMCD) PART_CODE,
