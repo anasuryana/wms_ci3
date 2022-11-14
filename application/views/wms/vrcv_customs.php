@@ -267,8 +267,7 @@ video {
                             <button id="rcvcustoms_btnTPB_direct" title="TPB Operations" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >TPB</button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#" onclick="rcvcustoms_btnmkemasan_eCK(this)"><i class="fa-solid fa-box"></i> Kemasan</a></li>
-                                <li><a id="rcvcustoms_btn_posting_direct" class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>
-                                <li><a class="dropdown-item disabled" onclick="rcvcustoms_cancel_eCK()"  href="#" ><i class="fas fa-ban" style="color: red"></i> Cancel</a></li>
+                                <li><a id="rcvcustoms_btn_posting_direct" class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>                                
                             </ul>
                         </div>
                     </div>
@@ -479,8 +478,7 @@ video {
                             <button id="rcvcustoms_btnTPB" title="TPB Operations" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >TPB</button>
                             <ul class="dropdown-menu">
                                 <li><a id="rcvcustoms_btn_mkemasan" class="dropdown-item" href="#" onclick="rcvcustoms_btnmkemasan_eCK(this)"><i class="fa-solid fa-box"></i> Kemasan</a></li>
-                                <li><a id="rcvcustoms_btn_posting" class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>
-                                <li><a id="rcvcustoms_cancel" class="dropdown-item disabled" onclick="rcvcustoms_cancel_eCK()"  href="#" ><i class="fas fa-ban" style="color: red"></i> Cancel</a></li>
+                                <li><a id="rcvcustoms_btn_posting" class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>                                
                             </ul>
                         </div>
                     </div>
@@ -836,8 +834,7 @@ video {
                             <button id="rcvcustoms_btnTPB_2" title="TPB Operations" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >TPB</button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#" onclick="rcvcustoms_btnmkemasan_eCK(this)"><i class="fa-solid fa-box"></i> Kemasan</a></li>
-                                <li><a id="rcvcustoms_btn_posting_2" class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>
-                                <li><a class="dropdown-item disabled" onclick="rcvcustoms_cancel_eCK()"  href="#" ><i class="fas fa-ban" style="color: red"></i> Cancel</a></li>
+                                <li><a id="rcvcustoms_btn_posting_2" class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>                                
                             </ul>
                         </div>
                     </div>
