@@ -1133,16 +1133,20 @@ class ITH extends CI_Controller {
     public function getstock_wh(){
         date_default_timezone_set('Asia/Jakarta');
         header('Content-Type: application/json');
+        $FG_RETURN_WH = ['AFWH3RT','NFWH4RT'];
         $citem = $this->input->get('initem');
         $cdate = $this->input->get('indate');
         $cbgroup = $this->input->get('inbgroup');
         $sbgroup ="";
-        if(is_array($cbgroup)){
-            for($i=0;$i<count($cbgroup);$i++){
+        if(is_array($cbgroup))
+        {
+            for($i=0;$i<count($cbgroup);$i++)
+            {
                 $sbgroup .= "'$cbgroup[$i]',";
             }
             $sbgroup = substr($sbgroup,0,strlen($sbgroup)-1);
-            if($sbgroup==''){
+            if($sbgroup=='')
+            {
                 $sbgroup ="''";
             }
         } else {
@@ -1151,10 +1155,38 @@ class ITH extends CI_Controller {
         $odate = strtotime($cdate.' +1 days');
         $tomorrow  = date("Y-m-d 07:00:00", $odate);		
         $cwh = $_COOKIE["CKPSI_WH"];
-        if($sbgroup=="-"){
-            $rs =  $this->ITH_mod->select_psi_stock_date_wbg($cwh, $citem, $cdate);
-        } else {
-            $rs = $this->ITH_mod->select_psi_stock_date($cwh, $citem, $sbgroup, $cdate);	
+        $main_wh = NULL;
+        $inc_wh = NULL;
+        $preparation_wh = NULL;
+        switch($cwh)
+        {
+            case 'NFWH4RT':
+                $main_wh = ['AFQART','NFWH4RT','ARSHPRTN'];
+                $inc_wh = ['AFQART','NFWH4RT'];
+                $preparation_wh = 'ARSHPRTN';
+                break;
+            case 'AFWH3RT':
+                $main_wh = ['AFQART2','AFWH3RT','ARSHPRTN2'];
+                $inc_wh = ['AFQART2','AFWH3RT'];
+                $preparation_wh = 'ARSHPRTN2';
+                break;
+        }
+        if($sbgroup=="-")
+        {
+            if(in_array($cwh, $FG_RETURN_WH))
+            {
+                $rs =  $this->ITH_mod->select_psi_stock_date_wbg_fg_rtn($main_wh, $inc_wh, $main_wh,$preparation_wh, $citem, $cdate);
+            } else {
+                $rs =  $this->ITH_mod->select_psi_stock_date_wbg($cwh, $citem, $cdate);
+            }
+        } else 
+        {
+            if(in_array($cwh, $FG_RETURN_WH))
+            {
+                $rs = $this->ITH_mod->select_psi_stock_date_fg_rtn($main_wh, $inc_wh, $main_wh,$preparation_wh, $citem, $sbgroup,$cdate);
+            } else {
+                $rs = $this->ITH_mod->select_psi_stock_date($cwh, $citem, $sbgroup, $cdate);
+            }
         }
         $atomorrow = ['date' => $tomorrow];
         die('{"data":'.json_encode($rs).',"info": '.json_encode($atomorrow).'}');
@@ -1164,7 +1196,8 @@ class ITH extends CI_Controller {
         header('Content-Type: application/json');
         $citem = $this->input->post('initem');
         $rsfinal = [];
-        foreach($citem as $i) {
+        foreach($citem as $i)
+        {
             $rsfinal[] =  $this->ITH_mod->select_psi_stock_date_wbg_query('AFWH3', $i, '2021-08-11');
         }
         die('{"request":'.json_encode($citem).',"response":'.json_encode($rsfinal).'}');

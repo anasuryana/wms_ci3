@@ -342,6 +342,50 @@ class ITH_mod extends CI_Model {
         $query =  $this->db->query($qry);
         return $query->result_array();
     }
+    public function select_psi_stock_date_fg_rtn($main_wh,$inc_wh,$out_wh,$preparation_wh, $item, $pbg, $pdate)
+    {
+        $s_main_wh = "'".implode("','", $main_wh)."'";
+        $s_inc_wh = "'".implode("','", $inc_wh)."'";
+        $s_out_wh = "'".implode("','", $out_wh)."'";
+        $qry = "SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,BEFQTY,INQTY, PRPQTY,abs(OUTQTY) OUTQTY, ISNULL(STOCKQTY,0)+ISNULL(PRPQTY,0) STOCKQTY, MITM_STKUOM,UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT FROM
+        (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM,MITM_NCAT from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD
+                left join v_mitm_bsgroup on ITH_ITMCD=PDPP_MDLCD
+                WHERE ITH_WH in ($s_main_wh) AND ITH_ITMCD like '%$item%' and PDPP_BSGRP IN ($pbg) 
+                AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
+                GROUP BY ITH_ITMCD,ITH_WH,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1,MITM_NCAT) VSTOCK
+        LEFT JOIN
+        (select ITH_ITMCD,SUM(ITH_QTY) BEFQTY from v_ith_tblc a 
+                WHERE ITH_WH in ($s_main_wh) AND ITH_ITMCD like '%$item%'
+                AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC< '$pdate'
+                GROUP BY ITH_ITMCD) VBEF ON VSTOCK.ITH_ITMCD=VBEF.ITH_ITMCD
+        LEFT JOIN
+        (select ITH_ITMCD,SUM(ITH_QTY) INQTY from v_ith_tblc a 
+                WHERE ITH_WH in ($s_inc_wh) AND ITH_ITMCD like '%$item%' AND ITH_FORM IN ('INC-WHRTN-FG-C','INC')
+                AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC= '$pdate' AND ITH_QTY>0
+                GROUP BY ITH_ITMCD) VIN ON VSTOCK.ITH_ITMCD=VIN.ITH_ITMCD
+        LEFT JOIN
+        (select ITH_ITMCD,SUM(ITH_QTY) OUTQTY from v_ith_tblc a 
+                WHERE ITH_WH in ($s_out_wh) AND ITH_ITMCD like '%$item%' AND ITH_FORM NOT IN ('CONVERT-OUT',
+                        'OUT-PEN-FG',
+                        'OUT-USE',
+                        'OUT-SHP-FG',
+                        'ADJ-OUT',
+                        'ADJ-I-OUT',
+                        'ADJ-O-OUT',
+                        'OUT-SCR-RTN',
+                        'SPLIT-CNV-FG-OUT',
+                        'OUT-C')
+                AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC= '$pdate' AND ITH_QTY<0
+                GROUP BY ITH_ITMCD) VOUT ON VSTOCK.ITH_ITMCD=VOUT.ITH_ITMCD
+        LEFT JOIN
+        (select ITH_ITMCD,SUM(ITH_QTY) PRPQTY from v_ith_tblc a 
+                WHERE ITH_WH='$preparation_wh' AND ITH_ITMCD like '%$item%'
+                AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<= '$pdate'
+                GROUP BY ITH_ITMCD) VPREP ON VSTOCK.ITH_ITMCD=VPREP.ITH_ITMCD				
+                ORDER BY VSTOCK.ITH_ITMCD ASC";
+        $query =  $this->db->query($qry);
+        return $query->result_array();
+    }
 
     public function select_compare_inventory($wh, $pdate){
         $whclosing = $wh=='AFSMT' ? 'AFWH3' : $wh;
@@ -464,6 +508,51 @@ class ITH_mod extends CI_Model {
     public function select_psi_stock_date_wbg($wh, $item, $pdate){
         $qry = "wms_sp_std_stock_wbg ?, ?, ?";	
         $query =  $this->db->query($qry, [$wh,$item,$pdate] );		
+        return $query->result_array();
+    }
+
+    public function select_psi_stock_date_wbg_fg_rtn($main_wh,$inc_wh,$out_wh,$preparation_wh, $item, $pdate)
+    {
+        $s_main_wh = "'".implode("','", $main_wh)."'";
+        $s_inc_wh = "'".implode("','", $inc_wh)."'";
+        $s_out_wh = "'".implode("','", $out_wh)."'";
+        $qry = "SELECT VSTOCK.ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,BEFQTY,INQTY, PRPQTY,abs(OUTQTY) OUTQTY,
+         ISNULL(STOCKQTY,0) STOCKQTY, MITM_STKUOM,UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT,LUPDT FROM
+            (select ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,MITM_STKUOM,MITM_NCAT,MAX(ITH_LUPDT) LUPDT FROM v_ith_tblc a INNER JOIN MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD            
+            WHERE ITH_WH in ($s_main_wh) AND ITH_ITMCD LIKE '%$item%' 
+            AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<= '$pdate'
+            GROUP BY ITH_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1,MITM_NCAT) VSTOCK
+        LEFT JOIN
+        (SELECT ITH_ITMCD,SUM(ITH_QTY) BEFQTY FROM v_ith_tblc a 
+                WHERE ITH_WH in ($s_main_wh) AND ITH_ITMCD LIKE '%$item%'
+                AND ITH_FORM NOT IN ('SASTART','SA') AND ITH_DATEC< '$pdate'
+                GROUP BY ITH_ITMCD) VBEF ON VSTOCK.ITH_ITMCD=VBEF.ITH_ITMCD
+        LEFT JOIN
+        (SELECT ITH_ITMCD,SUM(ITH_QTY) INQTY FROM v_ith_tblc a 
+                WHERE ITH_WH in ($s_inc_wh) AND ITH_ITMCD LIKE '%$item%' AND ITH_FORM NOT IN ('INC-WHRTN-FG-C','INC')
+                AND ITH_FORM NOT IN ('SASTART','SA') AND ITH_DATEC='$pdate' AND ITH_QTY>0
+                GROUP BY ITH_ITMCD) VIN ON VSTOCK.ITH_ITMCD=VIN.ITH_ITMCD
+        LEFT JOIN
+        (SELECT ITH_ITMCD,SUM(ITH_QTY) OUTQTY FROM v_ith_tblc a 
+                WHERE ITH_WH IN ($s_out_wh) AND ITH_ITMCD LIKE CONCAT('%','$item','%') AND ITH_FORM NOT IN ('CONVERT-OUT',
+                        'OUT-PEN-FG',
+                        'OUT-USE',
+                        'OUT-SHP-FG',
+                        'ADJ-OUT',
+                        'ADJ-I-OUT',
+                        'ADJ-O-OUT',
+                        'OUT-SCR-RTN',
+                        'SPLIT-CNV-FG-OUT',
+                        'OUT-C')
+                AND ITH_FORM NOT IN ('SASTART','SA') AND ITH_DATEC='$pdate' AND ITH_QTY<0
+                GROUP BY ITH_ITMCD) VOUT ON VSTOCK.ITH_ITMCD=VOUT.ITH_ITMCD
+        LEFT JOIN
+        (SELECT ITH_ITMCD,SUM(ITH_QTY) PRPQTY FROM v_ith_tblc a 
+                WHERE ITH_WH='$preparation_wh' AND ITH_ITMCD LIKE CONCAT('%','$item','%') 
+                AND ITH_FORM NOT IN ('SASTART','SA') AND ITH_DATEC<='$pdate'
+                GROUP BY ITH_ITMCD) VPREP ON VSTOCK.ITH_ITMCD=VPREP.ITH_ITMCD
+                ORDER BY VSTOCK.ITH_ITMCD ASC";	
+        $query =  $this->db->query($qry );		
         return $query->result_array();
     }
 
