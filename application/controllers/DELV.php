@@ -7968,6 +7968,20 @@ class DELV extends CI_Controller {
         die('{"status" : '.json_encode($myar).'}');
     }    
 
+    function set_log_finish_posting($DONumber)
+    {
+        #set finished time
+        $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
+        $finishTM = $now->format('Y-m-d H:i:s:v');
+        $this->POSTING_mod->update_where(['POSTING_FINISHED_AT' => $finishTM],
+        [
+            'POSTING_DOC' => $DONumber,
+            'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
+            'POSTING_FINISHED_AT' => NULL
+        ]);
+        #end
+    }
+
     public function posting25(){
         set_exception_handler([$this,'exception_handler']);
         set_error_handler([$this, 'log_error']);
@@ -8010,22 +8024,29 @@ class DELV extends CI_Controller {
 
             #filter rs_rm_null 
             $rs_filtered = [];
-            foreach($rs_rm_null as $r){
-                foreach($ser_com_calcualted as $n){
-                    if($r['DLV_SER'] == $n['NEWID']){
+            foreach($rs_rm_null as $r)
+            {
+                foreach($ser_com_calcualted as $n)
+                {
+                    if($r['DLV_SER'] == $n['NEWID'])
+                    {
                         $isfound = false;
-                        foreach($rs_filtered as $n){
+                        foreach($rs_filtered as $n)
+                        {
                             if($n['DLV_SER'] == $r['DLV_SER']){
                                 $isfound=true;break;
                             }
                         }
-                        if(!$isfound){
+                        if(!$isfound)
+                        {
                             $rs_filtered[] = $r;
                         }
                     }
                 }
             }
-            if(count($rs_filtered)>0){
+            if(count($rs_filtered)>0)
+            {
+                $this->set_log_finish_posting($csj);                
                 $myar[] = ['cd' => 100 ,'msg' => 'RM is null, please check again data in the table below'];
                 die('{"status" : '.json_encode($myar).', "data": '.json_encode($rs_filtered).'}'); #$rs_rm_null
             } else {
@@ -8076,12 +8097,16 @@ class DELV extends CI_Controller {
             }
         }
         
-        if($consignee=='-'){
+        if($consignee=='-')
+        {
+            $this->set_log_finish_posting($csj);
             $myar[] = ['cd' => 0 ,'msg' => 'please set consignment ('.$consignee.')'];
             die('{"status" : '.json_encode($myar).'}');
         } 
 
-        if($czinvoice==''){
+        if($czinvoice=='')
+        {
+            $this->set_log_finish_posting($csj);
             $myar[] = ['cd' => 0 ,'msg' => 'please add invoice number ('.$czinvoice.') custdate ('.$ccustdate.') consign ('.$consignee.')'];
             die('{"status" : '.json_encode($myar).'}');
         }
@@ -8104,31 +8129,42 @@ class DELV extends CI_Controller {
             $czizinpengusaha = $r['NOMOR_SKEP'];		
         }
 
-        if($czdocbctype==''){
+        if($czdocbctype=='')
+        {
+            $this->set_log_finish_posting($csj);
             $myar[] = ['cd' => 0 ,'msg' => 'please select bc type!'];
             die('{"status" : '.json_encode($myar).'}');
         }
 
-        if(strlen($nomoraju)!=6){
+        if(strlen($nomoraju)!=6)
+        {
+            $this->set_log_finish_posting($csj);
             $myar[] = ['cd' => 0 ,'msg' => 'NOMOR AJU is not valid, please re-check ('.$nomoraju.')'];
             die('{"status" : '.json_encode($myar).'}');
         }
         
         $cnoaju = substr($czkantorasal,0,4).$czdocbctype.$czidmodul.$cz_ymd.$nomoraju;
 
-        if($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $cnoaju])>0){
+        if($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $cnoaju])>0)
+        {
+            $this->set_log_finish_posting($csj);
             $myar[] = ['cd' => 0 ,'msg' => 'the NOMOR AJU is already posted'];
             die('{"status" : '.json_encode($myar).'}');
         }
 
-        if(($cbusiness_group=='PSI2PPZOMC' || $cbusiness_group =='PSI2PPZOMI' ) ){			
-            if(strlen($ccustomer_do)<5){
+        if(($cbusiness_group=='PSI2PPZOMC' || $cbusiness_group =='PSI2PPZOMI' ) )
+        {
+            if(strlen($ccustomer_do)<5)
+            {
+                $this->set_log_finish_posting($csj);
                 $myar[] = ['cd' => 0 ,'msg' => 'please enter valid Customer DO!'];
                 die('{"status" : '.json_encode($myar).'}');
             }
             $czsj = $ccustomer_do;
         }
-        if(strlen($nomoraju)!=6){
+        if(strlen($nomoraju)!=6)
+        {
+            $this->set_log_finish_posting($csj);
             $myar[] = ['cd' => 0 ,'msg' => 'please enter valid Nomor Pengajuan!'];
             die('{"status" : '.json_encode($myar).'}');
         }						
@@ -8150,29 +8186,39 @@ class DELV extends CI_Controller {
         }
         $cz_JUMLAH_KEMASAN = count($rsdlv);				
         
-        if(strlen($ccustdate)!=10){
+        if(strlen($ccustdate)!=10)
+        {
+            $this->set_log_finish_posting($csj);
             $myar[] = ['cd' => 0 ,'msg' => 'please enter valid customs date!'];
             die('{"status" : '.json_encode($myar).'}');
         }
 
-        if($this->DELV_mod->check_Primary(['DLV_ID' => $csj])==0){
+        if($this->DELV_mod->check_Primary(['DLV_ID' => $csj])==0)
+        {
+            $this->set_log_finish_posting($csj);
             $myar[] = ['cd' => 0 ,'msg' => 'DO is not found'];
             die('{"status" : '.json_encode($myar).'}');
         }
 
-        if($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $cnoaju])) {
+        if($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $cnoaju])) 
+        {
+            $this->set_log_finish_posting($csj);
             $myar[] = ['cd' => 0 ,'msg' => 'Already posted'];
             die('{"status" : '.json_encode($myar).'}');
         }
             
         $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate,$czcurrency);
-        if(count($rscurr)==0){			
+        if(count($rscurr)==0)
+        {
+            $this->set_log_finish_posting($csj);
             $dar = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
             $myar[] = $dar;
             die('{"status":'.json_encode($myar).'}');
         } else{
-            foreach($rscurr as  $r){
-                if($czcurrency=='RPH'){
+            foreach($rscurr as  $r)
+            {
+                if($czcurrency=='RPH')
+                {
                     $czharga_matauang = 1;
                     $cz_h_NDPBM = $r->MEXRATE_VAL;
                     break;
@@ -8197,10 +8243,12 @@ class DELV extends CI_Controller {
         $tpb_barang = [];
         $SERI_BARANG = 1;
         $cz_h_totalCIF = 0;
-        foreach($rspackinglist as $r) {
+        foreach($rspackinglist as $r) 
+        {
             $cz_h_BRUTO+=$r['MITM_GWG'];
         }
-        foreach($rsitem_p_price as $r){
+        foreach($rsitem_p_price as $r)
+        {
             #handle multiprice
             foreach($rspackinglist as $p){
                 if($r['SSO2_MDLCD']===$p['SI_ITMCD']){
@@ -8234,9 +8282,12 @@ class DELV extends CI_Controller {
             $SERI_BARANG++;
         }
         log_message('error', $_SERVER['REMOTE_ADDR'].',step1#, finish, group by assy code , price, item');
-        foreach($tpb_barang as &$r){
-            foreach($r_barang_kemasan as $k){
-                if($r['KODE_BARANG'] == $k['SER_ITMID']){
+        foreach($tpb_barang as &$r)
+        {
+            foreach($r_barang_kemasan as $k)
+            {
+                if($r['KODE_BARANG'] == $k['SER_ITMID'])
+                {
                     $r['JUMLAH_KEMASAN'] = $k['JUMLAH_KEMASAN'];break;
                 }
             }
@@ -8795,16 +8846,7 @@ class DELV extends CI_Controller {
             }
         }
 
-        #set finished time
-        $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
-        $finishTM = $now->format('Y-m-d H:i:s:v');
-        $this->POSTING_mod->update_where(['POSTING_FINISHED_AT' => $finishTM],
-        [
-            'POSTING_DOC' => $csj,
-            'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
-            'POSTING_FINISHED_AT' => NULL
-        ]);
-        #end
+        $this->set_log_finish_posting($csj);
 
         ##N
         if($consignee!='IEI'){
