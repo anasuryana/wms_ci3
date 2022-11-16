@@ -116,11 +116,12 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Date</th>
-                                    <th>Form</th>                                    
+                                    <th>Form</th>
                                     <th>Document</th>
                                     <th class="text-end">QTY</th>
                                     <th>Remark</th>
                                     <th>Key</th>
+                                    <th>Location</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -328,6 +329,8 @@
                     newcell.innerHTML = response.child[i].ITH_REMARK
                     newcell = newrow.insertCell(5)
                     newcell.innerHTML = response.child[i].ITH_SER
+                    newcell = newrow.insertCell(6)
+                    newcell.innerHTML = response.child[i].ITH_WH
                 }
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
