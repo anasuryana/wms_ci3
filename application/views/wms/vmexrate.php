@@ -71,15 +71,18 @@
         autoclose:true        
     });
     $("#vexrate_date").datepicker('update', new Date());
-    $("#vexrate_val").keypress(function (e) { 
-        if(e.which==13){
+    $("#vexrate_val").keypress(function (e)
+    {
+        if(e.which==13)
+        {
             vexrate_e_save();
         }
     });
 
     document.getElementById('vexrate_val_filterYear').value = new Date().getFullYear() 
 
-    function vexrate_e_save(){
+    function vexrate_e_save()
+    {
         let mcurr = $("#vexrat_curr").val();
         let mtype = $("#vexrat_type").val();
         let mdate = $("#vexrate_date").val();
@@ -100,8 +103,8 @@
     }
     $("#vexrate_btn_save").click(function (e) { 
         e.preventDefault();
-        var konfirm = confirm("Are you sure ?");
-        if(konfirm){
+        if(confirm("Are you sure ?"))
+        {
             vexrate_e_save();
         }
     });
@@ -110,7 +113,8 @@
         $("#vexrate_val").focus();
     });
     initMEXRATEList();
-    function initMEXRATEList(){        
+    function initMEXRATEList()
+    {        
         tableMEXRATE =  $('#vexrate_tbl').DataTable({
             fixedHeader: true,
             destroy: true,
@@ -144,13 +148,13 @@
 			$('#vexrate_tbl tbody tr.table-active').removeClass('table-active');
 			$(this).addClass('table-active');
         }
-        let mcurr =  $(this).closest("tr").find('td:eq(0)').text();
-        let mtype =  $(this).closest("tr").find('td:eq(1)').text();
-        let mdate =  $(this).closest("tr").find('td:eq(2)').text();
-        let mval =  $(this).closest("tr").find('td:eq(3)').text();
-        document.getElementById('vexrat_curr').value= mcurr;
-        document.getElementById('vexrat_type').value= mtype;        
+        let mcurr = $(this).closest("tr").find('td:eq(0)').text();
+        let mtype = $(this).closest("tr").find('td:eq(1)').text();
+        let mdate = $(this).closest("tr").find('td:eq(2)').text();
+        let mval = $(this).closest("tr").find('td:eq(3)').text();
+        document.getElementById('vexrat_curr').value = mcurr;
+        document.getElementById('vexrat_type').value = mtype;        
         $('#vexrate_date').datepicker('update', mdate);
-        document.getElementById('vexrate_val').value= mval;
+        document.getElementById('vexrate_val').value = mval;
     });
 </script>

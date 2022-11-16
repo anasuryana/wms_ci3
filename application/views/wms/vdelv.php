@@ -5249,28 +5249,43 @@ function txfg_btn_post_cancel_eCK() {
     if(!document.getElementById('txfg_btn_rmstatus').classList.contains('btn-outline-success')){
         alertify.warning("Raw material need to be fixed first !");
         return
-    }   
-    if(!confirm('Are you sure ?')){
-        return;
-    } 
-    let mymodal = new bootstrap.Modal(document.getElementById("TXFG_PROGRESS_CNCL"), {backdrop: 'static', keyboard: false});
-    mymodal.show()
+    }
     $.ajax({
-        type: "POST",
-        url: "<?=base_url('DELV/cancelposting')?>",
-        data: {msj: msj.value},
-        dataType: "JSON",
+        type: "GET",
+        url: "<?=base_url('MEXRATE/lastupdate')?>",
+        data: {tanggal_aju: txfg_txt_custdate.value},
+        dataType: "json",
         success: function (response) {
-            alertify.message(response.status[0].msg)
-            document.getElementById('txfg_btn_post_cancel').classList.add('disabled')
-            document.getElementById('txfg_status').value="Approved"
-            mymodal.hide()
+            if(response.status.cd===1)
+            {
+                if(!confirm('Are you sure ?')){
+                return;
+            } 
+            let mymodal = new bootstrap.Modal(document.getElementById("TXFG_PROGRESS_CNCL"), {backdrop: 'static', keyboard: false});
+            mymodal.show()
+            $.ajax({
+                type: "POST",
+                url: "<?=base_url('DELV/cancelposting')?>",
+                data: {msj: msj.value},
+                dataType: "JSON",
+                success: function (response) {
+                    alertify.message(response.status[0].msg)
+                    document.getElementById('txfg_btn_post_cancel').classList.add('disabled')
+                    document.getElementById('txfg_status').value="Approved"
+                    mymodal.hide()
+                }, error: function(xhr, xopt, xthrow){
+                    document.getElementById('txfg_btn_post_cancel').classList.add('disabled')
+                    mymodal.hide()
+                    alertify.error(xthrow)
+                }
+            })
+            }
         }, error: function(xhr, xopt, xthrow){
-            document.getElementById('txfg_btn_post_cancel').classList.add('disabled')
-            mymodal.hide()
+            document.getElementById('txfg_btn_post_cancel').classList.add('disabled')            
             alertify.error(xthrow)
         }
-    })
+    });
+    
 }
 $("#txfg_txt_transport").change(function (e) { 
     let mdataplat = $(this).val();
