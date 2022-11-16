@@ -2528,43 +2528,50 @@
                 dataType: "json",
                 success: function (response) {
                     document.getElementById('txfg_btn_post').classList.remove('disabled')
-                    const ttlrows = response.data.length;
-                    const ttlselected = txfg_ar_item_ser.length;
-                    for(let i=0;i<ttlrows; i++){
-                        for(let u=0;u<ttlselected; u++){
-                            if(response.data[i].SERD2_SER==txfg_ar_item_ser[u]){
-                                txfg_ar_cnt_rm[u]=response.data[i].COUNTRM;
-                            }
-                        }
-                    }
-                   
-                    let tbldet = document.getElementById("txfg_tbltx");
-                    let tbldet_b = tbldet.getElementsByTagName("tbody")[0];
-                    const ttlmainrow = tbldet_b.getElementsByTagName('tr').length;
-                    let ttldis = 0;
-                    for(let k = 0;k<ttlmainrow; k++){                        
-                        let item0 = tbldet_b.rows[k].cells[2].innerText.trim();
-                        if(item0.length>0){//handle/pass distincted data
-                            let isfilled = false;
-                            for(let i = 0;i<ttlmainrow; i++){
-                                let itemvirtual =tbldet_b.rows[i].cells[2].innerText.trim();
-                                let itemrm =tbldet_b.rows[i].cells[7].innerText.trim();
-                                if(item0==itemvirtual && itemrm.length>0){
-                                    isfilled=true;break;
+                    try 
+                    {
+                        const ttlrows = response.data.length;
+                        const ttlselected = txfg_ar_item_ser.length;
+                        for(let i=0;i<ttlrows; i++){
+                            for(let u=0;u<ttlselected; u++){
+                                if(response.data[i].SERD2_SER==txfg_ar_item_ser[u]){
+                                    txfg_ar_cnt_rm[u]=response.data[i].COUNTRM;
                                 }
                             }
-                            if(!isfilled){
-                                for(let c=0; c<ttlselected; c++){
-                                    if(item0==txfg_ar_item_cd[c].trim()){
-                                        tbldet_b.rows[k].cells[7].innerText = txfg_ar_cnt_rm[c];
-                                        ttldis+=txfg_ar_cnt_rm[c];
-                                        break;
+                        }
+                    
+                        let tbldet = document.getElementById("txfg_tbltx");
+                        let tbldet_b = tbldet.getElementsByTagName("tbody")[0];
+                        const ttlmainrow = tbldet_b.getElementsByTagName('tr').length;
+                        let ttldis = 0;
+                        for(let k = 0;k<ttlmainrow; k++){                        
+                            let item0 = tbldet_b.rows[k].cells[2].innerText.trim();
+                            if(item0.length>0){//handle/pass distincted data
+                                let isfilled = false;
+                                for(let i = 0;i<ttlmainrow; i++){
+                                    let itemvirtual =tbldet_b.rows[i].cells[2].innerText.trim();
+                                    let itemrm =tbldet_b.rows[i].cells[7].innerText.trim();
+                                    if(item0==itemvirtual && itemrm.length>0){
+                                        isfilled=true;break;
+                                    }
+                                }
+                                if(!isfilled){
+                                    for(let c=0; c<ttlselected; c++){
+                                        if(item0==txfg_ar_item_cd[c].trim()){
+                                            tbldet_b.rows[k].cells[7].innerText = txfg_ar_cnt_rm[c];
+                                            ttldis+=txfg_ar_cnt_rm[c];
+                                            break;
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }                    
-                    document.getElementById('txfg_gt_rm').innerText= numeral(ttldis).format(',');                    
+                        }                    
+                        document.getElementById('txfg_gt_rm').innerText= numeral(ttldis).format(',');
+                    } catch (err)
+                    {
+                        document.getElementById('txfg_gt_rm').innerText=0
+                    }
+                                        
                 }, error: function(xhr, xopt, xthrow){
                     alertify.error(xthrow);
                     document.getElementById('txfg_gt_rm').innerText= "please try again";
