@@ -78,6 +78,13 @@ class SER_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     } 
+    public function select_where($pwhere)
+	{        
+        $this->db->from($this->TABLENAME);
+        $this->db->where($pwhere);
+		$query = $this->db->get();
+		return $query->result_array();
+    } 
     public function selectbyVAR_with_cols($pwhere, $pcols)
 	{   
         $this->db->select($pcols);
