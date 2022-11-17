@@ -109,10 +109,10 @@
             <div class="col-md-12 mb-1">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="mpuror_home-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true">Detail Item</button>
+                    <button class="nav-link active" id="mpuror_home-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true">BC</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="mpuror_profile-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabFG" type="button" role="tab" aria-controls="profile" aria-selected="false">Detail Non Item</button>
+                    <button class="nav-link" id="mpuror_profile-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabFG" type="button" role="tab" aria-controls="profile" aria-selected="false">Non BC</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="mpuror_profile-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabSpecial" type="button" role="tab" aria-controls="profile" aria-selected="false">Special Discount</button>
