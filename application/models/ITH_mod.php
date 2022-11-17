@@ -1,6 +1,7 @@
 <?php
 
-class ITH_mod extends CI_Model {
+class ITH_mod extends CI_Model
+{
     private $TABLENAME = "ITH_TBL";
     private $TABLENAME_BIN = "ITH_BIN";
     public function __construct()
@@ -8,25 +9,26 @@ class ITH_mod extends CI_Model {
         $this->load->database();
     }
     public function selectAll($pid)
-    {		
+    {
         $this->db->from('vstock a');
-        $this->db->select("ITH_ITMCD,MITM_SPTNO,MITM_ITMD1,MITM_STKUOM, MITM_MODEL,ttl");   
-        $this->db->join('MITM_TBL b', "a.ITH_ITMCD=b.MITM_ITMCD");     
+        $this->db->select("ITH_ITMCD,MITM_SPTNO,MITM_ITMD1,MITM_STKUOM, MITM_MODEL,ttl");
+        $this->db->join('MITM_TBL b', "a.ITH_ITMCD=b.MITM_ITMCD");
         $this->db->like('ITH_ITMCD', $pid);
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    function select_minus_stock(){
+    function select_minus_stock()
+    {
         $this->db->from('VMINUS_STOCK');
         $this->db->order_by('ITH_WH,ITH_ITMCD');
         $query = $this->db->get();
         return $query->result_array();
     }
-    
+
     public function selectbin_history($plike)
-    {		
-        $this->db->from($this->TABLENAME_BIN." A");
+    {
+        $this->db->from($this->TABLENAME_BIN . " A");
         $this->db->select("A.*,CONCAT(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC");
         $this->db->join("MSTEMP_TBL", "ITH_USRBIN=MSTEMP_ID");
         $this->db->like($plike);
@@ -36,42 +38,42 @@ class ITH_mod extends CI_Model {
     }
 
     public function selectAll_by($pwhere)
-    {			
+    {
         $this->db->select("a.*,b.*,CONCAT(MSTEMP_FNM , ' ', MSTEMP_LNM) PIC");
-        $this->db->from($this->TABLENAME.' a');
-        $this->db->join('MITM_TBL b', 'a.ITH_ITMCD=b.MITM_ITMCD');  
-        $this->db->join('MSTEMP_TBL c', 'ITH_USRID=MSTEMP_ID','left');
+        $this->db->from($this->TABLENAME . ' a');
+        $this->db->join('MITM_TBL b', 'a.ITH_ITMCD=b.MITM_ITMCD');
+        $this->db->join('MSTEMP_TBL c', 'ITH_USRID=MSTEMP_ID', 'left');
         $this->db->where($pwhere);
         $this->db->order_by('ITH_LUPDT ASC,ITH_FORM DESC,ITH_WH, ITH_QTY ASC');
         $query = $this->db->get();
         return $query->result_array();
     }
     public function select_view_all_by($pwhere)
-    {			
+    {
         $this->db->select("a.*,b.*,CONCAT(MSTEMP_FNM , ' ', MSTEMP_LNM) PIC");
         $this->db->from('v_ith_tblc a');
-        $this->db->join('MITM_TBL b', 'a.ITH_ITMCD=b.MITM_ITMCD');  
-        $this->db->join('MSTEMP_TBL c', 'ITH_USRID=MSTEMP_ID','left');
+        $this->db->join('MITM_TBL b', 'a.ITH_ITMCD=b.MITM_ITMCD');
+        $this->db->join('MSTEMP_TBL c', 'ITH_USRID=MSTEMP_ID', 'left');
         $this->db->where($pwhere);
         $this->db->order_by('ITH_LUPDT ASC,ITH_FORM DESC,ITH_WH, ITH_QTY ASC');
         $query = $this->db->get();
         return $query->result_array();
     }
-    
+
     public function insert($data)
     {
-        $this->db->insert($this->TABLENAME,$data);
+        $this->db->insert($this->TABLENAME, $data);
         return $this->db->affected_rows();
     }
-    
+
     public function insertb($data)
     {
-        $this->db->insert_batch($this->TABLENAME,$data);
+        $this->db->insert_batch($this->TABLENAME, $data);
         return $this->db->affected_rows();
     }
     public function insertb_bin($data)
     {
-        $this->db->insert_batch($this->TABLENAME_BIN,$data);
+        $this->db->insert_batch($this->TABLENAME_BIN, $data);
         return $this->db->affected_rows();
     }
 
@@ -80,8 +82,10 @@ class ITH_mod extends CI_Model {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LUPDT,ITH_USRID) 
         VALUES(?,?,?,?,?,?,GETDATE(),?)";
-        $this->db->query($qry , [$data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
-        $data['ITH_WH'],   $data['ITH_USRID']] );
+        $this->db->query($qry, [
+            $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'],
+            $data['ITH_WH'],   $data['ITH_USRID']
+        ]);
         return $this->db->affected_rows();
     }
 
@@ -90,8 +94,10 @@ class ITH_mod extends CI_Model {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LUPDT,ITH_USRID,ITH_REMARK) 
         VALUES(?,CONVERT(DATE,GETDATE()),?,?,?,?,GETDATE(),?,?)";
-        $this->db->query($qry , [$data['ITH_ITMCD'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
-        $data['ITH_WH'],   $data['ITH_USRID'], $data['ITH_REMARK']] );
+        $this->db->query($qry, [
+            $data['ITH_ITMCD'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'],
+            $data['ITH_WH'],   $data['ITH_USRID'], $data['ITH_REMARK']
+        ]);
         return $this->db->affected_rows();
     }
     public function insert_ret($data)
@@ -99,8 +105,10 @@ class ITH_mod extends CI_Model {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LUPDT,ITH_USRID,ITH_REMARK) 
         VALUES(?,?,?,?,?,?,?,?,?)";
-        $this->db->query($qry , array($data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
-        $data['ITH_WH'], $data['ITH_LUPDT'] ,$data['ITH_USRID'], $data['ITH_REMARK']) );
+        $this->db->query($qry, array(
+            $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'],
+            $data['ITH_WH'], $data['ITH_LUPDT'], $data['ITH_USRID'], $data['ITH_REMARK']
+        ));
         return $this->db->affected_rows();
     }
 
@@ -109,8 +117,10 @@ class ITH_mod extends CI_Model {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LUPDT,ITH_USRID) 
         VALUES(?,?,?,?,?,?,GETDATE(),?)";
-        $this->db->query($qry , array($data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
-        $data['ITH_WH'],   $data['ITH_USRID']) );
+        $this->db->query($qry, array(
+            $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'],
+            $data['ITH_WH'],   $data['ITH_USRID']
+        ));
         return $this->db->affected_rows();
     }
     public function insert_rls($data)
@@ -118,8 +128,10 @@ class ITH_mod extends CI_Model {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_SER,ITH_LUPDT,ITH_USRID) 
         VALUES(?,?,?,?,?,?,?,GETDATE(),?)";
-        $this->db->query($qry , array($data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
-        $data['ITH_WH'],$data['ITH_SER'],  $data['ITH_USRID']) );
+        $this->db->query($qry, array(
+            $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'],
+            $data['ITH_WH'], $data['ITH_SER'],  $data['ITH_USRID']
+        ));
         return $this->db->affected_rows();
     }
     public function insert_disposerm($data)
@@ -127,8 +139,10 @@ class ITH_mod extends CI_Model {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LUPDT,ITH_USRID) 
         VALUES(?,?,?,?,?,?,getdate(),?)";
-        $this->db->query($qry , array($data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
-        $data['ITH_WH'], $data['ITH_USRID']) );
+        $this->db->query($qry, array(
+            $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'],
+            $data['ITH_WH'], $data['ITH_USRID']
+        ));
         return $this->db->affected_rows();
     }
     public function insert_disposefg($data)
@@ -136,8 +150,10 @@ class ITH_mod extends CI_Model {
         $qry = "INSERT INTO ITH_TBL (ITH_SER,ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LUPDT,ITH_USRID) 
         VALUES(?,?,?,?,?,?,?,getdate(),?)";
-        $this->db->query($qry , array($data['ITH_SER'],$data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
-        $data['ITH_WH'], $data['ITH_USRID']) );
+        $this->db->query($qry, array(
+            $data['ITH_SER'], $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'],
+            $data['ITH_WH'], $data['ITH_USRID']
+        ));
         return $this->db->affected_rows();
     }
     public function insert_delivery($data)
@@ -145,18 +161,22 @@ class ITH_mod extends CI_Model {
         $qry = "INSERT INTO ITH_TBL (ITH_SER,ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LUPDT,ITH_USRID) 
         VALUES(?,?,?,?,?,?,?,getdate(),?)";
-        $this->db->query($qry , array($data['ITH_SER'],$data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'], 
-        $data['ITH_WH'], $data['ITH_USRID']) );
+        $this->db->query($qry, array(
+            $data['ITH_SER'], $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'],
+            $data['ITH_WH'], $data['ITH_USRID']
+        ));
         return $this->db->affected_rows();
     }
-    
+
     public function insert_cancel_kitting_out($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LUPDT,ITH_USRID) 
         VALUES(?,?,'CANCELING-RM-PSN-OUT',?,?,?,getdate(),?)";
-        $this->db->query($qry , array($data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_DOC'], $data['ITH_QTY'], $data['ITH_WH'],
-        $data['ITH_USRID']) );
+        $this->db->query($qry, array(
+            $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_DOC'], $data['ITH_QTY'], $data['ITH_WH'],
+            $data['ITH_USRID']
+        ));
         return $this->db->affected_rows();
     }
 
@@ -167,51 +187,55 @@ class ITH_mod extends CI_Model {
         ITH_WH,ITH_LUPDT,ITH_USRID) 
         VALUES(?,?,'CANCELING-RM-PSN-IN',?,?,
         ?,getdate(),?)";
-        $this->db->query($qry , array($data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_DOC'], $data['ITH_QTY'], 
-        $data['ITH_WH'], $data['ITH_USRID']) );
+        $this->db->query($qry, array(
+            $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_DOC'], $data['ITH_QTY'],
+            $data['ITH_WH'], $data['ITH_USRID']
+        ));
         return $this->db->affected_rows();
     }
 
     public function update_exported_fg_wh($pser)
     {
         $qry = "update ITH_TBL set ITH_EXPORTED='1' WHERE ITH_WH='AFWH3' AND ITH_QTY > 0 AND ITH_FORM='INC-WH-FG' AND ITH_SER=?";
-        $this->db->query($qry , array($pser) );
+        $this->db->query($qry, array($pser));
         return $this->db->affected_rows();
     }
     public function update_exported_qcsa_wh($pser)
     {
         $qry = "update ITH_TBL set ITH_EXPORTED='1' WHERE ITH_WH='AWIP1' AND ITH_QTY > 0 AND ITH_FORM='INC' AND ITH_SER=?";
-        $this->db->query($qry , array($pser) );
+        $this->db->query($qry, array($pser));
         return $this->db->affected_rows();
-    }	
+    }
 
     public function check_Primary($data)
-    {        
-        return $this->db->get_where($this->TABLENAME,$data)->num_rows();		
+    {
+        return $this->db->get_where($this->TABLENAME, $data)->num_rows();
     }
 
     public function updatebyId($pwhere, $pval)
-    {        
+    {
         $this->db->where($pwhere);
         $this->db->update($this->TABLENAME, $pval);
         return $this->db->affected_rows();
     }
-    
-    public function selectSVDQTYbyDOCg($pdoc){
+
+    public function selectSVDQTYbyDOCg($pdoc)
+    {
         $this->db->select("ITH_ITMCD,ABS(SUM(ITH_QTY)) SAVEDQTY");
-        $this->db->from($this->TABLENAME." a");
+        $this->db->from($this->TABLENAME . " a");
         $this->db->where("ITH_DOC", $pdoc)->where("ITH_FORM", "OUT-WH-RM");
         $this->db->group_by("ITH_DOC,ITH_ITMCD");
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    public function selectqtyperdocitemday($pdoc, $pitem, $pdt, $pform){
+    public function selectqtyperdocitemday($pdoc, $pitem, $pdt, $pform)
+    {
         $this->db->select("abs(ITH_QTY) ITH_QTY");
-        $this->db->from($this->TABLENAME." a");
-        $this->db->where("ITH_DOC", $pdoc)->where("ITH_ITMCD", $pitem)->where("ITH_DATE", $pdt)->where("ITH_FORM", $pform);		
+        $this->db->from($this->TABLENAME . " a");
+        $this->db->where("ITH_DOC", $pdoc)->where("ITH_ITMCD", $pitem)->where("ITH_DATE", $pdt)->where("ITH_FORM", $pform);
         $query = $this->db->get();
-        if ($query->num_rows()>0){
+        if ($query->num_rows() > 0) {
             $ret = $query->row();
             return $ret->ITH_QTY;
         } else {
@@ -220,43 +244,49 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function selecttodayscanqa(){	
+    public function selecttodayscanqa()
+    {
         $this->db->limit(10);
-        $this->db->from("v_infoscntoday_qa");	
-        $this->db->order_by('ITH_LUPDT DESC');			
+        $this->db->from("v_infoscntoday_qa");
+        $this->db->order_by('ITH_LUPDT DESC');
         $query = $this->db->get();
         return $query->result_array();
     }
-    public function selecttodayscanwhrtn(){	
+    public function selecttodayscanwhrtn()
+    {
         $this->db->limit(10);
-        $this->db->from("v_infoscntoday_whrtn");	
-        $this->db->order_by('ITH_LUPDT DESC');			
+        $this->db->from("v_infoscntoday_whrtn");
+        $this->db->order_by('ITH_LUPDT DESC');
         $query = $this->db->get();
         return $query->result_array();
     }
-    public function selecttodayscanWIP(){	
+    public function selecttodayscanWIP()
+    {
         $this->db->limit(10);
-        $this->db->from("v_infoscntoday_wip");	
-        $this->db->order_by('ITH_LUPDT DESC');			
+        $this->db->from("v_infoscntoday_wip");
+        $this->db->order_by('ITH_LUPDT DESC');
         $query = $this->db->get();
         return $query->result_array();
     }
-    public function selecttodayscanprd(){	
+    public function selecttodayscanprd()
+    {
         $this->db->limit(10);
-        $this->db->from("v_infoscntoday_prd");	
-        $this->db->order_by('ITH_LUPDT DESC');			
+        $this->db->from("v_infoscntoday_prd");
+        $this->db->order_by('ITH_LUPDT DESC');
         $query = $this->db->get();
         return $query->result_array();
     }
-    public function selecttodayscanwh(){	
+    public function selecttodayscanwh()
+    {
         $this->db->limit(10);
-        $this->db->from("v_infoscntoday_wh");	
-        $this->db->order_by('ITH_LUPDT DESC');			
+        $this->db->from("v_infoscntoday_wh");
+        $this->db->order_by('ITH_LUPDT DESC');
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    public function selectincfgloc($pin){
+    public function selectincfgloc($pin)
+    {
         $qry = "SELECT a.ITH_SER,ITH_LOC FROM ITH_TBL a INNER JOIN
         (SELECT ITH_SER, MAX(ITH_LUPDT) LUPDT FROM ITH_TBL WHERE ITH_SER in ($pin) 
         GROUP BY ITH_SER) v1 on a.ITH_LUPDT=v1.LUPDT AND a.ITH_SER=v1.ITH_SER
@@ -265,7 +295,8 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function selecttxmonthbefore($pdate, $wh){
+    public function selecttxmonthbefore($pdate, $wh)
+    {
         $qry = "SELECT VITH.*,RTRIM(MITM_ITMD1) MITM_ITMD1 , RTRIM(MITM_SPTNO) MITM_SPTNO FROM (select ITH_ITMCD,abs(ISNULL(SUM(CASE WHEN ITH_QTY<0 THEN ITH_QTY END),0)) ITH_QTYOUT
         ,ISNULL(SUM(CASE WHEN ITH_QTY>0 THEN ITH_QTY END),0) ITH_QTYIN
         from v_ith_tblc WHERE ITH_WH=? and ITH_DATEC<=?
@@ -276,42 +307,47 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_where($Pwhere){
+    public function select_where($Pwhere)
+    {
         $this->db->from($this->TABLENAME);
-        $this->db->where($Pwhere);		        
+        $this->db->where($Pwhere);
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    public function select_view_where($Pwhere){
+    public function select_view_where($Pwhere)
+    {
         $this->db->from('v_ith_tblc');
         $this->db->where($Pwhere);
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    public function select_view_where_and_locationIn($Pwhere, $location){
+    public function select_view_where_and_locationIn($Pwhere, $location)
+    {
         $this->db->from('v_ith_tblc');
-        $this->db->where($Pwhere)->where_in('ITH_WH', $location );
+        $this->db->where($Pwhere)->where_in('ITH_WH', $location);
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    public function select_psi_stock($wh, $item, $pbg){		
+    public function select_psi_stock($wh, $item, $pbg)
+    {
         $qry = "select ITH_WH,ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,MITM_STKUOM from ITH_TBL a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD
         left join v_mitm_bsgroup on ITH_ITMCD=PDPP_MDLCD
         WHERE ITH_WH='$wh' AND ITH_ITMCD like '$item%' and PDPP_BSGRP in ($pbg)
         AND ITH_FORM NOT IN ('SASTART','SA')
         GROUP BY ITH_ITMCD,ITH_WH,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1
         ORDER BY ITH_ITMCD ASC";
-        $query =  $this->db->query($qry );
+        $query =  $this->db->query($qry);
         return $query->result_array();
     }
-    
-    public function select_psi_stock_date($wh, $item, $pbg, $pdate){			
-        $whout = $wh=='AFWH3'  || $wh=='AFSMT'  ? 'ARSHP' : $wh;				
-        $whclosing = $wh=='AFSMT' ? 'AFWH3' : $wh;
-        $closingcolumn= $wh=='AFSMT' ? "(STOCKQTY+ISNULL(PRPQTY,0))" : "STOCKQTY";
+
+    public function select_psi_stock_date($wh, $item, $pbg, $pdate)
+    {
+        $whout = $wh == 'AFWH3'  || $wh == 'AFSMT'  ? 'ARSHP' : $wh;
+        $whclosing = $wh == 'AFSMT' ? 'AFWH3' : $wh;
+        $closingcolumn = $wh == 'AFSMT' ? "(STOCKQTY+ISNULL(PRPQTY,0))" : "STOCKQTY";
         $qry = "SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,BEFQTY,INQTY, PRPQTY,abs(OUTQTY) OUTQTY, $closingcolumn STOCKQTY, MITM_STKUOM,UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT FROM
         (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM,MITM_NCAT from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD
                 left join v_mitm_bsgroup on ITH_ITMCD=PDPP_MDLCD
@@ -338,15 +374,15 @@ class ITH_mod extends CI_Model {
                 WHERE ITH_WH='ARSHP' AND ITH_ITMCD like '%$item%'
                 AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<= '$pdate'
                 GROUP BY ITH_ITMCD) VPREP ON VSTOCK.ITH_ITMCD=VPREP.ITH_ITMCD				
-                ORDER BY VSTOCK.ITH_ITMCD ASC";		
+                ORDER BY VSTOCK.ITH_ITMCD ASC";
         $query =  $this->db->query($qry);
         return $query->result_array();
     }
-    public function select_psi_stock_date_fg_rtn($main_wh,$inc_wh,$out_wh,$preparation_wh, $item, $pbg, $pdate)
+    public function select_psi_stock_date_fg_rtn($main_wh, $inc_wh, $out_wh, $preparation_wh, $item, $pbg, $pdate)
     {
-        $s_main_wh = "'".implode("','", $main_wh)."'";
-        $s_inc_wh = "'".implode("','", $inc_wh)."'";
-        $s_out_wh = "'".implode("','", $out_wh)."'";
+        $s_main_wh = "'" . implode("','", $main_wh) . "'";
+        $s_inc_wh = "'" . implode("','", $inc_wh) . "'";
+        $s_out_wh = "'" . implode("','", $out_wh) . "'";
         $qry = "SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,BEFQTY,INQTY, PRPQTY,abs(OUTQTY) OUTQTY, ISNULL(STOCKQTY,0)+ISNULL(PRPQTY,0) STOCKQTY, MITM_STKUOM,UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT FROM
         (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM,MITM_NCAT from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD
                 left join v_mitm_bsgroup on ITH_ITMCD=PDPP_MDLCD
@@ -387,10 +423,11 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_compare_inventory($wh, $pdate){
-        $whclosing = $wh=='AFSMT' ? 'AFWH3' : $wh;
-        $closingcolumn= $wh=='AFSMT' ? "(STOCKQTY+ISNULL(PRPQTY,0))" : "STOCKQTY";
-        if($whclosing=='AFWH9SC' || $whclosing=='AFWH3' || $whclosing=='AWIP1' || $whclosing =='QAFG' || $whclosing== 'NFWH9SC' || $whclosing=='NFWH4RT') {
+    public function select_compare_inventory($wh, $pdate)
+    {
+        $whclosing = $wh == 'AFSMT' ? 'AFWH3' : $wh;
+        $closingcolumn = $wh == 'AFSMT' ? "(STOCKQTY+ISNULL(PRPQTY,0))" : "STOCKQTY";
+        if ($whclosing == 'AFWH9SC' || $whclosing == 'AFWH3' || $whclosing == 'AWIP1' || $whclosing == 'QAFG' || $whclosing == 'NFWH9SC' || $whclosing == 'NFWH4RT') {
             $qry = "SELECT ITH_WH,ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
                 SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, $closingcolumn STOCKQTY, MITM_STKUOM FROM
                     (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
@@ -425,18 +462,20 @@ class ITH_mod extends CI_Model {
         $query = $this->db->query($qry);
         return $query->result_array();
     }
-    public function select_compare_inventory_machine($wh, $pdate){        
+    public function select_compare_inventory_machine($wh, $pdate)
+    {
         $qry = "SELECT ITH_WH,RTRIM(ITH_ITMCD) ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM FROM(
             SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM FROM
                 (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
                         WHERE ITH_WH='$wh' AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
                         GROUP BY ITH_ITMCD,ITH_WH,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VSTOCK		
                 ) VWMS                        
-                    ORDER BY ITH_ITMCD ASC";        
+                    ORDER BY ITH_ITMCD ASC";
         $query = $this->db->query($qry);
         return $query->result_array();
     }
-    public function select_compare_inventory_fg_rtn($wh, $pdate){
+    public function select_compare_inventory_fg_rtn($wh, $pdate)
+    {
         $qry = "SELECT ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD ,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
             SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
                 (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
@@ -449,11 +488,12 @@ class ITH_mod extends CI_Model {
                     LEFT JOIN XMITM_V ON FTRN_ITMCD=MITM_ITMCD 
                     WHERE FTRN_ISUDT<='$pdate' AND FTRN_LOCCD IN ('$wh') 
                     GROUP BY FTRN_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VMEGA ON ITH_ITMCD=ITRN_ITMCD
-                    ORDER BY ITH_ITMCD ASC";        
+                    ORDER BY ITH_ITMCD ASC";
         $query = $this->db->query($qry);
         return $query->result_array();
     }
-    public function select_compare_inventory_fg_fresh($wh, $pdate){
+    public function select_compare_inventory_fg_fresh($wh, $pdate)
+    {
         $qry = "SELECT ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD ,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
             SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
                 (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
@@ -466,11 +506,12 @@ class ITH_mod extends CI_Model {
                     LEFT JOIN XMITM_V ON FTRN_ITMCD=MITM_ITMCD 
                     WHERE FTRN_ISUDT<='$pdate' AND FTRN_LOCCD IN ('$wh') 
                     GROUP BY FTRN_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VMEGA ON ITH_ITMCD=ITRN_ITMCD
-                    ORDER BY ITH_ITMCD ASC";        
+                    ORDER BY ITH_ITMCD ASC";
         $query = $this->db->query($qry);
         return $query->result_array();
     }
-    public function select_compare_inventory_fg_qa($wh, $pdate){
+    public function select_compare_inventory_fg_qa($wh, $pdate)
+    {
         $qry = "SELECT ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
             SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
                 (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
@@ -483,11 +524,12 @@ class ITH_mod extends CI_Model {
                     LEFT JOIN XMITM_V ON FTRN_ITMCD=MITM_ITMCD 
                     WHERE FTRN_ISUDT<='$pdate' AND FTRN_LOCCD IN ('$wh') 
                     GROUP BY FTRN_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VMEGA ON ITH_ITMCD=ITRN_ITMCD
-                    ORDER BY ITH_ITMCD ASC";        
+                    ORDER BY ITH_ITMCD ASC";
         $query = $this->db->query($qry);
         return $query->result_array();
     }
-    public function select_compare_inventory_fg_rtn_asset($wh, $pdate){
+    public function select_compare_inventory_fg_rtn_asset($wh, $pdate)
+    {
         $qry = "SELECT ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
             SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY STOCKQTY, MITM_STKUOM FROM
                 (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD				
@@ -500,22 +542,23 @@ class ITH_mod extends CI_Model {
                     LEFT JOIN XMITM_V ON FTRN_ITMCD=MITM_ITMCD 
                     WHERE FTRN_ISUDT<='$pdate' AND FTRN_LOCCD IN ('$wh') 
                     GROUP BY FTRN_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VMEGA ON ITH_ITMCD=ITRN_ITMCD
-                    ORDER BY ITH_ITMCD ASC";        
+                    ORDER BY ITH_ITMCD ASC";
         $query = $this->db->query($qry);
         return $query->result_array();
     }
 
-    public function select_psi_stock_date_wbg($wh, $item, $pdate){
-        $qry = "wms_sp_std_stock_wbg ?, ?, ?";	
-        $query =  $this->db->query($qry, [$wh,$item,$pdate] );		
+    public function select_psi_stock_date_wbg($wh, $item, $pdate)
+    {
+        $qry = "wms_sp_std_stock_wbg ?, ?, ?";
+        $query =  $this->db->query($qry, [$wh, $item, $pdate]);
         return $query->result_array();
     }
 
-    public function select_psi_stock_date_wbg_fg_rtn($main_wh,$inc_wh,$out_wh,$preparation_wh, $item, $pdate)
+    public function select_psi_stock_date_wbg_fg_rtn($main_wh, $inc_wh, $out_wh, $preparation_wh, $item, $pdate)
     {
-        $s_main_wh = "'".implode("','", $main_wh)."'";
-        $s_inc_wh = "'".implode("','", $inc_wh)."'";
-        $s_out_wh = "'".implode("','", $out_wh)."'";
+        $s_main_wh = "'" . implode("','", $main_wh) . "'";
+        $s_inc_wh = "'" . implode("','", $inc_wh) . "'";
+        $s_out_wh = "'" . implode("','", $out_wh) . "'";
         $qry = "SELECT VSTOCK.ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,BEFQTY,INQTY, PRPQTY,abs(OUTQTY) OUTQTY,
          ISNULL(STOCKQTY,0) STOCKQTY, MITM_STKUOM,UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT,LUPDT FROM
             (select ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,MITM_STKUOM,MITM_NCAT,MAX(ITH_LUPDT) LUPDT FROM v_ith_tblc a INNER JOIN MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD            
@@ -551,24 +594,25 @@ class ITH_mod extends CI_Model {
                 WHERE ITH_WH='$preparation_wh' AND ITH_ITMCD LIKE CONCAT('%','$item','%') 
                 AND ITH_FORM NOT IN ('SASTART','SA') AND ITH_DATEC<='$pdate'
                 GROUP BY ITH_ITMCD) VPREP ON VSTOCK.ITH_ITMCD=VPREP.ITH_ITMCD
-                ORDER BY VSTOCK.ITH_ITMCD ASC";	
-        $query =  $this->db->query($qry );		
+                ORDER BY VSTOCK.ITH_ITMCD ASC";
+        $query =  $this->db->query($qry);
         return $query->result_array();
     }
 
-    function select_abnormal_kitting_tx($pDate) 
+    function select_abnormal_kitting_tx($pDate)
     {
         $qry = "wms_sp_abnormal_kitting_tx ?";
-        $query =  $this->db->query($qry, [$pDate] );
+        $query =  $this->db->query($qry, [$pDate]);
         return $query->result_array();
     }
 
-    function select_abnormal_kitting_tx_detail($docs, $items, $date) {
+    function select_abnormal_kitting_tx_detail($docs, $items, $date)
+    {
         $this->db->from('v_ith_tblc');
         $this->db->where_in("ITH_DOC", $docs)->where_in("ITH_ITMCD", $items)
-        ->where("ITH_DATEC", $date)
-        ->not_like("ITH_FORM", "RET")
-        ->order_by("ITH_LUPDT");
+            ->where("ITH_DATEC", $date)
+            ->not_like("ITH_FORM", "RET")
+            ->order_by("ITH_LUPDT");
         $query = $this->db->get();
         return $query->result_array();
     }
@@ -578,9 +622,10 @@ class ITH_mod extends CI_Model {
         return $this->db->from('wms_v_double_unique_tx')->get()->result_array();
     }
 
-    public function select_psi_stock_date_wbg_query($wh, $item, $pdate){
-        $outwh = $wh==='AFWH3' || $wh==='AFSMT' ? 'ARSHP' : $wh;
-        $closingwh = $wh === 'AFSMT' ? 	'AFWH3' : $wh;
+    public function select_psi_stock_date_wbg_query($wh, $item, $pdate)
+    {
+        $outwh = $wh === 'AFWH3' || $wh === 'AFSMT' ? 'ARSHP' : $wh;
+        $closingwh = $wh === 'AFSMT' ?     'AFWH3' : $wh;
         $qry = "SELECT ITH_WH,VSTOCK.ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,BEFQTY,INQTY, PRPQTY,abs(OUTQTY) OUTQTY,
         CASE WHEN '$wh'='AFSMT' THEN (STOCKQTY+ISNULL(PRPQTY,0)) ELSE 
          STOCKQTY END STOCKQTY, MITM_STKUOM   FROM
@@ -609,12 +654,13 @@ class ITH_mod extends CI_Model {
                 WHERE ITH_WH='ARSHP' AND ITH_ITMCD = '$item' 
                 AND ITH_FORM NOT IN ('SASTART','SA') AND ITH_DATEC<= '$pdate'
                 GROUP BY ITH_ITMCD) VPREP ON VSTOCK.ITH_ITMCD=VPREP.ITH_ITMCD
-                ORDER BY VSTOCK.ITH_ITMCD ASC";	
-            
+                ORDER BY VSTOCK.ITH_ITMCD ASC";
+
         $query =  $this->db->query($qry);
         return $query->result_array();
     }
-    public function select_psi_stock_date_wbg_detail($wh,  $pdate){	
+    public function select_psi_stock_date_wbg_detail($wh,  $pdate)
+    {
         $qry = "SELECT V1.*,SER_DOC FROM
         (select ITH_WH,ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,MITM_STKUOM,ITH_SER,MAX(ITH_LUPDT) ITH_LUPDT
                 from v_ith_tblc a 
@@ -624,64 +670,72 @@ class ITH_mod extends CI_Model {
                 GROUP BY ITH_ITMCD,ITH_WH,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1,ITH_SER
                 HAVING SUM(ITH_QTY)>0) V1
         LEFT JOIN SER_TBL ON ITH_SER=SER_ID
-        ORDER BY ITH_ITMCD ASC";	
-        $query =  $this->db->query($qry, [$wh,$pdate] );
+        ORDER BY ITH_ITMCD ASC";
+        $query =  $this->db->query($qry, [$wh, $pdate]);
         return $query->result_array();
     }
 
-    public function select_id_willbepending_list_bydoc($pwh, $pdoc){
+    public function select_id_willbepending_list_bydoc($pwh, $pdoc)
+    {
         $qry = "sp_idpendd_list ?, ?  ";
         $query =  $this->db->query($qry, array($pwh, $pdoc));
         return $query->result_array();
     }
 
-    public function select_id_willbepending_list_byitem($pwh, $pitem){
+    public function select_id_willbepending_list_byitem($pwh, $pitem)
+    {
         $qry = "sp_idpendd_list_byitem ?, ?  ";
         $query =  $this->db->query($qry, array($pwh, $pitem));
         return $query->result_array();
     }
 
-    public function select_id_willbepending_list_byser($pwh, $pser){
+    public function select_id_willbepending_list_byser($pwh, $pser)
+    {
         $qry = "sp_idpendd_list_byser ?, ?  ";
         $query =  $this->db->query($qry, array($pwh, $pser));
         return $query->result_array();
     }
 
-    public function select_scanned_pend($doc, $ser){
+    public function select_scanned_pend($doc, $ser)
+    {
         $qry = "select ITH_SER,SUM(ITH_QTY) ITH_QTY FROM ITH_TBL WHERE ITH_DOC =? AND ITH_SER = ? and ITH_WH='QAFG'
         GROUP BY ITH_SER ";
         $query =  $this->db->query($qry, array($doc, $ser));
         return $query->result_array();
     }
-    
-    public function select_stock_scrap_rm(){
+
+    public function select_stock_scrap_rm()
+    {
         $qry = "sp_getstock_scrap ";
         $query =  $this->db->query($qry);
         return $query->result_array();
     }
-    public function select_stock_scrap_fg(){
+    public function select_stock_scrap_fg()
+    {
         $qry = "sp_getstock_scrap_fg ";
         $query =  $this->db->query($qry);
         return $query->result_array();
     }
-    public function lastsdoc_dispose(){       
+    public function lastsdoc_dispose()
+    {
         $qry = "select TOP 1 substring(ITH_DOC, 12, 3) lser from ITH_TBL
         WHERE convert(date, ITH_DATE) = convert(date,GETDATE()) AND ITH_FORM='OUT-SCR-RM' 
         ORDER BY convert(bigint,SUBSTRING(ITH_DOC,12,3)) desc";
-        $query =  $this->db->query($qry);        
-        if ($query->num_rows()>0){
+        $query =  $this->db->query($qry);
+        if ($query->num_rows() > 0) {
             $ret = $query->row();
             return $ret->lser;
         } else {
             return '0';
         }
     }
-    public function lastsdoc_fg_dispose(){       
+    public function lastsdoc_fg_dispose()
+    {
         $qry = "select TOP 1 substring(ITH_DOC, 13, 3) lser from ITH_TBL
         WHERE convert(date, ITH_DATE) = convert(date,GETDATE()) AND ITH_FORM='OUT-SCR-FG'
         ORDER BY convert(bigint,SUBSTRING(ITH_DOC,13,3)) desc";
         $query =  $this->db->query($qry);
-        if ($query->num_rows()>0){
+        if ($query->num_rows() > 0) {
             $ret = $query->row();
             return $ret->lser;
         } else {
@@ -690,48 +744,57 @@ class ITH_mod extends CI_Model {
     }
 
     //report
-    public function selectincfg($pjob, $psts, $pbg){
+    public function selectincfg($pjob, $psts, $pbg)
+    {
         $qry = "exec sp_rincoming_fg ?, ? , ? ";
         $query =  $this->db->query($qry, [$pjob, $psts, $pbg]);
         return $query->result_array();
     }
-    public function select_KKA_MEGA_FG($pdate1, $pdate2){
+    public function select_KKA_MEGA_FG($pdate1, $pdate2)
+    {
         $qry = "wms_sp_kka_mega_fg ?, ?";
         $query =  $this->db->query($qry, [$pdate1, $pdate2]);
         return $query->result_array();
     }
-    public function select_KKA_MEGA_FG_RTN($pdate1, $pdate2){
+    public function select_KKA_MEGA_FG_RTN($pdate1, $pdate2)
+    {
         $qry = "wms_sp_kka_mega_fg_rtn ?, ?";
         $query =  $this->db->query($qry, [$pdate1, $pdate2]);
         return $query->result_array();
     }
-    public function select_KKA_MEGA_RM($pdate1, $pdate2){
+    public function select_KKA_MEGA_RM($pdate1, $pdate2)
+    {
         $qry = "wms_sp_kka_mega_rm ?, ?";
         $query =  $this->db->query($qry, [$pdate1, $pdate2]);
         return $query->result_array();
     }
-    public function selectincfg_with_revision($pjob, $psts, $pbg, $prevision){
+    public function selectincfg_with_revision($pjob, $psts, $pbg, $prevision)
+    {
         $qry = "sp_rincoming_fg_with_rev ?, ? , ? , ?";
-        $query =  $this->db->query($qry, [$pjob, $psts, $pbg, $prevision ]);
+        $query =  $this->db->query($qry, [$pjob, $psts, $pbg, $prevision]);
         return $query->result_array();
     }
-    public function selectincfgrtn($pbg, $pdocno, $pitem, $psts){
+    public function selectincfgrtn($pbg, $pdocno, $pitem, $psts)
+    {
         $qry = "sp_rincoming_fgrtn ?, ? , ?, ? ";
         $query =  $this->db->query($qry, [$pbg, $pdocno, $pitem, $psts]);
         return $query->result_array();
     }
-    public function selectincfg_prd_qc($pjob, $psts, $pbg){
+    public function selectincfg_prd_qc($pjob, $psts, $pbg)
+    {
         $qry = "exec sp_rincoming_fg_prd_qc ?, ?  ,?";
         $query =  $this->db->query($qry, array($pjob, $psts, $pbg));
         return $query->result_array();
     }
-    public function selectincfg_mega($pjob, $pdt1, $pdt2){
+    public function selectincfg_mega($pjob, $pdt1, $pdt2)
+    {
         $qry = "exec sp_rincoming_fg_mega ?, ? ,? ";
         $query =  $this->db->query($qry, array($pjob, $pdt1, $pdt2));
         return $query->result_array();
     }
 
-    public function select_output_prd($dtfrom, $dtto, $assyno, $pbg){
+    public function select_output_prd($dtfrom, $dtto, $assyno, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_QTY,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,PDPP_BSGRP,SER_RMRK FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
         INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
@@ -739,10 +802,11 @@ class ITH_mod extends CI_Model {
         WHERE ITH_WH='ARPRD1' AND (ITH_LUPDT BETWEEN ? AND ?)
         AND ITH_QTY > 0 AND ITH_FORM='INC-PRD-FG' AND ITH_ITMCD LIKE ? and PDPP_BSGRP IN ($pbg) 
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$assyno.'%']);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $assyno . '%']);
         return $query->result_array();
     }
-    public function select_output_prd_byjob($dtfrom, $dtto, $pjob, $pbg){
+    public function select_output_prd_byjob($dtfrom, $dtto, $pjob, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_QTY,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,PDPP_BSGRP,SER_RMRK FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
         INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
@@ -750,11 +814,12 @@ class ITH_mod extends CI_Model {
         WHERE ITH_WH='ARPRD1' AND (ITH_LUPDT BETWEEN ? AND ?)
         AND ITH_QTY > 0 AND ITH_FORM='INC-PRD-FG' AND ITH_DOC LIKE ? and PDPP_BSGRP IN ($pbg) 
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$pjob.'%']);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $pjob . '%']);
         return $query->result_array();
     }
 
-    public function select_output_qc($dtfrom, $dtto, $assyno, $pbg){		
+    public function select_output_qc($dtfrom, $dtto, $assyno, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,PDPP_BSGRP
         ,CASE WHEN ISNULL(SER_CAT,'')='' AND MAX(SER_BSGRP) ='PSI1PPZIEP' and ISNULL(SER_RMRK,'')!='NG MAKER' THEN  '' ELSE COALESCE(SER_RMRK,'') END SER_RMRK 		
         FROM ITH_TBL inner join SER_TBL 
@@ -765,10 +830,11 @@ class ITH_mod extends CI_Model {
          AND ITH_FORM='INC-QA-FG' AND ITH_ITMCD LIKE ?  and PDPP_BSGRP IN ($pbg) 
         group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,PDPP_BSGRP,SER_RMRK,SER_CAT
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%'.$assyno.'%'));
+        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%' . $assyno . '%'));
         return $query->result_array();
     }
-    public function select_output_qcsa($dtfrom, $dtto, $assyno, $pbg){		
+    public function select_output_qcsa($dtfrom, $dtto, $assyno, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,PDPP_BSGRP,COALESCE(SER_RMRK,'') SER_RMRK FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
         INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
@@ -777,10 +843,11 @@ class ITH_mod extends CI_Model {
          AND ITH_FORM='INC' AND ITH_ITMCD LIKE ?  and PDPP_BSGRP IN ($pbg) 
         group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,PDPP_BSGRP,SER_RMRK
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%'.$assyno.'%'));
+        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%' . $assyno . '%'));
         return $query->result_array();
     }
-    public function select_output_prdsa($dtfrom, $dtto, $assyno, $pbg){		
+    public function select_output_prdsa($dtfrom, $dtto, $assyno, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,PDPP_BSGRP,COALESCE(SER_RMRK,'') SER_RMRK FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
         INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
@@ -789,10 +856,11 @@ class ITH_mod extends CI_Model {
          AND ITH_FORM='INC' AND ITH_ITMCD LIKE ?  and PDPP_BSGRP IN ($pbg) AND SUBSTRING(ITH_SER, 1, 1)='3'
         group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,PDPP_BSGRP,SER_RMRK
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$assyno.'%']);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $assyno . '%']);
         return $query->result_array();
     }
-    public function select_output_qc_byjob($dtfrom, $dtto, $pjob, $pbg){		
+    public function select_output_qc_byjob($dtfrom, $dtto, $pjob, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,PDPP_BSGRP
         ,CASE WHEN ISNULL(SER_CAT,'')='' AND MAX(SER_BSGRP) ='PSI1PPZIEP' and ISNULL(SER_RMRK,'')!='NG MAKER' THEN  '' ELSE ISNULL(SER_RMRK,'') END SER_RMRK FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -802,10 +870,11 @@ class ITH_mod extends CI_Model {
          AND ITH_FORM='INC-QA-FG' AND ITH_DOC LIKE ?  and PDPP_BSGRP IN ($pbg) 
         group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,PDPP_BSGRP,SER_RMRK,SER_CAT
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%'.$pjob.'%'));
+        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%' . $pjob . '%'));
         return $query->result_array();
     }
-    public function select_output_qcsa_byjob($dtfrom, $dtto, $pjob, $pbg){		
+    public function select_output_qcsa_byjob($dtfrom, $dtto, $pjob, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,PDPP_BSGRP,COALESCE(SER_RMRK,'') SER_RMRK FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
         INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
@@ -814,10 +883,11 @@ class ITH_mod extends CI_Model {
          AND ITH_FORM='INC' AND ITH_DOC LIKE ?  and PDPP_BSGRP IN ($pbg) 
         group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,PDPP_BSGRP,SER_RMRK
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$pjob.'%']);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $pjob . '%']);
         return $query->result_array();
     }
-    public function select_output_prdsa_byjob($dtfrom, $dtto, $pjob, $pbg){		
+    public function select_output_prdsa_byjob($dtfrom, $dtto, $pjob, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,PDPP_BSGRP,COALESCE(SER_RMRK,'') SER_RMRK FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
         INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
@@ -826,10 +896,11 @@ class ITH_mod extends CI_Model {
          AND ITH_FORM='INC' AND ITH_DOC LIKE ?  and PDPP_BSGRP IN ($pbg)  AND SUBSTRING(ITH_SER, 1, 1)='3'
         group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,PDPP_BSGRP,SER_RMRK
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$pjob.'%']);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $pjob . '%']);
         return $query->result_array();
     }
-    public function select_output_wh_byassy($dtfrom, $dtto, $assyno){		
+    public function select_output_wh_byassy($dtfrom, $dtto, $assyno)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,ITH_LOC, PDPP_BSGRP 
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -838,10 +909,11 @@ class ITH_mod extends CI_Model {
         WHERE ITH_WH='AFWH3' AND (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WH-FG' AND ITH_ITMCD LIKE ? 
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$assyno.'%']);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $assyno . '%']);
         return $query->result_array();
     }
-    public function select_output_whrtn_byassy($dtfrom, $dtto, $assyno){		
+    public function select_output_whrtn_byassy($dtfrom, $dtto, $assyno)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, USEQTY ITH_QTY,SER_LOTNO, vra.ITH_DOC SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT, MBSG_BSGRP 
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -853,10 +925,11 @@ class ITH_mod extends CI_Model {
         WHERE (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WHRTN-FG' AND ITH_ITMCD LIKE ?
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$assyno.'%']);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $assyno . '%']);
         return $query->result_array();
     }
-    public function select_output_wh_byjob($dtfrom, $dtto, $pjob){
+    public function select_output_wh_byjob($dtfrom, $dtto, $pjob)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, SUM(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,ITH_LOC, PDPP_BSGRP
          FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -866,10 +939,11 @@ class ITH_mod extends CI_Model {
          AND ITH_FORM='INC-WH-FG' AND SER_DOC LIKE ? 
         GROUP BY ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,ITH_LOC, PDPP_BSGRP
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$pjob.'%']);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $pjob . '%']);
         return $query->result_array();
     }
-    public function select_output_whrtn_byjob($dtfrom, $dtto, $pjob){
+    public function select_output_whrtn_byjob($dtfrom, $dtto, $pjob)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, USEQTY ITH_QTY,SER_LOTNO, vra.ITH_DOC SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT, MBSG_BSGRP 
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -881,10 +955,11 @@ class ITH_mod extends CI_Model {
         WHERE (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WHRTN-FG' AND vra.ITH_DOC LIKE ?
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$pjob.'%']);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $pjob . '%']);
         return $query->result_array();
     }
-    public function select_output_wh_byreff($dtfrom, $dtto, $preff){
+    public function select_output_wh_byreff($dtfrom, $dtto, $preff)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, SUM(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,ITH_LOC, PDPP_BSGRP
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -894,10 +969,11 @@ class ITH_mod extends CI_Model {
          AND ITH_FORM='INC-WH-FG' AND ITH_SER LIKE ?  
         GROUP BY ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,ITH_LOC, PDPP_BSGRP
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%'.$preff.'%'));
+        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%' . $preff . '%'));
         return $query->result_array();
     }
-    public function select_output_whrtn_byreff($dtfrom, $dtto, $preff){
+    public function select_output_whrtn_byreff($dtfrom, $dtto, $preff)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, USEQTY ITH_QTY,SER_LOTNO, vra.ITH_DOC SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT, MBSG_BSGRP 
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -909,11 +985,12 @@ class ITH_mod extends CI_Model {
         WHERE (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WHRTN-FG' AND ITH_SER LIKE ?
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$preff.'%']);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $preff . '%']);
         return $query->result_array();
     }
 
-    public function select_output_wh_byassy_bg($dtfrom, $dtto, $assyno, $pbg){
+    public function select_output_wh_byassy_bg($dtfrom, $dtto, $assyno, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,ITH_LOC, PDPP_BSGRP 
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -922,10 +999,11 @@ class ITH_mod extends CI_Model {
         WHERE ITH_WH='AFWH3' AND (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WH-FG' AND ITH_ITMCD LIKE ? and PDPP_BSGRP = ?
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$assyno.'%', $pbg]);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $assyno . '%', $pbg]);
         return $query->result_array();
     }
-    public function select_output_whrtn_byassy_bg($dtfrom, $dtto, $assyno, $pbg){
+    public function select_output_whrtn_byassy_bg($dtfrom, $dtto, $assyno, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, USEQTY ITH_QTY,SER_LOTNO, vra.ITH_DOC SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT, MBSG_BSGRP 
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -937,11 +1015,12 @@ class ITH_mod extends CI_Model {
         WHERE (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WHRTN-FG' AND ITH_ITMCD LIKE ? and MBSG_BSGRP = ?
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$assyno.'%', $pbg]);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $assyno . '%', $pbg]);
         return $query->result_array();
     }
 
-    public function select_output_wh_byjob_bg($dtfrom, $dtto, $pjob, $pbg){
+    public function select_output_wh_byjob_bg($dtfrom, $dtto, $pjob, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_QTY,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,ITH_LOC, PDPP_BSGRP
          FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -950,10 +1029,11 @@ class ITH_mod extends CI_Model {
         WHERE ITH_WH='AFWH3' AND (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WH-FG' AND SER_DOC LIKE ? and PDPP_BSGRP = ?
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$pjob.'%', $pbg]);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $pjob . '%', $pbg]);
         return $query->result_array();
     }
-    public function select_output_whrtn_byjob_bg($dtfrom, $dtto, $pjob, $pbg){
+    public function select_output_whrtn_byjob_bg($dtfrom, $dtto, $pjob, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, USEQTY ITH_QTY,SER_LOTNO, vra.ITH_DOC SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT, MBSG_BSGRP 
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -965,11 +1045,12 @@ class ITH_mod extends CI_Model {
         WHERE (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WHRTN-FG' AND vra.ITH_DOC LIKE ? and MBSG_BSGRP = ?
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$pjob.'%', $pbg]);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $pjob . '%', $pbg]);
         return $query->result_array();
     }
 
-    public function select_output_wh_byreff_bg($dtfrom, $dtto, $preff, $pbg){
+    public function select_output_wh_byreff_bg($dtfrom, $dtto, $preff, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_QTY,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,ITH_LOC, PDPP_BSGRP
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -978,10 +1059,11 @@ class ITH_mod extends CI_Model {
         WHERE ITH_WH='AFWH3' AND (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WH-FG' AND ITH_SER LIKE ? and PDPP_BSGRP = ?
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$preff.'%', $pbg]);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $preff . '%', $pbg]);
         return $query->result_array();
     }
-    public function select_output_whrtn_byreff_bg($dtfrom, $dtto, $preff, $pbg){
+    public function select_output_whrtn_byreff_bg($dtfrom, $dtto, $preff, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, USEQTY ITH_QTY,SER_LOTNO, vra.ITH_DOC SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT, MBSG_BSGRP 
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -993,11 +1075,12 @@ class ITH_mod extends CI_Model {
         WHERE (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WHRTN-FG' AND ITH_SER LIKE ? and MBSG_BSGRP = ?
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$preff.'%', $pbg]);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $preff . '%', $pbg]);
         return $query->result_array();
     }
 
-    public function select_output_wh_byassy_bgxp($dtfrom, $dtto, $assyno, $pbg){
+    public function select_output_wh_byassy_bgxp($dtfrom, $dtto, $assyno, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_QTY,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,ITH_LOC, PDPP_BSGRP,convert(int,SER_QTY) SER_QTY 
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -1006,11 +1089,12 @@ class ITH_mod extends CI_Model {
         WHERE ITH_WH='AFWH3' AND (ITH_LUPDT BETWEEN ? AND ?)
         AND ITH_QTY > 0 AND ITH_FORM='INC-WH-FG' AND ITH_ITMCD LIKE ? and PDPP_BSGRP = ? and ITH_EXPORTED IS NULL 
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%'.$assyno.'%', $pbg));
+        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%' . $assyno . '%', $pbg));
         return $query->result_array();
     }
 
-    public function select_output_wh_byassy_bgxp_test($dtfrom, $dtto, $assyno, $pbg){
+    public function select_output_wh_byassy_bgxp_test($dtfrom, $dtto, $assyno, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_QTY,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,ITH_LOC, PDPP_BSGRP,convert(int,SER_QTY) SER_QTY 
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -1019,11 +1103,12 @@ class ITH_mod extends CI_Model {
         WHERE ITH_WH='AFWH3' AND (ITH_LUPDT BETWEEN ? AND ?)
         AND ITH_QTY > 0 AND ITH_FORM='INC-WH-FG' AND ITH_ITMCD LIKE ? and PDPP_BSGRP = ? 
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%'.$assyno.'%', $pbg));
+        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%' . $assyno . '%', $pbg));
         return $query->result_array();
     }
 
-    public function select_output_wh_byjob_bgxp($dtfrom, $dtto, $pjob, $pbg){
+    public function select_output_wh_byjob_bgxp($dtfrom, $dtto, $pjob, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_QTY,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,ITH_LOC, PDPP_BSGRP,convert(int,SER_QTY) SER_QTY
          FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -1032,11 +1117,12 @@ class ITH_mod extends CI_Model {
         WHERE ITH_WH='AFWH3' AND (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WH-FG' AND SER_DOC LIKE ? and PDPP_BSGRP = ? and ITH_EXPORTED IS NULL 
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%'.$pjob.'%', $pbg));
+        $query =  $this->db->query($qry, array($dtfrom, $dtto, '%' . $pjob . '%', $pbg));
         return $query->result_array();
     }
 
-    public function select_output_wh_byreff_bgxp($dtfrom, $dtto, $preff, $pbg){
+    public function select_output_wh_byreff_bgxp($dtfrom, $dtto, $preff, $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_QTY,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,ITH_LOC, PDPP_BSGRP,convert(int,SER_QTY) SER_QTY
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -1045,11 +1131,12 @@ class ITH_mod extends CI_Model {
         WHERE ITH_WH='AFWH3' AND (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-WH-FG' AND ITH_SER LIKE ? and PDPP_BSGRP = ? and ITH_EXPORTED IS NULL 
         order by ITH_LUPDT ASC ";
-        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%'.$preff.'%', $pbg]);
+        $query =  $this->db->query($qry, [$dtfrom, $dtto, '%' . $preff . '%', $pbg]);
         return $query->result_array();
     }
 
-    public function select_output_qcsa_byreff_bgxp($dtfrom, $dtto,  $pbg){
+    public function select_output_qcsa_byreff_bgxp($dtfrom, $dtto,  $pbg)
+    {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_QTY,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,ITH_LOC, PDPP_BSGRP
         FROM ITH_TBL inner join SER_TBL 
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
@@ -1062,77 +1149,86 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_qcwh_unscan(){
+    public function select_qcwh_unscan()
+    {
         $qry = "exec sp_qcwh_unscan ";
         $query =  $this->db->query($qry);
         return $query->result_array();
     }
 
-    public function select_active_ser($pser){		
+    public function select_active_ser($pser)
+    {
         $qry = "exec sp_laststatus_ser ?";
         $query =  $this->db->query($qry, array($pser));
         return $query->result_array();
     }
 
-    public function deletebyID($parr){        
+    public function deletebyID($parr)
+    {
         $this->db->where($parr);
         $this->db->delete($this->TABLENAME);
         return $this->db->affected_rows();
     }
-    
-    public function deletePRD($pid){
+
+    public function deletePRD($pid)
+    {
         $this->db->where('ITH_SER', $pid)->where('ITH_QTY < 0')->where('ITH_WH', 'ARPRD1');
         $this->db->delete($this->TABLENAME);
         return $this->db->affected_rows();
     }
 
-    public function tobin($puser,$pser)
+    public function tobin($puser, $pser)
     {
         $qry = "INSERT INTO ITH_BIN SELECT *,'DELETE', ?, getdate() FROM ITH_TBL WHERE ITH_SER=?";
-        $this->db->query($qry, array($puser,$pser));
+        $this->db->query($qry, array($puser, $pser));
         return $this->db->affected_rows();
-    }	
-    public function tobin_backdate($puser,$pser, $pform)
+    }
+    public function tobin_backdate($puser, $pser, $pform)
     {
         $qry = "INSERT INTO ITH_BIN SELECT *,'BACKDATE', ?, getdate() FROM ITH_TBL WHERE ITH_SER=? AND ITH_FORM=?";
-        $this->db->query($qry, [$puser,$pser, $pform]);
+        $this->db->query($qry, [$puser, $pser, $pform]);
         return $this->db->affected_rows();
-    }	
+    }
 
-    public function tobin_info($info, $puser,$pser)
+    public function tobin_info($info, $puser, $pser)
     {
         $qry = "INSERT INTO ITH_BIN SELECT *,?, ?, getdate() FROM ITH_TBL WHERE ITH_SER=?";
-        $this->db->query($qry, array($info,$puser,$pser));
+        $this->db->query($qry, array($info, $puser, $pser));
         return $this->db->affected_rows();
-    }	
-    
+    }
 
-    public function select_fg_location_ploc($pitem){
+
+    public function select_fg_location_ploc($pitem)
+    {
         $qry = "select ITH_LOC,SER_ITMID,SUM(ITH_QTY) TTLQTY, COUNT(*) TTLLBL, MAX(LTS_TIME) XTIME from vr_vis_fg
         where SER_ITMID LIKE ? 
         group by ITH_LOC , SER_ITMID ";
-        $query =  $this->db->query($qry, array('%'.$pitem.'%'));
+        $query =  $this->db->query($qry, array('%' . $pitem . '%'));
         return $query->result_array();
     }
 
-    public function selectstock_ser($pser){
+    public function selectstock_ser($pser)
+    {
         $qry = "exec sp_getstock_ser_wh ?";
         $query =  $this->db->query($qry, $pser);
         return $query->result_array();
     }
 
-    public function select_qcwh_unscan_recap(){
+    public function select_qcwh_unscan_recap()
+    {
         $qry = "exec sp_qcwh_unscan_recap ";
         $query =  $this->db->query($qry);
         return $query->result_array();
     }
-    public function select_qcwh_unscan_recap_lastscan(){
+    public function select_qcwh_unscan_recap_lastscan()
+    {
         $qry = "exec sp_qcwh_unscan_recap_lastscan ";
         $query =  $this->db->query($qry);
         return $query->result_array();
     }
 
-    public function select_txhistory_bef($pwh, $passy, $pdt1){
+    public function select_txhistory_bef($pwh, $passy, $pdt1)
+    {
         $qry = "SELECT UPPER(V2.ITH_ITMCD) ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,ISNULL(BALQTY,0) BALQTY,RTRIM(MITM_STKUOM) UOM FROM
         (SELECT ITH_ITMCD,SUM(ITH_QTY) BALQTY
                 FROM v_ith_tblc                     
@@ -1145,8 +1241,8 @@ class ITH_mod extends CI_Model {
         ) V2 ON V1.ITH_ITMCD=V2.ITH_ITMCD
         LEFT JOIN MITM_TBL ON V2.ITH_ITMCD=MITM_ITMCD
         WHERE V2.ITH_ITMCD!=''
-        ORDER BY V2.ITH_ITMCD";	
-        $query = $this->db->query($qry, [$pwh,"%$passy%", $pdt1,$pwh,"%$passy%"]);
+        ORDER BY V2.ITH_ITMCD";
+        $query = $this->db->query($qry, [$pwh, "%$passy%", $pdt1, $pwh, "%$passy%"]);
         return $query->result_array();
     }
 
@@ -1161,11 +1257,12 @@ class ITH_mod extends CI_Model {
         ) VITH LEFT JOIN SER_TBL ON ITH_SER=SER_ID
         GROUP BY SER_DOC
         ORDER BY SER_DOC";
-        $query = $this->db->query($qry, [$pDate,$pLocation]);
+        $query = $this->db->query($qry, [$pDate, $pLocation]);
         return $query->result_array();
     }
-    
-    public function select_txhistory_bef_parent($pwh, $passy, $pdt1){
+
+    public function select_txhistory_bef_parent($pwh, $passy, $pdt1)
+    {
         $qry = "select VMEGA.*,WQT from
         (SELECT  RTRIM(ITRN_ITMCD) ITRN_ITMCD,SUM(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) MGAQTY				
                                 FROM XITRN_TBL 						
@@ -1177,10 +1274,11 @@ class ITH_mod extends CI_Model {
         GROUP BY ITH_ITMCD
         ) VWMS ON ITRN_ITMCD=ITH_ITMCD
         ORDER BY ITRN_ITMCD";
-        $query = $this->db->query($qry, [$passy,$passy]);
+        $query = $this->db->query($qry, [$passy, $passy]);
         return $query->result_array();
     }
-    public function select_txhistory_bef_parent_fg($pwh, $passy, $pdt1){
+    public function select_txhistory_bef_parent_fg($pwh, $passy, $pdt1)
+    {
         $qry = "select VMEGA.*,WQT from
         (SELECT  RTRIM(FTRN_ITMCD) ITRN_ITMCD,SUM(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) MGAQTY				
                                 FROM XFTRN_TBL 						
@@ -1192,11 +1290,12 @@ class ITH_mod extends CI_Model {
         GROUP BY ITH_ITMCD
         ) VWMS ON ITRN_ITMCD=ITH_ITMCD
         ORDER BY ITRN_ITMCD";
-        $query = $this->db->query($qry, [$passy,$passy]);
+        $query = $this->db->query($qry, [$passy, $passy]);
         return $query->result_array();
-    }    
-    public function select_txhistory_bef_parent_fg_with_additional_wh($pwh, $passy, $pdt1, $awh){
-        $additional_wh = "'".implode("','", $awh)."'";
+    }
+    public function select_txhistory_bef_parent_fg_with_additional_wh($pwh, $passy, $pdt1, $awh)
+    {
+        $additional_wh = "'" . implode("','", $awh) . "'";
         $qry = "select VMEGA.*,WQT from
         (SELECT  RTRIM(FTRN_ITMCD) ITRN_ITMCD,SUM(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) MGAQTY				
                                 FROM XFTRN_TBL 						
@@ -1208,10 +1307,11 @@ class ITH_mod extends CI_Model {
         GROUP BY ITH_ITMCD
         ) VWMS ON ITRN_ITMCD=ITH_ITMCD
         ORDER BY ITRN_ITMCD";
-        $query = $this->db->query($qry, [$passy,$passy]);
+        $query = $this->db->query($qry, [$passy, $passy]);
         return $query->result_array();
     }
-    public function select_txhistory_customs_bef_d1($pitemcd, $pdt1){
+    public function select_txhistory_customs_bef_d1($pitemcd, $pdt1)
+    {
         $qry = "SELECT RTRIM(RPSTOCK_ITMNUM) RPSTOCK_ITMNUM,RPSTOCK_NOAJU,RPSTOCK_BCNUM,RPSTOCK_QTY BALQTY,RTRIM(MITM_ITMD1) MITM_ITMD1,RPSTOCK_DOC,FORMAT(IODATE,'dd-MMM-yy') INCDATE FROM ZRPSAL_BCSTOCK
         LEFT JOIN MITM_TBL ON RPSTOCK_ITMNUM=MITM_ITMCD
         WHERE RPSTOCK_TYPE='INC' AND RPSTOCK_ITMNUM LIKE ? AND IODATE>=? AND deleted_at IS NULL		
@@ -1219,7 +1319,8 @@ class ITH_mod extends CI_Model {
         $query = $this->db->query($qry, ["%$pitemcd%", $pdt1]);
         return $query->result_array();
     }
-    public function select_txhistory_customs_bef_d1_byaju($paju){
+    public function select_txhistory_customs_bef_d1_byaju($paju)
+    {
         $qry = "SELECT RTRIM(RPSTOCK_ITMNUM) RPSTOCK_ITMNUM,RPSTOCK_NOAJU,RPSTOCK_BCNUM,SUM(RPSTOCK_QTY) BALQTY,RTRIM(MITM_ITMD1) MITM_ITMD1,RPSTOCK_DOC,FORMAT(MIN(IODATE),'dd-MMM-yy') INCDATE FROM ZRPSAL_BCSTOCK
         LEFT JOIN MITM_TBL ON RPSTOCK_ITMNUM=MITM_ITMCD
         WHERE RPSTOCK_TYPE!='INC-DO' AND RPSTOCK_NOAJU LIKE ?
@@ -1228,7 +1329,8 @@ class ITH_mod extends CI_Model {
         $query = $this->db->query($qry, ["%$paju%"]);
         return $query->result_array();
     }
-    public function select_txhistory_customs_bef_d1_bydaftar($pdaftar, $pdt1){
+    public function select_txhistory_customs_bef_d1_bydaftar($pdaftar, $pdt1)
+    {
         $qry = "SELECT RTRIM(RPSTOCK_ITMNUM) RPSTOCK_ITMNUM,RPSTOCK_NOAJU,RPSTOCK_BCNUM,SUM(RPSTOCK_QTY) BALQTY,RTRIM(MITM_ITMD1) MITM_ITMD1,RPSTOCK_DOC,FORMAT(MIN(IODATE),'dd-MMM-yy') INCDATE FROM ZRPSAL_BCSTOCK
         LEFT JOIN MITM_TBL ON RPSTOCK_ITMNUM=MITM_ITMCD
         WHERE RPSTOCK_TYPE!='INC-DO' AND RPSTOCK_BCNUM LIKE ? AND IODATE>=?
@@ -1238,7 +1340,8 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_txhistory($pwh, $passy, $pdt1, $pdt2 ){	
+    public function select_txhistory($pwh, $passy, $pdt1, $pdt2)
+    {
         $qry = "SELECT UPPER(ITH_ITMCD) ITH_ITMCD,rtrim(MITM_ITMD1) MITM_ITMD1,ITH_FORM,ITH_DOC,FORMAT(ITH_DATEC,'dd-MMM-yy') ITH_DATEKU,
                 ISNULL(SUM(CASE WHEN ITH_QTY>0 THEN ITH_QTY END),0) INCQTY ,
                 ISNULL(SUM(CASE WHEN ITH_QTY<0 THEN ITH_QTY END),0) OUTQTY , 
@@ -1247,11 +1350,12 @@ class ITH_mod extends CI_Model {
             FROM v_ith_tblc LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
             WHERE ITH_WH=? and ITH_ITMCD like ? AND  ITH_DATEC between ? and ?
                 GROUP BY ITH_ITMCD, rtrim(MITM_ITMD1),ITH_DATEC,ITH_FORM,ITH_DOC,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm')
-                ORDER BY ITH_ITMCD,ITH_DATEC ,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm'), 6 DESC";				
+                ORDER BY ITH_ITMCD,ITH_DATEC ,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm'), 6 DESC";
         $query = $this->db->query($qry, [$pwh, "%$passy%", $pdt1, $pdt2]);
         return $query->result_array();
     }
-    public function select_txhistory_parent($pwh, $passy, $pdt1, $pdt2 ){	
+    public function select_txhistory_parent($pwh, $passy, $pdt1, $pdt2)
+    {
         $qry = "select ISNULL(ITRN_ITMCD,ITH_ITMCD) ITRN_ITMCD,ISNULL(ISUDT,ITH_DATEC) ISUDT ,ISNULL(MGAQTY,0) MGAQTY,WQT from
         (SELECT  RTRIM(ITRN_ITMCD) ITRN_ITMCD,CONVERT(DATE,ITRN_ISUDT) ISUDT,SUM(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) MGAQTY				
                                 FROM XITRN_TBL 						
@@ -1262,11 +1366,12 @@ class ITH_mod extends CI_Model {
         SELECT ITH_ITMCD,ITH_DATEC,SUM(ITH_QTY) WQT FROM v_ith_tblc WHERE (ITH_DATEC BETWEEN '$pdt1' AND '$pdt2') AND ITH_WH='$pwh' AND ITH_ITMCD=?
         GROUP BY ITH_ITMCD,ITH_DATEC
         ) VWMS ON ITRN_ITMCD=ITH_ITMCD AND ISUDT=ITH_DATEC
-        ORDER BY ISUDT";				
+        ORDER BY ISUDT";
         $query = $this->db->query($qry, [$passy, $passy]);
         return $query->result_array();
     }
-    public function select_txhistory_parent_fg($pwh, $passy, $pdt1, $pdt2 ){
+    public function select_txhistory_parent_fg($pwh, $passy, $pdt1, $pdt2)
+    {
         $qry = "select ISNULL(ITRN_ITMCD,ITH_ITMCD) ITRN_ITMCD,ISNULL(ISUDT,ITH_DATEC) ISUDT ,ISNULL(MGAQTY,0) MGAQTY,WQT from
         (SELECT  RTRIM(FTRN_ITMCD) ITRN_ITMCD,CONVERT(DATE,FTRN_ISUDT) ISUDT,SUM(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) MGAQTY				
                                 FROM XFTRN_TBL 						
@@ -1277,12 +1382,13 @@ class ITH_mod extends CI_Model {
         SELECT ITH_ITMCD,ITH_DATEC,SUM(ITH_QTY) WQT FROM v_ith_tblc WHERE (ITH_DATEC BETWEEN '$pdt1' AND '$pdt2') AND ITH_WH='$pwh' AND ITH_ITMCD=?
         GROUP BY ITH_ITMCD,ITH_DATEC
         ) VWMS ON ITRN_ITMCD=ITH_ITMCD AND ISUDT=ITH_DATEC
-        ORDER BY ISUDT";				
+        ORDER BY ISUDT";
         $query = $this->db->query($qry, [$passy, $passy]);
         return $query->result_array();
     }
-    public function select_txhistory_parent_fg_with_additional_wh($pwh, $passy, $pdt1, $pdt2, $awh ){
-        $additional_wh = "'".implode("','", $awh)."'";
+    public function select_txhistory_parent_fg_with_additional_wh($pwh, $passy, $pdt1, $pdt2, $awh)
+    {
+        $additional_wh = "'" . implode("','", $awh) . "'";
         $qry = "select ISNULL(ITRN_ITMCD,ITH_ITMCD) ITRN_ITMCD,ISNULL(ISUDT,ITH_DATEC) ISUDT ,ISNULL(MGAQTY,0) MGAQTY,WQT from
         (SELECT  RTRIM(FTRN_ITMCD) ITRN_ITMCD,CONVERT(DATE,FTRN_ISUDT) ISUDT,SUM(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) MGAQTY				
                                 FROM XFTRN_TBL 						
@@ -1293,24 +1399,26 @@ class ITH_mod extends CI_Model {
         SELECT ITH_ITMCD,ITH_DATEC,SUM(ITH_QTY) WQT FROM v_ith_tblc WHERE (ITH_DATEC BETWEEN '$pdt1' AND '$pdt2') AND ITH_WH IN ($additional_wh) AND ITH_ITMCD=?
         GROUP BY ITH_ITMCD,ITH_DATEC
         ) VWMS ON ITRN_ITMCD=ITH_ITMCD AND ISUDT=ITH_DATEC
-        ORDER BY ISUDT";				
+        ORDER BY ISUDT";
         $query = $this->db->query($qry, [$passy, $passy]);
         return $query->result_array();
     }
-    public function select_txhistory_customs($plike,$pdate){		
+    public function select_txhistory_customs($plike, $pdate)
+    {
         $this->db->select("RTRIM(RPSTOCK_ITMNUM) ITMCD,'' RPSTOCK_ITMNUM,RPSTOCK_NOAJU,'' DAFTAR,ISNULL(SUM(CASE WHEN RPSTOCK_QTY>0 THEN RPSTOCK_QTY END),0) INCQTY ,
         ISNULL(SUM(CASE WHEN RPSTOCK_QTY<0  THEN RPSTOCK_QTY END),0) OUTQTY,'' MITM_ITMD1,RPSTOCK_REMARK DOC,FORMAT(IODATE,'dd-MMM-yy') IODATE, 0 BAL,0 HEADER, '' AJU,RPSTOCK_DOC , '' MUSED
         ,MIN(RPSTOCK_BCTYPE) BCTYPE");
         $this->db->from("ZRPSAL_BCSTOCK");
-        $this->db->like($plike)->where("IODATE <=", $pdate)->where("deleted_at is null",null,false);
-        $this->db->where_not_in('RPSTOCK_TYPE',['INC-DO','INC','INC-SCR']);
+        $this->db->like($plike)->where("IODATE <=", $pdate)->where("deleted_at is null", null, false);
+        $this->db->where_not_in('RPSTOCK_TYPE', ['INC-DO', 'INC', 'INC-SCR']);
         $this->db->group_by("RTRIM(RPSTOCK_ITMNUM),RPSTOCK_NOAJU,RPSTOCK_BCNUM,RPSTOCK_DOC,IODATE,RPSTOCK_REMARK");
         $this->db->order_by("FORMAT(IODATE,'yyyy-MM-dd'), RPSTOCK_NOAJU,RPSTOCK_ITMNUM");
         $query = $this->db->get();
         return $query->result_array();
-    }	
+    }
 
-    public function select_confirmdate($pdoc) {
+    public function select_confirmdate($pdoc)
+    {
         $this->db->from("(SELECT ITH_DOC,MAX(ITH_LUPDT) ITH_LUPDT FROM ITH_TBL
         WHERE ITH_WH='ARSHP' AND ITH_QTY<0 AND ITH_FORM='OUT-SHP-FG'
         GROUP BY ITH_DOC) VRS");
@@ -1318,9 +1426,10 @@ class ITH_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
     }
-    
 
-    public function selectbyunique($preffno){
+
+    public function selectbyunique($preffno)
+    {
         $this->db->select("ITH_TBL.*,CONCAT(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC");
         $this->db->from($this->TABLENAME);
         $this->db->join("MSTEMP_TBL", "ITH_USRID=MSTEMP_ID", "LEFT");
@@ -1330,49 +1439,60 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function selectlocation_fg($pitem){
+    public function selectlocation_fg($pitem)
+    {
         $qry = "select LOC = STUFF((select distinct ',' + ITH_LOC from vr_vis_fg vd where vd.SER_ITMID=? and ITH_LOC is not null for XML PATH('')),1,1,'')";
         $query = $this->db->query($qry, [$pitem]);
         return $query->result_array();
     }
-    public function selectlocation_fg_NFWH4RT($pitem){
+    public function selectlocation_fg_NFWH4RT($pitem)
+    {
         $qry = "select LOC = STUFF((select distinct ',' + ITH_LOC from vr_vis_fg_NFWH4RT vd where vd.SER_ITMID=? and ITH_LOC is not null for XML PATH('')),1,1,'')";
         $query = $this->db->query($qry, [$pitem]);
         return $query->result_array();
     }
-    public function selectlocation_fg_AFWH3RT($pitem){
+    public function selectlocation_fg_AFWH3RT($pitem)
+    {
         $qry = "select LOC = STUFF((select distinct ',' + ITH_LOC from vr_vis_fg_AFWH3RT vd where vd.SER_ITMID=? and ITH_LOC is not null for XML PATH('')),1,1,'')";
         $query = $this->db->query($qry, [$pitem]);
         return $query->result_array();
     }
 
-    public function select_ser_stock($pser, $pwh){
+    public function select_ser_stock($pser, $pwh)
+    {
         $qry = "SELECT ITH_SER, SUM(ITH_QTY) TSOCK FROM ITH_TBL WHERE ITH_SER=? AND ITH_WH=?
             GROUP BY ITH_SER HAVING SUM(ITH_QTY)>0";
         $query = $this->db->query($qry, [$pser, $pwh]);
         return $query->result_array();
     }
 
-    public function insert_si_scan($pitem, $pform, $pdoc, $pqty, $pwh, $ploc, $pser, $puserid){
+    public function insert_si_scan($pitem, $pform, $pdoc, $pqty, $pwh, $ploc, $pser, $puserid)
+    {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LOC,ITH_SER,ITH_LINE,ITH_LUPDT,ITH_USRID) 
         VALUES(?,CONVERT(DATE, GETDATE()),?,?,?,
         ?,?,? ,dbo.fun_ithline(), GETDATE(),?)";
-        $this->db->query($qry , [$pitem, $pform, $pdoc, $pqty, 
-        $pwh, $ploc, $pser, $puserid   ] );
+        $this->db->query($qry, [
+            $pitem, $pform, $pdoc, $pqty,
+            $pwh, $ploc, $pser, $puserid
+        ]);
         return $this->db->affected_rows();
     }
-    public function insert_si_scan_with_remark($pitem, $pform, $pdoc, $pqty, $pwh, $ploc, $pser, $puserid, $premark){
+    public function insert_si_scan_with_remark($pitem, $pform, $pdoc, $pqty, $pwh, $ploc, $pser, $puserid, $premark)
+    {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LOC,ITH_SER,ITH_LINE,ITH_LUPDT,ITH_USRID,ITH_REMARK) 
         VALUES(?,CONVERT(DATE, GETDATE()),?,?,?,
         ?,?,? ,dbo.fun_ithline(), GETDATE(),?, ?)";
-        $this->db->query($qry , [$pitem, $pform, $pdoc, $pqty, 
-        $pwh, $ploc, $pser, $puserid , $premark  ] );
+        $this->db->query($qry, [
+            $pitem, $pform, $pdoc, $pqty,
+            $pwh, $ploc, $pser, $puserid, $premark
+        ]);
         return $this->db->affected_rows();
-    }	
+    }
 
-    public function select_rm_null_bo_zeroed($pdate){
+    public function select_rm_null_bo_zeroed($pdate)
+    {
         $qry = "SELECT ITH_SER,BEFQTYFG,ITH_WH,SER_DOC,  MAX(SERD2_SER_SMP) SERD2SER_SMP FROM
             (SELECT VBEFFG.*,SER_ITMID,SER_DOC FROM
                 (SELECT ITH_SER,SUM(ITH_QTY) BEFQTYFG, ITH_WH FROM v_ith_tblc WHERE  ITH_FORM NOT IN ('SASTART','SA') AND ITH_DATEC<=?
@@ -1390,7 +1510,8 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_rm_null_bo_zeroed_combined($pdate){
+    public function select_rm_null_bo_zeroed_combined($pdate)
+    {
         $qry = "SELECT SERD2_ITMCD ITH_ITMCD,SUM(SERD2_QTY) BEFQTY, 0 PLOTQTY, ITH_WH, '' REMARK FROM
         (SELECT ITH_SER,BEFQTYFG,ITH_WH,SER_DOC,  MAX(SERD2_SER_SMP) SERD2SER_SMP FROM
                 (SELECT VBEFFG.*,SER_ITMID,SER_DOC FROM
@@ -1412,13 +1533,15 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_rm_in_fg($item, $lotno, $stock) {
+    public function select_rm_in_fg($item, $lotno, $stock)
+    {
         $qry = "wms_sp_rm_in_fg ?, ?, ?";
         $query = $this->db->query($qry, [$item, $lotno, $stock]);
         return $query->result_array();
     }
 
-    public function select_RMFromDeliveredFG($pdate1, $pdate2) {
+    public function select_RMFromDeliveredFG($pdate1, $pdate2)
+    {
         $qry = "SELECT SERD2_ITMCD ITH_ITMCD
                 ,SUM(SERD2_QTY) BEFQTY
             FROM (
@@ -1438,7 +1561,8 @@ class ITH_mod extends CI_Model {
         $query = $this->db->query($qry, [$pdate1, $pdate2]);
         return $query->result_array();
     }
-    public function select_RMFromDeliveredFG_CJ($pdate1, $pdate2) {
+    public function select_RMFromDeliveredFG_CJ($pdate1, $pdate2)
+    {
         #CJ = combined job
         $qry = "SELECT SERD2_ITMCD ITH_ITMCD
                     ,SUM(SERD2_QTY) BEFQTY
@@ -1460,7 +1584,8 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_deliv_invo($pdate1, $pdate2, $bigrup) {
+    public function select_deliv_invo($pdate1, $pdate2, $bigrup)
+    {
         //ORDER BY ITH_DATEC, ITH_DOC, ITH_ITMCD
         $qry = "SELECT ITH_DATEC,ITH_DOC,DLV_CUSTDO,DLV_CONSIGN,NOMAJU,NOMPEN,INVDT,DLV_INVNO,DLV_SMTINVNO,ITH_ITMCD,ITMDESCD,DLVPRC_CPO,DLVPRC_QTY,DLVPRC_PRC,(DLVPRC_QTY*DLVPRC_PRC) AMOUNT,DLV_SMTINVNO,DLV_SPPBDOC  FROM 
         (select ITH_DATEC,max(DLV_CONSIGN) DLV_CONSIGN,max(DLV_INVDT) INVDT,ITH_ITMCD,MAX(RTRIM(MITM_ITMD1)) ITMDESCD,ITH_DOC,ABS(SUM(ITH_QTY)) DELQT,MAX(DLV_INVNO) DLV_INVNO, MAX(DLV_SMTINVNO) DLV_SMTINVNO
@@ -1497,10 +1622,11 @@ class ITH_mod extends CI_Model {
         LEFT JOIN (SELECT ITH_DOC, MAX(ITH_DATEC) SHIPDATE FROM v_ith_tblc WHERE ITH_FORM='OUT-SHP-RM' GROUP BY ITH_DOC) VITH ON DLV_ID=ITH_DOC
         WHERE DLVRMSO_CPO IS NOT NULL AND ISNULL(NOMPEN,'')!=''		
         ORDER BY ITH_DATEC, ITH_DOC, ITH_ITMCD";
-        $query = $this->db->query($qry, [$pdate1, $pdate2,$pdate1, $pdate2]);
+        $query = $this->db->query($qry, [$pdate1, $pdate2, $pdate1, $pdate2]);
         return $query->result_array();
     }
-    public function select_deliv_part_to3rdparty($pdate1, $pdate2, $bigrup) {
+    public function select_deliv_part_to3rdparty($pdate1, $pdate2, $bigrup)
+    {
         //ORDER BY ITH_DATEC, ITH_DOC, ITH_ITMCD
         $qry = "SELECT DLV_DATE ITH_DATEC,DLV_ID ITH_DOC,DLV_CUSTDO, DLV_CONSIGN, NOMAJU,
         NOMPEN, INVDT,DLV_INVNO,DLV_SMTINVNO,DLVRMDOC_ITMID ITH_ITMCD, RTRIM(MITM_ITMD1) ITMDESCD,DLVPRC_QTY,DLVRMSO_PRPRC DLVPRC_PRC, DLVPRC_QTY* DLVRMSO_PRPRC AMOUNT,DLV_DSCRPTN,
@@ -1526,14 +1652,16 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_itemtotal($pdoc, $pwh){
+    public function select_itemtotal($pdoc, $pwh)
+    {
         $qry = "SELECT RTRIM(ITH_ITMCD) ITH_ITMCD,SUM(ITH_QTY) ITH_QTY,ITH_DOC FROM ITH_TBL WHERE ITH_DOC=? AND ITH_WH=?
         GROUP BY ITH_ITMCD,ITH_DOC";
         $query = $this->db->query($qry, [$pdoc, $pwh]);
         return $query->result_array();
     }
 
-    public function select_out_wip($pdate){
+    public function select_out_wip($pdate)
+    {
         $qry = "SELECT SER_ID,SER_DOC,PDPP_BSGRP
         ,CASE WHEN PDPP_BSGRP = 'PSI1PPZIEP' THEN 'PLANT1'
         WHEN PDPP_BSGRP = 'PSI2PPZADI' THEN 'PLANT2'
@@ -1556,10 +1684,11 @@ class ITH_mod extends CI_Model {
         WHERE MITM_MODEL='0' AND ITH_FORM='INC-WH-FG' AND ITH_DATEC = ?
         and SERD2_ITMCD is not null AND WORID IS NULL
         GROUP BY SER_ID,SER_DOC,PDPP_BSGRP,SERD2_ITMCD,ITH_LUPDT";
-        $query = $this->db->query($qry, [$pdate,$pdate]);
+        $query = $this->db->query($qry, [$pdate, $pdate]);
         return $query->result_array();
     }
-    public function select_out_wip_fromsubassy($pdate){
+    public function select_out_wip_fromsubassy($pdate)
+    {
         $qry = "SELECT SERML_COMID,SER_DOC,PDPP_BSGRP
         ,CASE WHEN PDPP_BSGRP = 'PSI1PPZIEP' THEN 'PLANT1'
         WHEN PDPP_BSGRP = 'PSI2PPZADI' THEN 'PLANT2'
@@ -1584,11 +1713,12 @@ class ITH_mod extends CI_Model {
         WHERE MITM_MODEL='0' AND ITH_FORM='INC-WH-FG' AND ITH_DATEC = ?
         and SERD2_ITMCD is not null AND WORID IS NULL
         GROUP BY SERML_COMID,SER_DOC,PDPP_BSGRP,SERD2_ITMCD,ITH_LUPDT";
-        $query = $this->db->query($qry, [$pdate,$pdate]);
+        $query = $this->db->query($qry, [$pdate, $pdate]);
         return $query->result_array();
     }
 
-    public function select_out_wip_zeroed($pdate){
+    public function select_out_wip_zeroed($pdate)
+    {
         $qry = "SELECT SER_ID,SER_DOC,PDPP_BSGRP
         ,CASE WHEN PDPP_BSGRP = 'PSI1PPZIEP' THEN 'PLANT1'
         WHEN PDPP_BSGRP = 'PSI2PPZADI' THEN 'PLANT2'
@@ -1611,24 +1741,26 @@ class ITH_mod extends CI_Model {
         WHERE ITH_FORM='INC-WH-FG' AND ITH_DATEC = ?
         and SERD2_ITMCD is null AND WORID IS NULL
         GROUP BY SER_ID,SER_DOC,PDPP_BSGRP,SERD2_ITMCD,ITH_LUPDT,SERD2_SER_SMP,SER_QTYLOT";
-        $query = $this->db->query($qry, [$pdate,$pdate]);
+        $query = $this->db->query($qry, [$pdate, $pdate]);
         return $query->result_array();
     }
 
-    public function select_confirmdate_psn($psn){
+    public function select_confirmdate_psn($psn)
+    {
         $qry = "SELECT * FROM ITH_TBL WHERE ITH_FORM='INC-RET' AND ITH_DOC LIKE ?";
-        $query = $this->db->query($qry, ['%'.$psn.'%']);
+        $query = $this->db->query($qry, ['%' . $psn . '%']);
         return $query->result_array();
     }
 
-    public function select_fordispose($plike,$pdate0){
+    public function select_fordispose($plike, $pdate0)
+    {
         $this->db->select("ITH_ITMCD,MITMGRP_ITMCD,RTRIM(MAX(MITM_ITMD1)) ITMNM,SUM(ITH_QTY) STKQTY");
         $this->db->from('v_ith_tblc');
         $this->db->join('MITM_TBL', "ITH_ITMCD=MITM_ITMCD", "LEFT");
         $this->db->join('MITMGRP_TBL', "ITH_ITMCD=MITMGRP_ITMCD_GRD", "LEFT");
         $this->db->where("ITH_WH", "ARWH9SC")
-        ->where("ITH_DATEC <=", $pdate0)
-        ->like($plike);
+            ->where("ITH_DATEC <=", $pdate0)
+            ->like($plike);
         $this->db->group_by("ITH_ITMCD,MITMGRP_ITMCD");
         $this->db->order_by("ITH_ITMCD");
         $query = $this->db->get();
@@ -1639,9 +1771,9 @@ class ITH_mod extends CI_Model {
     {
         $this->db->from('v_ith_tblc');
         $this->db->like("ITH_DOC", $pDoc, 'after')
-        ->like("ITH_DOC", 'SP-')
-        ->where_not_in("ITH_FORM", ['INC-RET','OUT-RET'])
-        ->where("ITH_DATEC !=", $pDate);        
+            ->like("ITH_DOC", 'SP-')
+            ->where_not_in("ITH_FORM", ['INC-RET', 'OUT-RET'])
+            ->where("ITH_DATEC !=", $pDate);
         $this->db->order_by("ITH_LUPDT");
         $query = $this->db->get();
         return $query->result_array();
@@ -1650,26 +1782,27 @@ class ITH_mod extends CI_Model {
     {
         $this->db->from('v_ith_tblc');
         $this->db->like("ITH_DOC", $pDoc, 'after')
-        ->like("ITH_DOC", 'SP-')
-        ->where_not_in("ITH_FORM", ['INC-RET','OUT-RET'])
-        ->where("ITH_DATEC !=", $pDate)
-        ->where_in("ITH_ITMCD", $pItems);
+            ->like("ITH_DOC", 'SP-')
+            ->where_not_in("ITH_FORM", ['INC-RET', 'OUT-RET'])
+            ->where("ITH_DATEC !=", $pDate)
+            ->where_in("ITH_ITMCD", $pItems);
         $this->db->order_by("ITH_LUPDT");
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    function update_kitting_date($PSN, $newDate, $newDateTime,$oldDateTime, $itemcd)
+    function update_kitting_date($PSN, $newDate, $newDateTime, $oldDateTime, $itemcd)
     {
         $qry = "UPDATE ITH_TBL SET ITH_DATE=?,ITH_LUPDT=? where ITH_DOC LIKE ?
         AND ITH_FORM NOT IN ('INC-RET','OUT-RET')        
         AND ITH_LUPDT=?
         AND ITH_ITMCD=?";
-        $this->db->query($qry, [$newDate, $newDateTime, $PSN.'%', $oldDateTime, $itemcd]);
+        $this->db->query($qry, [$newDate, $newDateTime, $PSN . '%', $oldDateTime, $itemcd]);
         return $this->db->affected_rows();
     }
 
-    public function select_fordispose_fromfg($pdate0){
+    public function select_fordispose_fromfg($pdate0)
+    {
         $qry = "SELECT RTRIM(SERD2_ITMCD) ITH_ITMCD,MITMGRP_ITMCD,SUM(RMQT) STKQTY FROM
         (SELECT ITH_SER,SUM(ITH_QTY) FGQT FROM v_ith_tblc WHERE ITH_DATEC<=? AND ITH_WH='AFWH9SC'
         GROUP BY ITH_SER
@@ -1683,7 +1816,8 @@ class ITH_mod extends CI_Model {
         $query = $this->db->query($qry, [$pdate0]);
         return $query->result_array();
     }
-    public function select_fordispose_fromfg_serial($pdate0){
+    public function select_fordispose_fromfg_serial($pdate0)
+    {
         $qry = "SELECT SER_ITMID,RTRIM(SERD2_ITMCD) ITH_ITMCD,MITMGRP_ITMCD,SUM(RMQT) STKQTY FROM
         (SELECT ITH_SER,SUM(ITH_QTY) FGQT FROM v_ith_tblc WHERE ITH_DATEC<=? AND ITH_WH='AFWH9SC'
         GROUP BY ITH_SER
@@ -1699,100 +1833,111 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_balanceRA(){
+    public function select_balanceRA()
+    {
         $this->db->select("ITH_SER,ITH_DOC,MAX(ITH_ITMCD) ITMCD,SUM(ITH_QTY) BALQT,SUM(CASE WHEN ITH_QTY>0 THEN ITH_QTY ELSE 0 END) INCQT ");
         $this->db->from($this->TABLENAME);
         $this->db->where("ITH_WH", "AFQART");
         $this->db->group_by("ITH_SER,ITH_DOC");
-        $this->db->having("SUM(ITH_QTY) > ",0);
+        $this->db->having("SUM(ITH_QTY) > ", 0);
         $this->db->order_by("ITH_DOC");
         $query = $this->db->get();
         return $query->result();
     }
-    public function select_slow_moving_fg(){
+    public function select_slow_moving_fg()
+    {
         $this->db->select("wms_v_fg_slow_moving.*,RTRIM(MITM_ITMD1) MITM_ITMD1");
         $this->db->from("wms_v_fg_slow_moving");
-        $this->db->join("MITM_TBL","ITH_ITMCD=MITM_ITMCD","LEFT");
-        $this->db->join("v_mitm_bsgroup","ITH_ITMCD=PDPP_MDLCD","LEFT");
+        $this->db->join("MITM_TBL", "ITH_ITMCD=MITM_ITMCD", "LEFT");
+        $this->db->join("v_mitm_bsgroup", "ITH_ITMCD=PDPP_MDLCD", "LEFT");
         $this->db->order_by("ITH_ITMCD");
         $query = $this->db->get();
         return $query->result();
     }
-    public function select_slow_moving_fg_bg($pbg){
+    public function select_slow_moving_fg_bg($pbg)
+    {
         $this->db->select("wms_v_fg_slow_moving.*,RTRIM(MITM_ITMD1) MITM_ITMD1");
         $this->db->from("wms_v_fg_slow_moving");
-        $this->db->join("MITM_TBL","ITH_ITMCD=MITM_ITMCD","LEFT");
-        $this->db->join("v_mitm_bsgroup","ITH_ITMCD=PDPP_MDLCD","LEFT");
-        $this->db->where_in("PDPP_BSGRP",$pbg);
+        $this->db->join("MITM_TBL", "ITH_ITMCD=MITM_ITMCD", "LEFT");
+        $this->db->join("v_mitm_bsgroup", "ITH_ITMCD=PDPP_MDLCD", "LEFT");
+        $this->db->where_in("PDPP_BSGRP", $pbg);
         $this->db->order_by("ITH_ITMCD");
         $query = $this->db->get();
         return $query->result();
     }
-    public function select_discrepancy_prd_qc(){		
+    public function select_discrepancy_prd_qc()
+    {
         $this->db->from("wms_v_discrepancy_prd_qc");
         $this->db->where("YEAR(LUPDT)>", 2021);
         $this->db->order_by("LUPDT");
         $query = $this->db->get();
         return $query->result();
     }
-    public function select_WO_PRD_uncalculated(){
-        $this->db->from("WMS_V_WOPRD_UNCALCULATED");	
+    public function select_WO_PRD_uncalculated()
+    {
+        $this->db->from("WMS_V_WOPRD_UNCALCULATED");
         $query = $this->db->get();
         return $query->result();
     }
 
-    public function select_spl_booked($pbookid){
+    public function select_spl_booked($pbookid)
+    {
         $qry = "SELECT ITH_DOC,ITH_ITMCD,SUM(ITH_QTY),ITH_REMARK FROM ITH_TBL WHERE ITH_FORM='BOOK-SPL-1' AND ITH_DOC=?
         GROUP BY ITH_DOC,ITH_ITMCD,ITH_REMARK";
         $query =  $this->db->query($qry, [$pbookid]);
         return $query->result_array();
-    }	
+    }
 
-    public function select_wo_side_detail($pdate,$passycode,$ppsn) {
+    public function select_wo_side_detail($pdate, $passycode, $ppsn)
+    {
         $qry = "SELECT XWO.*,ISNULL(ITHQT,0) ITHQT,RTRIM(PWOP_BOMPN) PWOP_BOMPN,RTRIM(PWOP_SUBPN) PWOP_SUBPN,PWOP_PER, (PDPP_WORQT-ISNULL(ITHQT,0)) * PWOP_PER NEEDQTY, 0 PLOTQTY,PPSN1_PSNNO FROM XWO
         LEFT JOIN (SELECT ITH_DOC,ITH_ITMCD,SUM(ITH_QTY) ITHQT FROM v_ith_tblc LEFT JOIN XWO ON ITH_DOC=PDPP_WONO AND ITH_ITMCD=PDPP_MDLCD WHERE ITH_WH='AFWH3' AND ITH_FORM='INC-WH-FG' AND ITH_DATEC<=?  GROUP BY ITH_DOC,ITH_ITMCD) VITHQC ON PDPP_WONO=ITH_DOC AND PDPP_MDLCD=ITH_ITMCD
         LEFT JOIN XPWOP ON PDPP_WONO=PWOP_WONO
         LEFT JOIN (select PPSN1_WONO,RTRIM(MAX(PPSN1_PSNNO)) PPSN1_PSNNO from XPPSN1 WHERE PPSN1_PSNNO IN ($ppsn) group by PPSN1_WONO) VPSN ON PDPP_WONO=PPSN1_WONO		
         WHERE PDPP_MDLCD IN	($passycode) AND PDPP_WORQT!=isnull(ITHQT,0) AND abs(DATEDIFF(MONTH,  PDPP_ISUDT,?))<=2
         AND PPSN1_WONO IS NOT NULL
-        ORDER BY PPSN1_PSNNO DESC,PDPP_WONO DESC";		
-        $query = $this->db->query($qry, [$pdate,$pdate]);
+        ORDER BY PPSN1_PSNNO DESC,PDPP_WONO DESC";
+        $query = $this->db->query($qry, [$pdate, $pdate]);
         return $query->result_array();
     }
-    public function select_wo_side_detail_BGOther($pdate,$passycode,$ppsn) {
+    public function select_wo_side_detail_BGOther($pdate, $passycode, $ppsn)
+    {
         $qry = "SELECT XWO.*,ISNULL(ITHQT,0) ITHQT,RTRIM(PWOP_BOMPN) PWOP_BOMPN,RTRIM(PWOP_SUBPN) PWOP_SUBPN,PWOP_PER, (PDPP_WORQT-ISNULL(ITHQT,0)) * PWOP_PER NEEDQTY, 0 PLOTQTY,PPSN1_PSNNO FROM XWO
         LEFT JOIN (SELECT ITH_DOC,ITH_ITMCD,SUM(ITH_QTY) ITHQT FROM v_ith_tblc LEFT JOIN XWO ON ITH_DOC=PDPP_WONO AND ITH_ITMCD=PDPP_MDLCD WHERE ITH_WH='ARQA1' AND ITH_FORM='INC-QA-FG' AND ITH_DATEC<=?  GROUP BY ITH_DOC,ITH_ITMCD) VITHQC ON PDPP_WONO=ITH_DOC AND PDPP_MDLCD=ITH_ITMCD
         LEFT JOIN XPWOP ON PDPP_WONO=PWOP_WONO
         LEFT JOIN (select PPSN1_WONO,RTRIM(MAX(PPSN1_PSNNO)) PPSN1_PSNNO from XPPSN1 WHERE PPSN1_PSNNO IN ($ppsn) group by PPSN1_WONO) VPSN ON PDPP_WONO=PPSN1_WONO		
         WHERE PDPP_MDLCD IN	($passycode) AND PDPP_WORQT!=isnull(ITHQT,0) AND abs(DATEDIFF(MONTH,  PDPP_ISUDT,?))<=2
         AND PPSN1_WONO IS NOT NULL
-        ORDER BY PPSN1_PSNNO DESC,PDPP_WONO DESC";		
-        $query = $this->db->query($qry, [$pdate,$pdate]);
+        ORDER BY PPSN1_PSNNO DESC,PDPP_WONO DESC";
+        $query = $this->db->query($qry, [$pdate, $pdate]);
         return $query->result_array();
     }
-    public function select_wo_side_detail_byPSN($pdate,$ppsn) {
+    public function select_wo_side_detail_byPSN($pdate, $ppsn)
+    {
         $qry = "SELECT XWO.*,ISNULL(ITHQT,0) ITHQT,RTRIM(PWOP_BOMPN) PWOP_BOMPN,RTRIM(PWOP_SUBPN) PWOP_SUBPN,PWOP_PER, (PDPP_WORQT-ISNULL(ITHQT,0)) * PWOP_PER NEEDQTY, 0 PLOTQTY,PPSN1_PSNNO FROM XWO
         LEFT JOIN (SELECT ITH_DOC,ITH_ITMCD,SUM(ITH_QTY) ITHQT FROM v_ith_tblc LEFT JOIN XWO ON ITH_DOC=PDPP_WONO AND ITH_ITMCD=PDPP_MDLCD WHERE ITH_WH='AFWH3' AND ITH_FORM='INC-WH-FG' AND ITH_DATEC<=?  GROUP BY ITH_DOC,ITH_ITMCD) VITHQC ON PDPP_WONO=ITH_DOC AND PDPP_MDLCD=ITH_ITMCD
         LEFT JOIN XPWOP ON PDPP_WONO=PWOP_WONO
         LEFT JOIN (select PPSN1_WONO,RTRIM(MAX(PPSN1_PSNNO)) PPSN1_PSNNO from XPPSN1 WHERE PPSN1_PSNNO IN ($ppsn) group by PPSN1_WONO) VPSN ON PDPP_WONO=PPSN1_WONO		
         WHERE PDPP_WORQT!=isnull(ITHQT,0) AND abs(DATEDIFF(MONTH,  PDPP_ISUDT,?))<=2
         AND PPSN1_WONO IS NOT NULL
-        ORDER BY PPSN1_PSNNO DESC,PDPP_WONO DESC";		
-        $query = $this->db->query($qry, [$pdate,$pdate]);
+        ORDER BY PPSN1_PSNNO DESC,PDPP_WONO DESC";
+        $query = $this->db->query($qry, [$pdate, $pdate]);
         return $query->result_array();
     }
-    public function select_wo_side_detail_byPSN_BGOther($pdate,$ppsn) {
+    public function select_wo_side_detail_byPSN_BGOther($pdate, $ppsn)
+    {
         $qry = "SELECT XWO.*,ISNULL(ITHQT,0) ITHQT,RTRIM(PWOP_BOMPN) PWOP_BOMPN,RTRIM(PWOP_SUBPN) PWOP_SUBPN,PWOP_PER, (PDPP_WORQT-ISNULL(ITHQT,0)) * PWOP_PER NEEDQTY, 0 PLOTQTY,PPSN1_PSNNO FROM XWO
         LEFT JOIN (SELECT ITH_DOC,ITH_ITMCD,SUM(ITH_QTY) ITHQT FROM v_ith_tblc LEFT JOIN XWO ON ITH_DOC=PDPP_WONO AND ITH_ITMCD=PDPP_MDLCD WHERE ITH_WH='ARQA1' AND ITH_FORM='INC-QA-FG' AND ITH_DATEC<=?  GROUP BY ITH_DOC,ITH_ITMCD) VITHQC ON PDPP_WONO=ITH_DOC AND PDPP_MDLCD=ITH_ITMCD
         LEFT JOIN XPWOP ON PDPP_WONO=PWOP_WONO
         LEFT JOIN (select PPSN1_WONO,RTRIM(MAX(PPSN1_PSNNO)) PPSN1_PSNNO from XPPSN1 WHERE PPSN1_PSNNO IN ($ppsn) group by PPSN1_WONO) VPSN ON PDPP_WONO=PPSN1_WONO		
         WHERE PDPP_WORQT!=isnull(ITHQT,0) AND abs(DATEDIFF(MONTH,  PDPP_ISUDT,?))<=2
         AND PPSN1_WONO IS NOT NULL
-        ORDER BY PPSN1_PSNNO DESC,PDPP_WONO DESC";		
-        $query = $this->db->query($qry, [$pdate,$pdate]);
+        ORDER BY PPSN1_PSNNO DESC,PDPP_WONO DESC";
+        $query = $this->db->query($qry, [$pdate, $pdate]);
         return $query->result_array();
     }
-    public function select_wo_side_detail_open($pdate,$passycode) {
+    public function select_wo_side_detail_open($pdate, $passycode)
+    {
         $qry = "SELECT XWO.*,ISNULL(ITHQT,0) ITHQT,RTRIM(PWOP_BOMPN) PWOP_BOMPN,RTRIM(PWOP_SUBPN) PWOP_SUBPN,PWOP_PER, (PDPP_WORQT-ISNULL(ITHQT,0)) * PWOP_PER NEEDQTY, 0 PLOTQTY FROM XWO
         LEFT JOIN (SELECT ITH_DOC,ITH_ITMCD,SUM(ITH_QTY) ITHQT FROM v_ith_tblc LEFT JOIN XWO ON ITH_DOC=PDPP_WONO AND ITH_ITMCD=PDPP_MDLCD WHERE ITH_WH='AFWH3' AND ITH_FORM='INC-WH-FG' AND ITH_DATEC<=?  GROUP BY ITH_DOC,ITH_ITMCD) VITHQC ON PDPP_WONO=ITH_DOC AND PDPP_MDLCD=ITH_ITMCD
         LEFT JOIN XPWOP ON PDPP_WONO=PWOP_WONO
@@ -1804,9 +1949,10 @@ class ITH_mod extends CI_Model {
         ORDER BY ISSUEDATE DESC";
         $query = $this->db->query($qry, [$pdate]);
         return $query->result_array();
-    }	
+    }
 
-    public function select_critical_FGStock($pdate, $pFGs){
+    public function select_critical_FGStock($pdate, $pFGs)
+    {
         $qry = "SELECT RTRIM(ITH_ITMCD) ITH_ITMCD,
         isnull(SUM(CASE WHEN ITH_WH='ARQA1' THEN ITH_QTY END),0) QCQT,
         isnull(SUM(CASE WHEN ITH_WH='AFWH3' THEN ITH_QTY END),0) FGQT
@@ -1819,7 +1965,8 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_wip_balance($pDate, $pWarehouse,$pItems){		
+    public function select_wip_balance($pDate, $pWarehouse, $pItems)
+    {
         $qry = "SELECT * FROM
         (SELECT RTRIM(ITRN_ITMCD) ITRN_ITMCD,
          SUM( CASE WHEN ITRN_LOCCD='ARWH1' THEN 
@@ -1838,10 +1985,11 @@ class ITH_mod extends CI_Model {
         GROUP BY ITRN_ITMCD) VMEGA
         WHERE MGAQTY>0
         ORDER BY 1";
-        $query =  $this->db->query($qry, [$pDate,$pWarehouse]);
+        $query =  $this->db->query($qry, [$pDate, $pWarehouse]);
         return $query->result_array();
     }
-    public function select_allwip_plant2($pDate,$pItems){
+    public function select_allwip_plant2($pDate, $pItems)
+    {
         $qry = "SELECT * FROM
         (SELECT RTRIM(ITRN_ITMCD) ITRN_ITMCD,
          SUM( CASE WHEN ITRN_LOCCD='ARWH2' THEN 
@@ -1863,17 +2011,20 @@ class ITH_mod extends CI_Model {
         $query =  $this->db->query($qry, [$pDate]);
         return $query->result_array();
     }
-    public function select_allwip_plant1_byBG($pDate,$pBG){
+    public function select_allwip_plant1_byBG($pDate, $pBG)
+    {
         $qry = "wms_sp_rmstock_plant1 ?, ?";
-        $query =  $this->db->query($qry, [$pBG,$pDate]);
+        $query =  $this->db->query($qry, [$pBG, $pDate]);
         return $query->result_array();
     }
-    public function select_allwip_plant2_byBG($pDate,$pBG){
+    public function select_allwip_plant2_byBG($pDate, $pBG)
+    {
         $qry = "wms_sp_rmstock ?, ?";
-        $query =  $this->db->query($qry, [$pBG,$pDate]);
+        $query =  $this->db->query($qry, [$pBG, $pDate]);
         return $query->result_array();
     }
-    public function select_allwip_plant2_byBG_and_Part($pDate,$pBG, $pParts){
+    public function select_allwip_plant2_byBG_and_Part($pDate, $pBG, $pParts)
+    {
         $qry = "SELECT *,(ARWH+NRWH2+ARWH0PD+PLANT2+QA) STOCK FROM
         (SELECT RTRIM(ITRN_ITMCD) ITRN_ITMCD,RTRIM(MITM_ITMD1) ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,
             SUM( CASE WHEN ITRN_LOCCD='ARWH2' THEN 
@@ -1912,11 +2063,12 @@ class ITH_mod extends CI_Model {
                 AND ITRN_BSGRP=? AND ITRN_ITMCD IN ($pParts)
         GROUP BY ITRN_ITMCD,MITM_ITMD1,MITM_SPTNO) VMEGA		
         ORDER BY 1";
-        $query =  $this->db->query($qry, [$pDate,$pBG]);
+        $query =  $this->db->query($qry, [$pDate, $pBG]);
         return $query->result_array();
     }
 
-    public function select_allwip_plant1_byBG_and_Part($pDate,$pBG, $pParts){
+    public function select_allwip_plant1_byBG_and_Part($pDate, $pBG, $pParts)
+    {
         $qry = "SELECT *,(ARWH+NRWH2+ARWH0PD+PLANT2+QA) STOCK FROM
         (SELECT RTRIM(ITRN_ITMCD) ITRN_ITMCD,RTRIM(MITM_ITMD1) ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,
             SUM( CASE WHEN ITRN_LOCCD='ARWH1' THEN 
@@ -1955,16 +2107,18 @@ class ITH_mod extends CI_Model {
                 AND ITRN_BSGRP=? AND ITRN_ITMCD IN ($pParts)
         GROUP BY ITRN_ITMCD,MITM_ITMD1,MITM_SPTNO) VMEGA		
         ORDER BY 1";
-        $query =  $this->db->query($qry, [$pDate,$pBG]);
+        $query =  $this->db->query($qry, [$pDate, $pBG]);
         return $query->result_array();
     }
 
-    public function select_fg($date, $bg){
+    public function select_fg($date, $bg)
+    {
         $qry = "wms_sp_fgstock ?, ?";
-        $query =  $this->db->query($qry, [$bg,$date]);
+        $query =  $this->db->query($qry, [$bg, $date]);
         return $query->result_array();
     }
-    public function select_fg_byItemCodeArray($date, $bg, $aItems){
+    public function select_fg_byItemCodeArray($date, $bg, $aItems)
+    {
         $qry = "SELECT V1.*,RTRIM(MITM_ITMD1) ITMD1 FROM
         (
             SELECT ITH_ITMCD
@@ -1996,11 +2150,12 @@ class ITH_mod extends CI_Model {
             GROUP BY ITH_ITMCD
         ) V1
         LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD";
-        $query =  $this->db->query($qry, [$bg,$bg,$date]);
+        $query =  $this->db->query($qry, [$bg, $bg, $date]);
         return $query->result_array();
     }
 
-    public function select_psn_period($pdate1,$pdate2, $pItems){
+    public function select_psn_period($pdate1, $pdate2, $pItems)
+    {
         $qry = "SELECT SUBSTRING(ITRN_DOCNO,1,19) DOC FROM XITRN_TBL WHERE ITRN_ITMCD in ($pItems)
         AND (ITRN_ISUDT BETWEEN '$pdate1' AND '$pdate2')
         AND ITRN_DOCCD='TRF'
@@ -2012,7 +2167,8 @@ class ITH_mod extends CI_Model {
         $query =  $this->db->query($qry);
         return $query->result_array();
     }
-    public function select_psn_period_byBG($pdate1,$pdate2, $pBG){
+    public function select_psn_period_byBG($pdate1, $pdate2, $pBG)
+    {
         $qry = "SELECT VHEAD.* FROM 
         (SELECT SUBSTRING(ITRN_DOCNO,1,19) DOC FROM XITRN_TBL WHERE ITRN_BSGRP=?
                 AND (ITRN_ISUDT BETWEEN '$pdate1' AND '$pdate2')
@@ -2028,7 +2184,8 @@ class ITH_mod extends CI_Model {
         $query =  $this->db->query($qry, [$pBG, $pBG]);
         return $query->result_array();
     }
-    public function select_psn_period_byBG_and_Parts($pdate1,$pdate2, $pBG, $pParts){
+    public function select_psn_period_byBG_and_Parts($pdate1, $pdate2, $pBG, $pParts)
+    {
         $qry = "SELECT VHEAD.* FROM 
         (SELECT SUBSTRING(ITRN_DOCNO,1,19) DOC FROM XITRN_TBL WHERE ITRN_BSGRP=?
                 AND (ITRN_ISUDT BETWEEN '$pdate1' AND '$pdate2')
@@ -2046,7 +2203,8 @@ class ITH_mod extends CI_Model {
         $query =  $this->db->query($qry, [$pBG, $pBG]);
         return $query->result_array();
     }
-    public function select_psn_return_period($pdate1,$pdate2, $pItems){
+    public function select_psn_return_period($pdate1, $pdate2, $pItems)
+    {
         $qry = "SELECT SUBSTRING(ITRN_DOCNO,1,19) DOC FROM XITRN_TBL WHERE ITRN_ITMCD in ($pItems)
         AND (ITRN_ISUDT BETWEEN ? AND ?)
         AND ITRN_DOCNO LIKE '%SP-IEI%'  and ITRN_DOCNO like '%R%'
@@ -2055,7 +2213,8 @@ class ITH_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_parent_locations() : array {
+    public function select_parent_locations(): array
+    {
         $qry = "SELECT A.*,ISNULL(MSTLOCG_NM,'-') LOCATIONNM FROM
         (select RTRIM(ITRN_LOCCD) LOCATIONCD from XITRN_TBL
         group by ITRN_LOCCD
@@ -2099,7 +2258,7 @@ class ITH_mod extends CI_Model {
                             'NFWH4RT')
                         GROUP BY 
                             it3a.ITH_ITMCD,ITH_WH";
-        $query =  $this->db->query($qry, [ $date,$itemcode]);
+        $query =  $this->db->query($qry, [$date, $itemcode]);
         return $query->result_array();
     }
 
@@ -2134,7 +2293,7 @@ class ITH_mod extends CI_Model {
                 AND ITH_ITMCD=?
                 GROUP BY 
                     it3a.ITH_ITMCD,ITH_WH";
-        $query =  $this->db->query($qry, [ $datefrom, $dateto,$itemcode]);
+        $query =  $this->db->query($qry, [$datefrom, $dateto, $itemcode]);
         return $query->result_array();
     }
 
@@ -2180,7 +2339,39 @@ class ITH_mod extends CI_Model {
                     and ITH_ITMCD=?
                     GROUP BY 
                         it3a.ITH_ITMCD,ITH_WH";
-        $query =  $this->db->query($qry, [ $datefrom, $dateto,$itemcode]);
+        $query =  $this->db->query($qry, [$datefrom, $dateto, $itemcode]);
+        return $query->result_array();
+    }
+
+    function select_split_production($jobs)
+    {
+        $s_job = "'" . implode("','", $jobs) . "'";
+        $qry = "SELECT 
+                    VALLQC.* 
+                FROM 
+                    (
+                    SELECT 
+                        * 
+                    FROM 
+                        ITH_TBL 
+                    WHERE 
+                        ITH_DOC IN ($s_job) 
+                        AND ITH_WH IN ('ARQA1','AFWH3')
+                        AND ITH_FORM IN ('INC-WH-FG','INC-QA-FG')
+                    ) VALLQC 
+                    LEFT JOIN (
+                    SELECT 
+                        * 
+                    FROM 
+                        ITH_TBL 
+                    WHERE 
+                        ITH_DOC IN ($s_job) 
+                        AND ITH_WH = 'ARPRD1' 
+                        AND ITH_FORM = 'SPLIT-FG-LBL'
+                    ) VPRDSPLIT ON VALLQC.ITH_SER = VPRDSPLIT.ITH_SER 
+                WHERE 
+                    VPRDSPLIT.ITH_SER IS NOT NULL";
+        $query =  $this->db->query($qry);
         return $query->result_array();
     }
 }
