@@ -72,7 +72,7 @@ class PSV_mod extends CI_Model
 
    function reindex()
    {
-      $qry = "ALTER INDEX PK__STK_TBL__0837B678E48BF5BC on STK_TBL
+      $qry = "ALTER INDEX PK__STK_TBL__0837B67847244174 on STK_TBL
                REBUILD";
       $this->DBUse->query($qry);
    }
