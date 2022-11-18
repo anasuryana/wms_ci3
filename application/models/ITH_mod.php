@@ -1296,12 +1296,12 @@ class ITH_mod extends CI_Model
     public function select_txhistory_bef_parent_fg_with_additional_wh($pwh, $passy, $pdt1, $awh)
     {
         $additional_wh = "'" . implode("','", $awh) . "'";
-        $qry = "select VMEGA.*,WQT from
+        $qry = "select ISNULL(ITRN_ITMCD,ITH_ITMCD) ITRN_ITMCD,ISNULL(MGAQTY,0) MGAQTY,WQT from
         (SELECT  RTRIM(FTRN_ITMCD) ITRN_ITMCD,SUM(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) MGAQTY				
                                 FROM XFTRN_TBL 						
                                 WHERE FTRN_ISUDT<'$pdt1' AND FTRN_LOCCD='$pwh' AND FTRN_ITMCD=?
                                 GROUP BY FTRN_ITMCD) VMEGA
-        LEFT JOIN 
+        FULL JOIN
         (
         SELECT ITH_ITMCD,SUM(ITH_QTY) WQT FROM v_ith_tblc WHERE ITH_DATEC<'$pdt1' AND ITH_WH IN ($additional_wh) AND ITH_ITMCD=?
         GROUP BY ITH_ITMCD
