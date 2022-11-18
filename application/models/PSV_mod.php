@@ -57,10 +57,10 @@ class PSV_mod extends CI_Model
 
    function delete_stock()
    {
-      $qry = "DELETE FROM STK_TBL
-              WHERE AS_OF_DATE_TIME=(SELECT min(AS_OF_DATE_TIME) FROM STK_TBL)";
-      $this->DBUse->query($qry);
-      return $this->DBUse->affected_rows();
+      $qry = "DELETE FROM SRVPSV.PSV.dbo.STK_TBL
+      WHERE AS_OF_DATE_TIME=(SELECT min(AS_OF_DATE_TIME) FROM SRVPSV.PSV.dbo.STK_TBL)";
+      $this->db->query($qry);
+      return $this->db->affected_rows();
    }
 
    function truncate_stock()
