@@ -1,5 +1,6 @@
-<?php 
-class Usr_mod extends CI_Model {
+<?php
+class Usr_mod extends CI_Model
+{
     private $TABLENAME = 'MSTEMP_TBL';
     public function __construct()
     {
@@ -7,26 +8,26 @@ class Usr_mod extends CI_Model {
     }
 
     public function insert($data)
-    {        
-        $this->db->insert($this->TABLENAME,$data);
+    {
+        $this->db->insert($this->TABLENAME, $data);
         return $this->db->affected_rows();
     }
 
     public function check_Primary($data)
-    {       
-        return $this->db->get_where($this->TABLENAME,$data)->num_rows();
+    {
+        return $this->db->get_where($this->TABLENAME, $data)->num_rows();
     }
 
     public function selectAll_reged()
     {
         $this->db->select('MSTEMP_ID,MSTEMP_FNM,MSTEMP_LNM,MSTEMP_REGTM,MSTEMP_GRP,MSTGRP_NM,MSTEMP_STS');
         $this->db->from($this->TABLENAME);
-        $this->db->join('MSTGRP_TBL', 'MSTGRP_TBL.MSTGRP_ID='.$this->TABLENAME.'.MSTEMP_GRP');
-        $this->db->where('MSTEMP_ID !=', 'ane')->where('MSTEMP_ID !=', 'ane_')->where('MSTEMP_STS',1);
+        $this->db->join('MSTGRP_TBL', 'MSTGRP_TBL.MSTGRP_ID=' . $this->TABLENAME . '.MSTEMP_GRP');
+        $this->db->where('MSTEMP_ID !=', 'ane')->where('MSTEMP_ID !=', 'ane_')->where('MSTEMP_STS', 1);
         $query = $this->db->get();
         return $query->result_array();
     }
-    
+
     public function selectAll()
     {
         $query = $this->db->get($this->TABLENAME);
@@ -36,29 +37,29 @@ class Usr_mod extends CI_Model {
     public function cek_login($where)
     {
         $this->db->select("*,DATEDIFF(DAY,MSTEMP_LCHGPWDT,GETDATE()) DAY_AFTER_CHANGE_PW");
-        $query = $this->db->get_where($this->TABLENAME,$where);
+        $query = $this->db->get_where($this->TABLENAME, $where);
         return $query->result_array();
     }
 
 
     public function cek_pw($where)
     {
-        $query = $this->db->get_where($this->TABLENAME,$where);
+        $query = $this->db->get_where($this->TABLENAME, $where);
         return $query->num_rows();
     }
 
     public function updatepassword($pdata, $pkey)
     {
         $this->db->where($pkey);
-        $this->db->update($this->TABLENAME,$pdata);
+        $this->db->update($this->TABLENAME, $pdata);
         return $this->db->affected_rows();
     }
 
-    function selectunapproved(){
-        $qry  = "select * from ".$this->TABLENAME." where coalesce(MSTEMP_ACTSTS,0)=0";
+    function selectunapproved()
+    {
+        $qry  = "select * from " . $this->TABLENAME . " where coalesce(MSTEMP_ACTSTS,0)=0";
         $query = $this->db->query($qry);
         return $query->result_array();
-        
     }
 
     public function updatebyId($pdata, $pkey)
@@ -68,23 +69,26 @@ class Usr_mod extends CI_Model {
         return $this->db->affected_rows();
     }
 
-    public function selectbyName($pkey){
+    public function selectbyName($pkey)
+    {
         $this->db->select('MSTEMP_ID,MSTEMP_FNM,MSTEMP_LNM,MSTGRP_NM');
         $this->db->from($this->TABLENAME);
-        $this->db->join('MSTGRP_TBL', 'MSTGRP_TBL.MSTGRP_ID='.$this->TABLENAME.'.MSTEMP_GRP');
-        $this->db->like('lower(MSTEMP_FNM)',strtolower($pkey));
+        $this->db->join('MSTGRP_TBL', 'MSTGRP_TBL.MSTGRP_ID=' . $this->TABLENAME . '.MSTEMP_GRP');
+        $this->db->like('lower(MSTEMP_FNM)', strtolower($pkey));
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    public function selectNameMany($pwhere){
-        $qry = "select MSTEMP_ID,concat(MSTEMP_FNM, ' ' , MSTEMP_LNM) NAMA from ".$this->TABLENAME." 
-        where MSTEMP_ID in (".$pwhere.")";
+    public function selectNameMany($pwhere)
+    {
+        $qry = "select MSTEMP_ID,concat(MSTEMP_FNM, ' ' , MSTEMP_LNM) NAMA from " . $this->TABLENAME . " 
+        where MSTEMP_ID in (" . $pwhere . ")";
         $query = $this->db->query($qry);
         return $query->result_array();
     }
 
-    public function select_NPSI_user_where($pwhere){
+    public function select_NPSI_user_where($pwhere)
+    {
         $this->db->select('MSTEMP_FNM,MSTEMP_LNM,PSIDEPT');
         $this->db->from("VWMSPSI_USERS");
         $this->db->where($pwhere);
@@ -92,7 +96,8 @@ class Usr_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_kitting($pyear){
+    public function select_kitting($pyear)
+    {
         $qry = "SELECT YEARMONTH,CONCAT(MSTEMP_FNM,' ',MSTEMP_LNM) FULLNAME,count(*) TTLSCN FROM
         (select SPLSCN_USRID,concat(year(SPLSCN_LUPDT),'-',RIGHT(CONCAT('00',MONTH(SPLSCN_LUPDT)),2) ) YEARMONTH from  SPLSCN_TBL WHERE SPLSCN_USRID NOT IN ('1','ane') AND YEAR(SPLSCN_LUPDT) = ?) V1
         LEFT JOIN MSTEMP_TBL ON V1.SPLSCN_USRID=MSTEMP_ID
@@ -102,4 +107,14 @@ class Usr_mod extends CI_Model {
         return $query->result_array();
     }
 
+    public function select_unregistered($like)
+    {
+        $this->db->limit(100);
+        $this->db->select('ID, user_nicename,user_dept,user_doj');
+        $this->db->from("VPSI_USERS_UNREGISTERED");
+        $this->db->order_by("user_doj DESC,user_nicename");
+        $this->db->like($like);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 }

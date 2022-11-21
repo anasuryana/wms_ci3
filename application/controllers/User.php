@@ -211,6 +211,16 @@ class User extends CI_Controller {
         die(json_encode(['data' => $rs]));
     }
 
+    function search_unregistered()
+    {
+        header('Content-Type: application/json');
+        $searchby = $this->input->get('searchby');
+        $search = $this->input->get('search');
+        $like = $searchby === 'id' ? ['ID' => $search] : ['user_nicename' => $search];
+        $rs = $this->Usr_mod->select_unregistered($like);
+        die(json_encode(['data' => $rs]));
+    }
+
     function set_new_password()
     {        
         header('Content-Type: application/json');
