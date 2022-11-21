@@ -1,21 +1,21 @@
 <?php
 
-class PSV_mod extends CI_Model 
+class PSV_mod extends CI_Model
 {
    private $TABLENAME = "STK_TBL";
    private $DBUse = NULL;
    public function __construct()
    {
       $this->load->database();
-      $this->DBUse = $this->load->database('iei',TRUE);
+      $this->DBUse = $this->load->database('iei', TRUE);
    }
-   
+
    public function insert($data)
    {
-      $this->DBUse->insert($this->TABLENAME,$data);
+      $this->DBUse->insert($this->TABLENAME, $data);
       return $this->DBUse->insert_id();
    }
-   
+
    public function selectAll()
    {
       $query = $this->DBUse->get($this->TABLENAME);
@@ -31,9 +31,17 @@ class PSV_mod extends CI_Model
       return $query->result_array();
    }
 
+   function select_all_period()
+   {
+      $qry = "SELECT AS_OF_DATE_TIME FROM STK_TBL
+      GROUP BY AS_OF_DATE_TIME ORDER BY 1 DESC";
+      $query = $this->DBUse->query($qry);
+      return $query->result_array();
+   }
+
    public function check_Primary($data)
    {
-      return $this->DBUse->get_where($this->TABLENAME,$data)->num_rows();
+      return $this->DBUse->get_where($this->TABLENAME, $data)->num_rows();
    }
 
    public function insert_stock()
@@ -63,9 +71,17 @@ class PSV_mod extends CI_Model
       return $this->db->affected_rows();
    }
 
+   function delete_stock_where_period($period)
+   {
+      $qry = "DELETE FROM SRVPSV.PSV.dbo.STK_TBL
+      WHERE AS_OF_DATE_TIME<?";
+      $this->db->query($qry, [$period]);
+      return $this->db->affected_rows();
+   }
+
    function truncate_stock()
    {
-      $qry = "TRUNCATE TABLE ".$this->TABLENAME;
+      $qry = "TRUNCATE TABLE " . $this->TABLENAME;
       $this->DBUse->query($qry);
       return $this->DBUse->affected_rows();
    }
