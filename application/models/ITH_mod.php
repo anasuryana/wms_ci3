@@ -383,12 +383,12 @@ class ITH_mod extends CI_Model
         $s_main_wh = "'" . implode("','", $main_wh) . "'";
         $s_inc_wh = "'" . implode("','", $inc_wh) . "'";
         $s_out_wh = "'" . implode("','", $out_wh) . "'";
-        $qry = "SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,BEFQTY,INQTY, PRPQTY,abs(OUTQTY) OUTQTY, ISNULL(STOCKQTY,0)+ISNULL(PRPQTY,0) STOCKQTY, MITM_STKUOM,UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT FROM
-        (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM,MITM_NCAT from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD
+        $qry = "SELECT VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,BEFQTY,INQTY, PRPQTY,abs(OUTQTY) OUTQTY, ISNULL(STOCKQTY,0) STOCKQTY, MITM_STKUOM,UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT FROM
+        (select ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM,MITM_NCAT from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD
                 left join v_mitm_bsgroup on ITH_ITMCD=PDPP_MDLCD
                 WHERE ITH_WH in ($s_main_wh) AND ITH_ITMCD like '%$item%' and PDPP_BSGRP IN ($pbg) 
                 AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<='$pdate' 
-                GROUP BY ITH_ITMCD,ITH_WH,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1,MITM_NCAT) VSTOCK
+                GROUP BY ITH_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1,MITM_NCAT) VSTOCK
         LEFT JOIN
         (select ITH_ITMCD,SUM(ITH_QTY) BEFQTY from v_ith_tblc a 
                 WHERE ITH_WH in ($s_main_wh) AND ITH_ITMCD like '%$item%'
