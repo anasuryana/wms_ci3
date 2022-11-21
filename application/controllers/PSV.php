@@ -75,6 +75,7 @@ class PSV extends CI_Controller
             log_message('error', $_SERVER['REMOTE_ADDR'] . ',PSV,finish delete @ period ' . $period_);
             $status = ['cd' => 1, 'msg' => 'OK'];
         } else {
+            log_message('error', $_SERVER['REMOTE_ADDR'] . ',PSV,no need to delete @ period ');
             $status = ['cd' => 1, 'msg' => 'No need to be deleted'];
         }
         die(json_encode(["status" => $status, 'data' => $rs, 'tobe_deleted_period' => $period_]));
