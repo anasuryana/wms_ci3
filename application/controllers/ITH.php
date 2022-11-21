@@ -8,7 +8,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ITH extends CI_Controller
 {
-
+    private $FG_RETURN_WH = ['AFWH3RT', 'NFWH4RT'];
     public function __construct()
     {
         parent::__construct();
@@ -1121,91 +1121,6 @@ class ITH extends CI_Controller
         die(json_encode(['data' => $rs]));
     }
 
-
-    public function get_stock_recap_as_xls()
-    {
-        ini_set('max_execution_time', '-1');
-        $bg = $_COOKIE["CKPSI_BG"];
-        $wh = $_COOKIE["CKPSI_WH"];
-        $dt = $_COOKIE["CKPSI_DATE"];
-        $citem = "";
-        $rs = [];
-        $str_bg = "";
-        if (strlen(trim($bg)) == 0) {
-            $rs = $this->ITH_mod->select_psi_stock_date_wbg($wh, $citem, $dt);
-        } else {
-            if (strpos($bg, ",") !== false) {
-                $abg = explode(",", $bg);
-                $abg_c = count($abg);
-                for ($i = 0; $i < $abg_c; $i++) {
-                    $str_bg .= "'$abg[$i]',";
-                }
-                $str_bg = substr($str_bg, 0, strlen($str_bg) - 1);
-            } else {
-                $str_bg = "'$bg'";
-            }
-            $rs = $this->ITH_mod->select_psi_stock_date($wh, $citem, $str_bg, $dt);
-        }
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('stock_recap');
-        $sheet->setCellValueByColumnAndRow(1, 1, 'Warehouse');
-        $sheet->setCellValueByColumnAndRow(2, 1, 'Item Code');
-        $sheet->setCellValueByColumnAndRow(3, 1, 'Item Name');
-        $sheet->setCellValueByColumnAndRow(4, 1, 'SPTNO');
-        $sheet->setCellValueByColumnAndRow(5, 1, 'Opening');
-        $sheet->setCellValueByColumnAndRow(6, 1, 'IN');
-        $sheet->setCellValueByColumnAndRow(7, 1, 'PREPARE');
-        $sheet->setCellValueByColumnAndRow(8, 1, 'OUT');
-        $sheet->setCellValueByColumnAndRow(9, 1, 'CLOSING');
-        $sheet->setCellValueByColumnAndRow(10, 1, 'Unit Measurement');
-        $sheet->setCellValueByColumnAndRow(11, 1, 'Category');
-        $sheet->fromArray($rs, NULL, 'A2');
-        foreach (range('A', 'K') as $v) {
-            $sheet->getColumnDimension($v)->setAutoSize(true);
-        }
-        //left align
-        $rang = "A1:D" . $sheet->getHighestDataRow();
-        $sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-        if ($wh === 'AFSMT') {
-            $sheet = $spreadsheet->createSheet();
-            $sheet->setTitle('resume_category');
-            $sheet->setCellValueByColumnAndRow(1, 1, 'Category');
-            $sheet->setCellValueByColumnAndRow(2, 1, 'Qty');
-            $rscat = $this->MSTITM_mod->select_category();
-            foreach ($rscat as &$c) {
-                $c['TTL'] = 0;
-            }
-            unset($c);
-            foreach ($rs as $r) {
-                foreach ($rscat as &$c) {
-                    if ($c['MITM_NCAT'] === $r['MITM_NCAT']) {
-                        $c['TTL'] += $r['OUTQTY'];
-                    }
-                }
-                unset($c);
-            }
-            $i = 2;
-            foreach ($rscat as $r) {
-                $sheet->setCellValueByColumnAndRow(1, $i, $r['MITM_NCAT']);
-                $sheet->setCellValueByColumnAndRow(2, $i, $r['TTL']);
-                $i++;
-            }
-            foreach (range('A', 'B') as $v) {
-                $sheet->getColumnDimension($v)->setAutoSize(true);
-            }
-        }
-
-        $stringjudul = "stock $wh at " . $dt;
-        $writer = new Xlsx($spreadsheet);
-        $filename = $stringjudul; //save our workbook as this file name
-
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output');
-    }
-
     public function form_report_critical_part()
     {
         $data['lgroup'] = $this->XBGROUP_mod->selectall();
@@ -1216,7 +1131,7 @@ class ITH extends CI_Controller
     {
         date_default_timezone_set('Asia/Jakarta');
         header('Content-Type: application/json');
-        $FG_RETURN_WH = ['AFWH3RT', 'NFWH4RT'];
+
         $citem = $this->input->get('initem');
         $cdate = $this->input->get('indate');
         $cbgroup = $this->input->get('inbgroup');
@@ -1251,17 +1166,11 @@ class ITH extends CI_Controller
                 break;
         }
         if ($sbgroup == "-") {
-            if (in_array($cwh, $FG_RETURN_WH)) {
-                $rs =  $this->ITH_mod->select_psi_stock_date_wbg_fg_rtn($main_wh, $inc_wh, $main_wh, $preparation_wh, $citem, $cdate);
-            } else {
-                $rs =  $this->ITH_mod->select_psi_stock_date_wbg($cwh, $citem, $cdate);
-            }
+            $rs = in_array($cwh, $this->FG_RETURN_WH) ?  $this->ITH_mod->select_psi_stock_date_wbg_fg_rtn($main_wh, $inc_wh, $main_wh, $preparation_wh, $citem, $cdate) :
+                $this->ITH_mod->select_psi_stock_date_wbg($cwh, $citem, $cdate);
         } else {
-            if (in_array($cwh, $FG_RETURN_WH)) {
-                $rs = $this->ITH_mod->select_psi_stock_date_fg_rtn($main_wh, $inc_wh, $main_wh, $preparation_wh, $citem, $sbgroup, $cdate);
-            } else {
-                $rs = $this->ITH_mod->select_psi_stock_date($cwh, $citem, $sbgroup, $cdate);
-            }
+            $rs = in_array($cwh, $this->FG_RETURN_WH) ? $this->ITH_mod->select_psi_stock_date_fg_rtn($main_wh, $inc_wh, $main_wh, $preparation_wh, $citem, $sbgroup, $cdate) :
+                $this->ITH_mod->select_psi_stock_date($cwh, $citem, $sbgroup, $cdate);
         }
         $atomorrow = ['date' => $tomorrow];
         die('{"data":' . json_encode($rs) . ',"info": ' . json_encode($atomorrow) . '}');
