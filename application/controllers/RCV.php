@@ -679,9 +679,11 @@ class RCV extends CI_Controller
             'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
         ]);
 
-        $this->toITH([
-            'DOC' => $h_do, 'WH' => 'PSIEQUIP', 'DATE' => $h_date_bc, 'LUPDT' => $h_date_bc . ' 07:01:00', 'USRID' => $this->session->userdata('nama')
-        ]);
+        if ($h_date_bc > '2019-01-01') {
+            $this->toITH([
+                'DOC' => $h_do, 'WH' => 'PSIEQUIP', 'DATE' => $h_date_bc, 'LUPDT' => $h_date_bc . ' 07:01:00', 'USRID' => $this->session->userdata('nama')
+            ]);
+        }
 
         $api_result =  $h_nopen != '' ?  $this->gotoque($h_do) : [];
         if (count($datas) == 0) {
