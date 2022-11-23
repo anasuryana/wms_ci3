@@ -67,6 +67,7 @@
                                 <th class="align-middle text-center">Type BC</th>
                                 <th class="align-middle">No Aju</th>
                                 <th class="align-middle">No BC</th>
+                                <th class="align-middle">PPN</th>
                                 <th class="align-middle">Tgl BC</th>
                                 <th class="align-middle">Subject</th>
                                 <th class="align-middle">Department</th>
