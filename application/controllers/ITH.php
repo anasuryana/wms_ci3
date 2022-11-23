@@ -2020,9 +2020,11 @@ class ITH extends CI_Controller
             foreach ($rszero as $r) {
                 foreach ($rstemp as $b) {
                     if ($r['SERD2_SER_SMP'] == $b['SERD2_SER']) {
-                        $tosave[] = [
-                            'ITH_FORM' => 'WOR', 'ITH_DATE' => substr($r['ITH_LUPDT'], 0, 10), 'ITH_LUPDT' => $r['ITH_LUPDT'], 'ITH_ITMCD' => $b['ITH_ITMCD'], 'ITH_DOC' => $r['SER_DOC'], 'ITH_QTY' => -$r['SER_QTYLOT'] * $b['QTPER'], 'ITH_WH' => $r['OUTWH'], 'ITH_REMARK' => $r['SER_ID']
-                        ];
+                        if ($r['SER_QTYLOT'] * $b['QTPER'] > 0) {
+                            $tosave[] = [
+                                'ITH_FORM' => 'WOR', 'ITH_DATE' => substr($r['ITH_LUPDT'], 0, 10), 'ITH_LUPDT' => $r['ITH_LUPDT'], 'ITH_ITMCD' => $b['ITH_ITMCD'], 'ITH_DOC' => $r['SER_DOC'], 'ITH_QTY' => -$r['SER_QTYLOT'] * $b['QTPER'], 'ITH_WH' => $r['OUTWH'], 'ITH_REMARK' => $r['SER_ID']
+                            ];
+                        }
                     }
                 }
             }
@@ -2041,6 +2043,8 @@ class ITH extends CI_Controller
         log_message('error', 'finish out_wor');
         die(json_encode(['status' => $myar]));
     }
+
+
     public function out_wor_wip_subassy()
     {
         ini_set('max_execution_time', '-1');
