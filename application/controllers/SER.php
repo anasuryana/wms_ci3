@@ -3071,17 +3071,25 @@ class SER extends CI_Controller
                         if (strtoupper($u) === strtoupper($ca_itmcd[$i])) {
                            $isfound = false;
                            foreach ($test_out_tx as &$s) {
-                              if ($s['ITH_ITMCD'] === strtoupper($u)) {
-                                 $s['ITH_QTY'] -= $ca_qty[$i];
-                                 $isfound = true;
-                                 break;
+                              if (strtoupper($ca_itmcd[$i]) === strtoupper($colditem)) {
+                                 if ($s['ITH_FORM'] === 'SPLIT-FG-LBL') {
+                                    $s['ITH_QTY'] -= $ca_qty[$i];
+                                    $isfound = true;
+                                    break;
+                                 }
+                              } else {
+                                 if ($s['ITH_FORM'] === 'SPLIT-CNV-FG-OUT') {
+                                    $s['ITH_QTY'] -= $ca_qty[$i];
+                                    $isfound = true;
+                                    break;
+                                 }
                               }
                            }
                            unset($s);
 
                            if (!$isfound) {
                               $test_out_tx[] = [
-                                 "ITH_ITMCD" => strtoupper($u),
+                                 "ITH_ITMCD" => $colditem,
                                  "ITH_DATE" => $currdate,
                                  "ITH_FORM" => strtoupper($u) === strtoupper($colditem) ? 'SPLIT-FG-LBL' : 'SPLIT-CNV-FG-OUT',
                                  "ITH_DOC" => $coldjob,
