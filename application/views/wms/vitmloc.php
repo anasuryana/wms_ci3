@@ -522,6 +522,7 @@
             const mitem = excelRows[i].ITEM;
             const mloc = excelRows[i].LOCATIONID;
             const mlocg = excelRows[i].LOCATIONGROUP;
+            const mbusiness = excelRows[i].BUSINESSGROUP;
             $.ajax({
                 type: "post",
                 url: "<?= base_url('ITMLOC/import') ?>",
@@ -529,6 +530,7 @@
                     initem: mitem,
                     inlocg: mlocg,
                     inloc: mloc,
+                    inBG: mbusiness,
                     inrowid: i
                 },
                 dataType: "json",
