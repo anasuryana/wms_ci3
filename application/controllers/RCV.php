@@ -1231,7 +1231,29 @@ class RCV extends CI_Controller
         }
         $rs = $searchby == 'DO' ? $this->RCV_mod->select_deliv_invo_byDO($pdate1, $pdate2, $sbgroup, $search)
             : $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup, $search);
-        die(json_encode(['data' => $rs]));
+        $rsresume = [];
+        foreach ($rs as $r) {
+            $isfound = false;
+            foreach ($rsresume as &$s) {
+                if ($s['PNGR_INVNO'] === $r['PNGR_INVNO']) {
+                    $isfound = true;
+                    $s['PGRN_AMT'] += $r['PGRN_AMT'];
+                    break;
+                }
+            }
+            unset($s);
+            if (!$isfound) {
+                $rsresume[] = [
+                    'PGRN_SUPCD' => $r['PGRN_SUPCD'],
+                    'MSUP_SUPNM' => $r['MSUP_SUPNM'],
+                    'PNGR_INVNO' => $r['PNGR_INVNO'],
+                    'PGRN_RCVDT' => $r['PGRN_RCVDT'],
+                    'PGRN_CURCD' => $r['PGRN_CURCD'],
+                    'PGRN_AMT' => $r['PGRN_AMT'],
+                ];
+            }
+        }
+        die(json_encode(['data' => $rs, 'data_r' => $rsresume]));
     }
 
     public function report_summary_inv_as_xls()
@@ -1248,9 +1270,31 @@ class RCV extends CI_Controller
         $pdate2 = $_COOKIE["CKPSI_DATE2"];
         $sbgroup = $bsgrp;
         $rs = $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup, '');
+        $rsresume = [];
+        foreach ($rs as $r) {
+            $isfound = false;
+            foreach ($rsresume as &$s) {
+                if ($s['PNGR_INVNO'] === $r['PNGR_INVNO']) {
+                    $isfound = true;
+                    $s['PGRN_AMT'] += $r['PGRN_AMT'];
+                    break;
+                }
+            }
+            unset($s);
+            if (!$isfound) {
+                $rsresume[] = [
+                    'PGRN_SUPCD' => $r['PGRN_SUPCD'],
+                    'MSUP_SUPNM' => $r['MSUP_SUPNM'],
+                    'PNGR_INVNO' => $r['PNGR_INVNO'],
+                    'PGRN_RCVDT' => $r['PGRN_RCVDT'],
+                    'PGRN_CURCD' => $r['PGRN_CURCD'],
+                    'PGRN_AMT' => $r['PGRN_AMT'],
+                ];
+            }
+        }
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('RESUME');
+        $sheet->setTitle('DETAIL');
         $sheet->setCellValueByColumnAndRow(1, 1, 'ACTUAL RECEIVE PART');
         $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
         $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
@@ -1296,6 +1340,35 @@ class RCV extends CI_Controller
         }
         $rang = "P1:P" . $inx;
         $sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->freezePane('A5');
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('RESUME');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'ACTUAL RECEIVE PART');
+        $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
+        $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
+
+        $sheet->setCellValueByColumnAndRow(1, 4, 'Supplier Code');
+        $sheet->setCellValueByColumnAndRow(2, 4, 'Supplier Name');
+        $sheet->setCellValueByColumnAndRow(3, 4, 'Invoice No.');
+        $sheet->setCellValueByColumnAndRow(4, 4, 'Receive Date');
+        $sheet->setCellValueByColumnAndRow(5, 4, 'Currency');
+        $sheet->setCellValueByColumnAndRow(6, 4, 'Amount');
+        $inx = 5;
+        foreach ($rsresume as $r) {
+            $sheet->setCellValueByColumnAndRow(1, $inx, $r['PGRN_SUPCD']);
+            $sheet->setCellValueByColumnAndRow(2, $inx, $r['MSUP_SUPNM']);
+            $sheet->setCellValueByColumnAndRow(3, $inx, $r['PNGR_INVNO']);
+            $sheet->setCellValueByColumnAndRow(4, $inx, $r['PGRN_RCVDT']);
+            $sheet->setCellValueByColumnAndRow(5, $inx, $r['PGRN_CURCD']);
+            $sheet->setCellValueByColumnAndRow(6, $inx, $r['PGRN_AMT']);
+            $inx++;
+        }
+        foreach (range('A', 'F') as $r) {
+            $sheet->getColumnDimension($r)->setAutoSize(true);
+        }
+        $sheet->freezePane('A5');
+
         $dodis = $pdate1 . " to " . $pdate2;
         $stringjudul = "Summary Supplier Invoice " . $dodis;
         $writer = new Xlsx($spreadsheet);
