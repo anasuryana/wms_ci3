@@ -3547,7 +3547,9 @@ class DELV extends CI_Controller
                 break;
             }
             $rsfixINV = [];
+            $description = "";
             foreach ($rsrmdoc as &$r) {
+                $description = $r['DLV_DSCRPTN'];
                 $r['PLOTQT'] = 0;
                 foreach ($rs_rcv as &$x) {
                     if (
@@ -3719,7 +3721,10 @@ class DELV extends CI_Controller
                 }
                 $pdf->SetXY(155, 240 + 13);
                 $pdf->Cell(41.56, 4, number_format($ttlamount_, 2), 0, 0, 'R');
-                $pdf->Text(35, 240 + 25, "Non Commercial Value For Customs Purpose Only");
+                if($description !== "DIJUAL")
+                {
+                    $pdf->Text(35, 240 + 25, "Non Commercial Value For Customs Purpose Only");
+                }
             } else {
                 $rsrmdoc = $rsrmdocFromSO;
                 if (count($rsrmdoc)) {
