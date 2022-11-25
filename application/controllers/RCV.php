@@ -1337,9 +1337,10 @@ class RCV extends CI_Controller
         }
         foreach (range('A', 'P') as $r) {
             $sheet->getColumnDimension($r)->setAutoSize(true);
-        }
-        $rang = "P1:P" . $inx;
-        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        }        
+        #FORMAT NUMBER
+        $rang = "N5:O" . $sheet->getHighestDataRow();
+        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0.00');
         $sheet->freezePane('A5');
 
         $sheet = $spreadsheet->createSheet();
@@ -1364,6 +1365,10 @@ class RCV extends CI_Controller
             $sheet->setCellValueByColumnAndRow(6, $inx, $r['PGRN_AMT']);
             $inx++;
         }
+        #FORMAT NUMBER
+        $rang = "F5:F" . $sheet->getHighestDataRow();
+        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0.00');
+
         foreach (range('A', 'F') as $r) {
             $sheet->getColumnDimension($r)->setAutoSize(true);
         }
