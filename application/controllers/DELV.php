@@ -3569,7 +3569,14 @@ class DELV extends CI_Controller
                             $x['RCV_QTY'] -= $reqbal;
                         }
                         $rsfixINV[] = [
-                            'ITMQT' => $useqt, 'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC'], 'DLV_ITMD1' => $r['DLV_ITMD1'], 'DLVRMDOC_TYPE' => $r['DLVRMDOC_TYPE'], 'MITM_STKUOM' => $r['MITM_STKUOM'], 'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC'], 'DLVRMDOC_ITMID' => $r['DLVRMDOC_ITMID']
+                            'ITMQT' => $useqt
+                            , 'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC']
+                            , 'DLV_ITMD1' => $r['DLV_ITMD1']
+                            , 'DLVRMDOC_TYPE' => $r['DLVRMDOC_TYPE']
+                            , 'MITM_STKUOM' => $r['MITM_STKUOM']
+                            , 'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC']
+                            , 'DLVRMDOC_ITMID' => $r['DLVRMDOC_ITMID']
+                            , 'MITM_ITMCDCUS' => $r['MITM_ITMCDCUS']
                         ];
                         if ($r['ITMQT'] == $r['PLOTQT']) {
                             break;
@@ -3616,6 +3623,8 @@ class DELV extends CI_Controller
                 $ttlamount_ = 0;
                 $isDecimal = false;
                 foreach ($rsfixINV as $r) {
+                    $tempItem = $r['MITM_ITMCDCUS'] != '' ? $r['MITM_ITMCDCUS'] :  $r['DLVRMDOC_ITMID'];
+                    $ItemDis = $tempItem;
                     switch (trim($r['MITM_STKUOM'])) {
                         case 'GMS':
                             $uom = 'GRM';
@@ -3665,7 +3674,7 @@ class DELV extends CI_Controller
                         $additionalRow = 0;
                     }
                     $pdf->SetFont('Arial', '', 9);
-                    $pdf->Text(45, $curY + 4 + $YExtra, trim($r['DLVRMDOC_ITMID']));
+                    $pdf->Text(45, $curY + 4 + $YExtra, $tempItem);
                     $pdf->Text(45, $curY + 8 + $YExtra, trim($r['DLVRMDOC_TYPE']));
                     $pdf->Text(100, $curY, $uom);
                     $pdf->SetXY(110, $curY - 3);
