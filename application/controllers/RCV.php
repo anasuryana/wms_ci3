@@ -1235,7 +1235,7 @@ class RCV extends CI_Controller
         foreach ($rs as $r) {
             $isfound = false;
             foreach ($rsresume as &$s) {
-                if ($s['PNGR_INVNO'] === $r['PNGR_INVNO']) {
+                if ($s['PNGR_INVNO'] === $r['PNGR_INVNO'] && $s['PGRN_SUPCD'] === $r['PGRN_SUPCD']) {
                     $isfound = true;
                     $s['PGRN_AMT'] += $r['PGRN_AMT'];
                     break;
@@ -1274,7 +1274,7 @@ class RCV extends CI_Controller
         foreach ($rs as $r) {
             $isfound = false;
             foreach ($rsresume as &$s) {
-                if ($s['PNGR_INVNO'] === $r['PNGR_INVNO']) {
+                if ($s['PNGR_INVNO'] === $r['PNGR_INVNO'] && $s['PGRN_SUPCD'] === $r['PGRN_SUPCD']) {
                     $isfound = true;
                     $s['PGRN_AMT'] += $r['PGRN_AMT'];
                     break;
