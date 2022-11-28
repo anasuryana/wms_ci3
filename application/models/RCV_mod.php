@@ -1106,7 +1106,7 @@ class RCV_mod extends CI_Model {
         FROM XPGRN_VIEW LEFT JOIN XPNGR ON PGRN_SUPNO=PNGR_SUPNO AND PGRN_BSGRP=PNGR_BSGRP
         LEFT JOIN XMITM_V ON PGRN_ITMCD=MITM_ITMCD
         WHERE PGRN_SUPCD NOT LIKE '%DUMMY%' and isnull(PNGR_INVNO,'') LIKE ? AND PGRN_BSGRP in ($bigrup) AND PGRN_RCVDT BETWEEN ? AND ?
-        ORDER BY PGRN_SUPCD,PGRN_RCVDT,PGRN_ITMCD";
+        ORDER BY PGRN_SUPCD,PGRN_RCVDT,PNGR_INVNO,PGRN_ITMCD";
 		$query = $this->db->query($qry, ['%'.$pinv.'%',$pdate1, $pdate2]);
 		return $query->result_array();
 	}
@@ -1118,7 +1118,7 @@ class RCV_mod extends CI_Model {
         FROM XPGRN_VIEW LEFT JOIN XPNGR ON PGRN_SUPNO=PNGR_SUPNO AND PGRN_BSGRP=PNGR_BSGRP
         LEFT JOIN XMITM_V ON PGRN_ITMCD=MITM_ITMCD
         WHERE PGRN_SUPCD NOT LIKE '%DUMMY%' and isnull(PGRN_SUPNO,'') LIKE ? AND PGRN_BSGRP in ($bigrup) AND PGRN_RCVDT BETWEEN ? AND ?
-        ORDER BY PGRN_SUPCD,PGRN_RCVDT,PGRN_ITMCD";
+        ORDER BY PGRN_SUPCD,PGRN_RCVDT,PNGR_INVNO,PGRN_ITMCD";
 		$query = $this->db->query($qry, ['%'.$pDO.'%',$pdate1, $pdate2]);
 		return $query->result_array();
 	}
