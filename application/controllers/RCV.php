@@ -1444,10 +1444,8 @@ class RCV extends CI_Controller
                         }
                     }
                     $sheet->setCellValueByColumnAndRow(7, $inx, "=SUBTOTAL(9,G5:G" . ($inx - 1) . ")");
-                    $sheet->getStyle('G' . $inx)->getFont()->setBold(true);                    
-                    foreach (range('B', 'G') as $r) {
-                        $sheet->getColumnDimension($r)->setAutoSize(true);
-                    }
+                    $sheet->getStyle('G' . $inx)->getFont()->setBold(true);
+
                     $sheet->freezePane('A5');
                     #FORMAT HEADER
                     $sheet->setAutoFilter('A4:G4');
@@ -1479,6 +1477,42 @@ class RCV extends CI_Controller
                     $sheet->setCellValueByColumnAndRow(1, 3, 'SUPPLIER : ' . $supplierName);
                     $sheet->setTitle($supplierName);
                     $sheet->getStyle('G' . $inx)->getAlignment()->setHorizontal('right');
+
+                    #SIGNATURE
+                    $inx += 2;
+                    $sheet->setCellValueByColumnAndRow(5, $inx, "Input By.");
+                    $sheet->setCellValueByColumnAndRow(6, $inx, "Approved By.");
+                    $sheet->setCellValueByColumnAndRow(7, $inx, "Confirm By.");
+                    $sheet->getStyle("E" . $inx . ":G" . $inx)->getAlignment()
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+                    $sheet->getStyle("E" . $inx . ":G" . $inx)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
+                        ->setColor(new Color('1F1812'));
+                    $sheet->getStyle("E" . ($inx + 1) . ":E" . ($inx + 4))->getBorders()->getOutline()->setBorderStyle(Border::BORDER_THIN)
+                        ->setColor(new Color('1F1812'));
+                    $sheet->getStyle("F" . ($inx + 1) . ":F" . ($inx + 4))->getBorders()->getOutline()->setBorderStyle(Border::BORDER_THIN)
+                        ->setColor(new Color('1F1812'));
+                    $sheet->getStyle("G" . ($inx + 1) . ":G" . ($inx + 4))->getBorders()->getOutline()->setBorderStyle(Border::BORDER_THIN)
+                        ->setColor(new Color('1F1812'));
+                    $inx += 5;
+                    $sheet->getStyle("E" . $inx . ":G" . $inx)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
+                        ->setColor(new Color('1F1812'));
+                    $inx += 2;
+                    $sheet->setCellValueByColumnAndRow(5, $inx, "Acc Receive By.");
+                    $sheet->getStyle("E" . $inx . ":G" . $inx)->getAlignment()
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+                    $sheet->getStyle("E" . $inx . ":E" . $inx)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
+                        ->setColor(new Color('1F1812'));
+                    $sheet->getStyle("E" . ($inx + 1) . ":E" . ($inx + 4))->getBorders()->getOutline()->setBorderStyle(Border::BORDER_THIN)
+                        ->setColor(new Color('1F1812'));
+                    $inx += 5;
+                    $sheet->getStyle("E" . $inx . ":E" . $inx)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
+                        ->setColor(new Color('1F1812'));
+                    foreach (range('B', 'G') as $r) {
+                        $sheet->getColumnDimension($r)->setAutoSize(true);
+                    }
+
                     #PAGE SETUP
                     $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
                     $sheet->getPageMargins()->setTop(0.1);
