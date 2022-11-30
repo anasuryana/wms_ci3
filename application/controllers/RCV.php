@@ -3,7 +3,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Color;
 
 class RCV extends CI_Controller
 {
@@ -1209,15 +1210,25 @@ class RCV extends CI_Controller
         $this->load->view('wms_report/vsummary_sup_invoice');
     }
 
-    public function report_summary_inv()
+    public function supplier_period()
     {
         header('Content-Type: application/json');
         $pdate1 = $this->input->get('date1');
         $pdate2 = $this->input->get('date2');
-        $cbgroup = $this->input->get('bsgrp');
-        $searchby = $this->input->get('searchby');
-        $search = $this->input->get('search');
-        $sbgroup = "";
+        $rs = $this->RCV_mod->select_supplier_period($pdate1, $pdate2);
+        die(json_encode(['data' => $rs]));
+    }
+
+    public function report_summary_inv()
+    {
+        header('Content-Type: application/json');
+        $pdate1 = $this->input->post('date1');
+        $pdate2 = $this->input->post('date2');
+        $cbgroup = $this->input->post('bsgrp');
+        $csupplier = $this->input->post('supplier');
+        $searchby = $this->input->post('searchby');
+        $search = $this->input->post('search');
+        $sbgroup = $ssupplier = "";
         if (is_array($cbgroup)) {
             for ($i = 0; $i < count($cbgroup); $i++) {
                 $sbgroup .= "'$cbgroup[$i]',";
@@ -1229,8 +1240,23 @@ class RCV extends CI_Controller
         } else {
             $sbgroup = "''";
         }
+        if (is_array($csupplier)) {
+            for ($i = 0; $i < count($csupplier); $i++) {
+                $ssupplier .= "'$csupplier[$i]',";
+            }
+            $ssupplier = substr($ssupplier, 0, strlen($ssupplier) - 1);
+            if ($ssupplier == '') {
+                $ssupplier = "''";
+            }
+        } else {
+            $ssupplier = "''";
+        }
         $rs = $searchby == 'DO' ? $this->RCV_mod->select_deliv_invo_byDO($pdate1, $pdate2, $sbgroup, $search)
             : $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup, $search);
+
+        $rssupplier = $searchby == 'DO' ? $this->RCV_mod->select_deliv_supplier_invo_byDO($pdate1, $pdate2, $search, $ssupplier)
+            : $this->RCV_mod->select_deliv_supplier_invo($pdate1, $pdate2, $ssupplier, $search);
+
         $rsresume = [];
         foreach ($rs as $r) {
             $isfound = false;
@@ -1253,12 +1279,12 @@ class RCV extends CI_Controller
                 ];
             }
         }
-        die(json_encode(['data' => $rs, 'data_r' => $rsresume]));
+        die(json_encode(['data' => $rs, 'data_r' => $rsresume, 'data_r_supplier' => $rssupplier]));
     }
 
     public function report_summary_inv_as_xls()
     {
-        $bsgrp = '';
+        $bsgrp = $supplier = '';
         $pdate1 = '';
         $pdate2 = '';
         if (isset($_COOKIE["CKPSI_BG"])) {
@@ -1268,6 +1294,9 @@ class RCV extends CI_Controller
         }
         $pdate1 = $_COOKIE["CKPSI_DATE1"];
         $pdate2 = $_COOKIE["CKPSI_DATE2"];
+        if (isset($_COOKIE["CKPSI_SUPPLIER"])) {
+            $supplier = $_COOKIE["CKPSI_SUPPLIER"];
+        }
         $sbgroup = $bsgrp;
         $rs = $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup, '');
         $rsresume = [];
@@ -1292,6 +1321,14 @@ class RCV extends CI_Controller
                 ];
             }
         }
+        $asupplier = explode("','", $supplier);
+        foreach ($asupplier as &$r) {
+            $r = str_replace("'", "", $r);
+        }
+        unset($r);
+        $rssupplier = $this->RCV_mod->select_deliv_supplier_invo($pdate1, $pdate2, $supplier, '');
+
+
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('DETAIL');
@@ -1337,7 +1374,7 @@ class RCV extends CI_Controller
         }
         foreach (range('A', 'P') as $r) {
             $sheet->getColumnDimension($r)->setAutoSize(true);
-        }        
+        }
         #FORMAT NUMBER
         $rang = "N5:O" . $sheet->getHighestDataRow();
         $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0.00');
@@ -1373,6 +1410,84 @@ class RCV extends CI_Controller
             $sheet->getColumnDimension($r)->setAutoSize(true);
         }
         $sheet->freezePane('A5');
+
+        #resume per supplier
+        if (!empty($rssupplier)) {
+            foreach ($asupplier as $a) {
+                if (!empty($a)) {
+                    $supplierName = '';
+                    $sheet = $spreadsheet->createSheet();
+                    $sheet->setTitle($supplierName);
+                    $sheet->setCellValueByColumnAndRow(1, 1, 'SUMMARY SUPPLIER INVOICE');
+                    $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
+                    $sheet->setCellValueByColumnAndRow(1, 4, 'No');
+                    $sheet->setCellValueByColumnAndRow(2, 4, 'Supplier Code');
+                    $sheet->setCellValueByColumnAndRow(3, 4, 'Supplier Name');
+                    $sheet->setCellValueByColumnAndRow(4, 4, 'Invoice No.');
+                    $sheet->setCellValueByColumnAndRow(5, 4, 'Receive Date');
+                    $sheet->setCellValueByColumnAndRow(6, 4, 'Currency');
+                    $sheet->setCellValueByColumnAndRow(7, 4, 'Amount');
+                    $inx = 5;
+                    foreach ($rssupplier as $r) {
+                        if ($a === $r['PGRN_SUPCD']) {
+                            if (empty($supplierName)) {
+                                $supplierName = $r['MSUP_SUPNM'];
+                            }
+                            $sheet->setCellValueByColumnAndRow(1, $inx, ($inx - 4));
+                            $sheet->setCellValueByColumnAndRow(2, $inx, $r['PGRN_SUPCD']);
+                            $sheet->setCellValueByColumnAndRow(3, $inx, $r['MSUP_SUPNM']);
+                            $sheet->setCellValueByColumnAndRow(4, $inx, $r['PNGR_INVNO']);
+                            $sheet->setCellValueByColumnAndRow(5, $inx, $r['PGRN_RCVDT']);
+                            $sheet->setCellValueByColumnAndRow(6, $inx, $r['PGRN_CURCD']);
+                            $sheet->setCellValueByColumnAndRow(7, $inx, $r['PGRN_AMT']);
+                            $inx++;
+                        }
+                    }
+                    $sheet->setCellValueByColumnAndRow(7, $inx, "=SUBTOTAL(9,G5:G" . ($inx - 1) . ")");
+                    $sheet->getStyle('G' . $inx)->getFont()->setBold(true);                    
+                    foreach (range('B', 'G') as $r) {
+                        $sheet->getColumnDimension($r)->setAutoSize(true);
+                    }
+                    $sheet->freezePane('A5');
+                    #FORMAT HEADER
+                    $sheet->setAutoFilter('A4:G4');
+                    $rang = "A4:G4";
+                    $sheet->getStyle($rang)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('eeece1');
+
+                    $rang = "A4:F" . $sheet->getHighestDataRow();
+                    $sheet->getStyle($rang)->getAlignment()
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+                    $sheet->getStyle("G4:G4")->getAlignment()
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+                    #FORMAT NUMBER body
+                    $rang = "G5:G" . $sheet->getHighestDataRow();
+                    $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0.00');
+
+                    #FOOTER
+                    $sheet->getStyle("A" . $inx . ":G" . $inx)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('eeece1');
+                    $sheet->mergeCells('A' . $inx . ':F' . $inx);
+                    $sheet->setCellValueByColumnAndRow(1, $inx, 'GRAND TOTAL');
+                    $sheet->getStyle("A" . $inx . ":G" . $inx)->getAlignment()
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+                    $sheet->getStyle("A4:G" . $sheet->getHighestDataRow())->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
+                        ->setColor(new Color('1F1812'));
+                    $sheet->setCellValueByColumnAndRow(1, 3, 'SUPPLIER : ' . $supplierName);
+                    $sheet->setTitle($supplierName);
+                    $sheet->getStyle('G' . $inx)->getAlignment()->setHorizontal('right');
+                    #PAGE SETUP
+                    $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+                    $sheet->getPageMargins()->setTop(0.1);
+                    $sheet->getPageMargins()->setRight(0.1);
+                    $sheet->getPageMargins()->setLeft(0.1);
+                    $sheet->getPageMargins()->setBottom(0.1);
+                }
+            }
+        }
 
         $dodis = $pdate1 . " to " . $pdate2;
         $stringjudul = "Summary Supplier Invoice " . $dodis;
