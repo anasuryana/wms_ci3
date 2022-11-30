@@ -1297,7 +1297,7 @@ class RCV extends CI_Controller
         if (isset($_COOKIE["CKPSI_SUPPLIER"])) {
             $supplier = $_COOKIE["CKPSI_SUPPLIER"];
         }
-        $sbgroup = $bsgrp;
+        $sbgroup = empty($bsgrp) ? "''" : $bsgrp;
         $rs = $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup, '');
         $rsresume = [];
         foreach ($rs as $r) {
@@ -1328,88 +1328,92 @@ class RCV extends CI_Controller
         unset($r);
         $rssupplier = $this->RCV_mod->select_deliv_supplier_invo($pdate1, $pdate2, $supplier, '');
 
-
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('DETAIL');
-        $sheet->setCellValueByColumnAndRow(1, 1, 'ACTUAL RECEIVE PART');
-        $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
-        $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
+        if(empty($rs))
+        {
 
-        $sheet->setCellValueByColumnAndRow(1, 4, 'Supplier Code');
-        $sheet->setCellValueByColumnAndRow(2, 4, 'Supplier Name');
-        $sheet->setCellValueByColumnAndRow(3, 4, 'GRN No');
-        $sheet->setCellValueByColumnAndRow(4, 4, 'DO No');
-        $sheet->setCellValueByColumnAndRow(5, 4, 'Invoice No.');
-        $sheet->setCellValueByColumnAndRow(6, 4, 'PO No');
-        $sheet->setCellValueByColumnAndRow(7, 4, 'Parts Code');
-        $sheet->setCellValueByColumnAndRow(8, 4, 'Maker Parts Code');
-        $sheet->setCellValueByColumnAndRow(9, 4, 'Parts Name');
-        $sheet->setCellValueByColumnAndRow(10, 4, 'Receive Date');
-        $sheet->setCellValueByColumnAndRow(11, 4, 'Qty');
-        $sheet->setCellValueByColumnAndRow(12, 4, 'Unit');
-        $sheet->setCellValueByColumnAndRow(13, 4, 'Currency');
-        $sheet->setCellValueByColumnAndRow(14, 4, 'Unit Price');
-        $sheet->setCellValueByColumnAndRow(15, 4, 'Amount');
-        $sheet->setCellValueByColumnAndRow(16, 4, 'Warehouse');
-        $inx = 5;
-        foreach ($rs as $r) {
-            $sheet->setCellValueByColumnAndRow(1, $inx, $r['PGRN_SUPCD']);
-            $sheet->setCellValueByColumnAndRow(2, $inx, $r['MSUP_SUPNM']);
-            $sheet->setCellValueByColumnAndRow(3, $inx, $r['PGRN_GRLNO']);
-            $sheet->setCellValueByColumnAndRow(4, $inx, $r['PGRN_SUPNO']);
-            $sheet->setCellValueByColumnAndRow(5, $inx, $r['PNGR_INVNO']);
-            $sheet->setCellValueByColumnAndRow(6, $inx, $r['PGRN_PONO']);
-            $sheet->setCellValueByColumnAndRow(7, $inx, $r['PGRN_ITMCD']);
-            $sheet->setCellValueByColumnAndRow(8, $inx, $r['MITM_SPTNO']);
-            $sheet->setCellValueByColumnAndRow(9, $inx, $r['MITM_ITMD1']);
-            $sheet->setCellValueByColumnAndRow(10, $inx, $r['PGRN_RCVDT']);
-            $sheet->setCellValueByColumnAndRow(11, $inx, $r['PGRN_ROKQT']);
-            $sheet->setCellValueByColumnAndRow(12, $inx, $r['MITM_STKUOM']);
-            $sheet->setCellValueByColumnAndRow(13, $inx, $r['PGRN_CURCD']);
-            $sheet->setCellValueByColumnAndRow(14, $inx, $r['PGRN_PRPRC']);
-            $sheet->setCellValueByColumnAndRow(15, $inx, $r['PGRN_AMT']);
-            $sheet->setCellValueByColumnAndRow(16, $inx, $r['PGRN_LOCCD']);
-            $inx++;
+        } else {
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('DETAIL');
+            $sheet->setCellValueByColumnAndRow(1, 1, 'ACTUAL RECEIVE PART');
+            $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
+            $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
+    
+            $sheet->setCellValueByColumnAndRow(1, 4, 'Supplier Code');
+            $sheet->setCellValueByColumnAndRow(2, 4, 'Supplier Name');
+            $sheet->setCellValueByColumnAndRow(3, 4, 'GRN No');
+            $sheet->setCellValueByColumnAndRow(4, 4, 'DO No');
+            $sheet->setCellValueByColumnAndRow(5, 4, 'Invoice No.');
+            $sheet->setCellValueByColumnAndRow(6, 4, 'PO No');
+            $sheet->setCellValueByColumnAndRow(7, 4, 'Parts Code');
+            $sheet->setCellValueByColumnAndRow(8, 4, 'Maker Parts Code');
+            $sheet->setCellValueByColumnAndRow(9, 4, 'Parts Name');
+            $sheet->setCellValueByColumnAndRow(10, 4, 'Receive Date');
+            $sheet->setCellValueByColumnAndRow(11, 4, 'Qty');
+            $sheet->setCellValueByColumnAndRow(12, 4, 'Unit');
+            $sheet->setCellValueByColumnAndRow(13, 4, 'Currency');
+            $sheet->setCellValueByColumnAndRow(14, 4, 'Unit Price');
+            $sheet->setCellValueByColumnAndRow(15, 4, 'Amount');
+            $sheet->setCellValueByColumnAndRow(16, 4, 'Warehouse');
+            $inx = 5;
+            foreach ($rs as $r) {
+                $sheet->setCellValueByColumnAndRow(1, $inx, $r['PGRN_SUPCD']);
+                $sheet->setCellValueByColumnAndRow(2, $inx, $r['MSUP_SUPNM']);
+                $sheet->setCellValueByColumnAndRow(3, $inx, $r['PGRN_GRLNO']);
+                $sheet->setCellValueByColumnAndRow(4, $inx, $r['PGRN_SUPNO']);
+                $sheet->setCellValueByColumnAndRow(5, $inx, $r['PNGR_INVNO']);
+                $sheet->setCellValueByColumnAndRow(6, $inx, $r['PGRN_PONO']);
+                $sheet->setCellValueByColumnAndRow(7, $inx, $r['PGRN_ITMCD']);
+                $sheet->setCellValueByColumnAndRow(8, $inx, $r['MITM_SPTNO']);
+                $sheet->setCellValueByColumnAndRow(9, $inx, $r['MITM_ITMD1']);
+                $sheet->setCellValueByColumnAndRow(10, $inx, $r['PGRN_RCVDT']);
+                $sheet->setCellValueByColumnAndRow(11, $inx, $r['PGRN_ROKQT']);
+                $sheet->setCellValueByColumnAndRow(12, $inx, $r['MITM_STKUOM']);
+                $sheet->setCellValueByColumnAndRow(13, $inx, $r['PGRN_CURCD']);
+                $sheet->setCellValueByColumnAndRow(14, $inx, $r['PGRN_PRPRC']);
+                $sheet->setCellValueByColumnAndRow(15, $inx, $r['PGRN_AMT']);
+                $sheet->setCellValueByColumnAndRow(16, $inx, $r['PGRN_LOCCD']);
+                $inx++;
+            }
+            foreach (range('A', 'P') as $r) {
+                $sheet->getColumnDimension($r)->setAutoSize(true);
+            }
+            #FORMAT NUMBER
+            $rang = "N5:O" . $sheet->getHighestDataRow();
+            $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet->freezePane('A5');
+    
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('RESUME');
+            $sheet->setCellValueByColumnAndRow(1, 1, 'ACTUAL RECEIVE PART');
+            $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
+            $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
+    
+            $sheet->setCellValueByColumnAndRow(1, 4, 'Supplier Code');
+            $sheet->setCellValueByColumnAndRow(2, 4, 'Supplier Name');
+            $sheet->setCellValueByColumnAndRow(3, 4, 'Invoice No.');
+            $sheet->setCellValueByColumnAndRow(4, 4, 'Receive Date');
+            $sheet->setCellValueByColumnAndRow(5, 4, 'Currency');
+            $sheet->setCellValueByColumnAndRow(6, 4, 'Amount');
+            $inx = 5;
+            foreach ($rsresume as $r) {
+                $sheet->setCellValueByColumnAndRow(1, $inx, $r['PGRN_SUPCD']);
+                $sheet->setCellValueByColumnAndRow(2, $inx, $r['MSUP_SUPNM']);
+                $sheet->setCellValueByColumnAndRow(3, $inx, $r['PNGR_INVNO']);
+                $sheet->setCellValueByColumnAndRow(4, $inx, $r['PGRN_RCVDT']);
+                $sheet->setCellValueByColumnAndRow(5, $inx, $r['PGRN_CURCD']);
+                $sheet->setCellValueByColumnAndRow(6, $inx, $r['PGRN_AMT']);
+                $inx++;
+            }
+            #FORMAT NUMBER
+            $rang = "F5:F" . $sheet->getHighestDataRow();
+            $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0.00');
+    
+            foreach (range('A', 'F') as $r) {
+                $sheet->getColumnDimension($r)->setAutoSize(true);
+            }
+            $sheet->freezePane('A5');
         }
-        foreach (range('A', 'P') as $r) {
-            $sheet->getColumnDimension($r)->setAutoSize(true);
-        }
-        #FORMAT NUMBER
-        $rang = "N5:O" . $sheet->getHighestDataRow();
-        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0.00');
-        $sheet->freezePane('A5');
-
-        $sheet = $spreadsheet->createSheet();
-        $sheet->setTitle('RESUME');
-        $sheet->setCellValueByColumnAndRow(1, 1, 'ACTUAL RECEIVE PART');
-        $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
-        $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
-
-        $sheet->setCellValueByColumnAndRow(1, 4, 'Supplier Code');
-        $sheet->setCellValueByColumnAndRow(2, 4, 'Supplier Name');
-        $sheet->setCellValueByColumnAndRow(3, 4, 'Invoice No.');
-        $sheet->setCellValueByColumnAndRow(4, 4, 'Receive Date');
-        $sheet->setCellValueByColumnAndRow(5, 4, 'Currency');
-        $sheet->setCellValueByColumnAndRow(6, 4, 'Amount');
-        $inx = 5;
-        foreach ($rsresume as $r) {
-            $sheet->setCellValueByColumnAndRow(1, $inx, $r['PGRN_SUPCD']);
-            $sheet->setCellValueByColumnAndRow(2, $inx, $r['MSUP_SUPNM']);
-            $sheet->setCellValueByColumnAndRow(3, $inx, $r['PNGR_INVNO']);
-            $sheet->setCellValueByColumnAndRow(4, $inx, $r['PGRN_RCVDT']);
-            $sheet->setCellValueByColumnAndRow(5, $inx, $r['PGRN_CURCD']);
-            $sheet->setCellValueByColumnAndRow(6, $inx, $r['PGRN_AMT']);
-            $inx++;
-        }
-        #FORMAT NUMBER
-        $rang = "F5:F" . $sheet->getHighestDataRow();
-        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0.00');
-
-        foreach (range('A', 'F') as $r) {
-            $sheet->getColumnDimension($r)->setAutoSize(true);
-        }
-        $sheet->freezePane('A5');
 
         #resume per supplier
         if (!empty($rssupplier)) {
@@ -1475,7 +1479,7 @@ class RCV extends CI_Controller
                     $sheet->getStyle("A4:G" . $sheet->getHighestDataRow())->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
                         ->setColor(new Color('1F1812'));
                     $sheet->setCellValueByColumnAndRow(1, 3, 'SUPPLIER : ' . $supplierName);
-                    $sheet->setTitle($supplierName);
+                    $sheet->setTitle(substr($supplierName,0,31));
                     $sheet->getStyle('G' . $inx)->getAlignment()->setHorizontal('right');
 
                     #SIGNATURE
