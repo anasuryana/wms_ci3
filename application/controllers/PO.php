@@ -14,6 +14,7 @@ class PO extends CI_Controller {
         $this->load->model('PO_mod');
         $this->load->model('RCVNI_mod');
         $this->load->model('MSTITM_mod');
+        $this->load->model('TREQPARTLKL_mod');
     }
     public function index()
     {
@@ -1651,5 +1652,12 @@ class PO extends CI_Controller {
         $rspayment = $this->PO_mod->select_column_history(['PO_PAYTERM']);
         $rsSHP = $this->PO_mod->select_column_history(['PO_SHPDLV']);
         die(json_encode(['payment_term' => $rspayment, 'shipment' => $rsSHP]));
+    }
+    
+    function ost_request()
+    {
+        header('Content-Type: application/json');
+        $rs = $this->TREQPARTLKL_mod->selectall_ost();
+        die(json_encode(['data' => $rs]));
     }
 }
