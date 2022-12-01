@@ -1411,6 +1411,15 @@ class RCV extends CI_Controller
                 $sheet->getColumnDimension($r)->setAutoSize(true);
             }
             $sheet->freezePane('A5');
+
+            #PAGE SETUP
+            $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getPageMargins()->setTop(0.1);
+            $sheet->getPageMargins()->setRight(0.1);
+            $sheet->getPageMargins()->setLeft(0.1);
+            $sheet->getPageMargins()->setBottom(0.1);
+            $sheet->getPageSetup()->setHorizontalCentered(true);
+            $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
         }
 
         #resume per supplier
@@ -1521,6 +1530,8 @@ class RCV extends CI_Controller
                     $sheet->getPageMargins()->setRight(0.1);
                     $sheet->getPageMargins()->setLeft(0.1);
                     $sheet->getPageMargins()->setBottom(0.1);
+                    $sheet->getPageSetup()->setHorizontalCentered(true);
+                    $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
                 }
             }
         }
