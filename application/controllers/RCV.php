@@ -1416,9 +1416,7 @@ class RCV extends CI_Controller
         #resume per supplier
         if (!empty($rssupplier)) {
             foreach ($asupplier as $a) {
-                // echo $a."<br>";
                 if (!empty($a)) {
-                    // echo "sini <br>";
                     $supplierName = '';
                     $sheet = $spreadsheet->createSheet();
                     $sheet->setTitle($supplierName);
@@ -1436,7 +1434,6 @@ class RCV extends CI_Controller
                         if ($a === $r['PGRN_SUPCD']) {
                             if (empty($supplierName)) {
                                 $supplierName = $r['MSUP_SUPNM'];
-                                // echo "sini sheet <br>";
                             }
                             $sheet->setCellValueByColumnAndRow(1, $inx, ($inx - 4));
                             $sheet->setCellValueByColumnAndRow(2, $inx, $r['PGRN_SUPCD']);
@@ -1480,7 +1477,7 @@ class RCV extends CI_Controller
                     $sheet->getStyle("A4:G" . $sheet->getHighestDataRow())->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
                         ->setColor(new Color('1F1812'));
                     $sheet->setCellValueByColumnAndRow(1, 3, 'SUPPLIER : ' . $supplierName);
-                    $sheet->setTitle(substr($a." - ".$supplierName, 0, 31));
+                    $sheet->setTitle(substr($a . " - " . $supplierName, 0, 31));
                     $sheet->getStyle('G' . $inx)->getAlignment()->setHorizontal('right');
 
                     #SIGNATURE
