@@ -1329,16 +1329,14 @@ class RCV extends CI_Controller
         $rssupplier = $this->RCV_mod->select_deliv_supplier_invo($pdate1, $pdate2, $supplier, '');
 
         $spreadsheet = new Spreadsheet();
-        if(empty($rs))
-        {
-
+        if (empty($rs)) {
         } else {
             $sheet = $spreadsheet->getActiveSheet();
             $sheet->setTitle('DETAIL');
             $sheet->setCellValueByColumnAndRow(1, 1, 'ACTUAL RECEIVE PART');
             $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
             $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
-    
+
             $sheet->setCellValueByColumnAndRow(1, 4, 'Supplier Code');
             $sheet->setCellValueByColumnAndRow(2, 4, 'Supplier Name');
             $sheet->setCellValueByColumnAndRow(3, 4, 'GRN No');
@@ -1382,13 +1380,13 @@ class RCV extends CI_Controller
             $rang = "N5:O" . $sheet->getHighestDataRow();
             $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0.00');
             $sheet->freezePane('A5');
-    
+
             $sheet = $spreadsheet->createSheet();
             $sheet->setTitle('RESUME');
             $sheet->setCellValueByColumnAndRow(1, 1, 'ACTUAL RECEIVE PART');
             $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
             $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
-    
+
             $sheet->setCellValueByColumnAndRow(1, 4, 'Supplier Code');
             $sheet->setCellValueByColumnAndRow(2, 4, 'Supplier Name');
             $sheet->setCellValueByColumnAndRow(3, 4, 'Invoice No.');
@@ -1408,7 +1406,7 @@ class RCV extends CI_Controller
             #FORMAT NUMBER
             $rang = "F5:F" . $sheet->getHighestDataRow();
             $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0.00');
-    
+
             foreach (range('A', 'F') as $r) {
                 $sheet->getColumnDimension($r)->setAutoSize(true);
             }
@@ -1418,7 +1416,9 @@ class RCV extends CI_Controller
         #resume per supplier
         if (!empty($rssupplier)) {
             foreach ($asupplier as $a) {
+                // echo $a."<br>";
                 if (!empty($a)) {
+                    // echo "sini <br>";
                     $supplierName = '';
                     $sheet = $spreadsheet->createSheet();
                     $sheet->setTitle($supplierName);
@@ -1436,6 +1436,7 @@ class RCV extends CI_Controller
                         if ($a === $r['PGRN_SUPCD']) {
                             if (empty($supplierName)) {
                                 $supplierName = $r['MSUP_SUPNM'];
+                                // echo "sini sheet <br>";
                             }
                             $sheet->setCellValueByColumnAndRow(1, $inx, ($inx - 4));
                             $sheet->setCellValueByColumnAndRow(2, $inx, $r['PGRN_SUPCD']);
@@ -1479,7 +1480,7 @@ class RCV extends CI_Controller
                     $sheet->getStyle("A4:G" . $sheet->getHighestDataRow())->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
                         ->setColor(new Color('1F1812'));
                     $sheet->setCellValueByColumnAndRow(1, 3, 'SUPPLIER : ' . $supplierName);
-                    $sheet->setTitle(substr($supplierName,0,31));
+                    $sheet->setTitle(substr($a." - ".$supplierName, 0, 31));
                     $sheet->getStyle('G' . $inx)->getAlignment()->setHorizontal('right');
 
                     #SIGNATURE
