@@ -1527,11 +1527,12 @@ class RCV extends CI_Controller
                     #PAGE SETUP
                     $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
                     $sheet->getPageMargins()->setTop(0.1);
-                    $sheet->getPageMargins()->setRight(0.1);
-                    $sheet->getPageMargins()->setLeft(0.1);
+                    $sheet->getPageMargins()->setRight(0);
+                    $sheet->getPageMargins()->setLeft(0);
                     $sheet->getPageMargins()->setBottom(0.1);
                     $sheet->getPageSetup()->setHorizontalCentered(true);
                     $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+                    $sheet->getPageSetup()->setScale(80);
                 }
             }
         }
