@@ -1298,6 +1298,7 @@ class RCV extends CI_Controller
             $supplier = $_COOKIE["CKPSI_SUPPLIER"];
         }
         $sbgroup = empty($bsgrp) ? "''" : $bsgrp;
+        $supplier = empty($supplier) ? "''" : $supplier;
         $rs = $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup, '');
         $rsresume = [];
         foreach ($rs as $r) {
