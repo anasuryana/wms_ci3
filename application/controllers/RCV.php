@@ -3572,7 +3572,19 @@ class RCV extends CI_Controller
         header('Content-Type: application/json');
         $search = $this->input->get('search');
         $searchBY = $this->input->get('searchBY');
-        $rs =  $this->RCVNI_mod->select_header($searchBY === '0' ? ['RCVNI_DO' => $search] : ['MSUP_SUPNM' => $search]);
+        $like = null;
+        switch ($searchBY) {
+            case '0':
+                $like = ['RCVNI_DO' => $search];
+                break;
+            case '1':
+                $like = ['MSUP_SUPNM' => $search];
+                break;
+            case '2':
+                $like = ['RCVNI_PO' => $search];
+                break;
+        }
+        $rs = $this->RCVNI_mod->select_header($like);
         die(json_encode(['data' => $rs]));
     }
 
