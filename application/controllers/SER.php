@@ -2942,9 +2942,20 @@ class SER extends CI_Controller
             $myar[] = ["cd" => '0', "msg" => "could not split using this menu, ask MR. H or Mr. Z"]; //07 OKT 2020
             exit('{"status":' . json_encode($myar) . '}');
          }
+
+         if ($rsactive_wh == "ARPRD1") {
+            for ($i = 0; $i < $ca_count; $i++) {
+               if ($colditem != strtoupper($ca_itmcd[$i])) {
+                  $myar[] = ["cd" => "0", "msg" => "Could not convert in production area"];
+                  exit('{"status":' . json_encode($myar) . '}');
+                  break;
+               }
+            }
+         }
          if ($this->SER_mod->updatebyId(["SER_QTY" => 0, "SER_LUPDT" => $currrtime, "SER_USRID" => $CUSERID, "SER_CAT" => NULL], $coldreff) > 0) {
             $this->SERD_mod->deletebyID_label(['SERD2_SER' => $coldreff]);
             $ser_insert_ok = 0;
+
             for ($i = 0; $i < $ca_count; $i++) {
                $preparedStatement = [
                   "SER_ID" => $ca_reff[$i],
@@ -3019,6 +3030,7 @@ class SER extends CI_Controller
                      exit('{"status":' . json_encode($myar) . '}');
                   }
                } elseif ($rsactive_wh == "ARPRD1") {
+
                   $ret_min = $this->ITH_mod->insert(
                      [
                         "ITH_ITMCD" => $colditem,
@@ -5314,118 +5326,7 @@ class SER extends CI_Controller
       $Calc_lib = new RMCalculator();
       $rs = $Calc_lib->get_usage_rm_perjob($doc);
       die(json_encode(['data' => $rs]));
-   }
-
-   public function upload_serd2()
-   {
-      date_default_timezone_set('Asia/Jakarta');
-      $current_datetime = date('Y-m-d H:i:s');
-      $temp = '[
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "1184246101",
-                "QTY_PER": "14",
-                "job": "3A13-W0510M",
-                "DLV_QTY": "1"
-            },
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "1596009403",
-                "QTY_PER": "2",
-                "job": "3A13-W0510M",
-                "DLV_QTY": "1"
-            },
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "1803558800",
-                "QTY_PER": "2",
-                "job": "3A13-W0510M",
-                "DLV_QTY": "1"
-            },
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "2197642300",
-                "QTY_PER": "6",
-                "job": "3A13-W0510M",
-                "DLV_QTY": "1"
-            },
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "3068640302",
-                "QTY_PER": "2",
-                "job": "3A13-W0510M",
-                "DLV_QTY": "1"
-            },
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "6343322500",
-                "QTY_PER": "1",
-                "job": "3A13-W0510M",
-                "DLV_QTY": "1"
-            },
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "6592825600",
-                "QTY_PER": "12",
-                "job": "3A13-W0510M",
-                "DLV_QTY": "1"
-            },
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "6762950701",
-                "QTY_PER": "5",
-                "job": "3A13-W0510M",
-                "DLV_QTY": 1
-            },
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "7420283701",
-                "QTY_PER": "21",
-                "job": "3A13-W0510M",
-                "DLV_QTY": 1
-            },
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "7751925400(EA-3B)",
-                "QTY_PER": "15",
-                "job": "3A13-W0510M",
-                "DLV_QTY": 1
-            },
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "8164339302",
-                "QTY_PER": "1",
-                "job": "3A13-W0510M",
-                "DLV_QTY": 1
-            },
-            {
-                "SER": "121L010000000236",
-                "ASSY_CODE": "W0510M",
-                "MAIN_PARTS": "8717074800",
-                "QTY_PER": "1",
-                "job": "3A13-W0510M",
-                "DLV_QTY": 1
-            }
-        ]';
-      $rs = json_decode($temp);
-      $rssave = [];
-      foreach ($rs as $r) {
-         $rssave[] = [
-            'SERD2_PSNNO' => '', 'SERD2_LINENO' => '', 'SERD2_PROCD' => '', 'SERD2_CAT' => '', 'SERD2_FR' => '', 'SERD2_SER' => $r->SER, 'SERD2_FGQTY' => $r->DLV_QTY, 'SERD2_JOB' => $r->job, 'SERD2_QTPER' => $r->QTY_PER, 'SERD2_MC' => '', 'SERD2_MCZ' => '', 'SERD2_ITMCD' => $r->MAIN_PARTS, 'SERD2_QTY' => $r->QTY_PER * $r->DLV_QTY, 'SERD2_LOTNO' => '', 'SERD2_REMARK' => '', 'SERD2_USRID' => 'ane', 'SERD2_LUPDT' => $current_datetime
-         ];
-      }
-   }
+   }   
 
    public function resetcalculation()
    {
