@@ -661,15 +661,16 @@ class ITH_mod extends CI_Model
     }
     public function select_psi_stock_date_wbg_detail($wh,  $pdate)
     {
-        $qry = "SELECT V1.*,SER_DOC FROM
-        (select ITH_WH,ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,MITM_STKUOM,ITH_SER,MAX(ITH_LUPDT) ITH_LUPDT
-                from v_ith_tblc a 
-                inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD		
+        $qry = "SELECT V1.*,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,MITM_STKUOM,SER_DOC,ITH_LOC FROM
+        (select ITH_WH,ITH_ITMCD,SUM(ITH_QTY) STOCKQTY,ITH_SER,MAX(ITH_LUPDT) ITH_LUPDT
+                from v_ith_tblc a
                 WHERE ITH_WH=? 
                 AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<= ?
-                GROUP BY ITH_ITMCD,ITH_WH,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1,ITH_SER
+                GROUP BY ITH_ITMCD,ITH_WH,ITH_SER
                 HAVING SUM(ITH_QTY)>0) V1
-        LEFT JOIN SER_TBL ON ITH_SER=SER_ID
+                inner join MITM_TBL on V1.ITH_ITMCD=MITM_ITMCD
+                LEFT JOIN ITH_TBL B ON V1.ITH_SER=B.ITH_SER AND V1.ITH_LUPDT=B.ITH_LUPDT AND B.ITH_QTY>0 
+        LEFT JOIN SER_TBL ON V1.ITH_SER=SER_ID
         ORDER BY ITH_ITMCD ASC";
         $query =  $this->db->query($qry, [$wh, $pdate]);
         return $query->result_array();
