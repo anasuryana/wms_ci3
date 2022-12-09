@@ -42,7 +42,7 @@ class ITMLOC_mod extends CI_Model {
     }
 
     public function select_item_WithoutPSN($PWHERE){
-        $this->db->select("RTRIM(MITM_ITMCD) MITM_ITMCD,RTRIM(MITM_ITMD1) ITMD1,ITMLOC_LOC,RTRIM(MITM_SPTNO) SPTNO");
+        $this->db->select("RTRIM(MITM_ITMCD) MITM_ITMCD,RTRIM(MITM_SPTNO) ITMD1,ITMLOC_LOC,RTRIM(MITM_SPTNO) SPTNO");
         $this->db->from($this->TABLENAME." a");
         $this->db->join('MITM_TBL b', 'a.ITMLOC_ITM=b.MITM_ITMCD');
         $this->db->where($PWHERE);
