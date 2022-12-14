@@ -2401,10 +2401,7 @@ class DELV extends CI_Controller
                 if (is_numeric($armdoc_itmLINE[$i])) {
                     $this->DLVRMDOC_mod->updatebyId(
                         [
-                            'DLVRMDOC_ITMQT' => str_replace(',', '', $armdoc_itmQT[$i])
-                            , 'DLVRMDOC_TYPE' => $armdoc_TYPE[$i]
-                            , 'DLVRMDOC_PRPRC' => $armdoc_itmPRC[$i]
-                            , 'DLVRMDOC_ZPRPRC' => $armdoc_itmPRC[$i]
+                            'DLVRMDOC_ITMQT' => str_replace(',', '', $armdoc_itmQT[$i]), 'DLVRMDOC_TYPE' => $armdoc_TYPE[$i], 'DLVRMDOC_PRPRC' => $armdoc_itmPRC[$i], 'DLVRMDOC_ZPRPRC' => $armdoc_itmPRC[$i]
                         ],
                         [
                             'DLVRMDOC_TXID' => $doNum, 'DLVRMDOC_LINE' => $armdoc_itmLINE[$i]
@@ -3574,14 +3571,7 @@ class DELV extends CI_Controller
                             $x['RCV_QTY'] -= $reqbal;
                         }
                         $rsfixINV[] = [
-                            'ITMQT' => $useqt
-                            , 'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC']
-                            , 'DLV_ITMD1' => $r['DLV_ITMD1']
-                            , 'DLVRMDOC_TYPE' => $r['DLVRMDOC_TYPE']
-                            , 'MITM_STKUOM' => $r['MITM_STKUOM']
-                            , 'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC']
-                            , 'DLVRMDOC_ITMID' => $r['DLVRMDOC_ITMID']
-                            , 'MITM_ITMCDCUS' => $r['MITM_ITMCDCUS']
+                            'ITMQT' => $useqt, 'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC'], 'DLV_ITMD1' => $r['DLV_ITMD1'], 'DLVRMDOC_TYPE' => $r['DLVRMDOC_TYPE'], 'MITM_STKUOM' => $r['MITM_STKUOM'], 'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC'], 'DLVRMDOC_ITMID' => $r['DLVRMDOC_ITMID'], 'MITM_ITMCDCUS' => $r['MITM_ITMCDCUS']
                         ];
                         if ($r['ITMQT'] == $r['PLOTQT']) {
                             break;
@@ -3724,8 +3714,7 @@ class DELV extends CI_Controller
                 }
                 $pdf->SetXY(155, 240 + 13);
                 $pdf->Cell(41.56, 4, number_format($ttlamount_, 2), 0, 0, 'R');
-                if($description !== "DIJUAL")
-                {
+                if ($description !== "DIJUAL") {
                     $pdf->Text(35, 240 + 25, "Non Commercial Value For Customs Purpose Only");
                 }
             } else {
@@ -8112,14 +8101,6 @@ class DELV extends CI_Controller
         die('{"status" : ' . json_encode($myar) . '}');
     }
 
-    public function setchecking()
-    {
-        $txid = $this->input->get('txid');
-        $res = $this->sendto_delivery_checking($txid);
-        // echo $res."coba";
-
-    }
-
     public function control_multibom()
     {
         header('Content-Type: application/json');
@@ -11406,22 +11387,7 @@ class DELV extends CI_Controller
                         $x['RCV_QTY'] -= $reqbal;
                     }
                     $tpb_bahan_baku[] = [
-                        'KODE_JENIS_DOK_ASAL' => $x['RCV_BCTYPE'], 'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVRMDOC_NOPEN']
-                        , 'TANGGAL_DAFTAR_DOK_ASAL' => $x['RCV_BCDATE']
-                        , 'KODE_KANTOR' => $x['RCV_KPPBC']
-                        , 'NOMOR_AJU_DOK_ASAL' => strlen($r['DLVRMDOC_AJU']) == 6 ? substr('000000000000000000000000', 0, 26) : $r['DLVRMDOC_AJU']
-                        , 'SERI_BARANG_DOK_ASAL' => empty($x['RCV_ZNOURUT']) ? 0 : $x['RCV_ZNOURUT']
-                        , 'SPESIFIKASI_LAIN' => NULL
-                        , 'CIF' =>  number_format($x['RCV_PRPRC'] * $useqt, 2, '.', '')
-                        , 'HARGA_PENYERAHAN' => 0
-                        , 'KODE_BARANG' => $r['DLVRMDOC_ITMID']
-                        , 'KODE_STATUS' => "03"
-                        , 'POS_TARIF' => $x['RCV_HSCD']
-                        , 'URAIAN' => rtrim($r['DLV_ITMD1'])
-                        , 'TIPE' => rtrim($r['DLV_ITMSPTNO'])
-                        , 'JUMLAH_SATUAN' => $useqt
-                        , 'SERI_BAHAN_BAKU' => 1
-                        , 'JENIS_SATUAN' => ($r['MITM_STKUOM'] == 'PCS') ? 'PCE' : $r['MITM_STKUOM'], 'KODE_ASAL_BAHAN_BAKU' => ($x['RCV_BCTYPE'] == '27' || $x['RCV_BCTYPE'] == '23') ? '0' : '1', 'RBM' => $x['RCV_BM'] * 1, 'CURRENCY' => $x['MSUP_SUPCR'], 'ITMCDCUS' => $r['MITM_ITMCDCUS']
+                        'KODE_JENIS_DOK_ASAL' => $x['RCV_BCTYPE'], 'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVRMDOC_NOPEN'], 'TANGGAL_DAFTAR_DOK_ASAL' => $x['RCV_BCDATE'], 'KODE_KANTOR' => $x['RCV_KPPBC'], 'NOMOR_AJU_DOK_ASAL' => strlen($r['DLVRMDOC_AJU']) == 6 ? substr('000000000000000000000000', 0, 26) : $r['DLVRMDOC_AJU'], 'SERI_BARANG_DOK_ASAL' => empty($x['RCV_ZNOURUT']) ? 0 : $x['RCV_ZNOURUT'], 'SPESIFIKASI_LAIN' => NULL, 'CIF' =>  number_format($x['RCV_PRPRC'] * $useqt, 2, '.', ''), 'HARGA_PENYERAHAN' => 0, 'KODE_BARANG' => $r['DLVRMDOC_ITMID'], 'KODE_STATUS' => "03", 'POS_TARIF' => $x['RCV_HSCD'], 'URAIAN' => rtrim($r['DLV_ITMD1']), 'TIPE' => rtrim($r['DLV_ITMSPTNO']), 'JUMLAH_SATUAN' => $useqt, 'SERI_BAHAN_BAKU' => 1, 'JENIS_SATUAN' => ($r['MITM_STKUOM'] == 'PCS') ? 'PCE' : $r['MITM_STKUOM'], 'KODE_ASAL_BAHAN_BAKU' => ($x['RCV_BCTYPE'] == '27' || $x['RCV_BCTYPE'] == '23') ? '0' : '1', 'RBM' => $x['RCV_BM'] * 1, 'CURRENCY' => $x['MSUP_SUPCR'], 'ITMCDCUS' => $r['MITM_ITMCDCUS']
                     ];
                     $IncDateList[] = $x['RCV_BCDATE'];
                     $IncCRList[] = $x['MSUP_SUPCR'];
@@ -11475,15 +11441,10 @@ class DELV extends CI_Controller
                 $no++;
                 $SERI_BARANG++;
             }
-        } else {            
+        } else {
             foreach ($tpb_bahan_baku as $r) {
                 $tpb_barang[] = [
-                    'KODE_BARANG' => $r['KODE_BARANG'], 'POS_TARIF' => $r['POS_TARIF']
-                    , 'URAIAN' => $r['URAIAN'], 'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN']
-                    , 'KODE_SATUAN' => $r['JENIS_SATUAN']
-                    , 'NETTO' => $no == 1 ? $netweight_represent : 0, 'CIF' => $r['CIF'], 'HARGA_PENYERAHAN' => $r['CIF'] * $czharga_matauang
-                    , 'SERI_BARANG' => $SERI_BARANG, 'KODE_STATUS' => '02', 'JUMLAH_BAHAN_BAKU' => 1, 'ITMCDCUS' => $r['ITMCDCUS']
-                    ,'TIPE' => $r['TIPE']
+                    'KODE_BARANG' => $r['KODE_BARANG'], 'POS_TARIF' => $r['POS_TARIF'], 'URAIAN' => $r['URAIAN'], 'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN'], 'KODE_SATUAN' => $r['JENIS_SATUAN'], 'NETTO' => $no == 1 ? $netweight_represent : 0, 'CIF' => $r['CIF'], 'HARGA_PENYERAHAN' => $r['CIF'] * $czharga_matauang, 'SERI_BARANG' => $SERI_BARANG, 'KODE_STATUS' => '02', 'JUMLAH_BAHAN_BAKU' => 1, 'ITMCDCUS' => $r['ITMCDCUS'], 'TIPE' => $r['TIPE']
                 ];
                 $no++;
                 $SERI_BARANG++;
@@ -11581,8 +11542,7 @@ class DELV extends CI_Controller
             // $ZR_TPB_BARANG = $this->TPB_BARANG_imod->insert($n);
             $_barang = [
                 'KODE_BARANG' => $n['KODE_BARANG'] != $n['ITMCDCUS'] ? $n['ITMCDCUS'] : $n['KODE_BARANG'] //substr($n['KODE_BARANG'],0,2) == 'PM' ? '-' : $n['KODE_BARANG']
-                , 'POS_TARIF' => $n['POS_TARIF'], 'URAIAN' => $n['URAIAN']
-                , 'TIPE' => $n['TIPE'], 'JUMLAH_SATUAN' => $n['JUMLAH_SATUAN'], 'KODE_SATUAN' => $n['KODE_SATUAN'], 'NETTO' => $n['NETTO'], 'CIF' => $n['CIF'], 'HARGA_PENYERAHAN' => $n['HARGA_PENYERAHAN'], 'SERI_BARANG' => $n['SERI_BARANG'], 'KODE_STATUS' => $n['KODE_STATUS'], 'JUMLAH_BAHAN_BAKU' => $n['JUMLAH_BAHAN_BAKU'], 'ID_HEADER' => $n['ID_HEADER']
+                , 'POS_TARIF' => $n['POS_TARIF'], 'URAIAN' => $n['URAIAN'], 'TIPE' => $n['TIPE'], 'JUMLAH_SATUAN' => $n['JUMLAH_SATUAN'], 'KODE_SATUAN' => $n['KODE_SATUAN'], 'NETTO' => $n['NETTO'], 'CIF' => $n['CIF'], 'HARGA_PENYERAHAN' => $n['HARGA_PENYERAHAN'], 'SERI_BARANG' => $n['SERI_BARANG'], 'KODE_STATUS' => $n['KODE_STATUS'], 'JUMLAH_BAHAN_BAKU' => $n['JUMLAH_BAHAN_BAKU'], 'ID_HEADER' => $n['ID_HEADER']
             ];
             $ZR_TPB_BARANG = $this->TPB_BARANG_imod->insert($_barang);
             foreach ($tpb_bahan_baku as $b) {
@@ -12711,6 +12671,697 @@ class DELV extends CI_Controller
             $myar[] = ['cd' => '0', 'msg' => 'Could not delete'];
         }
         die(json_encode(['status' => $myar]));
+    }
+
+    public function ceisa_spreadsheet()
+    {
+        ini_set('max_execution_time', '-1');
+        $doc = $this->input->post('doc');
+        $rs_head_dlv = $this->DELV_mod->select_header_bydo($doc);
+        $NOMOR_AJU = '';
+        $KODE_DOKUMEN = '';
+        $KODE_KANTOR = '';
+        $KODE_KANTOR_BONGKAR = '';
+        $KODE_KANTOR_PERIKSA = '';
+        $KODE_KANTOR_TUJUAN = '';
+        $KODE_KANTOR_EKSPOR = '';
+        $KODE_JENIS_IMPOR = '';
+        $KODE_JENIS_EKSPOR = '';
+        $KODE_JENIS_TPB = '';
+        $KODE_JENIS_PLB = '';
+        $KODE_JENIS_PROSEDUR = '';
+        $KODE_TUJUAN_PEMASUKAN = '';
+        $KODE_TUJUAN_PENGIRIMAN = '';
+        $KODE_TUJUAN_TPB = '';
+        $KODE_CARA_DAGANG = '';
+        $KODE_CARA_BAYAR = '';
+        $KODE_CARA_BAYAR_LAINNYA = '';
+        $KODE_GUDANG_ASAL = '';
+        $KODE_GUDANG_TUJUAN = '';
+        $KODE_JENIS_KIRIM = '';
+        $KODE_JENIS_PENGIRIMAN = '';
+        $KODE_KATEGORI_EKSPOR = '';
+        $KODE_KATEGORI_MASUK_FTZ = '';
+        $KODE_KATEGORI_KELUAR_FTZ = '';
+        $KODE_KATEGORI_BARANG_FTZ = '';
+        $KODE_LOKASI = '';
+        $KODE_LOKASI_BAYAR = '';
+        $LOKASI_ASAL = '';
+        $LOKASI_TUJUAN = '';
+        $KODE_DAERAH_ASAL = '';
+        $KODE_GUDANG_ASAL = '';
+        $KODE_GUDANG_TUJUAN = '';
+        $KODE_NEGARA_TUJUAN = '';
+        $KODE_TUTUP_PU = '';
+        $NOMOR_BC11 = '';
+        $TANGGAL_BC11 = '';
+        $NOMOR_POS = '';
+        $NOMOR_SUB_POS = '';
+        $KODE_PELABUHAN_BONGKAR = '';
+        $KODE_PELABUHAN_MUAT = '';
+        $KODE_PELABUHAN_MUAT_AKHIR = '';
+        $KODE_PELABUHAN_TRANSIT = '';
+        $KODE_PELABUHAN_TUJUAN = '';
+        $KODE_PELABUHAN_EKSPOR = '';
+        $KODE_TPS = '';
+        $TANGGAL_BERANGKAT = '';
+        $TANGGAL_EKSPOR = '';
+        $TANGGAL_MASUK = '';
+        $TANGGAL_MUAT = '';
+        $TANGGAL_TIBA = '';
+        $TANGGAL_PERIKSA = '';
+        $TEMPAT_STUFFING = '';
+        $TANGGAL_STUFFING = '';
+        $KODE_TANDA_PENGAMAN = '';
+        $JUMLAH_TANDA_PENGAMAN = '';
+        $FLAG_CURAH = '';
+        $FLAG_SDA = '';
+        $FLAG_VD = '';
+        $FLAG_AP_BK = '';
+        $FLAG_MIGAS = '';
+        $KODE_ASURANSI = '';
+        $ASURANSI = '';
+        $NILAI_BARANG = '';
+        $NILAI_INCOTERM = '';
+        $NILAI_MAKLON = '';
+        $CIF = 0;
+        $HARGA_PENYERAHAN = 0;
+        $NDPBM = 0;
+        $BRUTO = 0;
+        $NETTO = 0;
+        $KOTA_PERNYATAAN = 'CIKARANG';
+        $TANGGAL_PERNYATAAN = '';
+        $NAMA_PERNYATAAN = '';
+        $JABATAN_PERNYATAAN = '';
+        $KODE_VALUTA = '';
+        $KODE_INCOTERM = '';
+        $KODE_JASA_KENA_PAJAK = '';
+        $NOMOR_BUKTI_BAYAR = '';
+        $TANGGAL_BUKTI_BAYAR = '';
+        $KODE_JENIS_NILAI = '';
+        $ccustdate = '';
+        $czcurrency = '';
+        foreach ($rs_head_dlv as $r) {
+            $NOMOR_AJU = $r['DLV_ZNOMOR_AJU'];
+            $KODE_DOKUMEN = $r['DLV_BCTYPE'];
+            $KODE_KANTOR = $r['DLV_FROMOFFICE'];
+            $KODE_KANTOR_TUJUAN = $r['DLV_DESTOFFICE'];
+            $ccustdate = $r['DLV_BCDATE'];
+            $TANGGAL_PERNYATAAN = $ccustdate;
+            $czcurrency = trim($r['MCUS_CURCD']);
+            $KODE_VALUTA = $czcurrency;
+            $KODE_JENIS_TPB = $r['DLV_ZJENIS_TPB_ASAL'];
+            $KODE_TUJUAN_PENGIRIMAN = $r['DLV_PURPOSE'];
+            $KODE_TUJUAN_TPB = $r['DLV_ZJENIS_TPB_TUJUAN'];
+            $NAMA_PERNYATAAN = $r['DLVH_PEMBERITAHU'];
+            $JABATAN_PERNYATAAN = $r['DLVH_JABATAN'];
+        }
+        $message = '';
+        if ($this->DELV_mod->check_Primary(['DLV_ID' => $doc]) == 0) {
+            $message = 'DO is not found';
+        }
+        $SERI_BARANG = 1;
+        $aspBOX = 0;
+        $rsitem_p_price = $this->setPriceRS(base64_encode($doc));
+        $rspackinglist = $this->DELV_mod->select_packinglist_bydono($doc);
+        $rsplotrm_per_fgprice = $this->perprice($doc, $rsitem_p_price);
+        $cz_h_JUMLAH_BARANG = count($rsitem_p_price);
+        $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
+        if (count($rscurr) == 0) {
+            $message = "Please fill exchange rate data !";
+        } else {
+            foreach ($rscurr as  $r) {
+                $czharga_matauang = $r->MEXRATE_VAL;
+                $NDPBM = $czharga_matauang;
+                break;
+            }
+        }
+        foreach ($rspackinglist as $r) {
+            $BRUTO += $r['MITM_GWG'];
+        }
+        foreach ($rsitem_p_price as $r) {
+            if ($r['MITM_HSCD'] == '') {
+                $myar[] = ["cd" => "0", "msg" => "HSCODE FG is empty"];
+                die('{"status":' . json_encode($myar) . ',"data":' . json_encode($rsitem_p_price) . '}');
+            }
+            $t_HARGA_PENYERAHAN = $r['CIF'] * $czharga_matauang;
+            $CIF += $r['CIF'];
+            $NETTO += $r['NWG'];
+            $HARGA_PENYERAHAN += $t_HARGA_PENYERAHAN;
+            $tpb_barang[] = [
+                'KODE_BARANG' => $r['SSO2_MDLCD'], 'POS_TARIF' => $r['MITM_HSCD'], 'URAIAN' => $r['MITM_ITMD1'], 'JUMLAH_SATUAN' => $r['SISOQTY'], 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 'NETTO' => $r['NWG'], 'CIF' => round($r['CIF'], 2), 'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN, 'SERI_BARANG' => $SERI_BARANG, 'KODE_STATUS' => '02'
+            ];
+            $SERI_BARANG++;
+            if (strpos(strtoupper($r['SSO2_MDLCD']), 'ASP') !== false) {
+                $aspBOX += $r['SISOQTY'];
+            }
+        }
+        if ($aspBOX) {
+            $cz_JUMLAH_KEMASAN = $aspBOX;
+        }
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('HEADER');
+        #define column
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'KODE DOKUMEN');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'KODE KANTOR');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'KODE KANTOR BONGKAR');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'KODE KANTOR PERIKSA');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'KODE KANTOR TUJUAN');
+        $sheet->setCellValueByColumnAndRow(7, 1, 'KODE KANTOR EKSPOR');
+        $sheet->setCellValueByColumnAndRow(8, 1, 'KODE JENIS IMPOR');
+        $sheet->setCellValueByColumnAndRow(9, 1, 'KODE JENIS EKSPOR');
+        $sheet->setCellValueByColumnAndRow(10, 1, 'KODE JENIS TPB');
+        $sheet->setCellValueByColumnAndRow(11, 1, 'KODE JENIS PLB');
+        $sheet->setCellValueByColumnAndRow(12, 1, 'KODE JENIS PROSEDUR');
+        $sheet->setCellValueByColumnAndRow(13, 1, 'KODE TUJUAN PEMASUKAN');
+        $sheet->setCellValueByColumnAndRow(14, 1, 'KODE TUJUAN PENGIRIMAN');
+        $sheet->setCellValueByColumnAndRow(15, 1, 'KODE TUJUAN TPB');
+        $sheet->setCellValueByColumnAndRow(16, 1, 'KODE CARA DAGANG');
+        $sheet->setCellValueByColumnAndRow(17, 1, 'KODE CARA BAYAR');
+        $sheet->setCellValueByColumnAndRow(18, 1, 'KODE CARA BAYAR LAINNYA');
+        $sheet->setCellValueByColumnAndRow(19, 1, 'KODE GUDANG ASAL');
+        $sheet->setCellValueByColumnAndRow(20, 1, 'KODE GUDANG TUJUAN');
+        $sheet->setCellValueByColumnAndRow(21, 1, 'KODE JENIS KIRIM');
+        $sheet->setCellValueByColumnAndRow(22, 1, 'KODE JENIS PENGIRIMAN');
+        $sheet->setCellValueByColumnAndRow(23, 1, 'KODE KATEGORI EKSPOR');
+        $sheet->setCellValueByColumnAndRow(24, 1, 'KODE KATEGORI MASUK FTZ');
+        $sheet->setCellValueByColumnAndRow(25, 1, 'KODE KATEGORI KELUAR FTZ');
+        $sheet->setCellValueByColumnAndRow(26, 1, 'KODE KATEGORI BARANG FTZ');
+        $sheet->setCellValueByColumnAndRow(27, 1, 'KODE LOKASI');
+        $sheet->setCellValueByColumnAndRow(28, 1, 'KODE LOKASI BAYAR');
+        $sheet->setCellValueByColumnAndRow(29, 1, 'LOKASI ASAL');
+        $sheet->setCellValueByColumnAndRow(30, 1, 'LOKASI TUJUAN');
+        $sheet->setCellValueByColumnAndRow(31, 1, 'KODE DAERAH ASAL');
+        $sheet->setCellValueByColumnAndRow(32, 1, 'KODE GUDANG ASAL');
+        $sheet->setCellValueByColumnAndRow(33, 1, 'KODE GUDANG TUJUAN');
+        $sheet->setCellValueByColumnAndRow(34, 1, 'KODE NEGARA TUJUAN');
+        $sheet->setCellValueByColumnAndRow(35, 1, 'KODE TUTUP PU');
+        $sheet->setCellValueByColumnAndRow(36, 1, 'NOMOR BC11');
+        $sheet->setCellValueByColumnAndRow(37, 1, 'TANGGAL BC11');
+        $sheet->setCellValueByColumnAndRow(38, 1, 'NOMOR POS');
+        $sheet->setCellValueByColumnAndRow(39, 1, 'NOMOR SUB POS');
+        $sheet->setCellValueByColumnAndRow(40, 1, 'KODE PELABUHAN BONGKAR');
+        $sheet->setCellValueByColumnAndRow(41, 1, 'KODE PELABUHAN MUAT');
+        $sheet->setCellValueByColumnAndRow(42, 1, 'KODE PELABUHAN MUAT AKHIR');
+        $sheet->setCellValueByColumnAndRow(43, 1, 'KODE PELABUHAN TRANSIT');
+        $sheet->setCellValueByColumnAndRow(44, 1, 'KODE PELABUHAN TUJUAN');
+        $sheet->setCellValueByColumnAndRow(45, 1, 'KODE PELABUHAN EKSPOR');
+        $sheet->setCellValueByColumnAndRow(46, 1, 'KODE TPS');
+        $sheet->setCellValueByColumnAndRow(47, 1, 'TANGGAL BERANGKAT');
+        $sheet->setCellValueByColumnAndRow(48, 1, 'TANGGAL EKSPOR');
+        $sheet->setCellValueByColumnAndRow(49, 1, 'TANGGAL MASUK');
+        $sheet->setCellValueByColumnAndRow(50, 1, 'TANGGAL MUAT');
+        $sheet->setCellValueByColumnAndRow(51, 1, 'TANGGAL TIBA');
+        $sheet->setCellValueByColumnAndRow(52, 1, 'TANGGAL PERIKSA');
+        $sheet->setCellValueByColumnAndRow(53, 1, 'TEMPAT STUFFING');
+        $sheet->setCellValueByColumnAndRow(54, 1, 'TANGGAL STUFFING');
+        $sheet->setCellValueByColumnAndRow(55, 1, 'KODE TANDA PENGAMAN');
+        $sheet->setCellValueByColumnAndRow(56, 1, 'JUMLAH TANDA PENGAMAN');
+        $sheet->setCellValueByColumnAndRow(57, 1, 'FLAG CURAH');
+        $sheet->setCellValueByColumnAndRow(58, 1, 'FLAG SDA');
+        $sheet->setCellValueByColumnAndRow(59, 1, 'FLAG VD');
+        $sheet->setCellValueByColumnAndRow(60, 1, 'FLAG AP BK');
+        $sheet->setCellValueByColumnAndRow(61, 1, 'FLAG MIGAS');
+        $sheet->setCellValueByColumnAndRow(62, 1, 'KODE ASURANSI');
+        $sheet->setCellValueByColumnAndRow(63, 1, 'ASURANSI');
+        $sheet->setCellValueByColumnAndRow(64, 1, 'NILAI BARANG');
+        $sheet->setCellValueByColumnAndRow(65, 1, 'NILAI INCOTERM');
+        $sheet->setCellValueByColumnAndRow(66, 1, 'NILAI MAKLON');
+        $sheet->setCellValueByColumnAndRow(67, 1, 'ASURANSI');
+        $sheet->setCellValueByColumnAndRow(68, 1, 'FREIGHT');
+        $sheet->setCellValueByColumnAndRow(69, 1, 'FOB');
+        $sheet->setCellValueByColumnAndRow(70, 1, 'BIAYA TAMBAHAN');
+        $sheet->setCellValueByColumnAndRow(71, 1, 'BIAYA PENGURANG');
+        $sheet->setCellValueByColumnAndRow(72, 1, 'VD');
+        $sheet->setCellValueByColumnAndRow(73, 1, 'CIF');
+        $sheet->setCellValueByColumnAndRow(74, 1, 'HARGA_PENYERAHAN');
+        $sheet->setCellValueByColumnAndRow(75, 1, 'NDPBM');
+        $sheet->setCellValueByColumnAndRow(76, 1, 'TOTAL DANA SAWIT');
+        $sheet->setCellValueByColumnAndRow(77, 1, 'DASAR PENGENAAN PAJAK');
+        $sheet->setCellValueByColumnAndRow(78, 1, 'NILAI JASA');
+        $sheet->setCellValueByColumnAndRow(79, 1, 'UANG MUKA');
+        $sheet->setCellValueByColumnAndRow(80, 1, 'BRUTO');
+        $sheet->setCellValueByColumnAndRow(81, 1, 'NETTO');
+        $sheet->setCellValueByColumnAndRow(82, 1, 'VOLUME');
+        $sheet->setCellValueByColumnAndRow(83, 1, 'KOTA PERNYATAAN');
+        $sheet->setCellValueByColumnAndRow(84, 1, 'TANGGAL PERNYATAAN');
+        $sheet->setCellValueByColumnAndRow(85, 1, 'NAMA PERNYATAAN');
+        $sheet->setCellValueByColumnAndRow(86, 1, 'JABATAN PERNYATAAN');
+        $sheet->setCellValueByColumnAndRow(87, 1, 'KODE VALUTA');
+        $sheet->setCellValueByColumnAndRow(88, 1, 'KODE INCOTERM');
+        $sheet->setCellValueByColumnAndRow(89, 1, 'KODE JASA KENA PAJAK');
+        $sheet->setCellValueByColumnAndRow(90, 1, 'NOMOR BUKTI BAYAR');
+        $sheet->setCellValueByColumnAndRow(91, 1, 'TANGGAL BUKTI BAYAR');
+        $sheet->setCellValueByColumnAndRow(92, 1, 'KODE JENIS NILAI');
+        # populate column
+        $sheet->setCellValueByColumnAndRow(1, 2, empty($NOMOR_AJU) ? $message : $NOMOR_AJU);
+        $sheet->setCellValueByColumnAndRow(2, 2, $KODE_DOKUMEN);
+        $sheet->setCellValueByColumnAndRow(3, 2, $KODE_KANTOR);
+        $sheet->setCellValueByColumnAndRow(4, 2, $KODE_KANTOR_BONGKAR);
+        $sheet->setCellValueByColumnAndRow(5, 2, $KODE_KANTOR_PERIKSA);
+        $sheet->setCellValueByColumnAndRow(6, 2, $KODE_KANTOR_TUJUAN);
+        $sheet->setCellValueByColumnAndRow(7, 2, $KODE_KANTOR_EKSPOR);
+        $sheet->setCellValueByColumnAndRow(8, 2, $KODE_JENIS_IMPOR);
+        $sheet->setCellValueByColumnAndRow(9, 2, $KODE_JENIS_EKSPOR);
+        $sheet->setCellValueByColumnAndRow(10, 2, $KODE_JENIS_TPB);
+        $sheet->setCellValueByColumnAndRow(11, 2, $KODE_JENIS_PLB);
+        $sheet->setCellValueByColumnAndRow(12, 2, $KODE_JENIS_PROSEDUR);
+        $sheet->setCellValueByColumnAndRow(13, 2, $KODE_TUJUAN_PEMASUKAN);
+        $sheet->setCellValueByColumnAndRow(14, 2, $KODE_TUJUAN_PENGIRIMAN);
+        $sheet->setCellValueByColumnAndRow(15, 2, $KODE_TUJUAN_TPB);
+        $sheet->setCellValueByColumnAndRow(16, 2, $KODE_CARA_DAGANG);
+        $sheet->setCellValueByColumnAndRow(17, 2, $KODE_CARA_BAYAR);
+        $sheet->setCellValueByColumnAndRow(18, 2, $KODE_CARA_BAYAR_LAINNYA);
+        $sheet->setCellValueByColumnAndRow(19, 2, $KODE_GUDANG_ASAL);
+        $sheet->setCellValueByColumnAndRow(20, 2, $KODE_GUDANG_TUJUAN);
+        $sheet->setCellValueByColumnAndRow(21, 2, $KODE_JENIS_KIRIM);
+        $sheet->setCellValueByColumnAndRow(22, 2, $KODE_JENIS_PENGIRIMAN);
+        $sheet->setCellValueByColumnAndRow(23, 2, $KODE_KATEGORI_EKSPOR);
+        $sheet->setCellValueByColumnAndRow(24, 2, $KODE_KATEGORI_MASUK_FTZ);
+        $sheet->setCellValueByColumnAndRow(25, 2, $KODE_KATEGORI_KELUAR_FTZ);
+        $sheet->setCellValueByColumnAndRow(26, 2, $KODE_KATEGORI_BARANG_FTZ);
+        $sheet->setCellValueByColumnAndRow(27, 2, $KODE_LOKASI);
+        $sheet->setCellValueByColumnAndRow(28, 2, $KODE_LOKASI_BAYAR);
+        $sheet->setCellValueByColumnAndRow(29, 2, $LOKASI_ASAL);
+        $sheet->setCellValueByColumnAndRow(30, 2, $LOKASI_TUJUAN);
+        $sheet->setCellValueByColumnAndRow(31, 2, $KODE_DAERAH_ASAL);
+        $sheet->setCellValueByColumnAndRow(32, 2, $KODE_GUDANG_ASAL);
+        $sheet->setCellValueByColumnAndRow(33, 2, $KODE_GUDANG_TUJUAN);
+        $sheet->setCellValueByColumnAndRow(34, 2, $KODE_NEGARA_TUJUAN);
+        $sheet->setCellValueByColumnAndRow(35, 2, $KODE_TUTUP_PU);
+        $sheet->setCellValueByColumnAndRow(36, 2, $NOMOR_BC11);
+        $sheet->setCellValueByColumnAndRow(37, 2, $TANGGAL_BC11);
+        $sheet->setCellValueByColumnAndRow(38, 2, $NOMOR_POS);
+        $sheet->setCellValueByColumnAndRow(39, 2, $NOMOR_SUB_POS);
+        $sheet->setCellValueByColumnAndRow(40, 2, $KODE_PELABUHAN_BONGKAR);
+        $sheet->setCellValueByColumnAndRow(41, 2, $KODE_PELABUHAN_MUAT);
+        $sheet->setCellValueByColumnAndRow(42, 2, $KODE_PELABUHAN_MUAT_AKHIR);
+        $sheet->setCellValueByColumnAndRow(43, 2, $KODE_PELABUHAN_TRANSIT);
+        $sheet->setCellValueByColumnAndRow(44, 2, $KODE_PELABUHAN_TUJUAN);
+        $sheet->setCellValueByColumnAndRow(45, 2, $KODE_PELABUHAN_EKSPOR);
+        $sheet->setCellValueByColumnAndRow(46, 2, $KODE_TPS);
+        $sheet->setCellValueByColumnAndRow(47, 2, $TANGGAL_BERANGKAT);
+        $sheet->setCellValueByColumnAndRow(48, 2, $TANGGAL_EKSPOR);
+        $sheet->setCellValueByColumnAndRow(49, 2, $TANGGAL_MASUK);
+        $sheet->setCellValueByColumnAndRow(50, 2, $TANGGAL_MUAT);
+        $sheet->setCellValueByColumnAndRow(51, 2, $TANGGAL_TIBA);
+        $sheet->setCellValueByColumnAndRow(52, 2, $TANGGAL_PERIKSA);
+        $sheet->setCellValueByColumnAndRow(53, 2, $TEMPAT_STUFFING);
+        $sheet->setCellValueByColumnAndRow(54, 2, $TANGGAL_STUFFING);
+        $sheet->setCellValueByColumnAndRow(55, 2, $KODE_TANDA_PENGAMAN);
+        $sheet->setCellValueByColumnAndRow(56, 2, $JUMLAH_TANDA_PENGAMAN);
+        $sheet->setCellValueByColumnAndRow(57, 2, $FLAG_CURAH);
+        $sheet->setCellValueByColumnAndRow(58, 2, $FLAG_SDA);
+        $sheet->setCellValueByColumnAndRow(59, 2, $FLAG_VD);
+        $sheet->setCellValueByColumnAndRow(60, 2, $FLAG_AP_BK);
+        $sheet->setCellValueByColumnAndRow(61, 2, $FLAG_MIGAS);
+        $sheet->setCellValueByColumnAndRow(62, 2, $KODE_ASURANSI);
+        $sheet->setCellValueByColumnAndRow(63, 2, $ASURANSI);
+        $sheet->setCellValueByColumnAndRow(64, 2, $NILAI_BARANG);
+        $sheet->setCellValueByColumnAndRow(65, 2, $NILAI_INCOTERM);
+        $sheet->setCellValueByColumnAndRow(66, 2, $NILAI_MAKLON);
+        $sheet->setCellValueByColumnAndRow(67, 2, '');
+        $sheet->setCellValueByColumnAndRow(68, 2, '');
+        $sheet->setCellValueByColumnAndRow(69, 2, '');
+        $sheet->setCellValueByColumnAndRow(70, 2, '');
+        $sheet->setCellValueByColumnAndRow(71, 2, '');
+        $sheet->setCellValueByColumnAndRow(72, 2, '');
+        $sheet->setCellValueByColumnAndRow(73, 2, $CIF);
+        $sheet->setCellValueByColumnAndRow(74, 2, $HARGA_PENYERAHAN);
+        $sheet->setCellValueByColumnAndRow(75, 2, $NDPBM);
+        $sheet->setCellValueByColumnAndRow(76, 2, '');
+        $sheet->setCellValueByColumnAndRow(77, 2, '');
+        $sheet->setCellValueByColumnAndRow(78, 2, '');
+        $sheet->setCellValueByColumnAndRow(79, 2, '');
+        $sheet->setCellValueByColumnAndRow(80, 2, $BRUTO);
+        $sheet->setCellValueByColumnAndRow(81, 2, $NETTO);
+        $sheet->setCellValueByColumnAndRow(82, 2, '');
+        $sheet->setCellValueByColumnAndRow(83, 2, $KOTA_PERNYATAAN);
+        $sheet->setCellValueByColumnAndRow(84, 2, $TANGGAL_PERNYATAAN);
+        $sheet->setCellValueByColumnAndRow(85, 2, $NAMA_PERNYATAAN);
+        $sheet->setCellValueByColumnAndRow(86, 2, $JABATAN_PERNYATAAN);
+        $sheet->setCellValueByColumnAndRow(87, 2, $KODE_VALUTA);
+        $sheet->setCellValueByColumnAndRow(88, 2, $KODE_INCOTERM);
+        $sheet->setCellValueByColumnAndRow(89, 2, $KODE_JASA_KENA_PAJAK);
+        $sheet->setCellValueByColumnAndRow(90, 2, $NOMOR_BUKTI_BAYAR);
+        $sheet->setCellValueByColumnAndRow(91, 2, $TANGGAL_BUKTI_BAYAR);
+        $sheet->setCellValueByColumnAndRow(92, 2, $KODE_JENIS_NILAI);
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('ENTITAS');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'KODE ENTITAS');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'KODE JENIS IDENTITAS');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'NOMOR IDENTITAS');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'NAMA ENTITAS');
+        $sheet->setCellValueByColumnAndRow(7, 1, 'ALAMAT ENTITAS');
+        $sheet->setCellValueByColumnAndRow(8, 1, 'NIB ENTITAS');
+        $sheet->setCellValueByColumnAndRow(9, 1, 'KODE JENIS API');
+        $sheet->setCellValueByColumnAndRow(10, 1, 'KODE STATUS');
+        $sheet->setCellValueByColumnAndRow(11, 1, 'NOMOR IJIN ENTITAS');
+        $sheet->setCellValueByColumnAndRow(12, 1, 'TANGGAL IJIN ENTITAS');
+        $sheet->setCellValueByColumnAndRow(13, 1, 'KODE NEGARA');
+        $sheet->setCellValueByColumnAndRow(14, 1, 'NIPER ENTITAS');
+        $sheet->setCellValueByColumnAndRow(1, 2, $NOMOR_AJU);
+        $sheet->setCellValueByColumnAndRow(2, 2, 1);
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('DOKUMEN');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'KODE DOKUMEN');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'NOMOR DOKUMEN');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'TANGGAL DOKUMEN');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'KODE FASILITAS');
+        $sheet->setCellValueByColumnAndRow(7, 1, 'KODE IJIN');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('PENGANGKUT');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'KODE CARA ANGKUT');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'NAMA PENGANGKUT');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'NOMOR PENGANGKUT');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'KODE BENDERA');
+        $sheet->setCellValueByColumnAndRow(7, 1, 'CALL SIGN');
+        $sheet->setCellValueByColumnAndRow(8, 1, 'FLAG ANGKUT PLB');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('KEMASAN');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'KODE KEMASAN');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'JUMLAH KEMASAN');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'MEREK');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('KONTAINER');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'NOMOR KONTINER');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'KODE UKURAN KONTAINER');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'KODE JENIS KONTAINER');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'KODE TIPE KONTAINER');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('BARANG');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI BARANG');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'HS');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'KODE BARANG');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'URAIAN');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'MEREK');
+        $sheet->setCellValueByColumnAndRow(7, 1, 'TIPE');
+        $sheet->setCellValueByColumnAndRow(8, 1, 'UKURAN');
+        $sheet->setCellValueByColumnAndRow(9, 1, 'SPESIFIKASI LAIN');
+        $sheet->setCellValueByColumnAndRow(10, 1, 'KODE SATUAN');
+        $sheet->setCellValueByColumnAndRow(11, 1, 'JUMLAH SATUAN');
+        $sheet->setCellValueByColumnAndRow(12, 1, 'KODE KEMASAN');
+        $sheet->setCellValueByColumnAndRow(13, 1, 'JUMLAH KEMASAN');
+        $sheet->setCellValueByColumnAndRow(14, 1, 'KODE DOKUMEN ASAL');
+        $sheet->setCellValueByColumnAndRow(15, 1, 'KODE KANTOR ASAL');
+        $sheet->setCellValueByColumnAndRow(16, 1, 'NOMOR DAFTAR ASAL');
+        $sheet->setCellValueByColumnAndRow(17, 1, 'TANGGAL DAFTAR ASAL');
+        $sheet->setCellValueByColumnAndRow(18, 1, 'NOMOR AJU ASAL');
+        $sheet->setCellValueByColumnAndRow(19, 1, 'SERI BARANG ASAL');
+        $sheet->setCellValueByColumnAndRow(20, 1, 'NETTO');
+        $sheet->setCellValueByColumnAndRow(21, 1, 'BRUTO');
+        $sheet->setCellValueByColumnAndRow(22, 1, 'VOLUME');
+        $sheet->setCellValueByColumnAndRow(23, 1, 'SALDO AWAL');
+        $sheet->setCellValueByColumnAndRow(24, 1, 'SALDO AKHIR');
+        $sheet->setCellValueByColumnAndRow(25, 1, 'JUMLAH REALISASI');
+        $sheet->setCellValueByColumnAndRow(26, 1, 'CIF');
+        $sheet->setCellValueByColumnAndRow(27, 1, 'CIF RUPIAH');
+        $sheet->setCellValueByColumnAndRow(28, 1, 'NDPBM');
+        $sheet->setCellValueByColumnAndRow(29, 1, 'FOB');
+        $sheet->setCellValueByColumnAndRow(30, 1, 'ASURANSI');
+        $sheet->setCellValueByColumnAndRow(31, 1, 'FREIGHT');
+        $sheet->setCellValueByColumnAndRow(32, 1, 'NILAI TAMBAH');
+        $sheet->setCellValueByColumnAndRow(33, 1, 'DISKON');
+        $sheet->setCellValueByColumnAndRow(34, 1, 'HARGA PENYERAHAN');
+        $sheet->setCellValueByColumnAndRow(35, 1, 'HARGA PEROLEHAN');
+        $sheet->setCellValueByColumnAndRow(36, 1, 'HARGA SATUAN');
+        $sheet->setCellValueByColumnAndRow(37, 1, 'HARGA EKSPOR');
+        $sheet->setCellValueByColumnAndRow(38, 1, 'HARGA PATOKAN');
+        $sheet->setCellValueByColumnAndRow(39, 1, 'NILAI BARANG');
+        $sheet->setCellValueByColumnAndRow(40, 1, 'NILAI JASA');
+        $sheet->setCellValueByColumnAndRow(41, 1, 'NILAI DANA SAWIT');
+        $sheet->setCellValueByColumnAndRow(42, 1, 'NILAI DEVISA');
+        $sheet->setCellValueByColumnAndRow(43, 1, 'PERSENTASE IMPOR');
+        $sheet->setCellValueByColumnAndRow(44, 1, 'KODE ASAL BARANG');
+        $sheet->setCellValueByColumnAndRow(45, 1, 'KODE DAERAH ASAL');
+        $sheet->setCellValueByColumnAndRow(46, 1, 'KODE GUNA BARANG');
+        $sheet->setCellValueByColumnAndRow(47, 1, 'KODE JENIS NILAI');
+        $sheet->setCellValueByColumnAndRow(48, 1, 'JATUH TEMPO ROYALTI');
+        $sheet->setCellValueByColumnAndRow(49, 1, 'KODE KATEGORI BARANG');
+        $sheet->setCellValueByColumnAndRow(50, 1, 'KODE KONDISI BARANG');
+        $sheet->setCellValueByColumnAndRow(51, 1, 'KODE NEGARA ASAL');
+        $sheet->setCellValueByColumnAndRow(52, 1, 'KODE PERHITUNGAN');
+        $sheet->setCellValueByColumnAndRow(53, 1, 'PERNYATAAN LARTAS');
+        $sheet->setCellValueByColumnAndRow(54, 1, 'FLAG 4 TAHUN');
+        $sheet->setCellValueByColumnAndRow(55, 1, 'SERI IZIN');
+        $sheet->setCellValueByColumnAndRow(56, 1, 'TAHUN PEMBUATAN');
+        $sheet->setCellValueByColumnAndRow(57, 1, 'KAPASITAS SILINDER');
+        $sheet->setCellValueByColumnAndRow(58, 1, 'KODE BKC');
+        $sheet->setCellValueByColumnAndRow(59, 1, 'KODE KOMODITI BKC');
+        $sheet->setCellValueByColumnAndRow(60, 1, 'KODE SUB KOMODITI BKC');
+        $sheet->setCellValueByColumnAndRow(61, 1, 'FLAG TIS');
+        $sheet->setCellValueByColumnAndRow(62, 1, 'ISI PER KEMASAN');
+        $sheet->setCellValueByColumnAndRow(63, 1, 'JUMLAH DILEKATKAN');
+        $sheet->setCellValueByColumnAndRow(64, 1, 'JUMLAH PITA CUKAI');
+        $sheet->setCellValueByColumnAndRow(65, 1, 'HJE CUKAI');
+        $sheet->setCellValueByColumnAndRow(66, 1, 'TARIF CUKAI');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('BARANGTARIF');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI BARANG');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'KODE PUNGUTAN');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'KODE TARIF');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'TARIF');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'KODE FASILITAS');
+        $sheet->setCellValueByColumnAndRow(7, 1, 'TARIF FASILITAS');
+        $sheet->setCellValueByColumnAndRow(8, 1, 'NILAI BAYAR');
+        $sheet->setCellValueByColumnAndRow(9, 1, 'NILAI FASILITAS');
+        $sheet->setCellValueByColumnAndRow(10, 1, 'NILAI SUDAH DILUNASI');
+        $sheet->setCellValueByColumnAndRow(11, 1, 'KODE SATUAN');
+        $sheet->setCellValueByColumnAndRow(12, 1, 'JUMLAH SATUAN');
+        $sheet->setCellValueByColumnAndRow(13, 1, 'FLAG BMT SEMENTARA');
+        $sheet->setCellValueByColumnAndRow(14, 1, 'KODE KOMODITI CUKAI');
+        $sheet->setCellValueByColumnAndRow(15, 1, 'KODE SUB KOMODITI CUKAI');
+        $sheet->setCellValueByColumnAndRow(16, 1, 'FLAG TIS');
+        $sheet->setCellValueByColumnAndRow(17, 1, 'FLAG PELEKATAN');
+        $sheet->setCellValueByColumnAndRow(18, 1, 'KODE KEMASAN');
+        $sheet->setCellValueByColumnAndRow(19, 1, 'JUMLAH KEMASAN');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('BARANGDOKUMEN');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI BARANG');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'SERI DOKUMEN');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'SERI IZIN');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('BARANGENTITAS');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI BARANG');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'SERI DOKUMEN');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('BARANGSPEKKHUSUS');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI BARANG');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'KODE');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'URAIAN');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('BARANGVD');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI BARANG');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'KODE VD');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'NILAI BARANG');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'BIAYA TAMBAHAN');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'BIAYA PENGURANG');
+        $sheet->setCellValueByColumnAndRow(7, 1, 'JATUH TEMPO');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('BAHANBAKU');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI BARANG');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'SERI BAHAN BAKU');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'KODE ASAL BAHAN BAKU');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'HS');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'KODE BARANG');
+        $sheet->setCellValueByColumnAndRow(7, 1, 'URAIAN');
+        $sheet->setCellValueByColumnAndRow(8, 1, 'MEREK');
+        $sheet->setCellValueByColumnAndRow(9, 1, 'TIPE');
+        $sheet->setCellValueByColumnAndRow(10, 1, 'UKURAN');
+        $sheet->setCellValueByColumnAndRow(11, 1, 'SPESIFIKASI LAIN');
+        $sheet->setCellValueByColumnAndRow(12, 1, 'KODE SATUAN');
+        $sheet->setCellValueByColumnAndRow(13, 1, 'JUMLAH SATUAN');
+        $sheet->setCellValueByColumnAndRow(14, 1, 'KODE KEMASAN');
+        $sheet->setCellValueByColumnAndRow(15, 1, 'JUMLAH KEMASAN');
+        $sheet->setCellValueByColumnAndRow(16, 1, 'KODE DOKUMEN ASAL');
+        $sheet->setCellValueByColumnAndRow(17, 1, 'KODE KANTOR ASAL');
+        $sheet->setCellValueByColumnAndRow(18, 1, 'NOMOR DAFTAR ASAL');
+        $sheet->setCellValueByColumnAndRow(19, 1, 'TANGGAL DAFTAR ASAL');
+        $sheet->setCellValueByColumnAndRow(20, 1, 'NOMOR AJU ASAL');
+        $sheet->setCellValueByColumnAndRow(21, 1, 'SERI BARANG ASAL');
+        $sheet->setCellValueByColumnAndRow(22, 1, 'NETTO');
+        $sheet->setCellValueByColumnAndRow(23, 1, 'BRUTO');
+        $sheet->setCellValueByColumnAndRow(24, 1, 'VOLUME');
+        $sheet->setCellValueByColumnAndRow(25, 1, 'CIF');
+        $sheet->setCellValueByColumnAndRow(26, 1, 'CIF RUPIAH');
+        $sheet->setCellValueByColumnAndRow(27, 1, 'NDPBM');
+        $sheet->setCellValueByColumnAndRow(28, 1, 'HARGA PENYERAHAN');
+        $sheet->setCellValueByColumnAndRow(29, 1, 'HARGA PEROLEHAN');
+        $sheet->setCellValueByColumnAndRow(30, 1, 'NILAI JASA');
+        $sheet->setCellValueByColumnAndRow(31, 1, 'SERI IZIN');
+        $sheet->setCellValueByColumnAndRow(32, 1, 'KODE BKC');
+        $sheet->setCellValueByColumnAndRow(33, 1, 'KODE KOMODITI BKC');
+        $sheet->setCellValueByColumnAndRow(34, 1, 'KODE SUB KOMODITI BKC');
+        $sheet->setCellValueByColumnAndRow(35, 1, 'FLAG TIS');
+        $sheet->setCellValueByColumnAndRow(36, 1, 'ISI PER KEMASAN');
+        $sheet->setCellValueByColumnAndRow(37, 1, 'JUMLAH DILEKATKAN');
+        $sheet->setCellValueByColumnAndRow(38, 1, 'JUMLAH PITA CUKAI');
+        $sheet->setCellValueByColumnAndRow(39, 1, 'HJE CUKAI');
+        $sheet->setCellValueByColumnAndRow(40, 1, 'TARIF CUKAI');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('BAHANBAKUTARIF');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI BARANG');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'SERI BAHAN BAKU');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'KODE ASAL BAHAN BAKU');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'KODE PUNGUTAN');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'KODE TARIF');
+        $sheet->setCellValueByColumnAndRow(7, 1, 'TARIF');
+        $sheet->setCellValueByColumnAndRow(8, 1, 'KODE FASILITAS');
+        $sheet->setCellValueByColumnAndRow(9, 1, 'TARIF FASILITAS');
+        $sheet->setCellValueByColumnAndRow(10, 1, 'NILAI BAYAR');
+        $sheet->setCellValueByColumnAndRow(11, 1, 'NILAI FASILITAS');
+        $sheet->setCellValueByColumnAndRow(12, 1, 'NILAI SUDAH DILUNASI');
+        $sheet->setCellValueByColumnAndRow(13, 1, 'KODE SATUAN');
+        $sheet->setCellValueByColumnAndRow(14, 1, 'JUMLAH SATUAN');
+        $sheet->setCellValueByColumnAndRow(15, 1, 'FLAG BMT SEMENTARA');
+        $sheet->setCellValueByColumnAndRow(16, 1, 'KODE KOMODITI CUKAI');
+        $sheet->setCellValueByColumnAndRow(17, 1, 'KODE SUB KOMODITI CUKAI');
+        $sheet->setCellValueByColumnAndRow(18, 1, 'FLAG TIS');
+        $sheet->setCellValueByColumnAndRow(19, 1, 'FLAG PELEKATAN');
+        $sheet->setCellValueByColumnAndRow(20, 1, 'KODE KEMASAN');
+        $sheet->setCellValueByColumnAndRow(21, 1, 'KODE SUB KOMODITI CUKAI');
+        $sheet->setCellValueByColumnAndRow(22, 1, 'FLAG TIS');
+        $sheet->setCellValueByColumnAndRow(23, 1, 'FLAG PELEKATAN');
+        $sheet->setCellValueByColumnAndRow(24, 1, 'KODE KEMASAN');
+        $sheet->setCellValueByColumnAndRow(25, 1, 'JUMLAH KEMASAN');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('BAHANBAKUDOKUMEN');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI BARANG');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'SERI BAHAN BAKU');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'KODE_ASAL_BAHAN_BAKU');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'SERI DOKUMEN');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'SERI IZIN');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('PUNGUTAN');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'KODE FASILITAS TARIF');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'KODE JENIS PUNGUTAN');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'NILAI PUNGUTAN');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('JAMINAN');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'KODE KANTOR');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'KODE JAMINAN');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'NOMOR JAMINAN');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'TANGGAL JAMINAN');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'NILAI JAMINAN');
+        $sheet->setCellValueByColumnAndRow(7, 1, 'PENJAMIN');
+        $sheet->setCellValueByColumnAndRow(8, 1, 'TANGGAL JATUH TEMPO');
+        $sheet->setCellValueByColumnAndRow(9, 1, 'NOMOR BPJ');
+        $sheet->setCellValueByColumnAndRow(10, 1, 'TANGGAL BPJ');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('BANKDEVISA');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'NOMOR AJU');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'SERI');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'KODE');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'NAMA');
+        foreach (range('A', 'Z') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('VERSI');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'VERSI');
+        $sheet->setCellValueByColumnAndRow(1, 2, '1');
+
+        $stringjudul = "nama file";
+        $filename = $stringjudul; //save our workbook as this file name
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
     }
 
     public function gotoque($psj)

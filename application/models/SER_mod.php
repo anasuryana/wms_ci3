@@ -410,11 +410,12 @@ class SER_mod extends CI_Model {
     }
 
     public function select_validate_emergency($preffno){
-        $this->db->select("SER_ID,VITHDLV.ITH_SER DLVSER,SERD2_SER,TQTY");
+        $this->db->select("SER_ID,VITHDLV.ITH_SER DLVSER,SERD2_SER,isnull(SERC_COMQTY,TQTY) TQTY");
         $this->db->from($this->TABLENAME);
         $this->db->join("(SELECT * FROM ITH_TBL WHERE ITH_SER='".$preffno."' AND ITH_FORM like '%OUT-SHP%') VITHDLV","SER_ID=VITHDLV.ITH_SER","left");
 		$this->db->join("(SELECT TOP 1 ITH_SER,ABS(ITH_QTY) TQTY FROM ITH_TBL WHERE ITH_SER='".$preffno."') VITH","SER_ID=VITH.ITH_SER","left");        
-        $this->db->join('(SELECT SERD2_SER FROM SERD2_TBL GROUP BY SERD2_SER) VSERD',"SER_ID=SERD2_SER","left");
+		$this->db->join("(SELECT TOP 1 ITH_SER,ABS(ITH_QTY) TQTY FROM ITH_TBL WHERE ITH_SER='".$preffno."') VITH","SER_ID=VITH.ITH_SER","left");        
+        $this->db->join('SERC_TBL',"SER_ID=SERC_COMID","left");
         $this->db->where('SER_ID', $preffno);        
 		$query = $this->db->get();
 		return $query->result();
