@@ -3271,6 +3271,7 @@ class ITH extends CI_Controller
         log_message('error', $_SERVER['REMOTE_ADDR'] . ', step2.6#, BG:OTHER, get PPSN1');
         $rsPPSN1 = $this->SPL_mod->select_wo_byArrayOf_WO($_sWO);
 
+        #initialize rsplot
         foreach ($rswip as &$w) {
             $w['B4QTY'] = $w['PLANT2'];
             $w['LOTSIZE'] = 0;
@@ -3298,12 +3299,13 @@ class ITH extends CI_Controller
                         $balneed = $o['NEEDQTY'] - $o['PLOTQTY'];
                         if ($balneed == 0) break;
                         $fixqty = $balneed;
-                        if ($balneed    > $w['PLANT2']) {
+                        if ($balneed > $w['PLANT2']) {
                             $w['PLANT2'] = 0;
                         } else {
                             $w['PLANT2'] -= $balneed;
                         }
                         $o['PLOTQTY'] = $o['NEEDQTY'];
+
                         $isfound = false;
                         foreach ($rsPlot as &$r) {
                             if ($r['WO'] == $o['PDPP_WONO'] && $r['PARTCD'] == $w['ITRN_ITMCD']) {
@@ -3332,9 +3334,9 @@ class ITH extends CI_Controller
                 $theIndex = 0;
                 $sampleRow = [];
                 foreach ($rswip as $index => &$w) {
-                    if ($r['PARTCD']    === $w['ITRN_ITMCD']) {
+                    if ($r['PARTCD'] === $w['ITRN_ITMCD']) {
                         if ($w['PLANT2'] > 0) {
-                            $w['LOGRTN'] = 0; # $w['PLANT2']; <=== use this to see logical balance of PLANT
+                            $w['LOGRTN'] = 0;
                             $w['PLANT2'] = 0;
                         }
 
@@ -3361,7 +3363,7 @@ class ITH extends CI_Controller
                                 #check is logical return per PSN is already plotted
                                 $isPlotted = false;
                                 foreach ($rswip as $g) {
-                                    if ($g['PSN'] === $sampleRow['PSN']) {
+                                    if ($g['PSN'] === $sampleRow['PSN'] && $g['ITRN_ITMCD'] === $sampleRow['ITRN_ITMCD']) {
                                         $isPlotted = true;
                                         break;
                                     }
@@ -3383,11 +3385,11 @@ class ITH extends CI_Controller
                     $sampleRow['NRWH2'] = 0;
                     $sampleRow['ARWH0PD'] = 0;
                     $sampleRow['JOB'] = $r['WO'];
+                    $sampleRow['LOTSIZE'] = $r['LOTSIZE'];
                     $sampleRow['JOBUNIT'] = $r['UNIT'];
                     $sampleRow['PLANT2'] = $r['PARTQTY'];
                     $sampleRow['STOCK'] = 0;
                     $sampleRow['QA'] = 0;
-                    $sampleRow['LOTSIZE'] = $r['LOTSIZE'];
                     $sampleRow['COMMENTS'] = '';
                     $rswip = array_merge(array_slice($rswip, 0, $theIndex), [$sampleRow], array_slice($rswip, $theIndex));
                 }
@@ -3415,7 +3417,7 @@ class ITH extends CI_Controller
             $theIndex = 0;
             $sampleRow = [];
             foreach ($rswip as $index => &$w) {
-                if ($r['ITMCD']    === $w['ITRN_ITMCD']) {
+                if ($r['ITMCD'] === $w['ITRN_ITMCD']) {
                     $theIndex = $index + 1;
                     $sampleRow = $w;
                     break;
@@ -3512,6 +3514,7 @@ class ITH extends CI_Controller
             $rang = "C5:M" . $sheet->getHighestDataRow();
             $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0');
         }
+
         log_message('error', $_SERVER['REMOTE_ADDR'] . ', step4#, BG:OTHER, done');
         $current_datetime = date('Y-m-d H:i:s');
         $spreadsheet->getProperties()
