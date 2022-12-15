@@ -1934,7 +1934,7 @@ class DELV extends CI_Controller
         $lastLineLog = $this->CSMLOG_mod->select_lastLine($ctxid, '') + 1;
         for ($i = 0; $i < 1; $i++) {
             $dlvh = ['DLVH_ID' => $ctxid];
-            if ($this->DLVH_mod->check_Primary($dlvh)) {
+            if (!$this->DLVH_mod->check_Primary($dlvh)) {
                 $this->DLVH_mod->insert($dlvh);
             }
             if ($this->DELV_mod->check_Primary(['DLV_SER' => $ctxa_ser[$i]]) == 0) {
