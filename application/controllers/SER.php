@@ -3963,9 +3963,10 @@ class SER extends CI_Controller
       $cold_reff = $this->input->get('inoldreff');
       $cold_job = $this->input->get('inoldjob');
       $cold_item = $this->input->get('inolditem');
-      $cold_qty = $this->input->get('inoldqty');
-      $oldyear = substr($cold_job, 0, 2);
+      $cold_qty = $this->input->get('inoldqty');      
       $crawtext = $this->input->get('inrawtext');
+      $tempoldjob = explode("-", $cold_job);
+      $tempoldjob = $tempoldjob[1];
       $myar = [];
       if (strpos($crawtext, "|") !== false) { /// regular item
          $araw =  explode("|", $crawtext);
@@ -3977,7 +3978,7 @@ class SER extends CI_Controller
          if (substr($tempjob, 0, 1) == '0') {
             $tempjob = substr($tempjob, 1, 4);
          }
-         $newjob = $oldyear . '-' . $tempjob . '-' . $newitem;
+         
          $newitem_ = substr($newitem, 0, 9);
          $cold_item_ = substr($cold_item, 0, 9);
          if ($newitem_ != $cold_item_) {
@@ -3993,11 +3994,8 @@ class SER extends CI_Controller
          $com_oldjob = str_replace("ES", "", $com_oldjob);
          $com_oldjob = str_replace("ASP", "", $com_oldjob);
 
-         $cold_job_ = strtoupper($com_oldjob);
-         $newjob_ = strtoupper($newjob);
-
-         if ($cold_job_ != $newjob_) {
-            $myar[] = ["cd" => "0", "msg" => "job is not same, please check the label again, $cold_job_  !=  $newjob_"];
+         if ($tempoldjob != $tempjob) {
+            $myar[] = ["cd" => "0", "msg" => "job is not same, please check the label again, $tempoldjob  !=  $tempjob"];
             exit('{"status":' . json_encode($myar) . '}');
          }
          if ($cold_reff == $newreff) {
@@ -5326,7 +5324,7 @@ class SER extends CI_Controller
       $Calc_lib = new RMCalculator();
       $rs = $Calc_lib->get_usage_rm_perjob($doc);
       die(json_encode(['data' => $rs]));
-   }   
+   }
 
    public function resetcalculation()
    {
