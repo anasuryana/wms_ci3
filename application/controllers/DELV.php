@@ -5078,10 +5078,16 @@ class DELV extends CI_Controller
             $myar[] = $ret > 0 ?  ["cd" => '11', "msg" => "Updated successfully"] : ["cd" => '00', "msg" => "No data to be updated"];
             if (!empty($cnopen)) {
                 $this->gotoque($cid);
+                if ($ctpb_tgl_daftar) {
+                    if ($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) > 0) {
+                        $this->NonReffnumberDeliveryConfirmation(['DOC' => $cid, 'DATE' => $ctpb_tgl_daftar, 'DATETIME' => $ctpb_tgl_daftar . ' 15:15:15']);
+                    }
+                }
             }
         }
         die(json_encode($myar));
     }
+
     public function change261()
     {
         $crnt_dt = date('Y-m-d H:i:s');
