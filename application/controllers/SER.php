@@ -5049,7 +5049,8 @@ class SER extends CI_Controller
       $rsdel = $this->ITH_mod->selectbin_history(['ITH_SER' => $cid]);
       $rsjm = $this->SER_mod->select_jm($cid);
       $rscombine = $this->SER_mod->select_combine($cid);
-      if (count($rs) > 0) {
+      $rsSI = $this->SISCN_mod->select_trace(['SISCN_SER' => $cid]);
+      if (!empty($rs)) {
          $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
       } else {
          $rsrelabel = $this->LOGSER_mod->select_new_label($cid);
@@ -5060,7 +5061,7 @@ class SER extends CI_Controller
                if (count($ar) > 1) {
                   $serid_new =  substr($ar[5], 2, strlen($ar[5]));
                   $serqty = substr($ar[3], 2, strlen($ar[3]));
-                  $rsrelabel_fix[] =  [
+                  $rsrelabel_fix[] = [
                      'SER_OLDID' => $cid, 'SER_NEWID' => $serid_new, 'SER_QTY' => $serqty, 'PIC' => $r['PIC'], 'LOGSER_DT' => $r['LOGSER_DT']
                   ];
                } else {
@@ -5072,16 +5073,17 @@ class SER extends CI_Controller
                }
             }
          }
-
          $myar[] = ['cd' => 0, 'msg' => 'not found'];
       }
-      die('{"status": ' . json_encode($myar)
-         . ', "data": ' . json_encode($rs)
-         . ', "data_relable":' . json_encode($rsrelabel_fix)
-         . ', "data_delete":' . json_encode($rsdel)
-         . ', "jm":' . json_encode($rsjm)
-         . ', "combine":' . json_encode($rscombine)
-         . '}');
+      die(json_encode([
+         'status' => $myar,
+         'data' => $rs,
+         'data_relable' => $rsrelabel_fix,
+         'data_delete' => $rsdel,
+         'jm' => $rsjm,
+         'combine' => $rscombine,
+         'si' => $rsSI
+      ]));      
    }
 
    function calculateCombinedJob()

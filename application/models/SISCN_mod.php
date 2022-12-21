@@ -1,126 +1,85 @@
 <?php
 
-class SISCN_mod extends CI_Model {
-	private $TABLENAME = "SISCN_TBL";
-	public function __construct()
+class SISCN_mod extends CI_Model
+{
+    private $TABLENAME = "SISCN_TBL";
+    public function __construct()
     {
         $this->load->database();
-    }	
-	
-	public function insert($data)
-    {        
-        $this->db->insert($this->TABLENAME,$data);
+    }
+
+    public function insert($data)
+    {
+        $this->db->insert($this->TABLENAME, $data);
         return $this->db->affected_rows();
     }
-	public function insertb($data)
-    {        
-        $this->db->insert_batch($this->TABLENAME,$data);
+    public function insertb($data)
+    {
+        $this->db->insert_batch($this->TABLENAME, $data);
         return $this->db->affected_rows();
     }
-    
-	public function check_Primary($data)
-    {        
-        return $this->db->get_where($this->TABLENAME,$data)->num_rows();
+
+    public function check_Primary($data)
+    {
+        return $this->db->get_where($this->TABLENAME, $data)->num_rows();
     }
 
     public function updatebyId($pdata, $pkey)
-    {        
+    {
         $this->db->where($pkey);
         $this->db->update($this->TABLENAME, $pdata);
         return $this->db->affected_rows();
     }
     public function updatebyId_serin($pdata, $pkey, $pser)
-    {        
+    {
         $this->db->where($pkey)->where_in('SISCN_SER', $pser);
         $this->db->update($this->TABLENAME, $pdata);
         return $this->db->affected_rows();
     }
 
     public function selectAll_by($pwhere)
-	{		          
-        $this->db->from($this->TABLENAME." a");
+    {
+        $this->db->from($this->TABLENAME . " a");
         $this->db->join("SER_TBL b", "a.SISCN_SER=b.SER_ID");
-        $this->db->where($pwhere);        
-		$query = $this->db->get();
-		return $query->result_array();
+        $this->db->where($pwhere);
+        $query = $this->db->get();
+        return $query->result_array();
     }
+
+    public function select_trace($pwhere)
+    {
+        $this->db->select("SISCN_DOC,SISCN_SER,SISCN_SERQTY,ISNULL(SISCN_PLLT,'-') SISCN_PLLT,SISCN_LUPDT,CONCAT(MSTEMP_FNM,' ',MSTEMP_LNM) PIC");
+        $this->db->from($this->TABLENAME . " a");
+        $this->db->join("MSTEMP_TBL b", "a.SISCN_USRID=b.MSTEMP_ID", "left");
+        $this->db->where($pwhere);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function selectAll_byserin($pwhere, $pser)
-	{
-        $this->db->from($this->TABLENAME." a");
+    {
+        $this->db->from($this->TABLENAME . " a");
         $this->db->join("SER_TBL b", "a.SISCN_SER=b.SER_ID");
         $this->db->where($pwhere)->where_in('SISCN_SER', $pser);
-		$query = $this->db->get();
-		return $query->result_array();
+        $query = $this->db->get();
+        return $query->result_array();
     }
     public function selectAllg_by($psi)
-	{	
-        $this->db->select("SER_ITMID,sum(SISCN_SERQTY) TTLQTY,COUNT(*) REMARK,SI_OTHRMRK");	   
-        $this->db->from($this->TABLENAME." a");
+    {
+        $this->db->select("SER_ITMID,sum(SISCN_SERQTY) TTLQTY,COUNT(*) REMARK,SI_OTHRMRK");
+        $this->db->from($this->TABLENAME . " a");
         $this->db->join("SER_TBL b", "a.SISCN_SER=b.SER_ID");
         $this->db->join("SI_TBL c", "a.SISCN_LINENO=c.SI_LINENO");
         $this->db->where('SISCN_DOC', $psi);
         $this->db->group_by('SER_ITMID,SI_OTHRMRK');
         $this->db->order_by('SI_OTHRMRK ASC,SER_ITMID asc');
-		$query = $this->db->get();
-		return $query->result_array();
+        $query = $this->db->get();
+        return $query->result_array();
     }
 
-    public function select_serah_terima($psi){
-        // $qry = "SELECT V1.*,TTLQTY,SCAN_DATE,MBSG_DESC,MCUS_CUSNM,SI_HRMRK,RTRIM(MITM_ITMD1) MITM_ITMD1,ISNULL(RTRIM(MBOM_GRADE),'') MBOM_GRADE  FROM
-        // (SELECT SI_ITMCD,SISCN_SERQTY,COUNT(*) TTLBOX, MIN(CONVERT(DATE,SISCN_LUPDT)) SCAN_DATE,MAX(SI_BSGRP) BSGRP, MAX(SI_CUSCD) MCUS, MAX(SI_HRMRK) SI_HRMRK,isnull(MBOM_GRADE,'') MBOM_GRADE, max(SER_RMRK) SER_RMRK  FROM SISCN_TBL 
-        // LEFT JOIN SI_TBL ON SISCN_LINENO=SI_LINENO
-		// LEFT JOIN SER_TBL ON SISCN_SER=SER_ID
-		// LEFT JOIN XWO ON SER_DOC=PDPP_WONO
-        // WHERE SISCN_DOC=?
-        // GROUP BY SI_ITMCD,SISCN_SERQTY,isnull(MBOM_GRADE,'')) V1
-        // LEFT JOIN
-        // (SELECT SI_ITMCD,SUM(SISCN_SERQTY) TTLQTY FROM SISCN_TBL 
-        // LEFT JOIN SI_TBL ON SISCN_LINENO=SI_LINENO
-        // WHERE SISCN_DOC=?
-        // GROUP BY SI_ITMCD) V2 ON V1.SI_ITMCD=V2.SI_ITMCD
-        // LEFT JOIN XMBSG_TBL ON BSGRP=MBSG_BSGRP
-        // LEFT JOIN MCUS_TBL ON MCUS=MCUS_CUSCD
-        // LEFT JOIN MITM_TBL ON V1.SI_ITMCD=MITM_ITMCD		        
-        // ORDER BY V1.SI_ITMCD,SISCN_SERQTY DESC";
-        // $qry="SELECT V1.*,TTLQTY,SCAN_DATE,MBSG_DESC,MCUS_CUSNM,SI_HRMRK,RTRIM(MITM_ITMD1) MITM_ITMD1  FROM
-        // (SELECT SI_ITMCD,SISCN_SERQTY,COUNT(*) TTLBOX, MIN(CONVERT(DATE,SISCN_LUPDT)) SCAN_DATE,MAX(SI_BSGRP) BSGRP, MAX(SI_CUSCD) MCUS, MAX(SI_HRMRK) SI_HRMRK,isnull(RTRIM(MBOM_GRADE),'') MBOM_GRADE, max(SER_RMRK) SER_RMRK  FROM SISCN_TBL 
-        // LEFT JOIN SI_TBL ON SISCN_LINENO=SI_LINENO
-		// LEFT JOIN SER_TBL ON SISCN_SER=SER_ID
-		// LEFT JOIN XWO ON SER_DOC=PDPP_WONO
-        // WHERE SISCN_DOC=?
-        // GROUP BY SI_ITMCD,SISCN_SERQTY,isnull(RTRIM(MBOM_GRADE),'')) V1
-        // LEFT JOIN
-        // (SELECT SI_ITMCD,SUM(SISCN_SERQTY) TTLQTY,MBOM_GRADE FROM SISCN_TBL 
-        // LEFT JOIN SI_TBL ON SISCN_LINENO=SI_LINENO
-		// LEFT JOIN SER_TBL ON SISCN_SER=SER_ID
-		// LEFT JOIN XWO ON SER_DOC=PDPP_WONO
-        // WHERE SISCN_DOC=?
-        // GROUP BY SI_ITMCD,MBOM_GRADE) V2 ON V1.SI_ITMCD=V2.SI_ITMCD and isnull(v1.MBOM_GRADE,'')=isnull(V2.MBOM_GRADE,'')
-        // LEFT JOIN XMBSG_TBL ON BSGRP=MBSG_BSGRP
-        // LEFT JOIN MCUS_TBL ON MCUS=MCUS_CUSCD
-        // LEFT JOIN MITM_TBL ON V1.SI_ITMCD=MITM_ITMCD		        
-        // ORDER BY V1.SI_ITMCD,SISCN_SERQTY DESC";
-    //     $qry = "SELECT V1.*,TTLQTY,SCAN_DATE,MBSG_DESC,MCUS_CUSNM,SI_HRMRK,RTRIM(MITM_ITMD1) MITM_ITMD1  FROM
-    //     (SELECT SI_ITMCD,SISCN_SERQTY,COUNT(*) TTLBOX, MIN(CONVERT(DATE,SISCN_LUPDT)) SCAN_DATE,MAX(SI_BSGRP) BSGRP, MAX(SI_CUSCD) MCUS, MAX(SI_HRMRK) SI_HRMRK,isnull(RTRIM(MBOM_GRADE),'') MBOM_GRADE, max(SER_RMRK) SER_RMRK		
-	// 	FROM SISCN_TBL 
-    //     LEFT JOIN SI_TBL ON SISCN_LINENO=SI_LINENO
-	// 	LEFT JOIN SER_TBL ON SISCN_SER=SER_ID
-	// 	LEFT JOIN XWO ON SER_DOC=PDPP_WONO
-    //     WHERE SISCN_DOC=?
-    //    GROUP BY SI_ITMCD,SISCN_SERQTY,isnull(RTRIM(MBOM_GRADE),'')) V1        
-    //    LEFT JOIN
-    //      (SELECT SI_ITMCD,SUM(SISCN_SERQTY) TTLQTY,isnull(MBOM_GRADE,'') MBOM_GRADE FROM SISCN_TBL 
-    //     LEFT JOIN SI_TBL ON SISCN_LINENO=SI_LINENO
-	// 	LEFT JOIN SER_TBL ON SISCN_SER=SER_ID
-	// 	LEFT JOIN XWO ON SER_DOC=PDPP_WONO
-    //     WHERE SISCN_DOC=?
-    //     GROUP BY SI_ITMCD,isnull(MBOM_GRADE,'')) V2 ON V1.SI_ITMCD=V2.SI_ITMCD and isnull(v1.MBOM_GRADE,'')=isnull(V2.MBOM_GRADE,'')
-    //     LEFT JOIN XMBSG_TBL ON BSGRP=MBSG_BSGRP
-    //     LEFT JOIN MCUS_TBL ON MCUS=MCUS_CUSCD
-    //     LEFT JOIN MITM_TBL ON V1.SI_ITMCD=MITM_ITMCD
-    //     ORDER BY V1.SI_ITMCD,MBOM_GRADE,SISCN_SERQTY DESC";
-    //RANK
-    $qry = "SELECT V1.*,TTLQTY,SCAN_DATE,MBSG_DESC,MCUS_CUSNM,SI_HRMRK,RTRIM(MITM_ITMD1) MITM_ITMD1  FROM
+    public function select_serah_terima($psi)
+    {
+        $qry = "SELECT V1.*,TTLQTY,SCAN_DATE,MBSG_DESC,MCUS_CUSNM,SI_HRMRK,RTRIM(MITM_ITMD1) MITM_ITMD1  FROM
     (SELECT SI_ITMCD,SISCN_SERQTY,COUNT(*) TTLBOX, MIN(CONVERT(DATE,SISCN_LUPDT)) SCAN_DATE,MAX(SI_BSGRP) BSGRP, MAX(SI_CUSCD) MCUS, MAX(SI_HRMRK) SI_HRMRK,isnull(RTRIM(SER_GRADE),'') MBOM_GRADE, max(SER_RMRK) SER_RMRK		
     FROM SISCN_TBL 
     LEFT JOIN SI_TBL ON SISCN_LINENO=SI_LINENO
@@ -141,7 +100,8 @@ class SISCN_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_serah_terima_rtn($psi){        
+    public function select_serah_terima_rtn($psi)
+    {
         $qry = "SELECT VDET.*,TTLQTY,MCUS_CUSNM,MBSG_DESC,RTRIM(MITM_ITMD1) MITM_ITMD1,isnull(RCV_RPNO,'') RCV_RPNO,ISNULL(RCV_BCNO,'') RCV_BCNO,PERBOX,BOX,SI_WH  FROM
         (SELECT SI_ITMCD, ITH_DOC SER_DOC,sum(INTQTY) INTQTY, MIN(CONVERT(DATE,SISCN_LUPDT)) SCAN_DATE
         , MAX(SI_BSGRP) SI_BSGRP, MAX(SI_CUSCD) SI_CUSCD,max(SISCN_SER) AX_SER,MAX(SI_HRMRK) RETFG_PLANT,SISCN_SERQTY,min(OLDITEM) OLDITEM 
@@ -166,12 +126,13 @@ class SISCN_mod extends CI_Model {
         LEFT JOIN (SELECT RETFG_DOCNO FROM RETFG_TBL GROUP BY RETFG_DOCNO) VRCV ON VDET.SER_DOC=RETFG_DOCNO
         LEFT JOIN MITM_TBL ON VTTLQTY.SI_ITMCD=MITM_ITMCD
         left join (SELECT RCV_INVNO, RCV_RPNO,RCV_BCNO FROM RCV_TBL GROUP BY RCV_INVNO,RCV_RPNO, RCV_BCNO) VRCVCUST ON SER_DOC=RCV_INVNO		
-        order by SI_ITMCD,SISCN_SERQTY,PERBOX DESC";#order by SI_ITMCD,AX_SER, PERBOX DESC
+        order by SI_ITMCD,SISCN_SERQTY,PERBOX DESC"; #order by SI_ITMCD,AX_SER, PERBOX DESC
         $query =  $this->db->query($qry, [$psi, $psi, $psi]);
         return $query->result_array();
     }
 
-    public function select_exbc_fgrtn($ptxid) {
+    public function select_exbc_fgrtn($ptxid)
+    {
         $qry = "SELECT VDET.*	
                 ,RTRIM(MITM_ITMD1) MITM_ITMD1
                 ,RTRIM(MITM_SPTNO) MITM_SPTNO
@@ -260,7 +221,8 @@ class SISCN_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function select_serah_terima_asp($psi){
+    public function select_serah_terima_asp($psi)
+    {
         $qry = "SELECT V1.*,SCAN_DATE,MBSG_DESC,MCUS_CUSNM,SI_HRMRK,RTRIM(MITM_ITMD1) MITM_ITMD1,ISNULL(RTRIM(MBOM_GRADE),'') MBOM_GRADE  FROM
         (SELECT SI_ITMCD, 1 SISCN_SERQTY, SUM(SISCN_SERQTY) TTLBOX, MIN(CONVERT(DATE,SISCN_LUPDT)) SCAN_DATE,MAX(SI_BSGRP) BSGRP, MAX(SI_CUSCD) MCUS, MAX(SI_HRMRK) SI_HRMRK,isnull(MBOM_GRADE,'') MBOM_GRADE, SUM(SISCN_SERQTY) TTLQTY, max(SER_RMRK) SER_RMRK  FROM SISCN_TBL 
         LEFT JOIN SI_TBL ON SISCN_LINENO=SI_LINENO
@@ -278,7 +240,7 @@ class SISCN_mod extends CI_Model {
 
 
     public function selectAll_for_delivery_by_si($psi, $cust, $pbg, $pstrloc)
-	{        
+    {
         $qry = "select SISCN_SER,SER_ITMID,MITM_ITMD1,SI_MDL, SI_DOC,SI_DOCREFF,SI_DOCREFFDT,SISCN_SERQTY,SI_DOCREFFDT,isnull(SISOPRC,0) SI_DOCREFFPRC,SER_DOC,ISNULL(SI_OTHRMRK,'') SI_OTHRMRK 
         ,SISO_SOLINE,ISNULL(MITM_BOXTYPE,'') MITM_BOXTYPE from $this->TABLENAME  a
         INNER JOIN SER_TBL b on a.SISCN_SER=b.SER_ID
@@ -290,11 +252,11 @@ class SISCN_mod extends CI_Model {
         and SI_BSGRP =? 
         and isnull(SI_OTHRMRK,'') like ? AND SISCN_PLLT IS NOT NULL
         ORDER BY SISCN_DOC ASC, SISCN_DOCREFF ASC, SER_ITMID ASC ";
-		$query =  $this->db->query($qry, ['%'.$psi.'%', $cust, $pbg,'%'.$pstrloc.'%']);
+        $query =  $this->db->query($qry, ['%' . $psi . '%', $cust, $pbg, '%' . $pstrloc . '%']);
         return $query->result_array();
     }
     public function selectAll_for_delivery_by_itemcode($pitem, $cust, $pbg, $pstrloc)
-	{
+    {
         $qry = "select SISCN_SER,SER_ITMID,MITM_ITMD1,SI_MDL,SI_DOC,SI_DOCREFF, SI_DOCREFFDT,SISCN_SERQTY,SI_DOCREFFDT,ISNULL(SISOPRC,0) SI_DOCREFFPRC,SER_DOC,ISNULL(SI_OTHRMRK,'') SI_OTHRMRK 
         ,SISO_SOLINE,MITM_BOXTYPE from $this->TABLENAME  a
         INNER JOIN SER_TBL b on a.SISCN_SER=b.SER_ID
@@ -305,12 +267,12 @@ class SISCN_mod extends CI_Model {
         WHERE SER_ITMID LIKE ? AND SI_CUSCD=? AND  DLV_SER IS NULL and SI_BSGRP = ? 
         and isnull(SI_OTHRMRK,'') like ? 
         ORDER BY SISCN_DOC ASC, SISCN_DOCREFF ASC, SER_ITMID ASC ";
-		$query =  $this->db->query($qry, ['%'.$pitem.'%', $cust, $pbg,'%'.$pstrloc.'%']);
+        $query =  $this->db->query($qry, ['%' . $pitem . '%', $cust, $pbg, '%' . $pstrloc . '%']);
         return $query->result_array();
     }
 
     public function selectAll_for_delivery_by_itemname($pitem, $cust, $pbg, $pstrloc)
-	{
+    {
         $qry = "select SISCN_SER,SER_ITMID,MITM_ITMD1,SI_MDL,SI_DOC,SI_DOCREFF, SI_DOCREFFDT,SISCN_SERQTY,SI_DOCREFFDT,ISNULL(SISOPRC,0) SI_DOCREFFPRC,SER_DOC,ISNULL(SI_OTHRMRK,'') SI_OTHRMRK 
         ,SISO_SOLINE,MITM_BOXTYPE from $this->TABLENAME  a
         INNER JOIN SER_TBL b on a.SISCN_SER=b.SER_ID
@@ -321,23 +283,24 @@ class SISCN_mod extends CI_Model {
         WHERE MITM_ITMD1 LIKE ? AND SI_CUSCD=? AND  DLV_SER IS NULL AND SI_BSGRP = ? 
         and isnull(SI_OTHRMRK,'') like ? 
         ORDER BY SISCN_DOC ASC, SISCN_DOCREFF ASC, SER_ITMID ASC ";
-		$query =  $this->db->query($qry, ['%'.$pitem.'%', $cust, $pbg,'%'.$pstrloc.'%']);
+        $query =  $this->db->query($qry, ['%' . $pitem . '%', $cust, $pbg, '%' . $pstrloc . '%']);
         return $query->result_array();
     }
 
     public function select_groupbyline($pline)
-	{
+    {
         $qry = "SELECT SISCN_LINENO,SUM(SISCN_SERQTY) SCNQTY FROM SISCN_TBL WHERE SISCN_LINENO = ? GROUP BY SISCN_LINENO";
-		$query =  $this->db->query($qry, array($pline));
+        $query =  $this->db->query($qry, array($pline));
         return $query->result_array();
     }
 
-    public function lastserialid(){       
+    public function lastserialid()
+    {
         $qry = "select TOP 1 coalesce(SISCN_PLLT,'0') lser from SISCN_TBL 
         WHERE convert(date, SISCN_LUPDT) = convert(date,GETDATE())
         ORDER BY convert(bigint,coalesce(SISCN_PLLT,'0')) desc";
-        $query =  $this->db->query($qry);        
-        if ($query->num_rows()>0){
+        $query =  $this->db->query($qry);
+        if ($query->num_rows() > 0) {
             $ret = $query->row();
             return $ret->lser;
         } else {
@@ -352,7 +315,8 @@ class SISCN_mod extends CI_Model {
         return $this->db->affected_rows();
     }
 
-    public function selectso_byser($pid){        
+    public function selectso_byser($pid)
+    {
         $qry = "SELECT V1.*,V2.*,SI_ITMCD,SI_BSGRP,SI_CUSCD FROM
         (select SISCN_LINENO,sum(SISCN_SERQTY) SCNQTY 
         from SISCN_TBL where SISCN_SER in ($pid)
@@ -367,7 +331,8 @@ class SISCN_mod extends CI_Model {
         return $query->result_array();
     }
 
-    public function selectso_bydo($pDO){        
+    public function selectso_bydo($pDO)
+    {
         $qry = "SELECT V1.*,V2.*,SI_ITMCD,SI_BSGRP,SI_CUSCD FROM
         (select SISCN_LINENO,sum(SISCN_SERQTY) SCNQTY 
         from SISCN_TBL INNER JOIN DLV_TBL ON SISCN_SER=DLV_SER where DLV_ID = ?
@@ -380,9 +345,10 @@ class SISCN_mod extends CI_Model {
 		LEFT JOIN SI_TBL ON SISCN_LINENO=SI_LINENO";
         $query =  $this->db->query($qry, [$pDO]);
         return $query->result_array();
-    }    
-   
-    public function select_forsetPrice($pdoc){
+    }
+
+    public function select_forsetPrice($pdoc)
+    {
         $qry = "SELECT V1.*,V2.*,UPPER(SI_ITMCD) SI_ITMCD,SI_BSGRP,SI_CUSCD FROM
         (select SISCN_LINENO,sum(SISCN_SERQTY) SCNQTY ,SISCN_SER
         from SISCN_TBL where SISCN_SER in  (SELECT DLV_SER FROM DLV_TBL WHERE DLV_ID=?)
@@ -396,6 +362,4 @@ class SISCN_mod extends CI_Model {
         $query =  $this->db->query($qry, [$pdoc]);
         return $query->result_array();
     }
-
-    
 }
