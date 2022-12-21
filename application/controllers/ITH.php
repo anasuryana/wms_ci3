@@ -3539,6 +3539,27 @@ class ITH extends CI_Controller
         }
     }
 
+    function change_adj_qty()
+    {
+        header('Content-Type: application/json');
+        $itemcd = $this->input->post('itemcd');
+        $old_qty = $this->input->post('old_qty');
+        $new_qty = $this->input->post('new_qty');
+        $lupdt = $this->input->post('lupdt');
+        $wh = $this->input->post('wh');
+        $form = $this->input->post('form');
+        $where = [
+            'ITH_ITMCD' => $itemcd, 'ITH_FORM' => $form, 'ITH_WH' => $wh, 'ITH_QTY' => $old_qty, 'ITH_LUPDT' => $lupdt
+        ];
+        $respon = $this->ITH_mod->updatebyId(
+            $where,
+            ['ITH_QTY' => $new_qty]
+        );
+        $myar = $respon ? ['cd' => '1', 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'Could not updated'];
+        log_message('error', $_SERVER['REMOTE_ADDR'] . ', change adj-qty value ' . json_encode($where));
+        die(json_encode(['status' => $myar]));
+    }
+
     function change_kitting_date()
     {
         date_default_timezone_set('Asia/Jakarta');
