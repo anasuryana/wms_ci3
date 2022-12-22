@@ -3685,19 +3685,11 @@ class DELV extends CI_Controller
                         $pdf->Cell(41.56, 4, number_format($amount_, 0), 0, 0, 'R');
                         $ttlamount_ += number_format($amount_, 0);
                     } else {
-                        if (substr(number_format($perprice_, 5), -5) === '00000') {
-                            $pdf->SetXY(138, $curY - 3);
-                            $pdf->Cell(17.5, 4, number_format($perprice_, 0), 0, 0, 'R');
-                            $pdf->SetXY(155, $curY - 3);
-                            $pdf->Cell(41.56, 4, number_format($amount_, 0), 0, 0, 'R');
-                            $ttlamount_ += str_replace(",", "", number_format($amount_, 0));
-                        } else {
-                            $pdf->SetXY(138, $curY - 3);
-                            $pdf->Cell(17.5, 4, number_format($perprice_, 5), 0, 0, 'R');
-                            $pdf->SetXY(155, $curY - 3);
-                            $pdf->Cell(41.56, 4, number_format($amount_, 2), 0, 0, 'R');
-                            $ttlamount_ += str_replace(',', '', number_format($amount_, 2));
-                        }
+                        $pdf->SetXY(138, $curY - 3);
+                        $pdf->Cell(17.5, 4, number_format($perprice_, 5), 0, 0, 'R');
+                        $pdf->SetXY(155, $curY - 3);
+                        $pdf->Cell(41.56, 4, number_format($amount_, 2), 0, 0, 'R');
+                        $ttlamount_ += str_replace(',', '', number_format($amount_, 2));
                     }
 
                     $no++;
@@ -5002,6 +4994,19 @@ class DELV extends CI_Controller
             }
         }
         return $resith;
+    }
+
+    function testdeduction()
+    {
+        $ctpb_tgl_daftar = $this->input->get('intgldaftar');
+        $cid = $this->input->get('inid');
+
+        if ($ctpb_tgl_daftar) {
+            if ($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) > 0) {
+                $this->NonReffnumberDeliveryConfirmation(['DOC' => $cid, 'DATE' => $ctpb_tgl_daftar, 'DATETIME' => $ctpb_tgl_daftar . ' 15:15:15']);
+            }
+        }
+        echo 'done ' . date('Y-m-d H:i:s');
     }
 
     public function change41()
