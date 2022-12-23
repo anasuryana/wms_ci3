@@ -2187,7 +2187,7 @@ class RCV extends CI_Controller
         $no = 1;
         $ttlqty = 0;
         foreach ($rs as $r) {
-            if ($Y > ($hight_p * 0.9)) {
+            if ($Y > ($hight_p * 0.86)) {
                 $pdf->AddPage();
                 //header
                 $pdf->SetFont('Arial', 'BU', 16);
