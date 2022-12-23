@@ -64,7 +64,7 @@ class MSTSUP extends CI_Controller {
     public function search_union(){
         header('Content-Type: application/json');
         $searchKey = $this->input->get('searchKey');
-        $rs = $this->MSTSUP_mod->select_union(['MSUP_SUPNM' => $searchKey]);
+        $rs = $this->MSTSUP_mod->select_like(['MSUP_SUPNM' => $searchKey]);
         $myar[] = count($rs) ? ['cd' => 1, 'msg' => 'go ahead'] : ['cd' => 0, 'msg' => 'not found'];
         die('{"data":'.json_encode($rs).',"status":'.json_encode($myar).'}');
     }
