@@ -1,5 +1,5 @@
 <div style="padding: 5px">
-    <div class="container-xxl">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-md-3 mb-1">
                 <h2><span class="badge bg-info">1 <i class="fas fa-hand-point-right"></i></span> <span class="badge bg-info">From</span></h2>
@@ -213,16 +213,16 @@
     $("#relable_newreff").keypress(function(e) {
         if (e.which == 13) {
             let nreff = $(this).val();
-            let rawtext = nreff;
+            let rawtext = nreff.toUpperCase();
             let oldreff = document.getElementById('relable_oldreff').value;
             let olditem = document.getElementById('relable_olditemcd').value;
             let oldqty = document.getElementById('relable_oldqty').value;
-            let oldjob = document.getElementById('relable_oldjob').value.toUpperCase().trim();            
+            let oldjob = document.getElementById('relable_oldjob').value.toUpperCase().trim();
             let oldyear = oldjob.substr(0, 2);
             oldqty = numeral(oldqty).value();
             let tempoldjob = oldjob.split('-')
             tempoldjob = tempoldjob[1]
-            if (nreff.includes("|")) {                
+            if (nreff.includes("|")) {
                 document.getElementById('relable_rawtxt1').value = nreff;
                 let ar = nreff.split("|");
                 let newitem = ar[0].substr(2, ar[0].length - 2);
@@ -262,9 +262,7 @@
                 let com_oldjob_ = com_oldjob.toUpperCase()
                 let com_newjob_ = com_newjob.toUpperCase()
                 if (com_oldjob_ != com_newjob_) {
-                    if(tempjob === tempoldjob)
-                    {                        
-                    } else {
+                    if (tempjob === tempoldjob) {} else {
                         alertify.warning('job is not same, please check the label again ' + com_oldjob_ + ' != ' + com_newjob_);
                         $(this).val('')
                         return;
