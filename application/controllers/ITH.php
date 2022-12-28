@@ -1993,8 +1993,7 @@ class ITH extends CI_Controller
     public function out_wor_wip()
     {
         ini_set('max_execution_time', '-1');
-        header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');        
         $date = $this->input->get('date');
         $msg = '';
         if (empty($date)) {
@@ -2006,7 +2005,7 @@ class ITH extends CI_Controller
             log_message('error', $msg);
         }
         $rs = $this->ITH_mod->select_out_wip($date);
-        $rszero = $this->ITH_mod->select_out_wip_zeroed($date);
+        $rszero = []; #$this->ITH_mod->select_out_wip_zeroed($date);
         $a_sample = [];
         foreach ($rszero as $r) {
             if (!in_array($r['SERD2_SER_SMP'], $a_sample)) {
@@ -2014,9 +2013,9 @@ class ITH extends CI_Controller
             }
         }
 
-        $rstemp = count($a_sample) > 0 ? $this->SERD_mod->select_group_byser($a_sample) : [];
+        $rstemp = !empty($a_sample) ? $this->SERD_mod->select_group_byser($a_sample) : [];
         $tosave = [];
-        if (count($rstemp)) {
+        if (!empty($rstemp)) {
             foreach ($rszero as $r) {
                 foreach ($rstemp as $b) {
                     if ($r['SERD2_SER_SMP'] == $b['SERD2_SER']) {
@@ -2614,7 +2613,7 @@ class ITH extends CI_Controller
             $myar = ["cd" => "0", "msg" => "Session is expired please reload page"];
             die(json_encode(['status' => $myar]));
         }
-        $whException = ['AFWH3', 'AWIP1', 'AFWH9SC', 'PSIEQUIP'];
+        $whException = ['AFWH3', 'AWIP1',  'PSIEQUIP'];#'AFWH9SC',
         $date = $this->input->post('date');
         $location = $this->input->post('location');
         $adjtype = $this->input->post('adjtype');
@@ -2632,6 +2631,9 @@ class ITH extends CI_Controller
                     $rs = $this->ITH_mod->select_compare_inventory_fg_rtn($location, $date);
                     break;
                 case 'QAFG':
+                    $rs = $this->ITH_mod->select_compare_inventory_fg_qa($location, $date);
+                    break;
+                case 'AFWH9SC':
                     $rs = $this->ITH_mod->select_compare_inventory_fg_qa($location, $date);
                     break;
                 case 'AFWH3':
