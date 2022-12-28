@@ -2945,7 +2945,7 @@ class SER extends CI_Controller
 
          if ($rsactive_wh == "ARPRD1") {
             for ($i = 0; $i < $ca_count; $i++) {
-               if ($colditem != strtoupper($ca_itmcd[$i])) {
+               if (strtoupper($colditem) != strtoupper($ca_itmcd[$i])) {
                   $myar[] = ["cd" => "0", "msg" => "Could not convert in production area"];
                   exit('{"status":' . json_encode($myar) . '}');
                   break;
