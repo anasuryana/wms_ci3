@@ -134,7 +134,7 @@ class RCV extends CI_Controller
         $data['lkemasan'] = $kemasan;
         $data['sapaDia'] = $this->session->userdata('sfname');
 
-        $rslocfrom = $this->MSTLOCG_mod->selectall_where_CODE_in(['ARWH1', 'ARWH2', 'NRWH2']);
+        $rslocfrom = $this->MSTLOCG_mod->selectall_where_CODE_in(['ARWH1', 'ARWH2', 'NRWH2','PSIEQUIP']);
         $rslocfrom_str = '';
         foreach ($rslocfrom as $r) {
             $rslocfrom_str .= "<option value='" . $r['MSTLOCG_ID'] . "'>" . $r['MSTLOCG_NM'] . " (" . $r['MSTLOCG_ID'] . ")</option>";
