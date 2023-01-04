@@ -673,7 +673,7 @@
             onScan.detachFrom(document)
         } else {
             p.readOnly = true
-            rcvfgprd_initOnScan()
+            rcvfgprd_abn_initOnScan()
         }
     }
 </script>
