@@ -20,6 +20,7 @@ class RMCalculator
         $this->CI->load->model('PWOP_mod');
         $this->CI->load->model('SPLREFF_mod');
         $this->CI->load->model('MSTSUP_mod');
+        $this->CI->load->model('MSTCUS_mod');
         $this->CI->load->model('TECPRTSUB_mod');
         $this->CI->load->model('RESIM_mod');
         $this->CI->load->model('WOH_mod');
@@ -3133,6 +3134,18 @@ class RMCalculator
     public function sync_supplier()
     {
         $affect = $this->CI->MSTSUP_mod->sync();
+        $myar = [];
+        if ($affect) {
+            $myar[] = ['cd' => 1, 'msg' => $affect . ' updated'];
+        } else {
+            $myar[] = ['cd' => 0, 'msg' => $affect . ' updated'];
+        }
+        return (json_encode(['status' => $myar]));
+    }
+
+    public function sync_customer()
+    {
+        $affect = $this->CI->MSTCUS_mod->sync();
         $myar = [];
         if ($affect) {
             $myar[] = ['cd' => 1, 'msg' => $affect . ' updated'];
