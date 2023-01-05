@@ -70,12 +70,12 @@
                     <select class="form-select" id="rcvfgprd_abn_cmb_job">
                         <option value="-">-</option>
                         <?php
-                        $todis = "";
-                        foreach ($rsjob as $r) {
-                            $todis .= "<option value='" . trim($r['PDPP_WONO']) . "'>" . $r['PDPP_WONO'] . "</option>";
-                        }
-                        echo $todis;
-                        ?>
+$todis = "";
+foreach ($rsjob as $r) {
+    $todis .= "<option value='" . trim($r['PDPP_WONO']) . "'>" . $r['PDPP_WONO'] . "</option>";
+}
+echo $todis;
+?>
                     </select>
                     <button class="btn btn-success" id="rcvfgprd_abn_refreshjob"><i class="fas fa-sync-alt"></i></button>
                 </div>
@@ -181,7 +181,7 @@
     function rcvfgprd_abn_f_refreshjob() {
         $.ajax({
             type: "get",
-            url: "<?= base_url('INCFG/get_joblbl_ost') ?>",
+            url: "<?=base_url('INCFG/get_joblbl_ost')?>",
             dataType: "json",
             success: function(response) {
                 let ttlrows = response.length;
@@ -297,7 +297,7 @@
             document.getElementById('rcvfgprd_abn_progress').innerHTML = 'Please wait... <i class="fas fa-spinner fa-spin"></i>';
             $.ajax({
                 type: "post",
-                url: "<?= base_url("INCFG/setprd") ?>",
+                url: "<?=base_url("INCFG/setprd")?>",
                 data: {
                     inkey: mkey,
                     injob: mjob,
@@ -390,7 +390,7 @@
             }
             $.ajax({
                 type: "get",
-                url: "<?= base_url("MSTITM/checkexist") ?>",
+                url: "<?=base_url("MSTITM/checkexist")?>",
                 data: {
                     initem: mitem
                 },
@@ -480,7 +480,7 @@
     function rcvfgprd_abn_evt_gettodayscan() {
         $.ajax({
             type: "get",
-            url: "<?= base_url('INCFG/gettodayscanprd') ?>",
+            url: "<?=base_url('INCFG/gettodayscanprd')?>",
             dataType: "json",
             success: function(response) {
                 let ttlrows = response.data.length;
@@ -548,21 +548,19 @@
 
     function rcvfgprd_abn_initOnScan() {
         let options = {
-            // timeBeforeScanTest: 100, 
-            // avgTimeByChar: 60,
-            // minLength: 5, 			
-            // scanButtonLongPressTime: 500, 
-            // stopPropagation: false, 
-            // preventDefault: false,
-            // reactToPaste: true,
-            // reactToKeyDown: true,
-            // singleScanQty: 1
-            suffixKeyCodes: [13], // enter-key expected at the end of a scan
-            reactToPaste: true, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
-            minLength: 5,
+            timeBeforeScanTest: 100,
+			avgTimeByChar: 30,
+			minLength: 5,
+			scanButtonLongPressTime: 500,
+			stopPropagation: false,
+			preventDefault: false,
+			reactToPaste: true,
+			reactToKeyDown: true,
+			singleScanQty: 1
         }
 
-        options.onScan = function(barcode, qty) {
+        options.onScan = function(barcode, qty)
+        {
             let tesnya = barcode;
             let ates = tesnya.split(String.fromCharCode(16));
             let e = $.Event('keypress');
@@ -587,45 +585,24 @@
                 }
             }
         };
-        options.keyCodeMapper = function(oEvent) {
-            console.log("mapper: " + oEvent.key)
-            if (oEvent.key == '|') {
-                return '|';
-            }
-            if (oEvent.key == 'Enter') {
-                return ' ';
-            }
-            if (oEvent.key == '_') {
-                return '_';
-            }
-            return oEvent.key
-            // Fall back to the default decoder in all other cases
-            // return onScan.decodeKeyEvent(oEvent);
-        }
         options.onScanError = function(err) {
             let sFormatedErrorString = "Error Details: {\n";
             for (let i in err) {
                 sFormatedErrorString += '    ' + i + ': ' + err[i] + ",\n";
             }
             sFormatedErrorString = sFormatedErrorString.trim().replace(/,$/, '') + "\n}";
-            // console.log("[onScanError]: " + sFormatedErrorString);
         };
 
         options.onKeyProcess = function(iKey, oEvent) {
-            // console.log("[onKeyProcess]: Processed key code: " + iKey);
+
         };
-        // options.onKeyDetect = function(iKey, oEvent){
-        //     console.log("[onKeyDetect]: Detected key code: " + iKey);
-        // };				
         options.onKeyDetect = function(iKeyCode) { // output all potentially relevant key events - great for debugging!
-            // console.log('Pressed: ' + iKeyCode);
+
         }
         options.onScanButtonLongPress = function() {
-            // console.log("[onScanButtonLongPress]: ScanButton has been long-pressed");
         };
 
         options.onPaste = function(sPasteString) {
-            // console.log("[onPaste]: Data has been pasted: " + sPasteString);
         }
 
         document.addEventListener('scan', scanHandler);
