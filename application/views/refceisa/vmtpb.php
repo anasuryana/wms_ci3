@@ -1,27 +1,27 @@
 <div style="padding: 10px">
 	<div class="container-xxl">
         <div class="row">
-            <div class="col-md-2 mb-1">
-                <div class="input-group input-group-sm">                    
-                    <label class="input-group-text">Code</label>                    
-                    <input type="text" class="form-control" id="tpbtype_txtid">                    
-                    <button title="Find item" class="btn btn-outline-secondary" type="button" id="tpbtype_btnfortpb"><i class="fas fa-search"></i></button>                                            
+            <div class="col-md-3 mb-1">
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text">Code</label>
+                    <input type="text" class="form-control" id="tpbtype_txtid">
+                    <button title="Find item" class="btn btn-outline-secondary" type="button" id="tpbtype_btnfortpb"><i class="fas fa-search"></i></button>
                 </div>
             </div>
-            <div class="col-md-10 mb-1">
-                <div class="input-group input-group-sm">                    
-                    <label class="input-group-text">Description</label>                    
+            <div class="col-md-9 mb-1">
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text">Description</label>
                     <input type="text" class="form-control" id="tpbtype_txtnm">
                 </div>
-            </div>          
-        </div>  
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12 mb-2">
                 <div class="btn-group btn-group-sm">
                     <button title="New" id="tpbtype_btnnew" class="btn btn-primary" ><i class="fas fa-file"></i></button>
                     <button title="Save" id="tpbtype_btnsave" class="btn btn-primary" ><i class="fas fa-save"></i></button>
                     <button title="Synchronize" id="tpbtype_btnsync" class="btn btn-success" ><i class="fas fa-sync"></i> Synchronize</button>
-                </div>                                
+                </div>
             </div>
         </div>
         <div class="row">
@@ -30,17 +30,17 @@
                     <table id="tpbtype_tbldiff" class="table table-bordered table-sm table-hover">
                         <thead class="table-light">
                             <tr>
-                                <th class="text-center" colspan="2">Type List</th>                                
+                                <th class="text-center" colspan="2">Type List</th>
                                 <th class="text-center" rowspan="2">
                                     <div class="btn-group btn-group-sm">
                                         <button class="btn btn-outline-success" id="tpbtype_btnsyncall" title="Synchronize all"><i class="fas fa-sync"></i></button>
                                         <button class="btn btn-secondary" id="tpbtype_btnclose" title="Close table"><i class="fas fa-window-close"></i></button>
-                                    </div>                                
-                                </th> 
+                                    </div>
+                                </th>
                             </tr>
                             <tr>
                                 <th class="d-none">aa</th>
-                                <th class="text-center">WMS</th>                                
+                                <th class="text-center">WMS</th>
                                 <th class="text-center">CEISA</th>
                             </tr>
                         </thead>
@@ -54,31 +54,24 @@
 </div>
 <div class="modal fade" id="TYPE_MODTPB">
     <div class="modal-dialog modal-lg">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Type List</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
                 <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="tpbtype_txtsearch" maxlength="15" required placeholder="..."> 
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search by</span>                        
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Search</span>
                         <select id="tpbtype_srchby" class="form-select">
                             <option value="ic">Type</option>
-                            <option value="in">Description</option>                             
-                        </select>                  
+                            <option value="in">Description</option>
+                        </select>
+                        <input type="text" class="form-control" id="tpbtype_txtsearch" maxlength="15" required placeholder="...">
                     </div>
                 </div>
             </div>            
@@ -89,7 +82,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Type</th>
-                                    <th>Description</th>                                    
+                                    <th>Description</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -98,7 +91,7 @@
                     </div>
                 </div>
             </div>
-        </div>             
+        </div>
       </div>
     </div>
 </div>
@@ -108,7 +101,7 @@
         $("#tpbtype_container").show();
         $.ajax({
             type: "get",
-            url: "<?=base_url('refceisa/MTPB/finddiff')?>",            
+            url: "<?=base_url('refceisa/MTPB/finddiff')?>",
             dataType: "json",
             success: function (response) {
                 var ttlrows = response.length;
@@ -118,9 +111,9 @@
                     for(var i =0;i<ttlrows;i++){
                         tohtml += '<tr>'+
                         '<td class="d-none">'+response[i].ID.trim()+'</td>'+
-                        '<td>?</td>'+                        
-                        '<td>'+response[i].DESC.trim()+'</td>'+       
-                        '<td></td>'+                                 
+                        '<td>?</td>'+
+                        '<td>'+response[i].DESC.trim()+'</td>'+
+                        '<td></td>'+
                         '</tr>';
                     }
                 } else {
@@ -128,7 +121,7 @@
                     tohtml += '<tr>'+
                         '<td colspan="4" class="text-center">No difference</td>'+
                         '</tr>';
-                }                
+                }
                 $("#tpbtype_tbldiff tbody").html(tohtml);
             }, error: function(xhr,xopt,xthrow){
                 alertify.error(xthrow);
@@ -176,10 +169,10 @@
     $("#tpbtype_srchby").change(function(){
         $("#tpbtype_txtsearch").focus();
     });
-    $("#tpbtype_txtsearch").keypress(function (e) { 
+    $("#tpbtype_txtsearch").keypress(function (e) {
         if (e.which==13){
             var mkey = $(this).val();
-            var msearchby = $("#tpbtype_srchby").val();     
+            var msearchby = $("#tpbtype_srchby").val();
             $('#tpbtype_tbl tbody').html('');
             $.ajax({
                 type: "get",
@@ -188,11 +181,11 @@
                 dataType: "json",
                 success: function (response) {
                     var ttlrows = response.length;
-                    var tohtmlr ='';                    
-                    for(var i=0;i<ttlrows;i++){                        
+                    var tohtmlr ='';
+                    for(var i=0;i<ttlrows;i++){
                         tohtmlr += '<tr style="cursor:pointer">'+
                         '<td style="white-space:nowrap">'+response[i].KODE_JENIS_TPB.trim()+'</td>'+
-                        '<td style="white-space:nowrap">'+response[i].URAIAN_JENIS_TPB+'</td>'+                        
+                        '<td style="white-space:nowrap">'+response[i].URAIAN_JENIS_TPB+'</td>'+
                         '</tr>';
                     }
                     $('#tpbtype_tbl tbody').html(tohtmlr);
@@ -200,7 +193,7 @@
             });
         }
     });
-    $('#tpbtype_tbl tbody').on( 'click', 'tr', function () { 
+    $('#tpbtype_tbl tbody').on( 'click', 'tr', function () {
 		if ( $(this).hasClass('table-active') ) {
 			$(this).removeClass('table-active');
         } else {
@@ -209,9 +202,9 @@
         }
         var mitem       = $(this).closest("tr").find('td:eq(0)').text();
         var mitemnm     = $(this).closest("tr").find('td:eq(1)').text();
-        
-        $("#tpbtype_txtid").val(mitem);            
-        $("#tpbtype_txtnm").val(mitemnm);                
+
+        $("#tpbtype_txtid").val(mitem);
+        $("#tpbtype_txtnm").val(mitemnm);
         $("#TYPE_MODTPB").modal('hide');
     });
     $("#tpbtype_btnnew").click(function(){
@@ -220,10 +213,10 @@
         $("#tpbtype_txtid").focus();
     });
     $("#tpbtype_btnsave").click(function(){
-        var konf = confirm("Are you sure ?");        
+        var konf = confirm("Are you sure ?");
         if(konf){
             var mitmcd      = $("#tpbtype_txtid").val();
-            var mitmnm1     = $("#tpbtype_txtnm").val();           
+            var mitmnm1     = $("#tpbtype_txtnm").val();
             if(mitmcd.trim()==''){
                 $("#tpbtype_txtid").focus(); return;
             }
