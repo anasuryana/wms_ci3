@@ -1,33 +1,33 @@
 <div style="padding: 10px">
 	<div class="container-xxl">
         <div class="row">
-            <div class="col-md-3 mb-1">
-                <div class="input-group input-group-sm">                    
-                    <label class="input-group-text">Document Code</label>                    
-                    <input type="text" class="form-control" id="prpsdelv_txtcd">                
-                    <button title="Find item" class="btn btn-outline-secondary" type="button" id="prpsdelv_btnformod"><i class="fas fa-search"></i></button>                                            
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text">Document Code</label>
+                    <input type="text" class="form-control" id="prpsdelv_txtcd">
+                    <button title="Find item" class="btn btn-outline-secondary" type="button" id="prpsdelv_btnformod"><i class="fas fa-search"></i></button>
                 </div>
             </div>
             <div class="col-md-4 mb-1">
-                <div class="input-group input-group-sm">                    
-                    <label class="input-group-text">Purpose Code</label>                    
-                    <input type="text" class="form-control" id="prpsdelv_seltype">                                            
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text">Purpose Code</label>
+                    <input type="text" class="form-control" id="prpsdelv_seltype">
                 </div>
             </div>
-            <div class="col-md-5 mb-1">
-                <div class="input-group input-group-sm">                    
-                    <label class="input-group-text">Description</label>                    
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text">Description</label>
                     <input type="text" class="form-control" id="prpsdelv_txtdcr">
                 </div>
             </div>
-        </div>  
+        </div>
         <div class="row">
             <div class="col-md-12 mb-2">
                 <div class="btn-group btn-group-sm">
                     <button title="New" id="prpsdelv_btnnew" class="btn btn-primary" ><i class="fas fa-file"></i></button>
                     <button title="Save" id="prpsdelv_btnsave" class="btn btn-primary" ><i class="fas fa-save"></i></button>
                     <button title="Synchronize" id="prpsdelv_btnsync" class="btn btn-success" ><i class="fas fa-sync"></i> Synchronize</button>
-                </div>                                
+                </div>
             </div>
         </div>
         <div class="row">
@@ -35,26 +35,26 @@
                 <div class="table-responsive" id="prpsdelv_container">
                     <table id="prpsdelv_tbldiff" class="table table-bordered table-sm table-hover">
                         <thead class="table-light">
-                            <tr>                                
-                                <th class="text-center" colspan="3">WMS</th>                                
+                            <tr>
+                                <th class="text-center" colspan="3">WMS</th>
                                 <th class="text-center" colspan="3">CEISA</th>
                                 <th class="text-center" ></th>
                             </tr>
                             <tr>
-                                <th class="text-center" >Document Code</th> 
-                                <th class="text-center" >Purpose Code</th> 
-                                <th class="text-center" >Description</th> 
-                                <th class="text-center" >Document Code</th> 
-                                <th class="text-center" >Purpose Code</th> 
-                                <th class="text-center" >Description</th> 
+                                <th class="text-center" >Document Code</th>
+                                <th class="text-center" >Purpose Code</th>
+                                <th class="text-center" >Description</th>
+                                <th class="text-center" >Document Code</th>
+                                <th class="text-center" >Purpose Code</th>
+                                <th class="text-center" >Description</th>
                                 <th class="text-center" >
                                     <div class="btn-group btn-group-sm">
                                         <button class="btn btn-outline-success" id="prpsdelv_btnsyncall" title="Synchronize all"><i class="fas fa-sync"></i></button>
                                         <button class="btn btn-secondary" id="prpsdelv_btnclose" title="Close table"><i class="fas fa-window-close"></i></button>
-                                    </div>                                
-                                </th> 
+                                    </div>
+                                </th>
                             </tr>
-                            
+
                         </thead>
                         <tbody>
                         </tbody>
@@ -66,34 +66,27 @@
 </div>
 <div class="modal fade" id="PRPSDLV_MOD">
     <div class="modal-dialog modal-lg">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">List</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
                 <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="prpsdelv_txtsearch" maxlength="15" required placeholder="..."> 
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Search by</span>
+                        <select id="prpsdelv_srchby" class="form-select">
+                            <option value="cd">Code</option>
+                            <option value="in">Description</option>
+                        </select>
+                        <input type="text" class="form-control" id="prpsdelv_txtsearch" maxlength="15" required placeholder="...">
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search by</span>                        
-                        <select id="prpsdelv_srchby" class="form-select">
-                            <option value="cd">Code</option>
-                            <option value="in">Description</option>                             
-                        </select>                  
-                    </div>
-                </div>
-            </div>            
             <div class="row">
                 <div class="col">
                     <div class="table-responsive">
@@ -102,7 +95,7 @@
                                 <tr>
                                     <th>Document Code</th>
                                     <th>Purpose Code</th>
-                                    <th>Description</th>                                    
+                                    <th>Description</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -111,7 +104,7 @@
                     </div>
                 </div>
             </div>
-        </div>             
+        </div>
       </div>
     </div>
 </div>
@@ -121,7 +114,7 @@
         $("#prpsdelv_container").show();
         $.ajax({
             type: "get",
-            url: "<?=base_url('refceisa/MPurposeDLV/finddiff')?>",            
+            url: "<?=base_url('refceisa/MPurposeDLV/finddiff')?>",
             dataType: "json",
             success: function (response) {
                 var ttlrows = response.length;
@@ -136,7 +129,7 @@
                         '<td>'+response[i].ID+'</td>'+
                         '<td>'+response[i].CD+'</td>'+
                         '<td>'+response[i].DESC+'</td>'+
-                        '<td></td>'+                                 
+                        '<td></td>'+
                         '</tr>';
                     }
                 } else {
@@ -144,7 +137,7 @@
                     tohtml += '<tr>'+
                         '<td colspan="7" class="text-center">No difference</td>'+
                         '</tr>';
-                }                
+                }
                 $("#prpsdelv_tbldiff tbody").html(tohtml);
             }, error: function(xhr,xopt,xthrow){
                 alertify.error(xthrow);
@@ -193,10 +186,10 @@
     $("#prpsdelv_srchby").change(function(){
         $("#prpsdelv_txtsearch").focus();
     });
-    $("#prpsdelv_txtsearch").keypress(function (e) { 
+    $("#prpsdelv_txtsearch").keypress(function (e) {
         if (e.which==13){
             var mkey = $(this).val();
-            var msearchby = $("#prpsdelv_srchby").val();     
+            var msearchby = $("#prpsdelv_srchby").val();
             $('#prpsdelv_tbl tbody').html('');
             $.ajax({
                 type: "get",
@@ -207,7 +200,7 @@
                     var ttlrows = response.length;
                     var tohtmlr ='';
                     if(ttlrows>0){
-                        for(var i=0;i<ttlrows;i++){                        
+                        for(var i=0;i<ttlrows;i++){
                             tohtmlr += '<tr style="cursor:pointer">'+
                             '<td style="white-space:nowrap">'+response[i].KODE_DOKUMEN+'</td>'+
                             '<td style="white-space:nowrap">'+response[i].KODE_TUJUAN_PENGIRIMAN+'</td>'+
@@ -216,13 +209,13 @@
                         }
                     } else {
                         tohtmlr ='<tr><td colspan="3" class="text-center">Sorry, data not found...</td></tr>';
-                    }                    
+                    }
                     $('#prpsdelv_tbl tbody').html(tohtmlr);
                 }
             });
         }
     });
-    $('#prpsdelv_tbl tbody').on( 'click', 'tr', function () { 
+    $('#prpsdelv_tbl tbody').on( 'click', 'tr', function () {
 		if ( $(this).hasClass('table-active') ) {
 			$(this).removeClass('table-active');
         } else {
@@ -232,8 +225,8 @@
         var mcd       = $(this).closest("tr").find('td:eq(0)').text();
         var mtype     = $(this).closest("tr").find('td:eq(1)').text();
         var mdescrip    = $(this).closest("tr").find('td:eq(2)').text();
-        
-        $("#prpsdelv_txtcd").val(mcd);   
+
+        $("#prpsdelv_txtcd").val(mcd);
         $("#prpsdelv_seltype").val(mtype);
         $("#prpsdelv_txtdcr").val(mdescrip);
         $("#PRPSDLV_MOD").modal('hide');
@@ -245,7 +238,7 @@
         $("#prpsdelv_txtcd").focus();
     });
     $("#prpsdelv_btnsave").click(function(){
-        var konf = confirm("Are you sure ?");        
+        var konf = confirm("Are you sure ?");
         if(konf){
             var mdoccode      = $("#prpsdelv_txtcd").val();
             var mpurposecode  = $("#prpsdelv_seltype").val();
