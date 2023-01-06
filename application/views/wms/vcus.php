@@ -1,7 +1,7 @@
 <div style="padding: 10px">
-	<div class="container-xxl">
+	<div class="container-fluid">
         <div class="row">
-            <div class="col-md-2 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm">                    
                     <label class="input-group-text">Code</label>                    
                     <input type="text" class="form-control" id="cus_txtcuscd">                    
@@ -22,7 +22,7 @@
                     <input type="text" class="form-control" id="cus_txtnm">
                 </div>
             </div>
-            <div class="col-md-4 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm">
                     
                     <label class="input-group-text">Abbr Name</label>                    
