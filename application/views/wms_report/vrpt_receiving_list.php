@@ -36,6 +36,7 @@
                     <select class="form-select" id="rrcvlist_seachby" onchange="document.getElementById('rrcvlist_txt_search').focus()">
                         <option value="id">Item Code</option>
                         <option value="name">Item Description</option>
+                        <option value="supname">Supplier</option>
                     </select>
                     <input type="text" class="form-control" id="rrcvlist_txt_search">
                 </div>

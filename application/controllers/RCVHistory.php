@@ -33,7 +33,17 @@ class RCVHistory extends CI_Controller
         $search = $this->input->get('search');
         $dateFrom = $this->input->get('date0');
         $dateTo = $this->input->get('date1');
-        $likeFilter = $searchby == 'id' ? ['ITEMCODE' => $search] : ['ITEMNAME' => $search];
+        switch($searchby){
+            case 'id':
+                $likeFilter = ['ITEMCODE' => $search];
+                break;
+            case 'name':
+                $likeFilter = ['ITEMNAME' => $search];
+                break;
+            case 'supname':
+                $likeFilter = ['SUPNM' => $search];
+                break;
+        }        
         $rs = $this->RCVNI_mod->select_receiving_like($likeFilter, $dateFrom, $dateTo);
         die(json_encode(['data' => $rs]));
     }
