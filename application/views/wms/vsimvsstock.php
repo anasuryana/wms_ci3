@@ -1,4 +1,4 @@
-<style>   
+<style>
     .anastylesel_sim{
         background: red;
         animation: anamove 1s infinite;
@@ -6,6 +6,17 @@
     @keyframes anamove {
         from {background: #7FDBFF;}
         to {background: #01FF70;}
+    }
+    thead tr.first th,
+    thead tr.first td {
+        position: sticky;
+        top: 0;
+    }
+
+    thead tr.second th,
+    thead tr.second td {
+        position: sticky;
+        top: 26px;
     }
 </style>
 <div style="padding: 10px">
@@ -18,15 +29,15 @@
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="simvsstock_byassy-tab" data-bs-toggle="tab" data-bs-target="#simvsstock_tabFG" type="button" role="tab" aria-controls="profile" aria-selected="false">By Assy Code</button>
-                    </li>               
+                    </li>
                 </ul>
                 <div class="tab-content" id="simvsstock_myTabContent">
                     <div class="tab-pane fade show active" id="simvsstock_tabRM" role="tabpanel" aria-labelledby="home-tab">
                         <div class="container-fluid mt-1">
                             <div class="row" id="simvsstock_stack1">
                                 <div class="col-md-12 mb-1">
-                                    <div class="input-group input-group-sm">                    
-                                        <span class="input-group-text" >Business Group</span>                    
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text" >Business Group</span>
                                         <select class="form-select" id="simvsstock_bisgrup" onchange="simvsstock_bisgrup_e_change()">
                                         </select>
                                         <button class="btn btn-success" id="simvsstock_refreshBG" onclick="simvsstock_getBG()" title="refresh BG data"><i class="fas fa-sync-alt"></i></button>
@@ -44,19 +55,19 @@
                                         <table id="simvsstock_tbl_resume" class="table table-striped table-bordered table-sm table-hover" style="font-size:75%">
                                             <thead class="table-light">
                                                 <tr>
-                                                    <th >Simulation Number</th>                                
+                                                    <th >Simulation Number</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>                        
+                                            <tbody>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                            </div>                                                        
+                            </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="simvsstock_tabFG" role="tabpanel" aria-labelledby="contact-tab">
-                        <div class="container-fluid mt-3">                                                     
+                        <div class="container-fluid mt-3">
                             <div class="row">
                                 <div class="col-md-6 mb-1">
                                     <div class="input-group input-group-sm">
@@ -88,27 +99,27 @@
                 <div class="table-responsive" id="simvsstock_divku">
                     <table id="simvsstock_tbl" class="table table-striped table-bordered table-sm table-hover" style="font-size:75%">
                         <thead class="table-light">
-                            <tr>                            
+                            <tr class="first">
                                 <th rowspan="2" class="align-middle">Simulation Number</th>
                                 <th rowspan="2" class="align-middle">Job Number</th>
                                 <th rowspan="2" class="align-middle">Item Code</th>
                                 <th rowspan="2" class="align-middle">Item Name</th>
-                                <th rowspan="2" class="align-middle">Item Code SUB</th>                                
+                                <th rowspan="2" class="align-middle">Item Code SUB</th>
                                 <th colspan="4" class="text-center">Qty</th>
                             </tr>
-                            <tr>
+                            <tr class="second">
                                 <th class="text-end">Requirement</th>
                                 <th class="text-end">Plot</th>
                                 <th class="text-end">Plot SUB</th>
                                 <th class="text-end">Shortage</th>
                             </tr>
                         </thead>
-                        <tbody>                        
+                        <tbody>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>                	
+        </div>
     </div>
 </div>
 <script>
@@ -120,10 +131,10 @@
         const ttlTabList = tabList.length
         const txtassycode = document.getElementById('simvsstock_txt_item')
         const txtassycodeQty = document.getElementById('simvsstock_txt_qty')
-    
-        for(let i=0; i < ttlTabList; i++) {            
-            const btn = tabList[i].children[0]            
-            if(btn.classList.contains('active')){                
+
+        for(let i=0; i < ttlTabList; i++) {
+            const btn = tabList[i].children[0]
+            if(btn.classList.contains('active')){
                 simvsstock_selected_Tab = btn.id
                 break
             }
@@ -133,19 +144,19 @@
                 alertify.message('Please select simulation no. first !');
                 return
             }
-        } else {            
+        } else {
             if(txtassycode.value.trim().length<=4){
                 alertify.warning('Assy Code is required')
                 txtassycode.focus()
                 return
-            }         
+            }
             if(numeral(txtassycodeQty.value).value()<=0){
                 alertify.warning('Qty is required')
                 txtassycodeQty.focus()
                 return
             }
         }
-        
+
         if(confirm("Are you sure ?")){
             document.getElementById('simvsstock_btn_simulate').innerText = "Please wait";
             document.getElementById('simvsstock_btn_simulate').disabled = true;
@@ -163,8 +174,8 @@
                     let myfrag = document.createDocumentFragment();
                     let mtabel = document.getElementById("simvsstock_tbl");
                     let cln = mtabel.cloneNode(true);
-                    myfrag.appendChild(cln);                    
-                    let tabell = myfrag.getElementById("simvsstock_tbl");                    
+                    myfrag.appendChild(cln);
+                    let tabell = myfrag.getElementById("simvsstock_tbl");
                     let tableku2 = tabell.getElementsByTagName("tbody")[0];
                     let newrow, newcell, newText;
                     tableku2.innerHTML='';
@@ -173,7 +184,7 @@
                     let simno_dis = '';
                     let jobno = '';
                     let jobno_dis = '';
-                    let shortage = 0;      
+                    let shortage = 0;
                     for (let i = 0; i<ttlrows; i++){
                         if(simno!=response.data[i].SIMNO){
                             simno=response.data[i].SIMNO;
@@ -191,10 +202,10 @@
                         }
                         shortage = numeral(response.data[i].REQQTY).value() - (numeral(response.data[i].PLOTQTY).value()+numeral(response.data[i].PLOTSUBQTY).value());
                         newrow = tableku2.insertRow(-1);
-                        newcell = newrow.insertCell(0);                            
+                        newcell = newrow.insertCell(0);
                         newText = document.createTextNode(simno_dis);
                         newcell.appendChild(newText);
-                        newcell = newrow.insertCell(1);                            
+                        newcell = newrow.insertCell(1);
                         newText = document.createTextNode(jobno_dis);
                         newcell.appendChild(newText);
                         newcell = newrow.insertCell(2);
@@ -209,7 +220,7 @@
                         newcell = newrow.insertCell(5);
                         newcell.title = "Requirement";
                         newcell.classList.add('text-end');
-                        newText = document.createTextNode(numeral(response.data[i].REQQTY).format(','));                            
+                        newText = document.createTextNode(numeral(response.data[i].REQQTY).format(','));
                         newcell.appendChild(newText);
                         newcell = newrow.insertCell(6);
                         newcell.title = "PLOT";
@@ -237,11 +248,11 @@
                     document.getElementById('simvsstock_btn_simulate').innerText = "Process";
                     document.getElementById('simvsstock_btn_simulate').disabled = false;
                 }
-            });            
+            });
         }
     }
-    function simvsstock_divresume_e_click(e){          
-        if(e.ctrlKey){   
+    function simvsstock_divresume_e_click(e){
+        if(e.ctrlKey){
             if(e.target.tagName.toLowerCase()=='td'){
                 if(e.target.cellIndex==0){
                     let mtbl = document.getElementById('simvsstock_tbl_resume');
@@ -249,7 +260,7 @@
                     let mtbltr = tableku2.getElementsByTagName('tr');
                     let ttlrows = mtbltr.length;
                     if(e.target.classList.contains('anastylesel_sim')){
-                        e.target.classList.remove('anastylesel_sim'); 
+                        e.target.classList.remove('anastylesel_sim');
                         let getINDX = simvsstock_a_simno.indexOf(e.target.textContent);
                         if(getINDX > -1){
                             simvsstock_a_simno.splice(getINDX, 1);
@@ -265,16 +276,16 @@
         }
     }
     $("#simvsstock_divku_resume").css('height', $(window).height()*30/100);
-    $("#simvsstock_divku").css('height', $(window).height()   
-    -document.getElementById('simvsstock_stack1').offsetHeight 
-    -document.getElementById('simvsstock_stack2').offsetHeight    
-    -document.getElementById('simvsstock_stack3').offsetHeight    
+    $("#simvsstock_divku").css('height', $(window).height()
+    -document.getElementById('simvsstock_stack1').offsetHeight
+    -document.getElementById('simvsstock_stack2').offsetHeight
+    -document.getElementById('simvsstock_stack3').offsetHeight
     -100);
     simvsstock_getBG();
     function simvsstock_getBG(){
         document.getElementById('simvsstock_bisgrup').innerHTML = "<option value='-'>Please wait...</option>";
         $.ajax({
-            url: "<?=base_url('SPL/get_bg_not_in_psn')?>",            
+            url: "<?=base_url('SPL/get_bg_not_in_psn')?>",
             dataType: "json",
             success: function (response) {
                 let ttldata = response.data.length;
@@ -309,15 +320,15 @@
                 let myfrag = document.createDocumentFragment();
                 let mtabel = document.getElementById("simvsstock_tbl_resume");
                 let cln = mtabel.cloneNode(true);
-                myfrag.appendChild(cln);                    
-                let tabell = myfrag.getElementById("simvsstock_tbl_resume");                    
+                myfrag.appendChild(cln);
+                let tabell = myfrag.getElementById("simvsstock_tbl_resume");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let newrow, newcell, newText;
                 tableku2.innerHTML='';
                 let tmpnomor = '';
                 let simno = '';
                 let simno_dis = '';
-                let ttlqty = 0;                
+                let ttlqty = 0;
                 for (let i = 0; i<ttlrows; i++){
                     if(simno!=response.data[i].SIMNO){
                         simno=response.data[i].SIMNO;
@@ -329,7 +340,7 @@
                     newcell = newrow.insertCell(0);
                     newcell.title = "Simulation Number";
                     newText = document.createTextNode(simno_dis);
-                    newcell.appendChild(newText);                                                     
+                    newcell.appendChild(newText);
                 }
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
