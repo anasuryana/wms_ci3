@@ -21,7 +21,7 @@
 </style>
 <div style="padding: 10px">
     <div class="container-fluid">
-        <div class="row">
+        <div class="row" id="simvsstock_stack1">
             <div class="col-md-12 mb-1">
                 <ul class="nav nav-tabs" id="simvsstock_myTab" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -34,7 +34,7 @@
                 <div class="tab-content" id="simvsstock_myTabContent">
                     <div class="tab-pane fade show active" id="simvsstock_tabRM" role="tabpanel" aria-labelledby="home-tab">
                         <div class="container-fluid mt-1">
-                            <div class="row" id="simvsstock_stack1">
+                            <div class="row" >
                                 <div class="col-md-12 mb-1">
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-text" >Business Group</span>
@@ -49,12 +49,12 @@
                                     <span id="simvsstock_lblgetsimjobinfo" class="badge bg-info"></span>
                                 </div>
                             </div>
-                            <div class="row" id="simvsstock_stack2">
+                            <div class="row">
                                 <div class="col-md-12 mb-1" onclick="simvsstock_divresume_e_click(event)">
                                     <div class="table-responsive" id="simvsstock_divku_resume">
                                         <table id="simvsstock_tbl_resume" class="table table-striped table-bordered table-sm table-hover" style="font-size:75%">
                                             <thead class="table-light">
-                                                <tr>
+                                                <tr class="first">
                                                     <th >Simulation Number</th>
                                                 </tr>
                                             </thead>
@@ -278,7 +278,6 @@
     $("#simvsstock_divku_resume").css('height', $(window).height()*30/100);
     $("#simvsstock_divku").css('height', $(window).height()
     -document.getElementById('simvsstock_stack1').offsetHeight
-    -document.getElementById('simvsstock_stack2').offsetHeight
     -document.getElementById('simvsstock_stack3').offsetHeight
     -100);
     simvsstock_getBG();
