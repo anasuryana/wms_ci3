@@ -5,7 +5,7 @@
                 <div class="input-group input-group-sm">
                     <label class="input-group-text">Part Request Number</label>
                     <input type="text" class="form-control" id="pareq_txtPRN" readonly>
-                    <button class="btn btn-primary" onclick="pareq_btnshow_saved()"><i class="fas fa-search"></i></button>                    
+                    <button class="btn btn-primary" onclick="pareq_btnshow_saved()"><i class="fas fa-search"></i></button>
                 </div>
             </div>
         </div>
@@ -28,7 +28,7 @@
             </div>
             <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm">
-                    <label class="input-group-text">Department</label>                    
+                    <label class="input-group-text">Department</label>
                     <select class="form-select" id="pareq_txtdept">
                         <option value="MF1">Manufacturing 1</option>
                         <option value="MF2">Manufacturing 2</option>
@@ -48,13 +48,13 @@
                         <?=$remarklist?>
                     </select>
                 </div>
-            </div>            
+            </div>
         </div>
         <div class="row">
             <div class="col-md-4 mb-2">
                 <div class="btn-group btn-group-sm">
                     <button title="New" id="pareq_btnnew" onclick="pareq_btnnew()" class="btn btn-primary" ><i class="fas fa-file"></i></button>
-                    <button title="Save" id="pareq_btnsave" onclick="pareq_btnsave()" class="btn btn-primary" ><i class="fas fa-save"></i></button>                              
+                    <button title="Save" id="pareq_btnsave" onclick="pareq_btnsave()" class="btn btn-primary" ><i class="fas fa-save"></i></button>
                 </div>
             </div>
             <div class="col-md-4 mb-2 text-center">
@@ -86,7 +86,7 @@
                     </table>
                 </div>
             </div>
-        </div>     
+        </div>
     </div>
 </div>
 <div class="modal fade" id="PR_MOD">
@@ -97,21 +97,21 @@
             <h4 class="modal-title">Document List</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
                 <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search</span>  
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Search</span>
                         <select id="pareq_srchby" class="form-select" onchange="document.getElementById('pareq_txtsearch').focus()">
                             <option value="D1">Document No.</option>
                             <option value="D2">Part Code</option>
-                        </select>                      
+                        </select>
                         <input type="text" class="form-control" id="pareq_txtsearch" onkeypress="pareq_txtsearch_e_keypress(event)" maxlength="25" required placeholder="...">
                     </div>
                 </div>
-            </div>            
+            </div>
             <div class="row">
                 <div class="col mb-1 text-end">
                     <span class="badge bg-info" id="lblinfo_pareq_tbl_saved"></span>
@@ -126,7 +126,7 @@
                                     <th>Document No.</th>
                                     <th>Date</th>
                                     <th>Category</th>
-                                    <th>Reff. Document No.</th>                                    
+                                    <th>Reff. Document No.</th>
                                     <th>PIC</th>
                                     <th>Remark</th>
                                     <th class="d-none">USRGRP</th>
@@ -152,7 +152,7 @@
             <h4 class="modal-title">PSN Data <span id="lblinfo_headerpsn"></span> </h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
@@ -176,7 +176,7 @@
                                     <th>Machine</th>
                                     <th>Item Code</th>
                                     <th>Item Name</th>
-                                    <th class="text-end">Qty</th>                                    
+                                    <th class="text-end">Qty</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -192,7 +192,7 @@
 <script>
     var pareq_tbllength = 0;
     var pareq_tblrowindexsel = '';
-    
+
     $('#pareq_tbl tbody').on( 'click', 'tr', function () {
         pareq_tblrowindexsel = $(this).index();
         if ($(this).hasClass('table-active') ) {
@@ -206,7 +206,7 @@
     $("#PR_MOD").on('shown.bs.modal', function(){
         $("#pareq_txtsearch").focus();
     });
-    function pareq_btnminus(){        
+    function pareq_btnminus(){
         if(confirm("Are you sure want to delete ?")){
             let msi = document.getElementById('pareq_txtPRN').value;
             let table = $("#pareq_tbl tbody");
@@ -237,7 +237,7 @@
             }
         }
     }
-    
+
     function pareq_load_saved_data(pdoc){
         document.getElementById('lblinfo_pareq_tbl').innerText = "Please wait...";
         $("#pareq_tbl tbody").empty();
@@ -247,13 +247,13 @@
             data: {indoc: pdoc},
             dataType: "json",
             success: function (response) {
-                document.getElementById('lblinfo_pareq_tbl').innerText = "";  
-                let ttlrows = response.data.length;                 
+                document.getElementById('lblinfo_pareq_tbl').innerText = "";
+                let ttlrows = response.data.length;
                 let tabell = document.getElementById("pareq_tbl");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let newrow, newcell, newText;
-                tableku2.innerHTML='';           
-                
+                tableku2.innerHTML='';
+
                 for (let i = 0; i<ttlrows; i++){
                     newrow = tableku2.insertRow(-1);
                     newcell = newrow.insertCell(0);
@@ -269,17 +269,17 @@
                     newcell.classList.add("text-end");
                     newText = document.createTextNode(numeral(response.data[i].SPL_QTYREQ).format(','));
                     newcell.appendChild(newText);
-                    newcell = newrow.insertCell(3);                    
+                    newcell = newrow.insertCell(3);
                     newcell.classList.add("d-none");
                     newText = document.createTextNode(response.data[i].SPL_LINEDATA);
                     newcell.appendChild(newText);
                     newcell = newrow.insertCell(4);
                     newcell.contentEditable = true;
-                    newcell.classList.add('font-monospace')                    
+                    newcell.classList.add('font-monospace')
                     newcell.innerHTML = response.data[i].SPL_ITMRMRK
                     newcell = newrow.insertCell(5);
                     newcell.contentEditable = true;
-                    newcell.classList.add('font-monospace')                    
+                    newcell.classList.add('font-monospace')
                     newcell.innerHTML = response.data[i].SPL_FMDL
                 }
             }, error: function(xhr, xopt, xthrow){
@@ -313,13 +313,13 @@
                         tableku2.innerHTML='';
                         for (let i = 0; i<ttlrows; i++){
                             newrow = tableku2.insertRow(-1);
-                            newcell = newrow.insertCell(0); 
+                            newcell = newrow.insertCell(0);
                             newcell.onclick = () => {
                                 document.getElementById('pareq_txtPRN').value = response.data[i].SPL_DOC;
                                 document.getElementById('pareq_category').value = response.data[i].CTG;
                                 document.getElementById('pareq_txtRMRK').value = response.data[i].SPL_RMRK;
                                 document.getElementById('pareq_txtdept').value = response.data[i].SPL_USRGRP;
-                                document.getElementById('pareq_txtline').value = response.data[i].SPL_LINE;                                
+                                document.getElementById('pareq_txtline').value = response.data[i].SPL_LINE;
                                 document.getElementById('pareq_category').disabled = true;
                                 document.getElementById('pareq_txtdept').disabled = true;
                                 $("#PR_MOD").modal('hide');
@@ -375,7 +375,7 @@
     }
 
     function pareq_kol1(e){
-        if(e.which==13){            
+        if(e.key==='Enter'){
             let refftyped = e.srcElement.innerText.trim();
             let doc_category = document.getElementById('pareq_category').value;
             if(doc_category=="PSN"){
@@ -389,6 +389,7 @@
 
     function pareq_loadpsn(ppsn){
         document.getElementById('lblinfo_headerpsn').innerHTML = "<i class='fas fa-spinner fa-spin'></i>";
+        pareq_tbl_psn.getElementsByTagName('tbody')[0].innerHTML = ''
         $.ajax({
             type: "get",
             url: "<?=base_url('SPL/getppsn2')?>",
@@ -396,7 +397,7 @@
             dataType: "json",
             success: function (response) {
                 document.getElementById('lblinfo_headerpsn').innerHTML = '';
-                let ttlrows = response.data.length;                
+                let ttlrows = response.data.length;
                 if(ttlrows>0){
                     let mydes = document.getElementById("pareq_div_psn");
                     let myfrag = document.createDocumentFragment();
@@ -411,15 +412,15 @@
                         newrow = tableku2.insertRow(-1)
                         newcell = newrow.insertCell(0)
                         newcell.innerHTML = response.data[i].PPSN2_MCZ
-                        newcell = newrow.insertCell(1) 
+                        newcell = newrow.insertCell(1)
                         newcell.innerHTML = response.data[i].PPSN2_MC
-                        newcell = newrow.insertCell(2)                        
+                        newcell = newrow.insertCell(2)
                         newcell.innerHTML = response.data[i].PPSN2_SUBPN
-                        newcell = newrow.insertCell(3)                        
+                        newcell = newrow.insertCell(3)
                         newcell.innerHTML = response.data[i].MITM_SPTNO
                         newcell = newrow.insertCell(4)
                         newcell.classList.add('text-end')
-                        newcell.contentEditable = true 
+                        newcell.contentEditable = true
                     }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
@@ -432,7 +433,7 @@
     }
 
     function pareq_btnnew(){
-        document.getElementById('pareq_txtPRN').value = "";        
+        document.getElementById('pareq_txtPRN').value = "";
         $("#pareq_tbl tbody").empty();
         document.getElementById('pareq_category').disabled = false;
         document.getElementById('pareq_txtdept').disabled = false;
@@ -446,11 +447,11 @@
     }
 
     function pareq_btnsave(){
-        let docno = document.getElementById('pareq_txtPRN').value;        
+        let docno = document.getElementById('pareq_txtPRN').value;
         let dept = document.getElementById('pareq_txtdept').value;
         let category = document.getElementById('pareq_category').value;
         let remark = document.getElementById('pareq_txtRMRK').value;
-        let line = document.getElementById('pareq_txtline').value;        
+        let line = document.getElementById('pareq_txtline').value;
         let a_reffdoc = [];
         let a_partCode = [];
         let a_qty = [];
@@ -466,7 +467,7 @@
             alertify.warning('Line is required')
             document.getElementById('pareq_txtline').focus()
             return;
-        }        
+        }
         for(let i=0; i<ttlrows; i++){
             partcode = tableku2.rows[i].cells[1].innerText.trim();
             qty = tableku2.rows[i].cells[2].innerText.trim();
@@ -554,10 +555,10 @@
         let table = $("#pareq_tbl tbody");
         let psnCol,itemCol;
         ttlrows = table.find('tr').length;
-        
+
         for(let i=0; i<ttlrows;i++){
             psnCol = table.find('tr').eq(i).find('td').eq(0).text()
-            itemCol = table.find('tr').eq(i).find('td').eq(1).text()            
+            itemCol = table.find('tr').eq(i).find('td').eq(1).text()
             if(psnCol.length>0 && itemCol.length==0) {
                 table.find('tr').eq(i).remove();
             }
