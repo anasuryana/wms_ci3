@@ -40,7 +40,7 @@ class SPL extends CI_Controller
         echo "sorry";
     }
 
-    function get_doc_today()
+    public function get_doc_today()
     {
         header("Access-Control-Allow-Origin: *");
         header('Content-Type: application/json');
@@ -49,7 +49,7 @@ class SPL extends CI_Controller
         die(json_encode(['data' => $rs]));
     }
 
-    function get_psn_item_confirmation_list_progress()
+    public function get_psn_item_confirmation_list_progress()
     {
         header("Access-Control-Allow-Origin: *");
         header('Content-Type: application/json');
@@ -58,7 +58,7 @@ class SPL extends CI_Controller
         $rsProgress = $this->SPLSCN_mod->select_supplied_vs_confirmed_progress($doc);
         die(json_encode(['status' => $myar, 'progress' => $rsProgress]));
     }
-    function get_psn_item_confirmation_list()
+    public function get_psn_item_confirmation_list()
     {
         header("Access-Control-Allow-Origin: *");
         header('Content-Type: application/json');
@@ -68,7 +68,7 @@ class SPL extends CI_Controller
         die(json_encode(['status' => $myar, 'data' => $rs]));
     }
 
-    function confirm_psn_item_at_plant()
+    public function confirm_psn_item_at_plant()
     {
         date_default_timezone_set('Asia/Jakarta');
         $currentDateTime = date('Y-m-d H:i:s');
@@ -114,7 +114,7 @@ class SPL extends CI_Controller
         die(json_encode(['status' => $myar, 'progress' => $rsProgress]));
     }
 
-    function confirm_psn_at_plant()
+    public function confirm_psn_at_plant()
     {
         header("Access-Control-Allow-Origin: *");
         date_default_timezone_set('Asia/Jakarta');
@@ -335,7 +335,7 @@ class SPL extends CI_Controller
         $rsremark = $this->RQSRMRK_mod->selectAll();
         $usrdept = '';
         foreach ($rsemp as $r) {
-            $usrdept = $r['PSIDEPT'] == "" ?  "OTH" : $r['PSIDEPT'];
+            $usrdept = $r['PSIDEPT'] == "" ? "OTH" : $r['PSIDEPT'];
         }
         $reamrklist = '';
         foreach ($rsremark as $r) {
@@ -413,7 +413,7 @@ class SPL extends CI_Controller
         $a_model = $this->input->post('a_model');
         $myar = [];
         $shouldContinue = false;
-        $currrtime     = date('Y-m-d H:i:s');
+        $currrtime = date('Y-m-d H:i:s');
 
         $crn_year = date('Y');
         $crn_month = date('m');
@@ -426,11 +426,11 @@ class SPL extends CI_Controller
                 $rsReffDoc = [];
                 $initData2 = '';
                 $initData5 = ''; #order number / nomor urut
-                $initBISGRUP = NULL;
+                $initBISGRUP = null;
 
                 if ($category == "PSN") {
                     $rsReffDoc = $this->SPL_mod->select_ppsn2_psno($u_reffdoc);
-                    if (count($rsReffDoc) > 0) { #IF REFF PSN EXIST ?						
+                    if (count($rsReffDoc) > 0) { #IF REFF PSN EXIST ?
                         $aField = explode("-", $u_reffdoc[0]);
                         $bg_initial = $aField[1];
                         $initData2 = $bg_initial;
@@ -498,7 +498,7 @@ class SPL extends CI_Controller
                 if ($shouldContinue) {
                     if ($this->SPL_mod->check_Primary(['SPL_DOC' => $docno])) {
                         $rsSPL = [];
-                        #validate rack					
+                        #validate rack
                         for ($i = 0; $i < $a_length; $i++) {
                             $isallrack_ready = false;
                             foreach ($rsrack as $rk) {
@@ -531,7 +531,7 @@ class SPL extends CI_Controller
                                     'SPL_FEDR' => '_',
                                     'SPL_MC' => '_',
                                     'SPL_ORDERNO' => $lastlinedata,
-                                    'SPL_ITMCD'    => $a_partcode[$i],
+                                    'SPL_ITMCD' => $a_partcode[$i],
                                     'SPL_MS' => '_',
                                     'SPL_RACKNO' => $therack,
                                     'SPL_QTYUSE' => 1,
@@ -545,17 +545,17 @@ class SPL extends CI_Controller
                                     'SPL_ITMRMRK' => $a_partRemark[$i],
                                     'SPL_FMDL' => $a_model[$i],
                                     'SPL_LUPDT' => $currrtime,
-                                    'SPL_USRID' => $this->session->userdata('nama')
+                                    'SPL_USRID' => $this->session->userdata('nama'),
                                 ];
                                 $ttlsaved += $this->SPL_mod->insert($rsSPL);
                                 $this->SPL_mod->insert_log($rsSPL);
                             } else {
                                 $ttlupdated += $this->SPL_mod->updatebyId(
                                     [
-                                        'SPL_QTYREQ' => $a_qty[$i], 'SPL_ITMCD' => $a_partcode[$i], 'SPL_RMRK' => $remark, 'SPL_RACKNO' => $therack, 'SPL_ITMRMRK' => $a_partRemark[$i], 'SPL_REFDOCNO' => $a_reffdoc[$i]
+                                        'SPL_QTYREQ' => $a_qty[$i], 'SPL_ITMCD' => $a_partcode[$i], 'SPL_RMRK' => $remark, 'SPL_RACKNO' => $therack, 'SPL_ITMRMRK' => $a_partRemark[$i], 'SPL_REFDOCNO' => $a_reffdoc[$i],
                                     ],
                                     [
-                                        'SPL_DOC' => $docno, 'SPL_LINEDATA' => $a_line[$i]
+                                        'SPL_DOC' => $docno, 'SPL_LINEDATA' => $a_line[$i],
                                     ]
                                 );
                             }
@@ -596,7 +596,7 @@ class SPL extends CI_Controller
                                 'SPL_FEDR' => '_',
                                 'SPL_MC' => '_',
                                 'SPL_ORDERNO' => $i,
-                                'SPL_ITMCD'    => $a_partcode[$i],
+                                'SPL_ITMCD' => $a_partcode[$i],
                                 'SPL_MS' => '_',
                                 'SPL_RACKNO' => $therack,
                                 'SPL_QTYUSE' => 1,
@@ -610,7 +610,7 @@ class SPL extends CI_Controller
                                 'SPL_ITMRMRK' => $a_partRemark[$i],
                                 'SPL_FMDL' => $a_model[$i],
                                 'SPL_LUPDT' => $currrtime,
-                                'SPL_USRID' => $this->session->userdata('nama')
+                                'SPL_USRID' => $this->session->userdata('nama'),
                             ];
                             $ttlsaved += $this->SPL_mod->insert($rsSPL);
                             $this->SPL_mod->insert_log($rsSPL);
@@ -638,7 +638,7 @@ class SPL extends CI_Controller
             $findpsn[] = $r['PPSN1_PSNNO'];
         }
         $rspsn = $this->SPL_mod->select_allxppsn2_bypsn($findpsn);
-        $rsmcz  = $this->SPL_mod->select_mcz_xppsn2_bypsn($findpsn);
+        $rsmcz = $this->SPL_mod->select_mcz_xppsn2_bypsn($findpsn);
         $rsjob = $this->SPL_mod->select_xwo(['PDPP_WORQT'], ['PDPP_WONO' => $cjob]);
         die('{"data_h": ' . json_encode($rspsn_distc) . ', "data": ' . json_encode($rspsn) . ', "datajob": ' . json_encode($rsjob) . ', "datamcz" : ' . json_encode($rsmcz) . '}');
     }
@@ -668,7 +668,7 @@ class SPL extends CI_Controller
             $findpsn[] = $r['PPSN1_PSNNO'];
         }
         $rspsn = $this->SPL_mod->select_allxppsn2_bypsn($findpsn);
-        $rsmcz  = $this->SPL_mod->select_mcz_xppsn2_bypsn($findpsn);
+        $rsmcz = $this->SPL_mod->select_mcz_xppsn2_bypsn($findpsn);
         $rsjob = $this->SPL_mod->select_xwo_delv(['PDPP_WORQT', 'PDPP_WONO'], $joblist);
         foreach ($rsjob as &$r) {
             $r['CWONO'] = $combinedjob;
@@ -700,7 +700,7 @@ class SPL extends CI_Controller
     {
         header('Content-Type: application/json');
         date_default_timezone_set('Asia/Jakarta');
-        $currrtime     = date('Y-m-d H:i:s');
+        $currrtime = date('Y-m-d H:i:s');
 
         die(json_encode(['time' => $currrtime]));
         $cidscan = $this->input->get('inidscan');
@@ -722,7 +722,7 @@ class SPL extends CI_Controller
             }
         }
         die(json_encode([
-            'rsSCN' => $rs, 'rsBOOK' => $rsBOOK, 'shouldReBook' => $shouldReBook, 'isLoopPassed' => $isLoopPassed
+            'rsSCN' => $rs, 'rsBOOK' => $rsBOOK, 'shouldReBook' => $shouldReBook, 'isLoopPassed' => $isLoopPassed,
         ]));
     }
 
@@ -838,12 +838,12 @@ class SPL extends CI_Controller
                     $retith = 0;
                     //adjust transaction
                     $retith = $this->ITH_mod->insert_cancel_kitting_out([
-                        'ITH_ITMCD' => $theitem,  'ITH_WH' => $cwh_out,
-                        'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => -$theqty, 'ITH_USRID' => $this->session->userdata('nama')
+                        'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_out,
+                        'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => -$theqty, 'ITH_USRID' => $this->session->userdata('nama'),
                     ]);
                     $retith += $this->ITH_mod->insert_cancel_kitting_in([
                         'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_inc,
-                        'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => $theqty, 'ITH_USRID' => $this->session->userdata('nama')
+                        'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => $theqty, 'ITH_USRID' => $this->session->userdata('nama'),
                     ]);
                     if ($retith == 2) {
                         //delete scannning history
@@ -853,14 +853,14 @@ class SPL extends CI_Controller
                             $myar[] = [
                                 'cd' => 0,
                                 'msg' => 'the transaction is successfully adjusted but could not remove scanning history, please contact admin',
-                                'reff' => $r['SPLSCN_ID']
+                                'reff' => $r['SPLSCN_ID'],
                             ];
                         }
                     } else {
                         $myar[] = [
                             'cd' => 0,
                             'msg' => 'could not adjust transaction please contact admin',
-                            'reff' => $r['SPLSCN_ID']
+                            'reff' => $r['SPLSCN_ID'],
                         ];
                     }
                 } else {
@@ -871,12 +871,12 @@ class SPL extends CI_Controller
                         } else {
                             $myar[] = [
                                 'cd' => 0,
-                                'msg' => 'the transaction is successfully deleted but could not remove scanning history, please contact admin', 'reff' => $r['SPLSCN_ID']
+                                'msg' => 'the transaction is successfully deleted but could not remove scanning history, please contact admin', 'reff' => $r['SPLSCN_ID'],
                             ];
                         }
                     } else {
                         if ($this->SPLSCN_mod->deleteby_filter(['SPLSCN_ID' => $r['SPLSCN_ID']]) > 0) {
-                            $myar[]  = ['cd' => 1, 'msg' => 'canceled successfully', 'reff' => $r['SPLSCN_ID']];
+                            $myar[] = ['cd' => 1, 'msg' => 'canceled successfully', 'reff' => $r['SPLSCN_ID']];
                         } else {
                             $myar[] = ['cd' => 0, 'msg' => 'delete failed', 'reff' => $r['SPLSCN_ID']];
                         }
@@ -963,21 +963,21 @@ class SPL extends CI_Controller
             if ($this->ITH_mod->check_Primary($where) > 0) {
                 //adjust transaction
                 $retith = $this->ITH_mod->insert_cancel_kitting_out([
-                    'ITH_ITMCD' => $theitem,  'ITH_WH' => $cwh_out,
-                    'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => -$theqty, 'ITH_USRID' => $this->session->userdata('nama')
+                    'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_out,
+                    'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => -$theqty, 'ITH_USRID' => $this->session->userdata('nama'),
                 ]);
                 $retith += $this->ITH_mod->insert_cancel_kitting_in([
                     'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_inc,
-                    'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => $theqty, 'ITH_USRID' => $this->session->userdata('nama')
+                    'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => $theqty, 'ITH_USRID' => $this->session->userdata('nama'),
                 ]);
                 if ($retith == 2) {
                     if ($shouldReBook) {
                         $datab = [
-                            'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' =>  $cwh_inc,
-                            'ITH_DOC'     => $thebookID, 'ITH_DATE' => $crn_date,
-                            'ITH_FORM'     => 'BOOK-SPL-3', 'ITH_QTY' => -$r['SPLSCN_QTY'],
+                            'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' => $cwh_inc,
+                            'ITH_DOC' => $thebookID, 'ITH_DATE' => $crn_date,
+                            'ITH_FORM' => 'BOOK-SPL-3', 'ITH_QTY' => -$r['SPLSCN_QTY'],
                             'ITH_REMARK' => $r['SPLSCN_LOTNO'],
-                            'ITH_USRID' =>  $this->session->userdata('nama')
+                            'ITH_USRID' => $this->session->userdata('nama'),
                         ];
                         $this->ITH_mod->insert_spl($datab);
                     }
@@ -1001,7 +1001,7 @@ class SPL extends CI_Controller
                     // $myar[] = ['cd' => 0, 'msg' => 'Please recheck your selected warehouse', 'where' => $where];
                 } else {
                     if ($this->SPLSCN_mod->deleteby_filter(['SPLSCN_ID' => $cidscan]) > 0) {
-                        $myar[]  = ['cd' => 1, 'msg' => 'canceled successfully'];
+                        $myar[] = ['cd' => 1, 'msg' => 'canceled successfully'];
                     } else {
                         $myar[] = ['cd' => 0, 'msg' => 'delete failed'];
                     }
@@ -1019,12 +1019,12 @@ class SPL extends CI_Controller
         header('Content-Type: application/json');
         $myar = [];
         $mystatus = [];
-        $cpsn    = $this->input->get('inpsn');
-        $cline    = $this->input->get('inline');
-        $ccat    = $this->input->get('incat');
-        $cfr    = $this->input->get('infr');
+        $cpsn = $this->input->get('inpsn');
+        $cline = $this->input->get('inline');
+        $ccat = $this->input->get('incat');
+        $cfr = $this->input->get('infr');
         $bookdate = date('Y-m-d');
-        $currrtime     = date('Y-m-d H:i:s');
+        $currrtime = date('Y-m-d H:i:s');
         $bookdate_a = explode('-', $bookdate);
         $_year = substr($bookdate_a[0], -2);
         $_month = $bookdate_a[1] * 1;
@@ -1042,7 +1042,7 @@ class SPL extends CI_Controller
             }
             $mystatus[] = [
                 'cd' => '0', 'msg' => 'There is a discrepancy between <b>scanned data</b> and <b>the latest data of MEGA</b>',
-                'msgdetail' => 'Please check Category <b>' . $fedr_cat . '</b>, Line <b>' . $fedr_line . '</b>, FR <b>' . $fedr_fr . '</b>,  Table <b>' . $fedr_mcz . '</b> and Item <b>' . $fedr_item . ' </b> . Canceling scanned data might be required'
+                'msgdetail' => 'Please check Category <b>' . $fedr_cat . '</b>, Line <b>' . $fedr_line . '</b>, FR <b>' . $fedr_fr . '</b>,  Table <b>' . $fedr_mcz . '</b> and Item <b>' . $fedr_item . ' </b> . Canceling scanned data might be required',
             ];
             exit('{"status": ' . json_encode($mystatus) . '}');
         } else {
@@ -1057,161 +1057,161 @@ class SPL extends CI_Controller
         if ($ttlrows > 0) {
             foreach ($rs as $r) {
                 $datac = [
-                    'SPL_DOC'         => trim($r['PPSN2_PSNNO']),
-                    'SPL_DOCNO'        => trim($r['PPSN2_DOCNO']),
-                    'SPL_LINE'         => trim($r['PPSN2_LINENO']),
-                    'SPL_CAT'         => trim($r['PPSN2_ITMCAT']),
-                    'SPL_PROCD'     => trim($r['PPSN2_PROCD']),
-                    'SPL_FEDR'         => trim($r['PPSN2_FR']),
-                    'SPL_MC'     => trim($r['PPSN2_MC']),
-                    'SPL_ORDERNO'     => trim($r['PPSN2_MCZ']),
-                    'SPL_ITMCD'     => trim($r['PPSN2_SUBPN']),
-                    'SPL_MS'         => trim($r['PPSN2_MSFLG']),
-                    'SPL_BG'         => trim($r['PPSN2_BSGRP'])
+                    'SPL_DOC' => trim($r['PPSN2_PSNNO']),
+                    'SPL_DOCNO' => trim($r['PPSN2_DOCNO']),
+                    'SPL_LINE' => trim($r['PPSN2_LINENO']),
+                    'SPL_CAT' => trim($r['PPSN2_ITMCAT']),
+                    'SPL_PROCD' => trim($r['PPSN2_PROCD']),
+                    'SPL_FEDR' => trim($r['PPSN2_FR']),
+                    'SPL_MC' => trim($r['PPSN2_MC']),
+                    'SPL_ORDERNO' => trim($r['PPSN2_MCZ']),
+                    'SPL_ITMCD' => trim($r['PPSN2_SUBPN']),
+                    'SPL_MS' => trim($r['PPSN2_MSFLG']),
+                    'SPL_BG' => trim($r['PPSN2_BSGRP']),
                 ];
                 if ($this->SPL_mod->check_Primary($datac) == 0) {
                     $datac['SPL_RACKNO'] = trim($r['ITMLOC_LOC']);
                     $datac['SPL_QTYUSE'] = $r['PPSN2_QTPER'];
                     $datac['SPL_QTYREQ'] = $r['PPSN2_REQQT'];
-                    $datac['SPL_LUPDT']    = $currrtime;
-                    $datac['SPL_USRID']    = $this->session->userdata('nama');
+                    $datac['SPL_LUPDT'] = $currrtime;
+                    $datac['SPL_USRID'] = $this->session->userdata('nama');
                     $this->SPL_mod->insert($datac);
                 }
             }
             // //BOOK SP & PCB
             // $bookid = '';
             // if($this->SPLBOOK_mod->check_Primary(['SPLBOOK_SPLDOC' => $cpsn])){
-            // 	//handle condition when :
-            // 	// - synchronize in several times - handled
-            // 	// - req. qty is changed
-            // 	// - part code is changed - handled
-            // 	// - PSN is deleted - handled
-            // 	//additional handler should be exist when cancel Kitting
-            // 	// $rsCurrentSPL = $this->SPL_mod->select_per_category([$cpsn], ['PCB','SP']);
-            // 	$rsBOOK = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_SPLDOC' => $cpsn]);
-            // 	$rsDiff = $this->SPL_mod->select_booked_spl_diff($cpsn);
+            //     //handle condition when :
+            //     // - synchronize in several times - handled
+            //     // - req. qty is changed
+            //     // - part code is changed - handled
+            //     // - PSN is deleted - handled
+            //     //additional handler should be exist when cancel Kitting
+            //     // $rsCurrentSPL = $this->SPL_mod->select_per_category([$cpsn], ['PCB','SP']);
+            //     $rsBOOK = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_SPLDOC' => $cpsn]);
+            //     $rsDiff = $this->SPL_mod->select_booked_spl_diff($cpsn);
 
-            // 	$bookline = 0;
-            // 	foreach($rsBOOK as $r){
-            // 		$bookid = $r['SPLBOOK_DOC'];
-            // 		if($bookline<$r['SPLBOOK_LINE']){
-            // 			$bookline = $r['SPLBOOK_LINE'];
-            // 		}
-            // 	}
-            // 	$bookline++;				
-            // 	$datas =[];
-            // 	foreach($rsDiff as $r){
-            // 		if(!$r['SPLBOOK_ITMCD']){
-            // 			# handle condition when part code is exist in SPL but it is not exist in BOOK
-            // 			$datas[] = [
-            // 				'SPLBOOK_DOC' => $bookid,
-            // 				'SPLBOOK_SPLDOC' => $cpsn,
-            // 				'SPLBOOK_CAT' => $r['SPL_CAT'],
-            // 				'SPLBOOK_ITMCD' => $r['SPL_ITMCD'],
-            // 				'SPLBOOK_QTY' => $r['RQT'],
-            // 				'SPLBOOK_DATE' => $bookdate,
-            // 				'SPLBOOK_LINE' => $bookline++,
-            // 				'SPLBOOK_LUPDTD' => $currrtime,
-            // 				'SPLBOOK_USRID' => $this->session->userdata('nama')
-            // 			];
-            // 			# end handle 
-            // 		} else {
-            // 			# handle condition when part code is exist in BOOK but it is not exist in SPL
-            // 			$this->SPLBOOK_mod->deleteby_filter(['SPLBOOK_SPLDOC' => $cpsn, 'SPLBOOK_ITMCD' => $r['SPLBOOK_ITMCD']]);
-            // 			$this->ITH_mod->deletebyID(['ITH_REMARK' => $cpsn, 'ITH_ITMCD' => $r['SPLBOOK_ITMCD']]);
-            // 			# end handle
-            // 		}
-            // 	}
-            // 	if(count($datas)>0)	{
-            // 		$this->SPLBOOK_mod->insertb($datas);
-            // 	}
+            //     $bookline = 0;
+            //     foreach($rsBOOK as $r){
+            //         $bookid = $r['SPLBOOK_DOC'];
+            //         if($bookline<$r['SPLBOOK_LINE']){
+            //             $bookline = $r['SPLBOOK_LINE'];
+            //         }
+            //     }
+            //     $bookline++;
+            //     $datas =[];
+            //     foreach($rsDiff as $r){
+            //         if(!$r['SPLBOOK_ITMCD']){
+            //             # handle condition when part code is exist in SPL but it is not exist in BOOK
+            //             $datas[] = [
+            //                 'SPLBOOK_DOC' => $bookid,
+            //                 'SPLBOOK_SPLDOC' => $cpsn,
+            //                 'SPLBOOK_CAT' => $r['SPL_CAT'],
+            //                 'SPLBOOK_ITMCD' => $r['SPL_ITMCD'],
+            //                 'SPLBOOK_QTY' => $r['RQT'],
+            //                 'SPLBOOK_DATE' => $bookdate,
+            //                 'SPLBOOK_LINE' => $bookline++,
+            //                 'SPLBOOK_LUPDTD' => $currrtime,
+            //                 'SPLBOOK_USRID' => $this->session->userdata('nama')
+            //             ];
+            //             # end handle
+            //         } else {
+            //             # handle condition when part code is exist in BOOK but it is not exist in SPL
+            //             $this->SPLBOOK_mod->deleteby_filter(['SPLBOOK_SPLDOC' => $cpsn, 'SPLBOOK_ITMCD' => $r['SPLBOOK_ITMCD']]);
+            //             $this->ITH_mod->deletebyID(['ITH_REMARK' => $cpsn, 'ITH_ITMCD' => $r['SPLBOOK_ITMCD']]);
+            //             # end handle
+            //         }
+            //     }
+            //     if(count($datas)>0)    {
+            //         $this->SPLBOOK_mod->insertb($datas);
+            //     }
             // } else {
-            // 	$datas = [];
-            // 	//handle condition When User Booked list is not exist
-            // 	$rsready = $this->SPLSCN_mod->select_ready_book(['SPL_DOC' => $cpsn]);
-            // 	$lastbookid = $this->SPLBOOK_mod->lastserialid($bookdate)+1;
-            // 	$newdoc = 'B'.$_year.$this->AMONTHPATRN[($_month-1)].$_date.$lastbookid;				
-            // 	$i=1;
-            // 	foreach($rsready as $r){
-            // 		if(!$this->SPLBOOK_mod->check_Primary(['SPLBOOK_SPLDOC' => $cpsn,'SPLBOOK_ITMCD' => $r['SPL_ITMCD']])){
-            // 			$datas[] = [
-            // 				'SPLBOOK_DOC' => $newdoc,
-            // 				'SPLBOOK_SPLDOC' => $cpsn,
-            // 				'SPLBOOK_CAT' => $r['SPL_CAT'],
-            // 				'SPLBOOK_ITMCD' => $r['SPL_ITMCD'],
-            // 				'SPLBOOK_QTY' => $r['BALQT'],
-            // 				'SPLBOOK_DATE' => $bookdate,
-            // 				'SPLBOOK_LINE' => $i++,
-            // 				'SPLBOOK_LUPDTD' => $currrtime,
-            // 				'SPLBOOK_USRID' => $this->session->userdata('nama')
-            // 			];
-            // 		}
-            // 	}
-            // 	$bookid = $newdoc;
-            // 	if(count($datas)){
-            // 		$this->SPLBOOK_mod->insertb($datas);
-            // 	}
+            //     $datas = [];
+            //     //handle condition When User Booked list is not exist
+            //     $rsready = $this->SPLSCN_mod->select_ready_book(['SPL_DOC' => $cpsn]);
+            //     $lastbookid = $this->SPLBOOK_mod->lastserialid($bookdate)+1;
+            //     $newdoc = 'B'.$_year.$this->AMONTHPATRN[($_month-1)].$_date.$lastbookid;
+            //     $i=1;
+            //     foreach($rsready as $r){
+            //         if(!$this->SPLBOOK_mod->check_Primary(['SPLBOOK_SPLDOC' => $cpsn,'SPLBOOK_ITMCD' => $r['SPL_ITMCD']])){
+            //             $datas[] = [
+            //                 'SPLBOOK_DOC' => $newdoc,
+            //                 'SPLBOOK_SPLDOC' => $cpsn,
+            //                 'SPLBOOK_CAT' => $r['SPL_CAT'],
+            //                 'SPLBOOK_ITMCD' => $r['SPL_ITMCD'],
+            //                 'SPLBOOK_QTY' => $r['BALQT'],
+            //                 'SPLBOOK_DATE' => $bookdate,
+            //                 'SPLBOOK_LINE' => $i++,
+            //                 'SPLBOOK_LUPDTD' => $currrtime,
+            //                 'SPLBOOK_USRID' => $this->session->userdata('nama')
+            //             ];
+            //         }
+            //     }
+            //     $bookid = $newdoc;
+            //     if(count($datas)){
+            //         $this->SPLBOOK_mod->insertb($datas);
+            //     }
             // }
-            // ///ITH///		
+            // ///ITH///
             // $rs = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_DOC' => $bookid]);
-            // $this->ITH_mod->deletebyID(['ITH_DOC' => $bookid, 'ITH_FORM' => 'BOOK-SPL-1']);		
+            // $this->ITH_mod->deletebyID(['ITH_DOC' => $bookid, 'ITH_FORM' => 'BOOK-SPL-1']);
             // $ith_data = [];
             // $psnlist = [];
             // foreach($rs as $r){
-            // 	if(!in_array($r['SPLBOOK_SPLDOC'], $psnlist)){
-            // 		$psnlist[] = $r['SPLBOOK_SPLDOC'];
-            // 	}
+            //     if(!in_array($r['SPLBOOK_SPLDOC'], $psnlist)){
+            //         $psnlist[] = $r['SPLBOOK_SPLDOC'];
+            //     }
             // }
             // if(count($psnlist)){
-            // 	$rsbg = $this->SPL_mod->select_bg_psn($psnlist);
-            // 	foreach($rs as $r){
-            // 		$wh = NULL;
-            // 		foreach($rsbg as $b){
-            // 			if($r['SPLBOOK_SPLDOC']==$b['SPL_DOC']){
-            // 				switch($b['SPL_BG']){
-            // 					case 'PSI1PPZIEP':
-            // 						$wh = 'ARWH1';							
-            // 						break;
-            // 					case 'PSI2PPZADI':
-            // 						$wh = 'ARWH2';							
-            // 						break;
-            // 					case 'PSI2PPZINS':
-            // 						$wh = 'NRWH2';							
-            // 						break;
-            // 					case 'PSI2PPZOMC':
-            // 						$wh = 'NRWH2';							
-            // 						break;
-            // 					case 'PSI2PPZOMI':
-            // 						$wh = 'ARWH2';							
-            // 						break;
-            // 					case 'PSI2PPZSSI':
-            // 						$wh = 'NRWH2';							
-            // 						break;
-            // 					case 'PSI2PPZSTY':
-            // 						$wh = 'ARWH2';							
-            // 						break;
-            // 					case 'PSI2PPZTDI':
-            // 						$wh = 'ARWH2';							
-            // 						break;
-            // 				}
-            // 				break;
-            // 			}
-            // 		}
-            // 		$ith_data[] = [
-            // 			'ITH_ITMCD' => $r['SPLBOOK_ITMCD'],
-            // 			'ITH_DATE' => $bookdate,
-            // 			'ITH_FORM' => 'BOOK-SPL-1',
-            // 			'ITH_DOC' => $bookid,
-            // 			'ITH_QTY' => -1*$r['SPLBOOK_QTY'],
-            // 			'ITH_WH' => $wh,
-            // 			'ITH_REMARK' => $r['SPLBOOK_SPLDOC'],
-            // 			'ITH_LUPDT' => $currrtime,
-            // 			'ITH_USRID' => $this->session->userdata('nama')
-            // 		];
-            // 	}
-            // 	if(count($ith_data)){
-            // 		$this->ITH_mod->insertb($ith_data);
-            // 	}
+            //     $rsbg = $this->SPL_mod->select_bg_psn($psnlist);
+            //     foreach($rs as $r){
+            //         $wh = NULL;
+            //         foreach($rsbg as $b){
+            //             if($r['SPLBOOK_SPLDOC']==$b['SPL_DOC']){
+            //                 switch($b['SPL_BG']){
+            //                     case 'PSI1PPZIEP':
+            //                         $wh = 'ARWH1';
+            //                         break;
+            //                     case 'PSI2PPZADI':
+            //                         $wh = 'ARWH2';
+            //                         break;
+            //                     case 'PSI2PPZINS':
+            //                         $wh = 'NRWH2';
+            //                         break;
+            //                     case 'PSI2PPZOMC':
+            //                         $wh = 'NRWH2';
+            //                         break;
+            //                     case 'PSI2PPZOMI':
+            //                         $wh = 'ARWH2';
+            //                         break;
+            //                     case 'PSI2PPZSSI':
+            //                         $wh = 'NRWH2';
+            //                         break;
+            //                     case 'PSI2PPZSTY':
+            //                         $wh = 'ARWH2';
+            //                         break;
+            //                     case 'PSI2PPZTDI':
+            //                         $wh = 'ARWH2';
+            //                         break;
+            //                 }
+            //                 break;
+            //             }
+            //         }
+            //         $ith_data[] = [
+            //             'ITH_ITMCD' => $r['SPLBOOK_ITMCD'],
+            //             'ITH_DATE' => $bookdate,
+            //             'ITH_FORM' => 'BOOK-SPL-1',
+            //             'ITH_DOC' => $bookid,
+            //             'ITH_QTY' => -1*$r['SPLBOOK_QTY'],
+            //             'ITH_WH' => $wh,
+            //             'ITH_REMARK' => $r['SPLBOOK_SPLDOC'],
+            //             'ITH_LUPDT' => $currrtime,
+            //             'ITH_USRID' => $this->session->userdata('nama')
+            //         ];
+            //     }
+            //     if(count($ith_data)){
+            //         $this->ITH_mod->insertb($ith_data);
+            //     }
             // }
             //END BOOK
             echo '{"data":' . json_encode($rs) . ',"status": ' . json_encode($mystatus) . '}';
@@ -1226,33 +1226,33 @@ class SPL extends CI_Controller
     public function getline_mfg()
     {
         header('Content-Type: application/json');
-        $rs        = $this->SPL_mod->select_line_mfg();
+        $rs = $this->SPL_mod->select_line_mfg();
         echo '{"data":' . json_encode($rs) . '}';
     }
 
-    function getWO()
+    public function getWO()
     {
         header('Content-Type: application/json');
-        $cwo    = $this->input->get('inwo');
-        $rs        = $this->SPL_mod->selectWO($cwo);
+        $cwo = $this->input->get('inwo');
+        $rs = $this->SPL_mod->selectWO($cwo);
         echo json_encode($rs);
     }
-    function getWOOpen()
+    public function getWOOpen()
     {
         header('Content-Type: application/json');
-        $cwo    = $this->input->get('inwo');
-        $rs        = $this->SPL_mod->selectWOOpen($cwo);
+        $cwo = $this->input->get('inwo');
+        $rs = $this->SPL_mod->selectWOOpen($cwo);
         echo json_encode($rs);
     }
-    function getWOOpen_assy_as_sub()
+    public function getWOOpen_assy_as_sub()
     {
         header('Content-Type: application/json');
-        $cwo    = $this->input->get('inwo');
-        $rs        = $this->SPL_mod->selectWOOpen_assy_as_sub($cwo);
+        $cwo = $this->input->get('inwo');
+        $rs = $this->SPL_mod->selectWOOpen_assy_as_sub($cwo);
         echo json_encode($rs);
     }
 
-    function checkPSN()
+    public function checkPSN()
     {
         $cpsn = $this->input->get('inpsn');
         $myar = [];
@@ -1271,7 +1271,7 @@ class SPL extends CI_Controller
         ]));
     }
 
-    function checkPSNCAT()
+    public function checkPSNCAT()
     {
         $cpsn = $this->input->get('inpsn');
         $ccat = $this->input->get('incat');
@@ -1284,11 +1284,11 @@ class SPL extends CI_Controller
             $myar[] = ["cd" => $ttlrows, "msg" => "Data not found"];
         }
         echo '{"data":' . json_encode($rs)
-            . ',"status" : ' . json_encode($myar)
+        . ',"status" : ' . json_encode($myar)
             . '}';
     }
 
-    function checkPSNCATLINE()
+    public function checkPSNCATLINE()
     {
         $cpsn = $this->input->get('inpsn');
         $ccat = $this->input->get('incat');
@@ -1308,7 +1308,7 @@ class SPL extends CI_Controller
         echo '}';
     }
 
-    function checkPSN_rack()
+    public function checkPSN_rack()
     {
         header('Content-Type: application/json');
         $cpsn = $this->input->get('inpsn');
@@ -1319,11 +1319,11 @@ class SPL extends CI_Controller
         $myar = [];
         $dataw = ["SPL_DOC" => $cpsn, "SPL_CAT" => $ccat, "SPL_LINE" => $cline, "SPL_FEDR" => $cfr, "SPL_RACKNO" => trim($crack)];
         $ttlrows = $this->SPL_mod->check_Primary($dataw);
-        $myar[] = ["cd" => $ttlrows, "msg" => $ttlrows > 0 ?   "go ahead" : "Data not found"];
+        $myar[] = ["cd" => $ttlrows, "msg" => $ttlrows > 0 ? "go ahead" : "Data not found"];
         echo '{"data":' . json_encode($myar) . '}';
     }
 
-    function checkPSNCATLINEFEEDR()
+    public function checkPSNCATLINEFEEDR()
     {
         header('Content-Type: application/json');
         $cpsn = $this->input->get('inpsn');
@@ -1381,13 +1381,13 @@ class SPL extends CI_Controller
             $rs2 = $this->SPL_mod->selecthead($cpsn, $cline, $cfr);
             $rssavedqty = $this->SPLSCN_mod->selectsaved($cpsn, $ccat, $cline, $cfr);
             echo '{"data":'
-                . json_encode($rs)
-                . ',"datahead":'
-                . json_encode($rs2)
-                . ',"datasaved":'
-                . json_encode($rssavedqty)
-                . ',"datav":'
-                . json_encode($rsv)
+            . json_encode($rs)
+            . ',"datahead":'
+            . json_encode($rs2)
+            . ',"datasaved":'
+            . json_encode($rssavedqty)
+            . ',"datav":'
+            . json_encode($rsv)
                 . '}';
         } else {
             $myar[] = ["cd" => $ttlrows, "msg" => "Data not found"];
@@ -1395,29 +1395,29 @@ class SPL extends CI_Controller
         }
     }
 
-    function checkPSN_only()
+    public function checkPSN_only()
     {
         header('Content-Type: application/json');
         $cpsn = $this->input->get('inpsn');
         $myar = [];
         $ttlrows = $this->SPL_mod->check_Primary(['SPL_DOC' => $cpsn]);
         if ($ttlrows > 0) {
-            $rs2 = substr($cpsn, 0, 3) == "PR-" ? [["PPSN1_WONO" => "_"]]  : $this->SPL_mod->selecthead_psnonly($cpsn);
+            $rs2 = substr($cpsn, 0, 3) == "PR-" ? [["PPSN1_WONO" => "_"]] : $this->SPL_mod->selecthead_psnonly($cpsn);
             $myar[] = ["cd" => $ttlrows, "msg" => "Go ahead"];
             echo '{"status":'
-                . json_encode($myar)
-                . ',"datahead":'
-                . json_encode($rs2)
+            . json_encode($myar)
+            . ',"datahead":'
+            . json_encode($rs2)
                 . '}';
         } else {
             $myar[] = ["cd" => $ttlrows, "msg" => "Data not found"];
             echo '{"status":'
-                . json_encode($myar)
+            . json_encode($myar)
                 . '}';
         }
     }
 
-    function checkPSNCATLINENoFR()
+    public function checkPSNCATLINENoFR()
     {
         header('Content-Type: application/json');
         $cpsn = $this->input->get('inpsn');
@@ -1428,29 +1428,29 @@ class SPL extends CI_Controller
         $ttlrows = $this->SPL_mod->check_Primary(['SPL_DOC' => $cpsn, 'SPL_CAT' => $ccat, 'SPL_LINE' => $cline]);
         if ($ttlrows > 0) {
             $rs = $this->SPL_mod->selectby3par($cpsn, $ccat, $cline);
-            $rs2 = substr($cpsn, 0, 3) == "PR-" ? [["PPSN1_WONO" => "_"]]  : $this->SPL_mod->selecthead_nofr($cpsn, $cline);
+            $rs2 = substr($cpsn, 0, 3) == "PR-" ? [["PPSN1_WONO" => "_"]] : $this->SPL_mod->selecthead_nofr($cpsn, $cline);
             $rssavedqty = $this->SPLSCN_mod->selectsaved_nofr($cpsn, $ccat, $cline);
             $myar[] = ["cd" => "1", "msg" => "Data not found"];
             echo '{"data":'
-                . json_encode($rs)
-                . ',"datahead":'
-                . json_encode($rs2)
-                . ',"datasaved":'
-                . json_encode($rssavedqty)
-                . ',"status":'
-                . json_encode($myar)
+            . json_encode($rs)
+            . ',"datahead":'
+            . json_encode($rs2)
+            . ',"datasaved":'
+            . json_encode($rssavedqty)
+            . ',"status":'
+            . json_encode($myar)
                 . '}';
         } else {
             $myar[] = ["cd" => $ttlrows, "msg" => "Data not found"];
             echo '{"data":'
-                . json_encode([])
-                . ',"status":'
-                . json_encode($myar)
+            . json_encode([])
+            . ',"status":'
+            . json_encode($myar)
                 . '}';
         }
     }
 
-    function checkPSN_itm()
+    public function checkPSN_itm()
     {
         header('Content-Type: application/json');
         $cpsn = $this->input->get('inpsn');
@@ -1463,7 +1463,7 @@ class SPL extends CI_Controller
         $datac = [
             'SPL_DOC' => $cpsn, 'SPL_LINE' => $cline,
             'SPL_CAT' => $ccat, 'SPL_FEDR' => $cfr,
-            'SPL_ITMCD' => $citemcd, 'SPL_RACKNO' => $crack
+            'SPL_ITMCD' => $citemcd, 'SPL_RACKNO' => $crack,
         ];
         $ttlrows = $this->SPL_mod->check_Primary($datac);
         if ($ttlrows > 0) {
@@ -1480,7 +1480,7 @@ class SPL extends CI_Controller
         }
     }
 
-    function checkPSN_itmret()
+    public function checkPSN_itmret()
     {
         header('Content-Type: application/json');
         $cpsn = $this->input->get('inpsn');
@@ -1492,7 +1492,7 @@ class SPL extends CI_Controller
         $datac = [
             'SPL_DOC' => $cpsn, 'SPL_LINE' => $cline,
             'SPL_CAT' => $ccat, 'SPL_FEDR' => $cfr,
-            'SPL_ITMCD' => $citemcd
+            'SPL_ITMCD' => $citemcd,
         ];
         $ttlrows = $this->SPL_mod->check_Primary($datac);
         if ($ttlrows > 0) {
@@ -1503,17 +1503,17 @@ class SPL extends CI_Controller
             }
             $myar[] = ["cd" => $ttlrows, "msg" => "Go ahead", "ref" => $csptno];
             echo '{"data":'
-                . json_encode($myar)
+            . json_encode($myar)
                 . '}';
         } else {
             $myar[] = ["cd" => 0, "msg" => "Data not found in PSN"];
             echo '{"data":'
-                . json_encode($myar)
+            . json_encode($myar)
                 . '}';
         }
     }
 
-    function checkPSN_itmret_nofr()
+    public function checkPSN_itmret_nofr()
     {
         header('Content-Type: application/json');
         $cpsn = $this->input->get('inpsn');
@@ -1522,7 +1522,7 @@ class SPL extends CI_Controller
 
         $citemcd = $this->input->get('incode');
         $myar = [];
-        $datac = ['SPL_DOC' => $cpsn, 'SPL_LINE' => $cline,    'SPL_CAT' => $ccat, 'SPL_ITMCD' => $citemcd];
+        $datac = ['SPL_DOC' => $cpsn, 'SPL_LINE' => $cline, 'SPL_CAT' => $ccat, 'SPL_ITMCD' => $citemcd];
         $ttlrows = $this->SPL_mod->check_Primary($datac);
         if ($ttlrows > 0) {
             $rsitem = $this->MSTITM_mod->selectbyid($citemcd);
@@ -1538,12 +1538,12 @@ class SPL extends CI_Controller
             }
             $myar[] = ["cd" => $ttlrows, "msg" => "Go ahead", "ref" => $csptno, "rackno" => $crackno];
             echo '{"data":'
-                . json_encode($myar)
+            . json_encode($myar)
                 . '}';
         } else {
             $myar[] = ["cd" => 0, "msg" => "Data not found in PSN"];
             echo '{"data":'
-                . json_encode($myar)
+            . json_encode($myar)
                 . '}';
         }
     }
@@ -1557,28 +1557,28 @@ class SPL extends CI_Controller
         }
     }
 
-    function scn_set()
+    public function scn_set()
     {
         date_default_timezone_set('Asia/Jakarta');
         $currdate = date('Ymd');
         $currrtime = date('Y-m-d H:i:s');
 
-        $cpsn     = $this->input->post('inpsn');
-        $ccat     = $this->input->post('incat');
-        $cline     = $this->input->post('inline');
-        $cfr     = $this->input->post('infr');
-        $citm     = $this->input->post('incode');
-        $cqty     = $this->input->post('inqty');
-        $clot     = $this->input->post('inlot');
+        $cpsn = $this->input->post('inpsn');
+        $ccat = $this->input->post('incat');
+        $cline = $this->input->post('inline');
+        $cfr = $this->input->post('infr');
+        $citm = $this->input->post('incode');
+        $cqty = $this->input->post('inqty');
+        $clot = $this->input->post('inlot');
         $corder = $this->input->post('inorder');
-        $datac  = ['SPL_DOC' => $cpsn, 'SPL_LINE' => $cline, 'SPL_CAT' => $ccat, 'SPL_FEDR' => $cfr, 'SPL_ITMCD' => $citm];
+        $datac = ['SPL_DOC' => $cpsn, 'SPL_LINE' => $cline, 'SPL_CAT' => $ccat, 'SPL_FEDR' => $cfr, 'SPL_ITMCD' => $citm];
         if ($this->SPL_mod->check_Primary($datac) > 0) {
             echo "1";
             $mlastid = $this->SPLSCN_mod->lastserialid();
             $mlastid++;
             $newid = $currdate . $mlastid;
             if ($corder == '-') {
-                //check if scanned qty is more than balance value			
+                //check if scanned qty is more than balance value
                 $rs = $this->SPL_mod->selectscan_balancing($cpsn, $ccat, $cline, $cfr, $citm);
                 if (count($rs) > 0) {
                     echo "1";
@@ -1631,20 +1631,19 @@ class SPL extends CI_Controller
         }
     }
 
-
     public function getdetailissue()
     {
         header('Content-Type: application/json');
-        $cpsn     = $this->input->get('inpsn');
-        $ccat     = $this->input->get('incat');
-        $cline     = $this->input->get('inline');
-        $cfr     = $this->input->get('infr');
-        $citm     = $this->input->get('incode');
-        $curut     = $this->input->get('inurut');
+        $cpsn = $this->input->get('inpsn');
+        $ccat = $this->input->get('incat');
+        $cline = $this->input->get('inline');
+        $cfr = $this->input->get('infr');
+        $citm = $this->input->get('incode');
+        $curut = $this->input->get('inurut');
         $dataw = ['SPLSCN_DOC' => $cpsn, 'SPLSCN_CAT' => $ccat, 'SPLSCN_LINE' => $cline, 'SPLSCN_FEDR' => $cfr, 'SPLSCN_ITMCD' => $citm, 'SPLSCN_ORDERNO' => $curut];
         $rs = $this->SPLSCN_mod->selectby_filter($dataw);
         echo '{"data":'
-            . json_encode($rs)
+        . json_encode($rs)
             . '}';
     }
 
@@ -1655,12 +1654,11 @@ class SPL extends CI_Controller
         }
         date_default_timezone_set('Asia/Jakarta');
         $currdate = date('Y-m-d');
-        $cpsn     = trim($this->input->post('inpsn'));
-        $ccat     = trim($this->input->post('incat'));
-        $cline     = trim($this->input->post('inline'));
-        $cfr     = trim($this->input->post('infr'));
+        $cpsn = trim($this->input->post('inpsn'));
+        $ccat = trim($this->input->post('incat'));
+        $cline = trim($this->input->post('inline'));
+        $cfr = trim($this->input->post('infr'));
         $cdoc = $cpsn . "|" . $ccat . "|" . $cline . "|" . $cfr;
-        //$rs = $this->SPLSCN_mod->selecttocompareith($cdoc);
         $cwh_out = $_COOKIE["CKPSI_WH"];
         $cwh_inc = '';
         $flag_insert = 0;
@@ -1709,36 +1707,21 @@ class SPL extends CI_Controller
             $flag_update += $toret;
             if ($toret > 0) {
                 $datas = [
-                    'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' =>  $cwh_inc,
-                    'ITH_DOC'     => $cdoc, 'ITH_DATE' => $currdate,
-                    'ITH_FORM'     => 'OUT-WH-RM', 'ITH_QTY' => -$r['SPLSCN_QTY'],
+                    'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' => $cwh_inc,
+                    'ITH_DOC' => $cdoc,
+                    'ITH_DATE' => $currdate,
+                    'ITH_FORM' => 'OUT-WH-RM', 'ITH_QTY' => -$r['SPLSCN_QTY'],
                     'ITH_REMARK' => $r['SPLSCN_LOTNO'],
-                    'ITH_USRID' =>  $this->session->userdata('nama')
+                    'ITH_USRID' => $this->session->userdata('nama'),
                 ];
-                $rsbook = $this->SPLBOOK_mod->select_book_like(['SPLBOOK_SPLDOC' => $cpsn, 'SPLBOOK_ITMCD' => $r['SPLSCN_ITMCD']]);
-                if (count($rsbook)) {
-                    $thebookID = '';
-                    foreach ($rsbook as $n) {
-                        $thebookID = $n['SPLBOOK_DOC'];
-                        break;
-                    }
-                    $datab = [
-                        'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' =>  $cwh_inc,
-                        'ITH_DOC'     => $thebookID, 'ITH_DATE' => $currdate,
-                        'ITH_FORM'     => 'BOOK-SPL-2', 'ITH_QTY' => $r['SPLSCN_QTY'],
-                        'ITH_REMARK' => $r['SPLSCN_LOTNO'],
-                        'ITH_USRID' =>  $this->session->userdata('nama')
-                    ];
-                    $this->ITH_mod->insert_spl($datab);
-                }
                 $tor = $this->ITH_mod->insert_spl($datas);
 
-                $datas     = [
-                    'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' =>  $cwh_out,
-                    'ITH_DOC'     => $cdoc, 'ITH_DATE' => $currdate,
-                    'ITH_FORM'     => 'INC-PRD-RM', 'ITH_QTY' => $r['SPLSCN_QTY'],
+                $datas = [
+                    'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' => $cwh_out,
+                    'ITH_DOC' => $cdoc, 'ITH_DATE' => $currdate,
+                    'ITH_FORM' => 'INC-PRD-RM', 'ITH_QTY' => $r['SPLSCN_QTY'],
                     'ITH_REMARK' => $r['SPLSCN_LOTNO'],
-                    'ITH_USRID' =>  $this->session->userdata('nama')
+                    'ITH_USRID' => $this->session->userdata('nama'),
                 ];
                 $tor = $this->ITH_mod->insert_spl($datas);
                 $flag_insert += $tor;
@@ -1747,7 +1730,7 @@ class SPL extends CI_Controller
         echo "Saved ($flag_insert)  and updated ($flag_update)";
     }
 
-    function removeunsaved()
+    public function removeunsaved()
     {
         $cid = $this->input->get('inid');
         $dataw = array('SPLSCN_ID' => $cid, "COALESCE(SPLSCN_SAVED,'') !=" => "1");
@@ -1770,15 +1753,15 @@ class SPL extends CI_Controller
         $qty = $this->input->post('qty');
         $tbl = $this->input->post('tbl');
         $data = [
-            'SPL' => $spl, 'category' => $category, 'line' => $line, 'fr' => $fr, 'itemcd' => $itemcd, 'qty' => $qty, 'tbl' => $tbl
+            'SPL' => $spl, 'category' => $category, 'line' => $line, 'fr' => $fr, 'itemcd' => $itemcd, 'qty' => $qty, 'tbl' => $tbl,
         ];
         $myar = [];
         $splscnExist = $this->SPLSCN_mod->check_Primary([
-            'SPLSCN_DOC' => $spl, 'SPLSCN_CAT' => $category, 'SPLSCN_LINE' => $line, 'SPLSCN_FEDR' => $fr, 'SPLSCN_ORDERNO' => $tbl, 'SPLSCN_ITMCD' => $itemcd
+            'SPLSCN_DOC' => $spl, 'SPLSCN_CAT' => $category, 'SPLSCN_LINE' => $line, 'SPLSCN_FEDR' => $fr, 'SPLSCN_ORDERNO' => $tbl, 'SPLSCN_ITMCD' => $itemcd,
         ]);
         if ($splscnExist == 0) {
             $result = $this->SPL_mod->deleteby_filter([
-                'SPL_DOC' => $spl, 'SPL_CAT' => $category, 'SPL_LINE' => $line, 'SPL_FEDR' => $fr, 'SPL_ORDERNO' => $tbl, 'SPL_ITMCD' => $itemcd
+                'SPL_DOC' => $spl, 'SPL_CAT' => $category, 'SPL_LINE' => $line, 'SPL_FEDR' => $fr, 'SPL_ORDERNO' => $tbl, 'SPL_ITMCD' => $itemcd,
             ]);
             $myar[] = $result ? ['cd' => 1, 'msg' => 'ok'] : ['cd' => 0, 'msg' => 'could not be deleted'];
         } else {
@@ -1832,7 +1815,7 @@ class SPL extends CI_Controller
                                     if ($d['USED'] == false) {
                                         if (count($rsfix) == 0) {
                                             $rsfix[] = [
-                                                "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1
+                                                "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1,
                                             ];
                                             $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                             $d['USED'] = true;
@@ -1845,8 +1828,8 @@ class SPL extends CI_Controller
                                                     $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                                     $rsfix[] =
                                                         [
-                                                            "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1
-                                                        ];
+                                                        "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1,
+                                                    ];
                                                     $isfound = true;
                                                     $d['USED'] = true;
                                                     break;
@@ -1855,7 +1838,7 @@ class SPL extends CI_Controller
                                             unset($t);
                                             if (!$isfound) {
                                                 $rsfix[] = [
-                                                    "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1
+                                                    "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1,
                                                 ];
                                                 $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                                 $d['USED'] = true;
@@ -1899,7 +1882,7 @@ class SPL extends CI_Controller
                                 if ($d['USED'] == false) {
                                     if (count($rsfix) == 0) {
                                         $rsfix[] = [
-                                            "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1
+                                            "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1,
                                         ];
                                         $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                         $d['USED'] = true;
@@ -1912,8 +1895,8 @@ class SPL extends CI_Controller
                                                 $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                                 $rsfix[] =
                                                     [
-                                                        "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1
-                                                    ];
+                                                    "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1,
+                                                ];
                                                 $isfound = true;
                                                 $d['USED'] = true;
                                                 break;
@@ -1922,7 +1905,7 @@ class SPL extends CI_Controller
                                         unset($t);
                                         if (!$isfound) {
                                             $rsfix[] = [
-                                                "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1
+                                                "SPLSCN_ID" => trim($d["SPLSCN_ID"]), "SPLSCN_USRID" => trim($d["SPLSCN_USRID"]), "PPSN2_DATANO" => trim($r["PPSN2_DATANO"]), "SPLSCN_FEDR" => trim($d["SPLSCN_FEDR"]), "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]), "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]), "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]), "ISOK" => 1,
                                             ];
                                             $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                             $d['USED'] = true;
@@ -1949,35 +1932,35 @@ class SPL extends CI_Controller
         foreach ($rsfix as &$d) {
             foreach ($rsbase as &$r) {
                 if ($r['PPSN2_DATANO'] == $d['PPSN2_DATANO']) {
-                    if ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ1'] &&  $r['PPSN2_PICKQT1'] > 0) {
+                    if ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ1'] && $r['PPSN2_PICKQT1'] > 0) {
                         $d['ISOK'] = 0;
                         $r['PPSN2_PICKQT1'] -= 1;
                         break;
-                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ2'] &&  $r['PPSN2_PICKQT2'] > 0) {
+                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ2'] && $r['PPSN2_PICKQT2'] > 0) {
                         $d['ISOK'] = 0;
                         $r['PPSN2_PICKQT2'] -= 1;
                         break;
-                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ3'] &&  $r['PPSN2_PICKQT3'] > 0) {
+                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ3'] && $r['PPSN2_PICKQT3'] > 0) {
                         $d['ISOK'] = 0;
                         $r['PPSN2_PICKQT3'] -= 1;
                         break;
-                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ4'] &&  $r['PPSN2_PICKQT4'] > 0) {
+                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ4'] && $r['PPSN2_PICKQT4'] > 0) {
                         $d['ISOK'] = 0;
                         $r['PPSN2_PICKQT4'] -= 1;
                         break;
-                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ5'] &&  $r['PPSN2_PICKQT5'] > 0) {
+                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ5'] && $r['PPSN2_PICKQT5'] > 0) {
                         $d['ISOK'] = 0;
                         $r['PPSN2_PICKQT5'] -= 1;
                         break;
-                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ6'] &&  $r['PPSN2_PICKQT6'] > 0) {
+                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ6'] && $r['PPSN2_PICKQT6'] > 0) {
                         $d['ISOK'] = 0;
                         $r['PPSN2_PICKQT6'] -= 1;
                         break;
-                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ7'] &&  $r['PPSN2_PICKQT7'] > 0) {
+                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ7'] && $r['PPSN2_PICKQT7'] > 0) {
                         $d['ISOK'] = 0;
                         $r['PPSN2_PICKQT7'] -= 1;
                         break;
-                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ8'] &&  $r['PPSN2_PICKQT8'] > 0) {
+                    } elseif ($d['SPLSCN_QTY'] == $r['PPSN2_PACKSZ8'] && $r['PPSN2_PICKQT8'] > 0) {
                         $d['ISOK'] = 0;
                         $r['PPSN2_PICKQT8'] -= 1;
                         break;
@@ -1992,13 +1975,19 @@ class SPL extends CI_Controller
         foreach ($rsfix as $r) {
             if ($r['ISOK'] == 1) {
                 $rsfinal[] = $r;
-                if (!in_array($r['SPLSCN_ITMCD'], $itemdistinct)) $itemdistinct[] = $r['SPLSCN_ITMCD'];
-                if (!in_array($r['SPLSCN_FEDR'], $frdistinct)) $frdistinct[] = $r['SPLSCN_FEDR'];
+                if (!in_array($r['SPLSCN_ITMCD'], $itemdistinct)) {
+                    $itemdistinct[] = $r['SPLSCN_ITMCD'];
+                }
+
+                if (!in_array($r['SPLSCN_FEDR'], $frdistinct)) {
+                    $frdistinct[] = $r['SPLSCN_FEDR'];
+                }
+
             }
         }
-        $myar = count($rsfinal) > 0 ?  ["cd" => "1", "msg" => "Go ahead"] : ["cd" => "0", "msg" => "data not found"];
+        $myar = count($rsfinal) > 0 ? ["cd" => "1", "msg" => "Go ahead"] : ["cd" => "0", "msg" => "data not found"];
         die(json_encode([
-            'data' => $rsfinal, 'ppsn2' => $rsbase, 'scanned' => $rsscn, 'status' => $myar, 'dataku' => $itemdistinct, 'dataku2' => $frdistinct
+            'data' => $rsfinal, 'ppsn2' => $rsbase, 'scanned' => $rsscn, 'status' => $myar, 'dataku' => $itemdistinct, 'dataku2' => $frdistinct,
         ]));
     }
 
@@ -2012,7 +2001,7 @@ class SPL extends CI_Controller
         $cline = $_COOKIE["CKPSI_DLNE"];
         $dataw = [
             'SPLSCN_DOC' => $cpsn, 'SPLSCN_CAT' => $ccat, 'SPLSCN_LINE' => $cline,
-            'SPLSCN_SAVED' => '1'
+            'SPLSCN_SAVED' => '1',
         ];
         $filterbase = ['PPSN2_PSNNO' => $cpsn, 'PPSN2_ITMCAT' => $ccat, 'PPSN2_LINENO' => $cline];
         $rsbase = $this->SPL_mod->select_ppsn2($filterbase);
@@ -2056,7 +2045,7 @@ class SPL extends CI_Controller
                                                     "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"],
                                                     "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]),
                                                     "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]),
-                                                    "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"])
+                                                    "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]),
                                                 )
                                             );
                                             $r['TTLSCN'] += $d['SPLSCN_QTY'];
@@ -2076,7 +2065,7 @@ class SPL extends CI_Controller
                                                             "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"],
                                                             "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]),
                                                             "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]),
-                                                            "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"])
+                                                            "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]),
                                                         )
                                                     );
                                                     $isfound = true;
@@ -2094,7 +2083,7 @@ class SPL extends CI_Controller
                                                         "SPLSCN_ITMCD" => trim($d["SPLSCN_ITMCD"]), "SPLSCN_QTY" => $d["SPLSCN_QTY"],
                                                         "SPLSCN_LUPDT" => substr($d['SPLSCN_LUPDT'], 0, 16), "SPLSCN_LOTNO" => trim($d["SPLSCN_LOTNO"]),
                                                         "SPLSCN_ORDERNO" => trim($d["SPLSCN_ORDERNO"]), "SPLSCN_LINE" => trim($d["SPLSCN_LINE"]),
-                                                        "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"])
+                                                        "PPSN2_MC" => trim($r["PPSN2_MC"]), "PPSN2_PROCD" => trim($r["PPSN2_PROCD"]),
                                                     )
                                                 );
                                                 $r['TTLSCN'] += $d['SPLSCN_QTY'];
@@ -2120,7 +2109,6 @@ class SPL extends CI_Controller
         unset($r);
 
         //$rs=$this->SPLSCN_mod->selectby_filter_formega($dataw);
-
 
         $stringjudul = 'RESULT_' . $cpsn;
         $spreadsheet = new Spreadsheet();
@@ -2252,7 +2240,7 @@ class SPL extends CI_Controller
                     $r['TTLREQ'] -= $r['TTLSCN'];
                     foreach ($rsdiff_mch as $k) {
                         if (trim($r['SPL_ORDERNO']) == trim($k['SPL_ORDERNO']) && trim($r['SPL_ITMCD']) == trim($k['SPL_ITMCD'])) {
-                            $r['SPL_ITMCD'] = trim($r['SPL_ITMCD']) .  ' *';
+                            $r['SPL_ITMCD'] = trim($r['SPL_ITMCD']) . ' *';
                         }
                     }
                 }
@@ -2532,8 +2520,8 @@ class SPL extends CI_Controller
                         } else {
                             $pdf->Cell(20, $td_h, $r['SPL_RACKNO'], 1, 0, 'L');
                         }
-                        $lebar =  $pdf->GetStringWidth($r['SPL_ORDERNO']) + 17;
-                        $clebar =  $pdf->GetStringWidth($r['SPL_ORDERNO']) + 16;
+                        $lebar = $pdf->GetStringWidth($r['SPL_ORDERNO']) + 17;
+                        $clebar = $pdf->GetStringWidth($r['SPL_ORDERNO']) + 16;
                         $strx = $wd2col - ($lebar + 3);
                         if (($i % 2) > 0) {
                             $pdf->Code128($wd2col - 80 + 2, $cury + 1.5, $r['SPL_ORDERNO'], $clebar, 3);
@@ -2609,7 +2597,6 @@ class SPL extends CI_Controller
                         }
                     }
                     unset($d);
-
 
                     $pdf->AliasNbPages();
                     $pdf->AddPage();
@@ -2751,7 +2738,7 @@ class SPL extends CI_Controller
                         $r['TTLREQ'] -= $r['TTLSCN'];
                         foreach ($rsdiff_mch as $k) {
                             if (trim($r['SPL_ORDERNO']) == trim($k['SPL_ORDERNO']) && trim($r['SPL_ITMCD']) == trim($k['SPL_ITMCD'])) {
-                                $r['SPL_ITMCD'] = trim($r['SPL_ITMCD']) .  ' *';
+                                $r['SPL_ITMCD'] = trim($r['SPL_ITMCD']) . ' *';
                             }
                         }
                     }
@@ -2854,8 +2841,8 @@ class SPL extends CI_Controller
                             } else {
                                 $pdf->Cell(20, $td_h, $r['SPL_RACKNO'], 1, 0, 'L');
                             }
-                            $lebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 17;
-                            $clebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 16;
+                            $lebar = $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 17;
+                            $clebar = $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 16;
                             $strx = $wd2col - ($lebar + 3);
                             if (($i % 2) > 0) {
                                 $pdf->Code128($wd2col - 80 + 2, $cury + 1.5, trim($r['SPL_ORDERNO']), $clebar, 3);
@@ -3266,8 +3253,8 @@ class SPL extends CI_Controller
                         } else {
                             $pdf->Cell(20, $td_h, $r['SPL_RACKNO'], 1, 0, 'L');
                         }
-                        $lebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 17;
-                        $clebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 16;
+                        $lebar = $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 17;
+                        $clebar = $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 16;
                         $strx = $wd2col - ($lebar + 3);
                         if (($i % 2) > 0) {
                             //$pdf->Code39(19,$cury+0.5,trim($r['SPL_ORDERNO']),0.5,3);
@@ -3393,7 +3380,6 @@ class SPL extends CI_Controller
         $pdf->Cell(15, 4, 'Page ' . $pdf->PageNo() . ' / {nb}', 1, 0, 'R');
         $cury = 22;
 
-
         $xWOcount = count($cwos);
 
         for ($j = 0; $j < $xWOcount; $j++) { // print job info
@@ -3486,7 +3472,7 @@ class SPL extends CI_Controller
             $r['TTLREQ'] -= $r['TTLSCN'];
             foreach ($rsdiff_mch as $k) {
                 if (trim($r['SPL_ORDERNO']) == trim($k['SPL_ORDERNO']) && trim($r['SPL_ITMCD']) == trim($k['SPL_ITMCD'])) {
-                    $r['SPL_ITMCD'] = trim($r['SPL_ITMCD']) .  ' *';
+                    $r['SPL_ITMCD'] = trim($r['SPL_ITMCD']) . ' *';
                 }
             }
         }
@@ -3612,8 +3598,8 @@ class SPL extends CI_Controller
                         } else {
                             $pdf->Cell(20, $td_h, $r['SPL_RACKNO'], 1, 0, 'L');
                         }
-                        $lebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 17;
-                        $clebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 16;
+                        $lebar = $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 17;
+                        $clebar = $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 16;
                         $strx = $wd2col - ($lebar + 3);
                         if (($i % 2) > 0) {
                             $pdf->Code128($wd2col - 80 + 2, $cury + 1.5, trim($r['SPL_ORDERNO']), $clebar, 3);
@@ -3687,8 +3673,8 @@ class SPL extends CI_Controller
                         } else {
                             $pdf->Cell(20, $td_h, $r['SPL_RACKNO'], 1, 0, 'L');
                         }
-                        $lebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 17;
-                        $clebar =  $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 16;
+                        $lebar = $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 17;
+                        $clebar = $pdf->GetStringWidth(trim($r['SPL_ORDERNO'])) + 16;
                         $strx = $wd2col - ($lebar + 3);
                         if (($i % 2) > 0) {
                             $pdf->Code128($wd2col - 80 + 2, $cury + 1.5, trim($r['SPL_ORDERNO']), $clebar, 3);
@@ -3734,11 +3720,11 @@ class SPL extends CI_Controller
             }
             $cury += 10;
         }
-        #end group		
+        #end group
         $pdf->Output('I', 'KIT Doc  ' . $cpsn . '.pdf');
     }
 
-    function printresult()
+    public function printresult()
     {
         if (!isset($_COOKIE["CKPSI_DPSN"]) && !isset($_COOKIE["CKPSI_DCAT"]) && !isset($_COOKIE["CKPSI_DLNE"]) && !isset($_COOKIE["CKPSI_DFDR"])) {
             exit('no data to be found');
@@ -3809,7 +3795,7 @@ class SPL extends CI_Controller
                                             $ttlroww = count($d_machine);
                                             $isfound = false;
                                             for ($i = 0; $i < $ttlroww; $i++) {
-                                                if (($d_mc[$i] ==  trim($r['SPL_MC'])) && ($d_machine[$i] == trim($r['SPL_ORDERNO'])) &&  ($d_item[$i] == trim($r['SPL_ITMCD']))
+                                                if (($d_mc[$i] == trim($r['SPL_MC'])) && ($d_machine[$i] == trim($r['SPL_ORDERNO'])) && ($d_item[$i] == trim($r['SPL_ITMCD']))
                                                     && ($d_qty[$i] == $d['SPLSCN_QTY']) && ($d_prc[$i] == trim($r['SPL_PROCD']))
                                                 ) {
                                                     $r['TTLSCN'] += $d['SPLSCN_QTY'];
@@ -3856,7 +3842,7 @@ class SPL extends CI_Controller
                         $ttlroww = count($d_machine);
                         $isfound = false;
                         for ($i = 0; $i < $ttlroww; $i++) {
-                            if (($d_mc[$i] ==  trim($r['SPL_MC'])) && ($d_machine[$i] == trim($r['SPL_ORDERNO'])) &&  ($d_item[$i] == trim($r['SPL_ITMCD']))
+                            if (($d_mc[$i] == trim($r['SPL_MC'])) && ($d_machine[$i] == trim($r['SPL_ORDERNO'])) && ($d_item[$i] == trim($r['SPL_ITMCD']))
                                 && ($d_qty[$i] == $d['SPLSCN_QTY']) && ($d_prc[$i] == trim($r['SPL_PROCD']))
                             ) {
                                 $r['TTLSCN'] += $d['SPLSCN_QTY'];
@@ -4671,7 +4657,7 @@ class SPL extends CI_Controller
 
             $ttlwos = count($cwos);
             $sisa = 9 - $ttlwos;
-            if ($sisa > 0) { //FILL THE REST ARRAY SIZE WITH ''	 BECAUSE WE AVOID NULL
+            if ($sisa > 0) { //FILL THE REST ARRAY SIZE WITH ''     BECAUSE WE AVOID NULL
                 for ($i = 0; $i < $sisa; $i++) {
                     $cwos[] = '';
                     $cmodels[] = '';
@@ -5637,7 +5623,6 @@ class SPL extends CI_Controller
             }
         }
 
-
         //end h4
         $pdf->Output('I', 'Result Doc  ' . date("d-M-Y") . '.pdf');
         // echo json_encode($d_qty);
@@ -5723,7 +5708,7 @@ class SPL extends CI_Controller
         $apsn = [];
         $rspsn = $this->SPL_mod->select_z_getpsn_byjob("'" . $cjob . "'");
         $rs_merg = [];
-        foreach ($rspsn as  $r) {
+        foreach ($rspsn as $r) {
             $apsn[] = $r['PPSN1_PSNNO'];
         }
         if (count($rsMSPP) == 0) {
@@ -5741,7 +5726,7 @@ class SPL extends CI_Controller
             }
         }
         $rs = $this->SPL_mod->select_xppsn2_byvar_partin(['PPSN2_DOCNO' => $cdocno], $thepart, $apsn);
-        #FILTER MCZ		
+        #FILTER MCZ
         $rsbymcz = $this->SPL_mod->select_xppsn2_byvar_(['PPSN2_MCZ' => $cmcz], $apsn);
         $rsbyitemname = $this->SPL_mod->select_xppsn2_byvar_like(['MITM_ITMD1' => $citemname], $apsn);
         $rs_merg = array_merge($rs, $rsbymcz, $rsbyitemname);
@@ -5773,7 +5758,7 @@ class SPL extends CI_Controller
         $apsn = [];
         $rspsn = $this->SPL_mod->select_z_getpsn_byjob("'" . $cjob . "'");
         $rs_merg = [];
-        foreach ($rspsn as  $r) {
+        foreach ($rspsn as $r) {
             $apsn[] = $r['PPSN1_PSNNO'];
         }
         if (count($rsMSPP) == 0) {
@@ -5795,7 +5780,7 @@ class SPL extends CI_Controller
             }
         }
         $rs = $this->SPL_mod->select_xppsn2_byvar_partin(['PPSN2_DOCNO' => $cdocno, 'PPSN2_SUBPN !=' => $cmpart], $thepart, $apsn);
-        #FILTER MCZ		
+        #FILTER MCZ
         $rsbymcz = $this->SPL_mod->select_xppsn2_byvar_(['PPSN2_MCZ' => $cmcz, 'PPSN2_SUBPN !=' => $cmpart], $apsn);
         $rsbyitemname = $this->SPL_mod->select_xppsn2_byvar_like_withException(['MITM_ITMD1' => $citemname], $apsn, [$cmpart]);
         $rs_merg = array_merge($rs, $rsbymcz, $rsbyitemname);
@@ -5826,7 +5811,7 @@ class SPL extends CI_Controller
     {
         $this->checkSession();
         date_default_timezone_set('Asia/Jakarta');
-        $currrtime     = date('Y-m-d H:i:s');
+        $currrtime = date('Y-m-d H:i:s');
         $docno = $this->input->post('docno');
         $line = $this->input->post('line');
         $myar = [];
@@ -5836,7 +5821,7 @@ class SPL extends CI_Controller
             if ($this->SPL_mod->delete_partreq_by_filter(['SPL_DOC' => $docno, 'SPL_LINEDATA' => $line])) {
                 $myar[] = ['cd' => 1, 'msg' => 'OK'];
                 $this->LOGSER_mod->insert_([
-                    'LOGSER_KEYS' => '{SPL_DOC:' . $docno . ',SPL_LINEDATA:' . $line . '}', 'LOGSER_DT' =>  $currrtime, 'LOGSER_USRID' => $this->session->userdata('nama')
+                    'LOGSER_KEYS' => '{SPL_DOC:' . $docno . ',SPL_LINEDATA:' . $line . '}', 'LOGSER_DT' => $currrtime, 'LOGSER_USRID' => $this->session->userdata('nama'),
                 ]);
             } else {
                 $myar[] = ['cd' => 0, 'msg' => 'Could not delete, because we could not find the data'];
@@ -5861,7 +5846,7 @@ class SPL extends CI_Controller
         $ppsn = $this->input->get('ppsn');
         $rs = $this->SPL_mod->select_all_ppsn2(
             [
-                'RTRIM(PPSN2_MCZ) PPSN2_MCZ', 'RTRIM(PPSN2_MC) PPSN2_MC', 'RTRIM(PPSN2_SUBPN) PPSN2_SUBPN', 'RTRIM(MITM_SPTNO) MITM_SPTNO'
+                'RTRIM(PPSN2_MCZ) PPSN2_MCZ', 'RTRIM(PPSN2_MC) PPSN2_MC', 'RTRIM(PPSN2_SUBPN) PPSN2_SUBPN', 'RTRIM(MITM_SPTNO) MITM_SPTNO',
             ],
             ['PPSN2_PSNNO' => $ppsn]
         );
@@ -5888,7 +5873,7 @@ class SPL extends CI_Controller
         if ($this->session->userdata('gid') == "MSPV" || $this->session->userdata('gid') == "QACT") {
             $ret = $this->SPL_mod->updatebyId(
                 ['SPL_APPRV_BY' => $userid, 'SPL_APPRV_TM' => $currrtime],
-                ['SPL_DOC' => $doc, 'SPL_APPRV_BY' => NULL]
+                ['SPL_DOC' => $doc, 'SPL_APPRV_BY' => null]
             );
             if ($ret > 0) {
                 $myar[] = ['cd' => 1, 'msg' => 'Approved'];
@@ -5909,7 +5894,7 @@ class SPL extends CI_Controller
         die('{"data":' . json_encode($rs) . '}');
     }
 
-    function outstanding()
+    public function outstanding()
     {
         header('Content-Type: application/json');
         $psnnum = $this->input->get('psnnum');
@@ -5917,11 +5902,11 @@ class SPL extends CI_Controller
         die(json_encode(['data' => $rs]));
     }
 
-    function savereference()
+    public function savereference()
     {
         header('Content-Type: application/json');
         date_default_timezone_set('Asia/Jakarta');
-        $currrtime     = date('Y-m-d H:i:s');
+        $currrtime = date('Y-m-d H:i:s');
         $psnnum = $this->input->post('psnnum');
         $confirmdate = $this->input->post('confirmdate');
         $a_r_part = $this->input->post('a_r_part');
@@ -5944,7 +5929,7 @@ class SPL extends CI_Controller
                 if ($this->SPLREFF_mod->check_Primary(['SPLREFF_DOC' => $psnnum, 'SPLREFF_LINE' => $a_r_line[$i]])) {
                 } else {
                     $datas[] = [
-                        'SPLREFF_DOC' => $psnnum, 'SPLREFF_REQ_PART' => $a_r_part[$i], 'SPLREFF_REQ_QTY' => str_replace(',', '', $a_r_qty[$i]), 'SPLREFF_ITMCAT' => $a_r_category[$i], 'SPLREFF_LINEPRD' => $a_r_lineprd[$i], 'SPLREFF_FEDR' => $a_r_fedr[$i], 'SPLREFF_MCZ' => $a_r_mcz[$i], 'SPLREFF_ACT_PART' => $a_s_part[$i], 'SPLREFF_ACT_QTY' => str_replace(',', '', $a_s_qty[$i]), 'SPLREFF_ACT_LOTNUM' => $a_s_lot[$i], 'SPLREFF_LINE' => $rLine, 'SPLREFF_DATE' => $confirmdate, 'SPLREFF_CREATEDAT' => $currrtime, 'SPLREFF_CREATEDBY' => $this->session->userdata('nama')
+                        'SPLREFF_DOC' => $psnnum, 'SPLREFF_REQ_PART' => $a_r_part[$i], 'SPLREFF_REQ_QTY' => str_replace(',', '', $a_r_qty[$i]), 'SPLREFF_ITMCAT' => $a_r_category[$i], 'SPLREFF_LINEPRD' => $a_r_lineprd[$i], 'SPLREFF_FEDR' => $a_r_fedr[$i], 'SPLREFF_MCZ' => $a_r_mcz[$i], 'SPLREFF_ACT_PART' => $a_s_part[$i], 'SPLREFF_ACT_QTY' => str_replace(',', '', $a_s_qty[$i]), 'SPLREFF_ACT_LOTNUM' => $a_s_lot[$i], 'SPLREFF_LINE' => $rLine, 'SPLREFF_DATE' => $confirmdate, 'SPLREFF_CREATEDAT' => $currrtime, 'SPLREFF_CREATEDBY' => $this->session->userdata('nama'),
                     ];
                     $rLine++;
                 }
@@ -5958,7 +5943,7 @@ class SPL extends CI_Controller
         } else {
             for ($i = 0; $i < $c; $i++) {
                 $datas[] = [
-                    'SPLREFF_DOC' => $psnnum, 'SPLREFF_REQ_PART' => $a_r_part[$i], 'SPLREFF_REQ_QTY' => str_replace(',', '', $a_r_qty[$i]), 'SPLREFF_ITMCAT' => $a_r_category[$i], 'SPLREFF_LINEPRD' => $a_r_lineprd[$i], 'SPLREFF_FEDR' => $a_r_fedr[$i], 'SPLREFF_MCZ' => $a_r_mcz[$i], 'SPLREFF_ACT_PART' => $a_s_part[$i], 'SPLREFF_ACT_QTY' => str_replace(',', '', $a_s_qty[$i]), 'SPLREFF_ACT_LOTNUM' => $a_s_lot[$i], 'SPLREFF_LINE' => $i, 'SPLREFF_DATE' => $confirmdate, 'SPLREFF_CREATEDAT' => $currrtime, 'SPLREFF_CREATEDBY' => $this->session->userdata('nama')
+                    'SPLREFF_DOC' => $psnnum, 'SPLREFF_REQ_PART' => $a_r_part[$i], 'SPLREFF_REQ_QTY' => str_replace(',', '', $a_r_qty[$i]), 'SPLREFF_ITMCAT' => $a_r_category[$i], 'SPLREFF_LINEPRD' => $a_r_lineprd[$i], 'SPLREFF_FEDR' => $a_r_fedr[$i], 'SPLREFF_MCZ' => $a_r_mcz[$i], 'SPLREFF_ACT_PART' => $a_s_part[$i], 'SPLREFF_ACT_QTY' => str_replace(',', '', $a_s_qty[$i]), 'SPLREFF_ACT_LOTNUM' => $a_s_lot[$i], 'SPLREFF_LINE' => $i, 'SPLREFF_DATE' => $confirmdate, 'SPLREFF_CREATEDAT' => $currrtime, 'SPLREFF_CREATEDBY' => $this->session->userdata('nama'),
                 ];
             }
             if (count($datas)) {
@@ -5972,18 +5957,18 @@ class SPL extends CI_Controller
         foreach ($rstoITH as $r) {
             $cdoc = $r['SPLREFF_DOC'] . '|' . $r['SPLREFF_ITMCAT'] . '|' . $r['SPLREFF_LINEPRD'] . '|' . $r['SPLREFF_FEDR'];
             $rssave[] = [
-                'ITH_ITMCD' => $r['SPLREFF_ACT_PART'], 'ITH_WH' =>  $r['WHOUT'],
-                'ITH_DOC'     => $cdoc, 'ITH_DATE' => $r['SPLREFF_DATE'],
-                'ITH_FORM'     => 'OUT-WH-RM_R', 'ITH_QTY' => -(int)$r['TTLSCN'],
-                'ITH_USRID' =>  $this->session->userdata('nama'),
-                'ITH_LUPDT' => $r['SPLREFF_DATE'] . " 13:13:13"
+                'ITH_ITMCD' => $r['SPLREFF_ACT_PART'], 'ITH_WH' => $r['WHOUT'],
+                'ITH_DOC' => $cdoc, 'ITH_DATE' => $r['SPLREFF_DATE'],
+                'ITH_FORM' => 'OUT-WH-RM_R', 'ITH_QTY' => -(int) $r['TTLSCN'],
+                'ITH_USRID' => $this->session->userdata('nama'),
+                'ITH_LUPDT' => $r['SPLREFF_DATE'] . " 13:13:13",
             ];
             $rssave[] = [
-                'ITH_ITMCD' => $r['SPLREFF_ACT_PART'], 'ITH_WH' =>  $this->getWH_INC_SUP($r['SPL_BG']),
-                'ITH_DOC'     => $cdoc, 'ITH_DATE' => $r['SPLREFF_DATE'],
-                'ITH_FORM'     => 'INC-PRD-RM_R', 'ITH_QTY' => (int)$r['TTLSCN'],
-                'ITH_USRID' =>  $this->session->userdata('nama'),
-                'ITH_LUPDT' => $r['SPLREFF_DATE'] . " 13:13:13"
+                'ITH_ITMCD' => $r['SPLREFF_ACT_PART'], 'ITH_WH' => $this->getWH_INC_SUP($r['SPL_BG']),
+                'ITH_DOC' => $cdoc, 'ITH_DATE' => $r['SPLREFF_DATE'],
+                'ITH_FORM' => 'INC-PRD-RM_R', 'ITH_QTY' => (int) $r['TTLSCN'],
+                'ITH_USRID' => $this->session->userdata('nama'),
+                'ITH_LUPDT' => $r['SPLREFF_DATE'] . " 13:13:13",
             ];
         }
         if (count($rssave)) {
@@ -6069,7 +6054,7 @@ class SPL extends CI_Controller
     {
         date_default_timezone_set('Asia/Jakarta');
         header('Content-Type: application/json');
-        $currrtime     = date('Y-m-d H:i:s');
+        $currrtime = date('Y-m-d H:i:s');
         $bookid = $this->input->post('hbookid');
         $bookdate = $this->input->post('hbookdate');
         $bookdate_a = explode('-', $bookdate);
@@ -6100,7 +6085,7 @@ class SPL extends CI_Controller
                             'SPLBOOK_DATE' => $bookdate,
                             'SPLBOOK_LINE' => $lastline++,
                             'SPLBOOK_LUPDTD' => $currrtime,
-                            'SPLBOOK_USRID' => $this->session->userdata('nama')
+                            'SPLBOOK_USRID' => $this->session->userdata('nama'),
                         ];
                     }
                 }
@@ -6124,7 +6109,7 @@ class SPL extends CI_Controller
                         'SPLBOOK_DATE' => $bookdate,
                         'SPLBOOK_LINE' => ($i + 1),
                         'SPLBOOK_LUPDTD' => $currrtime,
-                        'SPLBOOK_USRID' => $this->session->userdata('nama')
+                        'SPLBOOK_USRID' => $this->session->userdata('nama'),
                     ];
                 }
             }
@@ -6135,7 +6120,7 @@ class SPL extends CI_Controller
                 $myar[] = ['cd' => 0, 'msg' => 'the PSN is already booked'];
             }
         }
-        ///ITH///		
+        ///ITH///
         $rs = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_DOC' => $bookid]);
         $this->ITH_mod->deletebyID(['ITH_DOC' => $bookid, 'ITH_FORM' => 'BOOK-SPL-1']);
         $ith_data = [];
@@ -6147,7 +6132,7 @@ class SPL extends CI_Controller
         }
         $rsbg = $this->SPL_mod->select_bg_psn($psnlist);
         foreach ($rs as $r) {
-            $wh = NULL;
+            $wh = null;
             foreach ($rsbg as $b) {
                 if ($r['SPLBOOK_SPLDOC'] == $b['SPL_DOC']) {
                     switch ($b['SPL_BG']) {
@@ -6188,7 +6173,7 @@ class SPL extends CI_Controller
                 'ITH_WH' => $wh,
                 'ITH_REMARK' => $r['SPLBOOK_SPLDOC'],
                 'ITH_LUPDT' => $bookdate . " 09:00:00",
-                'ITH_USRID' => $this->session->userdata('nama')
+                'ITH_USRID' => $this->session->userdata('nama'),
             ];
         }
         die(json_encode(['status' => $myar, 'data' => $ith_data]));
