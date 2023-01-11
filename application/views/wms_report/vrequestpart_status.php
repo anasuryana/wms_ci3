@@ -1,48 +1,59 @@
-<style> 
+<style>
 table td.kuning  {
-    background-color:yellow;    
+    background-color:yellow;
 }
 table td.merah {
     background-color: red;
 }
 table td.hijau {
-    background-color: greenyellow;    
+    background-color: greenyellow;
 }
+thead tr.first th,
+    thead tr.first td {
+        position: sticky;
+        top: 0;
+    }
+
+    thead tr.second th,
+    thead tr.second td {
+        position: sticky;
+        top: 26px;
+    }
 </style>
 <div style="padding: 10px">
     <div class="container-fluid">
         <div class="row" id="stapartreq_stack1">
             <div class="col-md-12 mb-1">
-                <div class="input-group input-group-sm">                    
-                    <span class="input-group-text" >Business Group</span>                    
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" >Business Group</span>
                     <select class="form-select" id="stapartreq_bisgrup">
                         <option value="">All</option>
-                        <?php 
-                        $todis = '';
-                        foreach($lgroup as $r){
-                            $todis .= '<option value="'.trim($r->MBSG_BSGRP).'">'.trim($r->MBSG_DESC).'</option>';
-                        }
-                        echo $todis;
-                        ?>
+                        <?php
+$todis = '';
+foreach ($lgroup as $r) {
+    $todis .= '<option value="' . trim($r->MBSG_BSGRP) . '">' . trim($r->MBSG_DESC) . '</option>';
+}
+echo $todis;
+?>
                     </select>
                     <button class="btn btn-primary" type="button" id="stapartreq_btn_simulate" onclick="stapartreq_btn_simulate_e_click()">All outstanding</button>
                 </div>
-            </div>            
+            </div>
         </div>
         <div class="row">
             <div class="col-md-12 mb-1">
                 <div class="table-responsive" id="stapartreq_divku">
                     <table id="stapartreq_tbl" class="table table-bordered table-sm table-hover" >
                         <thead class="table-light">
-                            <tr> 
-                                <th rowspan="2" class="align-middle">PSN</th> 
-                                <th rowspan="2" class="align-middle">Remark</th> 
+                            <tr class="first">
+                                <th rowspan="2" class="align-middle">PSN</th>
+                                <th rowspan="2" class="align-middle">Remark</th>
                                 <th colspan="1" class="align-middle text-center" >Category</th>
-                                <th rowspan="2" class="align-middle text-center">Approval</th> 
-                                <th rowspan="2" class="align-middle text-center"></th> 
+                                <th rowspan="2" class="align-middle text-center">Approval</th>
+                                <th rowspan="2" class="align-middle text-center"></th>
                             </tr>
-                            <tr> 
-                            <th class="align-middle text-center">_</th> 
+                            <tr class="second">
+                            <th class="align-middle text-center">_</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -50,20 +61,20 @@ table td.hijau {
                     </table>
                 </div>
             </div>
-        </div> 
+        </div>
     </div>
 </div>
 <div class="modal fade" id="stapartreq_ost">
     <div class="modal-dialog modal-lg">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Outstanding List</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
-        <div class="modal-body">  
+        <div class="modal-body">
             <div class="row">
                 <div class="col mb-1 text-end">
                     <span id="stapartreq_job_lblinfo_h" class="badge bg-info"></span>
@@ -74,7 +85,7 @@ table td.hijau {
                     <div class="table-responsive" id="stapartreq_job_divku">
                         <table id="stapartreq_tbljob" class="table table-hover table-sm table-bordered">
                             <thead class="table-light">
-                                <tr>                   
+                                <tr>
                                     <th rowspan="2" class="align-middle">Part Code</th>
                                     <th rowspan="2" class="align-middle">Part Name</th>
                                     <th class="text-center" colspan="2">QTY</th>
@@ -84,7 +95,7 @@ table td.hijau {
                                     <th class="text-end">Scanned</th>
                                 </tr>
                             </thead>
-                            <tbody>                            
+                            <tbody>
                             </tbody>
                         </table>
                     </div>
@@ -95,8 +106,8 @@ table td.hijau {
     </div>
 </div>
 <script>
-    $("#stapartreq_divku").css('height', $(window).height()   
-    -document.getElementById('stapartreq_stack1').offsetHeight     
+    $("#stapartreq_divku").css('height', $(window).height()
+    -document.getElementById('stapartreq_stack1').offsetHeight
     -100);
     function pareq_btnshow_approve(pdoc){
         if(wms_usergroupid=="MSPV" || wms_usergroupid=="QACT" ){
@@ -121,15 +132,15 @@ table td.hijau {
         } else {
             alertify.warning("You could not approve this document");
             return
-        }        
+        }
     }
     function stapartreq_btn_simulate_e_click(){
         document.getElementById('stapartreq_btn_simulate').disabled = true;
         document.getElementById('stapartreq_btn_simulate').innerHTML = "<i class='fas fa-spinner fa-spin'></i>";
         let bg = document.getElementById('stapartreq_bisgrup').value;
         $("#stapartreq_tbl tbody").empty();
-        $.ajax({            
-            url: "<?=base_url('SPL/get_partreq_status')?>",            
+        $.ajax({
+            url: "<?=base_url('SPL/get_partreq_status')?>",
             dataType: "json",
             data: {bg : bg},
             success: function (response) {
@@ -141,7 +152,7 @@ table td.hijau {
                 let mtabel = document.getElementById("stapartreq_tbl");
                 let cln = mtabel.cloneNode(true);
                 myfrag.appendChild(cln);
-                let tabell = myfrag.getElementById("stapartreq_tbl");                    
+                let tabell = myfrag.getElementById("stapartreq_tbl");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let newrow, newcell, newText;
                 tableku2.innerHTML='';
@@ -180,7 +191,7 @@ table td.hijau {
                     newcell.innerHTML = stssymbol;
 
                     newcell = newrow.insertCell(3);
-                    
+
                     newcell.classList.add('text-center');
                     newcell.innerHTML = response.data[i].SPL_APPRV_TM ? 'Approved' : '?'
                     if(!response.data[i].SPL_APPRV_TM){
@@ -207,11 +218,11 @@ table td.hijau {
                 document.getElementById('stapartreq_btn_simulate').innerHTML = "All outstanding";
                 alertify.error(xthrow);
             }
-        });        
+        });
     }
 
     function stapartreq_printki(pdoc){
-        if(confirm("Are you sure ?")){            
+        if(confirm("Are you sure ?")){
             Cookies.set('CKPSI_DPSN', pdoc, {expires:365});
             window.open("<?=base_url('SPL/printkit_all')?>",'_blank');
         }
@@ -232,7 +243,7 @@ table td.hijau {
                 let mtabel = document.getElementById("stapartreq_tbljob");
                 let cln = mtabel.cloneNode(true);
                 myfrag.appendChild(cln);
-                let tabell = myfrag.getElementById("stapartreq_tbljob");                    
+                let tabell = myfrag.getElementById("stapartreq_tbljob");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let newrow, newcell, newText;
                 tableku2.innerHTML='';
@@ -250,7 +261,7 @@ table td.hijau {
                     newcell.innerHTML = numeral(response.data[i].SCN).format(',')
                 }
                 mydes.innerHTML='';
-                mydes.appendChild(myfrag);                
+                mydes.appendChild(myfrag);
             }
         });
     }
