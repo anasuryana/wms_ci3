@@ -7,7 +7,7 @@
                     <button class="btn btn-primary" id="pnd_btn_save"><i class="fas fa-save"></i> </button>
                     <button class="btn btn-primary" id="pnd_btn_print"><i class="fas fa-print"></i> </button>
                 </div>
-            </div>            
+            </div>
         </div>
         <div class="row">
             <div class="col-md-6 mb-1">
@@ -18,8 +18,8 @@
                 </div>
             </div>
             <div class="col-md-6 mb-1">
-                <div class="input-group input-group-sm mb-1">                    
-                    <label class="input-group-text">Date</label>                    
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text">Date</label>
                     <input type="text" class="form-control" id="pnd_txt_date" readonly>
                 </div>
             </div>
@@ -30,14 +30,14 @@
                     <button class="btn btn-primary" id="pnd_btnplus" onclick="pnd_btnadd()"><i class="fas fa-plus"></i></button>
                     <button class="btn btn-warning" id="pnd_btnmins"><i class="fas fa-minus"></i></button>
                 </div>
-            </div>           
-        </div>       
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12 mb-1">
                 <div class="table-responsive" id="pnd_divku">
                     <table id="pnd_tbl" class="table table-sm table-striped table-hover table-bordered" style="width:100%;cursor:pointer">
                         <thead class="table-light">
-                            <tr>                                
+                            <tr>
                                 <th>No</th>
                                 <th>Item Code</th>
                                 <th>Lotno</th>
@@ -62,34 +62,27 @@
 </div>
 <div class="modal fade" id="pnd_MOD">
     <div class="modal-dialog modal-xl">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Pending Document List</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
                 <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="pnd_txtsearch" onkeypress="pnd_e_search(event)" maxlength="15" onfocus="this.select()" required placeholder="...">                        
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Search</span>
+                        <select id="pnd_itm_srchby" onchange="pnd_e_fokus()" class="form-select">
+                            <option value="no">Document No</option>
+                            <option value="rmrk">Remarks</option>
+                        </select>
+                        <input type="text" class="form-control" id="pnd_txtsearch" onkeypress="pnd_e_search(event)" maxlength="15" onfocus="this.select()" required placeholder="...">
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search by</span>                        
-                        <select id="pnd_itm_srchby" onchange="pnd_e_fokus()" class="form-select">
-                            <option value="no">Document No</option>
-                            <option value="rmrk">Remarks</option>                            
-                        </select>                  
-                    </div>
-                </div>
-            </div>            
             <div class="row">
                 <div class="col mb-1 text-right">
                     <span class="badge bg-info" id="pnd_lblinfo"></span>
@@ -113,7 +106,7 @@
                     </div>
                 </div>
             </div>
-        </div>             
+        </div>
       </div>
     </div>
 </div>
@@ -128,12 +121,12 @@
         autoclose:true
     });
     $("#pnd_txt_date").datepicker('update', '<?=$dt?>');
-    pnd_e_col1 = function (e) { 
+    pnd_e_col1 = function (e) {
         e = e || window.event;
         var keyCode = e.keyCode || e.which,
         arrow = {left: 37, up: 38, right: 39, down: 40 };
-        
-        if(e.shiftKey && keyCode==9){            
+
+        if(e.shiftKey && keyCode==9){
             if(pnd_tblcolindexsel>1){
                 pnd_tblcolindexsel--;
             }
@@ -149,7 +142,7 @@
                     }
             }
         }
-        if (e.ctrlKey) {            
+        if (e.ctrlKey) {
             switch (keyCode) {
                 case arrow.up:
                     if(pnd_tblrowindexsel>0){
@@ -158,16 +151,16 @@
                     }
                     break;
                 case arrow.down:
-                    if(pnd_tblrowindexsel<(pnd_tbllength-1)){                        
-                        let tables = $("#pnd_tbl tbody");                        
-                        tables.find('tr').eq(++pnd_tblrowindexsel).find('td').eq(pnd_tblcolindexsel).find('input').focus();                        
+                    if(pnd_tblrowindexsel<(pnd_tbllength-1)){
+                        let tables = $("#pnd_tbl tbody");
+                        tables.find('tr').eq(++pnd_tblrowindexsel).find('td').eq(pnd_tblcolindexsel).find('input').focus();
                     }
                     break;
                 case 78:///N
                     pnd_btnadd();
                     break;
                 case 68://D
-                    $("#pnd_tbl tbody > tr:last").remove();pnd_renumberrow();                    
+                    $("#pnd_tbl tbody > tr:last").remove();pnd_renumberrow();
                     break;
             }
         }
@@ -177,17 +170,17 @@
         '<td></td>'+
         '<td><input type="text" class="form-control form-control-sm" onkeydown="pnd_e_col1(event)" onpaste="pnd_e_pastecol1(event)" maxlength="50"></td>'+
         '<td><input type="text" class="form-control form-control-sm" onkeydown="pnd_e_col1(event)" onpaste="pnd_e_pastecol1(event)" maxlength="50"></td>'+
-        '<td><input type="text" class="form-control form-control-sm" onkeydown="pnd_e_col1(event)" onpaste="pnd_e_pastecol1(event)" style="text-align: right"></td>'+         
+        '<td><input type="text" class="form-control form-control-sm" onkeydown="pnd_e_col1(event)" onpaste="pnd_e_pastecol1(event)" style="text-align: right"></td>'+
         '<td><input type="text" class="form-control form-control-sm" onkeydown="pnd_e_col1(event)" onpaste="pnd_e_pastecol1(event)" maxlength="50"></td>'+
         '</tr>');
-        pnd_tbllength = $('#pnd_tbl tbody > tr').length;    
+        pnd_tbllength = $('#pnd_tbl tbody > tr').length;
         // pnd_tblrowindexsel = pnd_tbllength-1;
-        pnd_renumberrow();   
+        pnd_renumberrow();
     }
 
     function pnd_renumberrow(){
         let rows =1;
-        let table = $("#pnd_tbl tbody");       
+        let table = $("#pnd_tbl tbody");
         table.find('tr').each(function (i) {
             let $tds = $(this).find('td');
                 $tds.eq(0).text(rows);
@@ -195,7 +188,7 @@
         });
     }
     function pnd_e_pastecol1(event){
-        let datapas = event.clipboardData.getData('text/plain');        
+        let datapas = event.clipboardData.getData('text/plain');
         let adatapas = datapas.split('\n');
         let ttlrowspasted = 0;
         for(let c=0;c<adatapas.length;c++){
@@ -205,7 +198,7 @@
         }
         let table = $("#pnd_tbl tbody");
         let incr =0;
-        if((pnd_tbllength-pnd_tblrowindexsel)<ttlrowspasted){       
+        if((pnd_tbllength-pnd_tblrowindexsel)<ttlrowspasted){
             let needRows = ttlrowspasted - (pnd_tbllength-pnd_tblrowindexsel);
             for(let i = 0;i<needRows;i++){
                 pnd_btnadd();
@@ -216,11 +209,11 @@
             let ttlcol = mcol.length;
             for(let k=0;(k<ttlcol) && (k<5);k++){
                 table.find('tr').eq((i+pnd_tblrowindexsel)).find('td').eq((k+pnd_tblcolindexsel)).find('input').val(mcol[k].trim());
-            }                
+            }
         }
         event.preventDefault();
     }
-    $("#pnd_btn_new").click(function (e) {         
+    $("#pnd_btn_new").click(function (e) {
         $("#pnd_tbl tbody").empty();
         document.getElementById('pnd_txt_doc').value='';
     });
@@ -242,31 +235,31 @@
             });
             table.find('tr').eq(pnd_tblrowindexsel).remove();
             pnd_renumberrow();
-        }        
+        }
     });
-    $('#pnd_tbl tbody').on( 'click', 'tr', function () {  
+    $('#pnd_tbl tbody').on( 'click', 'tr', function () {
         pnd_tblrowindexsel = $(this).index();
-        if ($(this).hasClass('table-active') ) {	
+        if ($(this).hasClass('table-active') ) {
             $(this).removeClass('table-active');
-        } else {                    			
+        } else {
             $('#pnd_tbl tbody tr.table-active').removeClass('table-active');
             $(this).addClass('table-active');
         }
     });
-    $('#pnd_tbl tbody').on( 'click', 'td', function () {            
-        pnd_tblcolindexsel = $(this).index();         
+    $('#pnd_tbl tbody').on( 'click', 'td', function () {
+        pnd_tblcolindexsel = $(this).index();
     });
-    $("#pnd_btn_save").click(function (e) { 
+    $("#pnd_btn_save").click(function (e) {
         let konf = confirm('Are you sure want to save ?');
         if(konf){
-            let mdoc = document.getElementById('pnd_txt_doc').value;   
+            let mdoc = document.getElementById('pnd_txt_doc').value;
             let mdate = document.getElementById('pnd_txt_date').value;
             let mtbl = document.getElementById('pnd_tbl');
             let mtbltr = mtbl.getElementsByTagName('tr');
             let ttlrows = mtbltr.length;
             let mitem,mlot, mqty, mremark;
             let aitem = [], aqty = [], aremark = [], alot= [];
-            if(ttlrows>1){                
+            if(ttlrows>1){
                 for(let i=1;i<ttlrows;i++){
                     mitem = mtbl.rows[i].cells[1].getElementsByTagName('input')[0].value;
                     mlot = mtbl.rows[i].cells[2].getElementsByTagName('input')[0].value;
@@ -278,11 +271,11 @@
                             alot.push(mlot);
                             aitem.push(mitem);
                             aremark.push(mremark);
-                        }                        
+                        }
                     }
                 }
-                if(aitem.length>0){                    
-                    if(mdoc!=''){                        
+                if(aitem.length>0){
+                    if(mdoc!=''){
                         $.ajax({
                             type: "post",
                             url: "<?=base_url('PND/edit')?>",
@@ -292,7 +285,7 @@
                                 if(response.data[0].cd=='0'){
                                     alertify.warning(response.data[0].msg);
                                 } else{
-                                    alertify.message(response.data[0].msg);                                    
+                                    alertify.message(response.data[0].msg);
                                 }
                             }, error:function(xhr,xopt,xthrow){
                                 alertify.error(xthrow);
@@ -306,7 +299,7 @@
                             dataType: "json",
                             success: function (response) {
                                 if(response.data[0].cd=='0'){
-                                    alertify.warning(response.data[0].msg);                                
+                                    alertify.warning(response.data[0].msg);
                                 } else{
                                     alertify.message(response.data[0].msg);
                                     document.getElementById('pnd_txt_doc').value=response.data[0].ref;
@@ -316,12 +309,12 @@
                                 alertify.error(xthrow);
                             }
                         });
-                    }                    
+                    }
                 } else {
                     alertify.message('no data to be processed');
                 }
             }
-        }                 
+        }
     });
     $("#pnd_btnmod").click(function (e) {
         $("#pnd_MOD").modal('show');
@@ -330,12 +323,12 @@
         document.getElementById('pnd_txtsearch').focus();
     }
     $("#pnd_MOD").on('shown.bs.modal', function(){
-        document.getElementById('pnd_txtsearch').focus();        
+        document.getElementById('pnd_txtsearch').focus();
     });
     function pnd_e_search(e){
         if(e.which==13){
             let msearch = document.getElementById('pnd_txtsearch').value;
-            let mby = document.getElementById('pnd_itm_srchby').value;           
+            let mby = document.getElementById('pnd_itm_srchby').value;
             document.getElementById('pnd_lblinfo').innerText ='please wait...';
             $.ajax({
                 type: "get",
@@ -344,7 +337,7 @@
                 dataType: "json",
                 success: function (response) {
                     let ttlrows = response.length;
-                    let tohtml = '';                    
+                    let tohtml = '';
                     for(let i=0;i<ttlrows;i++){
                         tohtml += "<tr style='cursor:pointer'>"+
                         "<td>"+response[i].PND_DOC+"</td>"+
@@ -353,7 +346,7 @@
                         "<td>"+response[i].REMARK+"</td>"+
                         "</tr>";
                     }
-                    $("#pnd_tblsaved tbody").html(tohtml);                    
+                    $("#pnd_tblsaved tbody").html(tohtml);
                     document.getElementById('pnd_lblinfo').innerText = ttlrows + ' row(s) found';
                 }, error: function(xhr, xopt, xthrow){
                     alertify.error(xthrow);
@@ -362,7 +355,7 @@
         }
     }
 
-    $('#pnd_tblsaved tbody').on( 'click', 'tr', function () { 
+    $('#pnd_tblsaved tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('table-active') ) {
             $(this).removeClass('table-active');
         } else {
@@ -394,7 +387,7 @@
                     '<td><input type="text" class="form-control form-control-sm" onkeydown="pnd_e_col1(event)" onpaste="pnd_e_pastecol1(event)" value="'+response[i].PND_REMARK+'"></td>'+
                     "</tr>";
                 }
-                $("#pnd_tbl tbody").html(tohtml);                    
+                $("#pnd_tbl tbody").html(tohtml);
                 document.getElementById('pnd_lblinfo').innerText = ttlrows + ' row(s) found';
                 pnd_tbllength = $('#pnd_tbl tbody > tr').length;
             }, error: function(xhr, xopt, xthrow){

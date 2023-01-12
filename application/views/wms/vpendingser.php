@@ -7,19 +7,19 @@
                     <button class="btn btn-primary" id="pndser_btn_save"><i class="fas fa-save"></i> </button>
                     <button class="btn btn-primary" id="pndser_btn_print"><i class="fas fa-print"></i> </button>
                 </div>
-            </div>            
+            </div>
         </div>
         <div class="row">
             <div class="col-md-6 mb-1">
-                <div class="input-group input-group-sm mb-1">                    
-                    <label class="input-group-text">Document</label>                    
-                    <input type="text" class="form-control" id="pndser_txt_doc" placeholder="<<auto number>>" readonly>                    
-                    <button class="btn btn-primary" id="pndser_btnmod"><i class="fas fa-search"></i></button>                    
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text">Document</label>
+                    <input type="text" class="form-control" id="pndser_txt_doc" placeholder="<<auto number>>" readonly>
+                    <button class="btn btn-primary" id="pndser_btnmod"><i class="fas fa-search"></i></button>
                 </div>
             </div>
             <div class="col-md-6 mb-1">
-                <div class="input-group input-group-sm mb-1">                    
-                    <label class="input-group-text">Date</label>                    
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text">Date</label>
                     <input type="text" class="form-control" id="pndser_txt_date" readonly>
                 </div>
             </div>
@@ -30,23 +30,23 @@
                     <button class="btn btn-primary" id="pndser_btnplus" onclick="pndser_btnadd()"><i class="fas fa-plus"></i></button>
                     <button class="btn btn-warning" id="pndser_btnmins"><i class="fas fa-minus"></i></button>
                 </div>
-            </div>           
-        </div>       
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12 mb-1">
                 <div class="table-responsive" id="pndser_divku">
                     <table id="pndser_tbl" class="table table-sm table-striped table-hover table-bordered" style="width:100%;cursor:pointer">
                         <thead class="table-light">
-                            <tr>                                
+                            <tr>
                                 <th>No</th>
                                 <th>ID</th>
                                 <th>Item Code</th>
                                 <th>Document Reference</th>
-                                <th class="text-right">QTY</th>                         
-                                <th>Remark</th>                         
+                                <th class="text-right">QTY</th>
+                                <th>Remark</th>
                             </tr>
                         </thead>
-                        <tbody>                           
+                        <tbody>
                         </tbody>
                     </table>
                 </div>
@@ -56,34 +56,27 @@
 </div>
 <div class="modal fade" id="pndser_MOD">
     <div class="modal-dialog modal-xl">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Pending Document List</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
                 <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="pndser_txtsearch" onkeypress="pndser_e_search(event)" maxlength="15" onfocus="this.select()" required placeholder="...">                        
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Search</span>
+                        <select id="pndser_itm_srchby" onchange="pndser_e_fokus()" class="form-select">
+                            <option value="no">Document No</option>
+                            <option value="rmrk">Remarks</option>
+                        </select>
+                        <input type="text" class="form-control" id="pndser_txtsearch" onkeypress="pndser_e_search(event)" maxlength="15" onfocus="this.select()" required placeholder="...">
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search by</span>                        
-                        <select id="pndser_itm_srchby" onchange="pndser_e_fokus()" class="form-select">
-                            <option value="no">Document No</option>
-                            <option value="rmrk">Remarks</option>                            
-                        </select>                  
-                    </div>
-                </div>
-            </div>            
             <div class="row">
                 <div class="col mb-1 text-right">
                     <span class="badge bg-info" id="pndser_lblinfo"></span>
@@ -107,53 +100,48 @@
                     </div>
                 </div>
             </div>
-        </div>             
+        </div>
       </div>
     </div>
 </div>
 
 <div class="modal fade" id="pndser_MODprep">
     <div class="modal-dialog modal-xl">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Item List</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text" >Warehouse</span>                        
+                        <span class="input-group-text" >Warehouse</span>
                         <select id="pndser_wh" class="form-select">
-                           <?php 
-                           $todis = '';
-                           foreach($lwh as $r){
-                            $todis .= '<option value="'.$r['MSTLOCG_ID'].'">'.$r['MSTLOCG_NM'].'</option>';
-                           }
-                           echo $todis;
-                           ?>
+                           <?php
+$todis = '';
+foreach ($lwh as $r) {
+    $todis .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . '</option>';
+}
+echo $todis;
+?>
                         </select>
                     </div>
-                </div>
-                <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search by</span>                        
-                        <select id="pndser_itmlist_srchby"  class="form-select">
-                            <option value="id">ID</option>
-                            <option value="cd">Item Code</option>
-                            <option value="doc">Job Number</option>                            
-                        </select>                  
-                    </div>                    
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="pndser_txtsearchitem" maxlength="16" onfocus="this.select()" required placeholder="...">                        
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Search</span>
+                        <select id="pndser_itmlist_srchby"  class="form-select">
+                            <option value="id">ID</option>
+                            <option value="cd">Item Code</option>
+                            <option value="doc">Job Number</option>
+                        </select>
+                        <input type="text" class="form-control" id="pndser_txtsearchitem" maxlength="16" onfocus="this.select()" required placeholder="...">
                     </div>
                 </div>
             </div>
@@ -161,7 +149,7 @@
                 <div class="col-md-12 mb-1 text-center">
                     <span class="badge bg-info" id="pndser_lbltbl"></span>
                 </div>
-            </div>    
+            </div>
             <div class="row">
                 <div class="col mb-1 text-center">
                     <button class="btn btn-sm btn-outline-primary" id="pndser_btngetsel">Get selected list</button>
@@ -186,14 +174,14 @@
                     </div>
                 </div>
             </div>
-        </div>             
+        </div>
       </div>
     </div>
 </div>
 <script>
     var pndser_tbllength         = 1;
     var pndser_tblrowindexsel    = '';
-    var pndser_tblcolindexsel    = '';   
+    var pndser_tblcolindexsel    = '';
     var pndser_ar_item_ser = [];
     var pndser_ar_item_cd = [];
     var pndser_ar_item_job = [];
@@ -206,20 +194,20 @@
     });
     $("#pndser_txt_date").datepicker('update', '<?=$dt?>');
     $("#pndser_MODprep").on('shown.bs.modal', function(){
-        document.getElementById('pndser_txtsearchitem').focus();        
+        document.getElementById('pndser_txtsearchitem').focus();
     });
-    $("#pndser_wh").change(function (e) { 
-        document.getElementById('pndser_txtsearchitem').focus();        
+    $("#pndser_wh").change(function (e) {
+        document.getElementById('pndser_txtsearchitem').focus();
     });
-    $("#pndser_itmlist_srchby").change(function (e) { 
-        document.getElementById('pndser_txtsearchitem').focus();        
+    $("#pndser_itmlist_srchby").change(function (e) {
+        document.getElementById('pndser_txtsearchitem').focus();
     });
     function pndser_btnadd(){
         $("#pndser_MODprep").modal('show');
-        pndser_renumberrow();   
+        pndser_renumberrow();
     }
 
-    $("#pndser_txtsearchitem").keypress(function (e) { 
+    $("#pndser_txtsearchitem").keypress(function (e) {
         if(e.which==13){
             document.getElementById('pndser_lbltbl').innerHTML = 'Please wait... <i class="fas fa-spinner fa-spin"></i>';
             let msearch = $(this).val();
@@ -244,10 +232,10 @@
                     tableku2.innerHTML='';
                     let tominqty = 0;
                     let tempqty = 0;
-                    let todisqty = 0;  
+                    let todisqty = 0;
                     for (let i = 0; i<ttlrows; i++){
                         newrow = tableku2.insertRow(-1);
-                        newcell = newrow.insertCell(0);            
+                        newcell = newrow.insertCell(0);
                         newText = document.createElement('input');
                         newText.setAttribute("type", "checkbox");
                         newText.classList.add("form-check-input");
@@ -275,7 +263,7 @@
                         }
                     }
                     mckall.onclick = function(){clooptable()};
-                    mydes.innerHTML='';                            
+                    mydes.innerHTML='';
                     mydes.appendChild(myfrag);
                     document.getElementById('pndser_lbltbl').innerHTML = '';
                 }, error:function(xhr,xopt,xthrow){
@@ -287,15 +275,15 @@
 
     function pndser_renumberrow(){
         let rows =1;
-        let table = $("#pndser_tbl tbody");       
+        let table = $("#pndser_tbl tbody");
         table.find('tr').each(function (i) {
             let $tds = $(this).find('td');
                 $tds.eq(0).text(rows);
             rows++;
         });
     }
-    
-    $("#pndser_btn_new").click(function (e) {         
+
+    $("#pndser_btn_new").click(function (e) {
         $("#pndser_tbl tbody").empty();
         $("#pndsermod_tblitem tbody").empty();
         document.getElementById('pndser_txt_doc').value='';
@@ -311,8 +299,8 @@
             return;
         }
         let konf = confirm("Are you sure want to delete ?");
-        
-        if(konf){            
+
+        if(konf){
             let table = $("#pndser_tbl tbody");
             let mitem = table.find('tr').eq(pndser_tblrowindexsel).find('td').eq(1).text();
             if(!pndser_editmode){
@@ -340,27 +328,27 @@
                     }
                 });
             }
-            
-            
-        }        
+
+
+        }
     });
-    $('#pndser_tbl tbody').on( 'click', 'tr', function () {          
+    $('#pndser_tbl tbody').on( 'click', 'tr', function () {
         pndser_tblrowindexsel =$(this).index();
         console.log(pndser_tblrowindexsel);
-        if ($(this).hasClass('table-active') ) {	
+        if ($(this).hasClass('table-active') ) {
             $(this).removeClass('table-active');
         } else {
             $('#pndser_tbl tbody tr.table-active').removeClass('table-active');
             $(this).addClass('table-active');
         }
     });
-    $('#pndser_tbl tbody').on( 'click', 'td', function () {            
+    $('#pndser_tbl tbody').on( 'click', 'td', function () {
         pndser_tblcolindexsel = $(this).index();
     });
-    $("#pndser_btn_save").click(function (e) { 
+    $("#pndser_btn_save").click(function (e) {
         let konf = confirm('Are you sure want to save ?');
         if(konf){
-            let mdoc = document.getElementById('pndser_txt_doc').value;   
+            let mdoc = document.getElementById('pndser_txt_doc').value;
             let mdate = document.getElementById('pndser_txt_date').value;
             let mtbl = document.getElementById('pndser_tbl');
             let mtbltr = mtbl.getElementsByTagName('tr');
@@ -368,7 +356,7 @@
             let mitem,mlot, mqty, mser, mremark;
             let aitem = [], aqty = [], aser = [], alot= [];
             let aremark = [];
-            if(ttlrows>1){                
+            if(ttlrows>1){
                 for(let i=1;i<ttlrows;i++){
                     mser = mtbl.rows[i].cells[1].innerText;
                     mitem = mtbl.rows[i].cells[2].innerText;
@@ -382,12 +370,12 @@
                             aitem.push(mitem);
                             aser.push(mser);
                             aremark.push(mremark);
-                        }                        
+                        }
                     }
                 }
-                if(aitem.length>0){ 
+                if(aitem.length>0){
                     if(mdoc!=''){
-                        $("#pndsermod_tblitem tbody").empty();               
+                        $("#pndsermod_tblitem tbody").empty();
                         $.ajax({
                             type: "post",
                             url: "<?=base_url('PND/editser')?>",
@@ -397,7 +385,7 @@
                                 if(response.data[0].cd=='0'){
                                     alertify.warning(response.data[0].msg);
                                 } else{
-                                    alertify.message(response.data[0].msg);                                    
+                                    alertify.message(response.data[0].msg);
                                 }
                             }, error:function(xhr,xopt,xthrow){
                                 alertify.error(xthrow);
@@ -411,10 +399,10 @@
                             dataType: "json",
                             success: function (response) {
                                 if(response.data[0].cd=='0'){
-                                    alertify.warning(response.data[0].msg);                                
+                                    alertify.warning(response.data[0].msg);
                                 } else{
                                     alertify.message(response.data[0].msg);
-                                    document.getElementById('pndser_txt_doc').value=response.data[0].ref;                                    
+                                    document.getElementById('pndser_txt_doc').value=response.data[0].ref;
                                     alertify.message('Document of Pending is ready to be printed');
 
                                 }
@@ -422,12 +410,12 @@
                                 alertify.error(xthrow);
                             }
                         });
-                    }                    
+                    }
                 } else {
                     alertify.message('no data to be processed');
                 }
             }
-        }                 
+        }
     });
     $("#pndser_btnmod").click(function (e) {
         $("#pndser_MOD").modal('show');
@@ -436,12 +424,12 @@
         document.getElementById('pndser_txtsearch').focus();
     }
     $("#pndser_MOD").on('shown.bs.modal', function(){
-        document.getElementById('pndser_txtsearch').focus();        
+        document.getElementById('pndser_txtsearch').focus();
     });
     function pndser_e_search(e){
         if(e.which==13){
             let msearch = document.getElementById('pndser_txtsearch').value;
-            let mby = document.getElementById('pndser_itm_srchby').value;           
+            let mby = document.getElementById('pndser_itm_srchby').value;
             document.getElementById('pndser_lblinfo').innerText ='please wait...';
             $.ajax({
                 type: "get",
@@ -450,7 +438,7 @@
                 dataType: "json",
                 success: function (response) {
                     let ttlrows = response.length;
-                    let tohtml = '';                    
+                    let tohtml = '';
                     for(let i=0;i<ttlrows;i++){
                         tohtml += "<tr style='cursor:pointer'>"+
                         "<td>"+response[i].PNDSER_DOC+"</td>"+
@@ -459,7 +447,7 @@
                         "<td>"+response[i].REMARK+"</td>"+
                         "</tr>";
                     }
-                    $("#pndser_tblsaved tbody").html(tohtml);                    
+                    $("#pndser_tblsaved tbody").html(tohtml);
                     document.getElementById('pndser_lblinfo').innerText = ttlrows + ' row(s) found';
                 }, error: function(xhr, xopt, xthrow){
                     alertify.error(xthrow);
@@ -468,7 +456,7 @@
         }
     }
 
-    $('#pndser_tblsaved tbody').on( 'click', 'tr', function () { 
+    $('#pndser_tblsaved tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('table-active') ) {
             $(this).removeClass('table-active');
         } else {
@@ -501,7 +489,7 @@
                     '<td contenteditable="true" class="bg-white">'+response[i].PNDSER_REMARK+'</td>'+
                     "</tr>";
                 }
-                $("#pndser_tbl tbody").html(tohtml);                    
+                $("#pndser_tbl tbody").html(tohtml);
                 document.getElementById('pndser_lblinfo').innerText = ttlrows + ' row(s) found';
                 pndser_tbllength = $('#pndser_tbl tbody > tr').length;
                 pndser_editmode = true;
@@ -514,11 +502,11 @@
     $("#pndser_btn_print").click(function (e) {
         let pendingdoc = document.getElementById('pndser_txt_doc').value;
         Cookies.set('CKPNDDOCSER_NO', pendingdoc , {expires:365});
-        window.open("<?=base_url('printpendingser_doc')?>" ,'_blank');        
+        window.open("<?=base_url('printpendingser_doc')?>" ,'_blank');
     });
 
-    $("#pndser_btngetsel").click(function (e) { 
-        let tabell = document.getElementById("pndsermod_tblitem");                    
+    $("#pndser_btngetsel").click(function (e) {
+        let tabell = document.getElementById("pndsermod_tblitem");
         let tableku2 = tabell.getElementsByTagName("tbody")[0];
         let mrows = tableku2.getElementsByTagName("tr");
         let cktemp,ttlcek;
