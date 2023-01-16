@@ -369,6 +369,7 @@ class RCV_mod extends CI_Model
         $qry = "SELECT V1.*,COALESCE(TTLITEMIN,0) TTLITEMIN,ISNULL(RCV_HSCD,'') RCV_HSCD
         , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO FROM
         (select STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,COUNT(*) TTLITEM,ISUDT from XVU_RTN where MBSG_BSGRP=?
+        AND STKTRND1_DOCNO LIKE ?
         GROUP BY STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,ISUDT) V1
         left join
                 (SELECT RCV_INVNO,COUNT(*) TTLITEMIN,MIN(RCV_HSCD) RCV_HSCD, MIN(RCV_BM) RCV_BM
@@ -383,8 +384,7 @@ class RCV_mod extends CI_Model
         ) VSUP ON isnull(RETFG_SUPCD,'')=MSUP_SUPCD
         LEFT JOIN (
             SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM FROM MSUP_TBL GROUP BY MSUP_SUPCD
-        ) VSUP2 ON isnull(RETFG_SUPCD,'')=SUPCD
-        where STKTRND1_DOCNO LIKE ?";
+        ) VSUP2 ON isnull(RETFG_SUPCD,'')=SUPCD";
         $query = $this->db->query($qry, [$psup, '%' . $pdo . '%']);
         return $query->result_array();
     }
@@ -486,7 +486,7 @@ class RCV_mod extends CI_Model
     {
         $qry = "SELECT V1.*,COALESCE(TTLITEMIN,0) TTLITEMIN,ISNULL(RCV_HSCD,'') RCV_HSCD
         , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO FROM
-        (select STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,COUNT(*) TTLITEM,ISUDT from XVU_RTN where MBSG_BSGRP=?
+        (select STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,COUNT(*) TTLITEM,ISUDT from XVU_RTN where MBSG_BSGRP=? AND STKTRND1_DOCNO LIKE ?
         GROUP BY STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,ISUDT) V1
         LEFT join (
 			SELECT RCV_INVNO,COUNT(*) TTLITEMIN,MIN(RCV_HSCD) RCV_HSCD, MIN(RCV_BM) RCV_BM
@@ -501,7 +501,7 @@ class RCV_mod extends CI_Model
         LEFT JOIN (
             SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM FROM MSUP_TBL GROUP BY MSUP_SUPCD
         ) VSUP2 ON isnull(RETFG_SUPCD,'')=SUPCD
-        where STKTRND1_DOCNO LIKE ? and (CONVERT(DATE, ISUDT) BETWEEN ? AND ?)";
+        where (CONVERT(DATE, ISUDT) BETWEEN ? AND ?)";
         $query = $this->db->query($qry, [$psup, '%' . $pdo . '%', $pdate1, $pdate2]);
         return $query->result_array();
     }
