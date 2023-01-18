@@ -37,8 +37,7 @@ class PO extends CI_Controller
         $this->load->view('wms/vpo', $data);
     }
 
-    public function print()
-    {
+    function print() {
         $Rcolor = 0;
         $Gcolor = 201;
         $Bcolor = 250;
@@ -222,7 +221,7 @@ class PO extends CI_Controller
                 if (!$isfound) {
                     $discountlist_distinct[] = [
                         'PO_DISC' => $r['PO_DISC'],
-                        'COUNT' => 1
+                        'COUNT' => 1,
                     ];
                 }
             }
@@ -324,6 +323,7 @@ class PO extends CI_Controller
 
         #analyze required sheets before generate PDF
         $_num = 0;
+        $ke = 1;
         foreach ($rs as $r) {
             $itemcd = $r['PO_ITMCD'] ? trim($r['PO_ITMCD']) : "NON ITEM";
             $itemcd = stripslashes($itemcd);
@@ -340,6 +340,7 @@ class PO extends CI_Controller
             }
             $rowsneeded = $YExtra1 > $YExtra2 ? $YExtra1 : $YExtra2;
             $_num += $rowsneeded;
+            $ke++;
         }
         #end
         if ($_num > 15) {
@@ -505,16 +506,24 @@ class PO extends CI_Controller
                 $finalamount = $amount - $discount_price;
                 $pdf->SetXY(6, $YStart);
                 $pdf->Cell(10, 5, $nomor_urut++, 0, 0, 'C');
-                $ttlwidth = $pdf->GetStringWidth(trim($itemcd));
-                if ($ttlwidth > 30) {
-                    $ukuranfont = 8.5;
-                    while ($ttlwidth > 30) {
-                        $pdf->SetFont('Times', '', $ukuranfont);
-                        $ttlwidth = $pdf->GetStringWidth(trim($itemcd));
-                        $ukuranfont = $ukuranfont - 0.5;
+                if (strpos($itemcd, " ") !== false) {
+
+                    $pdf->MultiCell(30, 5, $itemcd, 0, 'L');
+                    $YExtra_candidate = $pdf->GetY();
+                    $YExtra2 = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
+                } else {
+                    $ttlwidth = $pdf->GetStringWidth(trim($itemcd));
+                    if ($ttlwidth > 30) {
+                        $ukuranfont = 8.5;
+                        while ($ttlwidth > 30) {
+                            $pdf->SetFont('Times', '', $ukuranfont);
+                            $ttlwidth = $pdf->GetStringWidth(trim($itemcd));
+                            $ukuranfont = $ukuranfont - 0.5;
+                        }
                     }
+                    $pdf->Cell(30, 5, $itemcd, 0, 0, 'L');
                 }
-                $pdf->Cell(30, 5, $itemcd, 0, 0, 'L');
+
                 $pdf->SetFont('Times', '', 9);
                 $pdf->SetXY(46, $YStart);
                 $pdf->MultiCell(60, 5, $itemname, 0, 'L');
@@ -527,7 +536,7 @@ class PO extends CI_Controller
                 $pdf->Cell(27.5, 5, number_format($amount, 2), 0, 0, 'R');
                 $total_amount += $finalamount;
                 $ttldiscount_price += $discount_price;
-                $YStart += (5 + $YExtra);
+                $YStart += (5 + $YExtra + $YExtra2);
             }
             $pdf->AddPage();
             #company
@@ -733,7 +742,6 @@ class PO extends CI_Controller
             $pdf->Cell(87.5, 5, $sdata_section, 1, 0, 'C'); #section
             $pdf->Cell(67.5, 5, $sdata_department, 1, 0, 'C'); #department
 
-
             #incoming inspection
             $pdf->SetFont('Times', 'B', 8);
             $pdf->SetXY(5, 227 - $_y);
@@ -827,7 +835,7 @@ class PO extends CI_Controller
             $YExtra = 0;
             $total_amount_test = 0;
             foreach ($rs as $r) {
-                if ($pdf->GetY()+$YExtra >= 164) {
+                if ($pdf->GetY() + $YExtra >= 164) {
                     $pdf->AddPage();
                     #company
                     $pdf->SetFont('Arial', 'B', 10);
@@ -979,10 +987,12 @@ class PO extends CI_Controller
                 $total_amount_test += $amount;
                 $pdf->SetXY(6, $YStart);
                 $pdf->Cell(10, 5, $nomor_urut++, 0, 0, 'C');
-                if (strpos($itemcd, " ") !== false) {                    
+                if (strpos($itemcd, " ") !== false) {
+
                     $pdf->MultiCell(30, 5, $itemcd, 0, 'L');
                     $YExtra_candidate = $pdf->GetY();
-                    $YExtra = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
+                    $YExtra2 = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
+                    die('yextra' . $YExtra);
                 } else {
                     $ttlwidth = $pdf->GetStringWidth($itemcd);
                     if ($ttlwidth > 30) {
@@ -1006,7 +1016,11 @@ class PO extends CI_Controller
                 $pdf->Cell(27.5, 5, number_format($r['PO_PRICE'], 2), 0, 0, 'R');
                 $pdf->Cell(27.5, 5, number_format($amount, 2), 0, 0, 'R');
                 $total_amount += $finalamount;
-                $YStart += (5 + $YExtra);
+                if ($YExtra2 > 0) {
+                    $YStart += (5 + $YExtra2);
+                } else {
+                    $YStart += (5 + $YExtra);
+                }
             }
 
             #footermain
@@ -1032,7 +1046,7 @@ class PO extends CI_Controller
             $sdata_department = substr($sdata_department, 0, strlen($sdata_department) - 1);
             $sdata_subject = substr($sdata_subject, 0, strlen($sdata_subject) - 1);
 
-            #additional row for discount			
+            #additional row for discount
             if ($ttldiscount_price > 0 || $discount_msg != '') {
                 $pdf->SetXY(6, (180 - $_y) - 6);
                 $pdf->Cell(10, 5, '', 0, 0, 'C');
@@ -1043,7 +1057,7 @@ class PO extends CI_Controller
                 $pdf->Cell(27.5, 5, "(" . number_format($ttldiscount_price + $ttldiscount_priceSpecial, 2) . ")", 0, 0, 'R');
                 $pdf->Cell(27.5, 5, "(" . number_format($ttldiscount_price + $ttldiscount_priceSpecial, 2) . ")", 0, 0, 'R');
             }
-            #footer			
+            #footer
             $pdf->SetXY(6, 180 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
@@ -1096,7 +1110,6 @@ class PO extends CI_Controller
             $pdf->Cell(40, 5, $required_date, 1, 0, 'C'); #required date
             $pdf->Cell(87.5, 5, $sdata_section, 1, 0, 'C'); #section
             $pdf->Cell(67.5, 5, $sdata_department, 1, 0, 'C'); #department
-
 
             #incoming inspection
             $pdf->SetFont('Times', 'B', 8);
@@ -1289,7 +1302,7 @@ class PO extends CI_Controller
                         'PO_PAYTERM' => $h_payterm,
                         'PO_RMRK' => $h_remark,
                         'PO_SHPCOST' => $h_shp_cost,
-                        'PO_PRICE' => $di_price[$i]
+                        'PO_PRICE' => $di_price[$i],
                     ];
                 } else {
                     $colupdate = [
@@ -1311,7 +1324,7 @@ class PO extends CI_Controller
                         'PO_PAYTERM' => $h_payterm,
                         'PO_RMRK' => $h_remark,
                         'PO_SHPCOST' => $h_shp_cost,
-                        'PO_PRICE' => $di_price[$i]
+                        'PO_PRICE' => $di_price[$i],
                     ];
                     $ttlupdated += $this->PO_mod->update_where($colupdate, ['PO_NO' => $h_po, 'PO_LINE' => $di_rowid[$i]]);
                 }
@@ -1386,13 +1399,13 @@ class PO extends CI_Controller
                         'PODISC_REV' => 0,
                         'PODISC_DESC' => $dd_description[$i],
                         'PODISC_DISC' => str_replace(',', '', $dd_disc[$i]),
-                        'PODISC_LINE' => $line_discount++
+                        'PODISC_LINE' => $line_discount++,
                     ];
                 } else {
                     $this->PO_mod->update_discount_where(
                         [
                             'PODISC_DESC' => $dd_description[$i],
-                            'PODISC_DISC' => str_replace(',', '', $dd_disc[$i])
+                            'PODISC_DISC' => str_replace(',', '', $dd_disc[$i]),
                         ],
                         ['PODISC_PONO' => $h_po, 'PODISC_LINE' => $dd_rowid[$i]]
                     );
@@ -1461,7 +1474,7 @@ class PO extends CI_Controller
                     'PO_PAYTERM' => $h_payterm,
                     'PO_RMRK' => $h_remark,
                     'PO_SHPCOST' => $h_shp_cost,
-                    'PO_PRICE' => $di_price[$i]
+                    'PO_PRICE' => $di_price[$i],
                 ];
             }
             if (count($saveItem) > 0) {
@@ -1504,7 +1517,7 @@ class PO extends CI_Controller
                     'PODISC_REV' => 0,
                     'PODISC_DESC' => $dd_description[$i],
                     'PODISC_DISC' => $dd_disc[$i],
-                    'PODISC_LINE' => $i
+                    'PODISC_LINE' => $i,
                 ];
             }
             if (count($saveItemDiscount) > 0) {
@@ -1555,7 +1568,7 @@ class PO extends CI_Controller
         $searchtype = $this->input->get('searchtype');
         $like = ['PO_NO' => $search];
         $rs = $searchtype == '1' ? array_merge($this->PO_mod->select_balance_like($like), $this->PO_mod->select_balance_mega_like($like))
-            : $this->PO_mod->select_balance_nonitem_like($like);
+        : $this->PO_mod->select_balance_nonitem_like($like);
         $polist = [];
         foreach ($rs as $r) {
             if (!in_array($r['PO_NO'], $polist)) {
@@ -1673,7 +1686,7 @@ class PO extends CI_Controller
         die(json_encode(['payment_term' => $rspayment, 'shipment' => $rsSHP]));
     }
 
-    function ost_request()
+    public function ost_request()
     {
         header('Content-Type: application/json');
         $rs = $this->TREQPARTLKL_mod->selectall_ost();
