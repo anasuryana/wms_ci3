@@ -474,6 +474,7 @@ class INCFG extends CI_Controller
                     if ($xajob[2] != $itemfromkeys) {
                         $cjob = $xajob[0] . "-" . $xajob[1] . "-" . $itemfromkeys;
                     }
+                    $cjobWithoutYear = $xajob[1] . "-" . $itemfromkeys;
                     /// and handle
                     $astr = explode("|", $ckeys);
                     $citem = $astr[0];
@@ -502,7 +503,7 @@ class INCFG extends CI_Controller
                         $myar[] = ["cd" => "0", "msg" => "The label is already scanned (New Model)"];
                         exit(json_encode($myar));
                     }
-                    $rsostqty = $this->SPL_mod->selectWOITEM_es($cjob, $citem . $cremark);
+                    $rsostqty = $this->SPL_mod->selectWOITEM_es($cjobWithoutYear, $citem . $cremark);
                     if (count($rsostqty) > 0) {
                         $ostqty = 0;
                         $lotsizeqty = 0;
@@ -592,7 +593,7 @@ class INCFG extends CI_Controller
                             }
                         }
                     } else {
-                        $datar = ["cd" => "0", "msg" => "WO and Item don't match (new model).", 'rsos' => $rsostqty, 'job' => $cjob . $cremark];
+                        $datar = ["cd" => "0", "msg" => "WO and Item don't match (new model).", 'rsos' => $rsostqty, 'job' => $cjob . $cremark, '$citem' => $citem, '$cjobWithoutYear' => $cjobWithoutYear];
                     }
                 }
             } else { //handle KD ASP
