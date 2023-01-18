@@ -991,8 +991,7 @@ class PO extends CI_Controller
 
                     $pdf->MultiCell(30, 5, $itemcd, 0, 'L');
                     $YExtra_candidate = $pdf->GetY();
-                    $YExtra2 = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
-                    die('yextra' . $YExtra);
+                    $YExtra2 = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;                    
                 } else {
                     $ttlwidth = $pdf->GetStringWidth($itemcd);
                     if ($ttlwidth > 30) {
