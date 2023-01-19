@@ -988,10 +988,9 @@ class PO extends CI_Controller
                 $pdf->SetXY(6, $YStart);
                 $pdf->Cell(10, 5, $nomor_urut++, 0, 0, 'C');
                 if (strpos($itemcd, " ") !== false) {
-
-                    $pdf->MultiCell(30, 5, $itemcd, 0, 'L');
+                    $pdf->MultiCell(30, 4, $itemcd, 0, 'L');
                     $YExtra_candidate = $pdf->GetY();
-                    $YExtra2 = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;                    
+                    $YExtra2 = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
                 } else {
                     $ttlwidth = $pdf->GetStringWidth($itemcd);
                     if ($ttlwidth > 30) {
@@ -1006,7 +1005,7 @@ class PO extends CI_Controller
                 }
                 $pdf->SetFont('Times', '', 9);
                 $pdf->SetXY(46, $YStart);
-                $pdf->MultiCell(60, 5, $itemname, 0, 'L');
+                $pdf->MultiCell(60, 4, $itemname, 0, 'L');
                 $YExtra_candidate = $pdf->GetY();
                 $YExtra = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
                 $pdf->SetXY(106, $YStart);
