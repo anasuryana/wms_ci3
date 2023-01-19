@@ -1539,6 +1539,7 @@ class DELV extends CI_Controller
         $ctxa_soqty = $this->input->post('ina_soqty');
         $cconfirmation = $this->input->post('iconfirmation');
         $soCount = 0;
+        log_message('error', $_SERVER['REMOTE_ADDR'] . 'DELV/edit, step0#, DO:' . $ctxid);
         if (isset($ctxa_sono)) {
             if (is_array($ctxa_sono)) {
                 $soCount = count($ctxa_sono);
@@ -1590,6 +1591,8 @@ class DELV extends CI_Controller
         $myar = [];
         $ttlrow = count($ctxa_ser);
         $datas = [];
+
+        log_message('error', $_SERVER['REMOTE_ADDR'] . 'DELV/edit, step1# start check existence DLV_sER in DLV_TBL, DO:' . $ctxid);
         for ($i = 0; $i < $ttlrow; $i++) {
             $ttlrows = $this->DELV_mod->check_Primary(["DLV_SER" => $ctxa_ser[$i]]);
             if ($ttlrows == 0) {
@@ -1619,9 +1622,10 @@ class DELV extends CI_Controller
                 ];
             }
         }
+        log_message('error', $_SERVER['REMOTE_ADDR'] . 'DELV/edit, step1# finish check existence DLV_sER in DLV_TBL, DO:' . $ctxid);
         $lastLineLog = $this->CSMLOG_mod->select_lastLine($ctxid, '') + 1;
-        $this->DELV_mod->check_Primary(['DLV_ID' => $ctxid, 'DLV_POSTTM IS NOT NULL' => null]);
         $dlvUpdated = 0;
+        log_message('error', $_SERVER['REMOTE_ADDR'] . 'DELV/edit, step2# start update header in DLV_TBL, DO:' . $ctxid);
         #update docs properties
         $dlvUpdated = $this->DELV_mod->updatebyVAR(
             [
@@ -1637,7 +1641,9 @@ class DELV extends CI_Controller
             ],
             ['DLV_ID' => $ctxid]
         );
-        if (count($datas) > 0) {
+        log_message('error', $_SERVER['REMOTE_ADDR'] . 'DELV/edit, step2# finish update header in DLV_TBL, DO:' . $ctxid);
+        if (!empty($datas)) {
+            log_message('error', $_SERVER['REMOTE_ADDR'] . 'DELV/edit, step3# start insert CSMLOG, DO:' . $ctxid);
             $this->CSMLOG_mod->insert([
                 'CSMLOG_DOCNO' => $ctxid,
                 'CSMLOG_SUPZAJU' => '',
@@ -1648,7 +1654,10 @@ class DELV extends CI_Controller
                 'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
                 'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
             ]);
+            log_message('error', $_SERVER['REMOTE_ADDR'] . 'DELV/edit, step3# finish insert CSMLOG, DO:' . $ctxid);
+            log_message('error', $_SERVER['REMOTE_ADDR'] . 'DELV/edit, step4# start insert DLV_TBL, DO:' . $ctxid);
             $cret = $this->DELV_mod->insertb($datas);
+            log_message('error', $_SERVER['REMOTE_ADDR'] . 'DELV/edit, step4# finish insert DLV_TBL, DO:' . $ctxid);
             $myar[] = $cret > 0 ? ["cd" => '11', "msg" => "Saved successfully"] : ["cd" => '11', "msg" => "Could not add new Data"];
         } else {
             $myar[] = $dlvUpdated > 0 ? ["cd" => '11', "msg" => "Updated"] : ["cd" => '11', "msg" => "nothing updated"];
@@ -2702,7 +2711,6 @@ class DELV extends CI_Controller
     public function doc_rm_as_xls()
     {
         $pid = '';
-        $pforms = '';
         if (isset($_COOKIE["CKPDLV_NO"])) {
             $pid = $_COOKIE["CKPDLV_NO"];
             $currency = $_COOKIE["CKPDLV_CURRENCY"];
@@ -2711,7 +2719,6 @@ class DELV extends CI_Controller
             exit('nothing to be printed');
         }
         if (isset($_COOKIE["CKPDLV_FORMS"])) {
-            $pforms = $_COOKIE["CKPDLV_FORMS"];
         } else {
             exit('Please select at least one document type');
         }
@@ -2724,7 +2731,6 @@ class DELV extends CI_Controller
         $rs_rcv = $this->RCV_mod->select_for_rmrtn_bytxid($pid);
         $MultipliedNumber = 1;
         $shouldRound = false;
-        $isYEN = false;
         foreach ($rs_rcv as $a) {
             if ($a['MSUP_SUPCR'] != "RPH" && $currency == "RPH") {
                 $shouldRound = true;
@@ -2737,10 +2743,7 @@ class DELV extends CI_Controller
                         break;
                     }
                 }
-            } elseif ($currency == "YEN") {
-                $isYEN = true;
             }
-
             break;
         }
         $rsfixINV = [];
@@ -2808,15 +2811,12 @@ class DELV extends CI_Controller
                 switch (trim($r['MITM_STKUOM'])) {
                     case 'GMS':
                         $uom = 'GRM';
-                        $isDecimal = true;
                         break;
                     case 'KG':
                         $uom = 'KGM';
-                        $isDecimal = true;
                         break;
                     default:
                         $uom = $r['MITM_STKUOM'];
-                        $isDecimal = false;
                 }
                 if ($shouldRound) {
                     $amount_ = $r['ITMQT'] * round($r['DLVRMDOC_PRPRC'] * $MultipliedNumber);
@@ -2875,7 +2875,7 @@ class DELV extends CI_Controller
             }
         }
         $sheet->setCellValueByColumnAndRow(4, $inx, "=SUM(D7:D" . ($inx - 1) . ")");
-        $sheet->setCellValueByColumnAndRow(6, $inx, "=SUM(F7:F" . ($inx - 1) . ")");
+        $sheet->setCellValueByColumnAndRow(6, $inx, "=SUM(F7:F" . ($inx - 1) . ")");        
         foreach (range('B', 'F') as $columnID) {
             $sheet->getColumnDimension($columnID)
                 ->setAutoSize(true);
@@ -3685,8 +3685,13 @@ class DELV extends CI_Controller
                         $pdf->Cell(41.56, 4, number_format($amount_, 0), 0, 0, 'R');
                         $ttlamount_ += number_format($amount_, 0);
                     } else {
-                        $pdf->SetXY(138, $curY - 3);
-                        $pdf->Cell(17.5, 4, number_format($perprice_, 5), 0, 0, 'R');
+                        $pdf->SetXY(138, $curY - 3);                        
+                        if($hinv_currency==='RPH')
+                        {
+                            $pdf->Cell(17.5, 4, number_format($perprice_, 0), 0, 0, 'R');
+                        } else {
+                            $pdf->Cell(17.5, 4, number_format($perprice_, 5), 0, 0, 'R');
+                        }
                         $pdf->SetXY(155, $curY - 3);
                         $pdf->Cell(41.56, 4, number_format($amount_, 2), 0, 0, 'R');
                         $ttlamount_ += str_replace(',', '', number_format($amount_, 2));
