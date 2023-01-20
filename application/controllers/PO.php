@@ -341,6 +341,7 @@ class PO extends CI_Controller
             $rowsneeded = $YExtra1 > $YExtra2 ? $YExtra1 : $YExtra2;
             $_num += $rowsneeded;
             $ke++;
+            // echo "<br>".$_num;
         }
         #end
         if ($_num > 15) {
@@ -819,7 +820,7 @@ class PO extends CI_Controller
             $pdf->SetFont('Times', 'BIU', 9);
             $pdf->SetXY(140, 294 - $_y);
             $pdf->Cell(60, 5, 'Nama / Tanggal / Cap Perusahaan', 0, 0, 'C');
-        } else {
+        } else {            
             $MAXLENGTH_LINE_TO_BOTTOM = 75;
             $pdf->SetFont('Times', '', 9);
             $pdf->SetXY(6, 104 - $_y);
@@ -1002,6 +1003,7 @@ class PO extends CI_Controller
                         }
                     }
                     $pdf->Cell(30, 5, $itemcd, 0, 0, 'L');
+                    $YExtra2 = 0;
                 }
                 $pdf->SetFont('Times', '', 9);                
                 $pdf->SetXY(46, $YStart);               
