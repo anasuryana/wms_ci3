@@ -1007,7 +1007,7 @@ class PO extends CI_Controller
                 }
                 $pdf->SetFont('Times', '', 9);                
                 $pdf->SetXY(46, $YStart);               
-                $pdf->MultiCell(60, 5, $itemname ."($YStart)", 0, 'L');
+                $pdf->MultiCell(60, 5, $itemname, 0, 'L');
                 $YExtra_candidate = $pdf->GetY();
                 $YExtra = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
                 $pdf->SetXY(106, $YStart);
