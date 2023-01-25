@@ -129,7 +129,7 @@ class MEXRATE extends CI_Controller
                   $respon = ['cd' => 0, 'msg' => 'Exchange rate is required.'];
                } else {
                   if ($r['MEXRATE_LUPDT'] !== $aju_dt) {
-                     $respon = ['cd' => 0, 'msg' => 'NOT OK'];
+                     $respon = ['cd' => 0, 'msg' => 'Exchange rate updates is required'];
                   }
                }
             }
