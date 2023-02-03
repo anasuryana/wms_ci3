@@ -4086,12 +4086,17 @@ class DELV extends CI_Controller
 
     public function printdocs()
     {
-        $pid = '';
+        $pid = $pBarcode = '';
         $pforms = '';
         if (isset($_COOKIE["CKPDLV_NO"])) {
             $pid = $_COOKIE["CKPDLV_NO"];
         } else {
             exit('nothing to be printed');
+        }
+        if (isset($_COOKIE["CKPDLV_BARCODE"])) {
+            $pBarcode = $_COOKIE["CKPDLV_BARCODE"];
+        } else {
+            exit('need to be reload or refresh the browser');
         }
         if (isset($_COOKIE["CKPDLV_FORMS"])) {
             $pforms = $_COOKIE["CKPDLV_FORMS"];
@@ -4481,9 +4486,9 @@ class DELV extends CI_Controller
                     $pdf->SetXY(90, $curY - 3);
                     $pdf->Cell(16.63, 4, $dis_qty, 0, 0, 'R'); #number_format($r['SISCN_SERQTY'] * $r['TTLBOX'])
                     $pdf->SetXY(110, $curY - 3);
-                    $pdf->Cell(24.71, 4, number_format($r['MITM_NWG'], 2), 0, 0, 'R');
+                    $pdf->Cell(24.71, 4, number_format($r['MITM_NWG'], 4), 0, 0, 'R');
                     $pdf->SetXY(137.07, $curY - 3);
-                    $pdf->Cell(29.33, 4, number_format($r['MITM_GWG'], 2), 0, 0, 'R');
+                    $pdf->Cell(29.33, 4, number_format($r['MITM_GWG'], 4), 0, 0, 'R');
                     $pdf->SetXY(166.4, $curY - 3);
                     $pdf->Cell(31.17, 4, number_format($r['TTLBOX']) . " BOX (X) " . number_format($r['SISCN_SERQTY']), 0, 0, 'R');
 
@@ -4541,6 +4546,11 @@ class DELV extends CI_Controller
             $pdf->SetMargins(0, 0);
             $pdf->SetXY(48, 63);
             $pdf->MultiCell(76.04, 4, trim($hinv_customer) . " \n" . $hinv_address, 0);
+            if($pBarcode==='1')
+            {
+                $clebar = $pdf->GetStringWidth($pid) + 13;
+                $pdf->Code128(155, 40, $pid, $clebar, 7);
+            }
             $pdf->SetXY(155, 63);
             $pdf->Cell(31.17, 4, $pid, 0, 0, 'L');
             $pdf->SetXY(155, 60 + 5 + 5);
@@ -10659,7 +10669,9 @@ class DELV extends CI_Controller
     public function dispose_draft()
     {
         header('Content-Type: application/json');
-        $rsRM = $this->DisposeDraft_mod->select_resume_rm();
+        // $rsRM = $this->ITH_mod->select_fordispose_v2(['ITH_ITMCD' => ''], '2022-12-02');
+        $rsRM = $this->DisposeDraft_mod->select_arwh9sc('2022-12-02');
+       
         $itemcd = [];
         foreach ($rsRM as $r) {
             if (!in_array($r['PART_CODE'], $itemcd)) {
@@ -10699,23 +10711,24 @@ class DELV extends CI_Controller
         ]));
     }
 
-    public function dispose_lock()
+    public function dispose_lock_one()
     {
         header('Content-Type: application/json');
-        $rsRM = $this->DisposeDraft_mod->select_resume_rm_additional1();
+        ini_set('max_execution_time', '-1');
+        $rsRM = $this->DisposeDraft_mod->select_arwh9sc('2022-12-02');
         $czdocbctype = '27';
         $cztujuanpengiriman = '1';
-        $csj = 'DISD2206_3';
+        $csj = $this->input->post('doc'); //DISD221202_final1_sup1
         $rsallitem_cd = [];
         $rsallitem_qty = [];
         $rsallitem_qtyplot = [];
         $responseResume = [];
-        foreach ($rsRM as $r) {
-            $rsallitem_cd[] = $r['PART_CODE'];
-            $rsallitem_qty[] = $r['QTY'];
-            $rsallitem_qtyplot[] = 0;
-        }
-        $ccustdate = '2022-06-7';
+
+        $rsallitem_cd[] = $this->input->post('itemcode');
+        $rsallitem_qty[] = $this->input->post('qty');
+        $rsallitem_qtyplot[] = 0;
+       
+        $ccustdate = $this->input->post('date');
         $count_rsallitem = count($rsallitem_cd);
         $rstemp = $this->inventory_getstockbc_v2($czdocbctype, $cztujuanpengiriman, $csj, $rsallitem_cd, $rsallitem_qty, [], $ccustdate);
         $rsbc = json_decode($rstemp);
@@ -10741,14 +10754,108 @@ class DELV extends CI_Controller
                 }
                 unset($o);
             } else {
-                $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !", "api_respon" => $rstemp];
-                $this->inventory_cancelDO($csj);
-                die('{"status":' . json_encode($myar) . '}');
+                // $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !", "api_respon" => $rstemp];
+                // $this->inventory_cancelDO($csj);
+                // die('{"status":' . json_encode($myar) . '}');
             }
         } else {
-            $this->inventory_cancelDO($csj);
-            $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin", "api_respon" => $rstemp];
-            die('{"status":' . json_encode($myar) . '}');
+            // $this->inventory_cancelDO($csj);
+            // $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin", "api_respon" => $rstemp];
+            // die('{"status":' . json_encode($myar) . '}');
+        }
+        #CHECK IS REQ!=RES
+        $listNeedExBC = []; #outstanding list
+        for ($i = 0; $i < $count_rsallitem; $i++) {
+            foreach ($responseResume as &$r) {
+                if ($rsallitem_cd[$i] === $r['ITEM']) {
+                    $bal = $rsallitem_qty[$i] - $rsallitem_qtyplot[$i];
+                    if ($bal > $r['BALRES']) {
+                        $rsallitem_qtyplot[$i] += $r['BALRES'];
+                        $r['BALRES'] = 0;
+                    } else {
+                        $rsallitem_qtyplot[$i] += $bal;
+                        $r['BALRES'] -= $bal;
+                    }
+                    if ($rsallitem_qty[$i] == $rsallitem_qtyplot[$i]) {
+                        break;
+                    }
+                }
+            }
+            unset($r);
+            $bal = $rsallitem_qty[$i] - $rsallitem_qtyplot[$i];
+            if ($bal) {
+                $listNeedExBC[] = ['ITMCD' => $rsallitem_cd[$i], 'QTY' => $bal, 'LOTNO' => '?'];
+            }
+        }
+        if (count($listNeedExBC) > 0) {
+            $myar[] = ['cd' => 110, 'msg' => 'EX-BC for ' . count($listNeedExBC) . ' item(s) is not found. ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman];
+            die('{"status" : ' . json_encode($myar) . ', "data":' . json_encode($listNeedExBC)
+                . ',"rawdata":' . json_encode($rstemp)
+                . ',"itemsend":' . json_encode($rsallitem_cd)
+                . ',"itemqtysend":' . json_encode($rsallitem_qty)
+                . ',"responresume":' . json_encode($responseResume) . '}');
+        } else {
+            $myar[] = ['cd' => 110, 'msg' => 'OK ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman];
+            die('{"status" : ' . json_encode($myar) . ', "data":' . json_encode($listNeedExBC)
+                . ',"rawdata":' . json_encode($rstemp)
+                . ',"itemsend":' . json_encode($rsallitem_cd)
+                . ',"itemqtysend":' . json_encode($rsallitem_qty)
+                . ',"responresume":' . json_encode($responseResume) . '}');
+        }
+    }
+
+    public function dispose_lock()
+    {
+        header('Content-Type: application/json');
+        ini_set('max_execution_time', '-1');
+        // $rsRM = $this->DisposeDraft_mod->select_resume_rm_additional1();
+        $rsRM = $this->DisposeDraft_mod->select_arwh9sc('2022-12-02');
+        $czdocbctype = '27';
+        $cztujuanpengiriman = '1';
+        $csj = 'DISD221202_final1';
+        $rsallitem_cd = [];
+        $rsallitem_qty = [];
+        $rsallitem_qtyplot = [];
+        $responseResume = [];
+        foreach ($rsRM as $r) {
+            $rsallitem_cd[] = $r['PART_CODE'];
+            $rsallitem_qty[] = $r['QTY'];
+            $rsallitem_qtyplot[] = 0;
+        }
+        $ccustdate = '2023-01-21';
+        $count_rsallitem = count($rsallitem_cd);
+        $rstemp = $this->inventory_getstockbc_v2($czdocbctype, $cztujuanpengiriman, $csj, $rsallitem_cd, $rsallitem_qty, [], $ccustdate);
+        $rsbc = json_decode($rstemp);
+        if (!is_null($rsbc)) {
+            if (count($rsbc) > 0) {
+                foreach ($rsbc as &$o) {
+                    foreach ($o->data as &$v) {
+                        #resume respone
+                        $isfound = false;
+                        foreach ($responseResume as &$n) {
+                            if ($n['ITEM'] == $v->BC_ITEM) {
+                                $n['BALRES'] += $v->BC_QTY;
+                                $isfound = true;
+                            }
+                        }
+                        unset($n);
+                        if (!$isfound) {
+                            $responseResume[] = ['ITEM' => $v->BC_ITEM, 'BALRES' => $v->BC_QTY];
+                        }
+                        #end
+                    }
+                    unset($v);
+                }
+                unset($o);
+            } else {
+                // $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !", "api_respon" => $rstemp];
+                // $this->inventory_cancelDO($csj);
+                // die('{"status":' . json_encode($myar) . '}');
+            }
+        } else {
+            // $this->inventory_cancelDO($csj);
+            // $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin", "api_respon" => $rstemp];
+            // die('{"status":' . json_encode($myar) . '}');
         }
         #CHECK IS REQ!=RES
         $listNeedExBC = []; #outstanding list

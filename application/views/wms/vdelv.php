@@ -82,12 +82,12 @@
                                         <select class="form-select" id="txfg_businessgroup" onchange="txfg_businessgroup_e_onchange()" required>
                                             <option value="-">-</option>
                                             <?php
-                                            foreach ($lbg as $r) {
-                                            ?>
-                                                <option value="<?= trim($r->MBSG_BSGRP) ?>"><?= $r->MBSG_DESC ?></option>
+foreach ($lbg as $r) {
+    ?>
+                                                <option value="<?=trim($r->MBSG_BSGRP)?>"><?=$r->MBSG_DESC?></option>
                                             <?php
-                                            }
-                                            ?>
+}
+?>
                                         </select>
                                     </div>
                                 </div>
@@ -112,12 +112,12 @@
                                         <select id="txfg_consignee" class="form-select">
                                             <option value="-">-</option>
                                             <?php
-                                            foreach ($ldeliverycode as $r) {
-                                            ?>
-                                                <option value="<?= trim($r->MDEL_DELCD) ?>"><?= $r->MDEL_DELCD ?></option>
+foreach ($ldeliverycode as $r) {
+    ?>
+                                                <option value="<?=trim($r->MDEL_DELCD)?>"><?=$r->MDEL_DELCD?></option>
                                             <?php
-                                            }
-                                            ?>
+}
+?>
                                         </select>
                                     </div>
                                 </div>
@@ -127,12 +127,12 @@
                                         <select class="form-select" id="txfg_txt_transport" required>
                                             <option value="-">-</option>
                                             <?php
-                                            $todis = "";
-                                            foreach ($lplatno as $r) {
-                                                $todis .= "<option value='" . $r->MSTTRANS_ID . "_" . $r->MSTTRANS_TYPE . "'>$r->MSTTRANS_ID</option>";
-                                            }
-                                            echo $todis;
-                                            ?>
+$todis = "";
+foreach ($lplatno as $r) {
+    $todis .= "<option value='" . $r->MSTTRANS_ID . "_" . $r->MSTTRANS_TYPE . "'>$r->MSTTRANS_ID</option>";
+}
+echo $todis;
+?>
                                         </select>
                                         <input type="text" class="form-control" id="txfg_txt_transporttype" required readonly>
                                     </div>
@@ -363,12 +363,12 @@
                             <label class="input-group-text">Kantor Asal</label>
                             <select class="form-select" id="txfg_fromoffice">
                                 <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($ldestoffice as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "<option value='-'>-</option>";
+foreach ($ldestoffice as $r) {
+    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -377,12 +377,12 @@
                             <label class="input-group-text">Kantor Tujuan</label>
                             <select class="form-select" id="txfg_destoffice">
                                 <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($ldestoffice as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "<option value='-'>-</option>";
+foreach ($ldestoffice as $r) {
+    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -394,12 +394,12 @@
                             <select class="form-select" id="txfg_cmb_jenisTPB" disabled>
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($lkantorpabean as  $r) {
-                                    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($lkantorpabean as $r) {
+    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -409,12 +409,12 @@
                             <select class="form-select" id="txfg_cmb_jenisTPBtujuan" disabled>
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($lkantorpabean as  $r) {
-                                    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($lkantorpabean as $r) {
+    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -426,14 +426,14 @@
                             <select class="form-select" id="txfg_cmb_tujuanpengiriman">
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($ltujuanpengiriman as  $r) {
-                                    if (trim($r['KODE_DOKUMEN']) == '27') {
-                                        $tohtml .= "<option value='" . trim($r['KODE_TUJUAN_PENGIRIMAN']) . "'>$r[URAIAN_TUJUAN_PENGIRIMAN]</option>";
-                                    }
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($ltujuanpengiriman as $r) {
+    if (trim($r['KODE_DOKUMEN']) == '27') {
+        $tohtml .= "<option value='" . trim($r['KODE_TUJUAN_PENGIRIMAN']) . "'>$r[URAIAN_TUJUAN_PENGIRIMAN]</option>";
+    }
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -529,12 +529,12 @@
                             <label class="input-group-text">Kantor Pabean</label>
                             <select class="form-select" id="txfg_fromoffice41">
                                 <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($ldestoffice as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "<option value='-'>-</option>";
+foreach ($ldestoffice as $r) {
+    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -544,12 +544,12 @@
                             <select class="form-select" id="txfg_cmb_jenisTPB41">
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($lkantorpabean as  $r) {
-                                    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($lkantorpabean as $r) {
+    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -561,14 +561,14 @@
                             <select class="form-select" id="txfg_cmb_tujuanpengiriman41">
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($ltujuanpengiriman as  $r) {
-                                    if (trim($r['KODE_DOKUMEN']) == '41') {
-                                        $tohtml .= "<option value='" . trim($r['KODE_TUJUAN_PENGIRIMAN']) . "'>$r[URAIAN_TUJUAN_PENGIRIMAN]</option>";
-                                    }
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($ltujuanpengiriman as $r) {
+    if (trim($r['KODE_DOKUMEN']) == '41') {
+        $tohtml .= "<option value='" . trim($r['KODE_TUJUAN_PENGIRIMAN']) . "'>$r[URAIAN_TUJUAN_PENGIRIMAN]</option>";
+    }
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -651,12 +651,12 @@
                             <label class="input-group-text">Kantor Pabean</label>
                             <select class="form-select" id="txfg_fromoffice25">
                                 <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($ldestoffice as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "<option value='-'>-</option>";
+foreach ($ldestoffice as $r) {
+    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -666,12 +666,12 @@
                             <select class="form-select" id="txfg_cmb_jenisTPB25">
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($lkantorpabean as  $r) {
-                                    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($lkantorpabean as $r) {
+    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -696,12 +696,12 @@
                             <label class="input-group-text">Jenis Saran Pengangkut</label>
                             <select class="form-select" id="txfg_jenis_saranapengangkut25">
                                 <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($lwaytransport as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_CARA_ANGKUT]'>$r[URAIAN_CARA_ANGKUT]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "<option value='-'>-</option>";
+foreach ($lwaytransport as $r) {
+    $tohtml .= "<option value='$r[KODE_CARA_ANGKUT]'>$r[URAIAN_CARA_ANGKUT]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -921,7 +921,7 @@
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">Document Type</h4>
+                <h4 class="modal-title">Print</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -929,26 +929,48 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col mb-1">
-                        <ul class="list-group text-center">
-                            <li class="list-group-item">
-                                <input class="form-check-input" type="checkbox" value="1" id="txfg_ckDO">
-                                <label class="form-check-label" for="txfg_ckDO">Delivery Order</label>
-                            </li>
-                            <li class="list-group-item">
-                                <input class="form-check-input" type="checkbox" value="1" id="txfg_ckINV">
-                                <label class="form-check-label" for="txfg_ckINV">Invoice</label>
-                            </li>
-                            <li class="list-group-item">
-                                <input class="form-check-input" type="checkbox" value="1" id="txfg_ckPL">
-                                <label class="form-check-label" for="txfg_ckPL">Packing List</label>
-                            </li>
-                        </ul>
+                        <div class="card">
+                            <div class="card-header">
+                                Document Type
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group text-center">
+                                    <li class="list-group-item">
+                                        <input class="form-check-input" type="checkbox" value="1" id="txfg_ckDO">
+                                        <label class="form-check-label" for="txfg_ckDO">Delivery Order</label>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <input class="form-check-input" type="checkbox" value="1" id="txfg_ckINV">
+                                        <label class="form-check-label" for="txfg_ckINV">Invoice</label>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <input class="form-check-input" type="checkbox" value="1" id="txfg_ckPL">
+                                        <label class="form-check-label" for="txfg_ckPL">Packing List</label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>                        
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col mb-1 text-center">
-                        <button class="btn btn-sm btn-primary" title="Print" id="txfg_btnprintseldocs"><i class="fas fa-print"></i></button>
+                    <div class="col mb-1">
+                        <div class="card">
+                            <div class="card-header">
+                                Additional Setting
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group text-center">
+                                    <li class="list-group-item">
+                                        <input class="form-check-input" type="checkbox" value="1" id="txfg_ckBarcode">
+                                        <label class="form-check-label" for="txfg_ckBarcode">Show TX ID Barcode</label>
+                                    </li>                                    
+                                </ul>
+                            </div>
+                        </div>                        
                     </div>
+                </div>                
+            </div>
+            <div class="modal-footer">
+                <div class="col mb-1 text-center">
+                    <button class="btn btn-sm btn-primary" title="Print" id="txfg_btnprintseldocs"><i class="fas fa-print"></i></button>
                 </div>
             </div>
         </div>
@@ -1836,7 +1858,7 @@
         Cookies.set('CKPDLV_NO', txid, {
             expires: 365
         })
-        window.open("<?= base_url('delivery_doc_as_xls') ?>", '_blank');
+        window.open("<?=base_url('delivery_doc_as_xls')?>", '_blank');
     }
 
     function txfg_btn_flagOK_eCK() {
@@ -1864,7 +1886,7 @@
                     btnFLG.innerHTML = "Please wait"
                     $.ajax({
                         type: "POST",
-                        url: "<?= base_url('DELV/setflag') ?>",
+                        url: "<?=base_url('DELV/setflag')?>",
                         data: {
                             inser: serlist,
                             inpin: mpin
@@ -1915,7 +1937,7 @@
                 txfg_isRecalculateFunAlreadytried = true
                 $.ajax({
                     type: "POST",
-                    url: "<?= base_url('SER/resetcalculation') ?>",
+                    url: "<?=base_url('SER/resetcalculation')?>",
                     data: {
                         injob: joblist,
                         inser: serlist,
@@ -1947,7 +1969,7 @@
         }
         $.ajax({
             type: "GET",
-            url: "<?= base_url('SO/plot_so_manually') ?>",
+            url: "<?=base_url('SO/plot_so_manually')?>",
             data: {
                 doc: txid,
                 so_no: pdata.so_no,
@@ -2012,7 +2034,7 @@
         }
         $.ajax({
             type: "GET",
-            url: "<?= base_url('SO/plot_somega_manually') ?>",
+            url: "<?=base_url('SO/plot_somega_manually')?>",
             data: {
                 doc: txid,
                 so_no: pdata.so_no,
@@ -2084,7 +2106,7 @@
         document.getElementById('txfg_tblso_plot').getElementsByTagName('tbody')[0].innerHTML = `<tr><td colpsan="7" class="text-center">Please wait</td></tr>`
         $.ajax({
             type: "GET",
-            url: "<?= base_url('SO/plot_so_mega') ?>",
+            url: "<?=base_url('SO/plot_so_mega')?>",
             data: {
                 doc: txid
             },
@@ -2143,7 +2165,7 @@
         document.getElementById('txfg_tblsoother_plot').getElementsByTagName('tbody')[0].innerHTML = `<tr><td colpsan="4" class="text-center">Please wait</td></tr>`
         $.ajax({
             type: "GET",
-            url: "<?= base_url('SO/plot_so') ?>",
+            url: "<?=base_url('SO/plot_so')?>",
             data: {
                 doc: txid
             },
@@ -2204,7 +2226,7 @@
         document.getElementById('txfg_tblsoother').getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="5" class="text-center">Please wait</td></tr>`
         $.ajax({
             type: "POST",
-            url: "<?= base_url('SO/outstanding') ?>",
+            url: "<?=base_url('SO/outstanding')?>",
             data: {
                 bg: bg,
                 cuscd: scr_txfg_cust,
@@ -2260,7 +2282,7 @@
         const txid = document.getElementById('txfg_txt_id').value.trim()
         $.ajax({
             type: "GET",
-            url: "<?= base_url('DELV/so_dlv') ?>",
+            url: "<?=base_url('DELV/so_dlv')?>",
             data: {
                 doc: txid
             },
@@ -2309,7 +2331,7 @@
         document.getElementById('txfg_tblEXBC').getElementsByTagName("tbody")[0].innerHTML = `<tr><td colspan="3" class="text-center">Please wait</td></tr>`
         $.ajax({
             type: "GET",
-            url: "<?= base_url('DELV/exbclist') ?>",
+            url: "<?=base_url('DELV/exbclist')?>",
             data: {
                 txid: txid
             },
@@ -2361,7 +2383,7 @@
         btnFifo.disabled = true
         $.ajax({
             type: "POST",
-            url: "<?= base_url('SO/outstanding_mega') ?>",
+            url: "<?=base_url('SO/outstanding_mega')?>",
             data: {
                 bg: bg,
                 cuscd: scr_txfg_cust,
@@ -2420,7 +2442,7 @@
         const txid = document.getElementById('txfg_txt_id').value.trim()
         $.ajax({
             type: "GET",
-            url: "<?= base_url('DELV/so_mega_dlv') ?>",
+            url: "<?=base_url('DELV/so_mega_dlv')?>",
             data: {
                 doc: txid
             },
@@ -2516,7 +2538,7 @@
     function txfg_centerRight() {
         $.messager.show({
             title: 'Info',
-            msg: `Time Consume : ${txfg_timerspan.innerHTML} <br> 
+            msg: `Time Consume : ${txfg_timerspan.innerHTML} <br>
             Start : ${txfg_starttime} <br>
             Finish: ${moment().format('HH:mm:ss')}`,
             showType: 'fade',
@@ -2556,7 +2578,7 @@
             let ctxid = document.getElementById('txfg_txt_id').value;
             $.ajax({
                 type: "post",
-                url: "<?= base_url('DELV/removeun_by_txid_item') ?>",
+                url: "<?=base_url('DELV/removeun_by_txid_item')?>",
                 data: {
                     txid: ctxid,
                     itemid: txfg_g_string
@@ -2589,7 +2611,7 @@
         Cookies.set('CKPSI_DOBOM', dono, {
             expires: 365
         });
-        window.open("<?= base_url('ex_do_bom') ?>", '_blank');
+        window.open("<?=base_url('ex_do_bom')?>", '_blank');
 
     }
 
@@ -2603,7 +2625,7 @@
         Cookies.set('CKPSI_DOBOM', dono, {
             expires: 365
         });
-        window.open("<?= base_url('ex_shipping_mega') ?>", '_blank');
+        window.open("<?=base_url('ex_shipping_mega')?>", '_blank');
 
     }
 
@@ -2613,7 +2635,7 @@
             document.getElementById('txfg_btn_post').classList.add('disabled')
             $.ajax({
                 type: "post",
-                url: "<?= base_url('DELV/calculate_raw_material_resume') ?>",
+                url: "<?=base_url('DELV/calculate_raw_material_resume')?>",
                 data: {
                     inunique: txfg_ar_item_ser,
                     inunique_qty: txfg_ar_item_qty,
@@ -2680,7 +2702,7 @@
             $("#txfg_tblinfo_price tbody").empty();
             $.ajax({
                 type: "post",
-                url: "<?= base_url('SI/getsobyreffno') ?>",
+                url: "<?=base_url('SI/getsobyreffno')?>",
                 data: {
                     inser: txfg_ar_item_ser
                 },
@@ -2752,7 +2774,7 @@
         let itemcode = document.getElementById('txfg_txt_id').value;
         $.ajax({
             type: "get",
-            url: "<?= base_url('DELV/get_info_pendaftaran') ?>",
+            url: "<?=base_url('DELV/get_info_pendaftaran')?>",
             data: {
                 insj: itemcode
             },
@@ -2783,7 +2805,7 @@
         let itemcode = document.getElementById('txfg_txt_id').value;
         $.ajax({
             type: "get",
-            url: "<?= base_url('DELV/get_info_pendaftaran') ?>",
+            url: "<?=base_url('DELV/get_info_pendaftaran')?>",
             data: {
                 insj: itemcode
             },
@@ -2814,7 +2836,7 @@
         let itemcode = document.getElementById('txfg_txt_id').value;
         $.ajax({
             type: "get",
-            url: "<?= base_url('DELV/get_info_pendaftaran') ?>",
+            url: "<?=base_url('DELV/get_info_pendaftaran')?>",
             data: {
                 insj: itemcode
             },
@@ -2851,7 +2873,7 @@
             if (mval.trim() != '') {
                 $.ajax({
                     type: "get",
-                    url: "<?= base_url('Trans/search') ?>",
+                    url: "<?=base_url('Trans/search')?>",
                     data: {
                         inkey: mval
                     },
@@ -2964,7 +2986,7 @@
             $('#txfg_tblcus tbody').empty();
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/searchcustomer_si') ?>",
+                url: "<?=base_url('DELV/searchcustomer_si')?>",
                 data: {
                     cid: mkey,
                     csrchby: msearchby,
@@ -3034,7 +3056,7 @@
         const bisgrup = document.getElementById('txfg_businessgroup').value
         $.ajax({
             type: "GET",
-            url: "<?= base_url('MCONA/plot') ?>",
+            url: "<?=base_url('MCONA/plot')?>",
             data: {
                 bisgrup: bisgrup,
                 cuscd: scr_txfg_cust
@@ -3193,7 +3215,7 @@
         }
         // } else {
         //     // alertify.message('tidak cari');
-        // }   
+        // }
     }
 
     function txfg_strloc_e_keypress(e) {
@@ -3216,7 +3238,7 @@
         document.getElementById('txfg_lbl_wait_si').innerText = 'Please wait ..';
         $.ajax({
             type: "get",
-            url: "<?= base_url('SI/getsi') ?>",
+            url: "<?=base_url('SI/getsi')?>",
             data: {
                 inkey: mkey,
                 insearchby: msearchby,
@@ -3612,7 +3634,7 @@
                 txfg_btn_save.disabled = true
                 $.ajax({
                     type: "POST",
-                    url: "<?= base_url('DELV/edit') ?>",
+                    url: "<?=base_url('DELV/edit')?>",
                     data: {
                         intxid: mtxid,
                         intxdt: mtxdt,
@@ -3654,7 +3676,7 @@
                                     txfg_btn_save.disabled = true
                                     $.ajax({
                                         type: "POST",
-                                        url: "<?= base_url('DELV/edit') ?>",
+                                        url: "<?=base_url('DELV/edit')?>",
                                         data: {
                                             intxid: mtxid,
                                             intxdt: mtxdt,
@@ -3715,7 +3737,7 @@
                 txfg_btn_save.disabled = true
                 $.ajax({
                     type: "POST",
-                    url: "<?= base_url('DELV/set') ?>",
+                    url: "<?=base_url('DELV/set')?>",
                     data: {
                         intxid: mtxid,
                         intxdt: mtxdt,
@@ -3755,7 +3777,7 @@
                                     txfg_btn_save.disabled = true
                                     $.ajax({
                                         type: "POST",
-                                        url: "<?= base_url('DELV/set') ?>",
+                                        url: "<?=base_url('DELV/set')?>",
                                         data: {
                                             intxid: mtxid,
                                             intxdt: mtxdt,
@@ -3833,7 +3855,7 @@
             let yearperiod = document.getElementById('txfg_year').value;
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/search') ?>",
+                url: "<?=base_url('DELV/search')?>",
                 data: {
                     inkey: mkeys,
                     insearchby: ms_by,
@@ -4267,6 +4289,7 @@
         let mckdo = (document.getElementById('txfg_ckDO').checked) ? '1' : '0';
         let mckinv = (document.getElementById('txfg_ckINV').checked) ? '1' : '0';
         let mckpl = (document.getElementById('txfg_ckPL').checked) ? '1' : '0';
+        let mckBarcode = (document.getElementById('txfg_ckBarcode').checked) ? '1' : '0';
 
         if ((mckdo + mckinv + mckpl) == '000') {
             alertify.message('Please select document first');
@@ -4281,10 +4304,13 @@
         Cookies.set('CKPDLV_NO', txid, {
             expires: 365
         });
+        Cookies.set('CKPDLV_BARCODE', mckBarcode, {
+            expires: 365
+        });
         Cookies.set('CKPDLV_FORMS', (mckdo + mckinv + mckpl), {
             expires: 365
         });
-        window.open("<?= base_url('printdeliverydocs') ?>", '_blank');
+        window.open("<?=base_url('printdeliverydocs')?>", '_blank');
         $("#TXFG_MODPRINT").modal('hide');
     });
 
@@ -4300,7 +4326,7 @@
         document.getElementById('txfg_divalertrm').innerHTML = "";
         $.ajax({
             type: "get",
-            url: "<?= base_url('DELV/getdetails') ?>",
+            url: "<?=base_url('DELV/getdetails')?>",
             data: {
                 intxid: ptxid,
                 intype: '1'
@@ -4546,7 +4572,7 @@
                         let exASPitem = tc_itmcd.includes("ASP");
                         if (exASPitem) {
                             for (let b = 0; b < ttldetail; b++) {
-                                if (txfg_ar_so[b].trim() == tc_so && txfg_ar_item_cd[b].trim() == tc_itmcd) { //                           
+                                if (txfg_ar_so[b].trim() == tc_so && txfg_ar_item_cd[b].trim() == tc_itmcd) { //
                                     newrow = tbldet_b.insertRow(-1);
                                     newcell = newrow.insertCell(0);
                                     newcell.style.cssText = "cursor:pointer;"
@@ -4583,7 +4609,7 @@
                             }
                         } else {
                             for (let b = 0; b < ttldetail; b++) {
-                                if (txfg_ar_so[b].trim() == tc_so && txfg_ar_item_cd[b].trim() == tc_itmcd && numeral(txfg_ar_item_qty[b]).value() == tc_itmqty) { //                           
+                                if (txfg_ar_so[b].trim() == tc_so && txfg_ar_item_cd[b].trim() == tc_itmcd && numeral(txfg_ar_item_qty[b]).value() == tc_itmqty) { //
                                     newrow = tbldet_b.insertRow(-1);
                                     newcell = newrow.insertCell(0);
                                     newcell.style.cssText = "cursor:pointer;";
@@ -4627,7 +4653,7 @@
                             if (confirm(`Are you sure want to cancel ${mser} ? `)) {
                                 $.ajax({
                                     type: "post",
-                                    url: "<?= base_url('DELV/removeun') ?>",
+                                    url: "<?=base_url('DELV/removeun')?>",
                                     data: {
                                         inser: mser
                                     },
@@ -4720,7 +4746,7 @@
                             }
                         }
                     }
-                    // txfg_e_calculate_raw_material_resume();   
+                    // txfg_e_calculate_raw_material_resume();
                     //genarate rm
                     let tbldet = document.getElementById("txfg_tbltx");
                     let tbldet_b = tbldet.getElementsByTagName("tbody")[0];
@@ -4750,7 +4776,7 @@
                         }
                     }
                     document.getElementById('txfg_gt_rm').innerText = numeral(ttldis).format(',')
-                    //end          
+                    //end
                 }
             },
             error: function(xhr, xopt, xthrow) {
@@ -4804,7 +4830,7 @@
         $("#txfg_tbljoblist tbody").html("<td colspan='3'>Please wait...</td>");
         $.ajax({
             type: "get",
-            url: "<?= base_url('SPL/getpsn_byjob_delv') ?>",
+            url: "<?=base_url('SPL/getpsn_byjob_delv')?>",
             data: {
                 injob: pjob
             },
@@ -4931,7 +4957,7 @@
         Cookies.set('CKPDLV_NO', txid, {
             expires: 365
         })
-        window.open("<?= base_url('delivery_doc_as_omi_xls') ?>", '_blank')
+        window.open("<?=base_url('delivery_doc_as_omi_xls')?>", '_blank')
     }
 
     function txfg_e_calculate_raw_material(preffno, pjob, pqty) {
@@ -4940,7 +4966,7 @@
         $("txfg_divdetailser_rm tbody").empty();
         $.ajax({
             type: "get",
-            url: "<?= base_url('DELV/calculate_raw_material') ?>",
+            url: "<?=base_url('DELV/calculate_raw_material')?>",
             data: {
                 inunique: preffno,
                 inunique_job: pjob,
@@ -5026,7 +5052,7 @@
         $("txfg_divdetailser_rm tbody").empty();
         $.ajax({
             type: "get",
-            url: "<?= base_url('DELV/calculate_raw_material_welcat') ?>",
+            url: "<?=base_url('DELV/calculate_raw_material_welcat')?>",
             data: {
                 inunique: preffno,
                 inunique_job: pjob,
@@ -5140,7 +5166,7 @@
         if (confirm("Are You sure ?")) {
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/change25') ?>",
+                url: "<?=base_url('DELV/change25')?>",
                 data: {
                     inid: msj,
                     innopen: mnopen,
@@ -5226,7 +5252,7 @@
             pThis.disabled = true
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/change27') ?>",
+                url: "<?=base_url('DELV/change27')?>",
                 data: {
                     inid: msj,
                     innopen: mnopen,
@@ -5296,7 +5322,7 @@
         if (confirm("Are You sure ?")) {
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/change41') ?>",
+                url: "<?=base_url('DELV/change41')?>",
                 data: {
                     inid: msj,
                     innopen: mnopen,
@@ -5354,7 +5380,7 @@
         }
         $.ajax({
             type: "post",
-            url: "<?= base_url('DELV/approve') ?>",
+            url: "<?=base_url('DELV/approve')?>",
             data: {
                 inid: mtxid
             },
@@ -5555,7 +5581,7 @@
         }
         $.ajax({
             type: "GET",
-            url: "<?= base_url('MEXRATE/lastupdate') ?>",
+            url: "<?=base_url('MEXRATE/lastupdate')?>",
             data: {
                 tanggal_aju: txfg_txt_custdate.value
             },
@@ -5572,7 +5598,7 @@
                     mymodal.show()
                     $.ajax({
                         type: "POST",
-                        url: "<?= base_url('DELV/cancelposting') ?>",
+                        url: "<?=base_url('DELV/cancelposting')?>",
                         data: {
                             msj: msj.value
                         },
@@ -5655,7 +5681,7 @@
             Cookies.set('PRINTLABEL_SI', msi, {
                 expires: 365
             });
-            window.open("<?= base_url('printdeliveryepro') ?>", '_blank');
+            window.open("<?=base_url('printdeliveryepro')?>", '_blank');
         } else {
             alertify.message('EPSON Only');
         }
@@ -5666,7 +5692,7 @@
         let mjob = document.getElementById('txfg_detpsn_job').value;
         $.ajax({
             type: "get",
-            url: "<?= base_url('SPL/getpsn_byjob_mcz') ?>",
+            url: "<?=base_url('SPL/getpsn_byjob_mcz')?>",
             data: {
                 inmcz: mmcz,
                 injob: mjob
@@ -5748,7 +5774,7 @@
         }
         $.ajax({
             type: "GET",
-            url: "<?= base_url('DELV/weight') ?>",
+            url: "<?=base_url('DELV/weight')?>",
             data: {
                 txid: txtid
             },
@@ -5811,7 +5837,7 @@
         txfg_modchangeprice_new_tbl.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center"><i>Please wait</i></td></tr>`
         $.ajax({
             type: "POST",
-            url: "<?= base_url('DELVHistory/priceFG') ?>",
+            url: "<?=base_url('DELVHistory/priceFG')?>",
             data: {
                 itemcd: e.target.value,
                 reffno: txfg_ar_item_ser
@@ -5858,7 +5884,7 @@
 
         $.ajax({
             type: "POST",
-            url: "<?= base_url('SO/outstanding_mega') ?>",
+            url: "<?=base_url('SO/outstanding_mega')?>",
             data: {
                 bg: txfg_businessgroup.value,
                 cuscd: scr_txfg_cust,
@@ -5943,7 +5969,7 @@
             p.disabled = true
             $.ajax({
                 type: "POST",
-                url: "<?= base_url('SO/change_so_manually') ?>",
+                url: "<?=base_url('SO/change_so_manually')?>",
                 data: {
                     fline: fline,
                     newCPO: newCPO,
@@ -5975,7 +6001,7 @@
         }
         $.ajax({
             type: "POST",
-            url: "<?= base_url('DELV/relink_it_inventory') ?>",
+            url: "<?=base_url('DELV/relink_it_inventory')?>",
             data: {
                 doc: txid
             },
@@ -6007,7 +6033,7 @@
             type: "POST",
             url: "<?=base_url('DELV/ceisa_spreadsheet')?>",
             data: {doc: doc},
-            success: function (response) {                
+            success: function (response) {
                 const blob = new Blob([response], { type: "application/vnd.ms-excel" })
                 const fileName = `ceisa.${doc}.xlsx`
                 saveAs(blob, fileName)
@@ -6023,7 +6049,7 @@
                             xhr.responseType = "blob";
                         } else {
                             p.classList.remove('disabled')
-                            p.innerHTML = 'CEISA 4.0'                            
+                            p.innerHTML = 'CEISA 4.0'
                             xhr.responseType = "text";
                         }
                     }
