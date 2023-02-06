@@ -827,6 +827,10 @@ class SCR extends CI_Controller {
         $data['userID'] = $this->session->userdata('nama'); 
         $this->load->view('scrap_report/rpscrap_upload_mapping', $data);
     }
+    function form_dispose(){
+        $data['userID'] = $this->session->userdata('nama'); 
+        $this->load->view('scrap_report/vform_dispose', $data);
+    }
 
     function scrapreport_search(){
         header('Content-Type: application/json');
