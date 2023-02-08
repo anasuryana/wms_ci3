@@ -27,7 +27,8 @@ class SPLSCN_mod extends CI_Model {
     }
 
     public function selectby_filter($pwhere){
-	
+        $this->db->select("SPLSCN_ID,SPLSCN_DOC,SPLSCN_CAT,SPLSCN_LINE,SPLSCN_FEDR,SPLSCN_ORDERNO,UPPER(SPLSCN_ITMCD) SPLSCN_ITMCD,SPLSCN_LOTNO,SPLSCN_SAVED,
+        SPLSCN_QTY,SPLSCN_LUPDT,SPLSCN_USRID,SPLSCN_EXPORTED");
         $this->db->from($this->TABLENAME);        
         $this->db->where($pwhere);
         $this->db->order_by('SPLSCN_FEDR,SPLSCN_LUPDT ASC');
@@ -86,7 +87,7 @@ class SPLSCN_mod extends CI_Model {
 
     public function selectby_filter_formega_v1($pwhere){
         $this->db->select("concat('1',convert(varchar(30), SPLSCN_LUPDT,12),RIGHT(SPLSCN_ID,4) ) AS SPLSCN_ID,
-        SPLSCN_ITMCD,SPLSCN_QTY,(convert(varchar(30), SPLSCN_LUPDT,21)) SPLSCN_LUPDT
+        UPPER(RTRIM(SPLSCN_ITMCD)) SPLSCN_ITMCD,SPLSCN_QTY,(convert(varchar(30), SPLSCN_LUPDT,21)) SPLSCN_LUPDT
         ,SPLSCN_LOTNO,SPLSCN_ORDERNO,SPLSCN_LINE,SPLSCN_FEDR,SPLSCN_USRID");
         $this->db->from($this->TABLENAME);        
         $this->db->where($pwhere);
