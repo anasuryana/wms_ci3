@@ -820,7 +820,7 @@ class PO extends CI_Controller
             $pdf->SetFont('Times', 'BIU', 9);
             $pdf->SetXY(140, 294 - $_y);
             $pdf->Cell(60, 5, 'Nama / Tanggal / Cap Perusahaan', 0, 0, 'C');
-        } else {            
+        } else {
             $MAXLENGTH_LINE_TO_BOTTOM = 75;
             $pdf->SetFont('Times', '', 9);
             $pdf->SetXY(6, 104 - $_y);
@@ -1005,8 +1005,8 @@ class PO extends CI_Controller
                     $pdf->Cell(30, 5, $itemcd, 0, 0, 'L');
                     $YExtra2 = 0;
                 }
-                $pdf->SetFont('Times', '', 9);                
-                $pdf->SetXY(46, $YStart);               
+                $pdf->SetFont('Times', '', 9);
+                $pdf->SetXY(46, $YStart);
                 $pdf->MultiCell(60, 5, $itemname, 0, 'L');
                 $YExtra_candidate = $pdf->GetY();
                 $YExtra = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
@@ -1017,7 +1017,7 @@ class PO extends CI_Controller
                 $pdf->Cell(27.5, 5, number_format($amount, 2), 0, 0, 'R');
                 $total_amount += $finalamount;
                 if ($YExtra2 > 0) {
-                    $YStart += (5 + $YExtra2+5);
+                    $YStart += (5 + $YExtra2 + 5);
                 } else {
                     $YStart += (5 + $YExtra);
                 }
@@ -1237,10 +1237,11 @@ class PO extends CI_Controller
         $h_request_by = $this->input->post('h_request_by');
         $h_payterm = $this->input->post('h_payterm');
         $h_req_date = $this->input->post('h_req_date');
-        $h_issu_date = $this->input->post('h_issu_date');
+        $HIssuDate = $this->input->post('h_issu_date');
         $h_shp = $this->input->post('h_shp');
         $h_shp_cost = str_replace(',', '', $this->input->post('h_shp_cost'));
         $h_supplier = $this->input->post('h_supplier');
+        $HIsCustomsDocReq = $this->input->post('h_is_customs_doc_req');
         $di_rowid = $this->input->post('di_rowid');
         $di_item = $this->input->post('di_item');
         $di_qty = $this->input->post('di_qty');
@@ -1270,6 +1271,7 @@ class PO extends CI_Controller
         $h_pph = $h_pph === '' ? 0 : $h_pph;
         $h_vat = $h_vat === '' ? 0 : $h_vat;
         $h_shp_cost = $h_shp_cost === '' ? 0 : $h_shp_cost;
+
         if ($this->PO_mod->check_Primary(['PO_NO' => $h_po])) {
             $ttlsaved = 0;
             $ttlupdated = 0;
@@ -1284,7 +1286,7 @@ class PO extends CI_Controller
                         'PO_NO' => $h_po,
                         'PO_REV' => 0,
                         'PO_REQDT' => $h_req_date,
-                        'PO_ISSUDT' => $h_issu_date,
+                        'PO_ISSUDT' => $HIssuDate,
                         'PO_SUPCD' => $h_supplier,
                         'PO_ITMCD' => $di_item[$i],
                         'PO_QTY' => abs($di_qty[$i]),
@@ -1307,7 +1309,7 @@ class PO extends CI_Controller
                 } else {
                     $colupdate = [
                         'PO_REQDT' => $h_req_date,
-                        'PO_ISSUDT' => $h_issu_date,
+                        'PO_ISSUDT' => $HIssuDate,
                         'PO_SUPCD' => $h_supplier,
                         'PO_ITMCD' => $di_item[$i],
                         'PO_QTY' => abs($di_qty[$i]),
@@ -1415,7 +1417,6 @@ class PO extends CI_Controller
                 $this->PO_mod->insertb_discount($saveItemDiscount);
             }
             $myar[] = ['cd' => '1', 'msg' => $ttlsaved . ' Saved, ' . $ttlupdated . ' updated', 'doc' => $h_po];
-            die(json_encode(['status' => $myar]));
         } else {
             $ttlsaved = 0;
             $adate = explode("-", $h_issu_date);
@@ -1450,6 +1451,7 @@ class PO extends CI_Controller
                     break;
                 }
             }
+            $h_po = $gen_po_num;
 
             for ($i = 0; $i < $ttlrows_item; $i++) {
                 $saveItem[] = [
@@ -1524,8 +1526,28 @@ class PO extends CI_Controller
                 $this->PO_mod->insertb_discount($saveItemDiscount);
             }
             $myar[] = ['cd' => '1', 'msg' => 'OK', 'saved' => $ttlsaved, 'doc' => $gen_po_num];
-            die(json_encode(['status' => $myar]));
         }
+        if ($this->PO_mod->checkPrimaryHeader(['PO0_NO' => $h_po])) {
+            #update PO0
+            $this->PO_mod->update_header_where([
+                'PO0_ISCUSTOMS' => $HIsCustomsDocReq,
+                'PO0_ISSUDT' => $HIssuDate,
+                'PO0_LUPDT' => $current_datetime_,
+                'PO0_LUPDT_BY' => $userid,
+            ], [
+                'PO0_NO' => $h_po,
+            ]);
+        } else {
+            #insert PO0
+            $this->PO_mod->insertBatchHeader([
+                'PO0_NO' => $h_po,
+                'PO0_ISCUSTOMS' => $HIsCustomsDocReq,
+                'PO0_ISSUDT' => $HIssuDate,
+                'PO0_LUPDT' => $current_datetime_,
+                'PO0_LUPDT_BY' => $userid,
+            ]);
+        }
+        die(json_encode(['status' => $myar]));
     }
 
     public function search()

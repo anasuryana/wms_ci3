@@ -1,11 +1,21 @@
 <div style="padding: 5px">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-2 mb-1">
+            <div class="col-md-6 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" id="mpuror_btn_new" onclick="mpuror_btn_new_eC()"><i class="fas fa-file"></i></button>
                     <button class="btn btn-outline-primary" id="mpuror_btn_save" onclick="mpuror_btn_save_eC()"><i class="fas fa-save"></i></button>
                     <button class="btn btn-outline-primary" id="mpuror_btn_print" onclick="mpuror_btn_print_eC()"><i class="fas fa-print"></i></button>
+                </div>
+            </div>
+            <div class="col-md-6 mb-1 text-end">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">Customs Requirement</span>
+                    <select class="form-select" id="mpuror_cmb_customs" onchange="mpuror_cmb_customs_eChange(event)" required>
+                        <option value="-">-</option>
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -109,10 +119,10 @@
             <div class="col-md-12 mb-1">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="mpuror_home-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true">BC</button>
+                        <button class="nav-link active" id="mpuror_home-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true">Item</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="mpuror_profile-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabFG" type="button" role="tab" aria-controls="profile" aria-selected="false">Non BC</button>
+                        <button class="nav-link" id="mpuror_profile-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabFG" type="button" role="tab" aria-controls="profile" aria-selected="false">Non Item</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="mpuror_profile-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabSpecial" type="button" role="tab" aria-controls="profile" aria-selected="false">Special Discount</button>
@@ -265,7 +275,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?= $deptl ?>
+                                    <?=$deptl?>
                                 </tbody>
                             </table>
                         </div>
@@ -403,7 +413,7 @@
         const dl2_length = dl2.options.length
         let opt = document.createElement('option')
         $.ajax({
-            url: "<?= base_url('PO/additional') ?>",
+            url: "<?=base_url('PO/additional')?>",
             dataType: "json",
             success: function(response) {
                 const pay_length = response.payment_term.length
@@ -492,7 +502,7 @@
                 type: 'autocomplete',
                 title: 'Department',
                 width: 100,
-                source: [<?= $deptl_1 ?>]
+                source: [<?=$deptl_1?>]
             },
             {
                 type: 'text',
@@ -511,7 +521,7 @@
             if (mpuror_selected_row.toString().length > 0 && docnum.length > 0) {
                 $.ajax({
                     type: "post",
-                    url: "<?= base_url('PO/remove') ?>",
+                    url: "<?=base_url('PO/remove')?>",
                     data: {
                         lineId: mpuror_selected_row,
                         docNum: docnum
@@ -550,7 +560,7 @@
         Cookies.set('PONUM', msi, {
             expires: 365
         });
-        window.open("<?= base_url('printPO_doc') ?>", '_blank');
+        window.open("<?=base_url('printPO_doc')?>", '_blank');
     }
 
     function mpuror_btnfindmodvend_eC() {
@@ -568,7 +578,7 @@
             document.getElementById('mpuror_tblsup').getElementsByTagName('tbody')[0].innerHTML = ''
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('MSTSUP/search_union') ?>",
+                url: "<?=base_url('MSTSUP/search_union')?>",
                 data: {
                     searchKey: txt.value
                 },
@@ -621,6 +631,7 @@
         if (!confirm("Are you sure want to create new document ?")) {
             return
         }
+        mpuror_cmb_customs.value = '-'
         document.getElementById('mpuror_txt_doc').value = ''
         document.getElementById('mpuror_txt_remark').value = ''
         document.getElementById('mpuror_txt_pph').value = ''
@@ -777,7 +788,7 @@
                 const docnum = document.getElementById('mpuror_txt_doc').value
                 $.ajax({
                     type: "post",
-                    url: "<?= base_url('PO/remove') ?>",
+                    url: "<?=base_url('PO/remove')?>",
                     data: {
                         lineId: mylineid,
                         docNum: docnum
@@ -940,7 +951,7 @@
                 const docnum = document.getElementById('mpuror_txt_doc').value
                 $.ajax({
                     type: "post",
-                    url: "<?= base_url('PO/remove_discount') ?>",
+                    url: "<?=base_url('PO/remove_discount')?>",
                     data: {
                         lineId: mylineid,
                         docNum: docnum
@@ -990,6 +1001,13 @@
         let adept = []
         let asection = []
         let asubject = []
+
+        if(mpuror_cmb_customs.value === '-')
+        {
+            alertify.message('Please select')
+            mpuror_cmb_customs.focus()
+            return
+        }        
 
         for (let i = 0; i < ttlrows; i++) {
             if (tableku2.rows[i].cells[1].innerText.length > 2) {
@@ -1059,7 +1077,7 @@
             btnsave.disabled = true
             $.ajax({
                 type: "POST",
-                url: "<?= base_url('PO/save') ?>",
+                url: "<?=base_url('PO/save')?>",
                 data: {
                     h_po: txt_po.value,
                     h_remark: txt_remark.value,
@@ -1072,6 +1090,7 @@
                     h_shp: txt_shp.value,
                     h_shp_cost: numeral(txt_shp_cost.value).value(),
                     h_supplier: mpuror_vencd,
+                    h_is_customs_doc_req: mpuror_cmb_customs.value,
                     di_rowid: arowid,
                     di_item: aitem,
                     di_qty: aqty,
@@ -1134,7 +1153,7 @@
             e.target.readOnly = true
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('PO/search') ?>",
+                url: "<?=base_url('PO/search')?>",
                 data: {
                     search: search,
                     searchby: searchby,
@@ -1172,6 +1191,7 @@
                             document.getElementById('mpuror_txt_shipdoc').value = response.data[i].PO_SHPDLV
                             document.getElementById('mpuror_txt_shpcost').value = response.data[i].PO_SHPCOST * 1
                             document.getElementById('mpuror_txt_doc').value = response.data[i].PO_NO
+                            document.getElementById('mpuror_cmb_customs').value = response.data[i].PO0_ISCUSTOMS
                             document.getElementById('mpuror_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
                             mpuror_get_detail(response.data[i].PO_NO)
                             document.getElementById('mpuror_saved_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
@@ -1198,7 +1218,7 @@
 
     function mpuror_get_detail(pdoc) {
         $.ajax({
-            url: "<?= base_url('PO/detail') ?>",
+            url: "<?=base_url('PO/detail')?>",
             data: {
                 doc: pdoc
             },
@@ -1361,7 +1381,7 @@
             document.getElementById('mpuror_tblNALITM').getElementsByTagName('tbody')[0].innerHTML = lblwait
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('MSTITM/search_internal_item') ?>",
+                url: "<?=base_url('MSTITM/search_internal_item')?>",
                 data: {
                     searchBy: searchBy,
                     search: search
@@ -1432,6 +1452,19 @@
         Cookies.set('PO_DATE2', date2, {
             expires: 365
         })
-        window.open("<?= base_url('po_list') ?>", '_blank');
+        window.open("<?=base_url('po_list')?>", '_blank');
+    }
+
+    function mpuror_cmb_customs_eChange(e){
+        if(e.target.value === '1')
+        {
+            let firstTabEl =  document.querySelector('#myTab button[data-bs-target="#mpuror_tabRM"]')
+            let thetab = new bootstrap.Tab(firstTabEl)
+            thetab.show()
+            mpuror_txt_VAT.value = ''
+            mpuror_txt_VAT.readOnly = true
+        } else {
+            mpuror_txt_VAT.readOnly = false
+        }
     }
 </script>
