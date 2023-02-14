@@ -122,7 +122,7 @@
                         <button class="nav-link active" id="mpuror_home-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true">Item</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="mpuror_profile-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabFG" type="button" role="tab" aria-controls="profile" aria-selected="false">Non Item</button>
+                        <button class="nav-link" id="mpuror_nonitem-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabFG" type="button" role="tab" aria-controls="profile" aria-selected="false">Non Item</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="mpuror_profile-tab" data-bs-toggle="tab" data-bs-target="#mpuror_tabSpecial" type="button" role="tab" aria-controls="profile" aria-selected="false">Special Discount</button>
@@ -1456,14 +1456,19 @@
     }
 
     function mpuror_cmb_customs_eChange(e){
+        const tabItem = document.getElementById('mpuror_home-tab')
+        const tabNonItem = document.getElementById('mpuror_nonitem-tab')
+        tabItem.disabled = false        
         if(e.target.value === '1')
         {
+            tabNonItem.disabled = true
             let firstTabEl =  document.querySelector('#myTab button[data-bs-target="#mpuror_tabRM"]')
             let thetab = new bootstrap.Tab(firstTabEl)
             thetab.show()
             mpuror_txt_VAT.value = ''
             mpuror_txt_VAT.readOnly = true
-        } else {
+        } else {            
+            tabNonItem.disabled = false
             mpuror_txt_VAT.readOnly = false
         }
     }
