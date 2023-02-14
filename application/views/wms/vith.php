@@ -9,56 +9,59 @@
     }
     thead tr.first th, thead tr.first td {
         position: sticky;
-        top: 0;        
+        top: 0;
     }
 
     thead tr.second th, thead tr.second td {
         position: sticky;
         top: 26px;
-    }   
+    }
 </style>
 <div style="padding: 5px">
-    <div class="container-fluid">        
+    <div class="container-fluid">
         <div class="row" id="ith_stack1">
-            <div class="col-md-3 mb-1">
-                <div class="input-group input-group-sm">                    
-                    <span class="input-group-text" >Item</span>                    
-                    <input type="text" class="form-control" id="ith_txt_item">                    
-                    <button title="Search" class="btn btn-primary" id="ith_btn_gen"> <i class="fas fa-search"></i> </button>                    
-                    
+            <div class="col-md-6 mb-1">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" >Search by</span>
+                    <select class="form-select" id="ith_cmb_search_by" onchange="ith_cmb_search_by_eChange()">
+                        <option value="item_code">Item Code</option>
+                        <option value="item_desc">Item Description</option>
+                    </select>
+                    <input type="text" class="form-control" id="ith_txt_item">
+                    <button title="Search" class="btn btn-primary" id="ith_btn_gen"> <i class="fas fa-search"></i> </button>
+
                     <button id="btnGroupDrop1" type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Export to..">
                         <i class="fas fa-file-export"></i>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                        <li><a class="dropdown-item" href="#" id="ith_btn_xls" onclick="ith_btn_xls_head_e_click()"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> XLS</a></li>                            
-                        <li><a class="dropdown-item" href="#" id="ith_btn_xls" onclick="ith_btn_xls_e_click()"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> XLS Detail</a></li>                            
-                    </ul>                    
+                        <li><a class="dropdown-item" href="#" id="ith_btn_xls" onclick="ith_btn_xls_head_e_click()"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> XLS</a></li>
+                        <li><a class="dropdown-item" href="#" id="ith_btn_xls" onclick="ith_btn_xls_e_click()"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> XLS Detail</a></li>
+                    </ul>
                 </div>
-            </div> 
-            <div class="col-md-3 mb-1">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text" >Date</span>                    
-                    <input type="text" class="form-control" id="ith_txt_date" readonly>
-                </div>
-            </div> 
+            </div>            
             <div class="col-md-6 mb-1">
-                <div class="input-group input-group-sm">                    
-                    <span class="input-group-text" >Business Group</span>                    
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" >Business Group</span>
                     <input type="text" class="form-control" id="ith_cmb_bg" readonly onclick="ith_bisgrup_eC()">
-                </div>                
-            </div> 
-                      
-        </div>    
+                </div>
+            </div>
+        </div>
         <div class="row" id="ith_stack2">
-            <div class="col-md-10 mb-1">
+            <div class="col-md-7 mb-1">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text" >Warehouse</span>
                     <select class="form-select" id="ith_cmb_wh" ><?=$lwh?></select>
                 </div>
             </div>
+            <div class="col-md-3 mb-1">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" >Date</span>
+                    <input type="text" class="form-control" id="ith_txt_date" readonly>
+                </div>
+            </div>
             <div class="col-md-2 mb-1 text-end">
                 <span class="badge bg-info" id="ith_spn_info"></span>
-            </div> 
+            </div>
         </div>
         <div class="row">
             <div class="col-md-12 mb-1">
@@ -73,27 +76,27 @@
                                 <th rowspan="2" class="align-middle" title="Unite Measurement">UM</th>
                             </tr>
                             <tr class="second">
-                                <th class="text-end">Opening</th>                      
+                                <th class="text-end">Opening</th>
                                 <th class="text-end">In</th>
                                 <th class="text-end">Prepare</th>
                                 <th class="text-end">Out</th>
                                 <th class="text-end">Closing</th>
                             </tr>
                         </thead>
-                        <tbody>                        
+                        <tbody>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div> 
+        </div>
 		<div class="row" id="ith_stack3">
 			<div class="col-md-6 mb-1 text-right">
-				
+
 			</div>
             <div class="col-md-6 mb-1 text-right">
-				<div class="input-group input-group-sm">                    
-                    <span class="input-group-text" >TOTAL</span>                    
-                    <input type="text" class="form-control" id="ith_txt_ttl" readonly>                    
+				<div class="input-group input-group-sm">
+                    <span class="input-group-text" >TOTAL</span>
+                    <input type="text" class="form-control" id="ith_txt_ttl" readonly>
                 </div>
 			</div>
 		</div>
@@ -101,15 +104,15 @@
 </div>
 <div class="modal fade" id="ith_BG">
     <div class="modal-dialog modal-sm">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Business Group List</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
-        <div class="modal-body">            
+        <div class="modal-body">
             <div class="row">
                 <div class="col" onclick="ith_selectBG_eC(event)">
                     <div class="table-responsive" id="ith_tblbg_div">
@@ -155,14 +158,14 @@
                     }
                 }
             }
-        }        
+        }
     }
     function ith_bisgrup_eC() {
         $("#ith_BG").modal('show')
     }
     function ith_set_wh(){
         let mwh = document.getElementById("ith_cmb_wh").value;
-        Cookies.set('CKPSI_WH', mwh, {expires:365});    
+        Cookies.set('CKPSI_WH', mwh, {expires:365});
     }
     function ith_btn_xls_head_e_click(){
         ith_set_wh();
@@ -175,11 +178,11 @@
         if(sbg!=''){
             sbg = sbg.substr(0,sbg.length-1);
         }
-        Cookies.set('CKPSI_BG', sbg, {expires:365});        
+        Cookies.set('CKPSI_BG', sbg, {expires:365});
         Cookies.set('CKPSI_DATE', mdate, {expires:365});
         window.open("<?=base_url('ex_stock_recap')?>",'_blank');
     }
-    function ith_btn_xls_e_click(){    
+    function ith_btn_xls_e_click(){
         ith_set_wh();
         let mdate = document.getElementById('ith_txt_date').value;
         let bgroup = ith_a_BG
@@ -190,7 +193,7 @@
         if(sbg!=''){
             sbg = sbg.substr(0,sbg.length-1);
         }
-        Cookies.set('CKPSI_BG', sbg, {expires:365});        
+        Cookies.set('CKPSI_BG', sbg, {expires:365});
         Cookies.set('CKPSI_DATE', mdate, {expires:365});
         window.open("<?=base_url('ex_stock_detail')?>",'_blank');
     }
@@ -199,13 +202,13 @@
         format: 'yyyy-mm-dd',
         autoclose:true
     });
-    $("#ith_txt_date").datepicker('update', new Date());    
-    $("#ith_divku").css('height', $(window).height()   
-        -document.getElementById('ith_stack1').offsetHeight 
-        -document.getElementById('ith_stack2').offsetHeight    
+    $("#ith_txt_date").datepicker('update', new Date());
+    $("#ith_divku").css('height', $(window).height()
+        -document.getElementById('ith_stack1').offsetHeight
+        -document.getElementById('ith_stack2').offsetHeight
         -document.getElementById('ith_stack3').offsetHeight
         -100);
-$("#ith_txt_item").keypress(function (e) { 
+$("#ith_txt_item").keypress(function (e) {
     if(e.which==13){
         ith_getstock();
     }
@@ -219,7 +222,7 @@ function ith_getstock(){
     $.ajax({
         type: "get",
         url: "<?=base_url('ITH/getstock_wh')?>",
-        data: {initem: mitem, inbgroup: bgroup, indate: mdate},
+        data: {initem: mitem, inbgroup: bgroup, indate: mdate, insearch_by : ith_cmb_search_by.value},
         dataType: "json",
         success: function (response) {
             let ttlrows = response.data.length;
@@ -233,7 +236,7 @@ function ith_getstock(){
             let tableku2 = tabell.getElementsByTagName("tbody")[0];
             let newrow, newcell, newText;
 			let myitmttl = 0;
-            tableku2.innerHTML='';            
+            tableku2.innerHTML='';
             for (let i = 0; i<ttlrows; i++){
 				myitmttl+=numeral(response.data[i].STOCKQTY).value();
                 newrow = tableku2.insertRow(-1);
@@ -247,7 +250,7 @@ function ith_getstock(){
                 newcell.classList.add('font-monospace')
                 newcell.innerHTML = response.data[i].MITM_SPTNO
                 newcell = newrow.insertCell(3);
-                newText = document.createTextNode(response.data[i].MITM_ITMD1);                
+                newText = document.createTextNode(response.data[i].MITM_ITMD1);
                 newcell.appendChild(newText);
                 newcell = newrow.insertCell(4);
                 newcell.title = "OPENING";
@@ -269,9 +272,9 @@ function ith_getstock(){
                 newText = document.createTextNode(numeral(response.data[i].OUTQTY).format('0,0'));
                 newcell.style.cssText='text-align: right';
                 newcell.appendChild(newText);
-                
+
                 newcell = newrow.insertCell(8);
-                newcell.title = "END";                
+                newcell.title = "END";
                 newText = document.createTextNode(numeral(response.data[i].STOCKQTY).format('0,0'));
                 newcell.style.cssText='text-align: right';
                 newcell.appendChild(newText);
@@ -287,13 +290,13 @@ function ith_getstock(){
         }
     });
 }
-$("#ith_btn_gen").click(function (e) { 
-    ith_getstock();    
+$("#ith_btn_gen").click(function (e) {
+    ith_getstock();
 });
 ith_e_getBG()
     function ith_e_getBG(){
-        $.ajax({            
-            url: "<?=base_url('ITH/get_bs_group')?>",            
+        $.ajax({
+            url: "<?=base_url('ITH/get_bs_group')?>",
             dataType: "JSON",
             success: function (response) {
                 const ttlrows = response.data.length;
@@ -329,4 +332,8 @@ ith_e_getBG()
         })
         document.getElementById('ith_cmb_bg').value = strDisplay.substr(0,strDisplay.length-2)
     })
+    function ith_cmb_search_by_eChange()
+    {
+        ith_txt_item.focus()
+    }
 </script>

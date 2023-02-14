@@ -355,7 +355,7 @@ class ITH_mod extends CI_Model
                 ,INQTY
                 ,PRPQTY
                 ,ABS(OUTQTY) OUTQTY
-                ,$CLOSINGCOLUMN STOCKQTY
+                ,$closingcolumn STOCKQTY
                 ,MITM_STKUOM
                 ,UPPER(ISNULL(MITM_NCAT, '')) MITM_NCAT
             FROM (
@@ -374,8 +374,8 @@ class ITH_mod extends CI_Model
                 LEFT JOIN MITM_TBL b ON a.ITH_ITMCD = b.MITM_ITMCD
                 LEFT JOIN v_mitm_bsgroup ON ITH_ITMCD = PDPP_MDLCD
                 WHERE ITH_WH = '$whclosing'
-                    AND ITH_ITMCD LIKE ?
-                    AND PDPP_BSGRP IN ($PBG)
+                    AND MITM_ITMCD LIKE ?
+                    AND PDPP_BSGRP IN ($pbg)
                     AND ITH_FORM NOT IN (
                         'SASTART'
                         ,'SA'
@@ -444,6 +444,107 @@ class ITH_mod extends CI_Model
                 ) VPREP ON VSTOCK.ITH_ITMCD = VPREP.ITH_ITMCD
             ORDER BY VSTOCK.ITH_ITMCD ASC";
         $query = $this->db->query($qry, [$pdate,'%' . $item . '%', $pdate, '%' . $item . '%', $pdate, '%' . $item . '%', $pdate, '%' . $item . '%', $pdate]);
+        return $query->result_array();
+    }
+    public function selectPSIStockAtDateByDescripton($wh, $item, $PBG, $pdate)
+    {
+        $whout = $wh == 'AFWH3' || $wh == 'AFSMT' ? 'ARSHP' : $wh;
+        $whclosing = $wh == 'AFSMT' ? 'AFWH3' : $wh;
+        $CLOSINGCOLUMN = $wh == 'AFSMT' ? "(STOCKQTY+ISNULL(PRPQTY,0))" : "STOCKQTY";
+        $qry = "SELECT ITH_WH
+                ,VSTOCK.ITH_ITMCD
+                ,MITM_ITMD1
+                ,MITM_SPTNO
+                ,BEFQTY
+                ,INQTY
+                ,PRPQTY
+                ,ABS(OUTQTY) OUTQTY
+                ,$CLOSINGCOLUMN STOCKQTY
+                ,MITM_STKUOM
+                ,UPPER(ISNULL(MITM_NCAT, '')) MITM_NCAT
+            FROM (
+                SELECT ITH_WH
+                    ,ITH_ITMCD
+                    ,RTRIM(MITM_ITMD1) MITM_ITMD1
+                    ,RTRIM(MITM_SPTNO) MITM_SPTNO
+                    ,SUM(ITH_QTY) STOCKQTY
+                    ,RTRIM(MITM_STKUOM) MITM_STKUOM
+                    ,MITM_NCAT
+                    ,SUM(CASE 
+                            WHEN ITH_DATEC < ?
+                                THEN ITH_QTY
+                            END) BEFQTY
+                FROM v_ith_tblc a
+                LEFT JOIN MITM_TBL b ON a.ITH_ITMCD = b.MITM_ITMCD
+                LEFT JOIN v_mitm_bsgroup ON ITH_ITMCD = PDPP_MDLCD
+                WHERE ITH_WH = '$whclosing'
+                    AND MITM_ITMD1 LIKE ?
+                    AND PDPP_BSGRP IN ($PBG)
+                    AND ITH_FORM NOT IN (
+                        'SASTART'
+                        ,'SA'
+                        )
+                    AND ITH_DATEC <= ?
+                GROUP BY ITH_ITMCD
+                    ,ITH_WH
+                    ,MITM_SPTNO
+                    ,MITM_STKUOM
+                    ,MITM_ITMD1
+                    ,MITM_NCAT
+                ) VSTOCK
+            LEFT JOIN (
+                SELECT ITH_ITMCD
+                    ,SUM(ITH_QTY) INQTY
+                FROM v_ith_tblc a
+                WHERE ITH_WH = '$whclosing'                    
+                    AND ITH_FORM NOT IN (
+                        'SPLIT-FG-LBL'
+                        ,'JOIN_IN'
+                        ,'JOIN_OUT'
+                        ,'CANCEL-SHIP'
+                        ,'TRFIN-FG'
+                        )
+                    AND ITH_FORM NOT IN (
+                        'SASTART'
+                        ,'SA'
+                        )
+                    AND ITH_DATEC = ?
+                    AND ITH_QTY > 0
+                GROUP BY ITH_ITMCD
+                ) VIN ON VSTOCK.ITH_ITMCD = VIN.ITH_ITMCD
+            LEFT JOIN (
+                SELECT ITH_ITMCD
+                    ,SUM(ITH_QTY) OUTQTY
+                FROM v_ith_tblc a
+                WHERE ITH_WH = '$whout'                    
+                    AND ITH_FORM NOT IN (
+                        'SPLIT-FG-LBL'
+                        ,'JOIN_IN'
+                        ,'JOIN_OUT'
+                        ,'CANCEL-SHIP'
+                        )
+                    AND ITH_FORM NOT IN (
+                        'SASTART'
+                        ,'SA'
+                        )
+                    AND ITH_DATEC = ?
+                    AND ITH_QTY < 0
+                GROUP BY ITH_ITMCD
+                ) VOUT ON VSTOCK.ITH_ITMCD = VOUT.ITH_ITMCD
+            LEFT JOIN (
+                SELECT ITH_ITMCD
+                    ,SUM(ITH_QTY) PRPQTY
+                FROM v_ith_tblc a
+                WHERE ITH_WH = 'ARSHP'                    
+                    AND ITH_FORM NOT IN (
+                        'SASTART'
+                        ,'SA'
+                        )
+                    AND ITH_DATEC <= ?
+                GROUP BY ITH_ITMCD
+                ) VPREP ON VSTOCK.ITH_ITMCD = VPREP.ITH_ITMCD
+            ORDER BY VSTOCK.ITH_ITMCD ASC";
+        $query = $this->db->query($qry, [$pdate,'%' . $item . '%', $pdate,  $pdate, $pdate,  $pdate]);
         return $query->result_array();
     }
     public function select_psi_stock_date_fg_rtn($main_wh, $inc_wh, $out_wh, $preparation_wh, $item, $pbg, $pdate)
@@ -619,6 +720,13 @@ class ITH_mod extends CI_Model
     {
         $qry = "wms_sp_std_stock_wbg ?, ?, ?";
         $query = $this->db->query($qry, [$wh, $item, $pdate]);
+        return $query->result_array();
+    }
+
+    public function selectPSIStockDateWBGByDescription($wh, $itemDescription, $pdate)
+    {
+        $qry = "wms_spSelectStockWBGByDescription ?, ?, ?";
+        $query = $this->db->query($qry, [$wh, $itemDescription, $pdate]);
         return $query->result_array();
     }
 

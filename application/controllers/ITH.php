@@ -49,7 +49,7 @@ class ITH extends CI_Controller
             $todis .= '<option value="' . trim($r->MBSG_BSGRP) . '">' . trim($r->MBSG_DESC) . '</option>';
         }
         $data['lgroup'] = $todis;
-        $todiswh  = '';
+        $todiswh = '';
         $rs = $this->MSTLOCG_mod->selectall();
         foreach ($rs as $r) {
             $todiswh .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . '</option>';
@@ -63,12 +63,12 @@ class ITH extends CI_Controller
         $this->load->view('wms_report/vfg_slowmoving');
     }
 
-    function form_minus_stock()
+    public function form_minus_stock()
     {
         $this->load->view('wms_report/vminus_stock');
     }
 
-    function minus_stock()
+    public function minus_stock()
     {
         header('Content-Type: application/json');
         $rs = $this->ITH_mod->select_minus_stock();
@@ -109,7 +109,7 @@ class ITH extends CI_Controller
         $rs_j = [];
         foreach ($rs as $r) {
             $rs_j[] = [
-                'id' => trim($r->MBSG_BSGRP), 'text' => trim($r->MBSG_DESC)
+                'id' => trim($r->MBSG_BSGRP), 'text' => trim($r->MBSG_DESC),
             ];
         }
         exit('{"data":' . json_encode($rs_j) . '}');
@@ -122,7 +122,7 @@ class ITH extends CI_Controller
         $rs_j = [];
         foreach ($rs as $r) {
             $rs_j[] = [
-                'id' => trim($r->MBSG_BSGRP), 'text' => trim($r->MBSG_DESC)
+                'id' => trim($r->MBSG_BSGRP), 'text' => trim($r->MBSG_DESC),
             ];
         }
         exit(json_encode($rs_j));
@@ -169,7 +169,7 @@ class ITH extends CI_Controller
     }
     public function vtxhistory()
     {
-        $todiswh  = '';
+        $todiswh = '';
         $rs = $this->MSTLOCG_mod->selectall();
         foreach ($rs as $r) {
             $todiswh .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . ' (' . $r['MSTLOCG_ID'] . ')</option>';
@@ -179,7 +179,7 @@ class ITH extends CI_Controller
     }
     public function form_txhistory()
     {
-        $todiswh  = '';
+        $todiswh = '';
         $rs = $this->MSTLOCG_mod->selectall();
         foreach ($rs as $r) {
             $todiswh .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . ' (' . $r['MSTLOCG_ID'] . ')</option>';
@@ -423,7 +423,6 @@ class ITH extends CI_Controller
         }
         echo '{"data":' . json_encode($rs) . '}';
     }
-
 
     public function get_output_prdsa()
     {
@@ -671,7 +670,7 @@ class ITH extends CI_Controller
     {
         $rs = $this->ITH_mod->select_qcwh_unscan();
         $rsscrap = $this->SCR_mod->select_scrapreport_balance();
-        $rsdisplay =  [];
+        $rsdisplay = [];
         foreach ($rs as &$r) {
             foreach ($rsscrap as &$s) {
                 if ($r['ITH_DOC'] == $s['DOC_NO'] && $s['SCRQTY'] > 0) {
@@ -706,8 +705,8 @@ class ITH extends CI_Controller
         $cassy = $_COOKIE["CKPSI_DASSY"];
         $cbsgroup = $_COOKIE["CKPSI_BSGRP"];
         $dtto = '';
-        $grpid =  $this->session->userdata('gid');
-        $usrid =  $this->session->userdata('nama');
+        $grpid = $this->session->userdata('gid');
+        $usrid = $this->session->userdata('nama');
         if ($cdtfrom == $cdtto) {
             if ($creport == 'a' || $creport == 'n') {
                 $thedate = strtotime($cdtfrom . '+1 days');
@@ -806,7 +805,6 @@ class ITH extends CI_Controller
             $no++;
         }
 
-
         $tgl = str_replace('-', '', substr($cdtfrom, 0, 10));
 
         $stringjudul = "$cbsgroup $tgl ";
@@ -845,8 +843,8 @@ class ITH extends CI_Controller
         $creport = $_COOKIE["CKPSI_DREPORT"];
         $cbsgroup = $_COOKIE["CKPSI_BSGROUP"];
         $dtto = '';
-        $grpid =  $this->session->userdata('gid');
-        $usrid =  $this->session->userdata('nama');
+        $grpid = $this->session->userdata('gid');
+        $usrid = $this->session->userdata('nama');
         if ($cdtfrom == $cdtto) {
             if ($creport == 'a' || $creport == 'n') {
                 $thedate = strtotime($cdtfrom . '+1 days');
@@ -865,7 +863,6 @@ class ITH extends CI_Controller
             $dtto = date('Y-m-d', $thedate) . " 06:59:00";
             $cdtfrom .= ' 07:00:00';
         }
-
 
         $rs = $this->ITH_mod->select_output_qcsa_byreff_bgxp($cdtfrom, $dtto, $cbsgroup);
 
@@ -920,7 +917,6 @@ class ITH extends CI_Controller
             $no++;
         }
 
-
         $tgl = str_replace('-', '', substr($cdtfrom, 0, 10));
 
         $stringjudul = "$cbsgroup AWIP1 $tgl ";
@@ -970,7 +966,7 @@ class ITH extends CI_Controller
                 $ttldata = count($cbg);
                 for ($i = 0; $i < $ttldata; $i++) {
                     $cr_bg = $cbg[$i];
-                    $rst = $this->ITH_mod->selectincfg_with_revision($thejob,  $csts, $cr_bg, $therevision);
+                    $rst = $this->ITH_mod->selectincfg_with_revision($thejob, $csts, $cr_bg, $therevision);
                     foreach ($rst as $r) {
                         $rs[] = $r;
                         if (!in_array($r['SER_DOC'], $joblist_distinct)) {
@@ -984,7 +980,7 @@ class ITH extends CI_Controller
                 $ttldata = count($cbg);
                 for ($i = 0; $i < $ttldata; $i++) {
                     $cr_bg = $cbg[$i];
-                    $rst = $this->ITH_mod->selectincfg($cjob,  $csts, $cr_bg);
+                    $rst = $this->ITH_mod->selectincfg($cjob, $csts, $cr_bg);
                     foreach ($rst as $r) {
                         $rs[] = $r;
                         if (!in_array($r['SER_DOC'], $joblist_distinct)) {
@@ -1035,7 +1031,7 @@ class ITH extends CI_Controller
             $ttldata = count($cbg);
             for ($i = 0; $i < $ttldata; $i++) {
                 $cr_bg = $cbg[$i];
-                $rst = $this->ITH_mod->selectincfg_prd_qc($cjob,  $csts, $cr_bg);
+                $rst = $this->ITH_mod->selectincfg_prd_qc($cjob, $csts, $cr_bg);
                 foreach ($rst as $r) {
                     $rs[] = $r;
                 }
@@ -1135,6 +1131,7 @@ class ITH extends CI_Controller
         $citem = $this->input->get('initem');
         $cdate = $this->input->get('indate');
         $cbgroup = $this->input->get('inbgroup');
+        $inSearchBy = $this->input->get('insearch_by');
         $sbgroup = "";
         if (is_array($cbgroup)) {
             for ($i = 0; $i < count($cbgroup); $i++) {
@@ -1148,11 +1145,11 @@ class ITH extends CI_Controller
             $sbgroup = "-";
         }
         $odate = strtotime($cdate . ' +1 days');
-        $tomorrow  = date("Y-m-d 07:00:00", $odate);
+        $tomorrow = date("Y-m-d 07:00:00", $odate);
         $cwh = $_COOKIE["CKPSI_WH"];
-        $main_wh = NULL;
-        $inc_wh = NULL;
-        $preparation_wh = NULL;
+        $main_wh = null;
+        $inc_wh = null;
+        $preparation_wh = null;
         switch ($cwh) {
             case 'NFWH4RT':
                 $main_wh = ['AFQART', 'NFWH4RT', 'ARSHPRTN'];
@@ -1165,12 +1162,22 @@ class ITH extends CI_Controller
                 $preparation_wh = 'ARSHPRTN2';
                 break;
         }
-        if ($sbgroup == "-") {
-            $rs = in_array($cwh, $this->FG_RETURN_WH) ?  $this->ITH_mod->select_psi_stock_date_wbg_fg_rtn($main_wh, $inc_wh, $main_wh, $preparation_wh, $citem, $cdate) :
+        if ($inSearchBy === 'item_code') {
+            if ($sbgroup == "-") {
+                $rs = in_array($cwh, $this->FG_RETURN_WH) ? $this->ITH_mod->select_psi_stock_date_wbg_fg_rtn($main_wh, $inc_wh, $main_wh, $preparation_wh, $citem, $cdate) :
                 $this->ITH_mod->select_psi_stock_date_wbg($cwh, $citem, $cdate);
-        } else {
-            $rs = in_array($cwh, $this->FG_RETURN_WH) ? $this->ITH_mod->select_psi_stock_date_fg_rtn($main_wh, $inc_wh, $main_wh, $preparation_wh, $citem, $sbgroup, $cdate) :
+            } else {
+                $rs = in_array($cwh, $this->FG_RETURN_WH) ? $this->ITH_mod->select_psi_stock_date_fg_rtn($main_wh, $inc_wh, $main_wh, $preparation_wh, $citem, $sbgroup, $cdate) :
                 $this->ITH_mod->select_psi_stock_date($cwh, $citem, $sbgroup, $cdate);
+            }
+        } else {
+            if ($sbgroup == "-") {
+                $rs = in_array($cwh, $this->FG_RETURN_WH) ? $this->ITH_mod->select_psi_stock_date_wbg_fg_rtn($main_wh, $inc_wh, $main_wh, $preparation_wh, $citem, $cdate) :
+                $this->ITH_mod->selectPSIStockDateWBGByDescription($cwh, $citem, $cdate);
+            } else {
+                $rs = in_array($cwh, $this->FG_RETURN_WH) ? $this->ITH_mod->select_psi_stock_date_fg_rtn($main_wh, $inc_wh, $main_wh, $preparation_wh, $citem, $sbgroup, $cdate) :
+                $this->ITH_mod->selectPSIStockAtDateByDescripton($cwh, $citem, $sbgroup, $cdate);
+            }
         }
         $atomorrow = ['date' => $tomorrow];
         die('{"data":' . json_encode($rs) . ',"info": ' . json_encode($atomorrow) . '}');
@@ -1182,7 +1189,7 @@ class ITH extends CI_Controller
         $citem = $this->input->post('initem');
         $rsfinal = [];
         foreach ($citem as $i) {
-            $rsfinal[] =  $this->ITH_mod->select_psi_stock_date_wbg_query('AFWH3', $i, '2021-08-11');
+            $rsfinal[] = $this->ITH_mod->select_psi_stock_date_wbg_query('AFWH3', $i, '2021-08-11');
         }
         die('{"request":' . json_encode($citem) . ',"response":' . json_encode($rsfinal) . '}');
     }
@@ -1193,7 +1200,7 @@ class ITH extends CI_Controller
         $citem = $this->input->post('initem');
         $rsfinal = [];
         foreach ($citem as $i) {
-            $rsfinal[] =  $this->ITH_mod->select_psi_stock_date_wbg_query('AFWH3', $i, '2021-08-11');
+            $rsfinal[] = $this->ITH_mod->select_psi_stock_date_wbg_query('AFWH3', $i, '2021-08-11');
         }
         die('{"request":' . json_encode($citem) . ',"response":' . json_encode($rsfinal) . '}');
     }
@@ -1254,18 +1261,18 @@ class ITH extends CI_Controller
         $lastdoc = "DSPS" . $currdate . $lsno;
         $ttlinserted = 0;
         for ($i = 0; $i < $ttlrows; $i++) {
-            foreach ($rs as  $r) {
+            foreach ($rs as $r) {
                 if (trim($aid[$i]) == trim($r['ITH_SER'])) {
-                    if ((float)$aqty[$i] <= (float)$r['ITH_QTY']) {
+                    if ((float) $aqty[$i] <= (float) $r['ITH_QTY']) {
                         $datas = [
                             'ITH_SER' => $aid[$i],
                             'ITH_ITMCD' => $aitem[$i],
                             'ITH_DATE' => $cdate,
                             'ITH_FORM' => 'OUT-SCR-FG',
                             'ITH_DOC' => $lastdoc,
-                            'ITH_QTY' => -(float)$aqty[$i],
-                            'ITH_WH' =>  $cwh,
-                            'ITH_USRID' => $this->session->userdata('nama')
+                            'ITH_QTY' => -(float) $aqty[$i],
+                            'ITH_WH' => $cwh,
+                            'ITH_USRID' => $this->session->userdata('nama'),
                         ];
                         $resith = $this->ITH_mod->insert_disposefg($datas);
                         $ttlinserted += $resith;
@@ -1300,17 +1307,17 @@ class ITH extends CI_Controller
         $lastdoc = "DSP" . $currdate . $lsno;
         $ttlinserted = 0;
         for ($i = 0; $i < $ttlrows; $i++) {
-            foreach ($rs as  $r) {
+            foreach ($rs as $r) {
                 if (trim($aitem[$i]) == trim($r['ITH_ITMCD'])) {
-                    if ((float)$aqty[$i] <= (float)$r['ITH_QTY']) {
+                    if ((float) $aqty[$i] <= (float) $r['ITH_QTY']) {
                         $datas = array(
                             'ITH_ITMCD' => $aitem[$i],
                             'ITH_DATE' => $cdate,
                             'ITH_FORM' => 'OUT-SCR-RM',
                             'ITH_DOC' => $lastdoc,
-                            'ITH_QTY' => -(float)$aqty[$i],
-                            'ITH_WH' =>  $cwh,
-                            'ITH_USRID' => $this->session->userdata('nama')
+                            'ITH_QTY' => -(float) $aqty[$i],
+                            'ITH_WH' => $cwh,
+                            'ITH_USRID' => $this->session->userdata('nama'),
                         );
                         $resith = $this->ITH_mod->insert_disposerm($datas);
                         $ttlinserted += $resith;
@@ -1398,7 +1405,7 @@ class ITH extends CI_Controller
         $myar = [];
         if (count($rsbef) > 0) {
             foreach ($rsbef as $t) {
-                $rstoret[] = ['ITH_ITMCD' => $t['ITH_ITMCD'], 'MITM_ITMD1' => $t['MITM_ITMD1'], 'ITH_FORM' => '', 'ITH_DOC' => '', 'ITH_DATEKU' => '', 'INCQTY' => '', 'OUTQTY' => '',  'ITH_BAL' => $t['BALQTY'], 'UOM' => $t['UOM'], 'ITH_DATEC' => ''];
+                $rstoret[] = ['ITH_ITMCD' => $t['ITH_ITMCD'], 'MITM_ITMD1' => $t['MITM_ITMD1'], 'ITH_FORM' => '', 'ITH_DOC' => '', 'ITH_DATEKU' => '', 'INCQTY' => '', 'OUTQTY' => '', 'ITH_BAL' => $t['BALQTY'], 'UOM' => $t['UOM'], 'ITH_DATEC' => ''];
                 foreach ($rs as $r) {
                     if ($r['ITH_ITMCD'] == $t['ITH_ITMCD']) {
                         $rstoret[] = $r;
@@ -1413,7 +1420,7 @@ class ITH extends CI_Controller
                     $r['ITH_BAL'] = $current_balance + $r['INCQTY'] + $r['OUTQTY'];
                     $current_balance = $r['ITH_BAL'];
                 }
-                $r['OUTQTY'] = abs((float)$r['OUTQTY']);
+                $r['OUTQTY'] = abs((float) $r['OUTQTY']);
             }
             unset($r);
             $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
@@ -1458,12 +1465,12 @@ class ITH extends CI_Controller
         $myar = [];
         if (!empty($rs) && empty($rsbef)) {
             $rsbef = [
-                ['ITRN_ITMCD' => $citemcd, 'MGAQTY' => 0, 'WQT' => 0]
+                ['ITRN_ITMCD' => $citemcd, 'MGAQTY' => 0, 'WQT' => 0],
             ];
         }
         if (count($rsbef) > 0) {
             foreach ($rsbef as $t) {
-                $rstoret[] = ['ITRN_ITMCD' => $t['ITRN_ITMCD'], 'ISUDT' => '', 'MGAQTY' => '', 'WQT' => '',  'MGABAL' => $t['MGAQTY'], 'WBAL' => $t['WQT']];
+                $rstoret[] = ['ITRN_ITMCD' => $t['ITRN_ITMCD'], 'ISUDT' => '', 'MGAQTY' => '', 'WQT' => '', 'MGABAL' => $t['MGAQTY'], 'WBAL' => $t['WQT']];
                 foreach ($rs as $r) {
                     if ($r['ITRN_ITMCD'] == $t['ITRN_ITMCD']) {
                         $rstoret[] = $r;
@@ -1506,11 +1513,11 @@ class ITH extends CI_Controller
                 break;
             case 'aju':
                 $rsbef = $this->ITH_mod->select_txhistory_customs_bef_d1_byaju($citemcd);
-                $rs = $this->ITH_mod->select_txhistory_customs(['RPSTOCK_NOAJU' => $citemcd],  $cdate2);
+                $rs = $this->ITH_mod->select_txhistory_customs(['RPSTOCK_NOAJU' => $citemcd], $cdate2);
                 break;
             case 'daf':
                 $rsbef = $this->ITH_mod->select_txhistory_customs_bef_d1_bydaftar($citemcd, $cdate1);
-                $rs = $this->ITH_mod->select_txhistory_customs(['RPSTOCK_BCNUM' => $citemcd],  $cdate2);
+                $rs = $this->ITH_mod->select_txhistory_customs(['RPSTOCK_BCNUM' => $citemcd], $cdate2);
                 break;
         }
         $rstoret = [];
@@ -1518,7 +1525,7 @@ class ITH extends CI_Controller
         if (count($rsbef) > 0) {
             foreach ($rsbef as $t) {
                 $rstoret[] = [
-                    'RPSTOCK_ITMNUM' => $t['RPSTOCK_ITMNUM'], 'MITM_ITMD1' => $t['MITM_ITMD1'], 'AJU' => $t['RPSTOCK_NOAJU'], 'DAFTAR' => $t['RPSTOCK_BCNUM'], 'DOC' => $t['RPSTOCK_DOC'], 'IODATE' => $t['INCDATE'], 'INCQTY' => '', 'OUTQTY' => '', 'BAL' => $t['BALQTY'], 'INCDATE' => $t['INCDATE'], 'HEADER' => '1'
+                    'RPSTOCK_ITMNUM' => $t['RPSTOCK_ITMNUM'], 'MITM_ITMD1' => $t['MITM_ITMD1'], 'AJU' => $t['RPSTOCK_NOAJU'], 'DAFTAR' => $t['RPSTOCK_BCNUM'], 'DOC' => $t['RPSTOCK_DOC'], 'IODATE' => $t['INCDATE'], 'INCQTY' => '', 'OUTQTY' => '', 'BAL' => $t['BALQTY'], 'INCDATE' => $t['INCDATE'], 'HEADER' => '1',
                 ];
                 foreach ($rs as &$r) {
                     if ($r['ITMCD'] == $t['RPSTOCK_ITMNUM'] && $r['RPSTOCK_NOAJU'] == $t['RPSTOCK_NOAJU'] && $r['RPSTOCK_DOC'] === $t['RPSTOCK_DOC'] && $r['MUSED'] == '') {
@@ -1536,7 +1543,7 @@ class ITH extends CI_Controller
                     $r['BAL'] = $current_balance + $r['INCQTY'] + $r['OUTQTY'];
                     $current_balance = $r['BAL'];
                 }
-                $r['OUTQTY'] = abs((int)$r['OUTQTY']);
+                $r['OUTQTY'] = abs((int) $r['OUTQTY']);
             }
             unset($r);
             $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
@@ -1572,7 +1579,7 @@ class ITH extends CI_Controller
             $myar[] = ['cd' => 0, 'msg' => 'PIN is not valid'];
             die('{"status":' . json_encode($myar) . '}');
         }
-        $respon = $this->ZRPSTOCK_mod->updatebyId(['RPSTOCK_REMARK' => $outdoc, 'RPSTOCK_ITMNUM' => $incitem, 'RPSTOCK_DOC' => $incdoc, 'deleted_at is null' => NULL], ['deleted_at' => $deleted_at]);
+        $respon = $this->ZRPSTOCK_mod->updatebyId(['RPSTOCK_REMARK' => $outdoc, 'RPSTOCK_ITMNUM' => $incitem, 'RPSTOCK_DOC' => $incdoc, 'deleted_at is null' => null], ['deleted_at' => $deleted_at]);
         $this->LOGXDATA_mod->insert(['LOGXDATA_MENU' => 'CANCEL EXBC TX', 'LOGXDATA_USER' => $this->session->userdata('nama')]);
         $myar[] = ['cd' => 1, 'msg' => 'OK', 'respon' => $respon];
         die('{"status":' . json_encode($myar) . '}');
@@ -1588,7 +1595,7 @@ class ITH extends CI_Controller
         $rscandidate = $this->ZRPSTOCK_mod->query("SELECT * FROM RPSAL_BCSTOCK WHERE RPSTOCK_ITMNUM IN (
             SELECT RTRIM(RPSTOCK_ITMNUM) FROM RPSAL_BCSTOCK WHERE deleted_at IS NULL AND RPSTOCK_REMARK='21/12/04/0006-R' AND RPSTOCK_BCDATE>='2021-10-31'
             GROUP BY RPSTOCK_ITMNUM
-            ) AND deleted_at IS NULL AND (RPSTOCK_REMARK LIKE '%adj%' OR RPSTOCK_REMARK LIKE '%MIG%') 
+            ) AND deleted_at IS NULL AND (RPSTOCK_REMARK LIKE '%adj%' OR RPSTOCK_REMARK LIKE '%MIG%')
             order by RPSTOCK_BCDATE desc");
 
         $rscanfix = [];
@@ -1627,7 +1634,7 @@ class ITH extends CI_Controller
         $myar = [];
         if (count($rs) > 0) {
             foreach ($rsbef as $t) {
-                $rstoret[] = ['ITH_ITMCD' => $t['ITH_ITMCD'], 'MITM_ITMD1' => $t['MITM_ITMD1'], 'ITH_FORM' => '', 'ITH_DOC' => '', 'ITH_DATEKU' => '', 'INCQTY' => '', 'OUTQTY' => '',  'ITH_BAL' => $t['BALQTY']];
+                $rstoret[] = ['ITH_ITMCD' => $t['ITH_ITMCD'], 'MITM_ITMD1' => $t['MITM_ITMD1'], 'ITH_FORM' => '', 'ITH_DOC' => '', 'ITH_DATEKU' => '', 'INCQTY' => '', 'OUTQTY' => '', 'ITH_BAL' => $t['BALQTY']];
                 foreach ($rs as $r) {
                     if ($r['ITH_ITMCD'] == $t['ITH_ITMCD']) {
                         $rstoret[] = $r;
@@ -1695,7 +1702,7 @@ class ITH extends CI_Controller
             $sheet->setCellValueByColumnAndRow(5, $no, $r['ITH_FORM']);
             $sheet->setCellValueByColumnAndRow(6, $no, $r['ITH_DOC']);
             $sheet->setCellValueByColumnAndRow(7, $no, $r['INCQTY']);
-            $sheet->setCellValueByColumnAndRow(8, $no, abs((float)$r['OUTQTY']));
+            $sheet->setCellValueByColumnAndRow(8, $no, abs((float) $r['OUTQTY']));
             $sheet->setCellValueByColumnAndRow(9, $no, $r['ITH_BAL']);
             $no++;
         }
@@ -1749,7 +1756,7 @@ class ITH extends CI_Controller
         die('{"status": ' . json_encode($myar) . ', "data":' . json_encode($rs) . '}');
     }
 
-    function sync_parent_based_doc()
+    public function sync_parent_based_doc()
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
@@ -1915,7 +1922,7 @@ class ITH extends CI_Controller
         $cutoffdate = $this->input->get('date');
         $rschild = [];
         $rs_rm_null_c = $this->ITH_mod->select_rm_null_bo_zeroed_combined($cutoffdate);
-        $rs_rm_null = $this->ITH_mod->select_rm_null_bo_zeroed($cutoffdate); #because of set 0 
+        $rs_rm_null = $this->ITH_mod->select_rm_null_bo_zeroed($cutoffdate); #because of set 0
         $rs_rm_notnull = $this->SERD_mod->select_nonnull_rm($cutoffdate);
         $rs_rm_subassy = $this->SERD_mod->select_nonnull_rm_subassy($cutoffdate);
         $a_sample = [];
@@ -1934,13 +1941,13 @@ class ITH extends CI_Controller
                             'BEFQTY' => $b['QTPER'] * $r['BEFQTYFG'],
                             'PLOTQTY' => 0,
                             'ITH_WH' => $r['ITH_WH'],
-                            'REMARK' => 'FROM SAMPLE ' . $r['SERD2SER_SMP']
+                            'REMARK' => 'FROM SAMPLE ' . $r['SERD2SER_SMP'],
                         ];
                     }
                 }
             }
         }
-        $rssummary =  [];
+        $rssummary = [];
         if (count($rs_rm_notnull)) {
             $rschild = array_merge($rschild, $rs_rm_notnull, $rs_rm_subassy, $rs_rm_null_c);
             foreach ($rschild as $n) {
@@ -1956,7 +1963,7 @@ class ITH extends CI_Controller
                 if (!$isfound) {
                     $rssummary[] = [
                         'ITH_ITMCD' => $n['ITH_ITMCD'],
-                        'BEFQTY' => $n['BEFQTY']
+                        'BEFQTY' => $n['BEFQTY'],
                     ];
                 }
             }
@@ -1993,7 +2000,7 @@ class ITH extends CI_Controller
     public function out_wor_wip()
     {
         ini_set('max_execution_time', '-1');
-        header('Content-Type: application/json');        
+        header('Content-Type: application/json');
         $date = $this->input->get('date');
         $msg = '';
         if (empty($date)) {
@@ -2021,7 +2028,7 @@ class ITH extends CI_Controller
                     if ($r['SERD2_SER_SMP'] == $b['SERD2_SER']) {
                         if ($r['SER_QTYLOT'] * $b['QTPER'] > 0) {
                             $tosave[] = [
-                                'ITH_FORM' => 'WOR', 'ITH_DATE' => substr($r['ITH_LUPDT'], 0, 10), 'ITH_LUPDT' => $r['ITH_LUPDT'], 'ITH_ITMCD' => $b['ITH_ITMCD'], 'ITH_DOC' => $r['SER_DOC'], 'ITH_QTY' => -$r['SER_QTYLOT'] * $b['QTPER'], 'ITH_WH' => $r['OUTWH'], 'ITH_REMARK' => $r['SER_ID']
+                                'ITH_FORM' => 'WOR', 'ITH_DATE' => substr($r['ITH_LUPDT'], 0, 10), 'ITH_LUPDT' => $r['ITH_LUPDT'], 'ITH_ITMCD' => $b['ITH_ITMCD'], 'ITH_DOC' => $r['SER_DOC'], 'ITH_QTY' => -$r['SER_QTYLOT'] * $b['QTPER'], 'ITH_WH' => $r['OUTWH'], 'ITH_REMARK' => $r['SER_ID'],
                             ];
                         }
                     }
@@ -2032,7 +2039,7 @@ class ITH extends CI_Controller
         $rowaffected = 0;
         foreach ($rs as $r) {
             $tosave[] = [
-                'ITH_FORM' => 'WOR', 'ITH_DATE' => substr($r['ITH_LUPDT'], 0, 10), 'ITH_LUPDT' => $r['ITH_LUPDT'], 'ITH_ITMCD' => $r['SERD2_ITMCD'], 'ITH_DOC' => $r['SER_DOC'], 'ITH_QTY' => -$r['QTY'], 'ITH_WH' => $r['OUTWH'], 'ITH_REMARK' => $r['SER_ID']
+                'ITH_FORM' => 'WOR', 'ITH_DATE' => substr($r['ITH_LUPDT'], 0, 10), 'ITH_LUPDT' => $r['ITH_LUPDT'], 'ITH_ITMCD' => $r['SERD2_ITMCD'], 'ITH_DOC' => $r['SER_DOC'], 'ITH_QTY' => -$r['QTY'], 'ITH_WH' => $r['OUTWH'], 'ITH_REMARK' => $r['SER_ID'],
             ];
         }
         if ($tosave) {
@@ -2042,7 +2049,6 @@ class ITH extends CI_Controller
         log_message('error', 'finish out_wor');
         die(json_encode(['status' => $myar]));
     }
-
 
     public function out_wor_wip_subassy()
     {
@@ -2065,7 +2071,7 @@ class ITH extends CI_Controller
         $rowaffected = 0;
         foreach ($rs as $r) {
             $tosave[] = [
-                'ITH_FORM' => 'WOR', 'ITH_DATE' => substr($r['ITH_LUPDT'], 0, 10), 'ITH_LUPDT' => $r['ITH_LUPDT'], 'ITH_ITMCD' => $r['SERD2_ITMCD'], 'ITH_DOC' => $r['SER_DOC'], 'ITH_QTY' => -$r['QTY'], 'ITH_WH' => $r['OUTWH'], 'ITH_REMARK' => $r['SERML_COMID']
+                'ITH_FORM' => 'WOR', 'ITH_DATE' => substr($r['ITH_LUPDT'], 0, 10), 'ITH_LUPDT' => $r['ITH_LUPDT'], 'ITH_ITMCD' => $r['SERD2_ITMCD'], 'ITH_DOC' => $r['SER_DOC'], 'ITH_QTY' => -$r['QTY'], 'ITH_WH' => $r['OUTWH'], 'ITH_REMARK' => $r['SERML_COMID'],
             ];
         }
         if ($tosave) {
@@ -2082,7 +2088,7 @@ class ITH extends CI_Controller
         $cutoffdate = $this->input->get('cutoffdate');
         $rschild = [];
         $rs_rm_null_c = $this->ITH_mod->select_rm_null_bo_zeroed_combined($cutoffdate);
-        $rs_rm_null = $this->ITH_mod->select_rm_null_bo_zeroed($cutoffdate); #because of set 0 
+        $rs_rm_null = $this->ITH_mod->select_rm_null_bo_zeroed($cutoffdate); #because of set 0
         $rs_rm_notnull = $this->SERD_mod->select_nonnull_rm($cutoffdate);
         $rs_rm_subassy = $this->SERD_mod->select_nonnull_rm_subassy($cutoffdate);
         $rs_bcstock = $this->RCV_mod->select_bcstock($cutoffdate);
@@ -2103,7 +2109,7 @@ class ITH extends CI_Controller
                             'BEFQTY' => $b['QTPER'] * $r['BEFQTYFG'],
                             'PLOTQTY' => 0,
                             'ITH_WH' => $r['ITH_WH'],
-                            'REMARK' => 'FROM SAMPLE ' . $r['SERD2SER_SMP']
+                            'REMARK' => 'FROM SAMPLE ' . $r['SERD2SER_SMP'],
                         ];
                     }
                 }
@@ -2118,7 +2124,7 @@ class ITH extends CI_Controller
                 if ($r['ITH_ITMCD'] == $b['RPSTOCK_ITMNUM'] && $r['BEFQTY'] != $r['PLOTQTY'] && $b['CURRENTSTOCK'] > 0) {
                     $balance = $r['BEFQTY'] - $r['PLOTQTY'];
                     if ($balance > $b['CURRENTSTOCK']) {
-                        $r['PLOTQTY'] +=  $b['CURRENTSTOCK'];
+                        $r['PLOTQTY'] += $b['CURRENTSTOCK'];
                         $b['CURRENTSTOCK'] = 0;
                     } else {
                         $b['CURRENTSTOCK'] -= $balance;
@@ -2162,16 +2168,20 @@ class ITH extends CI_Controller
         unset($r);
         #end
 
-
-
         #2nd Filter
         $a_itemcdonly = [];
         foreach ($rschild as $r) {
             if ($r['BEFQTY'] != $r['PLOTQTY']) {
-                if (!in_array($r['ITH_ITMCD'], $a_itemcdonly)) $a_itemcdonly[] = $r['ITH_ITMCD'];
+                if (!in_array($r['ITH_ITMCD'], $a_itemcdonly)) {
+                    $a_itemcdonly[] = $r['ITH_ITMCD'];
+                }
+
                 foreach ($rsGrade as $g) {
                     if ($g['MITMGRP_ITMCD_GRD'] === $r['ITH_ITMCD']) {
-                        if (!in_array($g['MITMGRP_ITMCD'], $a_itemcdonly)) $a_itemcdonly[] = $g['MITMGRP_ITMCD'];
+                        if (!in_array($g['MITMGRP_ITMCD'], $a_itemcdonly)) {
+                            $a_itemcdonly[] = $g['MITMGRP_ITMCD'];
+                        }
+
                         break;
                     }
                 }
@@ -2191,7 +2201,7 @@ class ITH extends CI_Controller
                 if ($r['ITH_ITMCD'] == $b['PGRN_ITMCD'] && $r['BEFQTY'] != $r['PLOTQTY'] && $b['CURRENTSTOCK'] > 0) {
                     $balance = $r['BEFQTY'] - $r['PLOTQTY'];
                     if ($balance > $b['CURRENTSTOCK']) {
-                        $r['PLOTQTY'] +=  $b['CURRENTSTOCK'];
+                        $r['PLOTQTY'] += $b['CURRENTSTOCK'];
                         $b['CURRENTSTOCK'] = 0;
                     } else {
                         $b['CURRENTSTOCK'] -= $balance;
@@ -2215,7 +2225,7 @@ class ITH extends CI_Controller
                             if ($g['MITMGRP_ITMCD'] == $b['PGRN_ITMCD'] && $r['BEFQTY'] != $r['PLOTQTY'] && $b['CURRENTSTOCK'] > 0) {
                                 $balance = $r['BEFQTY'] - $r['PLOTQTY'];
                                 if ($balance > $b['CURRENTSTOCK']) {
-                                    $r['PLOTQTY'] +=  $b['CURRENTSTOCK'];
+                                    $r['PLOTQTY'] += $b['CURRENTSTOCK'];
                                     $b['CURRENTSTOCK'] = 0;
                                 } else {
                                     $b['CURRENTSTOCK'] -= $balance;
@@ -2262,7 +2272,7 @@ class ITH extends CI_Controller
                 if ($r['ITH_ITMCD'] == $b['RPSTOCK_ITMNUM'] && $r['BEFQTY'] != $r['PLOTQTY'] && $b['CURRENTSTOCK'] > 0) {
                     $balance = $r['BEFQTY'] - $r['PLOTQTY'];
                     if ($balance > $b['CURRENTSTOCK']) {
-                        $r['PLOTQTY'] +=  $b['CURRENTSTOCK'];
+                        $r['PLOTQTY'] += $b['CURRENTSTOCK'];
                         $b['CURRENTSTOCK'] = 0;
                     } else {
                         $b['CURRENTSTOCK'] -= $balance;
@@ -2285,7 +2295,7 @@ class ITH extends CI_Controller
                             if ($g['MITMGRP_ITMCD'] == $b['RPSTOCK_ITMNUM'] && $r['BEFQTY'] != $r['PLOTQTY'] && $b['CURRENTSTOCK'] > 0) {
                                 $balance = $r['BEFQTY'] - $r['PLOTQTY'];
                                 if ($balance > $b['CURRENTSTOCK']) {
-                                    $r['PLOTQTY'] +=  $b['CURRENTSTOCK'];
+                                    $r['PLOTQTY'] += $b['CURRENTSTOCK'];
                                     $b['CURRENTSTOCK'] = 0;
                                 } else {
                                     $b['CURRENTSTOCK'] -= $balance;
@@ -2311,7 +2321,7 @@ class ITH extends CI_Controller
                 if ($r['ITH_ITMCD'] == $b['RPSTOCK_ITMNUM'] && $r['BEFQTY'] != $r['PLOTQTY'] && $b['CURRENTSTOCK'] > 0) {
                     $balance = $r['BEFQTY'] - $r['PLOTQTY'];
                     if ($balance > $b['CURRENTSTOCK']) {
-                        $r['PLOTQTY'] +=  $b['CURRENTSTOCK'];
+                        $r['PLOTQTY'] += $b['CURRENTSTOCK'];
                         $b['CURRENTSTOCK'] = 0;
                     } else {
                         $b['CURRENTSTOCK'] -= $balance;
@@ -2341,7 +2351,7 @@ class ITH extends CI_Controller
         die('{"data": ' . json_encode($rschild) . ',"rsrcv2":' . json_encode($rsrcv2) . ',"icsdata":' . json_encode($rsicsused) . '}');
     }
 
-    function form_st_itinventory()
+    public function form_st_itinventory()
     {
         $this->load->view('wms/vst_itinventory');
     }
@@ -2356,7 +2366,7 @@ class ITH extends CI_Controller
         $cwh = $cwh === 'AFWH3' ? 'AFSMT' : $cwh;
         $cdate = $this->input->post('indate');
         $cpin = $this->input->post('inpin');
-        $usrid =  $this->session->userdata('nama');
+        $usrid = $this->session->userdata('nama');
         $myar = [];
         #validate PIN
         if ($cpin != 'NAHCLOSING') {
@@ -2391,7 +2401,7 @@ class ITH extends CI_Controller
                     'ITH_DOC' => 'DOCINV' . $dateformat,
                     'ITH_FORM' => $ith_form,
                     'ITH_USRID' => $usrid,
-                    'ITH_REMARK' => 'do at ' . $current_datetime
+                    'ITH_REMARK' => 'do at ' . $current_datetime,
                 ];
             }
         }
@@ -2444,7 +2454,7 @@ class ITH extends CI_Controller
                 } else {
                     $res = $this->RPSAL_INVENTORY_mod->check_Primary($WHERE);
                     $myar[] = [
-                        'cd' => "0", 'msg' => 'there is a discrepancy, please fix it first', 'res' => $res, 'where' => $WHERE, 'rssaved' => $rssaved, 'diff1row' => $r
+                        'cd' => "0", 'msg' => 'there is a discrepancy, please fix it first', 'res' => $res, 'where' => $WHERE, 'rssaved' => $rssaved, 'diff1row' => $r,
                     ];
                     die(json_encode(['status' => $myar]));
                     break;
@@ -2460,7 +2470,7 @@ class ITH extends CI_Controller
                 if (strtoupper($r['ITH_ITMCD']) == strtoupper($s['INV_ITMNUM'])) {
                     if ($r['STOCKQTY'] * 1 != $s['INV_QTY'] * 1) {
                         $WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];
-                        $ttlupdated += $this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' =>  $cdate], $WHERE);
+                        $ttlupdated += $this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $cdate], $WHERE);
                     }
                     $isfound = true;
                     break;
@@ -2468,7 +2478,7 @@ class ITH extends CI_Controller
             }
             if (!$isfound) {
                 $saverows[] = [
-                    'INV_ITMNUM' => $r['ITH_ITMCD'], 'INV_MONTH' => $WHERE['INV_MONTH'], 'INV_YEAR' => $WHERE['INV_YEAR'], 'INV_WH' => $cwh == 'AFSMT' ? 'AFWH3' : $cwh, 'INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $cdate, 'created_at' => $dateTimeTosave
+                    'INV_ITMNUM' => $r['ITH_ITMCD'], 'INV_MONTH' => $WHERE['INV_MONTH'], 'INV_YEAR' => $WHERE['INV_YEAR'], 'INV_WH' => $cwh == 'AFSMT' ? 'AFWH3' : $cwh, 'INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $cdate, 'created_at' => $dateTimeTosave,
                 ];
             }
         }
@@ -2477,17 +2487,17 @@ class ITH extends CI_Controller
         }
         if ($ttlsaved > 0 || $ttlupdated > 0) {
             $myar[] = [
-                'cd' => "1", 'msg' => 'done, Total saved : ' . $ttlsaved . ' , Total updated :' . $ttlupdated, 'rs' => $rs
+                'cd' => "1", 'msg' => 'done, Total saved : ' . $ttlsaved . ' , Total updated :' . $ttlupdated, 'rs' => $rs,
             ];
         } else {
             $myar[] = [
-                'cd' => "1", 'msg' => 'done, nothing changes'
+                'cd' => "1", 'msg' => 'done, nothing changes',
             ];
         }
         die('{"status":' . json_encode($myar) . ',"data":' . json_encode($rsadj) . '}');
     }
 
-    function inventory_date()
+    public function inventory_date()
     {
         header('Content-Type: application/json');
         $invYear = $this->input->get('year');
@@ -2520,7 +2530,7 @@ class ITH extends CI_Controller
                 if (strtoupper($r['ITH_ITMCD']) == strtoupper($s['INV_ITMNUM'])) {
                     if ($r['STOCKQTY'] * 1 != $s['INV_QTY'] * 1) {
                         $WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];
-                        $ttlupdated += $this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' =>  $cdate], $WHERE);
+                        $ttlupdated += $this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $cdate], $WHERE);
                     }
                     $isfound = true;
                     break;
@@ -2528,7 +2538,7 @@ class ITH extends CI_Controller
             }
             if (!$isfound) {
                 $saverows[] = [
-                    'INV_ITMNUM' => $r['ITH_ITMCD'], 'INV_MONTH' => $WHERE['INV_MONTH'], 'INV_YEAR' => $WHERE['INV_YEAR'], 'INV_WH' => $cwh == 'AFSMT' ? 'AFWH3' : $cwh, 'INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $cdate, 'created_at' => $current_datetime
+                    'INV_ITMNUM' => $r['ITH_ITMCD'], 'INV_MONTH' => $WHERE['INV_MONTH'], 'INV_YEAR' => $WHERE['INV_YEAR'], 'INV_WH' => $cwh == 'AFSMT' ? 'AFWH3' : $cwh, 'INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $cdate, 'created_at' => $current_datetime,
                 ];
             }
         }
@@ -2537,11 +2547,11 @@ class ITH extends CI_Controller
         }
         if ($ttlsaved > 0 || $ttlupdated > 0) {
             $myar[] = [
-                'cd' => "1", 'msg' => 'done, Total saved : ' . $ttlsaved . ' , Total updated :' . $ttlupdated, 'rs' => $rs
+                'cd' => "1", 'msg' => 'done, Total saved : ' . $ttlsaved . ' , Total updated :' . $ttlupdated, 'rs' => $rs,
             ];
         } else {
             $myar[] = [
-                'cd' => "1", 'msg' => 'done, nothing changes', 'data' => $saverows
+                'cd' => "1", 'msg' => 'done, nothing changes', 'data' => $saverows,
             ];
         }
         die('{"status":' . json_encode($myar) . ',"data":' . json_encode($rsadj) . '}');
@@ -2571,7 +2581,7 @@ class ITH extends CI_Controller
                     if ($r['STOCKQTY'] * 1 != $s['INV_QTY'] * 1) {
                         $WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];
                         $WHERE['INV_WH'] = $s['INV_WH'];
-                        $ttlupdated += $this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' =>  $cdate], $WHERE);
+                        $ttlupdated += $this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $cdate], $WHERE);
                     }
                     $isfound = true;
                     break;
@@ -2579,7 +2589,7 @@ class ITH extends CI_Controller
             }
             if (!$isfound) {
                 $saverows[] = [
-                    'INV_ITMNUM' => $r['ITH_ITMCD'], 'INV_MONTH' => $WHERE['INV_MONTH'], 'INV_YEAR' => $WHERE['INV_YEAR'], 'INV_WH' => $r['ICYC_WHSCD'] == 'AFSMT' ? 'AFWH3' : $r['ICYC_WHSCD'], 'INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $cdate, 'created_at' => $current_datetime
+                    'INV_ITMNUM' => $r['ITH_ITMCD'], 'INV_MONTH' => $WHERE['INV_MONTH'], 'INV_YEAR' => $WHERE['INV_YEAR'], 'INV_WH' => $r['ICYC_WHSCD'] == 'AFSMT' ? 'AFWH3' : $r['ICYC_WHSCD'], 'INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $cdate, 'created_at' => $current_datetime,
                 ];
             }
         }
@@ -2588,16 +2598,16 @@ class ITH extends CI_Controller
         }
         if ($ttlsaved > 0 || $ttlupdated > 0) {
             $myar[] = [
-                'cd' => "1", 'msg' => 'Uploaded successfully', 'rs' => $rs
+                'cd' => "1", 'msg' => 'Uploaded successfully', 'rs' => $rs,
             ];
         } else {
             if (count($rs)) {
                 $myar[] = [
-                    'cd' => "1", 'msg' => 'nothing changes', 'data' => $saverows
+                    'cd' => "1", 'msg' => 'nothing changes', 'data' => $saverows,
                 ];
             } else {
                 $myar[] = [
-                    'cd' => "0", 'msg' => 'Stock taking on ' . $cdate . ' is empty', 'data' => $saverows
+                    'cd' => "0", 'msg' => 'Stock taking on ' . $cdate . ' is empty', 'data' => $saverows,
                 ];
             }
         }
@@ -2613,12 +2623,12 @@ class ITH extends CI_Controller
             $myar = ["cd" => "0", "msg" => "Session is expired please reload page"];
             die(json_encode(['status' => $myar]));
         }
-        $whException = ['AFWH3', 'AWIP1',  'PSIEQUIP'];#'AFWH9SC',
+        $whException = ['AFWH3', 'AWIP1', 'PSIEQUIP']; #'AFWH9SC',
         $date = $this->input->post('date');
         $location = $this->input->post('location');
         $adjtype = $this->input->post('adjtype');
         $form_prefix = $adjtype === 'P' ? 'ADJ-I-' : 'ADJ-O-';
-        $usrid =  $this->session->userdata('nama');
+        $usrid = $this->session->userdata('nama');
         $current_datetime = date('Y-m-d H:i:s');
         if (!in_array($location, $whException)) {
             $dateObj = new DateTime($date);
@@ -2665,7 +2675,7 @@ class ITH extends CI_Controller
                         'ITH_DOC' => 'DOCINV' . $dateformat,
                         'ITH_FORM' => $ith_form,
                         'ITH_USRID' => $usrid,
-                        'ITH_REMARK' => 'do at ' . $current_datetime
+                        'ITH_REMARK' => 'do at ' . $current_datetime,
                     ];
                 }
             }
@@ -2689,7 +2699,7 @@ class ITH extends CI_Controller
         $location = $this->input->post('location');
         $upltype = $this->input->post('upltype');
         $cwh_inv = $location == 'AFSMT' ? 'AFWH3' : $location;
-        $cwh_wms =  $location == 'AFWH3' ? 'AFSMT' : $location;
+        $cwh_wms = $location == 'AFWH3' ? 'AFSMT' : $location;
         $dateObj = new DateTime($date);
         $_MONTH = $dateObj->format('m');
         $_YEAR = $dateObj->format('Y');
@@ -2725,12 +2735,12 @@ class ITH extends CI_Controller
                     if ($upltype === 'P') {
                         if ($r['STOCKQTY'] * 1 != $s['INV_PHY_QTY'] * 1) {
                             $WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];
-                            $ttlupdated += $this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_PHY_QTY' => $r['STOCKQTY'] * 1, 'INV_PHY_DATE' =>  $date], $WHERE);
+                            $ttlupdated += $this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_PHY_QTY' => $r['STOCKQTY'] * 1, 'INV_PHY_DATE' => $date], $WHERE);
                         }
                     } else {
                         if ($r['STOCKQTY'] * 1 != $s['INV_QTY'] * 1) {
                             $WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];
-                            $ttlupdated += $this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' =>  $date], $WHERE);
+                            $ttlupdated += $this->RPSAL_INVENTORY_mod->updatebyVAR(['INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $date], $WHERE);
                         }
                     }
                     $isfound = true;
@@ -2740,11 +2750,11 @@ class ITH extends CI_Controller
             if (!$isfound) {
                 if ($upltype === 'P') {
                     $saverows[] = [
-                        'INV_ITMNUM' => $r['ITH_ITMCD'], 'INV_MONTH' => $WHERE['INV_MONTH'], 'INV_YEAR' => $WHERE['INV_YEAR'], 'INV_WH' => $cwh_inv, 'INV_PHY_QTY' => $r['STOCKQTY'] * 1, 'INV_PHY_DATE' => $date, 'created_at' => $dateTimeTosave
+                        'INV_ITMNUM' => $r['ITH_ITMCD'], 'INV_MONTH' => $WHERE['INV_MONTH'], 'INV_YEAR' => $WHERE['INV_YEAR'], 'INV_WH' => $cwh_inv, 'INV_PHY_QTY' => $r['STOCKQTY'] * 1, 'INV_PHY_DATE' => $date, 'created_at' => $dateTimeTosave,
                     ];
                 } else {
                     $saverows[] = [
-                        'INV_ITMNUM' => $r['ITH_ITMCD'], 'INV_MONTH' => $WHERE['INV_MONTH'], 'INV_YEAR' => $WHERE['INV_YEAR'], 'INV_WH' => $cwh_inv, 'INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $date, 'created_at' => $dateTimeTosave
+                        'INV_ITMNUM' => $r['ITH_ITMCD'], 'INV_MONTH' => $WHERE['INV_MONTH'], 'INV_YEAR' => $WHERE['INV_YEAR'], 'INV_WH' => $cwh_inv, 'INV_QTY' => $r['STOCKQTY'] * 1, 'INV_DATE' => $date, 'created_at' => $dateTimeTosave,
                     ];
                 }
             }
@@ -2754,11 +2764,11 @@ class ITH extends CI_Controller
         }
         if ($ttlsaved > 0 || $ttlupdated > 0) {
             $myar = [
-                'cd' => "1", 'msg' => 'done,', 'reff' => $location
+                'cd' => "1", 'msg' => 'done,', 'reff' => $location,
             ];
         } else {
             $myar = [
-                'cd' => "1", 'msg' => 'done, nothing changes', 'reff' => $location, 'data' => $saverows
+                'cd' => "1", 'msg' => 'done, nothing changes', 'reff' => $location, 'data' => $saverows,
             ];
         }
         die(json_encode(['status' => $myar, 'data' => $saverows]));
@@ -2789,7 +2799,7 @@ class ITH extends CI_Controller
         $this->load->view('wms_report/vkka_mega');
     }
 
-    function sync_abnormal_transaction($pdate)
+    public function sync_abnormal_transaction($pdate)
     {
         $dateTimesBin = date('Y-m-d H:i:s');
         $date = $pdate;
@@ -2840,7 +2850,7 @@ class ITH extends CI_Controller
                                 'ITH_QTY' => $d['ITH_QTY'] * -1,
                                 'ITH_WH' => $wh,
                                 'ITH_LUPDT' => $d['ITH_LUPDT'],
-                                'ITH_USRID' => $d['ITH_USRID']
+                                'ITH_USRID' => $d['ITH_USRID'],
                             ];
                             $rsPatchBin[] = [
                                 'ITH_ITMCD' => $r['ITH_ITMCD'],
@@ -2852,7 +2862,7 @@ class ITH extends CI_Controller
                                 'ITH_LUPDT' => $d['ITH_LUPDT'],
                                 'ITH_USRID' => $d['ITH_USRID'],
                                 'ITH_LUPDTBIN' => $dateTimesBin,
-                                'ITH_REASON' => 'PATCH'
+                                'ITH_REASON' => 'PATCH',
                             ];
                             break;
                         }
@@ -2878,7 +2888,7 @@ class ITH extends CI_Controller
                                     'ITH_ITMCD' => $r['ITH_ITMCD'],
                                     'ITH_DOC' => $r['ITH_DOC'],
                                     'ITH_QTY' => abs($d['ITH_QTY']),
-                                    'COUNTQT' => 1
+                                    'COUNTQT' => 1,
                                 ];
                             }
                         }
@@ -2933,7 +2943,7 @@ class ITH extends CI_Controller
                             'ITH_LUPDT' => $d['ITH_LUPDT'],
                             'ITH_USRID' => $d['ITH_USRID'],
                             'ITH_LUPDTBIN' => $dateTimesBin,
-                            'ITH_REASON' => 'PATCH'
+                            'ITH_REASON' => 'PATCH',
                         ];
                         break;
                     }
@@ -2946,7 +2956,7 @@ class ITH extends CI_Controller
             }
 
             $myar[] = [
-                'cd' => '1', 'mst' => 'ready to be inserted', 'data' => $rsPatch, '$rs' => $rs, '$rsdetail' => $rsdetail, 'rs2' => $rs2, 'qtylist' => $qtylist
+                'cd' => '1', 'mst' => 'ready to be inserted', 'data' => $rsPatch, '$rs' => $rs, '$rsdetail' => $rsdetail, 'rs2' => $rs2, 'qtylist' => $qtylist,
             ];
         } else {
             $myar[] = ['cd' => '1', 'msg' => 'ok'];
@@ -2954,7 +2964,7 @@ class ITH extends CI_Controller
         return ['status' => $myar];
     }
 
-    function sync_today_abnormal_transaction()
+    public function sync_today_abnormal_transaction()
     {
         header('Content-Type: application/json');
         date_default_timezone_set('Asia/Jakarta');
@@ -2965,7 +2975,7 @@ class ITH extends CI_Controller
         die(json_encode($result));
     }
 
-    function sync_yesterday_abnormal_transaction()
+    public function sync_yesterday_abnormal_transaction()
     {
         header('Content-Type: application/json');
         date_default_timezone_set('Asia/Jakarta');
@@ -2976,14 +2986,14 @@ class ITH extends CI_Controller
         die(json_encode($result));
     }
 
-    function validateDate($date, $format = 'Y-m-d')
+    public function validateDate($date, $format = 'Y-m-d')
     {
         $d = DateTime::createFromFormat($format, $date);
         // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
         return $d && $d->format($format) === $date;
     }
 
-    function sync_atdate_abnormal_transaction()
+    public function sync_atdate_abnormal_transaction()
     {
         header('Content-Type: application/json');
         date_default_timezone_set('Asia/Jakarta');
@@ -2997,7 +3007,7 @@ class ITH extends CI_Controller
         die(json_encode($result));
     }
 
-    function report_kka_mega()
+    public function report_kka_mega()
     {
         if (!isset($_COOKIE["CKPSI_DDATE"]) || !isset($_COOKIE["CKPSI_DREPORT"]) && !isset($_COOKIE["CKPSI_DDATE2"])) {
             exit('no data to be found');
@@ -3141,8 +3151,11 @@ class ITH extends CI_Controller
         $rmlist = $this->input->post('rm');
         $bg = $this->input->post('bg');
         $saveOutput = $this->input->post('save');
-        if ($date == '') die('could not continue');
-        $fgstring =  is_array($fglist) ? "'" . implode("','", $fglist) . "'" : "''";
+        if ($date == '') {
+            die('could not continue');
+        }
+
+        $fgstring = is_array($fglist) ? "'" . implode("','", $fglist) . "'" : "''";
         $rmstring = is_array($rmlist) ? "'" . implode("','", $rmlist) . "'" : "''";
         $startDate = date('Y-m-d', strtotime($date . " - 60 days"));
         $spreadsheet = new Spreadsheet();
@@ -3194,7 +3207,7 @@ class ITH extends CI_Controller
 
         if (strlen($rmstring) > 5) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . ', step1#, BG:OTHER, get rsWIP, with parts');
-            $rswip = $bg === 'PSI1PPZIEP' ? $this->ITH_mod->select_allwip_plant1_byBG_and_Part($date, $bg, $rmstring) :  $this->ITH_mod->select_allwip_plant2_byBG_and_Part($date, $bg, $rmstring);
+            $rswip = $bg === 'PSI1PPZIEP' ? $this->ITH_mod->select_allwip_plant1_byBG_and_Part($date, $bg, $rmstring) : $this->ITH_mod->select_allwip_plant2_byBG_and_Part($date, $bg, $rmstring);
         } else {
             if (is_array($fglist)) {
                 #set FG's part code as additional data for rmlist
@@ -3214,14 +3227,14 @@ class ITH extends CI_Controller
                 $rmstring = "'" . implode("','", $rmlist) . "'";
                 if (!empty($rmlist)) {
                     log_message('error', $_SERVER['REMOTE_ADDR'] . ', step1#, BG:OTHER, get rsWIP, with parts from FG');
-                    $rswip = $bg === 'PSI1PPZIEP' ? $this->ITH_mod->select_allwip_plant1_byBG_and_Part($date, $bg, $rmstring) :  $this->ITH_mod->select_allwip_plant2_byBG_and_Part($date, $bg, $rmstring);
+                    $rswip = $bg === 'PSI1PPZIEP' ? $this->ITH_mod->select_allwip_plant1_byBG_and_Part($date, $bg, $rmstring) : $this->ITH_mod->select_allwip_plant2_byBG_and_Part($date, $bg, $rmstring);
                 } else {
                     log_message('error', $_SERVER['REMOTE_ADDR'] . ', step1#, BG:OTHER, get rsWIP, without parts.');
-                    $rswip = $bg === 'PSI1PPZIEP' ?  $this->ITH_mod->select_allwip_plant1_byBG($date, $bg) : $this->ITH_mod->select_allwip_plant2_byBG($date, $bg);
+                    $rswip = $bg === 'PSI1PPZIEP' ? $this->ITH_mod->select_allwip_plant1_byBG($date, $bg) : $this->ITH_mod->select_allwip_plant2_byBG($date, $bg);
                 }
             } else {
                 log_message('error', $_SERVER['REMOTE_ADDR'] . ', step1#, BG:OTHER, get rsWIP, without parts');
-                $rswip = $bg === 'PSI1PPZIEP' ?  $this->ITH_mod->select_allwip_plant1_byBG($date, $bg) : $this->ITH_mod->select_allwip_plant2_byBG($date, $bg);
+                $rswip = $bg === 'PSI1PPZIEP' ? $this->ITH_mod->select_allwip_plant1_byBG($date, $bg) : $this->ITH_mod->select_allwip_plant2_byBG($date, $bg);
             }
         }
 
@@ -3299,7 +3312,10 @@ class ITH extends CI_Controller
                     #END PSN CHECK
                     if ($isRightPSN) {
                         $balneed = $o['NEEDQTY'] - $o['PLOTQTY'];
-                        if ($balneed == 0) break;
+                        if ($balneed == 0) {
+                            break;
+                        }
+
                         $fixqty = $balneed;
                         if ($balneed > $w['PLANT2']) {
                             $w['PLANT2'] = 0;
@@ -3409,7 +3425,10 @@ class ITH extends CI_Controller
                 }
             }
             $p['PLOTTED'] = $isfound;
-            if (!$isfound) $arrPSNUnplotted[] = $p['DOC'];
+            if (!$isfound) {
+                $arrPSNUnplotted[] = $p['DOC'];
+            }
+
         }
         unset($p);
 
@@ -3541,7 +3560,7 @@ class ITH extends CI_Controller
         }
     }
 
-    function change_adj_qty()
+    public function change_adj_qty()
     {
         header('Content-Type: application/json');
         $itemcd = $this->input->post('itemcd');
@@ -3551,7 +3570,7 @@ class ITH extends CI_Controller
         $wh = $this->input->post('wh');
         $form = $this->input->post('form');
         $where = [
-            'ITH_ITMCD' => $itemcd, 'ITH_FORM' => $form, 'ITH_WH' => $wh, 'ITH_QTY' => $old_qty, 'ITH_LUPDT' => $lupdt
+            'ITH_ITMCD' => $itemcd, 'ITH_FORM' => $form, 'ITH_WH' => $wh, 'ITH_QTY' => $old_qty, 'ITH_LUPDT' => $lupdt,
         ];
         $respon = $this->ITH_mod->updatebyId(
             $where,
@@ -3562,7 +3581,7 @@ class ITH extends CI_Controller
         die(json_encode(['status' => $myar]));
     }
 
-    function change_kitting_date()
+    public function change_kitting_date()
     {
         date_default_timezone_set('Asia/Jakarta');
         header('Content-Type: application/json');
@@ -3592,11 +3611,11 @@ class ITH extends CI_Controller
         }
         unset($r);
         die(json_encode([
-            'status' => ['cd' => '1', 'msg' => $affectedRows . ' row(s) updated'], 'data' => $rs
+            'status' => ['cd' => '1', 'msg' => $affectedRows . ' row(s) updated'], 'data' => $rs,
         ]));
     }
 
-    function raw_ith_remove()
+    public function raw_ith_remove()
     {
         header('Content-Type: application/json');
         $item_code = $this->input->post('item_code');
@@ -3616,7 +3635,7 @@ class ITH extends CI_Controller
         die(json_encode(['status' => $myar, 'filter' => $where]));
     }
 
-    function remove_uploaded_stock_it_inventory()
+    public function remove_uploaded_stock_it_inventory()
     {
         header('Content-Type: application/json');
         $date = $this->input->post('date');
