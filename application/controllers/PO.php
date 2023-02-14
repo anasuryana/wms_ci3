@@ -1343,7 +1343,7 @@ class PO extends CI_Controller
                         'PO_NO' => $h_po,
                         'PO_REV' => 0,
                         'PO_REQDT' => $h_req_date,
-                        'PO_ISSUDT' => $h_issu_date,
+                        'PO_ISSUDT' => $HIssuDate,
                         'PO_SUPCD' => $h_supplier,
                         'PO_ITMNM' => $dni_item[$i],
                         'PO_UM' => $dni_measure[$i],
@@ -1367,7 +1367,7 @@ class PO extends CI_Controller
                 } else {
                     $colupdate = [
                         'PO_REQDT' => $h_req_date,
-                        'PO_ISSUDT' => $h_issu_date,
+                        'PO_ISSUDT' => $HIssuDate,
                         'PO_SUPCD' => $h_supplier,
                         'PO_ITMNM' => $dni_item[$i],
                         'PO_UM' => $dni_measure[$i],
@@ -1419,7 +1419,7 @@ class PO extends CI_Controller
             $myar[] = ['cd' => '1', 'msg' => $ttlsaved . ' Saved, ' . $ttlupdated . ' updated', 'doc' => $h_po];
         } else {
             $ttlsaved = 0;
-            $adate = explode("-", $h_issu_date);
+            $adate = explode("-", $HIssuDate);
             $mmonth = $adate[1];
             $myear = $adate[0];
             $display_year = substr($myear, -2);
@@ -1458,7 +1458,7 @@ class PO extends CI_Controller
                     'PO_NO' => $gen_po_num,
                     'PO_REV' => 0,
                     'PO_REQDT' => $h_req_date,
-                    'PO_ISSUDT' => $h_issu_date,
+                    'PO_ISSUDT' => $HIssuDate,
                     'PO_SUPCD' => $h_supplier,
                     'PO_ITMCD' => $di_item[$i],
                     'PO_QTY' => abs($di_qty[$i]),
@@ -1488,7 +1488,7 @@ class PO extends CI_Controller
                     'PO_NO' => $gen_po_num,
                     'PO_REV' => 0,
                     'PO_REQDT' => $h_req_date,
-                    'PO_ISSUDT' => $h_issu_date,
+                    'PO_ISSUDT' => $HIssuDate,
                     'PO_SUPCD' => $h_supplier,
                     'PO_ITMNM' => $dni_item[$i],
                     'PO_UM' => $dni_measure[$i],
@@ -1538,14 +1538,14 @@ class PO extends CI_Controller
                 'PO0_NO' => $h_po,
             ]);
         } else {
-            #insert PO0
-            $this->PO_mod->insertBatchHeader([
+            #insert PO0            
+            $this->PO_mod->insertBatchHeader([[
                 'PO0_NO' => $h_po,
                 'PO0_ISCUSTOMS' => $HIsCustomsDocReq,
                 'PO0_ISSUDT' => $HIssuDate,
                 'PO0_LUPDT' => $current_datetime_,
                 'PO0_LUPDT_BY' => $userid,
-            ]);
+            ]]);
         }
         die(json_encode(['status' => $myar]));
     }
