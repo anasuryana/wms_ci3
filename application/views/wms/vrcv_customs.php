@@ -4238,6 +4238,8 @@
     function rcvcustoms_po_txtsearch_eKP(e) {
         if (e.key === 'Enter') {
             e.target.readOnly = true
+            let mtabel = document.getElementById("rcvcustoms_po_tbl")
+            mtabel.getElementsByTagName("tbody")[0].innerHTML = '<tr><td colspan="11" class="text-center">Please wait</td></tr>'
             $.ajax({
                 url: "<?= base_url('PO/search_balance') ?>",
                 data: {
@@ -4250,7 +4252,6 @@
                     const ttlrows = response.data.length
                     let mydes = document.getElementById("rcvcustoms_po_tbl_div")
                     let myfrag = document.createDocumentFragment()
-                    let mtabel = document.getElementById("rcvcustoms_po_tbl")
                     let cln = mtabel.cloneNode(true);
                     myfrag.appendChild(cln)
                     let tabell = myfrag.getElementById("rcvcustoms_po_tbl")
@@ -4298,6 +4299,7 @@
                 error: function(xhr, xopt, xthrow) {
                     e.target.readOnly = false
                     alertify.error(xthrow)
+                    mtabel.getElementsByTagName("tbody")[0].innerHTML = `<tr><td colspan="11" class="text-center">[${xthrow}], please try again or contact administrator</td></tr>`
                 }
             })
         }

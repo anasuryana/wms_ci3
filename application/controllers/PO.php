@@ -1588,8 +1588,9 @@ class PO extends CI_Controller
         header('Content-Type: application/json');
         $search = $this->input->get('search');
         $searchtype = $this->input->get('searchtype');
-        $like = ['PO_NO' => $search];
-        $rs = $searchtype == '1' ? array_merge($this->PO_mod->select_balance_like($like), $this->PO_mod->select_balance_mega_like($like))
+        $likeInMEGA = ['PO_NO' => $search];
+        $like = ['PO_NO' => $search, "ISNULL(PO0_ISCUSTOMS,'')" => '1'];
+        $rs = $searchtype == '1' ? array_merge($this->PO_mod->select_balance_like($like), $this->PO_mod->select_balance_mega_like($likeInMEGA))
         : $this->PO_mod->select_balance_nonitem_like($like);
         $polist = [];
         foreach ($rs as $r) {
