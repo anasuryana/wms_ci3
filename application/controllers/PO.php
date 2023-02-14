@@ -1538,7 +1538,7 @@ class PO extends CI_Controller
                 'PO0_NO' => $h_po,
             ]);
         } else {
-            #insert PO0            
+            #insert PO0
             $this->PO_mod->insertBatchHeader([[
                 'PO0_NO' => $h_po,
                 'PO0_ISCUSTOMS' => $HIsCustomsDocReq,
@@ -1589,7 +1589,7 @@ class PO extends CI_Controller
         $search = $this->input->get('search');
         $searchtype = $this->input->get('searchtype');
         $likeInMEGA = ['PO_NO' => $search];
-        $like = ['PO_NO' => $search, "ISNULL(PO0_ISCUSTOMS,'')" => '1'];
+        $like = ['PO_NO' => $search, "ISNULL(PO0_ISCUSTOMS,'')" => $searchtype];
         $rs = $searchtype == '1' ? array_merge($this->PO_mod->select_balance_like($like), $this->PO_mod->select_balance_mega_like($likeInMEGA))
         : $this->PO_mod->select_balance_nonitem_like($like);
         $polist = [];

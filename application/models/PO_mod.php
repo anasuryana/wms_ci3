@@ -205,6 +205,7 @@ class PO_mod extends CI_Model
         $this->db->select("VPO_RESUME.*,RTRIM(PO_ITMNM) MITM_ITMD1,PO_UM MITM_STKUOM,MSUP_SUPNM,MSUP_SUPCR,MSUP_ADDR1,MSUP_TELNO,MSUP_FAXNO,ISNULL(RCVQTY,0) RCVQTY");
         $this->db->from('VPO_RESUME');
         $this->db->join("MSUP_TBL", "PO_SUPCD=MSUP_SUPCD", "LEFT");
+        $this->db->join("PO0_TBL", "PO_NO=PO0_NO", "LEFT");
         $this->db->join("(SELECT RCVNI_PO,RCVNI_ITMNM,SUM(RCVNI_QTY) RCVQTY FROM RCVNI_TBL GROUP BY RCVNI_PO,RCVNI_ITMNM) VRCV", "PO_NO=RCVNI_PO AND PO_ITMNM=RCVNI_ITMNM", "LEFT");
         $this->db->like($plike)->where("ISNULL(RCVQTY,0) < PO_QTY", null, false)->where("PO_ITMCD is null", null, false);
         $this->db->order_by("PO_REQDT");
