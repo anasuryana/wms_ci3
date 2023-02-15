@@ -30,16 +30,20 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text">Warehouse</span>
-                    <select class="form-select" id="rhistory_cmb_wh"><?= $lwh ?></select>
+                    <select class="form-select" id="rhistory_cmb_wh"><?=$lwh?></select>
                 </div>
             </div>
         </div>
 
         <div class="row" id="rhistory_stack2">
-            <div class="col-md-4 mb-1">
+            <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text">Item Code</span>
-                    <input type="text" class="form-control" id="rhistory_txt_assy">
+                    <span class="input-group-text">Search by</span>
+                    <select class="form-select" id="rhistory_cmb_search_by" onchange="rhistory_cmb_search_by_eChange()">
+                        <option value="item_code">Item Code</option>
+                        <option value="item_desc">Item Description</option>
+                    </select>
+                    <input type="text" class="form-control" id="rhistory_txt_assy" onkeypress="rhistory_txt_assy_eKPress(event)">
                 </div>
             </div>
 
@@ -51,13 +55,12 @@
                             Export to
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                            <li><a class="dropdown-item" href="#" id="rhistory_btn_xls"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> XLS</a></li>
-                            <li><a class="dropdown-item" href="#" id="rhistory_btn_pdf"><span style="color: Tomato"><i class="fas fa-file-pdf"></i></span> PDF</a></li>
+                            <li><a class="dropdown-item" href="#" id="rhistory_btn_xls"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> XLS</a></li>                            
                         </ul>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-1 text-end">
+            <div class="col-md-2 mb-1 text-end">
                 <span id="rhistory_lblinfo" class="badge bg-info"></span>
             </div>
         </div>
@@ -69,7 +72,7 @@
                             <tr class="first">
                                 <th rowspan="2" class="align-middle text-center">Date</th>
                                 <th rowspan="2" class="align-middle">Item Code</th>
-                                <th rowspan="2" class="align-middle">Item Name</th>
+                                <th rowspan="2" class="align-middle">Item Description</th>
                                 <th rowspan="2" class="align-middle">Warehouse</th>
                                 <th rowspan="2" class="align-middle">Event</th>
                                 <th rowspan="2" class="align-middle text-center">Document</th>
@@ -132,8 +135,7 @@
     $("#rhistory_divku").css('height', $(window).height() -
         document.getElementById('rhistory_stack1').offsetHeight -
         document.getElementById('rhistory_stack2').offsetHeight -
-        100);
-    // $("#rhistory_divku").css('height', $(window).height()*63/100);
+        100);    
     $("#rhistory_btn_xls").click(function(e) {
         let dt1 = document.getElementById('rhistory_txt_dt').value;
         let dt2 = document.getElementById('rhistory_txt_dt2').value;
@@ -152,7 +154,10 @@
         Cookies.set('CKPSI_DWH', wh, {
             expires: 365
         });
-        window.open("<?= base_url('ITH/gettxhistory_to_xls') ?>", '_blank');
+        Cookies.set('CKPSI_SEARCHBY', rhistory_cmb_search_by.value, {
+            expires: 365
+        });
+        window.open("<?=base_url('ITH/gettxhistory_to_xls')?>", '_blank');
     });
     $("#rhistory_txt_dt").datepicker({
         format: 'yyyy-mm-dd',
@@ -164,23 +169,24 @@
     });
     $("#rhistory_txt_dt").datepicker('update', new Date());
     $("#rhistory_txt_dt2").datepicker('update', new Date());
-
-    $("#rhistory_btn_gen").click(function(e) {
+    function rhistory_generate_report()
+    {
         document.getElementById('rhistory_btn_gen').disabled = true;
         let dt1 = document.getElementById('rhistory_txt_dt').value;
         let dt2 = document.getElementById('rhistory_txt_dt2').value;
         let itmcd = document.getElementById('rhistory_txt_assy').value;
         let wh = document.getElementById('rhistory_cmb_wh').value;
         $("#rhistory_tbl tbody").empty();
-        document.getElementById('rhistory_lblinfo').innerText = 'Please wait...';
+        rhistory_tbl.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="10" class="text-center">Please wait...</td></tr>'
         $.ajax({
             type: "get",
-            url: "<?= base_url('ITH/gettxhistory') ?>",
+            url: "<?=base_url('ITH/gettxhistory')?>",
             data: {
                 initemcode: itmcd,
                 indate1: dt1,
                 indate2: dt2,
-                inwh: wh
+                inwh: wh,
+                inSearchBy: rhistory_cmb_search_by.value
             },
             dataType: "json",
             success: function(response) {
@@ -269,15 +275,19 @@
                     mydes.innerHTML = '';
                     mydes.appendChild(myfrag);
                 } else {
-                    document.getElementById('rhistory_lblinfo').innerText = ' not found ';
+                    rhistory_tbl.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="10">not found</td></tr>`
                     alertify.message(response.status[0].msg);
                 }
             },
             error: function(xhr, xopt, xthrow) {
                 document.getElementById('rhistory_btn_gen').disabled = false;
                 alertify.error(xthrow);
+                rhistory_tbl.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="10">[${xthrow}], please try again or contact administrator</td></tr>`
             }
         });
+    }
+    $("#rhistory_btn_gen").click(function(e) {
+        rhistory_generate_report()
     });
     var rhistory_itemcd = ''
     var rhistory_itemqty = ''
@@ -287,9 +297,9 @@
 
     function rhistory_fun_get_detail_tx(pFilter) {
         let mtabel = document.getElementById("rhistory_tbldetail");
-        mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="6" class="text-center"><i>Please wait. . .</i></td></tr>`
+        mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="6" class="text-center">Please wait. . .</td></tr>`
         $.ajax({
-            url: "<?= base_url('ITHHistory/raw_ith') ?>",
+            url: "<?=base_url('ITHHistory/raw_ith')?>",
             data: pFilter,
             dataType: "json",
             success: function(response) {
@@ -309,7 +319,7 @@
                         rhistory_itemwh = event.target.parentNode.cells[1].innerText
                         rhistory_itemform = event.target.parentNode.cells[2].innerText
                         rhistory_itemqty = event.target.innerText
-                        rhistory_itemlupdt = event.target.parentNode.cells[3].innerText                        
+                        rhistory_itemlupdt = event.target.parentNode.cells[3].innerText
                     }
                     newcell = newrow.insertCell(0);
                     newcell.innerHTML = response.data[i].ITH_ITMCD
@@ -328,7 +338,7 @@
                             if (confirm('Are you sure ?')) {
                                 $.ajax({
                                     type: "POST",
-                                    url: "<?= base_url('ITH/change_adj_qty') ?>",
+                                    url: "<?=base_url('ITH/change_adj_qty')?>",
                                     data: {
                                         itemcd: rhistory_itemcd,
                                         old_qty: rhistory_itemqty,
@@ -350,7 +360,7 @@
                                         alertify.error(xthrow)
                                     }
                                 });
-                            }                            
+                            }
                             event.preventDefault()
                         }
                     }
@@ -382,7 +392,7 @@
     function rhistory_fun_remove(pFilter) {
         $.ajax({
             type: "POST",
-            url: "<?= base_url('ITH/raw_ith_remove') ?>",
+            url: "<?=base_url('ITH/raw_ith_remove')?>",
             data: pFilter,
             dataType: "json",
             success: function(response) {
@@ -392,5 +402,19 @@
                 alertify.error(xthrow)
             }
         });
+    }
+
+    function rhistory_cmb_search_by_eChange()
+    {
+        rhistory_txt_assy.focus()
+
+    }
+
+    function rhistory_txt_assy_eKPress(e)
+    {
+        if(e.key === 'Enter')
+        {
+            rhistory_generate_report()
+        }
     }
 </script>

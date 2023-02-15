@@ -366,7 +366,7 @@ class ITH_mod extends CI_Model
                     ,SUM(ITH_QTY) STOCKQTY
                     ,RTRIM(MITM_STKUOM) MITM_STKUOM
                     ,MITM_NCAT
-                    ,SUM(CASE 
+                    ,SUM(CASE
                             WHEN ITH_DATEC < ?
                                 THEN ITH_QTY
                             END) BEFQTY
@@ -443,7 +443,7 @@ class ITH_mod extends CI_Model
                 GROUP BY ITH_ITMCD
                 ) VPREP ON VSTOCK.ITH_ITMCD = VPREP.ITH_ITMCD
             ORDER BY VSTOCK.ITH_ITMCD ASC";
-        $query = $this->db->query($qry, [$pdate,'%' . $item . '%', $pdate, '%' . $item . '%', $pdate, '%' . $item . '%', $pdate, '%' . $item . '%', $pdate]);
+        $query = $this->db->query($qry, [$pdate, '%' . $item . '%', $pdate, '%' . $item . '%', $pdate, '%' . $item . '%', $pdate, '%' . $item . '%', $pdate]);
         return $query->result_array();
     }
     public function selectPSIStockAtDateByDescripton($wh, $item, $PBG, $pdate)
@@ -470,7 +470,7 @@ class ITH_mod extends CI_Model
                     ,SUM(ITH_QTY) STOCKQTY
                     ,RTRIM(MITM_STKUOM) MITM_STKUOM
                     ,MITM_NCAT
-                    ,SUM(CASE 
+                    ,SUM(CASE
                             WHEN ITH_DATEC < ?
                                 THEN ITH_QTY
                             END) BEFQTY
@@ -496,7 +496,7 @@ class ITH_mod extends CI_Model
                 SELECT ITH_ITMCD
                     ,SUM(ITH_QTY) INQTY
                 FROM v_ith_tblc a
-                WHERE ITH_WH = '$whclosing'                    
+                WHERE ITH_WH = '$whclosing'
                     AND ITH_FORM NOT IN (
                         'SPLIT-FG-LBL'
                         ,'JOIN_IN'
@@ -516,7 +516,7 @@ class ITH_mod extends CI_Model
                 SELECT ITH_ITMCD
                     ,SUM(ITH_QTY) OUTQTY
                 FROM v_ith_tblc a
-                WHERE ITH_WH = '$whout'                    
+                WHERE ITH_WH = '$whout'
                     AND ITH_FORM NOT IN (
                         'SPLIT-FG-LBL'
                         ,'JOIN_IN'
@@ -535,7 +535,7 @@ class ITH_mod extends CI_Model
                 SELECT ITH_ITMCD
                     ,SUM(ITH_QTY) PRPQTY
                 FROM v_ith_tblc a
-                WHERE ITH_WH = 'ARSHP'                    
+                WHERE ITH_WH = 'ARSHP'
                     AND ITH_FORM NOT IN (
                         'SASTART'
                         ,'SA'
@@ -544,7 +544,7 @@ class ITH_mod extends CI_Model
                 GROUP BY ITH_ITMCD
                 ) VPREP ON VSTOCK.ITH_ITMCD = VPREP.ITH_ITMCD
             ORDER BY VSTOCK.ITH_ITMCD ASC";
-        $query = $this->db->query($qry, [$pdate,'%' . $item . '%', $pdate,  $pdate, $pdate,  $pdate]);
+        $query = $this->db->query($qry, [$pdate, '%' . $item . '%', $pdate, $pdate, $pdate, $pdate]);
         return $query->result_array();
     }
     public function select_psi_stock_date_fg_rtn($main_wh, $inc_wh, $out_wh, $preparation_wh, $item, $pbg, $pdate)
@@ -1421,6 +1421,18 @@ class ITH_mod extends CI_Model
         $query = $this->db->query($qry, [$pwh, "%$passy%", $pdt1, $pwh, "%$passy%"]);
         return $query->result_array();
     }
+    public function selectTXHistoryBeforeByItemDescription($pwh, $passy, $pdt1)
+    {
+        $qry = "SELECT UPPER(ITH_ITMCD) ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,ISNULL(BALQTY,0) BALQTY,RTRIM(MITM_STKUOM) UOM FROM
+        (SELECT ITH_ITMCD,SUM(ITH_QTY) BALQTY,MITM_ITMD1,MITM_STKUOM
+                FROM v_ith_tblc
+                LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
+                WHERE ITH_WH=? and MITM_ITMD1 like ? and ITH_DATEC < ?
+                GROUP BY ITH_ITMCD,MITM_ITMD1,MITM_STKUOM) V1
+        ORDER BY ITH_ITMCD";
+        $query = $this->db->query($qry, [$pwh, "%$passy%", $pdt1]);
+        return $query->result_array();
+    }
 
     public function select_available_wo($pDate, $pLocation)
     {
@@ -1453,6 +1465,7 @@ class ITH_mod extends CI_Model
         $query = $this->db->query($qry, [$passy, $passy]);
         return $query->result_array();
     }
+
     public function select_txhistory_bef_parent_fg($pwh, $passy, $pdt1)
     {
         $qry = "select VMEGA.*,WQT from
@@ -1530,6 +1543,46 @@ class ITH_mod extends CI_Model
         $query = $this->db->query($qry, [$pwh, "%$passy%", $pdt1, $pdt2]);
         return $query->result_array();
     }
+
+    public function selectTXHistoryByDescription($pwh, $passy, $pdt1, $pdt2)
+    {
+        $qry = "SELECT UPPER(ITH_ITMCD) ITH_ITMCD
+                    ,rtrim(MITM_ITMD1) MITM_ITMD1
+                    ,ITH_FORM
+                    ,ITH_DOC
+                    ,FORMAT(ITH_DATEC, 'dd-MMM-yy') ITH_DATEKU
+                    ,ISNULL(SUM(CASE
+                                WHEN ITH_QTY > 0
+                                    THEN ITH_QTY
+                                END), 0) INCQTY
+                    ,ISNULL(SUM(CASE
+                                WHEN ITH_QTY < 0
+                                    THEN ITH_QTY
+                                END), 0) OUTQTY
+                    ,0 ITH_BAL
+                    ,MAX(ITH_LUPDT) ITH_LUPDT
+                    ,MIN(ITH_REMARK) ITH_REMARK
+                    ,ITH_DATEC
+                FROM v_ith_tblc
+                LEFT JOIN MITM_TBL ON ITH_ITMCD = MITM_ITMCD
+                WHERE ITH_WH = ?
+                    AND MITM_ITMD1 LIKE ?
+                    AND ITH_DATEC BETWEEN ?
+                        AND ?
+                GROUP BY ITH_ITMCD
+                    ,rtrim(MITM_ITMD1)
+                    ,ITH_DATEC
+                    ,ITH_FORM
+                    ,ITH_DOC
+                    ,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm')
+                ORDER BY ITH_ITMCD
+                    ,ITH_DATEC
+                    ,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm')
+                    ,6 DESC";
+        $query = $this->db->query($qry, [$pwh, "%$passy%", $pdt1, $pdt2]);
+        return $query->result_array();
+    }
+
     public function select_txhistory_parent($pwh, $passy, $pdt1, $pdt2)
     {
         $qry = "select ISNULL(ITRN_ITMCD,ITH_ITMCD) ITRN_ITMCD,ISNULL(ISUDT,ITH_DATEC) ISUDT ,ISNULL(MGAQTY,0) MGAQTY,WQT from

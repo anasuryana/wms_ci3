@@ -1399,8 +1399,14 @@ class ITH extends CI_Controller
         $citemcd = trim($this->input->get('initemcode'));
         $cdate1 = $this->input->get('indate1');
         $cdate2 = $this->input->get('indate2');
-        $rsbef = $this->ITH_mod->select_txhistory_bef($cwh, $citemcd, $cdate1);
-        $rs = $this->ITH_mod->select_txhistory($cwh, $citemcd, $cdate1, $cdate2);
+        $inSearchBy = $this->input->get('inSearchBy');
+        if ($inSearchBy === 'item_code') {
+            $rsbef = $this->ITH_mod->select_txhistory_bef($cwh, $citemcd, $cdate1);
+            $rs = $this->ITH_mod->select_txhistory($cwh, $citemcd, $cdate1, $cdate2);
+        } else {
+            $rsbef = $this->ITH_mod->selectTXHistoryBeforeByItemDescription($cwh, $citemcd, $cdate1);
+            $rs = $this->ITH_mod->selectTXHistoryByDescription($cwh, $citemcd, $cdate1, $cdate2);
+        }
         $rstoret = [];
         $myar = [];
         if (count($rsbef) > 0) {
@@ -1427,7 +1433,10 @@ class ITH extends CI_Controller
         } else {
             $myar[] = ['cd' => 0, 'msg' => 'not found'];
         }
-        exit('{"status": ' . json_encode($myar) . ', "data" : ' . json_encode($rstoret) . '}');
+        die(json_encode([
+            'status' => $myar,
+            'data' => $rstoret,
+        ]));
     }
     public function gettxhistory_parent()
     {
@@ -1628,8 +1637,14 @@ class ITH extends CI_Controller
         $citemcd = trim($_COOKIE["CKPSI_DITEMCD"]);
         $cdate1 = $_COOKIE["CKPSI_DDT1"];
         $cdate2 = $_COOKIE["CKPSI_DDT2"];
-        $rsbef = $this->ITH_mod->select_txhistory_bef($cwh, $citemcd, $cdate1);
-        $rs = $this->ITH_mod->select_txhistory($cwh, $citemcd, $cdate1, $cdate2);
+        $searchBy = $_COOKIE["CKPSI_SEARCHBY"];
+        if ($searchBy === 'item_code') {
+            $rsbef = $this->ITH_mod->select_txhistory_bef($cwh, $citemcd, $cdate1);
+            $rs = $this->ITH_mod->select_txhistory($cwh, $citemcd, $cdate1, $cdate2);
+        } else {
+            $rsbef = $this->ITH_mod->selectTXHistoryBeforeByItemDescription($cwh, $citemcd, $cdate1);
+            $rs = $this->ITH_mod->selectTXHistoryByDescription($cwh, $citemcd, $cdate1, $cdate2);            
+        }
         $rstoret = [];
         $myar = [];
         if (count($rs) > 0) {
@@ -1653,7 +1668,9 @@ class ITH extends CI_Controller
             unset($r);
             $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
         } else {
-            $myar[] = ['cd' => 0, 'msg' => 'not found'];
+            foreach ($rsbef as $t) {
+                $rstoret[] = ['ITH_ITMCD' => $t['ITH_ITMCD'], 'MITM_ITMD1' => $t['MITM_ITMD1'], 'ITH_FORM' => '', 'ITH_DOC' => '', 'ITH_DATEKU' => '', 'INCQTY' => '', 'OUTQTY' => '', 'ITH_BAL' => $t['BALQTY']];
+            }
         }
         $rs = null;
         unset($rs);
