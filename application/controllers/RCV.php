@@ -1145,10 +1145,12 @@ class RCV extends CI_Controller
             'CSMLOG_CREATED_AT' => $currrtime,
             'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
         ]);
-
-        $this->toITH([
-            'DOC' => $cdo, 'WH' => $cwh[0], 'DATE' => $cbcdate, 'LUPDT' => $cbcdate . ' 07:01:00', 'USRID' => $this->session->userdata('nama')
-        ]);
+        if($cbcdate>'2021-10-01')
+        {
+            $this->toITH([
+                'DOC' => $cdo, 'WH' => $cwh[0], 'DATE' => $cbcdate, 'LUPDT' => $cbcdate . ' 07:01:00', 'USRID' => $this->session->userdata('nama')
+            ]);
+        }
 
         $catccc = $this->gotoque($cdo);
         $myar = [];
