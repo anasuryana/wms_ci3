@@ -213,8 +213,10 @@
     function rcvnonitem_po_txtsearch_eKP(e) {
         if (e.key === 'Enter') {
             e.target.readOnly = true
+            let mtabel = document.getElementById("rcvnonitem_po_tbl")
+            mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="10" class="text-center">Pleasw wait...</td></tr>`
             $.ajax({
-                url: "<?= base_url('PO/search_balance') ?>",
+                url: "<?=base_url('PO/search_balance')?>",
                 data: {
                     search: e.target.value,
                     searchtype: '0'
@@ -225,7 +227,6 @@
                     const ttlrows = response.data.length
                     let mydes = document.getElementById("rcvnonitem_po_tbl_div")
                     let myfrag = document.createDocumentFragment()
-                    let mtabel = document.getElementById("rcvnonitem_po_tbl")
                     let cln = mtabel.cloneNode(true);
                     myfrag.appendChild(cln)
                     let tabell = myfrag.getElementById("rcvnonitem_po_tbl")
@@ -233,34 +234,43 @@
                     let newrow, newcell
                     let myitmttl = 0;
                     tableku2.innerHTML = ''
-                    for (let i = 0; i < ttlrows; i++) {
-                        let qtyreq = numeral(response.data[i].PO_QTY).value()
-                        let qtybal = qtyreq - numeral(response.data[i].RCVQTY).value()
+                    if(ttlrows===0)
+                    {
                         newrow = tableku2.insertRow(-1)
                         newcell = newrow.insertCell(0)
-                        newcell.innerHTML = response.data[i].PO_NO
-                        newcell = newrow.insertCell(1)
-                        newcell.innerHTML = response.data[i].MSUP_SUPNM
-                        newcell = newrow.insertCell(2)
-                        newcell.innerHTML = response.data[i].PO_ISSUDT
-                        newcell = newrow.insertCell(3)
-                        newcell.innerHTML = response.data[i].PO_REQDT
-                        newcell = newrow.insertCell(4)
-                        newcell.innerHTML = response.data[i].MITM_ITMD1
-                        newcell = newrow.insertCell(5)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = numeral(qtyreq).format('0,0.00')
-                        newcell = newrow.insertCell(6)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = numeral(qtybal).format('0,0.00')
-                        newcell = newrow.insertCell(7)
-                        newcell.innerHTML = response.data[i].PO_UM
-                        newcell = newrow.insertCell(8)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = response.data[i].PO_PRICE
-                        newcell = newrow.insertCell(9)
-                        newcell.classList.add('d-none')
-                        newcell.innerHTML = response.data[i].PO_SUPCD
+                        newcell.colSpan = 10
+                        newcell.innerHTML = 'Not found'
+                        newcell.classList.add('text-center')
+                    } else {
+                        for (let i = 0; i < ttlrows; i++) {
+                            let qtyreq = numeral(response.data[i].PO_QTY).value()
+                            let qtybal = qtyreq - numeral(response.data[i].RCVQTY).value()
+                            newrow = tableku2.insertRow(-1)
+                            newcell = newrow.insertCell(0)
+                            newcell.innerHTML = response.data[i].PO_NO
+                            newcell = newrow.insertCell(1)
+                            newcell.innerHTML = response.data[i].MSUP_SUPNM
+                            newcell = newrow.insertCell(2)
+                            newcell.innerHTML = response.data[i].PO_ISSUDT
+                            newcell = newrow.insertCell(3)
+                            newcell.innerHTML = response.data[i].PO_REQDT
+                            newcell = newrow.insertCell(4)
+                            newcell.innerHTML = response.data[i].MITM_ITMD1
+                            newcell = newrow.insertCell(5)
+                            newcell.classList.add('text-end')
+                            newcell.innerHTML = numeral(qtyreq).format('0,0.00')
+                            newcell = newrow.insertCell(6)
+                            newcell.classList.add('text-end')
+                            newcell.innerHTML = numeral(qtybal).format('0,0.00')
+                            newcell = newrow.insertCell(7)
+                            newcell.innerHTML = response.data[i].PO_UM
+                            newcell = newrow.insertCell(8)
+                            newcell.classList.add('text-end')
+                            newcell.innerHTML = response.data[i].PO_PRICE
+                            newcell = newrow.insertCell(9)
+                            newcell.classList.add('d-none')
+                            newcell.innerHTML = response.data[i].PO_SUPCD
+                        }
                     }
                     mydes.innerHTML = ''
                     mydes.appendChild(myfrag)
@@ -268,6 +278,7 @@
                 error: function(xhr, xopt, xthrow) {
                     e.target.readOnly = false
                     alertify.error(xthrow)
+                    mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="10">${xthrow}, please try again or contact administrator</td></tr>`
                 }
             })
         }
@@ -372,7 +383,7 @@
             if (confirm("Are you sure ?")) {
                 $.ajax({
                     type: "POST",
-                    url: "<?= base_url('RCV/set_nonitem') ?>",
+                    url: "<?=base_url('RCV/set_nonitem')?>",
                     data: {
                         donum: donum.value,
                         rcvdate: rcvdate,
@@ -413,7 +424,7 @@
             e.target.readOnly = true
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('RCV/search_doni') ?>",
+                url: "<?=base_url('RCV/search_doni')?>",
                 data: {
                     search: e.target.value,
                     searchBY: searchby
@@ -461,7 +472,7 @@
 
     function rcvnonitem_getdetail(pdo) {
         $.ajax({
-            url: "<?= base_url('RCV/doni') ?>",
+            url: "<?=base_url('RCV/doni')?>",
             data: {
                 doc: pdo
             },
