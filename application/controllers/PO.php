@@ -1598,7 +1598,8 @@ class PO extends CI_Controller
                 $polist[] = $r['PO_NO'];
             }
         }
-        $rsdisc = $this->PO_mod->select_discount_where_PO_in($polist);
+
+        $rsdisc = $polist ? $this->PO_mod->select_discount_where_PO_in($polist) : [];
         foreach ($rs as &$r) {
             foreach ($rsdisc as $d) {
                 if ($r['PO_NO'] === $d['PODISC_PONO']) {
