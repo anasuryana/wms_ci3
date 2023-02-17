@@ -1642,7 +1642,7 @@ class SER extends CI_Controller
             $cY = 0;
             $cX = 0;
             foreach ($rs as $r) {
-               $awo = explode('-', $r->SER_DOC);
+               $awo = explode('-', $r->SER_DOC=='20-2A21-F65255-05-1.00' ? '23-2A21-F65255-05-1.00' : $r->SER_DOC);
                $ccustnm     = $r->MCUS_CUSNM;
                $cuscd     = trim($r->PDPP_BSGRP);
                $noseri        = $r->SER_ID;
