@@ -1669,7 +1669,32 @@ class ITH_mod extends CI_Model
 
     public function selectlocation_fg($pitem)
     {
-        $qry = "select LOC = STUFF((select distinct ',' + ITH_LOC from vr_vis_fg vd where vd.SER_ITMID=? and ITH_LOC is not null for XML PATH('')),1,1,'')";
+        $qry = "
+        select LOC = STUFF((select distinct ',' + ITH_LOC from (
+            SELECT v1.*
+                    ,ITH_LOC
+                    ,SER_ITMID
+                FROM (
+                    SELECT ITH_WH
+                        ,ITH_SER
+                        ,SUM(ITH_QTY) ITH_QTY
+                        ,MAX(ITH_LUPDT) LTS_TIME
+                        ,MAX(isnull(ITH_LINE, '')) ITH_LINE
+                    FROM ITH_TBL
+                    WHERE ITH_WH = 'AFWH3' and ITH_ITMCD=?
+                    GROUP BY ITH_WH
+                        ,ITH_SER
+                    HAVING SUM(ITH_QTY) > 0
+                    ) v1
+                LEFT JOIN ITH_TBL a ON v1.ITH_SER = a.ITH_SER
+                    AND a.ITH_WH = v1.ITH_WH
+                    AND isnull(v1.LTS_TIME, GETDATE()) = isnull(a.ITH_LUPDT, GETDATE())
+                    AND a.ITH_QTY > 0
+                LEFT JOIN SER_TBL ON a.ITH_SER = SER_ID
+            
+            ) vd where  ITH_LOC is not null for XML PATH('')
+            ),1,1,'')
+        ";
         $query = $this->db->query($qry, [$pitem]);
         return $query->result_array();
     }

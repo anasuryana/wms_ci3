@@ -534,8 +534,8 @@ class SI extends CI_Controller
                 $pdf->Text(150, 12, 'Customer            : ' . $mycustomer);
 
                 $clebar = $pdf->GetStringWidth($whcode) + 13;
-                $pdf->Code128(250, 4, $whcode, $clebar, 4);
-                $pdf->Text(250, 12, $whcode);
+                $pdf->Code128(230, 4, $whcode, $clebar, 4);
+                $pdf->Text(230, 12, $whcode);
 
                 $pdf->SetXY(6, 17);
                 $pdf->Cell(10, 5, 'No', 1, 0, 'L');
