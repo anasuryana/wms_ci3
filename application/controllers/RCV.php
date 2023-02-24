@@ -2,9 +2,9 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class RCV extends CI_Controller
 {
@@ -134,7 +134,7 @@ class RCV extends CI_Controller
         $data['lkemasan'] = $kemasan;
         $data['sapaDia'] = $this->session->userdata('sfname');
 
-        $rslocfrom = $this->MSTLOCG_mod->selectall_where_CODE_in(['ARWH1', 'ARWH2', 'NRWH2','PSIEQUIP']);
+        $rslocfrom = $this->MSTLOCG_mod->selectall_where_CODE_in(['ARWH1', 'ARWH2', 'NRWH2', 'PSIEQUIP']);
         $rslocfrom_str = '';
         foreach ($rslocfrom as $r) {
             $rslocfrom_str .= "<option value='" . $r['MSTLOCG_ID'] . "'>" . $r['MSTLOCG_NM'] . " (" . $r['MSTLOCG_ID'] . ")</option>";
@@ -176,7 +176,7 @@ class RCV extends CI_Controller
     public function printlabel()
     {
         $pdo = '';
-        global  $image_name, $dono, $wid, $hgt, $padX, $padY, $supnm, $rcvdate;
+        global $image_name, $dono, $wid, $hgt, $padX, $padY, $supnm, $rcvdate;
         if (isset($_COOKIE["PRINTLABEL_DO"])) {
             $pdo = $_COOKIE["PRINTLABEL_DO"];
         }
@@ -185,7 +185,7 @@ class RCV extends CI_Controller
         } else {
             function printTagDO($pdf, $myleft, $mytop)
             {
-                global  $wid, $hgt,  $dono, $padX, $padY,  $image_name, $supnm, $rcvdate, $cmitmd1, $cprodt, $cwo, $cprdline, $cprdshift, $cserqty, $csersheet, $cum;
+                global $wid, $hgt, $dono, $padX, $padY, $image_name, $supnm, $rcvdate, $cmitmd1, $cprodt, $cwo, $cprdline, $cprdshift, $cserqty, $csersheet, $cum;
                 $th_x = $padX + $myleft;
                 $th_y = $padY + $mytop;
                 $pdf->SetY(0);
@@ -205,10 +205,10 @@ class RCV extends CI_Controller
             $hgt = 97;
             $padX = 0.35;
             $padY = 0.35;
-            $thegap  = 1.76;
+            $thegap = 1.76;
             $pdo = str_replace(str_split('"[]'), '', $pdo);
             $pdo = explode(",", $pdo);
-            $rs =  $this->RCV_mod->selectBCField_in($pdo);
+            $rs = $this->RCV_mod->selectBCField_in($pdo);
             $pdf = new PDF_Code39e128('L', 'mm', 'A4');
             $pdf->AddPage();
             $hgt_p = $pdf->GetPageHeight();
@@ -254,9 +254,9 @@ class RCV extends CI_Controller
 
     public function delete()
     {
-        $citem     = $this->input->get('initem');
-        $cdo     = $this->input->get('indo');
-        $toret  = $this->RCV_mod->deletebyDOandItem($cdo, $citem);
+        $citem = $this->input->get('initem');
+        $cdo = $this->input->get('indo');
+        $toret = $this->RCV_mod->deletebyDOandItem($cdo, $citem);
         if ($toret > 0) {
             echo "Deleted successfully";
         }
@@ -264,18 +264,18 @@ class RCV extends CI_Controller
 
     public function getdiscrepancy_scan()
     {
-        $myar  = [];
+        $myar = [];
         $rs = $this->RCVSCN_mod->select_discrepancy_h();
         if (count($rs) > 0) {
             $myar[] = ['cd' => 1, 'msg' => 'Go ahead'];
         } else {
-            $myar[] =  ['cd' => 0, 'msg' => 'Good, there is no discrepancy data'];
+            $myar[] = ['cd' => 0, 'msg' => 'Good, there is no discrepancy data'];
         }
         exit('{"status" : ' . json_encode($myar) . ', "data" : ' . json_encode($rs) . '}');
     }
     public function getdiscrepancy_scan_d()
     {
-        $myar  = [];
+        $myar = [];
         $cdo = $this->input->get('indo');
         $rs = $this->RCVSCN_mod->select_discrepancy($cdo);
         if (count($rs) > 0) {
@@ -291,42 +291,42 @@ class RCV extends CI_Controller
         date_default_timezone_set('Asia/Jakarta');
         $currrtime = date('Y-m-d H:i:s');
         ////////////DETAIL/////////////
-        $cpo    = $this->input->post('inpo');
-        $citem     = $this->input->post('initem');
-        $cqty     = $this->input->post('inqty');
+        $cpo = $this->input->post('inpo');
+        $citem = $this->input->post('initem');
+        $cqty = $this->input->post('inqty');
         $cprice = $this->input->post('inprice');
         //////////END DETAIL///////////
 
-        $cdate     = $this->input->post('indate');
-        $cdo     = $this->input->post('indo');
-        $cven     = $this->input->post('inven');
+        $cdate = $this->input->post('indate');
+        $cdo = $this->input->post('indo');
+        $cven = $this->input->post('inven');
 
         $ttldatas = count($cpo);
         $toret = 0;
         for ($i = 0; $i < $ttldatas; $i++) {
             $datacheck = [
                 'RCV_ITMCD' => $citem[$i],
-                'RCV_DONO' => $cdo
+                'RCV_DONO' => $cdo,
             ];
             if ($this->RCV_mod->check_Primary($datacheck) > 0) {
                 $dtu = [
-                    'RCV_QTY'         => $cqty[$i],
-                    'RCV_AMT'         => $cprice[$i],
-                    'RCV_LUPDT'     => $currrtime,
-                    'RCV_USRID'     => $this->session->userdata('nama')
+                    'RCV_QTY' => $cqty[$i],
+                    'RCV_AMT' => $cprice[$i],
+                    'RCV_LUPDT' => $currrtime,
+                    'RCV_USRID' => $this->session->userdata('nama'),
                 ];
                 $toret += $this->RCV_mod->updatebyId($dtu, $cdo, $citem[$i]);
             } else {
                 $dts = [
-                    'RCV_PO'         => $cpo[$i],
-                    'RCV_ITMCD'     => $citem[$i],
-                    'RCV_QTY'         => $cqty[$i],
-                    'RCV_AMT'         => $cprice[$i],
-                    'RCV_SUPID'     => $cven,
-                    'RCV_DONO'        => $cdo,
-                    'RCV_RCVDATE'     => $cdate,
-                    'RCV_LUPDT'     => $currrtime,
-                    'RCV_USRID'     => $this->session->userdata('nama')
+                    'RCV_PO' => $cpo[$i],
+                    'RCV_ITMCD' => $citem[$i],
+                    'RCV_QTY' => $cqty[$i],
+                    'RCV_AMT' => $cprice[$i],
+                    'RCV_SUPID' => $cven,
+                    'RCV_DONO' => $cdo,
+                    'RCV_RCVDATE' => $cdate,
+                    'RCV_LUPDT' => $currrtime,
+                    'RCV_USRID' => $this->session->userdata('nama'),
                 ];
                 $toret += $this->RCV_mod->insert($dts);
             }
@@ -356,13 +356,12 @@ class RCV extends CI_Controller
                     'ITH_ITMCD' => trim($r['RCVSCN_ITMCD']), 'ITH_WH' => $cwh,
                     'ITH_DOC' => $cdo, 'ITH_DATE' => $currdate,
                     'ITH_FORM' => 'INC-DO', 'ITH_QTY' => $r['RCVSCN_QTY'],
-                    'ITH_USRID' =>  $this->session->userdata('nama')
+                    'ITH_USRID' => $this->session->userdata('nama'),
                 ];
                 $resith = $this->ITH_mod->insert_incdo($datas);
                 $flag_insert += $resith;
             }
         }
-
 
         if ($flag_update > 0 && $flag_insert > 0) {
             echo "Saved and updated";
@@ -376,16 +375,16 @@ class RCV extends CI_Controller
     public function getdostxi_list()
     {
         header('Content-Type: application/json');
-        $dono     = $this->input->get('pdo');
-        $rs     = $this->RCVSTXI_mod->selectbyid($dono);
+        $dono = $this->input->get('pdo');
+        $rs = $this->RCVSTXI_mod->selectbyid($dono);
         echo json_encode($rs);
     }
 
     public function getsaveddo_list()
     {
         header('Content-Type: application/json');
-        $dono     = $this->input->get('pdo');
-        $rs     = $this->RCV_mod->selectbyid($dono);
+        $dono = $this->input->get('pdo');
+        $rs = $this->RCV_mod->selectbyid($dono);
         echo json_encode($rs);
     }
 
@@ -408,34 +407,34 @@ class RCV extends CI_Controller
     public function getsaveddo_list_jdt()
     {
         header('Content-Type: application/json');
-        $cyear     = $this->input->get('inyear');
-        $cmonth    = $this->input->get('inmonth');
-        $csts    = $this->input->get('insts');
-        $rs     = $csts == 'all' ?  $this->RCV_mod->selectbyYM($cyear, $cmonth) : $this->RCV_mod->selectbyYM_open($cyear, $cmonth);
+        $cyear = $this->input->get('inyear');
+        $cmonth = $this->input->get('inmonth');
+        $csts = $this->input->get('insts');
+        $rs = $csts == 'all' ? $this->RCV_mod->selectbyYM($cyear, $cmonth) : $this->RCV_mod->selectbyYM_open($cyear, $cmonth);
         echo '{"data":' . json_encode($rs) . '}';
     }
 
     public function getdetaildo()
     {
         header('Content-Type: application/json');
-        $dono     = $this->input->get('indo');
-        $rs     = $this->RCVSTXI_mod->selectbydo($dono);
+        $dono = $this->input->get('indo');
+        $rs = $this->RCVSTXI_mod->selectbydo($dono);
         echo json_encode($rs);
     }
 
     public function getdetailsaveddo()
     {
         header('Content-Type: application/json');
-        $dono     = $this->input->get('indo');
-        $rs     = $this->RCV_mod->selectbydo($dono);
+        $dono = $this->input->get('indo');
+        $rs = $this->RCV_mod->selectbydo($dono);
         echo json_encode($rs);
     }
 
     public function getBCField()
     {
         header('Content-Type: application/json');
-        $dono     = $this->input->get('indo');
-        $rs     = $this->RCV_mod->selectBCField($dono);
+        $dono = $this->input->get('indo');
+        $rs = $this->RCV_mod->selectBCField($dono);
         echo json_encode($rs);
     }
 
@@ -514,14 +513,14 @@ class RCV extends CI_Controller
                         'RCV_QTY' => $d_qty[$i],
                         'RCV_PRPRC' => $d_price[$i],
                         'RCV_AMT' => $d_price[$i] * $d_qty[$i],
-                        'RCV_TTLAMT' => ($h_amount == '' ? NULL : $h_amount),
+                        'RCV_TTLAMT' => ($h_amount == '' ? null : $h_amount),
                         'RCV_TPB' => $h_type_tpb,
                         'RCV_SUPCD' => $h_supcd,
-                        'RCV_RCVDATE' => $h_date_rcv == '' ? NULL : $h_date_rcv,
-                        'RCV_NW' => ($h_nw == '' ? NULL : $h_nw),
-                        'RCV_GW' => ($h_gw == '' ? NULL : $h_gw),
-                        'RCV_PRNW' => ($d_prNW[$i] == '' || $d_prNW[$i] == '-' ? NULL : $d_prNW[$i]),
-                        'RCV_PRGW' => ($d_prGW[$i] == '' || $d_prGW[$i] == '-' ? NULL : $d_prGW[$i]),
+                        'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
+                        'RCV_NW' => ($h_nw == '' ? null : $h_nw),
+                        'RCV_GW' => ($h_gw == '' ? null : $h_gw),
+                        'RCV_PRNW' => ($d_prNW[$i] == '' || $d_prNW[$i] == '-' ? null : $d_prNW[$i]),
+                        'RCV_PRGW' => ($d_prGW[$i] == '' || $d_prGW[$i] == '-' ? null : $d_prGW[$i]),
                         'RCV_KPPBC' => $h_kppbc,
                         'RCV_HSCD' => $d_hscode[$i],
                         'RCV_ZSTSRCV' => $h_bcstatus,
@@ -531,13 +530,13 @@ class RCV extends CI_Controller
                         'RCV_ZNOURUT' => $d_nourut[$i],
                         'RCV_ASSETNUM' => $d_assetnum[$i],
                         'RCV_CONA' => $h_cona,
-                        'RCV_DUEDT' => $h_mconaDueDate == '' ? NULL : $h_mconaDueDate,
-                        'RCV_CONADT' => $h_mconaDate == '' ? NULL : $h_mconaDate,
+                        'RCV_DUEDT' => $h_mconaDueDate == '' ? null : $h_mconaDueDate,
+                        'RCV_CONADT' => $h_mconaDate == '' ? null : $h_mconaDate,
                         'RCV_INVNO' => $h_minvNo,
                         'RCV_TAXINVOICE' => $h_tax_invoice,
                         'RCV_BSGRP' => $h_bisgrup,
                         'RCV_LUPDT' => date('Y-m-d H:i:s'),
-                        'RCV_USRID' => $this->session->userdata('nama')
+                        'RCV_USRID' => $this->session->userdata('nama'),
                     ];
                     $ttlupdated += $this->RCV_mod->updatebyVAR($datau, $dataw);
                 } else {
@@ -555,15 +554,15 @@ class RCV extends CI_Controller
                         'RCV_QTY' => $d_qty[$i],
                         'RCV_PRPRC' => $d_price[$i],
                         'RCV_AMT' => $d_price[$i] * $d_qty[$i],
-                        'RCV_TTLAMT' => ($h_amount == '' ? NULL : $h_amount),
+                        'RCV_TTLAMT' => ($h_amount == '' ? null : $h_amount),
                         'RCV_TPB' => $h_type_tpb,
                         'RCV_WH' => 'PSIEQUIP',
                         'RCV_SUPCD' => $h_supcd,
-                        'RCV_RCVDATE' => $h_date_rcv == '' ? NULL : $h_date_rcv,
-                        'RCV_NW' => ($h_nw == '' ? NULL : $h_nw),
-                        'RCV_GW' => ($h_gw == '' ? NULL : $h_gw),
-                        'RCV_PRNW' => ($d_prNW[$i] == '' || $d_prNW[$i] == '-' ? NULL : $d_prNW[$i]),
-                        'RCV_PRGW' => ($d_prGW[$i] == '' || $d_prGW[$i] == '-' ? NULL : $d_prGW[$i]),
+                        'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
+                        'RCV_NW' => ($h_nw == '' ? null : $h_nw),
+                        'RCV_GW' => ($h_gw == '' ? null : $h_gw),
+                        'RCV_PRNW' => ($d_prNW[$i] == '' || $d_prNW[$i] == '-' ? null : $d_prNW[$i]),
+                        'RCV_PRGW' => ($d_prGW[$i] == '' || $d_prGW[$i] == '-' ? null : $d_prGW[$i]),
                         'RCV_KPPBC' => $h_kppbc,
                         'RCV_GRLNO' => $lastLine,
                         'RCV_HSCD' => $d_hscode[$i],
@@ -574,12 +573,12 @@ class RCV extends CI_Controller
                         'RCV_ZNOURUT' => $d_nourut[$i],
                         'RCV_ASSETNUM' => $d_assetnum[$i],
                         'RCV_CONA' => $h_cona,
-                        'RCV_DUEDT' => $h_mconaDueDate == '' ? NULL : $h_mconaDueDate,
-                        'RCV_CONADT' => $h_mconaDate == '' ? NULL : $h_mconaDate,
+                        'RCV_DUEDT' => $h_mconaDueDate == '' ? null : $h_mconaDueDate,
+                        'RCV_CONADT' => $h_mconaDate == '' ? null : $h_mconaDate,
                         'RCV_BSGRP' => $h_bisgrup,
                         'RCV_LUPDT' => date('Y-m-d H:i:s'),
                         'RCV_USRID' => $this->session->userdata('nama'),
-                        'RCV_CREATEDBY' => $this->session->userdata('nama')
+                        'RCV_CREATEDBY' => $this->session->userdata('nama'),
                     ];
                     $lastLine++;
                 }
@@ -604,15 +603,15 @@ class RCV extends CI_Controller
                     'RCV_QTY' => $d_qty[$i],
                     'RCV_PRPRC' => $d_price[$i],
                     'RCV_AMT' => $d_price[$i] * $d_qty[$i],
-                    'RCV_TTLAMT' => ($h_amount == '' ? NULL : $h_amount),
+                    'RCV_TTLAMT' => ($h_amount == '' ? null : $h_amount),
                     'RCV_TPB' => $h_type_tpb,
                     'RCV_WH' => 'PSIEQUIP',
                     'RCV_SUPCD' => $h_supcd,
-                    'RCV_RCVDATE' => $h_date_rcv == '' ? NULL : $h_date_rcv,
-                    'RCV_NW' => ($h_nw == '' ? NULL : $h_nw),
-                    'RCV_GW' => ($h_gw == '' ? NULL : $h_gw),
-                    'RCV_PRNW' => ($d_prNW[$i] == '' || $d_prNW[$i] == '-' ? NULL : $d_prNW[$i]),
-                    'RCV_PRGW' => ($d_prGW[$i] == '' || $d_prGW[$i] == '-' ? NULL : $d_prGW[$i]),
+                    'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
+                    'RCV_NW' => ($h_nw == '' ? null : $h_nw),
+                    'RCV_GW' => ($h_gw == '' ? null : $h_gw),
+                    'RCV_PRNW' => ($d_prNW[$i] == '' || $d_prNW[$i] == '-' ? null : $d_prNW[$i]),
+                    'RCV_PRGW' => ($d_prGW[$i] == '' || $d_prGW[$i] == '-' ? null : $d_prGW[$i]),
                     'RCV_KPPBC' => $h_kppbc,
                     'RCV_GRLNO' => $i + 1,
                     'RCV_HSCD' => $d_hscode[$i],
@@ -623,12 +622,12 @@ class RCV extends CI_Controller
                     'RCV_ZNOURUT' => $d_nourut[$i],
                     'RCV_ASSETNUM' => $d_assetnum[$i],
                     'RCV_CONA' => $h_cona,
-                    'RCV_DUEDT' => $h_mconaDueDate == '' ? NULL : $h_mconaDueDate,
-                    'RCV_CONADT' => $h_mconaDate == '' ? NULL : $h_mconaDate,
+                    'RCV_DUEDT' => $h_mconaDueDate == '' ? null : $h_mconaDueDate,
+                    'RCV_CONADT' => $h_mconaDate == '' ? null : $h_mconaDate,
                     'RCV_BSGRP' => $h_bisgrup,
                     'RCV_LUPDT' => date('Y-m-d H:i:s'),
                     'RCV_USRID' => $this->session->userdata('nama'),
-                    'RCV_CREATEDBY' => $this->session->userdata('nama')
+                    'RCV_CREATEDBY' => $this->session->userdata('nama'),
                 ];
             }
             if (count($datas)) {
@@ -646,11 +645,11 @@ class RCV extends CI_Controller
                     'RCVPKG_JUMLAH_KEMASAN' => $d_pkg_jml[$i],
                     'RCVPKG_KODE_JENIS_KEMASAN' => $d_pkg_kd[$i],
                     'RCVPKG_CREATED_AT' => date('Y-m-d H:i:s'),
-                    'RCVPKG_CREATED_BY' => $this->session->userdata('nama')
+                    'RCVPKG_CREATED_BY' => $this->session->userdata('nama'),
                 ]);
             } else {
                 $this->RCVPKG_mod->updatebyId(
-                    ['RCVPKG_JUMLAH_KEMASAN' => $d_pkg_jml[$i],    'RCVPKG_KODE_JENIS_KEMASAN' => $d_pkg_kd[$i]],
+                    ['RCVPKG_JUMLAH_KEMASAN' => $d_pkg_jml[$i], 'RCVPKG_KODE_JENIS_KEMASAN' => $d_pkg_kd[$i]],
                     ['RCVPKG_AJU' => $h_aju, 'RCVPKG_DOC' => $h_pl_num, 'RCVPKG_LINE' => $d_pkg_idrow[$i]]
                 );
             }
@@ -682,11 +681,11 @@ class RCV extends CI_Controller
 
         if ($h_date_bc > '2019-01-01') {
             $this->toITH([
-                'DOC' => $h_do, 'WH' => 'PSIEQUIP', 'DATE' => $h_date_bc, 'LUPDT' => $h_date_bc . ' 07:01:00', 'USRID' => $this->session->userdata('nama')
+                'DOC' => $h_do, 'WH' => 'PSIEQUIP', 'DATE' => $h_date_bc, 'LUPDT' => $h_date_bc . ' 07:01:00', 'USRID' => $this->session->userdata('nama'),
             ]);
         }
 
-        $api_result =  $h_nopen != '' ?  $this->gotoque($h_do) : [];
+        $api_result = $h_nopen != '' ? $this->gotoque($h_do) : [];
         if (count($datas) == 0) {
             $myar[] = ['cd' => 1, 'msg' => 'Updated successfully'];
         }
@@ -719,13 +718,12 @@ class RCV extends CI_Controller
         foreach ($rs as $r) {
             $this->RCV_mod->insert(
                 [
-                    'RCV_PO' => $r['PO_NO'], 'RCV_ITMCD' => $r['ITMCD'], 'RCV_RPNO' => $r['NOAJU'], 'RCV_RPDATE' => $r['BCDATE'], 'RCV_BCTYPE' => $r['BCTYPE'], 'RCV_BCNO' => $r['BCNO'], 'RCV_BCDATE' => $r['BCDATE'], 'RCV_RCVDATE' => $r['BCDATE'], 'RCV_DONO' => $r['DO_NO'], 'RCV_QTY' => $r['QTY'], 'RCV_AMT' => $r['AMTK'], 'RCV_SUPCD' => $r['SUPCD'], 'RCV_WH' => $r['WH'], 'RCV_TPB' => $r['TPB'], 'RCV_PRPRC' => $r['PRICE'], 'RCV_KPPBC' => $r['KPPBC'], 'RCV_GRLNO' => $r['GRLNO'], 'RCV_ZSTSRCV' => $r['STATUSRCV'], 'RCV_ZNOURUT' => $r['GRLNO'], 'RCV_BSGRP' => $r['BG'], 'RCV_LUPDT' => $r['LUPTD'], 'RCV_USRID' => $r['USR']
+                    'RCV_PO' => $r['PO_NO'], 'RCV_ITMCD' => $r['ITMCD'], 'RCV_RPNO' => $r['NOAJU'], 'RCV_RPDATE' => $r['BCDATE'], 'RCV_BCTYPE' => $r['BCTYPE'], 'RCV_BCNO' => $r['BCNO'], 'RCV_BCDATE' => $r['BCDATE'], 'RCV_RCVDATE' => $r['BCDATE'], 'RCV_DONO' => $r['DO_NO'], 'RCV_QTY' => $r['QTY'], 'RCV_AMT' => $r['AMTK'], 'RCV_SUPCD' => $r['SUPCD'], 'RCV_WH' => $r['WH'], 'RCV_TPB' => $r['TPB'], 'RCV_PRPRC' => $r['PRICE'], 'RCV_KPPBC' => $r['KPPBC'], 'RCV_GRLNO' => $r['GRLNO'], 'RCV_ZSTSRCV' => $r['STATUSRCV'], 'RCV_ZNOURUT' => $r['GRLNO'], 'RCV_BSGRP' => $r['BG'], 'RCV_LUPDT' => $r['LUPTD'], 'RCV_USRID' => $r['USR'],
                 ]
             );
         }
         die('done');
     }
-
 
     public function saveManually2()
     {
@@ -782,12 +780,12 @@ class RCV extends CI_Controller
                         'RCV_QTY' => $d_qty[$i],
                         'RCV_PRPRC' => $d_price[$i] === '-' ? 0 : $d_price[$i],
                         'RCV_AMT' => $d_price[$i] * $d_qty[$i],
-                        'RCV_TTLAMT' => ($h_amount == '' ? NULL : $h_amount),
+                        'RCV_TTLAMT' => ($h_amount == '' ? null : $h_amount),
                         'RCV_TPB' => $h_type_tpb,
                         'RCV_SUPCD' => $h_supcd,
-                        'RCV_RCVDATE' => $h_date_rcv == '' ? NULL : $h_date_rcv,
-                        'RCV_NW' => ($h_nw == '' ? NULL : $h_nw),
-                        'RCV_GW' => ($h_gw == '' ? NULL : $h_gw),
+                        'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
+                        'RCV_NW' => ($h_nw == '' ? null : $h_nw),
+                        'RCV_GW' => ($h_gw == '' ? null : $h_gw),
                         'RCV_KPPBC' => $h_kppbc,
                         'RCV_HSCD' => $d_hscode[$i],
                         'RCV_ZSTSRCV' => $h_bcstatus,
@@ -800,7 +798,7 @@ class RCV extends CI_Controller
                         'RCV_BSGRP' => $h_bisgrup,
                         'RCV_LUPDT' => date('Y-m-d H:i:s'),
                         'RCV_USRID' => $this->session->userdata('nama'),
-                        'RCV_CREATEDBY' => $this->session->userdata('nama')
+                        'RCV_CREATEDBY' => $this->session->userdata('nama'),
                     ];
                     $ttlupdated += $this->RCV_mod->updatebyVAR($datau, $dataw);
                 } else {
@@ -817,13 +815,13 @@ class RCV extends CI_Controller
                         'RCV_QTY' => $d_qty[$i],
                         'RCV_PRPRC' => $d_price[$i] === '-' ? 0 : $d_price[$i],
                         'RCV_AMT' => $d_price[$i] * $d_qty[$i],
-                        'RCV_TTLAMT' => ($h_amount == '' ? NULL : $h_amount),
+                        'RCV_TTLAMT' => ($h_amount == '' ? null : $h_amount),
                         'RCV_TPB' => $h_type_tpb,
                         'RCV_WH' => $h_warehouse,
                         'RCV_SUPCD' => $h_supcd,
-                        'RCV_RCVDATE' => $h_date_rcv == '' ? NULL : $h_date_rcv,
-                        'RCV_NW' => ($h_nw == '' ? NULL : $h_nw),
-                        'RCV_GW' => ($h_gw == '' ? NULL : $h_gw),
+                        'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
+                        'RCV_NW' => ($h_nw == '' ? null : $h_nw),
+                        'RCV_GW' => ($h_gw == '' ? null : $h_gw),
                         'RCV_KPPBC' => $h_kppbc,
                         'RCV_GRLNO' => $lastLine,
                         'RCV_HSCD' => $d_hscode[$i],
@@ -835,7 +833,7 @@ class RCV extends CI_Controller
                         'RCV_BSGRP' => $h_bisgrup,
                         'RCV_LUPDT' => date('Y-m-d H:i:s'),
                         'RCV_USRID' => $this->session->userdata('nama'),
-                        'RCV_CREATEDBY' => $this->session->userdata('nama')
+                        'RCV_CREATEDBY' => $this->session->userdata('nama'),
                     ];
                     $lastLine++;
                 }
@@ -859,13 +857,13 @@ class RCV extends CI_Controller
                     'RCV_QTY' => $d_qty[$i],
                     'RCV_PRPRC' => $d_price[$i] === '-' ? 0 : $d_price[$i],
                     'RCV_AMT' => $d_price[$i] * $d_qty[$i],
-                    'RCV_TTLAMT' => ($h_amount == '' ? NULL : $h_amount),
+                    'RCV_TTLAMT' => ($h_amount == '' ? null : $h_amount),
                     'RCV_TPB' => $h_type_tpb,
                     'RCV_WH' => $h_warehouse,
                     'RCV_SUPCD' => $h_supcd,
-                    'RCV_RCVDATE' => $h_date_rcv == '' ? NULL : $h_date_rcv,
-                    'RCV_NW' => ($h_nw == '' ? NULL : $h_nw),
-                    'RCV_GW' => ($h_gw == '' ? NULL : $h_gw),
+                    'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
+                    'RCV_NW' => ($h_nw == '' ? null : $h_nw),
+                    'RCV_GW' => ($h_gw == '' ? null : $h_gw),
                     'RCV_KPPBC' => $h_kppbc,
                     'RCV_GRLNO' => $i,
                     'RCV_HSCD' => $d_hscode[$i],
@@ -877,7 +875,7 @@ class RCV extends CI_Controller
                     'RCV_BSGRP' => $h_bisgrup,
                     'RCV_LUPDT' => date('Y-m-d H:i:s'),
                     'RCV_USRID' => $this->session->userdata('nama'),
-                    'RCV_CREATEDBY' => $this->session->userdata('nama')
+                    'RCV_CREATEDBY' => $this->session->userdata('nama'),
                 ];
             }
             if (count($datas)) {
@@ -907,10 +905,9 @@ class RCV extends CI_Controller
             'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
             'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
         ]);
-        if($h_date_bc>'2022-10-01')
-        {
+        if ($h_date_bc > '2022-10-01') {
             $this->toITH([
-                'DOC' => $h_do, 'WH' => $h_warehouse, 'DATE' => $h_date_bc, 'LUPDT' => $h_date_bc . ' 07:01:00', 'USRID' => $this->session->userdata('nama')
+                'DOC' => $h_do, 'WH' => $h_warehouse, 'DATE' => $h_date_bc, 'LUPDT' => $h_date_bc . ' 07:01:00', 'USRID' => $this->session->userdata('nama'),
             ]);
         }
 
@@ -925,36 +922,36 @@ class RCV extends CI_Controller
     {
         $this->checkSession();
         date_default_timezone_set('Asia/Jakarta');
-        $currrtime     = date('Y-m-d H:i:s');
-        $cdo         = $this->input->post('indo');
+        $currrtime = date('Y-m-d H:i:s');
+        $cdo = $this->input->post('indo');
         $cconaNum = $this->input->post('inconaNum');
-        $cbctype     = $this->input->post('inbctype');
-        $caju  = $this->input->post('inbcno');
-        $cbcdate     = $this->input->post('inbcdate');
-        $crcvdate     = $this->input->post('inrcvdate');
+        $cbctype = $this->input->post('inbctype');
+        $caju = $this->input->post('inbcno');
+        $cbcdate = $this->input->post('inbcdate');
+        $crcvdate = $this->input->post('inrcvdate');
         $cregno = $this->input->post('inregno');
-        $ctpb         = $this->input->post('intpb');
-        $cttlamt    = $this->input->post('inttl_amt');
-        $c_nw        = $this->input->post('inNW');
-        $c_gw        = $this->input->post('inGW');
-        $ckppbc        = $this->input->post('inkppbc');
-        $cbisgrup    = $this->input->post('inbisgrup');
+        $ctpb = $this->input->post('intpb');
+        $cttlamt = $this->input->post('inttl_amt');
+        $c_nw = $this->input->post('inNW');
+        $c_gw = $this->input->post('inGW');
+        $ckppbc = $this->input->post('inkppbc');
+        $cbisgrup = $this->input->post('inbisgrup');
         //detail
-        $cpo         = $this->input->post('inpo');
-        $csup        = $this->input->post('insupcd');
-        $citem        = $this->input->post('initm');
-        $cqty        = $this->input->post('inqty');
-        $cprice        = $this->input->post('inprice');
-        $camt        = $this->input->post('inamt');
-        $cwh        = $this->input->post('inwh');
-        $cgrlno        = $this->input->post('ingrlno');
-        $chscd        = $this->input->post('inhscode');
-        $cbm        = $this->input->post('inbm');
-        $cppn        = $this->input->post('inppn');
-        $cpph        = $this->input->post('inpph');
-        $cnourut    = $this->input->post('innomorurut');
-        $cstsrcv    = $this->input->post('instsrcv');
-        $invoice    = $this->input->post('invoice');
+        $cpo = $this->input->post('inpo');
+        $csup = $this->input->post('insupcd');
+        $citem = $this->input->post('initm');
+        $cqty = $this->input->post('inqty');
+        $cprice = $this->input->post('inprice');
+        $camt = $this->input->post('inamt');
+        $cwh = $this->input->post('inwh');
+        $cgrlno = $this->input->post('ingrlno');
+        $chscd = $this->input->post('inhscode');
+        $cbm = $this->input->post('inbm');
+        $cppn = $this->input->post('inppn');
+        $cpph = $this->input->post('inpph');
+        $cnourut = $this->input->post('innomorurut');
+        $cstsrcv = $this->input->post('instsrcv');
+        $invoice = $this->input->post('invoice');
 
         $rsPGRN = $this->XPGRN_mod->selec_where_group(['RTRIM(PGRN_USRID) PGRN_USRID'], 'PGRN_USRID', ['PGRN_SUPNO' => $cdo]);
         $MEGAUser = '';
@@ -978,7 +975,7 @@ class RCV extends CI_Controller
                     'RCV_PO' => $cpo[$i],
                     'RCV_DONO' => $cdo,
                     'RCV_ITMCD' => $citem[$i],
-                    'RCV_GRLNO' => $cgrlno[$i]
+                    'RCV_GRLNO' => $cgrlno[$i],
                 ];
                 if ($this->RCV_mod->check_Primary($dataw) > 0) {
                     $datau = [
@@ -990,13 +987,13 @@ class RCV extends CI_Controller
                         'RCV_QTY' => $cqty[$i],
                         'RCV_PRPRC' => $cprice[$i],
                         'RCV_AMT' => $camt[$i],
-                        'RCV_TTLAMT' => ($cttlamt == '' ? NULL : $cttlamt),
+                        'RCV_TTLAMT' => ($cttlamt == '' ? null : $cttlamt),
                         'RCV_TPB' => $ctpb,
                         'RCV_WH' => $cwh[$i],
                         'RCV_SUPCD' => $csup[$i],
-                        'RCV_RCVDATE' => $crcvdate == '' ? NULL : $crcvdate,
-                        'RCV_NW' => ($c_nw == '' ? NULL : $c_nw),
-                        'RCV_GW' => ($c_gw == '' ? NULL : $c_gw),
+                        'RCV_RCVDATE' => $crcvdate == '' ? null : $crcvdate,
+                        'RCV_NW' => ($c_nw == '' ? null : $c_nw),
+                        'RCV_GW' => ($c_gw == '' ? null : $c_gw),
                         'RCV_KPPBC' => $ckppbc,
                         'RCV_HSCD' => $chscd[$i],
                         'RCV_ZSTSRCV' => $cstsrcv,
@@ -1008,7 +1005,7 @@ class RCV extends CI_Controller
                         'RCV_BSGRP' => $cbisgrup,
                         'RCV_USRID' => $this->session->userdata('nama'),
                         'RCV_CREATEDBY' => $MEGAUser,
-                        'RCV_INVNO' => $invoice
+                        'RCV_INVNO' => $invoice,
                     ];
                     $cret = $this->RCV_mod->updatebyVAR($datau, $dataw);
                     $myctr_edited += $cret;
@@ -1025,13 +1022,13 @@ class RCV extends CI_Controller
                         'RCV_QTY' => $cqty[$i],
                         'RCV_PRPRC' => $cprice[$i],
                         'RCV_AMT' => $camt[$i],
-                        'RCV_TTLAMT' => ($cttlamt == '' ? NULL : $cttlamt),
+                        'RCV_TTLAMT' => ($cttlamt == '' ? null : $cttlamt),
                         'RCV_TPB' => $ctpb,
                         'RCV_WH' => $cwh[$i],
                         'RCV_SUPCD' => $csup[$i],
-                        'RCV_RCVDATE' => $crcvdate == '' ? NULL : $crcvdate,
-                        'RCV_NW' => ($c_nw == '' ? NULL : $c_nw),
-                        'RCV_GW' => ($c_gw == '' ? NULL : $c_gw),
+                        'RCV_RCVDATE' => $crcvdate == '' ? null : $crcvdate,
+                        'RCV_NW' => ($c_nw == '' ? null : $c_nw),
+                        'RCV_GW' => ($c_gw == '' ? null : $c_gw),
                         'RCV_KPPBC' => $ckppbc,
                         'RCV_GRLNO' => $cgrlno[$i],
                         'RCV_HSCD' => $chscd[$i],
@@ -1045,10 +1042,10 @@ class RCV extends CI_Controller
                         'RCV_LUPDT' => $currrtime,
                         'RCV_USRID' => $this->session->userdata('nama'),
                         'RCV_CREATEDBY' => $MEGAUser,
-                        'RCV_INVNO' => $invoice
+                        'RCV_INVNO' => $invoice,
                     ];
                     $cret = $this->RCV_mod->insert($datas);
-                    $myctr_saved +=  $cret;
+                    $myctr_saved += $cret;
                 }
             }
         } else {
@@ -1056,7 +1053,7 @@ class RCV extends CI_Controller
                 'RCV_PO' => $cpo,
                 'RCV_DONO' => $cdo,
                 'RCV_ITMCD' => $citem,
-                'RCV_GRLNO' => $cgrlno
+                'RCV_GRLNO' => $cgrlno,
             ];
             if ($this->RCV_mod->check_Primary($dataw) > 0) {
                 $datau = [
@@ -1068,13 +1065,13 @@ class RCV extends CI_Controller
                     'RCV_QTY' => $cqty,
                     'RCV_PRPRC' => $cprice,
                     'RCV_AMT' => $camt,
-                    'RCV_TTLAMT' => ($cttlamt == '' ? NULL : $cttlamt),
+                    'RCV_TTLAMT' => ($cttlamt == '' ? null : $cttlamt),
                     'RCV_TPB' => $ctpb,
                     'RCV_WH' => $cwh,
                     'RCV_SUPCD' => $csup,
-                    'RCV_RCVDATE' => $crcvdate == '' ? NULL : $crcvdate,
-                    'RCV_NW' => ($c_nw == '' ? NULL : $c_nw),
-                    'RCV_GW' => ($c_gw == '' ? NULL : $c_gw),
+                    'RCV_RCVDATE' => $crcvdate == '' ? null : $crcvdate,
+                    'RCV_NW' => ($c_nw == '' ? null : $c_nw),
+                    'RCV_GW' => ($c_gw == '' ? null : $c_gw),
                     'RCV_KPPBC' => $ckppbc,
                     'RCV_GRLNO' => $cgrlno,
                     'RCV_HSCD' => $chscd,
@@ -1085,7 +1082,7 @@ class RCV extends CI_Controller
                     'RCV_ZNOURUT' => $cnourut,
                     'RCV_USRID' => $this->session->userdata('nama'),
                     'RCV_CREATEDBY' => $MEGAUser,
-                    'RCV_INVNO' => $invoice
+                    'RCV_INVNO' => $invoice,
                 ];
                 $cret = $this->RCV_mod->updatebyVAR($datau, $dataw);
                 $myctr_edited += $cret;
@@ -1102,13 +1099,13 @@ class RCV extends CI_Controller
                     'RCV_QTY' => $cqty,
                     'RCV_PRPRC' => $cprice,
                     'RCV_AMT' => $camt,
-                    'RCV_TTLAMT' => ($cttlamt == '' ? NULL : $cttlamt),
+                    'RCV_TTLAMT' => ($cttlamt == '' ? null : $cttlamt),
                     'RCV_TPB' => $ctpb,
                     'RCV_WH' => $cwh,
                     'RCV_SUPCD' => $csup,
-                    'RCV_RCVDATE' => $crcvdate == '' ? NULL : $crcvdate,
-                    'RCV_NW' => ($c_nw == '' ? NULL : $c_nw),
-                    'RCV_GW' => ($c_gw == '' ? NULL : $c_gw),
+                    'RCV_RCVDATE' => $crcvdate == '' ? null : $crcvdate,
+                    'RCV_NW' => ($c_nw == '' ? null : $c_nw),
+                    'RCV_GW' => ($c_gw == '' ? null : $c_gw),
                     'RCV_KPPBC' => $ckppbc,
                     'RCV_GRLNO' => $cgrlno,
                     'RCV_HSCD' => $chscd,
@@ -1120,10 +1117,10 @@ class RCV extends CI_Controller
                     'RCV_LUPDT' => $currrtime,
                     'RCV_USRID' => $this->session->userdata('nama'),
                     'RCV_CREATEDBY' => $MEGAUser,
-                    'RCV_INVNO' => $invoice
+                    'RCV_INVNO' => $invoice,
                 ];
                 $cret = $this->RCV_mod->insert($datas);
-                $myctr_saved +=  $cret;
+                $myctr_saved += $cret;
             }
         }
         $msg = '';
@@ -1148,17 +1145,16 @@ class RCV extends CI_Controller
             'CSMLOG_CREATED_AT' => $currrtime,
             'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
         ]);
-        if($cbcdate>'2021-10-01')
-        {
+        if ($cbcdate > '2021-10-01') {
             $this->toITH([
-                'DOC' => $cdo, 'WH' => $cwh[0], 'DATE' => $cbcdate, 'LUPDT' => $cbcdate . ' 07:01:00', 'USRID' => $this->session->userdata('nama')
+                'DOC' => $cdo, 'WH' => $cwh[0], 'DATE' => $cbcdate, 'LUPDT' => $cbcdate . ' 07:01:00', 'USRID' => $this->session->userdata('nama'),
             ]);
         }
 
         $catccc = $this->gotoque($cdo);
         $myar = [];
         $myar[] = [
-            "cd" => "1", "msg" => $myctr_saved . " saved, " . $myctr_edited . " edited [" . $catccc . "]", "extra" => trim($cwh[0])
+            "cd" => "1", "msg" => $myctr_saved . " saved, " . $myctr_edited . " edited [" . $catccc . "]", "extra" => trim($cwh[0]),
         ];
         echo json_encode($myar);
     }
@@ -1177,7 +1173,7 @@ class RCV extends CI_Controller
                         if ($r['RCV_QTY'] != $n['ITH_QTY']) {
                             //update in
                             $where = [
-                                'ITH_WH' => $p['WH'], 'ITH_DOC' => $n['ITH_DOC'], 'ITH_ITMCD' => $n['ITH_ITMCD']
+                                'ITH_WH' => $p['WH'], 'ITH_DOC' => $n['ITH_DOC'], 'ITH_ITMCD' => $n['ITH_ITMCD'],
                             ];
                             $this->ITH_mod->updatebyId($where, ['ITH_QTY' => 1 * $r['RCV_QTY']]);
                         }
@@ -1186,14 +1182,14 @@ class RCV extends CI_Controller
                 }
                 if (!$isfound) {
                     $rstosave[] = [
-                        'ITH_ITMCD' => $r['RCV_ITMCD'], 'ITH_DATE' => $p['DATE'], 'ITH_FORM' => 'INC-DO', 'ITH_DOC' => $p['DOC'], 'ITH_QTY' => 1 * $r['RCV_QTY'], 'ITH_WH' => $p['WH'], 'ITH_LUPDT' => $p['LUPDT'], 'ITH_USRID' => $p['USRID']
+                        'ITH_ITMCD' => $r['RCV_ITMCD'], 'ITH_DATE' => $p['DATE'], 'ITH_FORM' => 'INC-DO', 'ITH_DOC' => $p['DOC'], 'ITH_QTY' => 1 * $r['RCV_QTY'], 'ITH_WH' => $p['WH'], 'ITH_LUPDT' => $p['LUPDT'], 'ITH_USRID' => $p['USRID'],
                     ];
                 }
             }
         } else {
             foreach ($rsdlv as $r) {
                 $rstosave[] = [
-                    'ITH_ITMCD' => $r['RCV_ITMCD'], 'ITH_DATE' => $p['DATE'], 'ITH_FORM' => 'INC-DO', 'ITH_DOC' => $p['DOC'], 'ITH_QTY' => 1 * $r['RCV_QTY'], 'ITH_WH' => $p['WH'], 'ITH_LUPDT' => $p['LUPDT'], 'ITH_USRID' => $p['USRID']
+                    'ITH_ITMCD' => $r['RCV_ITMCD'], 'ITH_DATE' => $p['DATE'], 'ITH_FORM' => 'INC-DO', 'ITH_DOC' => $p['DOC'], 'ITH_QTY' => 1 * $r['RCV_QTY'], 'ITH_WH' => $p['WH'], 'ITH_LUPDT' => $p['LUPDT'], 'ITH_USRID' => $p['USRID'],
                 ];
             }
         }
@@ -1257,10 +1253,10 @@ class RCV extends CI_Controller
             $ssupplier = "''";
         }
         $rs = $searchby == 'DO' ? $this->RCV_mod->select_deliv_invo_byDO($pdate1, $pdate2, $sbgroup, $search)
-            : $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup, $search);
+        : $this->RCV_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup, $search);
 
         $rssupplier = $searchby == 'DO' ? $this->RCV_mod->select_deliv_supplier_invo_byDO($pdate1, $pdate2, $search, $ssupplier)
-            : $this->RCV_mod->select_deliv_supplier_invo($pdate1, $pdate2, $ssupplier, $search);
+        : $this->RCV_mod->select_deliv_supplier_invo($pdate1, $pdate2, $ssupplier, $search);
 
         $rsresume = [];
         foreach ($rs as $r) {
@@ -1584,7 +1580,7 @@ class RCV extends CI_Controller
         die('done');
     }
 
-    function storeto_fiform($dataw, $datas, $datau)
+    public function storeto_fiform($dataw, $datas, $datau)
     {
         if ($this->FIFORM_mod->check_Primary($dataw) > 0) {
             $toret = $this->FIFORM_mod->updatebyVAR($datau, $dataw);
@@ -1593,7 +1589,7 @@ class RCV extends CI_Controller
         }
     }
 
-    function removemanual()
+    public function removemanual()
     {
         header('Content-Type: application/json');
         $lineId = $this->input->post('lineId');
@@ -1651,7 +1647,7 @@ class RCV extends CI_Controller
         $cwh = $this->input->get('inWH');
         $crack = $this->input->get('inRACK');
         $citem = $this->input->get('inITEM');
-        $datac  = ['RCV_ITMCD' => $citem, 'RCV_DONO' => $cdo];
+        $datac = ['RCV_ITMCD' => $citem, 'RCV_DONO' => $cdo];
         if ($this->RCV_mod->check_Primary($datac) > 0) {
             echo "1";
             $datac_loc = ['ITMLOC_ITM' => $citem, 'ITMLOC_LOC' => $crack, 'ITMLOC_LOCG' => $cwh];
@@ -1702,7 +1698,7 @@ class RCV extends CI_Controller
             $ctxid = substr('0000' . $lastno, -4) . "/" . $monthroma . "/" . $myear . "/RTN-" . $cconsign;
             for ($i = 0; $i < $ttldata; $i++) {
                 $datac = [
-                    'RETFG_DOCNO' => $cdoc, 'RETFG_ITMCD' => $ca_item[$i], 'RETFG_QTY' => str_replace(",", "", $ca_qty[$i]), 'RETFG_RMRK' => $ca_remark[$i], 'RETFG_CUSCD' => $ccust_cd, 'RETFG_PLANT' => $cplant, 'RETFG_STRDOC' => $ctxid, 'RETFG_CONSIGN' => $cconsign
+                    'RETFG_DOCNO' => $cdoc, 'RETFG_ITMCD' => $ca_item[$i], 'RETFG_QTY' => str_replace(",", "", $ca_qty[$i]), 'RETFG_RMRK' => $ca_remark[$i], 'RETFG_CUSCD' => $ccust_cd, 'RETFG_PLANT' => $cplant, 'RETFG_STRDOC' => $ctxid, 'RETFG_CONSIGN' => $cconsign,
                 ];
                 $datac['RETFG_USRID'] = $this->session->userdata('nama');
                 $datac['RETFG_LUPDT'] = $current_datetime;
@@ -1722,15 +1718,15 @@ class RCV extends CI_Controller
             for ($i = 0; $i < $ttldata; $i++) {
                 $ret = $this->RETFG_mod->update_where(
                     [
-                        'RETFG_RMRK' => $ca_remark[$i], 'RETFG_NTCNO' => $ca_notice[$i], 'RETFG_SUPNO' => $supno, 'RETFG_SUPCD' => $supcd, 'RETFG_PLANT' => $cplant
+                        'RETFG_RMRK' => $ca_remark[$i], 'RETFG_NTCNO' => $ca_notice[$i], 'RETFG_SUPNO' => $supno, 'RETFG_SUPCD' => $supcd, 'RETFG_PLANT' => $cplant,
                     ],
                     [
-                        'RETFG_DOCNO' => $cdoc, 'RETFG_LINE' => $ca_rowid[$i]
+                        'RETFG_DOCNO' => $cdoc, 'RETFG_LINE' => $ca_rowid[$i],
                     ]
                 );
                 if ($ret == 0) {
                     $datac = [
-                        'RETFG_DOCNO' => $cdoc, 'RETFG_ITMCD' => $ca_item[$i], 'RETFG_QTY' => $ca_qty[$i], 'RETFG_RMRK' => $ca_remark[$i], 'RETFG_CUSCD' => $ccust_cd, 'RETFG_PLANT' => $cplant, 'RETFG_STRDOC' => $cdocinternal, 'RETFG_CONSIGN' => $cconsign
+                        'RETFG_DOCNO' => $cdoc, 'RETFG_ITMCD' => $ca_item[$i], 'RETFG_QTY' => $ca_qty[$i], 'RETFG_RMRK' => $ca_remark[$i], 'RETFG_CUSCD' => $ccust_cd, 'RETFG_PLANT' => $cplant, 'RETFG_STRDOC' => $cdocinternal, 'RETFG_CONSIGN' => $cconsign,
                     ];
                     $datac['RETFG_USRID'] = $this->session->userdata('nama');
                     $datac['RETFG_LUPDT'] = $current_datetime;
@@ -1753,7 +1749,7 @@ class RCV extends CI_Controller
         header('Content-Type: application/json');
         $cdo = $this->input->get('indo');
         $COLUMNS = [
-            "RTRIM(MITM_ITMCD) MITM_ITMCD", "RTRIM(MITM_ITMD1) MITM_ITMD1", 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RETFG_QTY', 'RETFG_RMRK', "RETFG_CUSCD", 'RETFG_PLANT', 'RETFG_LINE', 'RETFG_STRDOC', 'RETFG_STRDT', "ISNULL(RETFG_CONSIGN,'-') RETFG_CONSIGN", "RETFG_NTCNO", "RETFG_CAT", "RETFG_SUPNO", "RETFG_SUPCD", "RTRIM(ISNULL(MCUS_CUSNM,MSUP_SUPNM)) MCUS_CUSNM"
+            "RTRIM(MITM_ITMCD) MITM_ITMCD", "RTRIM(MITM_ITMD1) MITM_ITMD1", 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RETFG_QTY', 'RETFG_RMRK', "RETFG_CUSCD", 'RETFG_PLANT', 'RETFG_LINE', 'RETFG_STRDOC', 'RETFG_STRDT', "ISNULL(RETFG_CONSIGN,'-') RETFG_CONSIGN", "RETFG_NTCNO", "RETFG_CAT", "RETFG_SUPNO", "RETFG_SUPCD", "RTRIM(ISNULL(MCUS_CUSNM,MSUP_SUPNM)) MCUS_CUSNM",
         ];
         $rs = $this->RETFG_mod->select_cols_where($COLUMNS, ['RETFG_DOCNO' => $cdo]);
         die(json_encode(['data' => $rs]));
@@ -1826,23 +1822,23 @@ class RCV extends CI_Controller
         $currdate = date('Ymd');
         $currrtime = date('Y-m-d H:i:s');
 
-        $cdo     = $this->input->post('inDO');
-        $citm     = $this->input->post('inITM');
-        $cqty     = $this->input->post('inQTY');
-        $clot     = $this->input->post('inLOT');
-        $crack     = $this->input->post('inRACK');
-        $datac  = ['RCV_ITMCD' => $citm, 'RCV_DONO' => $cdo];
+        $cdo = $this->input->post('inDO');
+        $citm = $this->input->post('inITM');
+        $cqty = $this->input->post('inQTY');
+        $clot = $this->input->post('inLOT');
+        $crack = $this->input->post('inRACK');
+        $datac = ['RCV_ITMCD' => $citm, 'RCV_DONO' => $cdo];
         if ($this->RCV_mod->check_Primary($datac) > 0) {
             echo "1";
             $datac_loc = ['ITMLOC_ITM' => $citm, 'ITMLOC_LOC' => $crack];
             if ($this->ITMLOC_mod->check_Primary($datac_loc) > 0) {
                 echo "1"; //location valid
-                $mlastid    = $this->RCVSCN_mod->lastserialid();
+                $mlastid = $this->RCVSCN_mod->lastserialid();
                 $mlastid++;
-                $newid         = $currdate . $mlastid;
+                $newid = $currdate . $mlastid;
                 //check if scanned qty is more than balance value
-                $datac_bal     = ['RCV_DONO' => $cdo, 'RCV_ITMCD' => $citm];
-                $rs         = $this->RCV_mod->selectscan_balancing($datac_bal);
+                $datac_bal = ['RCV_DONO' => $cdo, 'RCV_ITMCD' => $citm];
+                $rs = $this->RCV_mod->selectscan_balancing($datac_bal);
                 $mget_bal = 0;
                 foreach ($rs as $r) {
                     $mget_bal = $r['RCV_QTY'] - $r['SCAN_QTY'] * 1;
@@ -1853,7 +1849,7 @@ class RCV extends CI_Controller
                     $datas = array(
                         'RCVSCN_ID' => $newid, 'RCVSCN_DONO' => $cdo, 'RCVSCN_LOCID' => $crack,
                         'RCVSCN_ITMCD' => $citm, 'RCVSCN_LOTNO' => $clot, 'RCVSCN_QTY' => $cqty,
-                        'RCVSCN_LUPDT' => $currrtime, 'RCVSCN_USRID' => $this->session->userdata('nama')
+                        'RCVSCN_LUPDT' => $currrtime, 'RCVSCN_USRID' => $this->session->userdata('nama'),
                     );
                     $toret = $this->RCVSCN_mod->insert($datas);
                     if ($toret > 0) {
@@ -1911,28 +1907,28 @@ class RCV extends CI_Controller
                 } else {
                     $mlastid = $this->RCVSCN_mod->lastserialid();
                     $mlastid++;
-                    $newid     = $currdate . $mlastid;
+                    $newid = $currdate . $mlastid;
                     $datas = [
-                        'RCVSCN_ID' => $newid, 'RCVSCN_DONO' => trim($r['RCV_DONO']), 'RCVSCN_LOCID' => NULL,
-                        'RCVSCN_ITMCD' => trim($r['RCV_ITMCD']), 'RCVSCN_LOTNO' => NULL, 'RCVSCN_QTY' => $mget_bal,
+                        'RCVSCN_ID' => $newid, 'RCVSCN_DONO' => trim($r['RCV_DONO']), 'RCVSCN_LOCID' => null,
+                        'RCVSCN_ITMCD' => trim($r['RCV_ITMCD']), 'RCVSCN_LOTNO' => null, 'RCVSCN_QTY' => $mget_bal,
                         'RCVSCN_SAVED' => '1',
-                        'RCVSCN_LUPDT' => $currrtime, 'RCVSCN_USRID' => $this->session->userdata('nama')
+                        'RCVSCN_LUPDT' => $currrtime, 'RCVSCN_USRID' => $this->session->userdata('nama'),
                     ];
                     if (!$this->RCVSCN_mod->check_Primary(['RCVSCN_ID' => $newid])) {
                         $mlastid = $this->RCVSCN_mod->lastserialid();
                         $mlastid++;
                     } else {
                     }
-                    $newid     = $currdate . $mlastid;
+                    $newid = $currdate . $mlastid;
                     $datas = [
-                        'RCVSCN_ID' => $newid, 'RCVSCN_DONO' => trim($r['RCV_DONO']), 'RCVSCN_LOCID' => NULL,
-                        'RCVSCN_ITMCD' => trim($r['RCV_ITMCD']), 'RCVSCN_LOTNO' => NULL, 'RCVSCN_QTY' => $mget_bal,
+                        'RCVSCN_ID' => $newid, 'RCVSCN_DONO' => trim($r['RCV_DONO']), 'RCVSCN_LOCID' => null,
+                        'RCVSCN_ITMCD' => trim($r['RCV_ITMCD']), 'RCVSCN_LOTNO' => null, 'RCVSCN_QTY' => $mget_bal,
                         'RCVSCN_SAVED' => '1',
-                        'RCVSCN_LUPDT' => $currrtime, 'RCVSCN_USRID' => $this->session->userdata('nama')
+                        'RCVSCN_LUPDT' => $currrtime, 'RCVSCN_USRID' => $this->session->userdata('nama'),
                     ];
                     $toret = $this->RCVSCN_mod->insert($datas);
                     if ($toret > 0) {
-                        echo "1 <br>"; //insert RCVSCN success					
+                        echo "1 <br>"; //insert RCVSCN success
                     }
                 }
             }
@@ -1942,18 +1938,18 @@ class RCV extends CI_Controller
     public function scnd_list_bydo_item()
     {
         header('Content-Type: application/json');
-        $cdo     = $this->input->get('inDO');
-        $citem     = $this->input->get('inITEM');
-        $dataf     = ['RCVSCN_DONO' => $cdo, 'RCVSCN_ITMCD' => $citem];
-        $rs     = $this->RCVSCN_mod->selectby_filter($dataf);
+        $cdo = $this->input->get('inDO');
+        $citem = $this->input->get('inITEM');
+        $dataf = ['RCVSCN_DONO' => $cdo, 'RCVSCN_ITMCD' => $citem];
+        $rs = $this->RCVSCN_mod->selectby_filter($dataf);
         echo json_encode($rs);
     }
 
     public function scnd_remove()
     {
-        $cid     = $this->input->get('inID');
-        $dataw     = ['RCVSCN_ID' => $cid];
-        $toret     = $this->RCVSCN_mod->deleteby_filter($dataw);
+        $cid = $this->input->get('inID');
+        $dataw = ['RCVSCN_ID' => $cid];
+        $toret = $this->RCVSCN_mod->deleteby_filter($dataw);
         if ($toret > 0) {
             echo "Deleted";
         } else {
@@ -1979,9 +1975,9 @@ class RCV extends CI_Controller
             }
             if ($cpermonth == 'y') {
                 if ($csup != '-') {
-                    $rs =   $this->RCV_mod->MGSelectDO_dateSup($ckey, $cdate1, $cdate2, $csup);
+                    $rs = $this->RCV_mod->MGSelectDO_dateSup($ckey, $cdate1, $cdate2, $csup);
                 } else {
-                    $rs =   $this->RCV_mod->MGSelectDO_date($ckey, $cdate1, $cdate2);
+                    $rs = $this->RCV_mod->MGSelectDO_date($ckey, $cdate1, $cdate2);
                 }
             } else {
                 if ($csup != '-') {
@@ -2047,7 +2043,7 @@ class RCV extends CI_Controller
         $supcd = $this->input->get('supcd');
         $nomorAju = $this->input->get('nomorAju');
         $columns = [
-            'RTRIM(RCV_GRLNO) RCV_GRLNO', 'RTRIM(RCV_ZNOURUT) RCV_ZNOURUT', 'RTRIM(RCV_PO) RCV_PO', 'RTRIM(RCV_ITMCD) RCV_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'RTRIM(RCV_QTY) RCV_QTY', 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RTRIM(RCV_PRPRC) RCV_PRPRC', 'RTRIM(RCV_HSCD) RCV_HSCD', 'RCV_BM RCV_BM', 'RCV_PPN RCV_PPN', 'RCV_PPH RCV_PPH', 'RCV_PRNW', 'RCV_PRGW', 'RCV_ASSETNUM'
+            'RTRIM(RCV_GRLNO) RCV_GRLNO', 'RTRIM(RCV_ZNOURUT) RCV_ZNOURUT', 'RTRIM(RCV_PO) RCV_PO', 'RTRIM(RCV_ITMCD) RCV_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'RTRIM(RCV_QTY) RCV_QTY', 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RTRIM(RCV_PRPRC) RCV_PRPRC', 'RTRIM(RCV_HSCD) RCV_HSCD', 'RCV_BM RCV_BM', 'RCV_PPN RCV_PPN', 'RCV_PPH RCV_PPH', 'RCV_PRNW', 'RCV_PRGW', 'RCV_ASSETNUM',
         ];
         $rs = $this->RCV_mod->select_where($columns, ['RCV_DONO' => $do, 'RCV_SUPCD' => $supcd]);
         $rsPKG = $this->RCVPKG_mod->select_where(
@@ -2061,7 +2057,7 @@ class RCV extends CI_Controller
         header('Content-Type: application/json');
         $do = $this->input->get('do');
         $columns = [
-            'RTRIM(RCV_GRLNO) RCV_GRLNO', 'RTRIM(RCV_ZNOURUT) RCV_ZNOURUT', 'RTRIM(RCV_PO) RCV_PO', 'RTRIM(RCV_ITMCD) RCV_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'RTRIM(RCV_QTY) RCV_QTY', 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RTRIM(RCV_PRPRC) RCV_PRPRC', 'RTRIM(RCV_HSCD) RCV_HSCD', 'RTRIM(RCV_BM) RCV_BM', 'RTRIM(RCV_PPN) RCV_PPN', 'RTRIM(RCV_PPH) RCV_PPH'
+            'RTRIM(RCV_GRLNO) RCV_GRLNO', 'RTRIM(RCV_ZNOURUT) RCV_ZNOURUT', 'RTRIM(RCV_PO) RCV_PO', 'RTRIM(RCV_ITMCD) RCV_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'RTRIM(RCV_QTY) RCV_QTY', 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RTRIM(RCV_PRPRC) RCV_PRPRC', 'RTRIM(RCV_HSCD) RCV_HSCD', 'RTRIM(RCV_BM) RCV_BM', 'RTRIM(RCV_PPN) RCV_PPN', 'RTRIM(RCV_PPH) RCV_PPH',
         ];
         $rs = $this->RCV_mod->select_where($columns, ['RCV_DONO' => $do, 'MITM_MODEL' => '0']);
         die(json_encode(['data' => $rs]));
@@ -2093,13 +2089,13 @@ class RCV extends CI_Controller
                 }
                 if ($cpermonth == 'y') {
                     $rs = $csup != '-' ? $this->RCV_mod->MGSelectDO_dateSup_return_fg($ckey, $cdate1, $cdate2, $csup)
-                        : $this->RCV_mod->MGSelectDO_date_return_fg($ckey, $cdate1, $cdate2);
+                    : $this->RCV_mod->MGSelectDO_date_return_fg($ckey, $cdate1, $cdate2);
                 } else {
                     if ($csup != '-') {
                         $rs = $this->RCV_mod->MGSelectDOSup_return_fg($ckey, $csup);
                     } else {
                         $rs = $cdatefilter != '' ? $this->RCV_mod->MGSelectDO_date_return_fg($ckey, $cdate1, $cdate2) :
-                            $this->RCV_mod->MGSelectDO_return_fg($ckey);
+                        $this->RCV_mod->MGSelectDO_return_fg($ckey);
                     }
                 }
                 break;
@@ -2134,7 +2130,7 @@ class RCV extends CI_Controller
             exit('nothing to be printed');
         }
         $COLUMNS = [
-            'RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RETFG_QTY', 'RETFG_RMRK', 'RETFG_CUSCD', 'RETFG_PLANT', 'RETFG_LINE', 'RETFG_STRDOC', 'RETFG_STRDT', 'CONVERT(DATE,ISUDT) STKTRND1_ISUDT'
+            'RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RETFG_QTY', 'RETFG_RMRK', 'RETFG_CUSCD', 'RETFG_PLANT', 'RETFG_LINE', 'RETFG_STRDOC', 'RETFG_STRDT', 'CONVERT(DATE,ISUDT) STKTRND1_ISUDT',
         ];
         $rs = $this->RETFG_mod->select_cols_where($COLUMNS, ['RETFG_DOCNO' => $pid]);
         $h_no_serahterima = '';
@@ -2338,7 +2334,7 @@ class RCV extends CI_Controller
                 "RCV_BCTYPE" => $r['RCV_BCTYPE'],
                 "RCV_BCNO" => $r['RCV_BCNO'],
                 "RCV_LUPDT" => $currrtime,
-                "RCV_USRID" => $this->session->userdata('nama')
+                "RCV_USRID" => $this->session->userdata('nama'),
             ];
             $myar[] = $rw;
             $key = [
@@ -2349,7 +2345,7 @@ class RCV extends CI_Controller
                 'ITH_DATE' => $r['RCV_BCDATE'],
                 'ITH_LUPDT' => $r['RCV_BCDATE'] . " 08:00:00",
                 'ITH_LINE' => 'ITH' . $formatyear . $formatmonth . $formatdate . $nourut,
-                'ITH_FORM' => 'ADJ-OUT'
+                'ITH_FORM' => 'ADJ-OUT',
             ];
             if (!$this->ITH_mod->check_Primary($key)) {
                 $rsminusmain[] = $key;
@@ -2358,7 +2354,7 @@ class RCV extends CI_Controller
         }
         $res = $this->RCV_mod->insertb($myar);
         $this->toITH([
-            'DOC' => $cdon, 'WH' => $thewh, 'DATE' => $bcdate, 'LUPDT' => $bcdate . ' 07:01:00', 'USRID' => $this->session->userdata('nama')
+            'DOC' => $cdon, 'WH' => $thewh, 'DATE' => $bcdate, 'LUPDT' => $bcdate . ' 07:01:00', 'USRID' => $this->session->userdata('nama'),
         ]);
         if (count($rsminusmain) > 0) {
             $this->ITH_mod->insertb($rsminusmain);
@@ -2378,7 +2374,7 @@ class RCV extends CI_Controller
         foreach ($rs as &$r) {
             $dataw = [
                 'RCV_DONO' => trim($cdo),
-                'RCV_ITMCD' => trim($r['PGRN_ITMCD'])
+                'RCV_ITMCD' => trim($r['PGRN_ITMCD']),
             ];
             $r['SYNC_STS'] = ($this->RCV_mod->check_Primary($dataw) > 0) ? 'Synchronized' : 'Not yet';
 
@@ -2387,7 +2383,7 @@ class RCV extends CI_Controller
                 'RCV_DONO' => trim($cdo),
                 'RCV_ITMCD' => trim($r['PGRN_ITMCD']),
                 'RCV_PO' => trim($r['PGRN_PONO']),
-                'RCV_GRLNO' => trim($r['PGRN_GRLNO'])
+                'RCV_GRLNO' => trim($r['PGRN_GRLNO']),
             ];
             $rs2 = $this->RCV_mod->selectbypar($dataw);
             $r['PROFNO'] = '';
@@ -2410,12 +2406,11 @@ class RCV extends CI_Controller
         echo json_encode($rs);
     }
 
-
     public function MGGetDODetailReturn()
     {
         header('Content-Type: application/json');
         $cdo = $this->input->get('indo');
-        $rs    = $this->RCV_mod->MGSelectDODetailReturn($cdo);
+        $rs = $this->RCV_mod->MGSelectDODetailReturn($cdo);
         $plant = '';
         $customer_cd = '';
         $customer_name = '';
@@ -2434,11 +2429,11 @@ class RCV extends CI_Controller
         foreach ($rs as &$r) {
             $dataw = [
                 'RCV_INVNO' => trim($cdo),
-                'RCV_ITMCD' => trim($r['STKTRND2_ITMCD'])
+                'RCV_ITMCD' => trim($r['STKTRND2_ITMCD']),
             ];
             $r['SYNC_STS'] = ($this->RCV_mod->check_Primary($dataw) > 0) ? 'Synchronized' : 'Not yet';
 
-            //SAVED CUSTOMS DOC			
+            //SAVED CUSTOMS DOC
             $rs2 = $this->RCV_mod->selectbypar($dataw);
             $r['PROFNO'] = '';
             $r['HSCD'] = '';
@@ -2465,8 +2460,8 @@ class RCV extends CI_Controller
     public function GetDODetail_split()
     {
         header('Content-Type: application/json');
-        $cdo    = $this->input->get('indo');
-        $rs        = $this->RCV_mod->SelectDODetail_split($cdo);
+        $cdo = $this->input->get('indo');
+        $rs = $this->RCV_mod->SelectDODetail_split($cdo);
         echo '{"data":' . json_encode($rs) . '}';
     }
 
@@ -2482,8 +2477,8 @@ class RCV extends CI_Controller
     public function getDO()
     {
         header('Content-Type: application/json');
-        $cwo    = $this->input->get('inwo');
-        $rs        = $this->RCV_mod->selectDO($cwo);
+        $cwo = $this->input->get('inwo');
+        $rs = $this->RCV_mod->selectDO($cwo);
         echo json_encode($rs);
     }
 
@@ -2600,14 +2595,14 @@ class RCV extends CI_Controller
         $rs_j = [];
         foreach ($rs as $r) {
             $rs_j[] = [
-                'id' => trim($r['SSO2_CUSCD']), 'text' => trim($r['MCUS_CUSNM'])
+                'id' => trim($r['SSO2_CUSCD']), 'text' => trim($r['MCUS_CUSNM']),
             ];
         }
         if ($cbg === 'PSI1PPZIEP') {
             $rs = $this->MSTSUP_mod->select_where_id_in(['MUR407U', 'KKI056U', 'KIY001U', 'PEI208U']);
             foreach ($rs as $r) {
                 $rs_j[] = [
-                    'id' => $r['SUPCD'], 'text' => $r['SUPNM']
+                    'id' => $r['SUPCD'], 'text' => $r['SUPNM'],
                 ];
             }
         }
@@ -2623,7 +2618,7 @@ class RCV extends CI_Controller
         $rs_j = [];
         foreach ($rs as $r) {
             $rs_j[] = [
-                'id' => trim($r['SI_OTHRMRK']), 'text' => trim($r['SI_OTHRMRK'])
+                'id' => trim($r['SI_OTHRMRK']), 'text' => trim($r['SI_OTHRMRK']),
             ];
         }
         exit(json_encode($rs_j));
@@ -2637,7 +2632,7 @@ class RCV extends CI_Controller
         $rs_j = [];
         foreach ($rs as $r) {
             $rs_j[] = [
-                'id' => trim($r['STKTRND2_ITMCD']), 'text' => trim($r['STKTRND2_ITMCD']), 'description' => trim($r['MITM_ITMD1']), 'um' => trim($r['MITM_STKUOM']), 'maxqty' => $r['TRNQT']
+                'id' => trim($r['STKTRND2_ITMCD']), 'text' => trim($r['STKTRND2_ITMCD']), 'description' => trim($r['MITM_ITMD1']), 'um' => trim($r['MITM_STKUOM']), 'maxqty' => $r['TRNQT'],
             ];
         }
         exit(json_encode($rs_j));
@@ -2690,8 +2685,6 @@ class RCV extends CI_Controller
         $sheet->setCellValueByColumnAndRow(3, 6, 'DOKUMEN ');
         $sheet->setCellValueByColumnAndRow(6, 6, 'PENDAFTARAN');
         $sheet->setCellValueByColumnAndRow(7, 6, 'NO. URUT');
-
-
 
         $sheet->mergeCells('H6:H7');
         $sheet->setCellValueByColumnAndRow(8, 6, 'URAIAN JENIS BARANG');
@@ -2761,8 +2754,6 @@ class RCV extends CI_Controller
                 $flgcolor = 'w';
                 $mnomorin++;
                 $mnomordis = '';
-                $mdatepabdis = '';
-                $mdatercv = '';
                 if ($mdo != $r['RCV_DONO']) {
                     $mdo = $r['RCV_DONO'];
                     $mnilaipab = $r['RCV_TTLAMT'];
@@ -2774,18 +2765,9 @@ class RCV extends CI_Controller
                     $msupdis = trim($msup);
                     $malamdis = $malam;
                     $mdodis = trim($mdo);
-                } else {
-                    $mnilaipabdis = '';
-                    $mberatpabdis = '';
-                    $msupdis = '';
-                    $malamdis = '';
-                    $mdodis = '';
                 }
             }
-            $sheet->setCellValueByColumnAndRow(2, $y, $mnomordis);
-            if ($flgcolor == 'w') {
-                $sheet->getStyle('C' . $y)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
-            }
+            $sheet->setCellValueByColumnAndRow(2, $y, $mnomordis);            
             $sheet->setCellValueByColumnAndRow(3, $y, $mnomorpabdis);
             $sheet->setCellValueByColumnAndRow(4, $y, $mdatepabdis);
             $sheet->setCellValueByColumnAndRow(5, $y, $mdatercv);
@@ -2823,9 +2805,9 @@ class RCV extends CI_Controller
         $BStyle = [
             'borders' => [
                 'outline' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK
-                ]
-            ]
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                ],
+            ],
         ];
         $sheet->getStyle('B6:S' . $y)->applyFromArray($BStyle);
         $sheet->freezePane('F8');
@@ -2847,12 +2829,12 @@ class RCV extends CI_Controller
 
     public function getlinkitemtemplate()
     {
-        $murl   = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
-        $murl   .= "://" . $_SERVER['HTTP_HOST'];
+        $murl = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
+        $murl .= "://" . $_SERVER['HTTP_HOST'];
         echo $murl . "/wms/RCV/downloadtemplate";
     }
 
-    function downloadtemplate()
+    public function downloadtemplate()
     {
         $theurl = 'assets/userxls_template/tmpl_hscode_receiving.xls';
         force_download($theurl, null);
@@ -2878,7 +2860,7 @@ class RCV extends CI_Controller
             $anar = ["indx" => $crowid, "status" => 'Not found'];
         } else {
             $datau = [
-                'RCV_HSCD' => $chscode, 'RCV_BM' => $cbm, 'RCV_PPN' => $cppn, 'RCV_PPH' => $cpph, 'RCV_ZNOURUT' => $cnomor_urut
+                'RCV_HSCD' => $chscode, 'RCV_BM' => $cbm, 'RCV_PPN' => $cppn, 'RCV_PPH' => $cpph, 'RCV_ZNOURUT' => $cnomor_urut,
             ];
             $toret = $this->RCV_mod->updatebyId_new($datau, $cdo, $citemcode, $cqty);
             if ($toret > 0) {
@@ -2901,7 +2883,7 @@ class RCV extends CI_Controller
         ini_set('max_execution_time', '-1');
         header('Content-Type: application/json');
         date_default_timezone_set('Asia/Jakarta');
-        $currrtime     = date('Y-m-d H:i:s');
+        $currrtime = date('Y-m-d H:i:s');
         $rs = $this->RCV_mod->MGSelectDODetail_formigration();
         $rsDO = $this->RCV_mod->DOList_formigration();
         $citem = [];
@@ -2940,7 +2922,7 @@ class RCV extends CI_Controller
                     'RCV_PO' => $cpo[$i],
                     'RCV_DONO' => $b['MIGDO'],
                     'RCV_ITMCD' => $citem[$i],
-                    'RCV_GRLNO' => $cgrlno[$i]
+                    'RCV_GRLNO' => $cgrlno[$i],
                 ];
                 if ($this->RCV_mod->check_Primary($dataw) > 0) {
                     $datau = [
@@ -2952,22 +2934,22 @@ class RCV extends CI_Controller
                         'RCV_QTY' => $cqty[$i],
                         'RCV_PRPRC' => $cprice[$i],
                         'RCV_AMT' => $camt[$i],
-                        'RCV_TTLAMT' => NULL,
-                        'RCV_TPB' => NULL,
+                        'RCV_TTLAMT' => null,
+                        'RCV_TPB' => null,
                         'RCV_WH' => $cwh[$i],
                         'RCV_SUPCD' => $csup[$i],
-                        'RCV_RCVDATE' => NULL,
-                        'RCV_NW' => NULL,
-                        'RCV_GW' => NULL,
+                        'RCV_RCVDATE' => null,
+                        'RCV_NW' => null,
+                        'RCV_GW' => null,
                         'RCV_KPPBC' => $b['KPPBC'],
                         'RCV_GRLNO' => $cgrlno[$i],
-                        'RCV_HSCD' => NULL,
-                        'RCV_ZSTSRCV' => NULL,
+                        'RCV_HSCD' => null,
+                        'RCV_ZSTSRCV' => null,
                         'RCV_BM' => 0,
                         'RCV_PPN' => 10,
                         'RCV_PPH' => 2.5,
-                        'RCV_ZNOURUT' => NULL,
-                        'RCV_USRID' => 'ane'
+                        'RCV_ZNOURUT' => null,
+                        'RCV_USRID' => 'ane',
                     ];
                     $cret = $this->RCV_mod->updatebyVAR($datau, $dataw);
                     $myctr_edited += $cret;
@@ -2984,34 +2966,34 @@ class RCV extends CI_Controller
                         'RCV_QTY' => $cqty[$i],
                         'RCV_PRPRC' => $cprice[$i],
                         'RCV_AMT' => $camt[$i],
-                        'RCV_TTLAMT' => NULL,
-                        'RCV_TPB' => NULL,
+                        'RCV_TTLAMT' => null,
+                        'RCV_TPB' => null,
                         'RCV_WH' => $cwh[$i],
                         'RCV_SUPCD' => $csup[$i],
-                        'RCV_RCVDATE' => NULL,
-                        'RCV_NW' => NULL,
-                        'RCV_GW' => NULL,
+                        'RCV_RCVDATE' => null,
+                        'RCV_NW' => null,
+                        'RCV_GW' => null,
                         'RCV_KPPBC' => $b['KPPBC'],
                         'RCV_GRLNO' => $cgrlno[$i],
-                        'RCV_HSCD' => NULL,
-                        'RCV_ZSTSRCV' => NULL,
+                        'RCV_HSCD' => null,
+                        'RCV_ZSTSRCV' => null,
                         'RCV_BM' => 0,
                         'RCV_PPN' => 10,
                         'RCV_PPH' => 2.5,
-                        'RCV_ZNOURUT' => NULL,
+                        'RCV_ZNOURUT' => null,
                         'RCV_BSGRP' => $cbisgrup[$i],
                         'RCV_LUPDT' => $currrtime,
-                        'RCV_USRID' => 'ane'
+                        'RCV_USRID' => 'ane',
                     ];
                     $cret = $this->RCV_mod->insert($datas);
-                    $myctr_saved +=  $cret;
+                    $myctr_saved += $cret;
                 }
             }
         }
         die('{"dono":' . json_encode($cdo) . '}');
     }
 
-    function osPO()
+    public function osPO()
     {
         $searchby = $this->input->get('searchby');
         $searchvalue = $this->input->get('searchvalue');
@@ -3031,7 +3013,7 @@ class RCV extends CI_Controller
         die('{"data":' . json_encode($rs) . '}');
     }
 
-    function simulatePO()
+    public function simulatePO()
     {
         header('Content-Type: application/json');
         $bisgrup = $this->input->post('bisgrup');
@@ -3066,7 +3048,7 @@ class RCV extends CI_Controller
                         'ITEMNM' => $r['MITM_ITMD1'],
                         'QTY' => $theqty,
                         'PRICE' => str_replace('$', '', $itemprice[$i]),
-                        'PRICEMEGA' => substr($r['PPO2_PRPRC'], 0, 1) === '.' ? '0' . $r['PPO2_PRPRC'] : $r['PPO2_PRPRC']
+                        'PRICEMEGA' => substr($r['PPO2_PRPRC'], 0, 1) === '.' ? '0' . $r['PPO2_PRPRC'] : $r['PPO2_PRPRC'],
                     ];
                     if ($itemqty[$i] == $itemqty_plot[$i]) {
                         break;
@@ -3084,7 +3066,7 @@ class RCV extends CI_Controller
                     'ITEMNM' => '',
                     'QTY' => $balancePlot,
                     'PRICE' => str_replace('$', '', $itemprice[$i]),
-                    'PRICEMEGA' => 0
+                    'PRICEMEGA' => 0,
                 ];
             }
         }
@@ -3127,7 +3109,7 @@ class RCV extends CI_Controller
             $theprice = str_replace('$', '', $ina_pricem[$i]);
             if ($ina_price[$i] != $ina_pricem[$i]) {
                 $differenceList[] = [
-                    'PO' => $ina_po[$i], 'INVOICEDATE' => $invoicedate, 'PARTCD' => $ina_itemcd[$i], 'PARTNM' => $ina_itemnm[$i], 'SPQ' => $ina_spq[$i], 'QTY' => $ina_qty[$i], 'PRICE' => $ina_price[$i], 'PRICEM' => $ina_pricem[$i]
+                    'PO' => $ina_po[$i], 'INVOICEDATE' => $invoicedate, 'PARTCD' => $ina_itemcd[$i], 'PARTNM' => $ina_itemnm[$i], 'SPQ' => $ina_spq[$i], 'QTY' => $ina_qty[$i], 'PRICE' => $ina_price[$i], 'PRICEM' => $ina_pricem[$i],
                 ];
                 $sheet->getStyle('A' . $y . ':J' . $y)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('fa2c22');
                 $isExist = true;
@@ -3232,7 +3214,7 @@ class RCV extends CI_Controller
             unset($r);
             if (!$isfound) {
                 $rsreq[] = [
-                    'ITEM' => $iteml[$i], 'QTY' => $qtyl[$i], 'PLOTQT' => 0
+                    'ITEM' => $iteml[$i], 'QTY' => $qtyl[$i], 'PLOTQT' => 0,
                 ];
             }
         }
@@ -3253,7 +3235,7 @@ class RCV extends CI_Controller
                         $r['PLOTQT'] += $bal;
                     }
                     $rsfix[] = [
-                        'NOAJU' => $a['RPSTOCK_NOAJU'], 'NOPEN' => $a['RPSTOCK_BCNUM'], 'DO' => $a['RPSTOCK_DOC'], 'TGLPEN' => $a['RCV_BCDATE'], 'ITMNUM' => $a['ITMNUM'], 'PRICE' => substr($a['PRICE'], 0, 1) == '.' ? '0' . $a['PRICE'] : $a['PRICE'], 'QTY' => $theqty, 'BCTYPE' => $a['RCV_BCTYPE']
+                        'NOAJU' => $a['RPSTOCK_NOAJU'], 'NOPEN' => $a['RPSTOCK_BCNUM'], 'DO' => $a['RPSTOCK_DOC'], 'TGLPEN' => $a['RCV_BCDATE'], 'ITMNUM' => $a['ITMNUM'], 'PRICE' => substr($a['PRICE'], 0, 1) == '.' ? '0' . $a['PRICE'] : $a['PRICE'], 'QTY' => $theqty, 'BCTYPE' => $a['RCV_BCTYPE'],
                     ];
                 }
             }
@@ -3266,7 +3248,7 @@ class RCV extends CI_Controller
             if ($bal > 0) {
                 $rsNE[] = [
                     'ITMCD' => $r['ITEM'],
-                    'QTY' => $bal
+                    'QTY' => $bal,
                 ];
             }
         }
@@ -3280,7 +3262,7 @@ class RCV extends CI_Controller
             '21/12/04/0001',
             '21/12/04/0002',
             '21/12/04/0003',
-            '21/12/04/0005'
+            '21/12/04/0005',
         ]);
         $search = "";
         $date0 = '2021-10-31';
@@ -3314,7 +3296,7 @@ class RCV extends CI_Controller
             '21/12/04/0001',
             '21/12/04/0002',
             '21/12/04/0003',
-            '21/12/04/0005'
+            '21/12/04/0005',
         ]);
         $search = "";
         $date0 = '2021-10-31';
@@ -3342,7 +3324,7 @@ class RCV extends CI_Controller
                         'RPSTOCK_NOAJU' => $b['RPSTOCK_NOAJU'],
                         'ITMNUM' => $b['ITMNUM'],
                         'QTY' => $qtyuse,
-                        'RCV_PRPRC' => $b['RCV_PRPRC']
+                        'RCV_PRPRC' => $b['RCV_PRPRC'],
                     ];
                     if ($s['STKQTY'] == $s['STKF']) {
                         break;
@@ -3353,7 +3335,7 @@ class RCV extends CI_Controller
         }
         unset($s);
         die(json_encode([
-            'rsstk' => $rsstk, 'rsFIX' => $rsFIX
+            'rsstk' => $rsstk, 'rsFIX' => $rsFIX,
         ]));
     }
 
@@ -3416,7 +3398,7 @@ class RCV extends CI_Controller
                         'RPSTOCK_NOAJU' => $b['RPSTOCK_NOAJU'],
                         'ITMNUM' => $b['ITMNUM'],
                         'QTY' => $qtyuse,
-                        'RCV_PRPRC' => $b['RCV_PRPRC']
+                        'RCV_PRPRC' => $b['RCV_PRPRC'],
                     ];
                     if ($s['STKQTY'] == $s['STKF']) {
                         break;
@@ -3428,7 +3410,7 @@ class RCV extends CI_Controller
         unset($s);
         die(json_encode([
             // 'rsbook' => $rsbooked
-            'rsstk' => $rsstk, 'rsFIX' => $rsFIX
+            'rsstk' => $rsstk, 'rsFIX' => $rsFIX,
         ]));
     }
     public function booked_vs_stock_detail_fg_serial()
@@ -3461,7 +3443,7 @@ class RCV extends CI_Controller
                         'RPSTOCK_NOAJU' => $b['RPSTOCK_NOAJU'],
                         'ITMNUM' => $b['ITMNUM'],
                         'QTY' => $qtyuse,
-                        'RCV_PRPRC' => $b['RCV_PRPRC']
+                        'RCV_PRPRC' => $b['RCV_PRPRC'],
                     ];
                     if ($s['STKQTY'] == $s['STKF']) {
                         break;
@@ -3472,7 +3454,7 @@ class RCV extends CI_Controller
         }
         unset($s);
         die(json_encode([
-            'rsstk' => $rsstk, 'rsFIX' => $rsFIX
+            'rsstk' => $rsstk, 'rsFIX' => $rsFIX,
         ]));
     }
 
@@ -3504,7 +3486,7 @@ class RCV extends CI_Controller
                         'RPSTOCK_NOAJU' => $b['RPSTOCK_NOAJU'],
                         'ITMNUM' => $b['ITMNUM'],
                         'QTY' => $qtyuse,
-                        'RCV_PRPRC' => $b['RCV_PRPRC']
+                        'RCV_PRPRC' => $b['RCV_PRPRC'],
                     ];
                     if ($s['STKQTY'] == $s['STKF']) {
                         break;
@@ -3516,7 +3498,7 @@ class RCV extends CI_Controller
         unset($s);
         die(json_encode([
             // 'rsbook' => $rsbooked
-            'rsstk' => $rsstk, 'rsFIX' => $rsFIX
+            'rsstk' => $rsstk, 'rsFIX' => $rsFIX,
         ]));
     }
 
@@ -3538,7 +3520,7 @@ class RCV extends CI_Controller
             $ttlsaved = 0;
             $datalength = count($apo);
             $save = [];
-            $lastline  = $this->RCVNI_mod->select_maxline($donum) + 1;
+            $lastline = $this->RCVNI_mod->select_maxline($donum) + 1;
             for ($i = 0; $i < $datalength; $i++) {
                 if ($arowid[$i] === '') {
                     $save[] = [
@@ -3549,16 +3531,16 @@ class RCV extends CI_Controller
                         'RCVNI_QTY' => $aqty[$i],
                         'RCVNI_CRTDBY' => $user,
                         'RCVNI_CRTDAT' => $createat,
-                        'RCVNI_RCVDATE' => $rcvdate
+                        'RCVNI_RCVDATE' => $rcvdate,
                     ];
                 } else {
                     $ttlupdated += $this->RCVNI_mod->update_where([
                         'RCVNI_QTY' => $aqty[$i],
                         'RCVNI_LUPDTAT' => $createat,
-                        'RCVNI_LUPDTBY' => $user
+                        'RCVNI_LUPDTBY' => $user,
                     ], [
                         'RCVNI_LINE' => $arowid[$i],
-                        'RCVNI_DO' => $donum
+                        'RCVNI_DO' => $donum,
                     ]);
                 }
             }
@@ -3676,7 +3658,7 @@ class RCV extends CI_Controller
                     'HARGA_PENYERAHAN' => $hargaPenyerahan,
                     'SERI_BARANG' => $seri_barang++,
                     'KODE_SATUAN' => trim($r['MITM_STKUOM']) == 'PCS' ? 'PCE' : trim($r['MITM_STKUOM']),
-                    'NETTO' => $r['RCV_PRNW']
+                    'NETTO' => $r['RCV_PRNW'],
                 ];
                 $hNetto += $r['RCV_PRNW'];
                 $hBruto += $r['RCV_PRGW'];
@@ -3684,7 +3666,7 @@ class RCV extends CI_Controller
             }
             $tpb_header = [
                 "NOMOR_AJU" => $nomorAju, "KODE_KANTOR" => $czkantorasal, "KODE_DOKUMEN_PABEAN" => 40,
-                "KODE_JENIS_TPB" => 1,  "KODE_TUJUAN_PENGIRIMAN" => $statusPengiriman,
+                "KODE_JENIS_TPB" => 1, "KODE_TUJUAN_PENGIRIMAN" => $statusPengiriman,
 
                 "KODE_ID_PENGUSAHA" => "1", "ID_PENGUSAHA" => $czidpengusaha, "NAMA_PENGUSAHA" => $cznmpengusaha,
                 "ALAMAT_PENGUSAHA" => $czalamatpengusaha, "NOMOR_IJIN_TPB" => $czizinpengusaha,
@@ -3694,9 +3676,9 @@ class RCV extends CI_Controller
 
                 "KODE_ID_PENGIRIM" => "1", "ID_PENGIRIM" => $idPengirim, "NAMA_PENGIRIM" => $namaPengirim,
                 "ALAMAT_PENGIRIM" => $alamatPengirim,
-                "JUMLAH_BARANG" => $ttldata, "KODE_STATUS" => '00', "ID_MODUL" => $czidmodul_asli, "VERSI_MODUL" => NULL,
+                "JUMLAH_BARANG" => $ttldata, "KODE_STATUS" => '00', "ID_MODUL" => $czidmodul_asli, "VERSI_MODUL" => null,
                 "KOTA_TTD" => "CIKARANG", "NAMA_PENGANGKUT" => "TRUCK", "NAMA_TTD" => "GUSTI AYU KETUT Y", "JABATAN_TTD" => "J.SUPERVISOR", "TANGGAL_TTD" => $createdat,
-                "NETTO"    => $hNetto, "BRUTO" => $hBruto, "HARGA_PENYERAHAN" => $TotalhargaPenyerahan
+                "NETTO" => $hNetto, "BRUTO" => $hBruto, "HARGA_PENYERAHAN" => $TotalhargaPenyerahan,
             ];
             $tpb_dokumen = [];
             $seridokumen = 1;
@@ -3704,7 +3686,7 @@ class RCV extends CI_Controller
                 $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "380", "NOMOR_DOKUMEN" => $nomorInvoice, "TANGGAL_DOKUMEN" => $dodate, "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => $seridokumen++];
             }
             if (!empty($nomorInvoice)) {
-                $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "388", "NOMOR_DOKUMEN" => $fakturPajak, "TANGGAL_DOKUMEN" => $dodate,  "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => $seridokumen++];
+                $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "388", "NOMOR_DOKUMEN" => $fakturPajak, "TANGGAL_DOKUMEN" => $dodate, "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => $seridokumen++];
             }
             $tpb_dokumen[] = ["KODE_JENIS_DOKUMEN" => "640", "NOMOR_DOKUMEN" => $donumber, "TANGGAL_DOKUMEN" => $dodate, "TIPE_DOKUMEN" => "02", "SERI_DOKUMEN" => 1];
 
@@ -3732,7 +3714,10 @@ class RCV extends CI_Controller
                 $n['ID_HEADER'] = $ZR_TPB_HEADER;
             }
             unset($n);
-            if (count($tpb_kemasan))    $this->TPB_KEMASAN_imod->insertb($tpb_kemasan);
+            if (count($tpb_kemasan)) {
+                $this->TPB_KEMASAN_imod->insertb($tpb_kemasan);
+            }
+
             ##N
 
             ##4 TPB BARANG

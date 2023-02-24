@@ -282,11 +282,7 @@
                         mdodis = mdo.trim();
                     } else {
                         mnomorin++;
-                        mnomordis = '';
-                        mnomorpabdis = '';
-                        mnomorpendaftarandis = '';
-                        mdatepabdis = '';   
-                        mdaterecv ='';                                                                     
+                        mnomordis = '';                                                                                         
                         if(mdo!=response.data[i].RCV_DONO){
                             mdo = response.data[i].RCV_DONO;
                             mnilaipab = response.data[i].RCV_TTLAMT;
@@ -295,15 +291,8 @@
                             malam = response.data[i].MSUP_ADDR1;
                             mnilaipabdis = numeral(mnilaipab).format('0,0.00');
                             mberatpabdis = numeral(mberatpab).format('0,0.00');
-                            msupdis=msup;
-                            malamdis = malam ? malam.trim() : '';
+                            msupdis=msup;                            
                             mdodis = mdo.trim();
-                        } else {
-                            mnilaipabdis = '';
-                            mberatpabdis = '';
-                            msupdis='';
-                            malamdis = '';
-                            mdodis = '';
                         }
                     }
                     newrow = tableku2.insertRow(-1);
