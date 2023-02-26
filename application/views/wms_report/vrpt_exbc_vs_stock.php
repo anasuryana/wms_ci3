@@ -47,8 +47,10 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-md-6 mb-1 text-end">
-                <button title="Copy to clipboard" id="xstock_resume_btnexcel" onclick="xstock_resume_btnexcel()" class="btn btn-success" ><i class="fas fa-clipboard"></i></button>
+            <div class="col-md-6 mb-1 text-end position-relative">                
+                <div class="position-absolute bottom-0 end-0">
+                    <button title="Copy to clipboard" id="xstock_resume_btnexcel" onclick="xstock_resume_btnexcel()" class="btn btn-success mt-auto" ><i class="fas fa-clipboard"></i></button>
+                </div>                
             </div>
         </div>
         <div class="row">
@@ -106,7 +108,7 @@
             success: function (response) {
                 xstock_txt_search.readOnly = false
                 e.innerHTML = `<i class="fas fa-search"></i>`
-                e.disabled = false                
+                e.disabled = false
                 let mydes = document.getElementById("xstock_divku");
                 let myfrag = document.createDocumentFragment();
                 let cln = mtabel.cloneNode(true);
