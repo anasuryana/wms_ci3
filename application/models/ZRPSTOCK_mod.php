@@ -77,4 +77,62 @@ class ZRPSTOCK_mod extends CI_Model {
         $query =  $this->db->query($qry, [$pPartCode, $pWO, $pOkIdSample ,$pPartCode]);
         return $query->result_array();
     }
+
+    function selectStockItemVSBC($item){
+        $qry = "SELECT '' SER_ITMID
+                    ,'' ITH_SER
+                    ,ITH_WH	ITRN_LOCCD
+                    ,SERD2_ITMCD ITRN_ITMCD
+                    ,SUM(SERD2_QTY) RMQT
+                FROM (
+                    SELECT ITH_SER
+                        ,ITH_WH
+                    FROM ITH_TBL
+                    WHERE ITH_WH IN (
+                            'QAFG'                            
+                            ,'AFWH3'
+                            ,'ARSHP'
+                            ,'AWIP1'
+                            )
+                    GROUP BY ITH_SER
+                        ,ITH_WH
+                    HAVING SUM(ITH_QTY) > 0
+                    ) V1
+                LEFT JOIN SERD2_TBL ON ITH_SER = SERD2_SER
+                LEFT JOIN SER_TBL ON ITH_SER = SER_ID
+                LEFT JOIN DLV_TBL ON SER_ID=DLV_sER
+                LEFT JOIN (SELECT RPSTOCK_REMARK FROM ZRPSAL_BCSTOCK GROUP BY RPSTOCK_REMARK) VBC ON DLV_ID=RPSTOCK_REMARK
+                WHERE SERD2_ITMCD LIKE ? AND RPSTOCK_REMARK IS NULL
+                GROUP BY 
+                    ITH_WH
+                    ,SERD2_ITMCD
+                
+                UNION ALL
+                
+                SELECT ''
+                    ,''					
+                    ,'EXBC'
+                    ,RTRIM(RPSTOCK_ITMNUM) ITRN_ITMCD
+                    ,SUM(RPSTOCK_QTY) RMQT
+                FROM ZRPSAL_BCSTOCK
+                WHERE RPSTOCK_ITMNUM LIKE ?
+                GROUP BY RPSTOCK_ITMNUM";
+        $query =  $this->db->query($qry, ['%'.$item.'%','%'.$item.'%']);
+        return $query->result_array();
+    }
+
+    function select_booked_dispose_202212()
+    {
+        $qry = "SELECT RTRIM(RPSTOCK_ITMNUM) ITMNUM, RPSTOCK_BCNUM,RPSTOCK_NOAJU,RPSTOCK_BCDATE  
+        ,PPN,PPH,BM,ABS(RPSTOCK_QTY) BCQT,URUT,HSCD
+        FROM ZRPSAL_BCSTOCK 
+        LEFT JOIN  (
+        SELECT RCV_RPNO,RCV_BCNO,RCV_DONO,RCV_ITMCD, MAX(RCV_PPN) PPN,MAX(RCV_PPH) PPH, MAX(RCV_BM) BM,MAX(RCV_ZNOURUT) URUT,MAX(RCV_HSCD) HSCD FROM RCV_TBL
+        GROUP BY RCV_RPNO,RCV_BCNO,RCV_DONO,RCV_ITMCD
+        ) VRCV ON RPSTOCK_NOAJU=RCV_RPNO AND RPSTOCK_BCNUM=RCV_BCNO AND RPSTOCK_DOC=RCV_DONO
+        AND RPSTOCK_ITMNUM=RCV_ITMCD
+        WHERE RPSTOCK_REMARK='DISD2212_FG'";
+        $query =  $this->db->query($qry);
+        return $query->result_array();
+    }
 }

@@ -31,6 +31,22 @@ class XITRN_mod extends CI_Model {
 		return $query->result_array();
     }
 
+    public function selectEXBCReconsiliator($item)
+    {
+        $qry = "SELECT '' SER_ITMID
+                    ,'' ITH_SER
+                    ,RTRIM(ITRN_LOCCD) ITRN_LOCCD					
+                    ,RTRIM(ITRN_ITMCD) ITRN_ITMCD
+                    ,SUM(IOQT) RMQT
+                FROM XITRN_TBL
+                WHERE ITRN_LOCCD != 'ARWH9SC'
+                    AND ITRN_ITMCD like ?
+                GROUP BY ITRN_LOCCD
+                    ,ITRN_ITMCD";
+        $query =  $this->db->query($qry, ['%'.$item.'%']);
+        return $query->result_array();
+    }
+
     public function check_Primary($data)
     {        
         return $this->db->get_where($this->TABLENAME,$data)->num_rows();		
