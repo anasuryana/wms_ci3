@@ -23,7 +23,7 @@
 	<link rel="stylesheet" href="<?=base_url("assets/tablesorter/css/theme.blue.css")?>">	
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jspreadsheet/jexcel.css")?>">	
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jsuites/jsuites.css")?>">	
-	<script type="text/javascript" src="<?=base_url("assets/chart/chart.js") ?>"></script>
+	<script type="text/javascript" src="<?=base_url("assets/chart/chart.umd.js") ?>"></script>
 	<script type="text/javascript" src="<?=base_url("assets/jquery/jquery.min.js") ?>"></script>
 	<script type="text/javascript" src="<?=base_url("assets/js/sweetalert2.all.min.js") ?>"></script>	
 	<script type="text/javascript" src="<?=base_url("assets/jeui/jquery.easyui.min.js") ?>"></script>	
