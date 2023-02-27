@@ -187,9 +187,9 @@
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">TPB Type</label>
                         <select id="rcvcustoms_typetpb" class="form-select">
-                            <?php foreach ($ltpb_type as $r) { ?>
-                                <option value="<?= $r['KODE_JENIS_TPB'] ?>"><?= $r['URAIAN_JENIS_TPB'] ?></option>
-                            <?php } ?>
+                            <?php foreach ($ltpb_type as $r) {?>
+                                <option value="<?=$r['KODE_JENIS_TPB']?>"><?=$r['URAIAN_JENIS_TPB']?></option>
+                            <?php }?>
                         </select>
                     </div>
                 </div>
@@ -198,12 +198,12 @@
                         <label class="input-group-text">KPPBC</label>
                         <select id="rcvcustoms_kppbc" class="form-select">
                             <?php
-                            $toprint = '';
-                            foreach ($officelist as $r) {
-                                $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
-                            }
-                            echo $toprint;
-                            ?>
+$toprint = '';
+foreach ($officelist as $r) {
+    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
+}
+echo $toprint;
+?>
                         </select>
                         <label class="input-group-text">...</label>
                     </div>
@@ -240,7 +240,7 @@
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Business Group</span>
                         <select class="form-select" id="rcvcustoms_businessgroup" required disabled>
-                            <?= $lbg ?>
+                            <?=$lbg?>
                         </select>
                     </div>
                 </div>
@@ -384,9 +384,9 @@
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">TPB Type</label>
                         <select id="rcvcustoms_typetpb_1" class="form-select">
-                            <?php foreach ($ltpb_type as $r) { ?>
-                                <option value="<?= trim($r['KODE_JENIS_TPB']) ?>"><?= $r['URAIAN_JENIS_TPB'] ?></option>
-                            <?php } ?>
+                            <?php foreach ($ltpb_type as $r) {?>
+                                <option value="<?=trim($r['KODE_JENIS_TPB'])?>"><?=$r['URAIAN_JENIS_TPB']?></option>
+                            <?php }?>
                         </select>
                     </div>
                 </div>
@@ -395,12 +395,12 @@
                         <label class="input-group-text">KPPBC</label>
                         <select id="rcvcustoms_kppbc_1" class="form-select">
                             <?php
-                            $toprint = '';
-                            foreach ($officelist as $r) {
-                                $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
-                            }
-                            echo $toprint;
-                            ?>
+$toprint = '';
+foreach ($officelist as $r) {
+    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
+}
+echo $toprint;
+?>
                         </select>
                         <label class="input-group-text">...</label>
                     </div>
@@ -431,7 +431,7 @@
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Business Group</span>
                         <select class="form-select" id="rcvcustoms_businessgroup_1" required>
-                            <?= $lbg ?>
+                            <?=$lbg?>
                         </select>
                     </div>
                 </div>
@@ -501,18 +501,17 @@
                                     <th>NoUrut</th> <!-- 1 -->
                                     <th>PO No</th> <!-- 2 -->
                                     <th>Item Code</th> <!-- 3 -->
-                                    <th>Asset Number</th> <!-- 4 -->
-                                    <th>Item Name</th> <!-- 5 -->
-                                    <th class="text-end">QTY</th> <!-- 6 -->
-                                    <th title="Unit Measurement">UM</th> <!-- 7 -->
-                                    <th class="text-end">Price</th> <!-- 8 -->
-                                    <th class="text-end">Amount</th> <!-- 9 -->
-                                    <th class="text-end">Net Weight</th> <!-- 10 -->
-                                    <th class="text-end">Gross Weight</th> <!-- 11 -->
-                                    <th class="text-center">HS Code</th> <!-- 12 -->
-                                    <th class="text-end" title="Bea Masuk">BM</th> <!-- 13 -->
-                                    <th class="text-end">PPN</th> <!-- 14 -->
-                                    <th class="text-end">PPH</th> <!-- 15 -->
+                                    <th>Item Name</th> <!-- 4 -->
+                                    <th class="text-end">QTY</th> <!-- 5 -->
+                                    <th title="Unit Measurement">UM</th> <!-- 6 -->
+                                    <th class="text-end">Price</th> <!-- 7 -->
+                                    <th class="text-end">Amount</th> <!-- 8 -->
+                                    <th class="text-end">Net Weight</th> <!-- 9 -->
+                                    <th class="text-end">Gross Weight</th> <!-- 10 -->
+                                    <th class="text-center">HS Code</th> <!-- 11 -->
+                                    <th class="text-end" title="Bea Masuk">BM</th> <!-- 12 -->
+                                    <th class="text-end">PPN</th> <!-- 13 -->
+                                    <th class="text-end">PPH</th> <!-- 14 -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -580,9 +579,9 @@
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">TPB Type</label>
                         <select id="rcvcustoms_fg_typetpb" class="form-select">
-                            <?php foreach ($ltpb_type as $r) { ?>
-                                <option value="<?= $r['KODE_JENIS_TPB'] ?>"><?= $r['URAIAN_JENIS_TPB'] ?></option>
-                            <?php } ?>
+                            <?php foreach ($ltpb_type as $r) {?>
+                                <option value="<?=$r['KODE_JENIS_TPB']?>"><?=$r['URAIAN_JENIS_TPB']?></option>
+                            <?php }?>
                         </select>
                     </div>
                 </div>
@@ -591,12 +590,12 @@
                         <label class="input-group-text">KPPBC</label>
                         <select id="rcvcustoms_fg_kppbc" class="form-select">
                             <?php
-                            $toprint = '';
-                            foreach ($officelist as $r) {
-                                $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
-                            }
-                            echo $toprint;
-                            ?>
+$toprint = '';
+foreach ($officelist as $r) {
+    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
+}
+echo $toprint;
+?>
                         </select>
                         <label class="input-group-text">...</label>
                     </div>
@@ -749,9 +748,9 @@
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">TPB Type</label>
                         <select id="rcvcustoms_typetpb_2" class="form-select">
-                            <?php foreach ($ltpb_type as $r) { ?>
-                                <option value="<?= $r['KODE_JENIS_TPB'] ?>"><?= $r['URAIAN_JENIS_TPB'] ?></option>
-                            <?php } ?>
+                            <?php foreach ($ltpb_type as $r) {?>
+                                <option value="<?=$r['KODE_JENIS_TPB']?>"><?=$r['URAIAN_JENIS_TPB']?></option>
+                            <?php }?>
                         </select>
                     </div>
                 </div>
@@ -760,12 +759,12 @@
                         <label class="input-group-text">KPPBC</label>
                         <select id="rcvcustoms_kppbc_2" class="form-select">
                             <?php
-                            $toprint = '';
-                            foreach ($officelist as $r) {
-                                $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
-                            }
-                            echo $toprint;
-                            ?>
+$toprint = '';
+foreach ($officelist as $r) {
+    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
+}
+echo $toprint;
+?>
                         </select>
                         <label class="input-group-text">...</label>
                     </div>
@@ -796,7 +795,7 @@
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Business Group</span>
                         <select class="form-select" id="rcvcustoms_businessgroup_2" required>
-                            <?= $lbg ?>
+                            <?=$lbg?>
                         </select>
                     </div>
                 </div>
@@ -820,7 +819,7 @@
                         <span class="input-group-text">Warehouse</span>
                         <select class="form-select" id="rcvcustoms_cmb_locTo">
                             <option value="-">-</option>
-                            <?= $llocto ?>
+                            <?=$llocto?>
                         </select>
                     </div>
                 </div>
@@ -923,7 +922,7 @@
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Supplier</label>
                             <select id="rcvcustoms_supfilter" class="form-select">
-                                <?= $lsupplier ?>
+                                <?=$lsupplier?>
                             </select>
                         </div>
                     </div>
@@ -1376,7 +1375,7 @@
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Business</label>
                             <select id="rcvcustoms_fg_supfilter" class="form-select">
-                                <?= $lbg ?>
+                                <?=$lbg?>
                             </select>
                         </div>
                     </div>
@@ -1528,7 +1527,7 @@
                             <span class="input-group-text">Jumlah</span>
                             <input type="text" class="form-control" id="rcvcustoms_pkg_jumlah" maxlength="3" required>
                             <select class="form-select" id="rcvcustoms_pkg_kodejenis" required onchange="document.getElementById('rcvcustoms_pkg_btnuse').focus()">
-                                <?= $lkemasan ?>
+                                <?=$lkemasan?>
                             </select>
                         </div>
                     </div>
@@ -1609,7 +1608,7 @@
                             <video autoplay></video>
                             <canvas class="d-none"></canvas>
                         </div>
-                        <img id="rcvcustoms_img" class="screenshot-image" alt="" src="<?= base_url('assets/imgs/bc_sample.JPG') ?>">
+                        <img id="rcvcustoms_img" class="screenshot-image" alt="" src="<?=base_url('assets/imgs/bc_sample.JPG')?>">
                     </div>
                 </div>
             </div>
@@ -1641,7 +1640,7 @@
     var rcvcustoms_selected_row = 0;
     var rcvcustoms_selected_col = 1;
     var rcvcustoms_selected_table = ''
-    var rcvcustoms_url_dev = '<?= str_replace('wms', 'wms_dev', base_url()) ?>'
+    var rcvcustoms_url_dev = '<?=str_replace('wms', 'wms_dev', base_url())?>'
     var rcvcustoms_currentmonth = (new Date().getMonth() + 1).toString() < 10 ? '0' + (new Date().getMonth() + 1).toString() : (new Date().getMonth() + 1).toString()
     document.getElementById('rcvcustoms_monthfilter').value = rcvcustoms_currentmonth
     document.getElementById('rcvcustoms_monthfilter_1').value = rcvcustoms_currentmonth
@@ -1704,7 +1703,6 @@
         let d_nourut = []
         let d_pono = []
         let d_itemcode = []
-        let d_assetnum = []
         let d_qty = []
         let d_price = []
         let d_hscode = []
@@ -1721,7 +1719,7 @@
         let mtrlength = mytable.getElementsByTagName('tr').length
         for (let i = 0; i < mtrlength; i++) {
             const itmcode = mytable.rows[i].cells[3].innerText.trim().replace(/\n+/g, '')
-            const price = mytable.rows[i].cells[8].innerText.replace(/\n+/g, '')
+            const price = mytable.rows[i].cells[7].innerText.replace(/\n+/g, '')
             if (price == '-') {
                 alertify.warning('Price is not valid')
                 return
@@ -1731,15 +1729,14 @@
                 d_nourut.push(mytable.rows[i].cells[1].innerText.replace(/\n+/g, ''))
                 d_pono.push(mytable.rows[i].cells[2].innerText.replace(/\n+/g, ''))
                 d_itemcode.push(itmcode)
-                d_assetnum.push(mytable.rows[i].cells[4].innerText.replace(/\n+/g, ''))
-                d_qty.push(mytable.rows[i].cells[6].innerText.replace(/\n+/g, ''))
+                d_qty.push(mytable.rows[i].cells[5].innerText.replace(/\n+/g, ''))
                 d_price.push(price)
-                d_prNW.push(mytable.rows[i].cells[10].innerText.replace(/\n+/g, ''))
-                d_prGW.push(mytable.rows[i].cells[11].innerText.replace(/\n+/g, ''))
-                d_hscode.push(mytable.rows[i].cells[12].innerText.replace(/\n+/g, ''))
-                d_bm.push(mytable.rows[i].cells[13].innerText.replace(/\n+/g, ''))
-                d_ppn.push(mytable.rows[i].cells[14].innerText.replace(/\n+/g, ''))
-                d_pph.push(mytable.rows[i].cells[15].innerText.replace(/\n+/g, ''))
+                d_prNW.push(mytable.rows[i].cells[9].innerText.replace(/\n+/g, ''))
+                d_prGW.push(mytable.rows[i].cells[10].innerText.replace(/\n+/g, ''))
+                d_hscode.push(mytable.rows[i].cells[11].innerText.replace(/\n+/g, ''))
+                d_bm.push(mytable.rows[i].cells[12].innerText.replace(/\n+/g, ''))
+                d_ppn.push(mytable.rows[i].cells[13].innerText.replace(/\n+/g, ''))
+                d_pph.push(mytable.rows[i].cells[14].innerText.replace(/\n+/g, ''))
             }
         }
         if (d_itemcode.length == 0) {
@@ -1756,7 +1753,7 @@
         if (confirm("Are you sure ?")) {
             $.ajax({
                 type: "POST",
-                url: "<?= base_url('RCV/saveManually') ?>",
+                url: "<?=base_url('RCV/saveManually')?>",
                 data: {
                     h_do: mdo,
                     h_bctype: mbctype,
@@ -1790,7 +1787,6 @@
                     d_pph: d_pph,
                     d_prNW: d_prNW,
                     d_prGW: d_prGW,
-                    d_assetnum: d_assetnum,
                     d_pkg_idrow: d_pkg_idrow,
                     d_pkg_jml: d_pkg_jml,
                     d_pkg_kd: d_pkg_kd
@@ -1898,7 +1894,7 @@
         if (confirm("Are you sure ?")) {
             $.ajax({
                 type: "POST",
-                url: "<?= base_url('RCV/saveManually2') ?>",
+                url: "<?=base_url('RCV/saveManually2')?>",
                 data: {
                     h_do: mdo,
                     h_bctype: mbctype,
@@ -2006,7 +2002,7 @@
                 const docnum = ptable == 'rcvcustoms_tbl_2' ? document.getElementById('rcvcustoms_docnoorigin_2').value : document.getElementById('rcvcustoms_docnoorigin_1').value
                 $.ajax({
                     type: "post",
-                    url: "<?= base_url('RCV/removemanual') ?>",
+                    url: "<?=base_url('RCV/removemanual')?>",
                     data: {
                         lineId: mylineid,
                         docNum: docnum
@@ -2040,7 +2036,7 @@
             document.getElementById('rcvcustoms_tblNALITM').getElementsByTagName('tbody')[0].innerHTML = lblwait
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('MSTITM/search_internal_item') ?>",
+                url: "<?=base_url('MSTITM/search_internal_item')?>",
                 data: {
                     searchBy: searchBy,
                     search: search
@@ -2430,7 +2426,7 @@
             document.getElementById('rcvcustoms_tblsup').getElementsByTagName('tbody')[0].innerHTML = ''
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('MSTSUP/search_union') ?>",
+                url: "<?=base_url('MSTSUP/search_union')?>",
                 data: {
                     searchKey: txt.value
                 },
@@ -2545,7 +2541,7 @@
     $("#rcvcustoms_btn_download").click(function(e) {
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/getlinkitemtemplate') ?>",
+            url: "<?=base_url('RCV/getlinkitemtemplate')?>",
             dataType: "text",
             success: function(response) {
                 window.open(response, '_blank');
@@ -2623,7 +2619,7 @@
 
             $.ajax({
                 type: "post",
-                url: "<?= base_url('RCV/import') ?>",
+                url: "<?=base_url('RCV/import')?>",
                 data: {
                     indo: mdo,
                     initemcode: mitemcd,
@@ -2717,7 +2713,7 @@
         });
         $.ajax({
             type: "post",
-            url: "<?= base_url('RCV/updateBCDoc') ?>",
+            url: "<?=base_url('RCV/updateBCDoc')?>",
             data: {
                 inbctype: mbctype,
                 inbcno: mnoaju,
@@ -2846,7 +2842,7 @@
     function getdocBC(pdo) {
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/getBCField') ?>",
+            url: "<?=base_url('RCV/getBCField')?>",
             data: {
                 indo: pdo
             },
@@ -2889,7 +2885,7 @@
             $("#lblinfo_rcvcustoms_tbldono").text("Please wait...")
             $.ajax({
                 type: "get",
-                url: "<?= base_url('RCV/MGGetDO') ?>",
+                url: "<?=base_url('RCV/MGGetDO')?>",
                 data: {
                     inid: mval,
                     inby: mby,
@@ -2951,7 +2947,7 @@
     function vrcv_e_getstsrcv(mid, pval) {
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/zgetsts_rcv') ?>",
+            url: "<?=base_url('RCV/zgetsts_rcv')?>",
             data: {
                 inid: mid,
                 instst: pval
@@ -2979,7 +2975,7 @@
         const mbisgrup = document.getElementById('rcvcustoms_businessgroup').value
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/WMSGetDODetail') ?>",
+            url: "<?=base_url('RCV/WMSGetDODetail')?>",
             data: {
                 indo: pdo,
                 inbisgrup: mbisgrup
@@ -3049,7 +3045,7 @@
         const mbisgrup = document.getElementById('rcvcustoms_businessgroup').value
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/MGGetDODetail') ?>",
+            url: "<?=base_url('RCV/MGGetDODetail')?>",
             data: {
                 indo: pdo,
                 inbisgrup: mbisgrup
@@ -3116,7 +3112,7 @@
         $("#RCVCUSTOMS_DTLMOD_1").modal('hide')
         $.ajax({
             type: "GET",
-            url: "<?= base_url('RCV/GetDODetail1') ?>",
+            url: "<?=base_url('RCV/GetDODetail1')?>",
             data: {
                 do: pdata.pdo,
                 supcd: pdata.psupcd,
@@ -3160,49 +3156,46 @@
                     newcell.style.cssText = "cursor:pointer"
                     newcell.innerHTML = response.data[i].RCV_ITMCD
                     newcell = newrow.insertCell(4)
-                    newcell.contentEditable = true
-                    newcell.innerHTML = response.data[i].RCV_ASSETNUM
-                    newcell = newrow.insertCell(5)
                     newcell.classList.add('table-info')
                     newcell.innerHTML = response.data[i].MITM_ITMD1
-                    newcell = newrow.insertCell(6)
+                    newcell = newrow.insertCell(5)
                     newcell.contentEditable = true
                     newcell.classList.add('text-end')
                     newcell.innerHTML = response.data[i].RCV_QTY
-                    newcell = newrow.insertCell(7)
+                    newcell = newrow.insertCell(6)
                     newcell.classList.add('table-info')
                     newcell.innerHTML = response.data[i].MITM_STKUOM
-                    newcell = newrow.insertCell(8)
+                    newcell = newrow.insertCell(7)
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PRPRC
-                    newcell = newrow.insertCell(9)
+                    newcell = newrow.insertCell(8)
                     newcell.classList.add('text-end', 'table-info')
                     newcell.innerHTML = numeral(response.data[i].RCV_PRPRC * response.data[i].RCV_QTY).format('0,0.00')
-                    newcell = newrow.insertCell(10)
+                    newcell = newrow.insertCell(9)
                     newcell.classList.add('text-end')
                     newcell.title = tabelHead.rows[0].cells[9].innerText
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PRNW
-                    newcell = newrow.insertCell(11)
+                    newcell = newrow.insertCell(10)
                     newcell.classList.add('text-end')
                     newcell.title = tabelHead.rows[0].cells[10].innerText
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PRGW
-                    newcell = newrow.insertCell(12)
+                    newcell = newrow.insertCell(11)
                     newcell.title = tabelHead.rows[0].cells[11].innerText
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_HSCD
-                    newcell = newrow.insertCell(13)
+                    newcell = newrow.insertCell(12)
                     newcell.title = tabelHead.rows[0].cells[12].innerText
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_BM
-                    newcell = newrow.insertCell(14)
+                    newcell = newrow.insertCell(13)
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PPN
-                    newcell = newrow.insertCell(15)
+                    newcell = newrow.insertCell(14)
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PPH
@@ -3255,7 +3248,7 @@
         $("#RCVCUSTOMS_DTLMOD_2").modal('hide')
         $.ajax({
             type: "GET",
-            url: "<?= base_url('RCV/GetDODetail2') ?>",
+            url: "<?=base_url('RCV/GetDODetail2')?>",
             data: {
                 do: pdo
             },
@@ -3340,7 +3333,7 @@
     function rcvcustoms_initReceivingStatus(bctype) {
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/zgetsts_rcv') ?>",
+            url: "<?=base_url('RCV/zgetsts_rcv')?>",
             data: {
                 inid: bctype
             },
@@ -3370,7 +3363,7 @@
         const mid = document.getElementById('rcvcustoms_typedoc_2').value;
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/zgetsts_rcv') ?>",
+            url: "<?=base_url('RCV/zgetsts_rcv')?>",
             data: {
                 inid: mid
             },
@@ -3410,7 +3403,7 @@
             document.getElementById('rcvcustoms_tblbox').getElementsByTagName('tbody')[0].innerHTML = ''
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('MCONA/search') ?>",
+                url: "<?=base_url('MCONA/search')?>",
                 data: {
                     searchBy: '0',
                     searchKey: msearchKey
@@ -3464,7 +3457,7 @@
     document.getElementById('rcvcustoms_fg_typedoc').value = '27'
     rcvcustoms_fg_typdoc_oCH('6')
     document.getElementById('rcvcustoms_fg_monthfilter').value = rcvcustoms_currentmonth
-    //end    
+    //end
 
     $("#rcvcustoms_fg_divku").css('height', $(window).height() -
         document.getElementById('rcvcustoms_stack0').offsetHeight -
@@ -3495,7 +3488,7 @@
     $("#rcvcustoms_fg_btn_download").click(function(e) {
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/getlinkitemtemplate') ?>",
+            url: "<?=base_url('RCV/getlinkitemtemplate')?>",
             dataType: "text",
             success: function(response) {
                 window.open(response, '_blank');
@@ -3578,7 +3571,7 @@
         });
         $.ajax({
             type: "post",
-            url: "<?= base_url('RCV/updateBCDoc') ?>",
+            url: "<?=base_url('RCV/updateBCDoc')?>",
             data: {
                 inbctype: mbctype,
                 inbcno: mnoaju,
@@ -3705,7 +3698,7 @@
             $("#lblinfo_rcvcustoms_fg_tbldono").text("Please wait...");
             $.ajax({
                 type: "get",
-                url: "<?= base_url('RCV/MGGetDOReturn') ?>",
+                url: "<?=base_url('RCV/MGGetDOReturn')?>",
                 data: {
                     inid: mval,
                     inby: mby,
@@ -3787,7 +3780,7 @@
     function vrcv_fg_e_getstsrcv(mid, pval) {
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/zgetsts_rcv') ?>",
+            url: "<?=base_url('RCV/zgetsts_rcv')?>",
             data: {
                 inid: mid,
                 instst: pval
@@ -3815,7 +3808,7 @@
     function vrcv_equip_e_getstsrcv(mid, pval, pid_component) {
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/zgetsts_rcv') ?>",
+            url: "<?=base_url('RCV/zgetsts_rcv')?>",
             data: {
                 inid: mid,
                 instst: pval
@@ -3843,7 +3836,7 @@
     function WMSGetDODetail_FGRET(pdo) {
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/WMSGetDODetail') ?>",
+            url: "<?=base_url('RCV/WMSGetDODetail')?>",
             data: {
                 indo: pdo
             },
@@ -3908,7 +3901,7 @@
         $("#rcvcustoms_fg_lbltbl").text("Please wait . . .");
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/MGGetDODetailReturn') ?>",
+            url: "<?=base_url('RCV/MGGetDODetailReturn')?>",
             data: {
                 indo: pdo
             },
@@ -3971,7 +3964,7 @@
         const mid = document.getElementById('rcvcustoms_fg_typedoc').value
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/zgetsts_rcv') ?>",
+            url: "<?=base_url('RCV/zgetsts_rcv')?>",
             data: {
                 inid: mid
             },
@@ -4020,7 +4013,7 @@
         Cookies.set('RP_PAB_NOAJU', mnoaju, {
             expires: 365
         })
-        window.open("<?= base_url('laporan_pembukuan_masuk_xlsx') ?>", '_blank')
+        window.open("<?=base_url('laporan_pembukuan_masuk_xlsx')?>", '_blank')
     }
     $("#rcvcustoms_contractdate_1").datepicker({
         format: 'yyyy-mm-dd',
@@ -4058,7 +4051,7 @@
             tbl.innerHTML = `<tr><td colspan="12" class="text-center">Please wait</td></tr>`
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('RCV/GetDO1') ?>",
+                url: "<?=base_url('RCV/GetDO1')?>",
                 data: {
                     inid: mval,
                     inby: mby,
@@ -4158,7 +4151,7 @@
             tbl.innerHTML = `<tr><td colspan="10" class="text-center">Please wait</td></tr>`
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('RCV/GetDO2') ?>",
+                url: "<?=base_url('RCV/GetDO2')?>",
                 data: {
                     inid: mval,
                     inby: mby,
@@ -4241,7 +4234,7 @@
             let mtabel = document.getElementById("rcvcustoms_po_tbl")
             mtabel.getElementsByTagName("tbody")[0].innerHTML = '<tr><td colspan="11" class="text-center">Please wait</td></tr>'
             $.ajax({
-                url: "<?= base_url('PO/search_balance') ?>",
+                url: "<?=base_url('PO/search_balance')?>",
                 data: {
                     search: e.target.value,
                     searchtype: '1'
@@ -4445,7 +4438,7 @@
         }
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/zgetsts_rcv') ?>",
+            url: "<?=base_url('RCV/zgetsts_rcv')?>",
             data: {
                 inid: c.value
             },
@@ -4511,7 +4504,7 @@
                 btnTPB = document.getElementById('rcvcustoms_btnTPB_2')
                 break
         }
-        //validation        
+        //validation
         if (txDOC.value.trim().length <= 3) {
             alertify.warning('DO Number is required')
             txDOC.focus()
@@ -4547,7 +4540,7 @@
         const btn = document.getElementById(psender.id)
         $.ajax({
             type: "POST",
-            url: "<?= base_url('RCV/posting') ?>" + pdata.BCType,
+            url: "<?=base_url('RCV/posting')?>" + pdata.BCType,
             data: {
                 donum: pdata.DONum,
                 aju: pdata.aju
@@ -4615,7 +4608,7 @@
                     const txtAju = document.getElementById('rcvcustoms_noaju_1')
                     $.ajax({
                         type: "POST",
-                        url: "<?= base_url('RCV/remove_pkg') ?>",
+                        url: "<?=base_url('RCV/remove_pkg')?>",
                         data: {
                             rowid: rcvcustoms_rowsObj.ids,
                             aju: txtAju.value
@@ -4647,7 +4640,7 @@
         let docnum = document.getElementById('rcvcustoms_docnoorigin_1').value;
         $.ajax({
             type: "get",
-            url: "<?= base_url('RCV/get_info_pendaftaran') ?>",
+            url: "<?=base_url('RCV/get_info_pendaftaran')?>",
             data: {
                 insj: docnum
             },
