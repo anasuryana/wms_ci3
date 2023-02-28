@@ -2290,62 +2290,58 @@ echo $toprint;
             $("#RCVCUSTOMS_INTERNALITEM").modal('show')
         }
         newcell.style.cssText = "cursor:pointer"
-        newcell.innerHTML = ''
+        newcell.innerHTML = ''        
 
         newcell = newrow.insertCell(4)
-        newcell.contentEditable = true
-        newcell.innerHTML = '-'
-
-        newcell = newrow.insertCell(5)
         newcell.classList.add('table-info')
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(6)
+        newcell = newrow.insertCell(5)
         newcell.contentEditable = true
         newcell.classList.add('text-end')
         newcell.innerHTML = '0'
 
-        newcell = newrow.insertCell(7)
+        newcell = newrow.insertCell(6)
         newcell.classList.add('table-info')
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(8)
+        newcell = newrow.insertCell(7)
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(9)
+        newcell = newrow.insertCell(8)
         newcell.classList.add('text-end', 'table-info')
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(10)
+        newcell = newrow.insertCell(9)
         newcell.title = 'Net weight'
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = 0
-        newcell = newrow.insertCell(11)
+        newcell = newrow.insertCell(10)
         newcell.classList.add('text-end')
         newcell.title = 'Gross weight'
         newcell.contentEditable = true
         newcell.innerHTML = '-'
-        newcell = newrow.insertCell(12)
+        newcell = newrow.insertCell(11)
         newcell.title = 'HSCode'
         newcell.contentEditable = true
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(13)
+        newcell = newrow.insertCell(12)
         newcell.title = 'BM'
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(14)
+        newcell = newrow.insertCell(13)
         newcell.title = 'PPN'
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(15)
+        newcell = newrow.insertCell(14)
         newcell.title = 'PPH'
         newcell.classList.add('text-end')
         newcell.contentEditable = true
@@ -4352,44 +4348,46 @@ echo $toprint;
                     $("#RCVCUSTOMS_INTERNALITEM").modal('show')
                 }
                 newcell.style.cssText = "cursor:pointer"
-                newcell.innerHTML = aItem[i]
+                newcell.innerHTML = aItem[i]           
 
                 newcell = newrow.insertCell(4)
-                newcell.contentEditable = true
-
-                newcell = newrow.insertCell(5)
                 newcell.classList.add('table-info')
                 newcell.innerHTML = aItemName[i]
 
-                newcell = newrow.insertCell(6)
+                newcell = newrow.insertCell(5)
                 newcell.contentEditable = true
                 newcell.classList.add('text-end')
                 newcell.innerHTML = aqty[i]
 
-                newcell = newrow.insertCell(7)
+                newcell = newrow.insertCell(6)
                 newcell.classList.add('table-info')
                 newcell.innerHTML = aUM[i]
 
-                newcell = newrow.insertCell(8)
+                newcell = newrow.insertCell(7)
                 newcell.classList.add('text-end')
                 newcell.innerHTML = aprice[i]
 
-                newcell = newrow.insertCell(9)
+                newcell = newrow.insertCell(8)
                 newcell.classList.add('text-end', 'table-info')
                 newcell.innerHTML = '-'
 
-                newcell = newrow.insertCell(10)
+                newcell = newrow.insertCell(9)
                 newcell.classList.add('text-end')
                 newcell.title = 'net weight'
                 newcell.contentEditable = true
                 newcell.innerHTML = '-'
-                newcell = newrow.insertCell(11)
+                newcell = newrow.insertCell(10)
                 newcell.classList.add('text-end')
                 newcell.title = 'gross weight'
                 newcell.contentEditable = true
                 newcell.innerHTML = '-'
-                newcell = newrow.insertCell(12)
+                newcell = newrow.insertCell(11)
                 newcell.title = 'HS Code'
+                newcell.contentEditable = true
+                newcell.innerHTML = '-'
+
+                newcell = newrow.insertCell(12)
+                newcell.classList.add('text-end')
                 newcell.contentEditable = true
                 newcell.innerHTML = '-'
 
@@ -4399,11 +4397,6 @@ echo $toprint;
                 newcell.innerHTML = '-'
 
                 newcell = newrow.insertCell(14)
-                newcell.classList.add('text-end')
-                newcell.contentEditable = true
-                newcell.innerHTML = '-'
-
-                newcell = newrow.insertCell(15)
                 newcell.classList.add('text-end')
                 newcell.contentEditable = true
                 newcell.innerHTML = '-'
