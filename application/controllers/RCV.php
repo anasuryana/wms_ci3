@@ -487,8 +487,7 @@ class RCV extends CI_Controller
         $d_ppn = $this->input->post('d_ppn');
         $d_pph = $this->input->post('d_pph');
         $d_prNW = $this->input->post('d_prNW');
-        $d_prGW = $this->input->post('d_prGW');
-        $d_assetnum = $this->input->post('d_assetnum');
+        $d_prGW = $this->input->post('d_prGW');        
         $d_pkg_idrow = $this->input->post('d_pkg_idrow');
         $d_pkg_jml = $this->input->post('d_pkg_jml');
         $d_pkg_kd = $this->input->post('d_pkg_kd');
@@ -527,8 +526,7 @@ class RCV extends CI_Controller
                         'RCV_BM' => is_numeric($d_bm[$i]) ? $d_bm[$i] : 0,
                         'RCV_PPN' => is_numeric($d_ppn[$i]) ? $d_ppn[$i] : 0,
                         'RCV_PPH' => is_numeric($d_pph[$i]) ? $d_pph[$i] : 0,
-                        'RCV_ZNOURUT' => $d_nourut[$i],
-                        'RCV_ASSETNUM' => $d_assetnum[$i],
+                        'RCV_ZNOURUT' => $d_nourut[$i],                        
                         'RCV_CONA' => $h_cona,
                         'RCV_DUEDT' => $h_mconaDueDate == '' ? null : $h_mconaDueDate,
                         'RCV_CONADT' => $h_mconaDate == '' ? null : $h_mconaDate,
@@ -570,8 +568,7 @@ class RCV extends CI_Controller
                         'RCV_BM' => is_numeric($d_bm[$i]) ? $d_bm[$i] : 0,
                         'RCV_PPN' => is_numeric($d_ppn[$i]) ? $d_ppn[$i] : 0,
                         'RCV_PPH' => is_numeric($d_pph[$i]) ? $d_pph[$i] : 0,
-                        'RCV_ZNOURUT' => $d_nourut[$i],
-                        'RCV_ASSETNUM' => $d_assetnum[$i],
+                        'RCV_ZNOURUT' => $d_nourut[$i],                        
                         'RCV_CONA' => $h_cona,
                         'RCV_DUEDT' => $h_mconaDueDate == '' ? null : $h_mconaDueDate,
                         'RCV_CONADT' => $h_mconaDate == '' ? null : $h_mconaDate,
@@ -619,8 +616,7 @@ class RCV extends CI_Controller
                     'RCV_BM' => is_numeric($d_bm[$i]) ? $d_bm[$i] : 0,
                     'RCV_PPN' => is_numeric($d_ppn[$i]) ? $d_ppn[$i] : 0,
                     'RCV_PPH' => is_numeric($d_pph[$i]) ? $d_pph[$i] : 0,
-                    'RCV_ZNOURUT' => $d_nourut[$i],
-                    'RCV_ASSETNUM' => $d_assetnum[$i],
+                    'RCV_ZNOURUT' => $d_nourut[$i],                    
                     'RCV_CONA' => $h_cona,
                     'RCV_DUEDT' => $h_mconaDueDate == '' ? null : $h_mconaDueDate,
                     'RCV_CONADT' => $h_mconaDate == '' ? null : $h_mconaDate,
