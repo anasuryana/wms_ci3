@@ -21,7 +21,7 @@ class RCV extends CI_Controller
         $this->load->model('RCVNI_mod');
         $this->load->model('RCVSCN_mod');
         $this->load->model('RCVMEGA_mod');
-        $this->load->model('ITMLOC_mod');
+        $this->load->model(['ITMLOC_mod','MSTITM_mod']);
         $this->load->model('MSTSUP_mod');
         $this->load->model('MSTCUS_mod');
         $this->load->model('XBGROUP_mod');
@@ -487,7 +487,7 @@ class RCV extends CI_Controller
         $d_ppn = $this->input->post('d_ppn');
         $d_pph = $this->input->post('d_pph');
         $d_prNW = $this->input->post('d_prNW');
-        $d_prGW = $this->input->post('d_prGW');        
+        $d_prGW = $this->input->post('d_prGW');
         $d_pkg_idrow = $this->input->post('d_pkg_idrow');
         $d_pkg_jml = $this->input->post('d_pkg_jml');
         $d_pkg_kd = $this->input->post('d_pkg_kd');
@@ -526,7 +526,7 @@ class RCV extends CI_Controller
                         'RCV_BM' => is_numeric($d_bm[$i]) ? $d_bm[$i] : 0,
                         'RCV_PPN' => is_numeric($d_ppn[$i]) ? $d_ppn[$i] : 0,
                         'RCV_PPH' => is_numeric($d_pph[$i]) ? $d_pph[$i] : 0,
-                        'RCV_ZNOURUT' => $d_nourut[$i],                        
+                        'RCV_ZNOURUT' => $d_nourut[$i],
                         'RCV_CONA' => $h_cona,
                         'RCV_DUEDT' => $h_mconaDueDate == '' ? null : $h_mconaDueDate,
                         'RCV_CONADT' => $h_mconaDate == '' ? null : $h_mconaDate,
@@ -568,7 +568,7 @@ class RCV extends CI_Controller
                         'RCV_BM' => is_numeric($d_bm[$i]) ? $d_bm[$i] : 0,
                         'RCV_PPN' => is_numeric($d_ppn[$i]) ? $d_ppn[$i] : 0,
                         'RCV_PPH' => is_numeric($d_pph[$i]) ? $d_pph[$i] : 0,
-                        'RCV_ZNOURUT' => $d_nourut[$i],                        
+                        'RCV_ZNOURUT' => $d_nourut[$i],
                         'RCV_CONA' => $h_cona,
                         'RCV_DUEDT' => $h_mconaDueDate == '' ? null : $h_mconaDueDate,
                         'RCV_CONADT' => $h_mconaDate == '' ? null : $h_mconaDate,
@@ -616,7 +616,7 @@ class RCV extends CI_Controller
                     'RCV_BM' => is_numeric($d_bm[$i]) ? $d_bm[$i] : 0,
                     'RCV_PPN' => is_numeric($d_ppn[$i]) ? $d_ppn[$i] : 0,
                     'RCV_PPH' => is_numeric($d_pph[$i]) ? $d_pph[$i] : 0,
-                    'RCV_ZNOURUT' => $d_nourut[$i],                    
+                    'RCV_ZNOURUT' => $d_nourut[$i],
                     'RCV_CONA' => $h_cona,
                     'RCV_DUEDT' => $h_mconaDueDate == '' ? null : $h_mconaDueDate,
                     'RCV_CONADT' => $h_mconaDate == '' ? null : $h_mconaDate,
@@ -2491,6 +2491,11 @@ class RCV extends CI_Controller
         $this->load->view('wms/vrevise_lotno');
     }
 
+    public function form_serno_reg()
+    {
+        $this->load->view('wms/vreceiving_detail');
+    }
+
     public function revise_lot()
     {
         header('Content-Type: application/json');
@@ -2763,7 +2768,7 @@ class RCV extends CI_Controller
                     $mdodis = trim($mdo);
                 }
             }
-            $sheet->setCellValueByColumnAndRow(2, $y, $mnomordis);            
+            $sheet->setCellValueByColumnAndRow(2, $y, $mnomordis);
             $sheet->setCellValueByColumnAndRow(3, $y, $mnomorpabdis);
             $sheet->setCellValueByColumnAndRow(4, $y, $mdatepabdis);
             $sheet->setCellValueByColumnAndRow(5, $y, $mdatercv);
@@ -3166,6 +3171,14 @@ class RCV extends CI_Controller
         $searchby = $this->input->post('searchby');
         $searchval = $this->input->post('searchval');
         $rs = [];
+
+        # ketika suatu Item memiliki 'rank' maka dalam pencarian EXBC item rank perlu dirubah menjadi item induk dari rank tersebut
+        $rsGrade = $this->MSTITM_mod->selectColumnGradeWhere(['MITMGRP_ITMCD'], ['MITMGRP_ITMCD_GRD' => $itemcd]);
+        if (!empty($rsGrade)) {
+            foreach ($rsGrade as $r) {
+                $itemcd = $r['MITMGRP_ITMCD'];
+            }
+        }
         switch ($searchby) {
             case 'itemname':
                 $rs = $this->RCV_mod->select_balanceEXBC_like([$itemcd], ['MITM_ITMD1' => $searchval]);

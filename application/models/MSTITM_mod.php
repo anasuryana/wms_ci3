@@ -23,6 +23,14 @@ class MSTITM_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectColumnGradeWhere($pColumns, $pWhere)
+    {
+        $this->db->select($pColumns);
+        $this->db->where($pWhere);
+        $query = $this->db->get($this->TABLENAMEGRADE);
+        return $query->result_array();
+    }
+
     public function select_fg()
     {
         $this->db->limit(10000);
