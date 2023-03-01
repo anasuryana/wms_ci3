@@ -1390,6 +1390,13 @@ class ITH_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectstock_ser_rtn($pser)
+    {
+        $qry = "wms_sp_getstock_ser_wh_rtn ?";
+        $query = $this->db->query($qry, $pser);
+        return $query->result_array();
+    }
+
     public function select_qcwh_unscan_recap()
     {
         $qry = "exec sp_qcwh_unscan_recap ";

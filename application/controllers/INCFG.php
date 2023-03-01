@@ -720,11 +720,13 @@ class INCFG extends CI_Controller
         $rsith = $this->ITH_mod->selectstock_ser($ccode);
         $whok = true;
         $myar = [];
+        $openingLocation = '';
         foreach ($rsith as $r) {
-            if (trim($r['ITH_WH']) == 'QAFG') {
+            $openingLocation = trim($r['ITH_WH']);
+            if ($openingLocation == 'QAFG') {
                 $whok = false;
                 break;
-            } elseif (trim($r['ITH_WH']) == 'AFQART') {
+            } elseif (in_array($openingLocation, ['AFQART','AFQART2']) ) {
                 $myar[] = ['cd' => 0, 'msg' => 'denied, because the serial should not be here'];
                 die('{"status":' . json_encode($myar) . '}');
             }
@@ -734,11 +736,14 @@ class INCFG extends CI_Controller
             die('{"status":' . json_encode($myar) . '}');
         }
 
-        if ($this->ITH_mod->check_Primary(['ITH_WH' => 'ARRCRT', 'ITH_SER' => $ccode])) {
-            $cwh_inc = 'AFQCRT';
-            $rstes = $this->ITH_mod->selectstock_ser($ccode);
-            $rstes = !empty($rstes) ? reset($rstes) : ['ITH_WH' => '??'];
-            if ($rstes['ITH_WH'] == $cwh_inc) {
+        # penentu apakah sebuah reff berasal dari FG-RTN atau bukan
+        if (in_array($openingLocation, ['NFWH4RT','AFWH3RT']) ) {
+            $rs_stktrn = $this->SER_mod->select_whcd_rtn($ccode);
+            $rs_stktrn = count($rs_stktrn) > 0 ? reset($rs_stktrn) : ['STKTRND1_LOCCDFR' => '??'];
+            $cwh_inc = $rs_stktrn['STKTRND1_LOCCDFR'];
+            $rstes = $this->ITH_mod->selectstock_ser_rtn($ccode);
+            $rstes = !empty($rstes) ? reset($rstes) : ['ITH_WH' => '??', 'ITH_LOC' => '???'];
+            if ($rstes['ITH_WH'] == $cwh_inc && $rstes['ITH_LOC'] === 'QC') {
                 $myar[] = ['cd' => 1, 'msg' => 'Serial is already scanned'];
             } else {
                 $cfm_inc = 'INC-QCRTN-FG';
@@ -756,7 +761,8 @@ class INCFG extends CI_Controller
                         $datac['ITH_DATE'] = $currdate;
                         $datac['ITH_DOC'] = $r['SER_DOC'];
                         $datac['ITH_QTY'] = -$r['SER_QTY'];
-                        $datac['ITH_WH'] = 'ARRCRT';
+                        $datac['ITH_WH'] = $cwh_inc;
+                        $datac['ITH_LOC'] = 'RC';
                         $datac['ITH_LUPDT'] = $currrtime;
                         $datac['ITH_USRID'] = $this->session->userdata('nama');
                     }
@@ -766,6 +772,7 @@ class INCFG extends CI_Controller
                         $datac['ITH_DATE'] = $currdate;
                         $datac['ITH_QTY'] = $r['SER_QTY'];
                         $datac['ITH_WH'] = $cwh_inc;
+                        $datac['ITH_LOC'] = 'QC';
                         $datac['ITH_LUPDT'] = $currrtime;
                         $datac['ITH_USRID'] = $this->session->userdata('nama');
                         $this->ITH_mod->insert($datac);
@@ -868,8 +875,7 @@ class INCFG extends CI_Controller
         $this->checkSession();
         date_default_timezone_set('Asia/Jakarta');
         $currdate = date('Y-m-d');
-        $currrtime = date('Y-m-d H:i:s');
-        $cwh_out = 'AFQCRT';
+        $currrtime = date('Y-m-d H:i:s');        
         $cfm_inc = 'INC-WHRTN-FG';
         $cfm_out = 'OUT-QCRTN-FG';
         $ccode = $this->input->get('incode') ? $this->input->get('incode') : '??';
@@ -895,21 +901,40 @@ class INCFG extends CI_Controller
             $rs_stktrn = $this->SER_mod->select_whcd_rtn($ccode);
             $rs_stktrn = count($rs_stktrn) > 0 ? reset($rs_stktrn) : ['STKTRND1_LOCCDFR' => '??'];
             $cwh_inc = $rs_stktrn['STKTRND1_LOCCDFR'];
+            $cwh_out = $rs_stktrn['STKTRND1_LOCCDFR'];
             if ($cwh_inc == '??') {
                 $myar[] = ['cd' => 0, 'msg' => 'the destination warehouse code is not found'];
             } else {
                 if ($this->ITH_mod->check_Primary(['ITH_SER' => $ccode, 'ITH_WH' => $cwh_inc])) {
                     $myar[] = ['cd' => 0, 'msg' => 'the label is already scanned'];
                 } else {
-                    $rstes = $this->ITH_mod->selectstock_ser($ccode);
+                    $rstes = $this->ITH_mod->selectstock_ser_rtn($ccode);
                     $rstes = count($rstes) > 0 ? reset($rstes) : ['ITH_WH' => '??'];
-                    if ($rstes['ITH_WH'] == $cwh_out) {
+                    if ($rstes['ITH_WH'] == $cwh_out && $rstes['ITH_LOC'] === 'QC') {
                         #check is already scanned by QC
                         $this->ITH_mod->insert([
-                            'ITH_ITMCD' => $rs_stktrn['SER_ITMID'], 'ITH_DATE' => $currdate, 'ITH_FORM' => $cfm_out, 'ITH_DOC' => $rs_stktrn['SER_DOC'], 'ITH_QTY' => -$rs_stktrn['SER_QTY'], 'ITH_WH' => $cwh_out, 'ITH_SER' => $ccode, 'ITH_LUPDT' => $currrtime, 'ITH_USRID' => $this->session->userdata('nama'),
+                            'ITH_ITMCD' => $rs_stktrn['SER_ITMID']
+                            , 'ITH_DATE' => $currdate
+                            , 'ITH_FORM' => $cfm_out
+                            , 'ITH_DOC' => $rs_stktrn['SER_DOC']
+                            , 'ITH_QTY' => -$rs_stktrn['SER_QTY']
+                            , 'ITH_WH' => $cwh_out
+                            , 'ITH_LOC' => 'QC'
+                            , 'ITH_SER' => $ccode
+                            , 'ITH_LUPDT' => $currrtime
+                            , 'ITH_USRID' => $this->session->userdata('nama'),
                         ]);
                         $this->ITH_mod->insert([
-                            'ITH_ITMCD' => $rs_stktrn['SER_ITMID'], 'ITH_DATE' => $currdate, 'ITH_FORM' => $cfm_inc, 'ITH_DOC' => $rs_stktrn['SER_DOC'], 'ITH_QTY' => $rs_stktrn['SER_QTY'], 'ITH_WH' => $cwh_inc, 'ITH_SER' => $ccode, 'ITH_LUPDT' => $currrtime, 'ITH_USRID' => $this->session->userdata('nama'),
+                            'ITH_ITMCD' => $rs_stktrn['SER_ITMID']
+                            , 'ITH_DATE' => $currdate
+                            , 'ITH_FORM' => $cfm_inc
+                            , 'ITH_DOC' => $rs_stktrn['SER_DOC']
+                            , 'ITH_QTY' => $rs_stktrn['SER_QTY']
+                            , 'ITH_WH' => $cwh_inc
+                            , 'ITH_LOC' => 'WH'
+                            , 'ITH_SER' => $ccode
+                            , 'ITH_LUPDT' => $currrtime
+                            , 'ITH_USRID' => $this->session->userdata('nama'),
                         ]);
                         $myar[] = ['cd' => 1, 'msg' => 'OK'];
                     } else {
