@@ -2075,8 +2075,8 @@ echo $toprint;
                                 if (!isfound) {
                                     if (rcvcustoms_tablefokus == 'rcvcustoms_tbl_1') {
                                         document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[3].innerHTML = response.data[i].MITM_ITMCD.trim()
-                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[5].innerHTML = response.data[i].MITM_ITMD1
-                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[7].innerHTML = response.data[i].MITM_STKUOM
+                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[4].innerHTML = response.data[i].MITM_ITMD1
+                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[6].innerHTML = response.data[i].MITM_STKUOM
                                     } else {
                                         document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[3].innerHTML = response.data[i].MITM_ITMCD.trim()
                                         document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[4].innerHTML = response.data[i].MITM_ITMD1
