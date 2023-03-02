@@ -649,18 +649,6 @@ class DELV_mod extends CI_Model {
     }
 
     public function select_shipping_for_mega($pdo){
-        // $qry = "SELECT MXDLV_DATE,SSO2_MDLCD,SISOQTY,SISO_CPONO,SISO_SOLINE FROM
-        // (SELECT DLV_ID,SISCN_LINENO,SUM(DLV_QTY) DLVQTY,MAX(DLV_DATE) MXDLV_DATE FROM DLV_TBL 
-		// 	INNER JOIN SISCN_TBL ON DLV_SER=SISCN_SER
-		// 	WHERE DLV_ID=?
-		// 	GROUP BY DLV_ID,SISCN_LINENO) V1
-        // LEFT JOIN
-        // (SELECT SISO_CPONO,SISO_HLINE,SSO2_MDLCD,SUM(SISO_QTY) SISOQTY,SISO_SOLINE  FROM SISO_TBL
-		// 	LEFT JOIN XSSO2 ON SISO_CPONO=SSO2_CPONO AND SISO_SOLINE=SSO2_SOLNO
-		// 	GROUP BY SISO_HLINE,SSO2_MDLCD,SISO_CPONO,SISO_SOLINE
-        // ) V2 ON SISCN_LINENO=SISO_HLINE
-        // LEFT JOIN MITM_TBL ON SSO2_MDLCD=MITM_ITMCD
-        // ORDER BY SSO2_MDLCD";
         $qry = "SELECT * FROM
         (select DLVPRC_TXID,SER_ITMID,SUM(DLVPRC_QTY) PLTQTY,DLVPRC_CPO,DLVPRC_CPOLINE  from DLVPRC_TBL
         LEFT JOIN SER_TBL ON DLVPRC_SER=SER_ID
@@ -671,7 +659,7 @@ class DELV_mod extends CI_Model {
         )  VDELV ON DLVPRC_TXID=DLV_ID";
         $query = $this->db->query($qry, [$pdo]);
 		return $query->result_array();
-    }    
+    }
 
     public function select_dlv_ser_rm($pdo){
         $this->db->select("vserd2_cims.*, DLV_QTY B4MINS, 0 PRICEFOR,0 QTYFOR,SER_ITMID,0 PRICEGROUP");
@@ -1074,18 +1062,9 @@ class DELV_mod extends CI_Model {
     }
 
     public function select_for_pkg_rm_rtn($pdoc){
-        $qry = "SELECT DLV_PKG_TBL.*,RTRIM(MITM_ITMD1) MITM_ITMD1,MDEL_ZNAMA,MDEL_ADDRCUSTOMS,DLV_DATE, DLV_INVNO
-        ,DLV_SMTINVNO,MCUS_CURCD,DLV_INVDT,DLV_NOPEN,DLV_ITMD1,DLV_ITMSPTNO,RTRIM(MITM_SPTNO) MITM_SPTNO,ISNULL(MITM_ITMCDCUS,'-') MITM_ITMCDCUS 
-        ,RTRIM(MITM_STKUOM) MITM_STKUOM FROM DLV_PKG_TBL
-        LEFT JOIN MITM_TBL ON DLV_PKG_ITM=MITM_ITMCD
-        LEFT JOIN ( SELECT DLV_ID,MDEL_ZNAMA,MDEL_ADDRCUSTOMS,DLV_DATE,ISNULL(DLV_INVNO,'') DLV_INVNO 
-        ,ISNULL(DLV_SMTINVNO,'') DLV_SMTINVNO,RTRIM(MCUS_CURCD) MCUS_CURCD,DLV_INVDT,isnull(DLV_NOPEN,'') DLV_NOPEN ,DLV_ITMCD,DLV_ITMD1,DLV_ITMSPTNO
-        FROM DLV_TBL LEFT JOIN MDEL_TBL ON DLV_CONSIGN=MDEL_DELCD LEFT JOIN MCUS_TBL ON DLV_CUSTCD=MCUS_CUSCD 
-        GROUP BY DLV_ID,MDEL_ZNAMA,MDEL_ADDRCUSTOMS,DLV_DATE,DLV_INVNO,DLV_SMTINVNO,MCUS_CURCD,DLV_INVDT,DLV_NOPEN,DLV_ITMCD ,DLV_ITMD1,DLV_ITMSPTNO
-        ) VH ON DLV_PKG_DOC=DLV_ID  AND DLV_PKG_ITM=DLV_ITMCD
-        WHERE DLV_ID=?";
-         $query = $this->db->query($qry, [$pdoc]);        
-         return $query->result_array();
+        $qry = "wms_sp_packaging_rm_rtn ?";
+        $query = $this->db->query($qry, [$pdoc]);        
+        return $query->result_array();
     }
 
     public function select_for_rm_h($pdoc){
