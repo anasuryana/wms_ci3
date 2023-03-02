@@ -353,7 +353,7 @@ class SER_mod extends CI_Model
 
     public function select_whcd_rtn($pser)
     {
-        $qry = "SELECT TOP 1 STKTRND1_LOCCDFR,A.SER_ITMID,A.SER_QTY,B.SER_DOC FROM SER_TBL A
+        $qry = "SELECT TOP 1 RTRIM(STKTRND1_LOCCDFR) STKTRND1_LOCCDFR,A.SER_ITMID,A.SER_QTY,B.SER_DOC FROM SER_TBL A
             LEFT JOIN SER_TBL B ON A.SER_REFNO=B.SER_ID
             LEFT JOIN XVU_RTN ON  B.SER_DOC=STKTRND1_DOCNO
             WHERE A.SER_ID=?";

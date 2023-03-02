@@ -37,12 +37,17 @@ class XITRN_mod extends CI_Model {
                     ,'' ITH_SER
                     ,RTRIM(ITRN_LOCCD) ITRN_LOCCD					
                     ,RTRIM(ITRN_ITMCD) ITRN_ITMCD
+                    ,RTRIM(MITM_SPTNO) MITM_SPTNO
+                    ,RTRIM(MITM_ITMD1) MITM_ITMD1
                     ,SUM(IOQT) RMQT
                 FROM XITRN_TBL
+                LEFT JOIN XMITM_V ON ITRN_ITMCD=MITM_ITMCD
                 WHERE ITRN_LOCCD != 'ARWH9SC'
                     AND ITRN_ITMCD like ?
                 GROUP BY ITRN_LOCCD
-                    ,ITRN_ITMCD";
+                    ,ITRN_ITMCD
+                    ,MITM_SPTNO
+                    ,MITM_ITMD1";
         $query =  $this->db->query($qry, ['%'.$item.'%']);
         return $query->result_array();
     }

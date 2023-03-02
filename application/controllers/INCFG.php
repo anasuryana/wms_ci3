@@ -726,7 +726,7 @@ class INCFG extends CI_Controller
             if ($openingLocation == 'QAFG') {
                 $whok = false;
                 break;
-            } elseif (in_array($openingLocation, ['AFQART','AFQART2']) ) {
+            } elseif (in_array($openingLocation, ['AFQART', 'AFQART2'])) {
                 $myar[] = ['cd' => 0, 'msg' => 'denied, because the serial should not be here'];
                 die('{"status":' . json_encode($myar) . '}');
             }
@@ -737,7 +737,7 @@ class INCFG extends CI_Controller
         }
 
         # penentu apakah sebuah reff berasal dari FG-RTN atau bukan
-        if (in_array($openingLocation, ['NFWH4RT','AFWH3RT']) ) {
+        if (in_array($openingLocation, ['NFWH4RT', 'AFWH3RT'])) {
             $rs_stktrn = $this->SER_mod->select_whcd_rtn($ccode);
             $rs_stktrn = count($rs_stktrn) > 0 ? reset($rs_stktrn) : ['STKTRND1_LOCCDFR' => '??'];
             $cwh_inc = $rs_stktrn['STKTRND1_LOCCDFR'];
@@ -875,7 +875,7 @@ class INCFG extends CI_Controller
         $this->checkSession();
         date_default_timezone_set('Asia/Jakarta');
         $currdate = date('Y-m-d');
-        $currrtime = date('Y-m-d H:i:s');        
+        $currrtime = date('Y-m-d H:i:s');
         $cfm_inc = 'INC-WHRTN-FG';
         $cfm_out = 'OUT-QCRTN-FG';
         $ccode = $this->input->get('incode') ? $this->input->get('incode') : '??';
@@ -902,10 +902,12 @@ class INCFG extends CI_Controller
             $rs_stktrn = count($rs_stktrn) > 0 ? reset($rs_stktrn) : ['STKTRND1_LOCCDFR' => '??'];
             $cwh_inc = $rs_stktrn['STKTRND1_LOCCDFR'];
             $cwh_out = $rs_stktrn['STKTRND1_LOCCDFR'];
+            $rstes = $this->ITH_mod->selectstock_ser_rtn($ccode);
+            $rstes = !empty($rstes) ? reset($rstes) : ['ITH_WH' => '??', 'ITH_LOC' => '???'];
             if ($cwh_inc == '??') {
                 $myar[] = ['cd' => 0, 'msg' => 'the destination warehouse code is not found'];
             } else {
-                if ($this->ITH_mod->check_Primary(['ITH_SER' => $ccode, 'ITH_WH' => $cwh_inc])) {
+                if ($this->ITH_mod->check_Primary(['ITH_SER' => $ccode, 'ITH_WH' => $cwh_inc, 'ITH_LOC' => 'WH'])) {
                     $myar[] = ['cd' => 0, 'msg' => 'the label is already scanned'];
                 } else {
                     $rstes = $this->ITH_mod->selectstock_ser_rtn($ccode);
@@ -938,7 +940,7 @@ class INCFG extends CI_Controller
                         ]);
                         $myar[] = ['cd' => 1, 'msg' => 'OK'];
                     } else {
-                        $myar[] = ['cd' => 0, 'msg' => 'the label is not passed qc'];
+                        $myar[] = ['cd' => 0, 'msg' => 'the label is not passed qc '];
                     }
                 }
             }
