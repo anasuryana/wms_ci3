@@ -317,6 +317,13 @@ class ITHHistory extends CI_Controller
             }
         }
 
+        $rsEquipment = $this->ITH_mod->selectPSIEquipment(['ITH_ITMCD' => $item_code]);
+        foreach ($rsEquipment as $r) {
+            if (!in_array($r['ITH_WH'], $location)) {
+                $location[] = $r['ITH_WH'];
+            }
+        }
+
 		# inisialisasi nilai 'baris dan kolom kanan'
         foreach ($rsMega as $r) {
             $isFound = false;
@@ -331,6 +338,26 @@ class ITHHistory extends CI_Controller
 			
             if (!$isFound) {
                 $row = ['ITRN_ITMCD' => $r['ITRN_ITMCD'], 'SPTNO' => $r['MITM_SPTNO'], 'D1' => $r['MITM_ITMD1'] ];
+                foreach ($location as $l) {
+                    $row[$l] = 0;
+                }
+                $rsFix[] = $row;
+            }
+        }		
+
+        foreach ($rsEquipment as $r) {
+            $isFound = false;
+            foreach ($rsFix as &$n) {
+                if ($n['ITRN_ITMCD'] === $r['ITH_ITMCD']) {
+                    $isFound = true;
+                    break;
+                }
+            }
+            unset($n);
+
+			
+            if (!$isFound) {
+                $row = ['ITRN_ITMCD' => $r['ITH_ITMCD'], 'SPTNO' => $r['MITM_SPTNO'], 'D1' => $r['MITM_ITMD1'] ];
                 foreach ($location as $l) {
                     $row[$l] = 0;
                 }
@@ -358,8 +385,14 @@ class ITHHistory extends CI_Controller
 					$r[$m['ITRN_LOCCD']] += $m['RMQT'];
 				}
 			}
+			foreach($rsEquipment as $m)
+			{
+				if($r['ITRN_ITMCD'] === $m['ITH_ITMCD']){
+					$r[$m['ITH_WH']] += $m['EQUIPQT'];
+				}
+			}
 		}
 		unset($r);
-        die(json_encode(['data_location' => $location, 'rsFix' => $rsFix]));
+        die(json_encode(['data_location' => $location, 'rsFix' => $rsFix, '$rsEquipment' => $rsEquipment]));
     }
 }
