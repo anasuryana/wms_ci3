@@ -330,7 +330,7 @@ class ITHHistory extends CI_Controller
 
 			
             if (!$isFound) {
-                $row = ['ITRN_ITMCD' => $r['ITRN_ITMCD']];
+                $row = ['ITRN_ITMCD' => $r['ITRN_ITMCD'], 'SPTNO' => $r['MITM_SPTNO'], 'D1' => $r['MITM_ITMD1'] ];
                 foreach ($location as $l) {
                     $row[$l] = 0;
                 }

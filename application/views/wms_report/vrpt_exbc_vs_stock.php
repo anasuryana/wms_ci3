@@ -47,10 +47,10 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-md-6 mb-1 text-end position-relative">                
+            <div class="col-md-6 mb-1 text-end position-relative">
                 <div class="position-absolute bottom-0 end-0">
                     <button title="Copy to clipboard" id="xstock_resume_btnexcel" onclick="xstock_resume_btnexcel()" class="btn btn-success mt-auto" ><i class="fas fa-clipboard"></i></button>
-                </div>                
+                </div>
             </div>
         </div>
         <div class="row">
@@ -60,7 +60,9 @@
                         <thead class="table-light">
                             <tr class="first">
                                 <th class="align-middle" rowspan="2">Item Code</th>
-                                <th class="align-middle">Location</th>
+                                <th class="align-middle" rowspan="2">Item Name</th>
+                                <th class="align-middle" rowspan="2">Description</th>
+                                <th class="align-middle text-center">Location</th>
                             </tr>
                             <tr class="second">
                                 <th class="text-center">...</th>
@@ -92,12 +94,14 @@
         let mtabel = document.getElementById("xstock_tbl");
         mtabel.getElementsByTagName('thead')[0].innerHTML = `<tr class="first">
                                 <th class="align-middle" rowspan="2">Item Code</th>
+                                <th class="align-middle" rowspan="2">Item Name</th>
+                                <th class="align-middle" rowspan="2">Description</th>
                                 <th class="align-middle text-center">Location</th>
                             </tr>
                             <tr class="second">
                             <th class="text-center">...</th>
                             </tr>`
-        mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="2" class="text-center">Please wait</td></tr>`
+        mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center">Please wait</td></tr>`
         xstock_resume_part_qty.innerHTML = '-'
         xstock_resume_exbc_qty.innerHTML = '-'
         xstock_resume_diff_qty.innerHTML = '-'
@@ -128,6 +132,8 @@
                 }
                 tabell.getElementsByTagName('thead')[0].innerHTML = `<tr class="first">
                                 <th class="align-middle" rowspan="2">Item Code</th>
+                                <th class="align-middle" rowspan="2">Item Name</th>
+                                <th class="align-middle" rowspan="2">Description</th>
                                 <th class="align-middle text-center" colspan="${totalColumn}">Location</th>
                                 <th class="align-middle text-center" rowspan="2">Balance</th>
                             </tr>
@@ -143,8 +149,9 @@
                     for(const [index, [key , value]] of Object.entries(Object.entries(x)) )
                     {
                         newcell = newrow.insertCell(index)
-                        if(key === 'ITRN_ITMCD'){
+                        if(['ITRN_ITMCD','SPTNO', 'D1'].includes(key)){
                             newcell.innerHTML = value
+                            console.log(value)
                         } else {
                             newcell.innerHTML = numeral(value < 0 ? 0 : value).format(',')
                             newcell.classList.add('text-end')
