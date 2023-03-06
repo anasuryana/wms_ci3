@@ -16,12 +16,23 @@ class PO extends CI_Controller
         $this->load->model('MDEPT_mod');
         $this->load->model('PO_mod');
         $this->load->model('RCVNI_mod');
+        $this->load->model('RCV_mod');
+        $this->load->model('RCVD_mod');
         $this->load->model('MSTITM_mod');
         $this->load->model('TREQPARTLKL_mod');
+        date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
     {
         echo "sorry";
+    }
+    public function checkSession()
+    {
+        $myar = [];
+        if ($this->session->userdata('status') != "login") {
+            $myar[] = ["cd" => "0", "msg" => "Session is expired please reload page"];
+            exit(json_encode(['status' => $myar]));
+        }
     }
     public function form()
     {
@@ -1228,7 +1239,6 @@ class PO extends CI_Controller
     public function save()
     {
         header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
         $current_datetime_ = date('Y-m-d H:i:s');
         $h_po = $this->input->post('h_po');
         $h_remark = $this->input->post('h_remark');
@@ -1715,5 +1725,91 @@ class PO extends CI_Controller
         header('Content-Type: application/json');
         $rs = $this->TREQPARTLKL_mod->selectall_ost();
         die(json_encode(['data' => $rs]));
+    }
+
+    public function DOPO()
+    {
+        header('Content-Type: application/json');
+        # DO number & PO Number
+        $searchBy = $this->input->get('searchBy');
+        $search = $this->input->get('search');
+        $likeColumn = '';
+        switch ($searchBy) {
+            case 'ic':
+                $likeColumn = 'RCV_ITMCD';
+                break;
+            case 'sup':
+                $likeColumn = 'MSUP_SUPNM';
+                break;
+            case 'in':
+                $likeColumn = 'MITM_ITMD1';
+                break;
+        }
+        $rs = $this->RCV_mod->selectColumnGroup(['RCV_DONO', 'RCV_PO', 'MSUP_SUPNM'], [$likeColumn => $search], ['RCV_DONO', 'RCV_PO', 'MSUP_SUPNM']);
+        die(json_encode(['data' => $rs]));
+    }
+    public function DOPODetail()
+    {
+        # DO number & PO Number
+        $po = $this->input->get('po');
+        $do = $this->input->get('do');
+        $rs = $this->RCV_mod->selectColumnGroup(
+            ['RTRIM(MITM_ITMCD) ITMCD', 'RTRIM(MITM_ITMD1) ITMD1', 'SUM(RCV_QTY) RQT', 'RTRIM(MITM_STKUOM) UM']
+            , ['RCV_PO' => $po, 'RCV_DONO' => $do]
+            , ['MITM_ITMCD', 'MITM_ITMD1', 'MITM_STKUOM']);
+        die(json_encode(['data' => $rs]));
+    }
+    public function DOPOSerial()
+    {
+        $this->checkSession();
+        header('Content-Type: application/json');
+        $po = $this->input->get('po');
+        $do = $this->input->get('do');
+        $item_code = $this->input->get('item_code');
+        $item_qty = $this->input->get('item_qty');
+        $current_datetime_ = date('Y-m-d H:i:s');
+        $rs = [];
+        if (!$this->RCVD_mod->check_Primary(['RCVD_PO' => $po, 'RCVD_DO' => $do, 'RCVD_ITMID' => $item_code])) {
+            $rsTobeSaved = [];
+            for ($i = 0; $i < $item_qty; $i++) {
+                $rsTobeSaved[] = [
+                    'RCVD_ITMID' => $item_code,
+                    'RCVD_PO' => $po,
+                    'RCVD_DO' => $do,
+                    'RCVD_CREATED_DT' => $current_datetime_,
+                    'RCVD_CREATED_BY' => $this->session->userdata('nama'),
+                ];
+            }
+            $this->RCVD_mod->insertb($rsTobeSaved);
+        }
+        $rs = $this->RCVD_mod->selectColumnWhere(
+            ['RCVD_ID', 'RCVD_SERNNUM', 'RCVD_ASSETNUM']
+            , ['RCVD_PO' => $po, 'RCVD_DO' => $do, 'RCVD_ITMID' => $item_code]);
+        die(json_encode(['data' => $rs]));
+    }
+
+    public function DOPOSerialSave()
+    {
+        $this->checkSession();
+        header('Content-Type: application/json');
+        $po = $this->input->post('po');
+        $do = $this->input->post('do');
+        $item_code = $this->input->post('item_code');
+        $SaveID = $this->input->post('SaveID');
+        $SaveSerialNumber = $this->input->post('SaveSerialNumber');
+        $SaveAssetNumber = $this->input->post('SaveAssetNumber');
+        $TotalRows = is_array($SaveID) ? count($SaveID) : 0;
+        $AffectedRows = 0;
+        for ($i = 0; $i < $TotalRows; $i++) {
+            $AffectedRows += $this->RCVD_mod->updatebyId(['RCVD_ID' => $SaveID[$i] ]
+                , [
+                    'RCVD_SERNNUM' => $SaveSerialNumber[$i],
+                    'RCVD_ASSETNUM' => $SaveAssetNumber[$i],
+                ]
+            );
+        }
+        $respon = [];
+        $respon[] = ['cd' => 1, 'msg' => 'Saved' ,'$AffectedRows' => $AffectedRows];
+        die(json_encode(['status' => $respon]));
     }
 }
