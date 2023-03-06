@@ -150,8 +150,7 @@
                     {
                         newcell = newrow.insertCell(index)
                         if(['ITRN_ITMCD','SPTNO', 'D1'].includes(key)){
-                            newcell.innerHTML = value
-                            console.log(value)
+                            newcell.innerHTML = value                            
                         } else {
                             newcell.innerHTML = numeral(value < 0 ? 0 : value).format(',')
                             newcell.classList.add('text-end')
