@@ -128,7 +128,7 @@
                     <div class="col-md-12 mb-1">
                         <div class="input-group mb-1">                            
                             <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>                            
-                            <input type="password" class="form-control" id="vuser_txtnewpassword_ht" placeholder="Enter new Password here">
+                            <input type="password" class="form-control" id="vuser_txtnewpassword_ht" placeholder="Enter new Password here" maxlength="8">
                         </div>
                     </div>
                 </div>
@@ -136,7 +136,7 @@
                     <div class="col-md-12 mb-1">
                         <div class="input-group mb-1">                            
                             <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>                            
-                            <input type="password" class="form-control" id="vuser_txtnewpassword_c_ht" placeholder="Confirm new Password here" >
+                            <input type="password" class="form-control" id="vuser_txtnewpassword_c_ht" placeholder="Confirm new Password here" maxlength="8">
                         </div>
                     </div>
                 </div>
