@@ -2386,7 +2386,7 @@ class ITH extends CI_Controller
         $usrid = $this->session->userdata('nama');
         $myar = [];
         #validate PIN
-        if ($cpin != 'NAHCLOSING') {
+        if ($cpin != 'NAHCLOSINGBROX') {
             $myar[] = ['cd' => "0", 'msg' => 'PIN is not valid'];
             die('{"status":' . json_encode($myar) . '}');
         }
@@ -2439,7 +2439,7 @@ class ITH extends CI_Controller
         $cpin = $this->input->post('inpin');
         $myar = [];
         #validate PIN
-        if ($cpin != 'NAHCLOSING_SAVE') {
+        if ($cpin != 'NAHCLOSINGBROX_SAVE') {
             $myar[] = ['cd' => "0", 'msg' => 'PIN is not valid'];
             die('{"status":' . json_encode($myar) . '}');
         }
