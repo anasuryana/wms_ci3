@@ -2640,7 +2640,7 @@ class ITH extends CI_Controller
             $myar = ["cd" => "0", "msg" => "Session is expired please reload page"];
             die(json_encode(['status' => $myar]));
         }
-        $whException = ['AFWH3', 'AWIP1', 'PSIEQUIP']; #'AFWH9SC',
+        $whException = ['AFWH3', 'AWIP1', 'PSIEQUIP','NFWH4RT'];
         $date = $this->input->post('date');
         $location = $this->input->post('location');
         $adjtype = $this->input->post('adjtype');
