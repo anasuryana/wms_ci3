@@ -1272,4 +1272,15 @@ class RCV_mod extends CI_Model
         $query = $this->db->query($qry);
         return $query->result_array();
     }
+
+    public function selectItemLike($like)
+    {
+        $this->db->select("RTRIM(MITM_ITMCD) MITM_ITMCD, RTRIM(MITM_ITMD1) MITM_ITMD1");
+        $this->db->from($this->TABLENAME);
+        $this->db->join("MITM_TBL", "RCV_ITMCD=MITM_ITMCD", "LEFT");
+        $this->db->like($like);
+        $this->db->group_by("MITM_ITMCD,MITM_ITMD1");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 }
