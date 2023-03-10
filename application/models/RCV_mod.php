@@ -289,20 +289,20 @@ class RCV_mod extends CI_Model
         $query = $this->db->query($qry);
         return $query->result_array();
     }
-    public function SelectDO1($pdo)
+    public function SelectDO1($like)
     {
-        $qry = "SELECT RCV_DONO,COUNT(*) TTLITEMIN,MIN(RCV_HSCD) RCV_HSCD, MIN(RCV_BM) RCV_BM
+        $this->db->from($this->TABLENAME);
+        $this->db->select("RCV_DONO,COUNT(*) TTLITEMIN,MIN(RCV_HSCD) RCV_HSCD, MIN(RCV_BM) RCV_BM
         , MIN(RCV_PPN) RCV_PPN, MIN(RCV_PPH) RCV_PPH,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM,MIN(RCV_INVNO) RCV_INVNO
 		,MIN(RCV_BCDATE) RCV_BCDATE,MAX(RCV_BCTYPE) RCV_BCTYPE,MAX(RCV_ZSTSRCV) RCV_ZSTSRCV,MAX(RCV_RPNO) RCV_RPNO
         ,MAX(RCV_BCNO) RCV_BCNO,MAX(RCV_RPDATE) RCV_RPDATE,MAX(RCV_RCVDATE) RCV_RCVDATE,RTRIM(MAX(RCV_TPB)) RCV_TPB,MAX(RCV_KPPBC) RCV_KPPBC
 		,MAX(RCV_NW) RCV_NW,MAX(RCV_GW) RCV_GW,MAX(RCV_CONA) RCV_CONA,MAX(RCV_DUEDT) RCV_DUEDT,MAX(RCV_CONADT) RCV_CONADT
-        ,MAX(RCV_TAXINVOICE) RCV_TAXINVOICE
-		FROM RCV_TBL b
-		left join MITM_TBL on RCV_ITMCD=MITM_ITMCD
-		LEFT JOIN (SELECT MSUP_SUPCD,MAX(MSUP_SUPNM) MSUP_SUPNM FROM v_supplier_customer_union GROUP BY MSUP_SUPCD ) S ON RCV_SUPCD=S.MSUP_SUPCD
-		where MITM_MODEL='6' AND RCV_DONO like ?
-        GROUP BY RCV_DONO,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM";
-        $query = $this->db->query($qry, ['%' . $pdo . '%']);
+        ,MAX(RCV_TAXINVOICE) RCV_TAXINVOICE");
+        $this->db->join('MITM_TBL', 'RCV_ITMCD=MITM_ITMCD', 'left');
+        $this->db->join('(SELECT MSUP_SUPCD,MAX(MSUP_SUPNM) MSUP_SUPNM FROM v_supplier_customer_union GROUP BY MSUP_SUPCD ) S', 'RCV_SUPCD=S.MSUP_SUPCD', 'left');
+        $this->db->where("MITM_MODEL", 6)->like($like);
+        $this->db->group_by("RCV_DONO,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM");
+        $query = $this->db->get();
         return $query->result_array();
     }
     public function SelectDO2($pdo)
@@ -416,21 +416,21 @@ class RCV_mod extends CI_Model
         $query = $this->db->query($qry, ['%' . $pdo . '%', $pdate1, $pdate2]);
         return $query->result_array();
     }
-    public function SelectDO_date1($pdo, $pdate1, $pdate2)
+    public function SelectDO_date1($like, $pdate1, $pdate2)
     {
-        $qry = "SELECT RCV_DONO,COUNT(*) TTLITEMIN,MIN(RCV_HSCD) RCV_HSCD, MIN(RCV_BM) RCV_BM
+        $this->db->from($this->TABLENAME);
+        $this->db->select("RCV_DONO,COUNT(*) TTLITEMIN,MIN(RCV_HSCD) RCV_HSCD, MIN(RCV_BM) RCV_BM
         , MIN(RCV_PPN) RCV_PPN, MIN(RCV_PPH) RCV_PPH,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM,MIN(RCV_INVNO) RCV_INVNO
 		,MIN(RCV_BCDATE) RCV_BCDATE,MAX(RCV_BCTYPE) RCV_BCTYPE,MAX(RCV_ZSTSRCV) RCV_ZSTSRCV,MAX(RCV_RPNO) RCV_RPNO,
         MAX(RCV_BCNO) RCV_BCNO,MAX(RCV_RPDATE) RCV_RPDATE,MAX(RCV_RCVDATE) RCV_RCVDATE,RTRIM(MAX(RCV_TPB)) RCV_TPB,MAX(RCV_KPPBC) RCV_KPPBC
 		,MAX(RCV_NW) RCV_NW,MAX(RCV_GW) RCV_GW,MAX(RCV_CONA) RCV_CONA,MAX(RCV_DUEDT) RCV_DUEDT,MAX(RCV_CONADT) RCV_CONADT
-        ,MAX(RCV_TAXINVOICE) RCV_TAXINVOICE
-        FROM RCV_TBL b
-		left join MITM_TBL on RCV_ITMCD=MITM_ITMCD
-		LEFT JOIN (SELECT MSUP_SUPCD,MAX(MSUP_SUPNM) MSUP_SUPNM FROM v_supplier_customer_union GROUP BY MSUP_SUPCD ) S ON RCV_SUPCD=S.MSUP_SUPCD
-		where MITM_MODEL='6' AND RCV_DONO like ? and RCV_BCDATE between ? and ?
-        GROUP BY RCV_DONO,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM
-        ORDER BY RCV_BCDATE";
-        $query = $this->db->query($qry, ['%' . $pdo . '%', $pdate1, $pdate2]);
+        ,MAX(RCV_TAXINVOICE) RCV_TAXINVOICE");
+        $this->db->join('MITM_TBL', "RCV_ITMCD=MITM_ITMCD", 'LEFT');
+        $this->db->join('(SELECT MSUP_SUPCD,MAX(MSUP_SUPNM) MSUP_SUPNM FROM v_supplier_customer_union GROUP BY MSUP_SUPCD ) S', "RCV_SUPCD=S.MSUP_SUPCD", 'LEFT');
+        $this->db->where("MITM_MODEL", 6)->where("RCV_BCDATE >=", $pdate1)->where("RCV_BCDATE <=", $pdate2);
+        $this->db->like($like);
+        $this->db->group_by("RCV_DONO,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM");
+        $query = $this->db->get();
         return $query->result_array();
     }
     public function SelectDO_date2($pdo, $pdate1, $pdate2)

@@ -2000,11 +2000,12 @@ class RCV extends CI_Controller
         $cdate1 = $this->input->get('inyear') . '-' . $this->input->get('inmonth') . '-01';
         $cdate2 = date("Y-m-t", strtotime($cdate1));
         $rs = [];
-        if ($cby == 'do') {
+        if (in_array($cby, ['do','po']) ) {
+            $like = $cby === 'do' ? ['RCV_DONO' => $ckey] : ['RCV_PO' => $ckey];
             if ($cpermonth == 'y') {
-                $rs = $this->RCV_mod->SelectDO_date1($ckey, $cdate1, $cdate2);
+                $rs = $this->RCV_mod->SelectDO_date1($like, $cdate1, $cdate2);
             } else {
-                $rs = $this->RCV_mod->SelectDO1($ckey);
+                $rs = $this->RCV_mod->SelectDO1($like);
             }
         } else {
             $rs = $this->RCV_mod->SelectDObyItem1($ckey);

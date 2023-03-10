@@ -1005,6 +1005,7 @@ echo $toprint;
                             <select id="rcvcustoms_searchfilter_1" class="form-select" onchange="document.getElementById('rcvcustoms_txt_search_1').focus()">
                                 <option value="do">DO Number</option>
                                 <option value="in">Item Name</option>
+                                <option value="po">PO Number</option>
                             </select>
                             <input type="text" class="form-control" id="rcvcustoms_txt_search_1" onkeypress="rcvcustoms_txt_search_1_eKP(event)">
                         </div>
@@ -4037,7 +4038,7 @@ echo $toprint;
     })
 
     function rcvcustoms_txt_search_1_eKP(e) {
-        if (e.key == 'Enter') {
+        if (e.key === 'Enter') {
             const mval = document.getElementById('rcvcustoms_txt_search_1').value
             const mby = document.getElementById('rcvcustoms_searchfilter_1').value
             const mpermonth = document.getElementById('rcvcustoms_ck_1').checked ? 'y' : 'n'
