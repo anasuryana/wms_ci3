@@ -2111,6 +2111,16 @@ class ITH_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectStockWhereItemIn($items,$warehouse)
+    {
+        $this->db->from('v_ith_tblc');
+        $this->db->where_in("ITH_ITMCD", $items)->where("ITH_WH", $warehouse);        
+        $this->db->group_by("ITH_ITMCD");
+        $this->db->select("RTRIM(ITH_ITMCD) ITH_ITMCD,SUM(ITH_QTY) SQT, SUM(ITH_QTY) BACKUP_SQT");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function update_kitting_date($PSN, $newDate, $newDateTime, $oldDateTime, $itemcd)
     {
         $qry = "UPDATE ITH_TBL SET ITH_DATE=?,ITH_LUPDT=? where ITH_DOC LIKE ?

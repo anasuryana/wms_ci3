@@ -261,7 +261,7 @@
                             trfnonref_property_created_by.value = arrayItem['PIC']
                             trfnonref_property_created_at.value = arrayItem['TRFH_CREATED_DT']
                             let isShouldReadonly = false
-                            if(arrayItem['TRFH_APPROVED_DT'] || arrayItem['TRFH_CREATED_BY']!=uidnya){
+                            if(arrayItem['TRFH_CREATED_BY']!=uidnya){
                                 isShouldReadonly = true
                             }
                             trfnonref_getSavedData({doc:arrayItem['TRFH_DOC'], readonly: isShouldReadonly })
@@ -334,7 +334,7 @@
             let ttlrows = mtbltr.length
             let LineID = []
             let LineItemCode = []
-            let LineItemQty = []        
+            let LineItemQty = []
             for (let i = 0; i < ttlrows; i++) {
                 let _itemCode = tableku2.rows[i].cells[1].innerText.trim()
                 let _itemQty = numeral(tableku2.rows[i].cells[2].innerText.trim()).value()
@@ -343,6 +343,10 @@
                     LineID.push(tableku2.rows[i].cells[0].innerText)
                     LineItemCode.push(_itemCode)
                     LineItemQty.push(_itemQty)
+                } else {
+                    alertify.message('please recheck the data')
+                    tableku2.rows[i].cells[2].focus()
+                    return
                 }
             }
             if(LineItemCode.length === 0)
@@ -373,6 +377,8 @@
                             alertify.message(response.status[0].msg)
                             trfnonref_txt_doc.value = response.status[0].reff
                             trfnonref_loadSavedData(response)
+                        } else {                            
+                            alertify.warning(response.status[0].msg)
                         }
                     }, error: function(xhr, xopt, xthrow) {
                         alertify.error(xthrow);
@@ -380,14 +386,14 @@
                     }
                 });
             }, function(){
-    
+
             })
         } else {
             let LineID = '-'
             let LineItemCode = ''
             let LineItemQty = ''
             if(trfnonref_pub_index === ''){
-                
+
             } else {
                 LineID = trfnonref_tbl.getElementsByTagName('tbody')[0].getElementsByTagName('tr')[trfnonref_pub_index-1].cells[0].innerText
                 LineItemCode = trfnonref_tbl.getElementsByTagName('tbody')[0].getElementsByTagName('tr')[trfnonref_pub_index-1].cells[1].innerText
@@ -408,7 +414,7 @@
                     dataType: "json",
                     success: function (response) {
                         p.disabled = false
-                        alertify.message(response.status[0].msg)                        
+                        alertify.message(response.status[0].msg)
                         trfnonref_loadSavedData(response)
                     }, error: function(xhr, xopt, xthrow) {
                         alertify.error('Please try again');
@@ -416,7 +422,7 @@
                     }
                 });
             }, function(){
-    
+
             })
         }
     }

@@ -13,7 +13,7 @@ class MSTITM extends CI_Controller {
         $this->load->model('SER_mod');
         $this->load->model('RCV_mod');
         $this->load->model('DELV_mod');
-        $this->load->model('MUM_mod');
+        $this->load->model('MUM_mod');        
         $this->load->model('MITMHSCD_HIS_mod');
         $this->load->helper('url');
         $this->load->helper('download');
@@ -722,14 +722,19 @@ class MSTITM extends CI_Controller {
         $searchBy = $this->input->get('searchBy');
         $search = $this->input->get('search');
         $rs = [];
-        if($searchBy=='in') {
-            $rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMD1' => $search]);			
-        } elseif($searchBy=='ic'){
-            $rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMCD' => $search]);
-        } else {
-            $rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMCDCUS' => $search]);			
-        }
-        die('{"data":'.json_encode($rs).'}');
+        switch($searchBy){
+            case 'in':
+                $rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMD1' => $search]);break;
+            case 'ic':
+                $rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMCD' => $search]);break;                
+            case 'po':
+                $rs = $this->RCV_mod->selectItemLike(['RCV_PO' => $search]) ;break;
+            case 'do':
+                $rs = $this->RCV_mod->selectItemLike(['RCV_DONO' => $search]);break;
+            default :
+                $rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMCDCUS' => $search]);			    
+        }        
+        die(json_encode(['data' => $rs]));
     }
 
     public function fg_exim() {

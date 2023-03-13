@@ -9,6 +9,9 @@ class TRF extends CI_Controller
         $this->load->helper('url');
         $this->load->library('session');
         $this->load->model('ITH_mod');
+        $this->load->model('MSTLOCG_mod');
+        $this->load->model('SERD_mod');
+        $this->load->model('TRF_mod');
         date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
@@ -16,13 +19,209 @@ class TRF extends CI_Controller
         die("sorry");
     }
 
-    function form_part()
+    public function form_part()
     {
-        $this->load->view('wms/vtransfer_part');
+        $todiswh = '';
+        $rs = $this->MSTLOCG_mod->selectall_where_CODE_in(['ENGEQUIP',
+            'ENGLINEEQUIP',
+            'MFG1EQUIP',
+            'MFG2EQUIP',
+            'PPICEQUIP',
+            'PRCSCREQUIP',
+            'PSIEQUIP',
+            'QAEQUIP']);
+        foreach ($rs as $r) {
+            $todiswh .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . ' (' . $r['MSTLOCG_ID'] . ')</option>';
+        }
+        $data['lwh'] = $todiswh;
+        $this->load->view('wms/vtransfer_part', $data);
     }
 
-    function form_FG()
+    public function form_FG()
     {
         $this->load->view('wms/vtransfer_FG');
+    }
+
+    public function saveDraft()
+    {
+        # Format Nomor Dokumen
+        # WTRF-YYM0000
+        header('Content-Type: application/json');
+        $this->checkSession();
+        $CurrentDateTime = date('Y-m-d H:i:s');
+        $doc = $this->input->post('doc');
+        $docDate = $this->input->post('docDate');
+        $frLoc = $this->input->post('frLoc');
+        $toLoc = $this->input->post('toLoc');
+        $LineID = $this->input->post('LineID');
+        $LineItemCode = $this->input->post('LineItemCode');
+        $LineItemQty = $this->input->post('LineItemQty');
+        $TotalRows = is_array($LineItemCode) ? count($LineItemCode) : 0;
+        $RSOK = [];
+        $RSResume = [];
+        $Array_docDate = explode("-", $docDate);
+        $MonthIssue = $Array_docDate[1];
+        $YearIssue = $Array_docDate[0];
+        $RSStock = [];
+        $RSStockUnreceive = [];
+        if (strlen($doc) === 0) {
+            for ($i = 0; $i < $TotalRows; $i++) {
+                $isFound = false;
+                foreach ($RSResume as &$r) {
+                    if ($r['ITEMCD'] === $LineItemCode[$i]) {
+                        $r['ITEMCD'] += $LineItemQty[$i];
+                    }
+                }
+                unset($r);
+
+                if (!$isFound) {
+                    $RSResume[] = ['ITEMCD' => $LineItemCode[$i], 'ITEMQT' => $LineItemQty[$i]];
+                }
+            }
+
+            # periksa stok
+            $RSStock = !empty($LineItemCode) ? $this->ITH_mod->selectStockWhereItemIn($LineItemCode, $frLoc) : [];
+            $RSStockUnreceive = $this->TRF_mod->selectStockUnReceive($LineItemCode);
+            if (!empty($RSStock)) {
+                # jadikan qty draft sebagai pengurang stock
+                foreach ($RSStockUnreceive as &$r) {
+                    foreach ($RSStock as &$n) {
+                        if ($r['TRFD_ITEMCD'] === $n['ITH_ITMCD'] && $r['DQT'] > 0) {
+                            $n['SQT'] -= $r['DQT'];
+                            $r['DQT'] = 0;
+                        }
+                    }
+                    unset($n);
+                }
+                unset($r);
+            }
+
+            $isStockEnough = true;
+            foreach ($RSResume as $r) {
+                foreach ($RSStock as $s) {
+                    if ($r['ITEMCD'] === $s['ITH_ITMCD'] && $s['SQT'] < $r['ITEMQT']) {
+                        $isStockEnough = false;
+                        $response[] = ['cd' => '0', 'msg' => 'Stock is not enough for ' . $s['ITH_ITMCD']];
+                    }
+                }
+                if (!$isStockEnough) {
+                    break;
+                }
+            }
+            if ($isStockEnough) {
+                # buat nomor transaksi
+                $RSLOrder = $this->TRF_mod->selectLastOrder($MonthIssue, $YearIssue);
+                $LOrder = 0;
+                $NewDocument = '';
+                foreach ($RSLOrder as $r) {
+                    $_year = date('y');
+                    $_month = date('m') * 1;
+                    $_monthDisplay = '';
+                    $_newOrder = $r->LORDER + 1;
+                    $_newOrderDisplay = substr('0000' . $_newOrder, -4);
+                    $LOrder = $r->LORDER + 1;
+                    switch ($_month) {
+                        case 10:
+                            $_monthDisplay = 'X';
+                            break;
+                        case 11:
+                            $_monthDisplay = 'Y';
+                            break;
+                        case 12:
+                            $_monthDisplay = 'Z';
+                            break;
+                        default:
+                            $_monthDisplay = $_month;
+                    }
+                    $NewDocument = 'WTRF-' . $_year . $_monthDisplay . $_newOrderDisplay;
+                }
+
+                # simpan Header
+                $TobeSaved = [
+                    'TRFH_DOC' => $NewDocument,
+                    'TRFH_CREATED_DT' => $CurrentDateTime,
+                    'TRFH_CREATED_BY' => $this->session->userdata('nama'),
+                    'TRFH_ISSUE_DT' => $docDate,
+                    'TRFH_LOC_FR' => $frLoc,
+                    'TRFH_LOC_TO' => $toLoc,
+                    'TRFH_ORDER' => $LOrder,
+                ];
+                $AffectedRows = $this->TRF_mod->insert($TobeSaved);
+                if ($AffectedRows) {
+                    $TobeSaved_d = [];
+                    for ($i = 0; $i < $TotalRows; $i++) {
+                        $TobeSaved_d[] = [
+                            'TRFD_DOC' => $NewDocument,
+                            'TRFD_ITEMCD' => $LineItemCode[$i],
+                            'TRFD_QTY' => $LineItemQty[$i],
+                            'TRFD_CREATED_BY' => $this->session->userdata('nama'),
+                            'TRFD_CREATED_DT' => $CurrentDateTime,
+                        ];
+                    }
+                    if (!empty($TobeSaved_d)) {
+                        # simpan Detail
+                        $this->TRF_mod->insertb($TobeSaved_d);
+                        $response[] = ['cd' => '1', 'msg' => 'OK', 'reff' => $NewDocument];
+                        $RSOK = $this->TRF_mod->selectDetailWhere(['TRFD_DOC' => $NewDocument]);
+                    }
+                } else {
+                    $response[] = ['cd' => '0', 'msg' => 'Could not save Header file'];
+                }
+            }
+        } else {
+            $response[] = ['cd' => '0', 'msg' => 'something wrong happen, please refresh browser'];
+        }
+        die(json_encode(['status' => $response, 'data' => $RSOK, '$RSStock' => $RSStock
+            , '$RSStockUnreceive' => $RSStockUnreceive])
+        );
+    }
+
+    public function updateDraft()
+    {
+        header('Content-Type: application/json');
+        $this->checkSession();
+        $CurrentDateTime = date('Y-m-d H:i:s');
+        $doc = $this->input->post('doc');
+        $docDate = $this->input->post('docDate');
+        $frLoc = $this->input->post('frLoc');
+        $toLoc = $this->input->post('toLoc');
+        $LineID = $this->input->post('LineID');
+        $LineItemCode = $this->input->post('LineItemCode');
+        $LineItemQty = $this->input->post('LineItemQty');
+        $RSStock = !empty($LineItemCode) ? $this->ITH_mod->selectStockWhereItemIn([$LineItemCode], $frLoc) : [];
+        $AffectedRows = 0;
+        foreach ($RSStock as $r) {
+            if ($r['SQT'] >= $LineItemQty) {
+                $AffectedRows += $this->TRF_mod->updatebyId(['TRFD_LINE' => $LineID]
+                    , ['TRFD_ITEMCD' => $LineItemCode, 'TRFD_QTY' => $LineItemQty, 'TRFD_LAST_UPDATED_BY' => $this->session->userdata('nama'), 'TRFD_UPDATED_DT' => $CurrentDateTime]);
+            }
+        }
+        $response[] = $AffectedRows ? ['cd' => '1', 'msg' => 'Updated'] : ['cd' => '0', 'msg' => 'Could not update'];
+        $this->TRF_mod->updateHeaderWhere(['TRFH_DOC' => $doc]
+            , ['TRFH_ISSUE_DT' => $docDate, 'TRFH_LOC_FR' => $frLoc, 'TRFH_LOC_TO' => $toLoc]);
+        $RSOK = $this->TRF_mod->selectDetailWhere(['TRFD_DOC' => $doc]);
+        die(json_encode(['status' => $response, 'data' => $RSOK]));
+    }
+
+    public function removeDraft()
+    {
+        header('Content-Type: application/json');
+        $this->checkSession();
+        $doc = $this->input->post('doc');
+        $lineId = $this->input->post('lineId');
+        $respon = [];
+        $AffectedRows = $this->TRF_mod->updatebyId(['TRFD_LINE' => $lineId, 'TRFD_DOC' => $doc],
+            ['TRFD_DELETED_BY' => $this->session->userdata('nama'), 'TRFD_DELETED_DT' => date('Y-m-d H:i:s')]);
+        $respon[] = $AffectedRows ? ['cd' => '1', 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'sorry'];
+        die(json_encode(['status' => $respon]));
+    }
+
+    public function checkSession()
+    {
+        $myar = [];
+        if ($this->session->userdata('status') != "login") {
+            $myar[] = ["cd" => "0", "msg" => "Session is expired please reload page"];
+            exit(json_encode(['status' => $myar]));
+        }
     }
 }
