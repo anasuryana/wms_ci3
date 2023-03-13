@@ -126,7 +126,7 @@ class PO_mod extends CI_Model
         $this->db->join("(select MSUP_SUPCD,rtrim(MAX(MSUP_SUPNM)) MSUP_SUPNM,MAX(MSUP_SUPCR) MSUP_SUPCR FROM v_supplier_customer_union GROUP BY MSUP_SUPCD) V1", "PO_SUPCD=MSUP_SUPCD", "left");
         $this->db->join($this->TABLENAME0, "PO_NO=PO0_NO", "LEFT");
         $this->db->like($plike)->where("PO_ISSUDT>=", $pdate0)->where("PO_ISSUDT<=", $pdate1);
-        $this->db->group_by("PO_NO,PO_RMRK,PO_PPH,PO_VAT,PO_SUPCD,MSUP_SUPNM,MSUP_SUPCR,PO_RQSTBY,PO_PAYTERM,PO_REQDT,PO_ISSUDT,PO_SHPDLV,PO_SHPCOST");
+        $this->db->group_by("PO_NO,PO_RMRK,PO_PPH,PO_VAT,PO_SUPCD,MSUP_SUPNM,MSUP_SUPCR,PO_RQSTBY,PO_PAYTERM,PO_REQDT,PO_ISSUDT,PO_SHPDLV,PO_SHPCOST,PO0_ISCUSTOMS");
         $this->db->order_by("PO_ISSUDT");
         $query = $this->db->get();
         return $query->result_array();
