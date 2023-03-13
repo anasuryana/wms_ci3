@@ -41,7 +41,6 @@ class Usr_mod extends CI_Model
         return $query->result_array();
     }
 
-
     public function cek_pw($where)
     {
         $query = $this->db->get_where($this->TABLENAME, $where);
@@ -55,9 +54,9 @@ class Usr_mod extends CI_Model
         return $this->db->affected_rows();
     }
 
-    function selectunapproved()
+    public function selectunapproved()
     {
-        $qry  = "select * from " . $this->TABLENAME . " where coalesce(MSTEMP_ACTSTS,0)=0";
+        $qry = "select * from " . $this->TABLENAME . " where coalesce(MSTEMP_ACTSTS,0)=0";
         $query = $this->db->query($qry);
         return $query->result_array();
     }
@@ -81,7 +80,7 @@ class Usr_mod extends CI_Model
 
     public function selectNameMany($pwhere)
     {
-        $qry = "select MSTEMP_ID,concat(MSTEMP_FNM, ' ' , MSTEMP_LNM) NAMA from " . $this->TABLENAME . " 
+        $qry = "select MSTEMP_ID,concat(MSTEMP_FNM, ' ' , MSTEMP_LNM) NAMA from " . $this->TABLENAME . "
         where MSTEMP_ID in (" . $pwhere . ")";
         $query = $this->db->query($qry);
         return $query->result_array();
@@ -114,6 +113,17 @@ class Usr_mod extends CI_Model
         $this->db->from("VPSI_USERS_UNREGISTERED");
         $this->db->order_by("user_doj DESC,user_nicename");
         $this->db->like($like);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function select_registered($like)
+    {
+        $this->db->limit(100);
+        $this->db->select("MSTEMP_ID ID, CONCAT(MSTEMP_FNM, ' ' ,MSTEMP_LNM) user_nicename");
+        $this->db->from($this->TABLENAME);
+        $this->db->like($like);
+        $this->db->where('MSTEMP_STS', '1');
         $query = $this->db->get();
         return $query->result_array();
     }

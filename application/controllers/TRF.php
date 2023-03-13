@@ -12,6 +12,7 @@ class TRF extends CI_Controller
         $this->load->model('MSTLOCG_mod');
         $this->load->model('SERD_mod');
         $this->load->model('TRF_mod');
+        $this->load->model('TRFSET_mod');
         date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
@@ -40,6 +41,11 @@ class TRF extends CI_Controller
     public function form_FG()
     {
         $this->load->view('wms/vtransfer_FG');
+    }
+
+    public function form_setting()
+    {
+        $this->load->view('wms/vtrf_set');
     }
 
     public function saveDraft()
@@ -223,5 +229,57 @@ class TRF extends CI_Controller
             $myar[] = ["cd" => "0", "msg" => "Session is expired please reload page"];
             exit(json_encode(['status' => $myar]));
         }
+    }
+
+    public function ApprovalList()
+    {
+        header('Content-Type: application/json');
+        $warehouse = $this->input->get('warehouse');
+        $RS = $this->TRFSET_mod->selectDetailWhere(['TRFSET_WH' => $warehouse]);
+        die(json_encode(['data' => $RS]));
+    }
+
+    public function ApprovalSet()
+    {
+        header('Content-Type: application/json');
+        $CurrentDateTime = date('Y-m-d H:i:s');
+        $id = $this->input->post('id');
+        $wh = $this->input->post('wh');
+        $RS = $this->TRFSET_mod->selectDetailWhere(['TRFSET_APPROVER' => $id, 'TRFSET_WH' => $wh]);
+        $respon = [];
+        if (empty($RS)) {
+            $RSTobeSaved = [
+                'TRFSET_WH' => $wh,
+                'TRFSET_APPROVER' => $id,
+                'TRFSET_CREATED_BY' => $this->session->userdata('nama'),
+                'TRFSET_CREATED_DT' => $CurrentDateTime,
+            ];
+
+            $AffectedRows = $this->TRFSET_mod->insert($RSTobeSaved);
+            if ($AffectedRows) {
+                $respon[] = ['cd' => '1', 'msg' => 'Saved'];
+            } else {
+                $respon[] = ['cd' => '0', 'msg' => 'Could not be saved'];
+            }
+        } else {
+            $respon[] = ['cd' => '0', 'msg' => 'Could not be saved.'];
+        }
+        $RSCurrentPIC = $this->TRFSET_mod->selectDetailWhere(['TRFSET_WH' => $wh]);
+        die(json_encode(['status' => $respon, 'data' => $RSCurrentPIC]));
+    }
+
+    public function revoke()
+    {
+        header('Content-Type: application/json');
+        $this->checkSession();
+        $id = $this->input->post('id');
+        $wh = $this->input->post('wh');
+        $CurrentDateTime = date('Y-m-d H:i:s');
+        $AffectedRows = $this->TRFSET_mod->updatebyId(['TRFSET_DELETED_BY' => $this->session->userdata('nama'), 'TRFSET_DELETED_DT' => $CurrentDateTime],
+            ['TRFSET_LINE' => $id]);
+        $respon = [];
+        $respon[] = $AffectedRows ? ['cd' => '1', 'msg' => 'OK'] : ['cd' => '1', 'msg' => 'OK'];
+        $RSCurrentPIC = $this->TRFSET_mod->selectDetailWhere(['TRFSET_WH' => $wh]);
+        die(json_encode(['data' => $RSCurrentPIC, 'status' => $respon]));
     }
 }

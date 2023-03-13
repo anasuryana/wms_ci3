@@ -221,6 +221,16 @@ class User extends CI_Controller {
         die(json_encode(['data' => $rs]));
     }
 
+    function search_registered()
+    {
+        header('Content-Type: application/json');
+        $searchby = $this->input->get('searchby');
+        $search = $this->input->get('search');
+        $like = $searchby === 'id' ? ['MSTEMP_ID' => $search] : ["CONCAT(MSTEMP_FNM, ' ' ,MSTEMP_LNM)" => $search];
+        $rs = $this->Usr_mod->select_registered($like);
+        die(json_encode(['data' => $rs]));
+    }
+
     function set_new_password()
     {        
         header('Content-Type: application/json');
