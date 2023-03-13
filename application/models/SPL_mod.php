@@ -3,7 +3,7 @@
 class SPL_mod extends CI_Model
 {
     private $TABLENAME = "SPL_TBL";
-    private $SPECIALWO = ['22-5A09-217724501', '22-6A27-F65929-09V', '22-ZB28-219236900'];
+    private $SPECIALWO = ['22-5A09-217724501', '22-6A27-F65929-09V', '22-ZB28-219236900','21-XA08-221093101ES'];
     public function __construct()
     {
         $this->load->database();
@@ -625,7 +625,7 @@ class SPL_mod extends CI_Model
 
     public function select_ppsn2($par)
     {
-        $this->db->select("PPSN2_DATANO,PPSN2_MC,PPSN2_MCZ,PPSN2_FR,PPSN2_SUBPN,PPSN2_REQQT,PPSN2_PROCD
+        $this->db->select("PPSN2_DATANO,PPSN2_MC,PPSN2_MCZ,PPSN2_FR,UPPER(RTRIM(PPSN2_SUBPN)) PPSN2_SUBPN,PPSN2_REQQT,PPSN2_PROCD
         ,PPSN2_PACKSZ1,PPSN2_PICKQT1
         ,PPSN2_PACKSZ2,PPSN2_PICKQT2
         ,PPSN2_PACKSZ3,PPSN2_PICKQT3
@@ -1088,7 +1088,7 @@ class SPL_mod extends CI_Model
 
     public function select_ppsn2_byArrayOf_WO_and_part($pWO, $pPart)
     {
-        $qry = "SELECT rtrim(PPSN2_PSNNO) PSN, RTRIM(PPSN2_SUBPN) SUBPN,(SUM(PPSN2_ACTQT)-SUM(PPSN2_REQQT)) LOGRTNQT  FROM XPPSN2 WHERE
+        $qry = "SELECT rtrim(PPSN2_PSNNO) PSN, UPPER(RTRIM(PPSN2_SUBPN)) SUBPN,(SUM(PPSN2_ACTQT)-SUM(PPSN2_REQQT)) LOGRTNQT  FROM XPPSN2 WHERE
         PPSN2_PSNNO IN (
         SELECT PPSN1_PSNNO FROM XPPSN1 WHERE PPSN1_WONO IN ($pWO)
         ) AND PPSN2_SUBPN IN ($pPart)
