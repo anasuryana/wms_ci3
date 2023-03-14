@@ -134,6 +134,8 @@
     </div>
 </div>
 <script>
+    
+    ith_colorize(ith_cmb_wh)
     var ith_a_BG = [];
     var ith_a_BG_NM = [];
     function ith_selectBG_eC(e){

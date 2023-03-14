@@ -27,12 +27,12 @@
                             <span class="input-group-text">Warehouse</span>
                             <select id="FOOTER_MODWH_selwh" class="form-select">
                                 <?php
-                                $todis = '';
-                                foreach ($lwh as $r) {
-                                    $todis .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . '</option>';
-                                }
-                                echo $todis;
-                                ?>
+$todis = '';
+foreach ($lwh as $r) {
+    $todis .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . '</option>';
+}
+echo $todis;
+?>
                             </select>
                         </div>
                     </div>
@@ -63,12 +63,12 @@
                             <span class="input-group-text">Warehouse</span>
                             <select id="FOOTER_MODWHFG_selwh" class="form-select">
                                 <?php
-                                $todis = '';
-                                foreach ($lwhfg as $r) {
-                                    $todis .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . '</option>';
-                                }
-                                echo $todis;
-                                ?>
+$todis = '';
+foreach ($lwhfg as $r) {
+    $todis .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . '</option>';
+}
+echo $todis;
+?>
                             </select>
                         </div>
                     </div>
@@ -89,13 +89,13 @@
     function isNumeric(n) {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
-    var wms_usergroupid = '<?= $wms_usergroup_id; ?>';
+    var wms_usergroupid = '<?=$wms_usergroup_id;?>';
     var wms_scan_pipe = setInterval(wms_check_unscan_wh, 15000);
 
     function wms_check_unscan_wh() {
         if (wms_usergroupid == 'INC') {
             $.ajax({
-                url: "<?= base_url('ITH/get_unscanned_FG_v1') ?>",
+                url: "<?=base_url('ITH/get_unscanned_FG_v1')?>",
                 dataType: "JSON",
                 success: function(response) {
                     if (response.status[0].cd != '0') {
@@ -116,7 +116,7 @@
     }
     var indexnya = 0;
     const devNode = $('#mmenu').tree({
-        url: '<?= base_url("menu") ?>',
+        url: '<?=base_url("menu")?>',
         animate: true,
         lines: true,
         onClick: function(node) {
@@ -162,11 +162,17 @@
                 field: 'id',
                 value: 'CL'
             })
+
+            $('#tt').tabs('add', {
+                title: 'Dashboard',
+                href: '<?=base_url('Home/form_dashboard')?>',
+                closable: false
+            });
         }
     })
 
     function addT(Judul, alamat) {
-        $.post("<?= base_url('Pages/l') ?>", {
+        $.post("<?=base_url('Pages/l')?>", {
                 inmenu: Judul,
                 inurl: alamat
             },
@@ -178,10 +184,12 @@
         indexnya++;
         $('#tt').tabs('add', {
             title: Judul,
-            href: '<?php echo base_url(); ?>' + alamat,
+            href: '<?=base_url()?>' + alamat,
             closable: true
         });
     }
+
+
 
     function showinfoofus() {
         let mymodal = new bootstrap.Modal(document.getElementById("FOOTER_MODWH"), {
@@ -311,9 +319,17 @@
             range.select()
         }
     }
+    function ith_colorize(pcontainer){
+        let ithwh = pcontainer.getElementsByTagName('option')
+        Array.from(ithwh).forEach(function(elem) {
+            if(elem.value.includes('EQUIP')){
+                elem.style.cssText = 'background-color:#0072B5;color:white'
+            }
+        })
+    }
 </script>
-<script type="text/javascript" src="<?= base_url("assets/js/popper.min.js") ?>"></script>
-<script type="text/javascript" src="<?= base_url("assets/bootstrap/js/bootstrap.min.js") ?>"></script>
+<script type="text/javascript" src="<?=base_url("assets/js/popper.min.js")?>"></script>
+<script type="text/javascript" src="<?=base_url("assets/bootstrap/js/bootstrap.min.js")?>"></script>
 </body>
 
 </html>

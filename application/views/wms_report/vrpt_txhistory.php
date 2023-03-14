@@ -132,6 +132,7 @@
     </div>
 </div>
 <script>
+    ith_colorize(rhistory_cmb_wh)
     $("#rhistory_divku").css('height', $(window).height() -
         document.getElementById('rhistory_stack1').offsetHeight -
         document.getElementById('rhistory_stack2').offsetHeight -
