@@ -1,28 +1,28 @@
 <div style="padding: 10px">
-    <div class="container-fluid">        
+    <div class="container-fluid">
         <div class="row" id="clsinv_stack1">
             <div class="col-md-7 mb-1">
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text" >Warehouse</span> 
+                    <span class="input-group-text" >Warehouse</span>
                     <select class="form-select" id="clsinv_wh">
                         <option value="-">Choose</option>
-                        <?php 
-                            $dwh = '';
-                            foreach($lwh as $r){
-                                $dwh .= "<option value='$r[MSTLOCG_ID]'>$r[MSTLOCG_NM] ($r[MSTLOCG_ID])</option>";
-                            }
-                            echo $dwh;
-                        ?>
+                        <?php
+$dwh = '';
+foreach ($lwh as $r) {
+    $dwh .= "<option value='$r[MSTLOCG_ID]'>$r[MSTLOCG_NM] ($r[MSTLOCG_ID])</option>";
+}
+echo $dwh;
+?>
                     </select>
                 </div>
             </div>
             <div class="col-md-5 mb-1">
-                <div class="input-group input-group-sm mb-1">                    
+                <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">Date</label>
                     <input type="text" class="form-control" id="clsinv_date" readonly>
                 </div>
             </div>
-        </div> 
+        </div>
         <div class="row" id="clsinv_stack2">
             <div class="col-md-6 mb-1">
                 <div class="btn-group btn-group-sm">
@@ -48,28 +48,29 @@
                                 <th class="text-end text-danger" id="clsinv_ttl_discrepancy"></th>
                             </tr>
                             <tr>
-                                <th rowspan="2" class="align-middle">No</th>                                
+                                <th rowspan="2" class="align-middle">No</th>
                                 <th colspan="2" class="align-middle text-center">Item Id</th>
-                                <th rowspan="2" class="align-middle">Item Name</th>                                
+                                <th rowspan="2" class="align-middle">Item Name</th>
                                 <th colspan="3" class="text-center">QTY</th>
                             </tr>
                             <tr>
                                 <th class="text-center">WMS</th>
-                                <th class="text-center">MEGA</th>                                
+                                <th class="text-center">MEGA</th>
                                 <th class="text-end">WMS</th>
                                 <th class="text-end">MEGA</th>
                                 <th class="text-end">Discrepancy</th>
                             </tr>
                         </thead>
-                        <tbody>                        
+                        <tbody>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>       	
-    </div>			
+        </div>
+    </div>
 </div>
 <script>
+    ith_colorize(clsinv_wh)
     function clsinv_btn_save_eC() {
         const whcode = document.getElementById('clsinv_wh')
         const mdate = document.getElementById('clsinv_date')
@@ -138,7 +139,7 @@
             return
         }
         const mpin = prompt("PIN")
-        if ( mpin !== '') {            
+        if ( mpin !== '') {
             document.getElementById('clsinv_tbl_lblinfo').innerHTML = 'Please wait...'
             $.ajax({
                 type: "POST",
@@ -166,9 +167,9 @@
             alertify.message('PIN is required')
         }
     }
-    $("#clsinv_divku").css('height', $(window).height()   
-    -document.getElementById('clsinv_stack1').offsetHeight 
-    -document.getElementById('clsinv_stack2').offsetHeight    
+    $("#clsinv_divku").css('height', $(window).height()
+    -document.getElementById('clsinv_stack1').offsetHeight
+    -document.getElementById('clsinv_stack2').offsetHeight
     -100);
     $("#clsinv_date").datepicker({
         format: 'yyyy-mm-dd',
@@ -178,7 +179,7 @@
         document.getElementById('clsinv_btn_gen').disabled = true
         const mwh = document.getElementById('clsinv_wh').value;
         const mdate = document.getElementById('clsinv_date');
-        
+
         if(mwh=='-'){
             document.getElementById('clsinv_wh').focus();
             alertify.message('Please select warehouse first !');
@@ -204,15 +205,15 @@
                     let myfrag = document.createDocumentFragment();
                     let mtabel = document.getElementById("clsinv_tbl");
                     let cln = mtabel.cloneNode(true);
-                    myfrag.appendChild(cln);                    
-                    let tabell = myfrag.getElementById("clsinv_tbl");                    
+                    myfrag.appendChild(cln);
+                    let tabell = myfrag.getElementById("clsinv_tbl");
                     let tableku2 = tabell.getElementsByTagName("tbody")[0];
-                    
+
                     let newrow, newcell, newText;
                     tableku2.innerHTML='';
                     let tominqty = 0;
                     let tempqty = 0;
-                    let todisqty = 0;  
+                    let todisqty = 0;
                     let wmsqty, megaqty, balqty
                     let ttlwms =0
                     let ttlmega = 0
@@ -225,28 +226,28 @@
                         ttlwms += wmsqty
                         ttlmega += megaqty
                         ttlbal += balqty
-                        
+
                         newrow = tableku2.insertRow(-1);
                         newcell = newrow.insertCell(0);
                         newText = document.createTextNode((i+1));
-                        newcell.appendChild(newText);                 
-                        newcell = newrow.insertCell(1);                        
+                        newcell.appendChild(newText);
+                        newcell = newrow.insertCell(1);
                         newcell.innerHTML = response.data[i].ITH_ITMCD
 
-                        newcell = newrow.insertCell(2)        
+                        newcell = newrow.insertCell(2)
                         newcell.innerHTML = response.data[i].ITRN_ITMCD
 
-                        newcell = newrow.insertCell(3)                    
+                        newcell = newrow.insertCell(3)
                         newcell.innerHTML = response.data[i].MITM_ITMD1 ? response.data[i].MITM_ITMD1 : response.data[i].MGMITM_ITMD1
-                        
+
                         newcell = newrow.insertCell(4)
                         newcell.innerHTML = numeral(response.data[i].STOCKQTY).format('0,0.00')
                         newcell.style.cssText = 'text-align: right'
                         newcell.title = "WMS"
 
-                        newcell = newrow.insertCell(5)  
+                        newcell = newrow.insertCell(5)
                         newcell.innerHTML = numeral(response.data[i].MGAQTY).format('0,0.00')
-                        newcell.style.cssText = 'text-align: right'  
+                        newcell.style.cssText = 'text-align: right'
                         newcell.title = "MEGA"
 
                         newcell = newrow.insertCell(6)
