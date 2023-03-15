@@ -22,7 +22,7 @@ class TRF extends CI_Controller
 
     public function form_part()
     {
-        $todiswh = '';
+        $todiswh = $FromWH = '';
         $rs = $this->MSTLOCG_mod->selectall_where_CODE_in(['ENGEQUIP',
             'ENGLINEEQUIP',
             'MFG1EQUIP',
@@ -34,7 +34,13 @@ class TRF extends CI_Controller
         foreach ($rs as $r) {
             $todiswh .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . ' (' . $r['MSTLOCG_ID'] . ')</option>';
         }
+        $rsFromWH = $this->TRFSET_mod->selectColumnWhere(['MSTLOCG_ID', 'MSTLOCG_NM'], ['TRFSET_APPROVER' => $this->session->userdata('nama')]);
+        foreach ($rsFromWH as $r) {
+            $FromWH .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . ' (' . $r['MSTLOCG_ID'] . ')</option>';
+        }
         $data['lwh'] = $todiswh;
+        $data['fwh'] = $FromWH;
+
         $this->load->view('wms/vtransfer_part', $data);
     }
 

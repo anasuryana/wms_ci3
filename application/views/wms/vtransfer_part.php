@@ -52,7 +52,7 @@
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">From Location</label>
                     <select id="trfnonref_fr_loc" class="form-select" onchange="document.getElementById('trfnonref_to_loc').focus()">
-                    <?=$lwh?>
+                    <?=$fwh?>
                     </select>
                 </div>
             </div>
