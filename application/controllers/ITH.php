@@ -1441,7 +1441,7 @@ class ITH extends CI_Controller
     public function gettxhistory_parent()
     {
         header('Content-Type: application/json');
-        $fg_wh = ['AFWH3', 'AFWH3RT', 'NFWH4', 'NFWH4RT', 'AWIP1', 'QAFG', 'AFWH9SC','NFWH9SC'];
+        $fg_wh = ['AFWH3', 'AFWH3RT', 'NFWH4', 'NFWH4RT', 'AWIP1', 'QAFG', 'AFWH9SC', 'NFWH9SC'];
         $cwh = $this->input->get('inwh');
         $citemcd = trim($this->input->get('initemcode'));
         $cdate1 = $this->input->get('indate1');
@@ -1643,7 +1643,7 @@ class ITH extends CI_Controller
             $rs = $this->ITH_mod->select_txhistory($cwh, $citemcd, $cdate1, $cdate2);
         } else {
             $rsbef = $this->ITH_mod->selectTXHistoryBeforeByItemDescription($cwh, $citemcd, $cdate1);
-            $rs = $this->ITH_mod->selectTXHistoryByDescription($cwh, $citemcd, $cdate1, $cdate2);            
+            $rs = $this->ITH_mod->selectTXHistoryByDescription($cwh, $citemcd, $cdate1, $cdate2);
         }
         $rstoret = [];
         $myar = [];
@@ -1830,7 +1830,7 @@ class ITH extends CI_Controller
     public function transaction()
     {
         header('Content-Type: application/json');
-        $fg_wh = ['AFWH3', 'AFWH3RT', 'NFWH4', 'NFWH4RT', 'QAFG', 'AWIP1', 'AFWH9SC','NFWH9SC'];
+        $fg_wh = ['AFWH3', 'AFWH3RT', 'NFWH4', 'NFWH4RT', 'QAFG', 'AWIP1', 'AFWH9SC', 'NFWH9SC'];
         $date = $this->input->get('date');
         $item = $this->input->get('item');
         $location = $this->input->get('location');
@@ -2640,13 +2640,16 @@ class ITH extends CI_Controller
             $myar = ["cd" => "0", "msg" => "Session is expired please reload page"];
             die(json_encode(['status' => $myar]));
         }
-        $whException = ['AFWH3', 'AWIP1', 'PSIEQUIP','NFWH4RT'];
+        $whException = ['AFWH3', 'AWIP1', 'PSIEQUIP'];
         $date = $this->input->post('date');
         $location = $this->input->post('location');
         $adjtype = $this->input->post('adjtype');
         $form_prefix = $adjtype === 'P' ? 'ADJ-I-' : 'ADJ-O-';
         $usrid = $this->session->userdata('nama');
         $current_datetime = date('Y-m-d H:i:s');
+        if ($location === 'NFWH4RT' && substr($date, 0, 4) !== '2021') {
+            $whException[] = 'NFWH4RT';
+        }
         if (!in_array($location, $whException)) {
             $dateObj = new DateTime($date);
             $dateObj->modify('+1 day');
