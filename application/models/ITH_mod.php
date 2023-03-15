@@ -1592,17 +1592,44 @@ class ITH_mod extends CI_Model
 
     public function select_txhistory_parent($pwh, $passy, $pdt1, $pdt2)
     {
-        $qry = "select ISNULL(ITRN_ITMCD,ITH_ITMCD) ITRN_ITMCD,ISNULL(ISUDT,ITH_DATEC) ISUDT ,ISNULL(MGAQTY,0) MGAQTY,WQT from
-        (SELECT  RTRIM(ITRN_ITMCD) ITRN_ITMCD,CONVERT(DATE,ITRN_ISUDT) ISUDT,SUM(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) MGAQTY
-                                FROM XITRN_TBL
-                                WHERE (ITRN_ISUDT BETWEEN '$pdt1' AND '$pdt2') AND ITRN_LOCCD='$pwh' AND ITRN_ITMCD=?
-                                GROUP BY ITRN_ITMCD,ITRN_ISUDT) VMEGA
-        FULL JOIN
-        (
-        SELECT ITH_ITMCD,ITH_DATEC,SUM(ITH_QTY) WQT FROM v_ith_tblc WHERE (ITH_DATEC BETWEEN '$pdt1' AND '$pdt2') AND ITH_WH='$pwh' AND ITH_ITMCD=?
-        GROUP BY ITH_ITMCD,ITH_DATEC
-        ) VWMS ON ITRN_ITMCD=ITH_ITMCD AND ISUDT=ITH_DATEC
-        ORDER BY ISUDT";
+        $qry = "SELECT ISNULL(ITRN_ITMCD, ITH_ITMCD) ITRN_ITMCD
+                    ,ISNULL(ISUDT, ITH_DATEC) ISUDT
+                    ,ISNULL(MGAQTY, 0) MGAQTY
+                    ,WQT
+                FROM (
+                    SELECT UPPER(RTRIM(ITRN_ITMCD)) ITRN_ITMCD
+                        ,CONVERT(DATE, ITRN_ISUDT) ISUDT
+                        ,SUM(CASE
+                                WHEN ITRN_IOFLG = '1'
+                                    THEN ITRN_TRNQT
+                                ELSE - 1 * ITRN_TRNQT
+                                END) MGAQTY
+                    FROM XITRN_TBL
+                    WHERE (
+                            ITRN_ISUDT BETWEEN '$pdt1'
+                                AND '$pdt2'
+                            )
+                        AND ITRN_LOCCD = '$pwh'
+                        AND ITRN_ITMCD = ?
+                    GROUP BY ITRN_ITMCD
+                        ,ITRN_ISUDT
+                    ) VMEGA
+                FULL JOIN (
+                    SELECT UPPER(RTRIM(ITH_ITMCD)) ITH_ITMCD
+                        ,ITH_DATEC
+                        ,SUM(ITH_QTY) WQT
+                    FROM v_ith_tblc
+                    WHERE (
+                            ITH_DATEC BETWEEN '$pdt1'
+                                AND '$pdt2'
+                            )
+                        AND ITH_WH = '$pwh'
+                        AND ITH_ITMCD = ?
+                    GROUP BY ITH_ITMCD
+                        ,ITH_DATEC
+                    ) VWMS ON ITRN_ITMCD = ITH_ITMCD
+                    AND ISUDT = ITH_DATEC
+                ORDER BY ISUDT";
         $query = $this->db->query($qry, [$passy, $passy]);
         return $query->result_array();
     }
@@ -1674,7 +1701,8 @@ class ITH_mod extends CI_Model
         return $query->result_array();
     }
 
-    public function selectPSIEquipment($pLike){
+    public function selectPSIEquipment($pLike)
+    {
         $this->db->select("ITH_WH
         ,RTRIM(ITH_ITMCD) ITH_ITMCD
         ,RTRIM(MITM_SPTNO) MITM_SPTNO
@@ -1683,11 +1711,11 @@ class ITH_mod extends CI_Model
         $this->db->from($this->TABLENAME);
         $this->db->join("MITM_TBL", "ITH_ITMCD = MITM_ITMCD", "LEFT");
         $this->db->where_in("ITH_WH", ['ENGEQUIP'
-		,'MFG1EQUIP'
-		,'MFG2EQUIP'
-		,'PPICEQUIP'
-		,'PSIEQUIP'
-		,'QAEQUIP']);
+            , 'MFG1EQUIP'
+            , 'MFG2EQUIP'
+            , 'PPICEQUIP'
+            , 'PSIEQUIP'
+            , 'QAEQUIP']);
         $this->db->like($pLike);
         $this->db->group_by("ITH_ITMCD,ITH_WH,MITM_SPTNO,MITM_ITMD1");
         $query = $this->db->get();
@@ -1718,7 +1746,7 @@ class ITH_mod extends CI_Model
                     AND isnull(v1.LTS_TIME, GETDATE()) = isnull(a.ITH_LUPDT, GETDATE())
                     AND a.ITH_QTY > 0
                 LEFT JOIN SER_TBL ON a.ITH_SER = SER_ID
-            
+
             ) vd where  ITH_LOC is not null for XML PATH('')
             ),1,1,'')
         ";
@@ -2111,10 +2139,10 @@ class ITH_mod extends CI_Model
         return $query->result_array();
     }
 
-    public function selectStockWhereItemIn($items,$warehouse)
+    public function selectStockWhereItemIn($items, $warehouse)
     {
         $this->db->from('v_ith_tblc');
-        $this->db->where_in("ITH_ITMCD", $items)->where("ITH_WH", $warehouse);        
+        $this->db->where_in("ITH_ITMCD", $items)->where("ITH_WH", $warehouse);
         $this->db->group_by("ITH_ITMCD");
         $this->db->select("RTRIM(ITH_ITMCD) ITH_ITMCD,SUM(ITH_QTY) SQT, SUM(ITH_QTY) BACKUP_SQT");
         $query = $this->db->get();
