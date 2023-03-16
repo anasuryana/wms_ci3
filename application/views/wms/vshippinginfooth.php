@@ -1,44 +1,44 @@
 <div style="padding: 10px" onpaste="shpfgoth_e_pastecol1(event)" tabindex="0">
 	<div class="container-fluid">
-        <div class="row">				
+        <div class="row">
             <div class="col-md-12 mb-1">
                 <div class="btn-group btn-group-sm">
-                    <button title="New" id="shpfgoth_btnnew" onclick="" class="btn btn-outline-primary" ><i class="fas fa-file"></i></button>                    
+                    <button title="New" id="shpfgoth_btnnew" onclick="" class="btn btn-outline-primary" ><i class="fas fa-file"></i></button>
                     <button title="Save" id="shpfgoth_btnsave" class="btn btn-outline-primary" ><i class="fas fa-save"></i></button>
-                    <button title="Print" id="shpfgoth_btnprnt" class="btn btn-outline-primary" ><i class="fas fa-print"></i></button>                   
+                    <button title="Print" id="shpfgoth_btnprnt" class="btn btn-outline-primary" ><i class="fas fa-print"></i></button>
                 </div>
             </div>
         </div>
         <div class="row">
             <input type="hidden" id="shpfgoth_isedit" value="n">
             <div class="col-md-3 mb-1">
-                <div class="input-group input-group-sm mb-1">                    
-                    <span class="input-group-text" title="Business Group">BG</span>                    
+                <div class="input-group input-group-sm mb-1">
+                    <span class="input-group-text" title="Business Group">BG</span>
                     <select class="form-select" id="shpfgoth_sel_bg" data-style="btn-info" onchange="shpfgoth_e_onchange_bg()">
                         <option value="-">-</option>
-                        <?php                         
-                        foreach($lbg as $r){
-                            ?>
+                        <?php
+foreach ($lbg as $r) {
+    ?>
                             <option value="<?=trim($r->MBSG_BSGRP)?>"><?=$r->MBSG_DESC?></option>
                             <?php
-                        }
-                        ?>
-                    </select>        
+}
+?>
+                    </select>
                 </div>
             </div>
             <div class="col-md-3 mb-1">
-                <div class="input-group input-group-sm mb-1">                    
-                    <span class="input-group-text" >Customer</span>                    
+                <div class="input-group input-group-sm mb-1">
+                    <span class="input-group-text" >Customer</span>
                     <select class="form-select" id="shpfgoth_sel_cus" data-style="btn-info">
-                        <option value="-">-</option>                        
-                    </select>        
+                        <option value="-">-</option>
+                    </select>
                 </div>
             </div>
             <div class="col-md-4 mb-1">
-                <div class="input-group input-group-sm mb-1">                    
-                    <span class="input-group-text" >SI Doc</span>                    
-                    <input type="text" class="form-control" id="shpfgoth_txt_doc" required value="<<AutoNumber>>" readonly>                    
-                    <button class="btn btn-primary" id="shpfgoth_btn_finddoc"><i class="fas fa-search"></i></button>                    
+                <div class="input-group input-group-sm mb-1">
+                    <span class="input-group-text" >SI Doc</span>
+                    <input type="text" class="form-control" id="shpfgoth_txt_doc" required value="<<AutoNumber>>" readonly>
+                    <button class="btn btn-primary" id="shpfgoth_btn_finddoc"><i class="fas fa-search"></i></button>
                 </div>
             </div>
             <div class="col-md-2 mb-1">
@@ -58,8 +58,8 @@
                     <button class="btn btn-primary" id="shpfgoth_btnplus"><i class="fas fa-plus"></i></button>
                     <button class="btn btn-warning" id="shpfgoth_btnmins"><i class="fas fa-minus"></i></button>
                 </div>
-            </div>           
-        </div> 
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12 mb-1">
                 <div class="table-responsive" id="shpfgoth_divku">
@@ -81,18 +81,18 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>1</td>                                
+                                <td>1</td>
                                 <td contenteditable="true"></td>
                                 <td contenteditable="true"></td>
                                 <td contenteditable="true"></td>
-                                <td contenteditable="true"></td>                            
                                 <td contenteditable="true"></td>
-                                <td contenteditable="true"></td>                                
-                                <td contenteditable="true"></td>                                
-                                <td contenteditable="true"></td>                                
-                                <td class="d-none"></td>                                
-                                <td></td>                                
-                            </tr>                   
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td class="d-none"></td>
+                                <td></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -102,31 +102,31 @@
 </div>
 <div class="modal fade" id="shpfgoth_MOD">
     <div class="modal-dialog modal-xl">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">SI List</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
                 <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="shpfgoth_txtsearch" onkeypress="shpfgoth_e_search(event)" maxlength="15" required placeholder="...">                        
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Search</span>
+                        <input type="text" class="form-control" id="shpfgoth_txtsearch" onkeypress="shpfgoth_e_search(event)" maxlength="15" required placeholder="...">
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text" >Search by</span>                        
+                        <span class="input-group-text" >Search by</span>
                         <select id="shpfgoth_itm_srchby" onchange="shpfgoth_e_fokus()" class="form-select">
                             <option value="si">SI Code</option>
-                            <option value="cs">Customer</option>                            
-                        </select>                  
+                            <option value="cs">Customer</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -176,7 +176,7 @@
                     </div>
                 </div>
             </div>
-        </div>             
+        </div>
       </div>
     </div>
 </div>
@@ -188,7 +188,7 @@
             <h4 class="modal-title">SO Plotting</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
@@ -203,7 +203,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th colspan="6" class="text-center">Outstanding SO</th>
-                                </tr>                                
+                                </tr>
                                 <tr>
                                     <th rowspan="2" class="align-middle text-center">SO</th>
                                     <th rowspan="2" class="align-middle text-center">Assy Code</th>
@@ -221,7 +221,7 @@
                         </table>
                     </div>
                 </div>
-            </div>            
+            </div>
             <div class="row">
                 <div class="col text-end mb-1">
                     <span class="badge bg-info" id="shpfgoth_tbl_plotso_info"></span>
@@ -244,11 +244,11 @@
                                     <th  class="text-center">SO</th> <!-- 0-->
                                     <th  class="d-none">so line</th> <!-- 1-->
                                     <th  class="text-center">Assy Code</th><!-- 2-->
-                                    <th  class="text-center">Price</th> <!-- 3-->                       
+                                    <th  class="text-center">Price</th> <!-- 3-->
                                     <th  class="text-center">Qty Req</th><!-- 4-->
                                     <th  class="text-center">Qty SO Plot</th><!-- 5-->
-                                    <th  class="d-none">idsi</th>       <!-- 6-->               
-                                    <th  class="d-none">idmaintbl_idx</th>       <!-- 7-->               
+                                    <th  class="d-none">idsi</th>       <!-- 6-->
+                                    <th  class="d-none">idmaintbl_idx</th>       <!-- 7-->
                                     <th  class="text-center"></th><!-- 8-->
                                 </tr>
                             </thead>
@@ -258,11 +258,11 @@
                     </div>
                 </div>
             </div>
-        </div>             
+        </div>
       </div>
     </div>
 </div>
-<script>   
+<script>
     var shpfgoth_tbllength         = 1;
     var shpfgoth_tblrowindexsel    = '';
     var shpfgoth_tblcolindexsel    = '';
@@ -273,19 +273,19 @@
         document.getElementById('shpfgmod_btnfifo').innerText = 'Please wait';
         let promise = new Promise((resolve, reject) => {
             setTimeout(() => {
-                let tabell = document.getElementById("shpfgoth_tbl");                    
+                let tabell = document.getElementById("shpfgoth_tbl");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let mrows = tableku2.getElementsByTagName("tr");
                 let ttlrows =  mrows.length;
 
-                let tabel_OSSO = document.getElementById("shpfgoth_tbosso");                    
+                let tabel_OSSO = document.getElementById("shpfgoth_tbosso");
                 let tabel_OSSO_body0 = tabel_OSSO.getElementsByTagName("tbody")[0];
-                let ttlrows_OSSO = tabel_OSSO_body0.getElementsByTagName("tr").length;        
+                let ttlrows_OSSO = tabel_OSSO_body0.getElementsByTagName("tr").length;
 
-                let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");                    
+                let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");
                 let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
                 let ttlrows_PLOT = tabel_PLOT_body0.getElementsByTagName("tr").length;
-        
+
                 if(ttlrows_PLOT>0){
                     document.getElementById('shpfgmod_btnfifo').disabled=false;
                     document.getElementById('shpfgmod_btnfifo').innerText='FIFO';
@@ -302,25 +302,25 @@
                                 }
                             }
                             if(!isfound){
-                                let newobku = {mindex : Number(tabel_PLOT_body0.rows[i].cells[7].innerText), 
+                                let newobku = {mindex : Number(tabel_PLOT_body0.rows[i].cells[7].innerText),
                                                 mqtyreq: numeral(tabel_PLOT_body0.rows[i].cells[4].innerText).value()
                                                 ,mqtysup : numeral(tabel_PLOT_body0.rows[i].cells[5].innerText).value() };
                                 ca_resumeplotted.push(newobku);
                             }
-                        }                        
-                                                
+                        }
+
                         for(let i=0;i<ttlrows; i++){
                             let isfoundplot = false;
                             for(let k in ca_resumeplotted){
                                 if(ca_resumeplotted[k].mindex==i){
-                                    let maintblqty = numeral(tableku2.rows[ca_resumeplotted[k].mindex].cells[5].innerText).value();        
+                                    let maintblqty = numeral(tableku2.rows[ca_resumeplotted[k].mindex].cells[5].innerText).value();
                                     if(maintblqty!=ca_resumeplotted[k].mqtyreq){
                                         isfoundplot=true;
                                         tableku2.rows[i].cells[10].innerText = 'not ok';
                                         tableku2.rows[i].cells[10].style.backgroundColor = 'Crimson';
                                         let isfound = false;
                                         for(let c in listre_fifo){
-                                            if(listre_fifo[c].mindex == ca_resumeplotted[k].mindex){                                    
+                                            if(listre_fifo[c].mindex == ca_resumeplotted[k].mindex){
                                                 isfound =true; break;
                                             }
                                         }
@@ -328,7 +328,7 @@
                                             let newobku = {mindex : ca_resumeplotted[k].mindex };
                                             listre_fifo.push(newobku);
                                         }
-                                    }                              
+                                    }
                                 }
                             }
                             if(!isfoundplot){
@@ -365,27 +365,27 @@
                                             tabel_OSSO_body0.rows[r].cells[4].innerText = numeral(tabel_OSSO_body0.rows[r].cells[4].innerText).value()+Number(listre_fifo_os[i].qtyret);
                                         }
                                     }
-                                }                               
+                                }
                                 let areq = [];
                                 let asup = [];
                                 for(let f in listre_fifo){
                                     for(let i=0;i<ttlrows; i++){
                                         if(listre_fifo[f].mindex==i){//tableku2.rows[i].cells[14].innerText
                                             let qty = numeral(tableku2.rows[i].cells[5].innerText).value();
-                                            let anobj = {reqindex: i, reqitem: tableku2.rows[i].cells[2].innerText, 
+                                            let anobj = {reqindex: i, reqitem: tableku2.rows[i].cells[2].innerText,
                                                         reqqty: qty, supqty : 0};
                                             areq.push(anobj);
                                             break;
                                         }
                                     }
                                 }
-                                // console.log('edit save mode before think fplot promise');                                
+                                // console.log('edit save mode before think fplot promise');
                                 shpfgoth_e_thinkplot(areq,asup);
                             }
                         } else {
                             alertify.message('nothing difference edit mode');
                         }
-                    } else {                        
+                    } else {
                         //get distinct plotted so
                         for(let i=0;i<ttlrows_PLOT; i++){
                             let isfound = false;
@@ -396,13 +396,13 @@
                                 }
                             }
                             if(!isfound){
-                                let newobku = {mindex : Number(tabel_PLOT_body0.rows[i].cells[7].innerText), 
+                                let newobku = {mindex : Number(tabel_PLOT_body0.rows[i].cells[7].innerText),
                                                 mqtyreq: numeral(tabel_PLOT_body0.rows[i].cells[4].innerText).value()
                                                 ,mqtysup : numeral(tabel_PLOT_body0.rows[i].cells[5].innerText).value() };
                                 ca_resumeplotted.push(newobku);
                             }
                         }
-                        
+
                         for(let i in ca_resumeplotted){
                             let maintblqty = numeral(tableku2.rows[ca_resumeplotted[i].mindex].cells[5].innerText).value();
                             if(maintblqty!=ca_resumeplotted[i].mqtyreq){
@@ -410,7 +410,7 @@
                                 tableku2.rows[ca_resumeplotted[i].mindex].cells[10].style.backgroundColor = 'Crimson';
                                 let isfound = false;
                                 for(let c in listre_fifo){
-                                    if(listre_fifo[c].mindex == ca_resumeplotted[i].mindex){                                    
+                                    if(listre_fifo[c].mindex == ca_resumeplotted[i].mindex){
                                         isfound =true; break;
                                     }
                                 }
@@ -457,63 +457,63 @@
                                     for(let i=0;i<ttlrows; i++){
                                         if(listre_fifo[f].mindex==i){
                                             let qty = numeral(tableku2.rows[i].cells[5].innerText).value();
-                                            let anobj = {reqindex: i, reqitem: tableku2.rows[i].cells[2].innerText, 
+                                            let anobj = {reqindex: i, reqitem: tableku2.rows[i].cells[2].innerText,
                                                         reqqty: qty, supqty : 0};
                                             areq.push(anobj);
                                             break;
                                         }
                                     }
                                 }
-                                
+
                                 shpfgoth_e_thinkplot(areq,asup);
                             }
                         } else {
                             alertify.message('Already plotted');
                         }
                     }
-                   
+
                 } else {
                     let areq = [];
                     let asup = [];
                     for(let i=0;i<ttlrows; i++){
                         let qty = numeral(tableku2.rows[i].cells[5].innerText).value();
-                        let anobj = {reqindex: i, reqitem: tableku2.rows[i].cells[2].innerText, 
+                        let anobj = {reqindex: i, reqitem: tableku2.rows[i].cells[2].innerText,
                                     reqqty: qty, supqty : 0};
                         areq.push(anobj);
-                    }                    
+                    }
                     shpfgoth_e_thinkplot(areq,asup);
-                }                
+                }
             },50);
         });
-    } 
+    }
 
     function shpfgoth_e_thinkplot(areq, asup){
-        let tabell = document.getElementById("shpfgoth_tbl");                    
+        let tabell = document.getElementById("shpfgoth_tbl");
         let tableku2 = tabell.getElementsByTagName("tbody")[0];
         let ttlrows = tableku2.getElementsByTagName("tr").length;
-        
 
-        let tabel_OSSO = document.getElementById("shpfgoth_tbosso");                    
+
+        let tabel_OSSO = document.getElementById("shpfgoth_tbosso");
         let tabel_OSSO_body0 = tabel_OSSO.getElementsByTagName("tbody")[0];
-        let ttlrows_OSSO = tabel_OSSO_body0.getElementsByTagName("tr").length;        
+        let ttlrows_OSSO = tabel_OSSO_body0.getElementsByTagName("tr").length;
 
-        let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");                    
+        let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
         let ttlrows_PLOT = tabel_PLOT_body0.getElementsByTagName("tr").length;
         for(let i in areq){
             let think1 = true;
-            let itemreq = areq[i].reqitem.trim();                           
-            let itemreqindex = areq[i].reqindex;                           
+            let itemreq = areq[i].reqitem.trim();
+            let itemreqindex = areq[i].reqindex;
             while(think1){
                 let iscontinue = false;
                 for(let u =0; u< ttlrows_OSSO; u++){
                     let itemso = tabel_OSSO_body0.rows[u].cells[1].innerText.trim();
-                    let itemsoqty = numeral(tabel_OSSO_body0.rows[u].cells[4].innerText).value();                    
-                    if(itemreq==itemso && itemsoqty>0 ){        
+                    let itemsoqty = numeral(tabel_OSSO_body0.rows[u].cells[4].innerText).value();
+                    if(itemreq==itemso && itemsoqty>0 ){
                         iscontinue = true; break;
-                    }                
+                    }
                 }
-                if(iscontinue){                    
+                if(iscontinue){
                     for(let u =0; u< ttlrows_OSSO; u++){
                         let itemso = tabel_OSSO_body0.rows[u].cells[1].innerText.trim();
                         if(itemreq == itemso){
@@ -521,13 +521,13 @@
                             while(think2){
                                 if(Number(areq[i].reqqty) > Number(areq[i].supqty)){
                                     if(numeral(tabel_OSSO_body0.rows[u].cells[4].innerText).value()>0){
-                                        
+
                                         let isfound = false;
                                         areq[i].supqty +=1;
                                         tabel_OSSO_body0.rows[u].cells[4].innerText = numeral(tabel_OSSO_body0.rows[u].cells[4].innerText).value()-1;
                                         for(let c in asup){
-                                            if(asup[c].pindex==itemreqindex 
-                                                && asup[c].pso==tabel_OSSO_body0.rows[u].cells[0].innerText.trim() 
+                                            if(asup[c].pindex==itemreqindex
+                                                && asup[c].pso==tabel_OSSO_body0.rows[u].cells[0].innerText.trim()
                                                 && asup[c].psoline==tabel_OSSO_body0.rows[u].cells[5].innerText.trim() ){
                                                 asup[c].pqty += 1;
                                                 isfound=true;break;
@@ -540,7 +540,7 @@
                                                 pqtyreq : areq[i].reqqty,pqty: 1 ,pindex : itemreqindex};
                                             asup.push(newobku);
                                         }
-                                        
+
                                     } else {
                                         think2 =false;
                                     }
@@ -556,34 +556,34 @@
                             }
                         }
                     }
-                } else {                    
+                } else {
                     think1=false;
                 }
-            }            
+            }
         }
-        for(let i in asup){                                  
+        for(let i in asup){
             newrow = tabel_PLOT_body0.insertRow(-1);
             newcell = newrow.insertCell(0);
             newText = document.createTextNode(asup[i].pso);
             newcell.appendChild(newText);
             newcell = newrow.insertCell(1);
             newcell.classList.add('d-none');
-            newText = document.createTextNode(asup[i].psoline);               
-            newcell.appendChild(newText);            
+            newText = document.createTextNode(asup[i].psoline);
+            newcell.appendChild(newText);
             newcell = newrow.insertCell(2);
-            newText = document.createTextNode(asup[i].pitem);            
+            newText = document.createTextNode(asup[i].pitem);
             newcell.appendChild(newText);
-            newcell = newrow.insertCell(3);            
-            newText = document.createTextNode(asup[i].pprice);                        
-            newcell.appendChild(newText);
-            newcell.classList.add('text-end');
-            newcell = newrow.insertCell(4);            
-            newText = document.createTextNode(asup[i].pqtyreq);                        
+            newcell = newrow.insertCell(3);
+            newText = document.createTextNode(asup[i].pprice);
             newcell.appendChild(newText);
             newcell.classList.add('text-end');
-            newcell = newrow.insertCell(5);            
-            newText = document.createTextNode(asup[i].pqty);  
-            newcell.classList.add('text-end');                                  
+            newcell = newrow.insertCell(4);
+            newText = document.createTextNode(asup[i].pqtyreq);
+            newcell.appendChild(newText);
+            newcell.classList.add('text-end');
+            newcell = newrow.insertCell(5);
+            newText = document.createTextNode(asup[i].pqty);
+            newcell.classList.add('text-end');
             newcell.appendChild(newText);
             newcell = newrow.insertCell(6);
             newcell.classList.add('d-none');
@@ -593,7 +593,7 @@
             newcell.classList.add('d-none');
             newText = document.createTextNode(asup[i].pindex);
             newcell.appendChild(newText);
-            newcell = newrow.insertCell(8);            
+            newcell = newrow.insertCell(8);
             newText = document.createTextNode('');
             newcell.appendChild(newText);
         }
@@ -607,16 +607,16 @@
                 tableku2.rows[areq[i].reqindex].cells[10].innerText ='not ok';
                 tableku2.rows[areq[i].reqindex].cells[10].style.backgroundColor='Crimson';
             }
-        }     
+        }
         document.getElementById('shpfgmod_btnfifo').disabled=false;
-        document.getElementById('shpfgmod_btnfifo').innerText='FIFO';   
+        document.getElementById('shpfgmod_btnfifo').innerText='FIFO';
         if(ttloksupplied==areq.length){
-            $("#shpfgoth_PO").modal('hide') ;            
-        }        
+            $("#shpfgoth_PO").modal('hide') ;
+        }
     }
 
 
-    $("#shpfgoth_btngetpo").click(function (e) { 
+    $("#shpfgoth_btngetpo").click(function (e) {
         getosso_oth();
         $("#shpfgoth_PO").modal('show');
     });
@@ -632,10 +632,10 @@
             alertify.message('Please select customer');
             return;
         }
-        let tabell = document.getElementById("shpfgoth_tbl");                    
+        let tabell = document.getElementById("shpfgoth_tbl");
         let tableku2 = tabell.getElementsByTagName("tbody")[0];
         let mrows = tableku2.getElementsByTagName("tr");
-        let mitems = [];        
+        let mitems = [];
         for(let x=0;x<mrows.length;x++){
             let citem = tableku2.rows[x].cells[2].innerText.trim();
             if(mitems.indexOf(citem)===-1 && citem!=''){
@@ -645,7 +645,7 @@
         if(mitems.length==0){
             alertify.message('there is no item code in the table below');
             return;
-        }        
+        }
         document.getElementById('shpfgoth_tbosso_info').innerText = "Please wait..."
         const wh = document.getElementById('shpfgoth_cmb_wh').value
         $.ajax({
@@ -660,8 +660,8 @@
                     let myfrag = document.createDocumentFragment();
                     let mtabel = document.getElementById("shpfgoth_tbosso");
                     let cln = mtabel.cloneNode(true);
-                    myfrag.appendChild(cln);                    
-                    let tabell = myfrag.getElementById("shpfgoth_tbosso");                    
+                    myfrag.appendChild(cln);
+                    let tabell = myfrag.getElementById("shpfgoth_tbosso");
                     let tableku2 = tabell.getElementsByTagName("tbody")[0];
                     let newrow, newcell, newText;
                     tableku2.innerHTML='';
@@ -670,9 +670,9 @@
                         let ostqty =  numeral(response.data[i].SSO2_ORDQT).value()-numeral(response.data[i].SSO2_DELQT).value();
                         ostqty-= shpfgoth_e_get_qty_plotted(response.data[i].SSO2_CPONO.trim(),response.data[i].SSO2_SOLNO,response.data[i].SSO2_MDLCD.trim());
                         newrow = tableku2.insertRow(-1);
-                        newcell = newrow.insertCell(0);            
-                        newText = document.createTextNode(response.data[i].SSO2_CPONO);                        
-                        newcell.appendChild(newText);                        
+                        newcell = newrow.insertCell(0);
+                        newText = document.createTextNode(response.data[i].SSO2_CPONO);
+                        newcell.appendChild(newText);
                         newcell = newrow.insertCell(1);
                         newText = document.createTextNode(response.data[i].SSO2_MDLCD);
                         newcell.appendChild(newText);
@@ -691,9 +691,9 @@
                         newcell = newrow.insertCell(5);
                         newcell.classList.add('d-none');
                         newText = document.createTextNode(response.data[i].SSO2_SOLNO);
-                        newcell.appendChild(newText);             
+                        newcell.appendChild(newText);
                     }
-                    mydes.innerHTML='';                            
+                    mydes.innerHTML='';
                     mydes.appendChild(myfrag);
                 } else {
                     $("#shpfgoth_tbosso tbody").empty();
@@ -734,26 +734,22 @@
         });
     }
 
-    $("#shpfgoth_dtp1").datetimepicker({
-        format: 'YYYY-MM-DD'
-    });
-
     function shpfgoth_e_checkeditedqty_plot(){
-        let tabell = document.getElementById("shpfgoth_tbl");                    
+        let tabell = document.getElementById("shpfgoth_tbl");
         let tableku2 = tabell.getElementsByTagName("tbody")[0];
         let ttlrows = tableku2.getElementsByTagName("tr").length;
-        
-        let tabel_OSSO = document.getElementById("shpfgoth_tbosso");                    
+
+        let tabel_OSSO = document.getElementById("shpfgoth_tbosso");
         let tabel_OSSO_body0 = tabel_OSSO.getElementsByTagName("tbody")[0];
         let ttlrows_OSSO = tabel_OSSO_body0.getElementsByTagName("tr").length;
 
-        let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");                    
+        let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
         let ttlrows_PLOT = tabel_PLOT_body0.getElementsByTagName("tr").length;
         let ca_resumeplotted = [];
         let listre_fifo = [];
         if(document.getElementById('shpfgoth_isedit').value=='y'){
-            //handle edited qty after saved 
+            //handle edited qty after saved
             for(let i=0;i<ttlrows_PLOT; i++){
                 let isfound = false;
                 for(let c in ca_resumeplotted){
@@ -763,21 +759,21 @@
                     }
                 }
                 if(!isfound){
-                    let newobku = {mindex : Number(tabel_PLOT_body0.rows[i].cells[7].innerText), 
+                    let newobku = {mindex : Number(tabel_PLOT_body0.rows[i].cells[7].innerText),
                                     mqtyreq: numeral(tabel_PLOT_body0.rows[i].cells[4].innerText).value()
                                     ,mqtysup : numeral(tabel_PLOT_body0.rows[i].cells[5].innerText).value() };
                     ca_resumeplotted.push(newobku);
                 }
             }
-            
+
             // for(let i in ca_resumeplotted){
-            //     let maintblqty = numeral(tableku2.rows[ca_resumeplotted[i].mindex].cells[5].innerText).value();                        
+            //     let maintblqty = numeral(tableku2.rows[ca_resumeplotted[i].mindex].cells[5].innerText).value();
             //     if(maintblqty!=ca_resumeplotted[i].mqtyreq){
             //         tableku2.rows[ca_resumeplotted[i].mindex].cells[10].innerText = 'not ok';
             //         tableku2.rows[ca_resumeplotted[i].mindex].cells[10].style.backgroundColor = 'Crimson';
             //         let isfound = false;
             //         for(let c in listre_fifo){
-            //             if(listre_fifo[c].mindex == ca_resumeplotted[i].mindex){                                    
+            //             if(listre_fifo[c].mindex == ca_resumeplotted[i].mindex){
             //                 isfound =true; break;
             //             }
             //         }
@@ -785,21 +781,21 @@
             //             let newobku = {mindex : ca_resumeplotted[i].mindex };
             //             listre_fifo.push(newobku);
             //         }
-            //     }                   
+            //     }
             // }
 
             for(let i=0;i<ttlrows; i++){
                 let isfoundplot = false;
                 for(let k in ca_resumeplotted){
                     if(ca_resumeplotted[k].mindex==i){
-                        let maintblqty = numeral(tableku2.rows[ca_resumeplotted[k].mindex].cells[5].innerText).value();        
+                        let maintblqty = numeral(tableku2.rows[ca_resumeplotted[k].mindex].cells[5].innerText).value();
                         if(maintblqty!=ca_resumeplotted[k].mqtyreq){
                             isfoundplot=true;
                             tableku2.rows[i].cells[10].innerText = 'not ok';
                             tableku2.rows[i].cells[10].style.backgroundColor = 'Crimson';
                             let isfound = false;
                             for(let c in listre_fifo){
-                                if(listre_fifo[c].mindex == ca_resumeplotted[k].mindex){                                    
+                                if(listre_fifo[c].mindex == ca_resumeplotted[k].mindex){
                                     isfound =true; break;
                                 }
                             }
@@ -807,7 +803,7 @@
                                 let newobku = {mindex : ca_resumeplotted[k].mindex };
                                 listre_fifo.push(newobku);
                             }
-                        }                              
+                        }
                     }
                 }
                 if(!isfoundplot){
@@ -845,14 +841,14 @@
                             }
                         }
                     }
-                   
+
                     let areq = [];
                     let asup = [];
                     for(let f in listre_fifo){
                         for(let i=0;i<ttlrows; i++){
                             if(listre_fifo[f].mindex==i){//tableku2.rows[i].cells[14].innerText
                                 let qty = numeral(tableku2.rows[i].cells[5].innerText).value();
-                                let anobj = {reqindex: i, reqitem: tableku2.rows[i].cells[2].innerText, 
+                                let anobj = {reqindex: i, reqitem: tableku2.rows[i].cells[2].innerText,
                                             reqqty: qty, supqty : 0};
                                 areq.push(anobj);
                                 break;
@@ -877,20 +873,20 @@
                     }
                 }
                 if(!isfound){
-                    let newobku = {mindex : Number(tabel_PLOT_body0.rows[i].cells[7].innerText), 
+                    let newobku = {mindex : Number(tabel_PLOT_body0.rows[i].cells[7].innerText),
                                     mqtyreq: numeral(tabel_PLOT_body0.rows[i].cells[4].innerText).value()
                                     ,mqtysup : numeral(tabel_PLOT_body0.rows[i].cells[5].innerText).value() };
                     ca_resumeplotted.push(newobku);
                 }
-            }            
+            }
             for(let i in ca_resumeplotted){
-                let maintblqty = numeral(tableku2.rows[ca_resumeplotted[i].mindex].cells[5].innerText).value();  
+                let maintblqty = numeral(tableku2.rows[ca_resumeplotted[i].mindex].cells[5].innerText).value();
                 if(maintblqty!=ca_resumeplotted[i].mqtyreq){
                     tableku2.rows[ca_resumeplotted[i].mindex].cells[10].innerText = 'not ok';
                     tableku2.rows[ca_resumeplotted[i].mindex].cells[10].style.backgroundColor = 'Crimson';
                     let isfound = false;
                     for(let c in listre_fifo){
-                        if(listre_fifo[c].mindex == ca_resumeplotted[i].mindex){                                    
+                        if(listre_fifo[c].mindex == ca_resumeplotted[i].mindex){
                             isfound =true; break;
                         }
                     }
@@ -912,7 +908,7 @@
                                             ,soline: tabel_PLOT_body0.rows[b].cells[1].innerText
                                             ,soitem: tabel_PLOT_body0.rows[b].cells[2].innerText.trim()
                                             ,qtyret: numeral(tabel_PLOT_body0.rows[b].cells[5].innerText).value() };
-                                listre_fifo_os.push(newobj);                               
+                                listre_fifo_os.push(newobj);
                                 listre_fifo_plot_4delete.push(b);
                             }
                         }
@@ -936,7 +932,7 @@
                         for(let i=0;i<ttlrows; i++){
                             if(listre_fifo[f].mindex==i){
                                 let qty = numeral(tableku2.rows[i].cells[5].innerText).value();
-                                let anobj = {reqindex: i, reqitem: tableku2.rows[i].cells[2].innerText, 
+                                let anobj = {reqindex: i, reqitem: tableku2.rows[i].cells[2].innerText,
                                             reqqty: qty, supqty : 0};
                                 areq.push(anobj);
                                 break;
@@ -951,10 +947,10 @@
                 alertify.message('re-FIFO successfully');
             }
         }
-        
+
     }
-    
-    $("#shpfgoth_btnsave").click(function (e) { 
+
+    $("#shpfgoth_btnsave").click(function (e) {
         let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
         let ttlrows_PLOT = tabel_PLOT_body0.getElementsByTagName("tr").length;
@@ -977,7 +973,7 @@
         if(mcus.trim()=='-'){
             alertify.message('Please select customer first');
             return;
-        } 
+        }
         let lang = navigator.languages ? navigator.languages : navigator.language;
         let mformat = moment().locale(lang).localeData()._longDateFormat['L'];
         let mtbl = document.getElementById('shpfgoth_tbl');
@@ -994,13 +990,13 @@
                 mitem = mtbl.rows[i].cells[2].innerText;
                 mmodel = mtbl.rows[i].cells[3].innerText;
                 mreqdate = mtbl.rows[i].cells[4].innerText;
-                tmpreqdate = mreqdate.split(' ');           
+                tmpreqdate = mreqdate.split(' ');
                 if(tmpreqdate[0].includes('-')){
                     gssformat = "YYYY-MM-DD";
-                } else {                        
+                } else {
                     gssformat = "YYYY/MM/DD";
                 }
-                momobj = moment(tmpreqdate, gssformat);            
+                momobj = moment(tmpreqdate, gssformat);
                 if(tmpreqdate[1]){
                     waktu = tmpreqdate[1];
                 } else {
@@ -1010,8 +1006,8 @@
                 mreqqty = mtbl.rows[i].cells[5].innerText;
                 mremark = mtbl.rows[i].cells[6].innerText;
                 mplant = mtbl.rows[i].cells[7].innerText;
-                meta = mtbl.rows[i].cells[8].innerText; 
-                mlineno= mtbl.rows[i].cells[9].innerText;                   
+                meta = mtbl.rows[i].cells[8].innerText;
+                mlineno= mtbl.rows[i].cells[9].innerText;
                 if(meta.trim().length!=19){
                     alertify.warning("ETA value is not valid");
                     return;
@@ -1037,7 +1033,7 @@
                 if(document.getElementById('shpfgoth_isedit').value=='y'){
                     let msi = document.getElementById('shpfgoth_txt_doc').value;
                     let konf = confirm('Are you sure want to save changes?');
-                    if(konf){                        
+                    if(konf){
                         let pl_so = [];
                         let pl_soline = [];
                         let pl_soqty = [];
@@ -1069,7 +1065,7 @@
                                 if(response.data[0].cd=='0'){
                                     alertify.warning(response.data[0].msg);
                                 } else{
-                                    alertify.message(response.data[0].msg);                                    
+                                    alertify.message(response.data[0].msg);
                                 }
                             }, error:function(xhr,xopt,xthrow){
                                 alertify.error(xthrow);
@@ -1095,14 +1091,14 @@
                         $.ajax({
                             type: "post",
                             url: "<?=base_url('SI/setoth')?>",
-                            data: {inbg: mbg,incus: mcus, inkanban: akanban, initem:aitem, inmodel: amodel, inreqdate: areqdate, 
+                            data: {inbg: mbg,incus: mcus, inkanban: akanban, initem:aitem, inmodel: amodel, inreqdate: areqdate,
                             inreqqty : areqqty, inrmrk: armrk, inplant: aplant, ineta: aeta, inwh:whcode
                             ,inp_so: pl_so, inp_soline: pl_soline, inp_soqty: pl_soqty, inp_idx: pl_index},
                             dataType: "json",
                             success: function (response) {
                                 document.getElementById("shpfgoth_lblinfo_d").innerText= "done.";
                                 if(response.data[0].cd=='0'){
-                                    alertify.warning(response.data[0].msg);      
+                                    alertify.warning(response.data[0].msg);
                                 } else{
                                     alertify.message(response.data[0].msg);
                                     document.getElementById('shpfgoth_txt_doc').value=response.data[0].ref;
@@ -1112,12 +1108,12 @@
                                 alertify.error(xthrow);
                             }
                         });
-                    }                    
+                    }
                 }
             }
-        }        
+        }
     });
-    $("#shpfgoth_btnnew").click(function (e) { 
+    $("#shpfgoth_btnnew").click(function (e) {
         $("#shpfgoth_tbl tbody").empty();
         $("#shpfgoth_tbl_plotso tbody").empty();
         $("#shpfgoth_tbosso tbody").empty();
@@ -1127,42 +1123,42 @@
         document.getElementById('shpfgoth_btnsave').disabled = false;
     });
     $("#shpfgoth_divku").css('height', $(window).height()*68/100);
-    $("#shpfgoth_btnplus").click(function () {    
+    $("#shpfgoth_btnplus").click(function () {
         if(document.getElementById('shpfgoth_isedit').value=="n"){
             shpfgoth_btnadd();
             $("#shpfgoth_tbl_plotso tbody").empty();
         } else {
             shpfgoth_btnadd();
-        } 
+        }
     });
     $("#shpfgoth_btnmins").click(function(){
         let konf = confirm("Are you sure want to delete ?");
         if(konf){
             let msi = document.getElementById('shpfgoth_txt_doc').value;
             let table = $("#shpfgoth_tbl tbody");
-            let mlineno = table.find('tr').eq(shpfgoth_tblrowindexsel).find('td').eq(9).text();            
+            let mlineno = table.find('tr').eq(shpfgoth_tblrowindexsel).find('td').eq(9).text();
             if(document.getElementById('shpfgoth_isedit').value=="n"){
                 table.find('tr').eq(shpfgoth_tblrowindexsel).remove();
                 shpfgoth_tbllength = $('#shpfgoth_tbl tbody > tr').length;
-                shpfgoth_renumberrow();                
+                shpfgoth_renumberrow();
                 $("#shpfgoth_tbl_plotso tbody").empty();
             } else {
                 if(mlineno.trim()==''){
                     table.find('tr').eq(shpfgoth_tblrowindexsel).remove();
-                    shpfgoth_e_removebysiindex(shpfgoth_tblrowindexsel); 
+                    shpfgoth_e_removebysiindex(shpfgoth_tblrowindexsel);
                     shpfgoth_e_renindexplot_bysiline();
 
                     ///RESET    EDITED AFTER SAVED
-                    let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");                    
+                    let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");
                     let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
                     let ttlrows_PLOT = tabel_PLOT_body0.getElementsByTagName("tr").length;
                     let thinkdelete = true;
                     let ifind = ttlrows_PLOT-1;
-                    while(ifind>0){                        
-                        let idsisoline =tabel_PLOT_body0.rows[ifind].cells[8].innerText.trim();                      
-                        if(idsisoline==''){                            
-                            tabel_PLOT_body0.deleteRow(ifind);                                                        
-                            ifind=tabel_PLOT_body0.getElementsByTagName("tr").length-1;                            
+                    while(ifind>0){
+                        let idsisoline =tabel_PLOT_body0.rows[ifind].cells[8].innerText.trim();
+                        if(idsisoline==''){
+                            tabel_PLOT_body0.deleteRow(ifind);
+                            ifind=tabel_PLOT_body0.getElementsByTagName("tr").length-1;
                         }
                         let iscontinue = false;
                         for(let k=0;k<tabel_PLOT_body0.getElementsByTagName("tr").length;k++){
@@ -1170,9 +1166,9 @@
                                 iscontinue= true;
                             }
                         }
-                        if (!iscontinue){                            
+                        if (!iscontinue){
                             break;
-                        } else {                            
+                        } else {
                         }
                     }
                 } else {
@@ -1188,7 +1184,7 @@
                                 case '01':
                                     shpfgoth_e_removebysiindex(shpfgoth_tblrowindexsel);
                                     alertify.message(response.data[0].msg);break;
-                                case '11':                                   
+                                case '11':
                                     $("#shpfgoth_tbl tbody").empty();
                                     alertify.success(response.data[0].msg);
                                     alertify.message('Please reload document SI to see the changes');
@@ -1204,7 +1200,7 @@
         }
     });
     function shpfgoth_e_removebysiline(psiline){
-        let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");                    
+        let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
         let ttlrows_PLOT = tabel_PLOT_body0.getElementsByTagName("tr").length;
         for(let i=0;i<ttlrows_PLOT; i++){
@@ -1215,7 +1211,7 @@
         }
     }
     function shpfgoth_e_removebysiindex(psiindex){
-        let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");                    
+        let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
         let ttlrows_PLOT = tabel_PLOT_body0.getElementsByTagName("tr").length;
         for(let i=0;i<ttlrows_PLOT; i++){
@@ -1232,15 +1228,15 @@
         '<td contenteditable="true"></td>'+
         '<td contenteditable="true"></td>'+
         '<td contenteditable="true"></td>'+
-        '<td contenteditable="true"></td>'+    
-        '<td contenteditable="true"></td>'+    
-        '<td contenteditable="true"></td>'+    
-        '<td contenteditable="true"></td>'+    
-        '<td class="d-none"></td>'+    
+        '<td contenteditable="true"></td>'+
+        '<td contenteditable="true"></td>'+
+        '<td contenteditable="true"></td>'+
+        '<td contenteditable="true"></td>'+
+        '<td class="d-none"></td>'+
         '<td></td>'+
         '</tr>');
-        shpfgoth_tbllength = $('#shpfgoth_tbl tbody > tr').length;        
-        shpfgoth_renumberrow();   
+        shpfgoth_tbllength = $('#shpfgoth_tbl tbody > tr').length;
+        shpfgoth_renumberrow();
         $(".shpfgoth_dtp").datetimepicker({
             format: 'YYYY-MM-DD'
         });
@@ -1248,7 +1244,7 @@
 
     function shpfgoth_renumberrow(){
         let rows =1;
-        let table = $("#shpfgoth_tbl tbody");       
+        let table = $("#shpfgoth_tbl tbody");
         table.find('tr').each(function (i) {
             let $tds = $(this).find('td');
                 $tds.eq(0).text(rows);
@@ -1256,25 +1252,25 @@
         });
     }
 
-    $('#shpfgoth_tbl tbody').on( 'click', 'tr', function () {  
+    $('#shpfgoth_tbl tbody').on( 'click', 'tr', function () {
         shpfgoth_tblrowindexsel =$(this).index();
-        if ($(this).hasClass('table-active') ) {	
+        if ($(this).hasClass('table-active') ) {
             $(this).removeClass('table-active');
-        } else {                    			
+        } else {
             $('#shpfgoth_tbl tbody tr.table-active').removeClass('table-active');
             $(this).addClass('table-active');
         }
     });
-    $('#shpfgoth_tbl tbody').on( 'click', 'td', function () {            
-        shpfgoth_tblcolindexsel = $(this).index();         
+    $('#shpfgoth_tbl tbody').on( 'click', 'td', function () {
+        shpfgoth_tblcolindexsel = $(this).index();
     });
 
-    shpfgoth_e_col1 = function (e) { 
+    shpfgoth_e_col1 = function (e) {
         e = e || window.event;
         var keyCode = e.keyCode || e.which,
         arrow = {left: 37, up: 38, right: 39, down: 40 };
-        
-        if(e.shiftKey && keyCode==9){            
+
+        if(e.shiftKey && keyCode==9){
             if(shpfgoth_tblcolindexsel>1){
                 shpfgoth_tblcolindexsel--;
             }
@@ -1296,14 +1292,14 @@
                     }
                     break;
                 case arrow.down:
-                    if(shpfgoth_tblrowindexsel<(shpfgoth_tbllength-1) && !e.ctrlKey){                        
-                        let tables = $("#shpfgoth_tbl tbody");                        
-                        tables.find('tr').eq(++shpfgoth_tblrowindexsel).find('td').eq(shpfgoth_tblcolindexsel).find('input').focus();                                           
+                    if(shpfgoth_tblrowindexsel<(shpfgoth_tbllength-1) && !e.ctrlKey){
+                        let tables = $("#shpfgoth_tbl tbody");
+                        tables.find('tr').eq(++shpfgoth_tblrowindexsel).find('td').eq(shpfgoth_tblcolindexsel).find('input').focus();
                     }
                     break;
             }
         }
-        if (e.ctrlKey) {            
+        if (e.ctrlKey) {
             switch (keyCode) {
                 case arrow.up:
                     if(shpfgoth_tblrowindexsel>0){
@@ -1312,7 +1308,7 @@
                     }
                     break;
                 case arrow.down:
-                    if(shpfgoth_tblrowindexsel<(shpfgoth_tbllength-1)){                        
+                    if(shpfgoth_tblrowindexsel<(shpfgoth_tbllength-1)){
                         let tables = $("#shpfgoth_tbl tbody");
                         let curval = tables.find('tr').eq(shpfgoth_tblrowindexsel).find('td').eq(shpfgoth_tblcolindexsel).find('input').val();
                         tables.find('tr').eq(++shpfgoth_tblrowindexsel).find('td').eq(shpfgoth_tblcolindexsel).find('input').focus();
@@ -1334,13 +1330,13 @@
                     shpfgoth_btnadd();
                     break;
                 case 68://D
-                    $("#shpfgoth_tbl tbody > tr:last").remove();shpfgoth_renumberrow();                    
+                    $("#shpfgoth_tbl tbody > tr:last").remove();shpfgoth_renumberrow();
                     break;
             }
         }
     };
     function shpfgoth_e_pastecol1(event){
-        let datapas = event.clipboardData.getData('text/plain');        
+        let datapas = event.clipboardData.getData('text/plain');
         let adatapas = datapas.split('\n');
         let ttlrowspasted = 0;
         for(let c=0;c<adatapas.length;c++){
@@ -1350,18 +1346,18 @@
         }
         let table = $("#shpfgoth_tbl tbody");
         let incr =0;
-        if((shpfgoth_tbllength-shpfgoth_tblrowindexsel)<ttlrowspasted){       
+        if((shpfgoth_tbllength-shpfgoth_tblrowindexsel)<ttlrowspasted){
             let needRows = ttlrowspasted - (shpfgoth_tbllength-shpfgoth_tblrowindexsel);
             for(let i = 0;i<needRows;i++){
                 shpfgoth_btnadd();
             }
-        }        
-        for(let i=0;i<ttlrowspasted;i++){            
+        }
+        for(let i=0;i<ttlrowspasted;i++){
             let mcol = adatapas[i].split('\t')
             let ttlcol = mcol.length
             for(let k=0;(k<ttlcol) && (k<9);k++){
                 table.find('tr').eq((i+shpfgoth_tblrowindexsel)).find('td').eq((k+shpfgoth_tblcolindexsel)).text(mcol[k].trim());
-            }                
+            }
         }
         if(document.getElementById('shpfgoth_isedit').value=="n"){
             $("#shpfgoth_tbl_plotso tbody").empty();
@@ -1373,7 +1369,7 @@
     }
 
     function shpfgoth_e_renindexplot_bysiline(){
-        let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");                    
+        let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
         let ttlrowsplot = tabel_PLOT_body0.getElementsByTagName('tr').length;
         for(let i =0;i<ttlrowsplot;i++){
@@ -1386,7 +1382,7 @@
 
     $("#shpfgoth_btn_finddoc").click(function (e) {
         $("#shpfgoth_MOD").modal('show');
-    });    
+    });
     $("#shpfgoth_MOD").on('shown.bs.modal', function(){
         document.getElementById('shpfgoth_txtsearch').focus();
     });
@@ -1413,7 +1409,7 @@
                 dataType: "json",
                 success: function (response) {
                     let ttlrows = response.length;
-                    let tohtml = '';                    
+                    let tohtml = '';
                     for(let i=0;i<ttlrows;i++){
                         let bg = response[i].SI_BSGRP ? response[i].SI_BSGRP.trim() : '-';
                         let bg_desc = response[i].MBSG_DESC ? response[i].MBSG_DESC.trim() : '-';
@@ -1426,7 +1422,7 @@
                         "<td>"+response[i].SI_WH+"</td>"+
                         "</tr>";
                     }
-                    $("#shpfgoth_tblsaved tbody").html(tohtml);                    
+                    $("#shpfgoth_tblsaved tbody").html(tohtml);
                     document.getElementById('shpfgoth_lblinfo').innerText = ttlrows + ' row(s) found';
                 }, error: function(xhr, xopt, xthrow){
                     alertify.error(xthrow);
@@ -1434,7 +1430,7 @@
             });
         }
     }
-    $('#shpfgoth_tblsaved tbody').on( 'click', 'tr', function () { 
+    $('#shpfgoth_tblsaved tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('table-active') ) {
             $(this).removeClass('table-active');
         } else {
@@ -1466,60 +1462,60 @@
                 let ttlrowsso = response.sodata.length;
                 let ttlrows = response.mdata.length;
                 let tohtml = '';
-                for(let i=0;i<ttlrows;i++){     
+                for(let i=0;i<ttlrows;i++){
                     let detailqty = 0;
                     for(let u=0;u<ttlrowsso;u++){
                         if(response.sodata[u].SISO_HLINE==response.mdata[i].SI_LINENO){
                             detailqty+=numeral(response.sodata[u].SISO_QTY).value();
                         }
-                    }                    
-                    let kolstatus = detailqty == numeral(response.mdata[i].SI_QTY).value() ? '<td style="background-Color: Chartreuse">ok</td>' : '<td style="background-Color: Crimson">not ok</td>';              
+                    }
+                    let kolstatus = detailqty == numeral(response.mdata[i].SI_QTY).value() ? '<td style="background-Color: Chartreuse">ok</td>' : '<td style="background-Color: Crimson">not ok</td>';
                     tohtml += "<tr style='cursor:pointer'>"+
                     '<td>'+(i+1)+'</td>'+
                     '<td>'+response.mdata[i].SI_DOCREFF+'</td>'+
                     '<td>'+response.mdata[i].SI_ITMCD+'</td>'+
                     '<td>'+response.mdata[i].SI_MDL+'</td>'+
                     '<td>'+response.mdata[i].SI_REQDT+'</td>'+
-                    '<td contenteditable="true">'+numeral(response.mdata[i].SI_QTY).value()+'</td>'+    
-                    '<td>'+response.mdata[i].SI_OTHRMRK+'</td>'+    
-                    '<td>'+response.mdata[i].SI_HRMRK+'</td>'+    
-                    '<td contenteditable="true">'+response.mdata[i].SI_DOCREFFETA.substr(0,19)+'</td>'+    
+                    '<td contenteditable="true">'+numeral(response.mdata[i].SI_QTY).value()+'</td>'+
+                    '<td>'+response.mdata[i].SI_OTHRMRK+'</td>'+
+                    '<td>'+response.mdata[i].SI_HRMRK+'</td>'+
+                    '<td contenteditable="true">'+response.mdata[i].SI_DOCREFFETA.substr(0,19)+'</td>'+
                     '<td class="d-none">'+response.mdata[i].SI_LINENO+'</td>'+
                     kolstatus+
                     "</tr>";
                 }
-                $("#shpfgoth_tbl tbody").html(tohtml);                    
+                $("#shpfgoth_tbl tbody").html(tohtml);
                 document.getElementById('shpfgoth_lblinfo_d').innerText = ttlrows + ' row(s) found';
                 shpfgoth_tbllength = $('#shpfgoth_tbl tbody > tr').length;
 
                 //get data saved so
-                
+
                 $("#shpfgoth_tbl_plotso tbody").empty();
-                let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");                    
-                let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];        
+                let tabel_PLOT = document.getElementById("shpfgoth_tbl_plotso");
+                let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
                 for(let i=0; i < ttlrowsso; i++){
                     newrow = tabel_PLOT_body0.insertRow(-1);
                     newcell = newrow.insertCell(0);
-                    newText = document.createTextNode(response.sodata[i].SISO_CPONO);               
-                    newcell.appendChild(newText);            
+                    newText = document.createTextNode(response.sodata[i].SISO_CPONO);
+                    newcell.appendChild(newText);
                     newcell = newrow.insertCell(1);
                     newcell.classList.add('d-none');
-                    newText = document.createTextNode(response.sodata[i].SISO_SOLINE);               
-                    newcell.appendChild(newText);            
-                    newcell = newrow.insertCell(2);
-                    newText = document.createTextNode(response.sodata[i].SI_ITMCD);            
+                    newText = document.createTextNode(response.sodata[i].SISO_SOLINE);
                     newcell.appendChild(newText);
-                    newcell = newrow.insertCell(3);            
-                    newText = document.createTextNode(response.sodata[i].SSO2_SLPRC);                        
+                    newcell = newrow.insertCell(2);
+                    newText = document.createTextNode(response.sodata[i].SI_ITMCD);
+                    newcell.appendChild(newText);
+                    newcell = newrow.insertCell(3);
+                    newText = document.createTextNode(response.sodata[i].SSO2_SLPRC);
                     newcell.appendChild(newText);
                     newcell.classList.add('text-end');
-                    newcell = newrow.insertCell(4);            
+                    newcell = newrow.insertCell(4);
                     newText = document.createTextNode(numeral(response.sodata[i].SI_QTY).value());
                     newcell.appendChild(newText);
                     newcell.classList.add('text-end');
                     newcell = newrow.insertCell(5);
-                    newText = document.createTextNode(response.sodata[i].SISO_QTY);  
-                    newcell.classList.add('text-end');                                  
+                    newText = document.createTextNode(response.sodata[i].SISO_QTY);
+                    newcell.classList.add('text-end');
                     newcell.appendChild(newText);
                     newcell = newrow.insertCell(6);
                     newcell.classList.add('d-none');
@@ -1529,7 +1525,7 @@
                     newcell.classList.add('d-none');
                     newText = document.createTextNode(getindexmaintable_bysiline_oth(response.sodata[i].SISO_HLINE));
                     newcell.appendChild(newText);
-                    newcell = newrow.insertCell(8);            
+                    newcell = newrow.insertCell(8);
                     newText = document.createTextNode(response.sodata[i].SISO_FLINE);
                     newcell.appendChild(newText);
                 }
@@ -1541,7 +1537,7 @@
     }
     function getindexmaintable_bysiline_oth(psiline){
         let toret = 0;
-        let tabell = document.getElementById("shpfgoth_tbl");                    
+        let tabell = document.getElementById("shpfgoth_tbl");
         let tableku2 = tabell.getElementsByTagName("tbody")[0];
         let ttlrowsv = tableku2.getElementsByTagName("tr").length;
         for(let v=0;v<ttlrowsv;v++){
@@ -1551,7 +1547,7 @@
         }
         return toret;
     }
-    $("#shpfgoth_btnprnt").click(function (e) { 
+    $("#shpfgoth_btnprnt").click(function (e) {
         let msi = document.getElementById('shpfgoth_txt_doc').value;
         if(msi.trim()==''){
             alertify.message('Please select SI Docuemnt first');
@@ -1564,19 +1560,19 @@
         window.open("<?=base_url('printlabel_sioth')?>",'_blank');
     });
 
-    function shpfgoth_e_get_qty_plotted(pso, pso_line, passycode){        
-        let tabelplot = document.getElementById("shpfgoth_tbl_plotso");                    
+    function shpfgoth_e_get_qty_plotted(pso, pso_line, passycode){
+        let tabelplot = document.getElementById("shpfgoth_tbl_plotso");
         let tabelplotebody0 = tabelplot.getElementsByTagName("tbody")[0];
-        let mrows = tabelplotebody0.getElementsByTagName("tr").length;        
+        let mrows = tabelplotebody0.getElementsByTagName("tr").length;
         let qtyplot = 0;
-        for(let i=0 ; i < mrows; i++){            
-            if(tabelplotebody0.rows[i].cells[0].innerText.trim()==pso 
+        for(let i=0 ; i < mrows; i++){
+            if(tabelplotebody0.rows[i].cells[0].innerText.trim()==pso
                 && tabelplotebody0.rows[i].cells[1].innerText.trim()==pso_line.toString()
                 && tabelplotebody0.rows[i].cells[2].innerText.trim()==passycode
                 ){//&& tabelplotebody0.rows[i].cells[6].innerText.trim()==''
                     qtyplot += numeral(tabelplotebody0.rows[i].cells[5].innerText).value();
                 }
-        }        
+        }
         return qtyplot;
     }
 </script>
