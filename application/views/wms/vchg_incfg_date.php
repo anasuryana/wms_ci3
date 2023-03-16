@@ -56,10 +56,10 @@
                     <input type="text" class="form-control" id="chgincfgdt_olddata" required readonly>
                 </div>
             </div>
-            <div class="col-md-6 mb-1 text-center">
+            <div class="col-md-6 mb-1 text-center">                
                 <div class="input-group input-group-sm mb-1">
                     <span class="input-group-text" >New Data</span>
-                    <input type="text" class="form-control" autocomplete="off" id="chgincfgdt_newdata" data-toggle="datetimepicker" data-target="#chgincfgdt_newdata">
+                    <input type="text" class="form-control" autocomplete="off" id="chgincfgdt_newdata" data-td-toggle="datetimepicker" data-td-target="#chgincfgdt_newdata" readonly>
                 </div>
             </div>
         </div>
@@ -114,14 +114,18 @@
         }
     }
 
-    $('#chgincfgdt_newdata').datetimepicker({
-        format: 'YYYY-MM-DD HH:mm:ss',
-        icons: {
-            time: 'fas fa-clock'
-        },
-        useStrict: true,
-        maxDate: new Date
-    });
+    var chgincfgdt_newdata_pub = new tempusDominus.TempusDominus(chgincfgdt_newdata,
+        {
+            localization: {
+                locale : 'en',
+                format : 'yyyy-MM-dd HH:mm:ss'
+            },
+            restrictions : {
+                maxDate: new Date
+            }
+        }
+    )
+    
     function chgincfgdt_oldreff_e_kp(e){
         if(e.which==13){
             const reffno = document.getElementById('chgincfgdt_oldreff').value;

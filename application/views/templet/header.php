@@ -18,7 +18,7 @@
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/DataTables/datatables.min.css") ?>">
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/alertify/css/alertify.min.css") ?>">
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/alertify/css/themes/semantic.min.css") ?>">	
-	<link rel="stylesheet" href="<?=base_url("assets/bootstrap_dt/css/tempusdominus-bootstrap-4.min.css")?>">	
+	<link rel="stylesheet" href="<?=base_url("assets/bootstrap_dt/css/tempus-dominus.min.css")?>">	
 	<link rel="stylesheet" href="<?=base_url("assets/tablesorter/css/theme.bootstrap_4.min.css")?>">	
 	<link rel="stylesheet" href="<?=base_url("assets/tablesorter/css/theme.blue.css")?>">	
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jspreadsheet/jexcel.css")?>">	
@@ -38,7 +38,7 @@
 	<script type="text/javascript" src="<?=base_url("assets/js/onscan.min.js") ?>"></script>
 	<script type="text/javascript" src="<?=base_url("assets/js/xlsx.full.min.js") ?>"></script>	
 	<script type="text/javascript" src="<?=base_url("assets/js/FileSaver.js") ?>"></script>	
-	<script src="<?=base_url("assets/bootstrap_dt/js/tempusdominus-bootstrap-4.min.js")?>"></script>
+	<script src="<?=base_url("assets/bootstrap_dt/js/tempus-dominus.min.js")?>"></script>
 	<script src="<?=base_url("assets/tablesorter/js/jquery.tablesorter.js")?>"></script>
 	<script src="<?=base_url("assets/js/raphael.min.js")?>"></script>
 	<script src="<?=base_url("assets/js/html5-qrcode.min.js")?>"></script>	
