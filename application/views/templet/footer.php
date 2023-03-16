@@ -26,13 +26,7 @@
                         <div class="input-group input-group-sm mb-1">
                             <span class="input-group-text">Warehouse</span>
                             <select id="FOOTER_MODWH_selwh" class="form-select">
-                                <?php
-$todis = '';
-foreach ($lwh as $r) {
-    $todis .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . '</option>';
-}
-echo $todis;
-?>
+                            <?=$lwh?>
                             </select>
                         </div>
                     </div>
@@ -62,13 +56,7 @@ echo $todis;
                         <div class="input-group input-group-sm mb-1">
                             <span class="input-group-text">Warehouse</span>
                             <select id="FOOTER_MODWHFG_selwh" class="form-select">
-                                <?php
-$todis = '';
-foreach ($lwhfg as $r) {
-    $todis .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . '</option>';
-}
-echo $todis;
-?>
+                                <?=$lwhfg?>
                             </select>
                         </div>
                     </div>
@@ -163,11 +151,11 @@ echo $todis;
                 value: 'CL'
             })
 
-            $('#tt').tabs('add', {
-                title: 'Dashboard',
-                href: '<?=base_url('Home/form_dashboard')?>',
-                closable: false
-            });
+            // $('#tt').tabs('add', {
+            //     title: 'Dashboard',
+            //     href: '<?=base_url('Home/form_dashboard')?>',
+            //     closable: false
+            // });
         }
     })
 
