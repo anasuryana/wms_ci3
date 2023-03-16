@@ -1236,10 +1236,7 @@ foreach ($lbg as $r) {
         '<td></td>'+
         '</tr>');
         shpfgoth_tbllength = $('#shpfgoth_tbl tbody > tr').length;
-        shpfgoth_renumberrow();
-        $(".shpfgoth_dtp").datetimepicker({
-            format: 'YYYY-MM-DD'
-        });
+        shpfgoth_renumberrow();        
     }
 
     function shpfgoth_renumberrow(){
