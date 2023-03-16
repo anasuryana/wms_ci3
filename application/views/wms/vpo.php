@@ -1007,7 +1007,7 @@
             alertify.message('Please select')
             mpuror_cmb_customs.focus()
             return
-        }        
+        }
 
         for (let i = 0; i < ttlrows; i++) {
             if (tableku2.rows[i].cells[1].innerText.length > 2) {
@@ -1458,16 +1458,21 @@
     function mpuror_cmb_customs_eChange(e){
         const tabItem = document.getElementById('mpuror_home-tab')
         const tabNonItem = document.getElementById('mpuror_nonitem-tab')
-        tabItem.disabled = false        
+
         if(e.target.value === '1')
         {
             tabNonItem.disabled = true
+            tabItem.disabled = false
             let firstTabEl =  document.querySelector('#myTab button[data-bs-target="#mpuror_tabRM"]')
             let thetab = new bootstrap.Tab(firstTabEl)
             thetab.show()
             mpuror_txt_VAT.value = ''
             mpuror_txt_VAT.readOnly = true
-        } else {            
+        } else {
+            let firstTabEl =  document.querySelector('#myTab button[data-bs-target="#mpuror_tabFG"]')
+            let thetab = new bootstrap.Tab(firstTabEl)
+            thetab.show()
+            tabItem.disabled = true
             tabNonItem.disabled = false
             mpuror_txt_VAT.readOnly = false
         }
