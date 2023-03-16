@@ -196,17 +196,7 @@
         document.getElementById('chgincfgdt_olditemcd').value = "";
         document.getElementById('chgincfgdt_oldqty').value = "";
         txtoldreff.focus();
-        $("#chgincfgdt_tbl tbody").empty()
-        $('#chgincfgdt_newdata').datetimepicker('destroy')
-        $('#chgincfgdt_newdata').datetimepicker({
-            format: 'YYYY-MM-DD HH:mm:ss',
-            icons: {
-                time: 'fas fa-clock'
-            },
-            useStrict: true,
-            maxDate: new Date,
-            minDate: false
-        });
+        $("#chgincfgdt_tbl tbody").empty()        
         document.getElementById('chgincfgdt_olddata').value = ''
     }
     function chgincfgdt_selectrow(pdata){
@@ -228,17 +218,7 @@
             }            
             console.log(`the minimum date : ${theMinDate}`)
             console.log(`the maximum date : ${theMaxDate}`)
-            document.getElementById('chgincfgdt_olddata').value = pdata.lupdt.substr(0,19)
-            $('#chgincfgdt_newdata').datetimepicker('destroy')
-            $('#chgincfgdt_newdata').datetimepicker({
-                format: 'YYYY-MM-DD HH:mm:ss',
-                icons: {
-                    time: 'fas fa-clock'
-                },
-                useStrict: true,
-                maxDate: theMaxDate,
-                minDate: theMinDate
-            });
+            document.getElementById('chgincfgdt_olddata').value = pdata.lupdt.substr(0,19)            
         } else {
             document.getElementById('chgincfgdt_olddata').value = ''
         }
