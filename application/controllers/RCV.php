@@ -21,7 +21,7 @@ class RCV extends CI_Controller
         $this->load->model('RCVNI_mod');
         $this->load->model('RCVSCN_mod');
         $this->load->model('RCVMEGA_mod');
-        $this->load->model(['ITMLOC_mod','MSTITM_mod']);
+        $this->load->model(['ITMLOC_mod', 'MSTITM_mod']);
         $this->load->model('MSTSUP_mod');
         $this->load->model('MSTCUS_mod');
         $this->load->model('XBGROUP_mod');
@@ -2000,7 +2000,7 @@ class RCV extends CI_Controller
         $cdate1 = $this->input->get('inyear') . '-' . $this->input->get('inmonth') . '-01';
         $cdate2 = date("Y-m-t", strtotime($cdate1));
         $rs = [];
-        if (in_array($cby, ['do','po']) ) {
+        if (in_array($cby, ['do', 'po'])) {
             $like = $cby === 'do' ? ['RCV_DONO' => $ckey] : ['RCV_PO' => $ckey];
             if ($cpermonth == 'y') {
                 $rs = $this->RCV_mod->SelectDO_date1($like, $cdate1, $cdate2);
@@ -2730,6 +2730,7 @@ class RCV extends CI_Controller
         $mnomordis = $mnomorpab = $mnomorpabdis = $mdatepabdis = $mdatercv = $mnilaipab = $mnilaipabdis = $mberatpab = $mberatpabdis = $msup = $msupdis = $malam = $malamdis = $mdo = $mdodis = $nopen = '';
         $flgcolor = '';
         foreach ($rs as $r) {
+            $mnilaipab = $r['RCV_QTY'] * $r['RCV_PRPRC'];
             if ($mnomorpab != $r['RCV_RPNO']) {
                 $flgcolor = 'b';
                 $mnomorpab = $r['RCV_RPNO'];
@@ -2739,8 +2740,7 @@ class RCV extends CI_Controller
                 $mdatepabdis = $r['RCV_RPDATE'];
                 $mdatercv = $r['RCV_RCVDATE'];
                 $mnomorin = 1;
-                $mnilaipab = $r['RCV_TTLAMT'];
-                $mnilaipabdis = number_format($mnilaipab, 2);
+
                 $mberatpab = $r['RCV_NW'];
                 $mberatpabdis = number_format($mberatpab, 2);
                 $msup = $r['MSUP_SUPNM'];
@@ -2758,11 +2758,9 @@ class RCV extends CI_Controller
                 $mnomordis = '';
                 if ($mdo != $r['RCV_DONO']) {
                     $mdo = $r['RCV_DONO'];
-                    $mnilaipab = $r['RCV_TTLAMT'];
                     $mberatpab = $r['RCV_NW'];
                     $msup = $r['MSUP_SUPNM'];
                     $malam = $r['MSUP_ADDR1'];
-                    $mnilaipabdis = number_format($mnilaipab, 2);
                     $mberatpabdis = number_format($mberatpab, 2);
                     $msupdis = trim($msup);
                     $malamdis = $malam;
@@ -2778,9 +2776,9 @@ class RCV extends CI_Controller
             $sheet->setCellValueByColumnAndRow(8, $y, trim($r['MITM_ITMD1']));
             $sheet->setCellValueByColumnAndRow(9, $y, trim($r['RCV_ITMCD']));
             $sheet->setCellValueByColumnAndRow(10, $y, $r['RCV_HSCD']);
-            $sheet->setCellValueByColumnAndRow(11, $y, number_format($r['RCV_QTY']));
+            $sheet->setCellValueByColumnAndRow(11, $y, $r['RCV_QTY']);
             $sheet->setCellValueByColumnAndRow(12, $y, trim($r['MITM_STKUOM']));
-            $sheet->setCellValueByColumnAndRow(13, $y, $mnilaipabdis);
+            $sheet->setCellValueByColumnAndRow(13, $y, $mnilaipab);
             $sheet->setCellValueByColumnAndRow(14, $y, $mberatpabdis);
             $sheet->setCellValueByColumnAndRow(15, $y, $msupdis);
             $sheet->setCellValueByColumnAndRow(16, $y, trim($malamdis));
@@ -2820,6 +2818,10 @@ class RCV extends CI_Controller
         }
         $sheet->getStyle('B6:S7')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('d4d4d4');
         $sheet->removeColumn('A');
+        $rang = "J4:J" . $sheet->getHighestDataRow();
+        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0');
+        $rang = "L4:L" . $sheet->getHighestDataRow();
+        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0.00');
         $writer = new Xlsx($spreadsheet);
         $filename = 'Export ' . $stringjudul . date(' H i'); //save our workbook as this file name
 
