@@ -28,7 +28,7 @@
                         <option value="item_desc">Item Description</option>
                     </select>
                     <input type="text" class="form-control" id="ith_txt_item">
-                    <button title="Search" class="btn btn-primary" id="ith_btn_gen"> <i class="fas fa-search"></i> </button>
+                    <button title="Search" class="btn btn-primary" id="ith_btn_gen" onclick="ith_btn_gen_eCK(this)"> <i class="fas fa-search"></i> </button>
 
                     <button id="btnGroupDrop1" type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Export to..">
                         <i class="fas fa-file-export"></i>
@@ -138,6 +138,9 @@
     ith_colorize(ith_cmb_wh)
     var ith_a_BG = [];
     var ith_a_BG_NM = [];
+    function ith_btn_gen_eCK(p){        
+        ith_getstock();
+    }
     function ith_selectBG_eC(e){
         if(e.target.tagName.toLowerCase()==='td'){
             if(e.target.cellIndex==1){
@@ -196,7 +199,7 @@
             sbg = sbg.substr(0,sbg.length-1);
         }
         Cookies.set('CKPSI_BG', sbg, {expires:365});
-        Cookies.set('CKPSI_DATE', mdate, {expires:365});
+        Cookies.set('CKPSI_DATE', mdate, {expires:365});        
         window.open("<?=base_url('ex_stock_detail')?>",'_blank');
     }
 
@@ -221,12 +224,14 @@ function ith_getstock(){
     let mdate = document.getElementById('ith_txt_date').value;
     let bgroup = ith_a_BG
     document.getElementById('ith_spn_info').innerText='Please wait ...';
+    ith_btn_gen.disabled = true
     $.ajax({
         type: "get",
         url: "<?=base_url('ITH/getstock_wh')?>",
         data: {initem: mitem, inbgroup: bgroup, indate: mdate, insearch_by : ith_cmb_search_by.value},
         dataType: "json",
         success: function (response) {
+            ith_btn_gen.disabled = false
             let ttlrows = response.data.length;
             document.getElementById('ith_spn_info').innerText=ttlrows +' row(s) found';
             let mydes = document.getElementById("ith_divku");
@@ -288,13 +293,12 @@ function ith_getstock(){
             mydes.appendChild(myfrag);
 			document.getElementById('ith_txt_ttl').value=numeral(myitmttl).format('0,0');
         }, error: function(xhr, xopt, xthrow){
-            alertify.error(xthrow);
+            alertify.error(`${xthrow}, please try again`);
+            ith_btn_gen.disabled = false
         }
     });
 }
-$("#ith_btn_gen").click(function (e) {
-    ith_getstock();
-});
+
 ith_e_getBG()
     function ith_e_getBG(){
         $.ajax({
