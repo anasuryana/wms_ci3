@@ -49,14 +49,13 @@ class RMCalculator
         }
         unset($d);
 
-
         foreach ($rsbase as &$r) {
             $think = true;
             while ($think) {
                 $grasp = false;
                 foreach ($rsscn as $d) {
                     if (($r['PPSN2_FR'] == $d['SPLSCN_FEDR']) && ($r['PPSN2_MCZ'] == $d['SPLSCN_ORDERNO'])
-                        && ($r['PPSN2_SUBPN'] == $d['SPLSCN_ITMCD'])  && ($r['PPSN2_PSNNO'] == $d['SPLSCN_DOC'])
+                        && ($r['PPSN2_SUBPN'] == $d['SPLSCN_ITMCD']) && ($r['PPSN2_PSNNO'] == $d['SPLSCN_DOC'])
                         && ($r['PPSN2_LINENO'] == $d['SPLSCN_LINE']) && ($r['PPSN2_ITMCAT'] == $d['SPLSCN_CAT'])
                         && $d['USED'] == false
                     ) {
@@ -66,7 +65,7 @@ class RMCalculator
                 }
                 if ($grasp) {
                     foreach ($rsscn as &$d) {
-                        if (($r['PPSN2_MCZ'] == $d['SPLSCN_ORDERNO'])  && ($r['PPSN2_SUBPN'] == $d['SPLSCN_ITMCD'])
+                        if (($r['PPSN2_MCZ'] == $d['SPLSCN_ORDERNO']) && ($r['PPSN2_SUBPN'] == $d['SPLSCN_ITMCD'])
                             && $d['USED'] == false and ($r['PPSN2_FR'] == $d['SPLSCN_FEDR'])
                             && ($r['PPSN2_LINENO'] == $d['SPLSCN_LINE']) && ($r['PPSN2_ITMCAT'] == $d['SPLSCN_CAT'])
                             && ($r['PPSN2_PSNNO'] == $d['SPLSCN_DOC'])
@@ -77,12 +76,12 @@ class RMCalculator
                                     if ($d['USED'] == false) {
                                         $isfound = false;
                                         foreach ($rsfix as &$t) {
-                                            if (($t["PPSN2_MC"] == $r["PPSN2_MC"])  && ($t["SPLSCN_ORDERNO"] == $r["PPSN2_MCZ"])
-                                                && ($t["SPLSCN_ITMCD"] == $r["PPSN2_SUBPN"])  && ($t["PPSN2_PROCD"] == $r["PPSN2_PROCD"])
+                                            if (($t["PPSN2_MC"] == $r["PPSN2_MC"]) && ($t["SPLSCN_ORDERNO"] == $r["PPSN2_MCZ"])
+                                                && ($t["SPLSCN_ITMCD"] == $r["PPSN2_SUBPN"]) && ($t["PPSN2_PROCD"] == $r["PPSN2_PROCD"])
                                             ) {
                                                 $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                                 $rsfix[] = [
-                                                    "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG']
+                                                    "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG'],
                                                 ];
                                                 $isfound = true;
                                                 $d['USED'] = true;
@@ -93,7 +92,7 @@ class RMCalculator
 
                                         if (!$isfound) {
                                             $rsfix[] = [
-                                                "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG']
+                                                "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG'],
                                             ];
                                             $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                             $d['USED'] = true;
@@ -124,7 +123,7 @@ class RMCalculator
                 $grasp = false;
                 foreach ($rsscn as $d) {
                     if (($r['PPSN2_FR'] == $d['SPLSCN_FEDR']) && ($r['PPSN2_MCZ'] == $d['SPLSCN_ORDERNO'])
-                        && ($r['PPSN2_SUBPN'] == $d['SPLSCN_ITMCD'])  && ($r['PPSN2_PSNNO'] == $d['SPLSCN_DOC'])
+                        && ($r['PPSN2_SUBPN'] == $d['SPLSCN_ITMCD']) && ($r['PPSN2_PSNNO'] == $d['SPLSCN_DOC'])
                         && ($r['PPSN2_LINENO'] == $d['SPLSCN_LINE']) && ($r['PPSN2_ITMCAT'] == $d['SPLSCN_CAT'])
                         && $d['USED'] == false
                     ) {
@@ -134,7 +133,7 @@ class RMCalculator
                 }
                 if ($grasp) {
                     foreach ($rsscn as &$d) {
-                        if (($r['PPSN2_MCZ'] == $d['SPLSCN_ORDERNO'])  && ($r['PPSN2_SUBPN'] == $d['SPLSCN_ITMCD'])
+                        if (($r['PPSN2_MCZ'] == $d['SPLSCN_ORDERNO']) && ($r['PPSN2_SUBPN'] == $d['SPLSCN_ITMCD'])
                             && $d['USED'] == false and ($r['PPSN2_FR'] == $d['SPLSCN_FEDR'])
                             && ($r['PPSN2_LINENO'] == $d['SPLSCN_LINE']) && ($r['PPSN2_ITMCAT'] == $d['SPLSCN_CAT'])
                             && ($r['PPSN2_PSNNO'] == $d['SPLSCN_DOC'])
@@ -144,12 +143,12 @@ class RMCalculator
                                 if ($d['USED'] == false) {
                                     $isfound = false;
                                     foreach ($rsfix as &$t) {
-                                        if (($t["PPSN2_MC"] == $r["PPSN2_MC"])  && ($t["SPLSCN_ORDERNO"] == $r["PPSN2_MCZ"])
-                                            && ($t["SPLSCN_ITMCD"] == $r["PPSN2_SUBPN"])  && ($t["PPSN2_PROCD"] == $r["PPSN2_PROCD"])
+                                        if (($t["PPSN2_MC"] == $r["PPSN2_MC"]) && ($t["SPLSCN_ORDERNO"] == $r["PPSN2_MCZ"])
+                                            && ($t["SPLSCN_ITMCD"] == $r["PPSN2_SUBPN"]) && ($t["PPSN2_PROCD"] == $r["PPSN2_PROCD"])
                                         ) {
                                             $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                             $rsfix[] = [
-                                                "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG']
+                                                "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG'],
                                             ];
                                             $isfound = true;
                                             $d['USED'] = true;
@@ -160,7 +159,7 @@ class RMCalculator
 
                                     if (!$isfound) {
                                         $rsfix[] = [
-                                            "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG']
+                                            "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG'],
                                         ];
                                         $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                         $d['USED'] = true;
@@ -179,26 +178,25 @@ class RMCalculator
         }
         unset($r);
 
-
-        /* 
+        /*
         NEW LOGIC
         SET SHIELDPLATE qty = Balance
-        */
+         */
         foreach ($rsbase as $d) {
             $bal = $d['PPSN2_REQQT'] - $d['TTLSCN'];
             if ($bal > 0) {
                 if (strpos($d['MITM_ITMD1'], 'SHIELD PLATE') !== false || $d["PPSN2_PROCD"] == 'SMT-SP') {
                     $rsfix[] = [
-                        "PPSN2_DATANO" => $d["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["PPSN2_FR"], "SPLSCN_ITMCD" => $d["PPSN2_SUBPN"], "SPLSCN_QTY" => $bal, "SPLSCN_LOTNO" => 'AUTO', "SPLSCN_ORDERNO" => $d["PPSN2_MCZ"], "SPLSCN_LINE" => $d["PPSN2_LINENO"], "PPSN2_MC" => $d["PPSN2_MC"], "PPSN2_PROCD" => $d["PPSN2_PROCD"], "SPLSCN_CAT" => $d['PPSN2_ITMCAT'], "SPLSCN_DOC" => $d['PPSN2_PSNNO'], "SCNTIME" => NULL, "PPSN2_MSFLG" => $d['PPSN2_MSFLG']
+                        "PPSN2_DATANO" => $d["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["PPSN2_FR"], "SPLSCN_ITMCD" => $d["PPSN2_SUBPN"], "SPLSCN_QTY" => $bal, "SPLSCN_LOTNO" => 'AUTO', "SPLSCN_ORDERNO" => $d["PPSN2_MCZ"], "SPLSCN_LINE" => $d["PPSN2_LINENO"], "PPSN2_MC" => $d["PPSN2_MC"], "PPSN2_PROCD" => $d["PPSN2_PROCD"], "SPLSCN_CAT" => $d['PPSN2_ITMCAT'], "SPLSCN_DOC" => $d['PPSN2_PSNNO'], "SCNTIME" => null, "PPSN2_MSFLG" => $d['PPSN2_MSFLG'],
                     ];
                 } else {
-                    /* 
+                    /*
                     NEW LOGIC
                     SET ASAHI, TOYO, STANLEY KITTING DATA AUTOCOMPLETE
-                    */
+                     */
                     if ($d['PPSN2_BSGRP'] === 'PSI2PPZTDI' || $d['PPSN2_BSGRP'] === 'PSI2PPZADI' || $d['PPSN2_BSGRP'] === 'PSI2PPZSTY') {
                         $rsfix[] = [
-                            "PPSN2_DATANO" => $d["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["PPSN2_FR"], "SPLSCN_ITMCD" => $d["PPSN2_SUBPN"], "SPLSCN_QTY" => $bal, "SPLSCN_LOTNO" => '25AUTO', "SPLSCN_ORDERNO" => $d["PPSN2_MCZ"], "SPLSCN_LINE" => $d["PPSN2_LINENO"], "PPSN2_MC" => $d["PPSN2_MC"], "PPSN2_PROCD" => $d["PPSN2_PROCD"], "SPLSCN_CAT" => $d['PPSN2_ITMCAT'], "SPLSCN_DOC" => $d['PPSN2_PSNNO'], "SCNTIME" => NULL, "PPSN2_MSFLG" => $d['PPSN2_MSFLG']
+                            "PPSN2_DATANO" => $d["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["PPSN2_FR"], "SPLSCN_ITMCD" => $d["PPSN2_SUBPN"], "SPLSCN_QTY" => $bal, "SPLSCN_LOTNO" => '25AUTO', "SPLSCN_ORDERNO" => $d["PPSN2_MCZ"], "SPLSCN_LINE" => $d["PPSN2_LINENO"], "PPSN2_MC" => $d["PPSN2_MC"], "PPSN2_PROCD" => $d["PPSN2_PROCD"], "SPLSCN_CAT" => $d['PPSN2_ITMCAT'], "SPLSCN_DOC" => $d['PPSN2_PSNNO'], "SCNTIME" => null, "PPSN2_MSFLG" => $d['PPSN2_MSFLG'],
                         ];
                     }
                 }
@@ -227,7 +225,7 @@ class RMCalculator
                 if ($this->CI->MSTITM_mod->check_Primary_FG_AS_BOM(['PWOP_BOMPN' => $d['PPSN2_SUBPN']])) {
                     $d["TTLSCN"] = $d['PPSN2_REQQT'];
                     $rsfix[] = [
-                        "PPSN2_DATANO" => $d["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["PPSN2_FR"], "SPLSCN_ITMCD" => $d["PPSN2_SUBPN"], "SPLSCN_QTY" => $d["TTLSCN"], "SPLSCN_LOTNO" => NULL, "SPLSCN_ORDERNO" => $d["PPSN2_MCZ"], "SPLSCN_LINE" => $d["PPSN2_LINENO"], "PPSN2_MC" => $d["PPSN2_MC"], "PPSN2_PROCD" => $d["PPSN2_PROCD"], "SPLSCN_CAT" => $d['PPSN2_ITMCAT'], "SPLSCN_DOC" => $d['PPSN2_PSNNO'], "SCNTIME" => NULL, "PPSN2_MSFLG" => $d['PPSN2_MSFLG']
+                        "PPSN2_DATANO" => $d["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["PPSN2_FR"], "SPLSCN_ITMCD" => $d["PPSN2_SUBPN"], "SPLSCN_QTY" => $d["TTLSCN"], "SPLSCN_LOTNO" => null, "SPLSCN_ORDERNO" => $d["PPSN2_MCZ"], "SPLSCN_LINE" => $d["PPSN2_LINENO"], "PPSN2_MC" => $d["PPSN2_MC"], "PPSN2_PROCD" => $d["PPSN2_PROCD"], "SPLSCN_CAT" => $d['PPSN2_ITMCAT'], "SPLSCN_DOC" => $d['PPSN2_PSNNO'], "SCNTIME" => null, "PPSN2_MSFLG" => $d['PPSN2_MSFLG'],
                     ];
                 } else {
                     $d["TTLSCN"] = 0;
@@ -242,7 +240,6 @@ class RMCalculator
             }
         }
         unset($d);
-
 
         foreach ($rsbase as &$r) {
             $think = true;
@@ -262,7 +259,7 @@ class RMCalculator
                     foreach ($rsscn as &$d) {
                         if (($r['PPSN2_MCZ'] == $d['SPLSCN_ORDERNO']) && ($r['PPSN2_SUBPN'] == $d['SPLSCN_ITMCD'])
                             && $d['USED'] == false && ($r['PPSN2_FR'] == $d['SPLSCN_FEDR'])
-                            && ($r['PPSN2_LINENO'] == $d['SPLSCN_LINE'])  && ($r['PPSN2_ITMCAT'] == $d['SPLSCN_CAT'])
+                            && ($r['PPSN2_LINENO'] == $d['SPLSCN_LINE']) && ($r['PPSN2_ITMCAT'] == $d['SPLSCN_CAT'])
                             && ($r['PPSN2_PSNNO'] == $d['SPLSCN_DOC'])
                         ) {
                             $think2 = true;
@@ -271,12 +268,12 @@ class RMCalculator
                                     if ($d['USED'] == false) {
                                         $isfound = false;
                                         foreach ($rsfix as &$t) {
-                                            if (($t["PPSN2_MC"] == $r["PPSN2_MC"])  && ($t["SPLSCN_ORDERNO"] == $r["PPSN2_MCZ"])
-                                                && ($t["SPLSCN_ITMCD"] == $r["PPSN2_SUBPN"])  && ($t["PPSN2_PROCD"] == $r["PPSN2_PROCD"])
+                                            if (($t["PPSN2_MC"] == $r["PPSN2_MC"]) && ($t["SPLSCN_ORDERNO"] == $r["PPSN2_MCZ"])
+                                                && ($t["SPLSCN_ITMCD"] == $r["PPSN2_SUBPN"]) && ($t["PPSN2_PROCD"] == $r["PPSN2_PROCD"])
                                             ) {
                                                 $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                                 $rsfix[] = [
-                                                    "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG']
+                                                    "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG'],
                                                 ];
                                                 $isfound = true;
                                                 $d['USED'] = true;
@@ -287,7 +284,7 @@ class RMCalculator
 
                                         if (!$isfound) {
                                             $rsfix[] = [
-                                                "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG']
+                                                "PPSN2_DATANO" => $r["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["SPLSCN_FEDR"], "SPLSCN_ITMCD" => $d["SPLSCN_ITMCD"], "SPLSCN_QTY" => $d["SPLSCN_QTY"], "SPLSCN_LOTNO" => $d["SPLSCN_LOTNO"], "SPLSCN_ORDERNO" => $d["SPLSCN_ORDERNO"], "SPLSCN_LINE" => $d["SPLSCN_LINE"], "PPSN2_MC" => $r["PPSN2_MC"], "PPSN2_PROCD" => $r["PPSN2_PROCD"], "SPLSCN_CAT" => $d['SPLSCN_CAT'], "SPLSCN_DOC" => $r['PPSN2_PSNNO'], "SCNTIME" => $d['SPLSCN_LUPDT'], "PPSN2_MSFLG" => $r['PPSN2_MSFLG'],
                                             ];
                                             $r['TTLSCN'] += $d['SPLSCN_QTY'];
                                             $d['USED'] = true;
@@ -317,14 +314,14 @@ class RMCalculator
             if ($bal > 0) {
                 if (strpos($d['MITM_ITMD1'], 'SHIELD PLATE') !== false) {
                     $rsfix[] = [
-                        "PPSN2_DATANO" => $d["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["PPSN2_FR"], "SPLSCN_ITMCD" => $d["PPSN2_SUBPN"], "SPLSCN_QTY" => $bal, "SPLSCN_LOTNO" => 'AUTO', "SPLSCN_ORDERNO" => $d["PPSN2_MCZ"], "SPLSCN_LINE" => $d["PPSN2_LINENO"], "PPSN2_MC" => $d["PPSN2_MC"], "PPSN2_PROCD" => $d["PPSN2_PROCD"], "SPLSCN_CAT" => $d['PPSN2_ITMCAT'], "SPLSCN_DOC" => $d['PPSN2_PSNNO'], "SCNTIME" => NULL, "PPSN2_MSFLG" => $d['PPSN2_MSFLG']
+                        "PPSN2_DATANO" => $d["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["PPSN2_FR"], "SPLSCN_ITMCD" => $d["PPSN2_SUBPN"], "SPLSCN_QTY" => $bal, "SPLSCN_LOTNO" => 'AUTO', "SPLSCN_ORDERNO" => $d["PPSN2_MCZ"], "SPLSCN_LINE" => $d["PPSN2_LINENO"], "PPSN2_MC" => $d["PPSN2_MC"], "PPSN2_PROCD" => $d["PPSN2_PROCD"], "SPLSCN_CAT" => $d['PPSN2_ITMCAT'], "SPLSCN_DOC" => $d['PPSN2_PSNNO'], "SCNTIME" => null, "PPSN2_MSFLG" => $d['PPSN2_MSFLG'],
                     ];
                 } else {
                     //NEW LOGIC
                     //SET ASAHI, TOYO, STANLEY KITTING DATA AUTOCOMPLETE
                     if ($d['PPSN2_BSGRP'] === 'PSI2PPZTDI' || $d['PPSN2_BSGRP'] === 'PSI2PPZADI' || $d['PPSN2_BSGRP'] === 'PSI2PPZSTY') {
                         $rsfix[] = [
-                            "PPSN2_DATANO" => $d["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["PPSN2_FR"], "SPLSCN_ITMCD" => $d["PPSN2_SUBPN"], "SPLSCN_QTY" => $bal, "SPLSCN_LOTNO" => '25AUTO', "SPLSCN_ORDERNO" => $d["PPSN2_MCZ"], "SPLSCN_LINE" => $d["PPSN2_LINENO"], "PPSN2_MC" => $d["PPSN2_MC"], "PPSN2_PROCD" => $d["PPSN2_PROCD"], "SPLSCN_CAT" => $d['PPSN2_ITMCAT'], "SPLSCN_DOC" => $d['PPSN2_PSNNO'], "SCNTIME" => NULL, "PPSN2_MSFLG" => $d['PPSN2_MSFLG']
+                            "PPSN2_DATANO" => $d["PPSN2_DATANO"], "SPLSCN_FEDR" => $d["PPSN2_FR"], "SPLSCN_ITMCD" => $d["PPSN2_SUBPN"], "SPLSCN_QTY" => $bal, "SPLSCN_LOTNO" => '25AUTO', "SPLSCN_ORDERNO" => $d["PPSN2_MCZ"], "SPLSCN_LINE" => $d["PPSN2_LINENO"], "PPSN2_MC" => $d["PPSN2_MC"], "PPSN2_PROCD" => $d["PPSN2_PROCD"], "SPLSCN_CAT" => $d['PPSN2_ITMCAT'], "SPLSCN_DOC" => $d['PPSN2_PSNNO'], "SCNTIME" => null, "PPSN2_MSFLG" => $d['PPSN2_MSFLG'],
                         ];
                     }
                 }
@@ -340,7 +337,7 @@ class RMCalculator
         return $rsfix;
     }
 
-    function generate_total_use($pjob)
+    public function generate_total_use($pjob)
     {
         $crnt_dt = date('Y-m-d H:i:s');
         $rspsn = $this->CI->SPL_mod->select_z_getpsn_byjob("'" . $pjob . "'");
@@ -378,7 +375,7 @@ class RMCalculator
     {
         #version : 1.4
         #-two ways SA Part
-        #version : 1.3        
+        #version : 1.3
         $crnt_dt = date('Y-m-d H:i:s');
         $cuserid = $this->CI->session->userdata('nama');
         $rspsn = $this->CI->SPL_mod->select_z_getpsn_byjob("'" . $pjob . "'");
@@ -399,7 +396,7 @@ class RMCalculator
         if (trim($strpsn) != '') {
             $rsMSPP = $this->CI->MSPP_mod->select_byvar_for_calc($strmdlcd, $pjob);
             $xrssub = $this->CI->MSPP_mod->select_all_byvar_group(["MSPP_ACTIVE" => "Y", "MSPP_MDLCD !=" => $strmdlcd]);
-            $rsSpecial = $this->CI->MITMSA_mod->select_where(['RTRIM(MITMSA_ITMCD) MITMSA_ITMCD', 'RTRIM(MITMSA_ITMCDS) MITMSA_ITMCDS'], ['MITMSA_MDLCD' => $strmdlcd, 'MITMSA_DELDT' => NULL]);
+            $rsSpecial = $this->CI->MITMSA_mod->select_where(['RTRIM(MITMSA_ITMCD) MITMSA_ITMCD', 'RTRIM(MITMSA_ITMCDS) MITMSA_ITMCDS'], ['MITMSA_MDLCD' => $strmdlcd, 'MITMSA_DELDT' => null]);
             $rsTECSUB = $this->CI->TECPRTSUB_mod->select_where(['RTRIM(PRTCD) MITMSA_ITMCD', 'RTRIM(SUBCD) MITMSA_ITMCDS'], ['ITMCD' => $strmdlcd]);
             $rsSpecial = array_merge($rsSpecial, $rsTECSUB);
             $rspsnjob_req = $this->CI->SPL_mod->select_psnjob_req($strdocno, $pjob);
@@ -417,7 +414,7 @@ class RMCalculator
                 if ($BSGRP === 'PSI2PPZTDI' || $BSGRP === 'PSI2PPZADI' || $BSGRP === 'PSI2PPZSTY') {
                     //NEW LOGIC
                     //DATE : 2021-09-16
-                    //SET ASAHI, TOYO, STANLEY KITTING DATA AUTOCOMPLETE						
+                    //SET ASAHI, TOYO, STANLEY KITTING DATA AUTOCOMPLETE
                     //PIC : HADI, ZEFRI, GUSTI
                 } else {
                     $rspsn_kit = $this->CI->SPLSCN_mod->select_spl_vs_splscn_null($strpsn);
@@ -567,7 +564,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfmain"
+                                                "SERD_REMARK" => "xfmain",
                                             ];
                                         }
                                     } else {
@@ -639,7 +636,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub"
+                                                "SERD_REMARK" => "xfsub",
                                             ];
                                         }
                                     } else {
@@ -702,7 +699,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub2"
+                                                "SERD_REMARK" => "xfsub2",
                                             ];
                                         }
                                     } else {
@@ -721,7 +718,6 @@ class RMCalculator
                 }
             }
             unset($n);
-
 
             #sub3 CALCULATION
             foreach ($rspsnjob_req as &$n) {
@@ -766,7 +762,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub3"
+                                                "SERD_REMARK" => "xfsub3",
                                             ];
                                         }
                                     } else {
@@ -829,7 +825,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub4"
+                                                "SERD_REMARK" => "xfsub4",
                                             ];
                                         }
                                     } else {
@@ -892,7 +888,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "SpeAcp"
+                                                "SERD_REMARK" => "SpeAcp",
                                             ];
                                         }
                                     } else {
@@ -954,7 +950,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "SpeAcp"
+                                                "SERD_REMARK" => "SpeAcp",
                                             ];
                                         }
                                     } else {
@@ -1017,7 +1013,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "WOM"
+                                                "SERD_REMARK" => "WOM",
                                             ];
                                         }
                                     } else {
@@ -1050,14 +1046,14 @@ class RMCalculator
                             }
                         }
                         if ($issubtituted) {
-                            #third side sub							
+                            #third side sub
                             $balreq = $n['PIS3_REQQTSUM'] - $n["SUPQTY"];
                             if ($balreq && $x['SPLSCN_QTY'] > 0) {
                                 $serdqty = 0;
                                 $qtper = $n['MYPER'][0] == "." ? "0" . $n['MYPER'] : $n['MYPER'];
                                 if ($balreq > $x['SPLSCN_QTY']) {
-                                    $n['SUPQTY'] +=  $x['SPLSCN_QTY'];
-                                    $serdqty = (int)$x['SPLSCN_QTY'];
+                                    $n['SUPQTY'] += $x['SPLSCN_QTY'];
+                                    $serdqty = (int) $x['SPLSCN_QTY'];
                                     $x['SPLSCN_QTY'] = 0;
                                 } else {
                                     $x['SPLSCN_QTY'] -= $balreq;
@@ -1067,7 +1063,7 @@ class RMCalculator
 
                                 $rspsn_req_d[] = [
                                     "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => $serdqty, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                    "SERD_REMARK" => "splreff"
+                                    "SERD_REMARK" => "splreff",
                                 ];
                             }
                         }
@@ -1076,7 +1072,6 @@ class RMCalculator
                 }
             }
             unset($n);
-
 
             #MAX RUN Logic
             $distinct_ost_item_only = [];
@@ -1107,7 +1102,7 @@ class RMCalculator
                         unset($o);
                         if (!$isfound) {
                             $distinct_ost_item[] = [
-                                'ITEMCD' => $d, 'COUNT' => $r['MYPER'], 'COUNTROW' => 1
+                                'ITEMCD' => $d, 'COUNT' => $r['MYPER'], 'COUNTROW' => 1,
                             ];
                         }
                     }
@@ -1136,7 +1131,7 @@ class RMCalculator
             foreach ($rspsnjob_req as &$n) {
                 $isfound = false;
                 foreach ($distinct_ost_item as $k) {
-                    if ($k['ITEMCD'] === $n['PIS3_MPART'] &&  $k['COUNTROW'] > 1) {
+                    if ($k['ITEMCD'] === $n['PIS3_MPART'] && $k['COUNTROW'] > 1) {
                         $isfound = true;
                         break;
                     }
@@ -1149,7 +1144,7 @@ class RMCalculator
 
             foreach ($rspsn_req_d as $n => $val) {
                 foreach ($distinct_ost_item as $k) {
-                    if ($k['ITEMCD'] === $val['SERD_ITMCD'] &&  $k['COUNTROW'] > 1) {
+                    if ($k['ITEMCD'] === $val['SERD_ITMCD'] && $k['COUNTROW'] > 1) {
                         unset($rspsn_req_d[$n]);
                     }
                 }
@@ -1181,8 +1176,8 @@ class RMCalculator
                                     $qtper = $n['MYPER'][0] == "." ? "0" . $n['MYPER'] : $n['MYPER'];
                                     $serdqty = 0;
                                     if ($balreq > $x['SPLSCN_QTY_BAK']) {
-                                        $n['SUPQTY'] +=  $x['SPLSCN_QTY_BAK'];
-                                        $serdqty = (int)$x['SPLSCN_QTY_BAK'];
+                                        $n['SUPQTY'] += $x['SPLSCN_QTY_BAK'];
+                                        $serdqty = (int) $x['SPLSCN_QTY_BAK'];
                                         $x['SPLSCN_QTY_BAK'] = 0;
                                     } else {
                                         $x['SPLSCN_QTY_BAK'] -= $balreq;
@@ -1194,7 +1189,7 @@ class RMCalculator
                                     }
                                     $rspsn_req_d[] = [
                                         "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => $serdqty, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                        "SERD_REMARK" => "maxrun"
+                                        "SERD_REMARK" => "maxrun",
                                     ];
                                 }
                             }
@@ -1260,7 +1255,7 @@ class RMCalculator
                 if ($BSGRP === 'PSI2PPZTDI' || $BSGRP === 'PSI2PPZADI' || $BSGRP === 'PSI2PPZSTY') {
                     //NEW LOGIC
                     //DATE : 2021-09-16
-                    //SET ASAHI, TOYO, STANLEY KITTING DATA AUTOCOMPLETE						
+                    //SET ASAHI, TOYO, STANLEY KITTING DATA AUTOCOMPLETE
                     //PIC : HADI, ZEFRI, GUSTI
                 } else {
                     $rspsn_kit = $this->CI->SPLSCN_mod->select_spl_vs_splscn_null($strpsn);
@@ -1398,7 +1393,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfmain"
+                                                "SERD_REMARK" => "xfmain",
                                             ];
                                         }
                                     } else {
@@ -1470,7 +1465,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub"
+                                                "SERD_REMARK" => "xfsub",
                                             ];
                                         }
                                     } else {
@@ -1533,7 +1528,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub2"
+                                                "SERD_REMARK" => "xfsub2",
                                             ];
                                         }
                                     } else {
@@ -1552,7 +1547,6 @@ class RMCalculator
                 }
             }
             unset($n);
-
 
             #sub3 CALCULATION
             foreach ($rspsnjob_req as &$n) {
@@ -1597,7 +1591,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub3"
+                                                "SERD_REMARK" => "xfsub3",
                                             ];
                                         }
                                     } else {
@@ -1660,7 +1654,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub4"
+                                                "SERD_REMARK" => "xfsub4",
                                             ];
                                         }
                                     } else {
@@ -1679,7 +1673,6 @@ class RMCalculator
                 }
             }
             unset($n);
-
 
             #sub5 CALCULATION Special Acceptance
             foreach ($rspsnjob_req as &$n) {
@@ -1724,7 +1717,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "SpeAcp"
+                                                "SERD_REMARK" => "SpeAcp",
                                             ];
                                         }
                                     } else {
@@ -1787,7 +1780,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "WOM"
+                                                "SERD_REMARK" => "WOM",
                                             ];
                                         }
                                     } else {
@@ -1820,14 +1813,14 @@ class RMCalculator
                             }
                         }
                         if ($issubtituted) {
-                            #third side sub							
+                            #third side sub
                             $balreq = $n['PIS3_REQQTSUM'] - $n["SUPQTY"];
                             if ($balreq && $x['SPLSCN_QTY'] > 0) {
                                 $serdqty = 0;
                                 $qtper = $n['MYPER'][0] == "." ? "0" . $n['MYPER'] : $n['MYPER'];
                                 if ($balreq > $x['SPLSCN_QTY']) {
-                                    $n['SUPQTY'] +=  $x['SPLSCN_QTY'];
-                                    $serdqty = (int)$x['SPLSCN_QTY'];
+                                    $n['SUPQTY'] += $x['SPLSCN_QTY'];
+                                    $serdqty = (int) $x['SPLSCN_QTY'];
                                     $x['SPLSCN_QTY'] = 0;
                                 } else {
                                     $x['SPLSCN_QTY'] -= $balreq;
@@ -1837,7 +1830,7 @@ class RMCalculator
 
                                 $rspsn_req_d[] = [
                                     "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => $serdqty, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                    "SERD_REMARK" => "splreff"
+                                    "SERD_REMARK" => "splreff",
                                 ];
                             }
                         }
@@ -1847,7 +1840,7 @@ class RMCalculator
             }
             unset($n);
 
-            #MAX RUN Logic		
+            #MAX RUN Logic
             $distinct_ost_item_only = [];
             $distinct_ost_item = [];
             $mxr_item_suplied = [];
@@ -1876,7 +1869,7 @@ class RMCalculator
                         unset($o);
                         if (!$isfound) {
                             $distinct_ost_item[] = [
-                                'ITEMCD' => $d, 'COUNT' => $r['MYPER'], 'COUNTROW' => 1
+                                'ITEMCD' => $d, 'COUNT' => $r['MYPER'], 'COUNTROW' => 1,
                             ];
                         }
                     }
@@ -1905,7 +1898,7 @@ class RMCalculator
             foreach ($rspsnjob_req as &$n) {
                 $isfound = false;
                 foreach ($distinct_ost_item as $k) {
-                    if ($k['ITEMCD'] === $n['PIS3_MPART'] &&  $k['COUNTROW'] > 1) {
+                    if ($k['ITEMCD'] === $n['PIS3_MPART'] && $k['COUNTROW'] > 1) {
                         $isfound = true;
                         break;
                     }
@@ -1918,7 +1911,7 @@ class RMCalculator
 
             foreach ($rspsn_req_d as $n => $val) {
                 foreach ($distinct_ost_item as $k) {
-                    if ($k['ITEMCD'] === $val['SERD_ITMCD'] &&  $k['COUNTROW'] > 1) {
+                    if ($k['ITEMCD'] === $val['SERD_ITMCD'] && $k['COUNTROW'] > 1) {
                         unset($rspsn_req_d[$n]);
                     }
                 }
@@ -1949,8 +1942,8 @@ class RMCalculator
                                     $qtper = $n['MYPER'][0] == "." ? "0" . $n['MYPER'] : $n['MYPER'];
                                     $serdqty = 0;
                                     if ($balreq > $x['SPLSCN_QTY_BAK']) {
-                                        $n['SUPQTY'] +=  $x['SPLSCN_QTY_BAK'];
-                                        $serdqty = (int)$x['SPLSCN_QTY_BAK'];
+                                        $n['SUPQTY'] += $x['SPLSCN_QTY_BAK'];
+                                        $serdqty = (int) $x['SPLSCN_QTY_BAK'];
                                         $x['SPLSCN_QTY_BAK'] = 0;
                                     } else {
                                         $x['SPLSCN_QTY_BAK'] -= $balreq;
@@ -1959,7 +1952,7 @@ class RMCalculator
                                     }
                                     $rspsn_req_d[] = [
                                         "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => $serdqty, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                        "SERD_REMARK" => "maxrun"
+                                        "SERD_REMARK" => "maxrun",
                                     ];
                                 }
                             }
@@ -2056,7 +2049,6 @@ class RMCalculator
                 $rspsn_sup = $this->CI->SPLSCN_mod->select_scannedwelcat_bypsn($strpsn);
             }
 
-
             if (count($rspsnjob_req) == 0) {
                 $myar[] = ['cd' => 0, 'msg' => 'pis3 null'];
                 return ('{"status": ' . json_encode($myar) . '}');
@@ -2111,7 +2103,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => $x['SPLSCN_CAT'], "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfmain"
+                                                "SERD_REMARK" => "xfmain",
                                             ];
                                         }
                                     } else {
@@ -2176,7 +2168,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => $x['SPLSCN_CAT'], "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub"
+                                                "SERD_REMARK" => "xfsub",
                                             ];
                                         }
                                     } else {
@@ -2241,7 +2233,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => $x['SPLSCN_CAT'], "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub2"
+                                                "SERD_REMARK" => "xfsub2",
                                             ];
                                         }
                                     } else {
@@ -2260,7 +2252,6 @@ class RMCalculator
                 }
             }
             unset($n);
-
 
             #sub3 CALCULATION
             foreach ($rspsnjob_req as &$n) {
@@ -2307,7 +2298,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => $x['SPLSCN_CAT'], "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub3"
+                                                "SERD_REMARK" => "xfsub3",
                                             ];
                                         }
                                     } else {
@@ -2372,7 +2363,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => $x['SPLSCN_CAT'], "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "xfsub4"
+                                                "SERD_REMARK" => "xfsub4",
                                             ];
                                         }
                                     } else {
@@ -2435,7 +2426,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "SpeAcp"
+                                                "SERD_REMARK" => "SpeAcp",
                                             ];
                                         }
                                     } else {
@@ -2497,7 +2488,7 @@ class RMCalculator
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
                                                 "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
-                                                "SERD_REMARK" => "SpeAcp"
+                                                "SERD_REMARK" => "SpeAcp",
                                             ];
                                         }
                                     } else {
@@ -2718,14 +2709,14 @@ class RMCalculator
                                     $this->CI->SERD_mod->deletebyID_label(['SERD2_SER' => $pser[$u]]);
                                     $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser[$u], $pserqty[$u], $pjob[$u]));
                                     $myar[] = $res2->status[0]->cd != 0 ? ['cd' => 1, 'msg' => 'recalculated ok', 'reffno' => $pser[$u]] :
-                                        ['cd' => 0, 'msg' => 'recalculating is failed', 'reffno' => $pser[$u]];
+                                    ['cd' => 0, 'msg' => 'recalculating is failed', 'reffno' => $pser[$u]];
                                 } else {
                                     $myar[] = ['cd' => 1, 'msg' => 'just get', 'reffno' => $pser[$u]];
                                 }
                             } else {
                                 $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser[$u], $pserqty[$u], $pjob[$u]));
-                                $myar[] = $res2->status[0]->cd != 0 ?  ['cd' => 1, 'msg' => 'recalculated ok', 'reffno' => $pser[$u]] :
-                                    ['cd' => 0, 'msg' => 'calculating is failed', 'reffno' => $pser[$u]];
+                                $myar[] = $res2->status[0]->cd != 0 ? ['cd' => 1, 'msg' => 'recalculated ok', 'reffno' => $pser[$u]] :
+                                ['cd' => 0, 'msg' => 'calculating is failed', 'reffno' => $pser[$u]];
                             }
                         } else { //if not yet calculated per job
                             $kittingnull = $res; #$res->data[0] ? $res->data[0] : [];
@@ -2753,14 +2744,14 @@ class RMCalculator
                                 $this->CI->SERD_mod->deletebyID_label(['SERD2_SER' => $pser[$u]]);
                                 $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser[$u], $pserqty[$u], $pjob[$u]));
                                 $myar[] = $res2->status[0]->cd != 0 ? ['cd' => 1, 'msg' => 'recalculated ok.', 'reffno' => $pser[$u]] :
-                                    ['cd' => 0, 'msg' => 'recalculating is failed..', 'reffno' => $pser[$u]];
+                                ['cd' => 0, 'msg' => 'recalculating is failed..', 'reffno' => $pser[$u]];
                             } else {
                                 $myar[] = ['cd' => 1, 'msg' => 'just get', 'reffno' => $pser[$u]];
                             }
                         } else {
                             $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser[$u], $pserqty[$u], $pjob[$u]));
-                            $myar[] = $res2->status[0]->cd != 0 ?  ['cd' => 1, 'msg' => 'recalculated ok.', 'reffno' => $pser[$u]] :
-                                ['cd' => 0, 'msg' => 'calculating is failed...', 'reffno' => $pser[$u]];
+                            $myar[] = $res2->status[0]->cd != 0 ? ['cd' => 1, 'msg' => 'recalculated ok.', 'reffno' => $pser[$u]] :
+                            ['cd' => 0, 'msg' => 'calculating is failed...', 'reffno' => $pser[$u]];
                         }
                     }
                     #CHECK IS SUB ASSY
@@ -3021,7 +3012,7 @@ class RMCalculator
                     $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob));
                     if ($res2->status[0]->cd != 0) {
                         $myar[] = ['cd' => 1, 'msg' => 'recalculated, ok.'];
-                        $rsusage = $this->CI->SERD_mod->select_calculatedlabel_where($showed_cols,     ['SERD2_SER' => $pser]);
+                        $rsusage = $this->CI->SERD_mod->select_calculatedlabel_where($showed_cols, ['SERD2_SER' => $pser]);
                     } else {
                         $myar[] = ['cd' => 0, 'msg' => 'recalculating is failed.'];
                     }
@@ -3044,7 +3035,7 @@ class RMCalculator
 
     public function get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob)
     {
-        #version : 3        
+        #version : 3
         $currrtime = date('Y-m-d H:i:s');
         $rsjobrm_d = $this->CI->SERD_mod->selectd_byjob($pjob);
         $pserqty = str_replace(",", "", $pserqty);
@@ -3073,7 +3064,7 @@ class RMCalculator
                                     $__qty = $__balance;
                                 } else {
                                     $n["SUPSERQTY"] += $x['SERD_QTY'];
-                                    $__qty =  $x['SERD_QTY'];
+                                    $__qty = $x['SERD_QTY'];
                                     $x['SERD_QTY'] = 0;
                                 }
                                 $islotfound = false;
@@ -3095,7 +3086,7 @@ class RMCalculator
                                 unset($u);
                                 if (!$islotfound) {
                                     $rsser_d[] = [
-                                        "SERD2_SER" => $pser, "SERD2_JOB" => $n['SERD_JOB'], "SERD2_QTPER" => $n['SERD_QTPER'], "SERD2_ITMCD" => $x['SERD_ITMCD'], "SERD2_FGQTY" => intval($pserqty), "SERD2_QTY" => $__qty * 1, "SERD2_LOTNO" => $x['SERD_LOTNO'], "SERD2_PSNNO" => $x['SERD_PSNNO'], "SERD2_LINENO" => $n['SERD_LINENO'], "SERD2_PROCD" => $n['SERD_PROCD'], "SERD2_CAT" => $n['SERD_CAT'], "SERD2_FR" => $n['SERD_FR'], "SERD2_MC" => $n['SERD_MC'], "SERD2_MCZ" => $n['SERD_MCZ'], "SERD2_MSCANTM" => $x['SERD_MSCANTM'], "SERD2_LUPDT" => $currrtime
+                                        "SERD2_SER" => $pser, "SERD2_JOB" => $n['SERD_JOB'], "SERD2_QTPER" => $n['SERD_QTPER'], "SERD2_ITMCD" => $x['SERD_ITMCD'], "SERD2_FGQTY" => intval($pserqty), "SERD2_QTY" => $__qty * 1, "SERD2_LOTNO" => $x['SERD_LOTNO'], "SERD2_PSNNO" => $x['SERD_PSNNO'], "SERD2_LINENO" => $n['SERD_LINENO'], "SERD2_PROCD" => $n['SERD_PROCD'], "SERD2_CAT" => $n['SERD_CAT'], "SERD2_FR" => $n['SERD_FR'], "SERD2_MC" => $n['SERD_MC'], "SERD2_MCZ" => $n['SERD_MCZ'], "SERD2_MSCANTM" => $x['SERD_MSCANTM'], "SERD2_LUPDT" => $currrtime,
                                     ];
                                 }
                             }
@@ -3155,14 +3146,13 @@ class RMCalculator
         return (json_encode(['status' => $myar]));
     }
 
-
     public function sync_new_item()
     {
         $rs = $this->CI->MSTITM_mod->selectdiff();
         $counterNew = 0;
         foreach ($rs as $r) {
-            $citem    = $r['MITM_ITMCD'];
-            if ($this->CI->MSTITM_mod->check_Primary(['MITM_ITMCD' =>  $citem]) == 0) {
+            $citem = $r['MITM_ITMCD'];
+            if ($this->CI->MSTITM_mod->check_Primary(['MITM_ITMCD' => trim($citem)]) == 0) {
                 $toret = $this->CI->MSTITM_mod->insertsync($citem);
                 if ($toret > 0) {
                     $counterNew++;
@@ -3182,7 +3172,7 @@ class RMCalculator
         foreach ($rs as $r) {
             $citem = $r['PGRELED_LEDGRP'];
             $citemGrade = $r['PGRELED_ITMCD'];
-            $saveData = ['MITMGRP_ITMCD' =>  $citem, 'MITMGRP_ITMCD_GRD' => $citemGrade];
+            $saveData = ['MITMGRP_ITMCD' => $citem, 'MITMGRP_ITMCD_GRD' => $citemGrade];
             if ($this->CI->MSTITM_mod->check_PrimaryGrade($saveData) == 0) {
                 $saveData['MITMGRP_LUPDT'] = $crnt_dt;
                 $saveData['MITMGRP_USRID'] = $cuserid;
@@ -3200,7 +3190,7 @@ class RMCalculator
         $fields = [
             'inunique' => $pser,
             'inunique_qty' => $pqty,
-            'inunique_job' => $pjob
+            'inunique_job' => $pjob,
         ];
         $fields_string = http_build_query($fields);
         $ch = curl_init();
