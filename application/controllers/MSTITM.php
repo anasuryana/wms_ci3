@@ -743,9 +743,9 @@ class MSTITM extends CI_Controller {
         $itemhscd = $this->input->post('itemhscd');
         $netweight = $this->input->post('netweight');
         $grosweight = $this->input->post('grosweight');
-        $beamasuk = $this->input->post('beamasuk');
-        $ppn = $this->input->post('ppn');
-        $pph = $this->input->post('pph');
+        $beamasuk = trim($this->input->post('beamasuk'));
+        $ppn = trim($this->input->post('ppn'));
+        $pph = trim($this->input->post('pph'));
         $ret = $this->MSTITM_mod->updatebyId([
             'MITM_HSCD' => $itemhscd,
             'MITM_NWG' => $netweight == 'null' ? NULL : $netweight,

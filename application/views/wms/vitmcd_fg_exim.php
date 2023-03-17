@@ -56,13 +56,13 @@
     function mst_fg_exim_btn_save_e_click(){        
         let tabell = document.getElementById("mst_fg_exim_tbl");
         let tableku2 = tabell.getElementsByTagName("tbody")[0];
-        let itemcd = tableku2.rows[mst_fg_exim_selected_index].cells[0].innerText
-        let itemhscd = tableku2.rows[mst_fg_exim_selected_index].cells[2].innerText
-        let netweight = tableku2.rows[mst_fg_exim_selected_index].cells[3].innerText
-        let grosweight = tableku2.rows[mst_fg_exim_selected_index].cells[4].innerText
-        let beamasuk = tableku2.rows[mst_fg_exim_selected_index].cells[5].innerText
-        let ppn = tableku2.rows[mst_fg_exim_selected_index].cells[6].innerText
-        let pph = tableku2.rows[mst_fg_exim_selected_index].cells[7].innerText
+        let itemcd = tableku2.rows[mst_fg_exim_selected_index].cells[0].innerText.trim()
+        let itemhscd = tableku2.rows[mst_fg_exim_selected_index].cells[2].innerText.trim()
+        let netweight = tableku2.rows[mst_fg_exim_selected_index].cells[3].innerText.trim()
+        let grosweight = tableku2.rows[mst_fg_exim_selected_index].cells[4].innerText.trim()
+        let beamasuk = tableku2.rows[mst_fg_exim_selected_index].cells[5].innerText.trim()
+        let ppn = tableku2.rows[mst_fg_exim_selected_index].cells[6].innerText.trim()
+        let pph = tableku2.rows[mst_fg_exim_selected_index].cells[7].innerText.trim()
         if(confirm("Are you sure ?")) {
             $.ajax({
                 type: "POST",

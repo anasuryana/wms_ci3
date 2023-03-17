@@ -126,8 +126,8 @@ class MSTITM_mod extends CI_Model
 
     public function selectdiff()
     {
-        $qry = "select rtrim(MITM_ITMCD) MITM_ITMCD  from XMITM_V
-		where MITM_ITMCD not in (select MITM_ITMCD from MITM_TBL)";
+        $qry = "select replace(RTRIM(MITM_ITMCD),char(160) ,'') MITM_ITMCD  from XMITM_V
+		where MITM_ITMCD not in (select RTRIM(MITM_ITMCD) MITM_ITMCD from MITM_TBL)";
         $resq = $this->db->query($qry);
         return $resq->result_array();
     }
