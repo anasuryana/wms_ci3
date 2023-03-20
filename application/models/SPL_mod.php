@@ -3,7 +3,7 @@
 class SPL_mod extends CI_Model
 {
     private $TABLENAME = "SPL_TBL";
-    private $SPECIALWO = ['22-5A09-217724501', '22-6A27-F65929-09V', '22-ZB28-219236900','21-XA08-221093101ES'];
+    private $SPECIALWO = ['22-5A09-217724501', '22-6A27-F65929-09V', '22-ZB28-219236900', '21-XA08-221093101ES'];
     public function __construct()
     {
         $this->load->database();
@@ -12,7 +12,7 @@ class SPL_mod extends CI_Model
     public function select_last_line_doc($doc)
     {
         $qry = "SELECT MAX(SPL_LINEDATA) LASTLINEDATA FROM SPL_TBL WHERE SPL_DOC=?";
-        $query =  $this->db->query($qry, [$doc]);
+        $query = $this->db->query($qry, [$doc]);
         if ($query->num_rows() > 0) {
             $ret = $query->row();
             return $ret->LASTLINEDATA;
@@ -34,7 +34,7 @@ class SPL_mod extends CI_Model
         $qry = " SELECT MAX(CONVERT(INT,RIGHT(SPL_DOC,4))) LASTNO FROM SPL_TBL WHERE SPL_DOC LIKE 'PR-%'
         AND YEAR(SPL_LUPDT)=? AND MONTH(SPL_LUPDT)=? AND SUBSTRING(SPL_DOC,4,3)=?
         ORDER BY 1 DESC";
-        $query =  $this->db->query($qry, [$pYear, $pMonth, $data2]);
+        $query = $this->db->query($qry, [$pYear, $pMonth, $data2]);
         if ($query->num_rows() > 0) {
             $ret = $query->row();
             return $ret->LASTNO;
@@ -104,7 +104,7 @@ class SPL_mod extends CI_Model
         LEFT JOIN
         ( select SER_DOC,SUM(SER_QTYLOT) LBLTTL from SER_TBL x WHERE SER_DOC LIKE '%$pwo%'
         GROUP BY SER_DOC
-        ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_WONO LIKE '%$pwo%'  and PDPP_WORQT!=PDPP_GRNQT AND PDPP_COMFG=0"; # 
+        ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_WONO LIKE '%$pwo%'  and PDPP_WORQT!=PDPP_GRNQT AND PDPP_COMFG=0"; #
         $query = $this->db->query($qry);
         return $query->result_array();
     }
@@ -115,7 +115,7 @@ class SPL_mod extends CI_Model
         LEFT JOIN
         ( select SER_DOC,SUM(SER_QTYLOT) LBLTTL from SER_TBL x WHERE SER_DOC LIKE '%$pwo%' AND SER_REFNO!='SN'
         GROUP BY SER_DOC
-        ) v2 on PDPP_WONO=v2.SER_DOC 
+        ) v2 on PDPP_WONO=v2.SER_DOC
         inner join v_assy_as_sub on SUBSTRING(PDPP_MDLCD,1,9)=PWOP_BOMPN
         WHERE PDPP_WONO LIKE '%$pwo%' and PDPP_WORQT!=PDPP_GRNQT AND PDPP_COMFG=0";
         $query = $this->db->query($qry);
@@ -173,12 +173,12 @@ class SPL_mod extends CI_Model
     {
         $this->db->select("SPL_ORDERNO,SPL_RACKNO, SPL_ITMCD,MITM_SPTNO,  SPL_QTYUSE, SPL_MS, TTLREQ, TTLSCN");
         $this->db->from("(SELECT SPL_ORDERNO,SPL_RACKNO, SPL_ITMCD, MAX(SPL_QTYUSE) SPL_QTYUSE, SPL_MS, SUM(SPL_QTYREQ) TTLREQ
-        FROM $this->TABLENAME WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline' AND SPL_FEDR='$pfr' 
+        FROM $this->TABLENAME WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline' AND SPL_FEDR='$pfr'
         GROUP BY SPL_ORDERNO,SPL_RACKNO, SPL_ITMCD,  SPL_MS) a");
         $this->db->join('MITM_TBL b', 'a.SPL_ITMCD=b.MITM_ITMCD');
         $this->db->join(
-            "(SELECT SPLSCN_ORDERNO,SPLSCN_ITMCD,SUM(SPLSCN_QTY) TTLSCN 
-        FROM SPLSCN_TBL WHERE SPLSCN_DOC='$pspl' AND SPLSCN_CAT='$pcat' AND SPLSCN_LINE='$pline' AND SPLSCN_FEDR='$pfr' 
+            "(SELECT SPLSCN_ORDERNO,SPLSCN_ITMCD,SUM(SPLSCN_QTY) TTLSCN
+        FROM SPLSCN_TBL WHERE SPLSCN_DOC='$pspl' AND SPLSCN_CAT='$pcat' AND SPLSCN_LINE='$pline' AND SPLSCN_FEDR='$pfr'
         GROUP BY SPLSCN_DOC,SPLSCN_CAT, SPLSCN_LINE, SPLSCN_FEDR,SPLSCN_ORDERNO,SPLSCN_ITMCD) c",
             "a.SPL_ITMCD=c.SPLSCN_ITMCD AND a.SPL_ORDERNO=c.SPLSCN_ORDERNO",
             'left'
@@ -192,12 +192,12 @@ class SPL_mod extends CI_Model
     {
         $this->db->select("SPL_ORDERNO,SPL_RACKNO, SPL_ITMCD,MITM_SPTNO,  SPL_QTYUSE, SPL_MS, TTLREQ, TTLSCN");
         $this->db->from("(SELECT SPL_ORDERNO,SPL_RACKNO, SPL_ITMCD, MAX(SPL_QTYUSE) SPL_QTYUSE, SPL_MS, SUM(SPL_QTYREQ) TTLREQ
-        FROM $this->TABLENAME WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline' 
+        FROM $this->TABLENAME WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline'
         GROUP BY SPL_ORDERNO,SPL_RACKNO, SPL_ITMCD,  SPL_MS) a");
         $this->db->join('MITM_TBL b', 'a.SPL_ITMCD=b.MITM_ITMCD');
         $this->db->join(
-            "(SELECT SPLSCN_ORDERNO,SPLSCN_ITMCD,SUM(SPLSCN_QTY) TTLSCN 
-        FROM SPLSCN_TBL WHERE SPLSCN_DOC='$pspl' AND SPLSCN_CAT='$pcat' AND SPLSCN_LINE='$pline' 
+            "(SELECT SPLSCN_ORDERNO,SPLSCN_ITMCD,SUM(SPLSCN_QTY) TTLSCN
+        FROM SPLSCN_TBL WHERE SPLSCN_DOC='$pspl' AND SPLSCN_CAT='$pcat' AND SPLSCN_LINE='$pline'
         GROUP BY SPLSCN_DOC,SPLSCN_CAT, SPLSCN_LINE, SPLSCN_FEDR,SPLSCN_ORDERNO,SPLSCN_ITMCD) c",
             "a.SPL_ITMCD=c.SPLSCN_ITMCD AND a.SPL_ORDERNO=c.SPLSCN_ORDERNO",
             'left'
@@ -207,12 +207,11 @@ class SPL_mod extends CI_Model
         return $query->result_array();
     }
 
-
     public function selectby4par_result($pspl, $pcat, $pline, $pfr)
     {
         $this->db->select("SPL_MC,SPL_ORDERNO,SPL_RACKNO, SPL_ITMCD,MITM_SPTNO, SPL_PROCD, SPL_QTYUSE, SPL_MS, TTLREQ, 0 TTLSCN,PRISSUDT");
         $this->db->from("(SELECT SPL_PROCD, SPL_MC,SPL_ORDERNO,SPL_RACKNO, SPL_ITMCD, MAX(SPL_QTYUSE) SPL_QTYUSE, SPL_MS, SUM(SPL_QTYREQ) TTLREQ,MIN(CONVERT(DATE,SPL_LUPDT)) PRISSUDT
-        FROM $this->TABLENAME WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline' AND SPL_FEDR='$pfr' 
+        FROM $this->TABLENAME WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline' AND SPL_FEDR='$pfr'
         GROUP BY SPL_MC,SPL_ORDERNO,SPL_RACKNO, SPL_ITMCD,  SPL_MS,SPL_PROCD) a");
         $this->db->join('MITM_TBL b', 'a.SPL_ITMCD=b.MITM_ITMCD');
         $this->db->order_by('SPL_PROCD ASC,SPL_ORDERNO ASC,SPL_MC ASC,SPL_ITMCD ASC');
@@ -224,7 +223,7 @@ class SPL_mod extends CI_Model
     {
         $this->db->select("SPL_PROCD,SPL_ORDERNO,SPL_RACKNO, rtrim(SPL_ITMCD) SPL_ITMCD,MITM_SPTNO, SPL_QTYUSE, SPL_MC, SPL_MS, TTLREQ, TTLSCN, SPL_ITMRMRK,TTLREQ TTLREQB4");
         $this->db->from("(SELECT SPL_PROCD,SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD, max(SPL_QTYUSE) SPL_QTYUSE,SPL_MS, SPL_MC, SUM(SPL_QTYREQ) TTLREQ, 0 TTLSCN , max(SPL_ITMRMRK) SPL_ITMRMRK
-        FROM $this->TABLENAME LEFT JOIN (SELECT MSTLOC_CD,MAX(aliasrack) aliasrack FROM vinitlocation GROUP BY MSTLOC_CD) VRAK on SPL_RACKNO=MSTLOC_CD WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline' AND SPL_FEDR='$pfr' 
+        FROM $this->TABLENAME LEFT JOIN (SELECT MSTLOC_CD,MAX(aliasrack) aliasrack FROM vinitlocation GROUP BY MSTLOC_CD) VRAK on SPL_RACKNO=MSTLOC_CD WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline' AND SPL_FEDR='$pfr'
         GROUP BY SPL_PROCD,SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD,  SPL_MC,SPL_MS) a");
         $this->db->join('MITM_TBL b', 'a.SPL_ITMCD=b.MITM_ITMCD', 'LEFT');
         $this->db->order_by('aliasrack,SPL_RACKNO,SPL_ORDERNO,SPL_MC,SPL_ITMCD,SPL_PROCD');
@@ -236,7 +235,7 @@ class SPL_mod extends CI_Model
     {
         $this->db->select("SPL_PROCD,SPL_ORDERNO,SPL_RACKNO, rtrim(SPL_ITMCD) SPL_ITMCD,rtrim(MITM_SPTNO) MITM_SPTNO, SPL_QTYUSE, SPL_MC, SPL_MS, TTLREQ, TTLSCN, SPL_ITMRMRK,TTLREQ TTLREQB4,SPL_LINE,SPL_CAT,SPL_FEDR");
         $this->db->from("(SELECT SPL_PROCD,RTRIM(SPL_ORDERNO) SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD, max(SPL_QTYUSE) SPL_QTYUSE,SPL_MS, RTRIM(SPL_MC) SPL_MC, SUM(SPL_QTYREQ) TTLREQ, 0 TTLSCN , max(SPL_ITMRMRK) SPL_ITMRMRK,SPL_LINE,SPL_CAT,SPL_FEDR
-        FROM $this->TABLENAME LEFT JOIN (SELECT MSTLOC_CD,MAX(aliasrack) aliasrack FROM vinitlocation GROUP BY MSTLOC_CD) VRAK on SPL_RACKNO=MSTLOC_CD WHERE SPL_DOC='$pspl' 
+        FROM $this->TABLENAME LEFT JOIN (SELECT MSTLOC_CD,MAX(aliasrack) aliasrack FROM vinitlocation GROUP BY MSTLOC_CD) VRAK on SPL_RACKNO=MSTLOC_CD WHERE SPL_DOC='$pspl'
         GROUP BY SPL_LINE,SPL_CAT,SPL_FEDR, SPL_PROCD,SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD,  SPL_MC,SPL_MS) a");
         $this->db->join('MITM_TBL b', 'a.SPL_ITMCD=b.MITM_ITMCD', 'LEFT');
         $this->db->order_by('SPL_CAT,SPL_LINE,SPL_FEDR,aliasrack,SPL_RACKNO,SPL_ORDERNO,SPL_MC,SPL_ITMCD,SPL_PROCD');
@@ -248,8 +247,8 @@ class SPL_mod extends CI_Model
     {
         $this->db->select("SPL_ORDERNO,SPL_RACKNO, UPPER(SPL_ITMCD) SPL_ITMCD,MITM_SPTNO, SPL_QTYUSE, SPL_MC, SPL_MS, TTLREQ, TTLSCN");
         $this->db->from("(SELECT SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD, max(SPL_QTYUSE) SPL_QTYUSE,SPL_MS, SPL_MC, SUM(SPL_QTYREQ) TTLREQ, 0 TTLSCN
-        FROM $this->TABLENAME LEFT JOIN (select MSTLOC_CD,max(aliasrack) aliasrack  from vinitlocation group by MSTLOC_CD) vloc on SPL_RACKNO=MSTLOC_CD         
-        WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline' AND SPL_FEDR='$pfr' 
+        FROM $this->TABLENAME LEFT JOIN (select MSTLOC_CD,max(aliasrack) aliasrack  from vinitlocation group by MSTLOC_CD) vloc on SPL_RACKNO=MSTLOC_CD
+        WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline' AND SPL_FEDR='$pfr'
         GROUP BY SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD,  SPL_MC,SPL_MS) a");
         $this->db->join('MITM_TBL b', 'a.SPL_ITMCD=b.MITM_ITMCD');
         $this->db->order_by('SPL_ORDERNO,SPL_MC,SPL_ITMCD'); //
@@ -262,20 +261,20 @@ class SPL_mod extends CI_Model
         $this->db->limit(1);
         $this->db->select("SPL_DOC,SPL_CAT, SPL_LINE, SPL_FEDR, SPL_ORDERNO,SPL_ITMCD, convert(int,TTLREQ) TTLREQ, convert(int,COALESCE(TTLSCN,0)) TTLSCN ");
         $this->db->from(
-            "(SELECT SPL_DOC,SPL_CAT, SPL_LINE, SPL_FEDR, SPL_ORDERNO,SPL_ITMCD, sum(SPL_QTYREQ) TTLREQ from $this->TABLENAME 
+            "(SELECT SPL_DOC,SPL_CAT, SPL_LINE, SPL_FEDR, SPL_ORDERNO,SPL_ITMCD, sum(SPL_QTYREQ) TTLREQ from $this->TABLENAME
             where SPL_DOC = '$pspl' AND  SPL_CAT='$pcat' AND SPL_LINE='$pline' AND SPL_FEDR='$pfr' AND SPL_ITMCD='$pitem'
             GROUP BY SPL_DOC,SPL_CAT,SPL_LINE,SPL_FEDR,SPL_ORDERNO,SPL_ITMCD) a"
         );
         $this->db->join(
-            "(select SPLSCN_DOC,SPLSCN_CAT,SPLSCN_LINE,SPLSCN_FEDR,SPLSCN_ORDERNO,SPLSCN_ITMCD, sum(SPLSCN_QTY) TTLSCN from SPLSCN_TBL 
-            where SPLSCN_DOC = '$pspl' AND  SPLSCN_CAT='$pcat' AND SPLSCN_LINE='$pline' AND SPLSCN_FEDR='$pfr' and SPLSCN_ITMCD='$pitem' 
+            "(select SPLSCN_DOC,SPLSCN_CAT,SPLSCN_LINE,SPLSCN_FEDR,SPLSCN_ORDERNO,SPLSCN_ITMCD, sum(SPLSCN_QTY) TTLSCN from SPLSCN_TBL
+            where SPLSCN_DOC = '$pspl' AND  SPLSCN_CAT='$pcat' AND SPLSCN_LINE='$pline' AND SPLSCN_FEDR='$pfr' and SPLSCN_ITMCD='$pitem'
             GROUP BY SPLSCN_DOC,SPLSCN_CAT,SPLSCN_LINE,SPLSCN_FEDR,SPLSCN_ORDERNO,SPLSCN_ITMCD) v1",
             "a.SPL_DOC=v1.SPLSCN_DOC and a.SPL_CAT=v1.SPLSCN_CAT and a.SPL_LINE=v1.SPLSCN_LINE and a.SPL_FEDR=v1.SPLSCN_FEDR and a.SPL_ORDERNO=v1.SPLSCN_ORDERNO and a.SPL_ITMCD=v1.SPLSCN_ITMCD",
             "left"
         );
         $this->db->where('TTLREQ>COALESCE(TTLSCN,0)');
         $this->db->order_by('SPL_ORDERNO ASC');
-        // $this->db->where('SPL_DOC', $pspl)->where('SPL_CAT', $pcat)->where('SPL_LINE', $pline)->where('SPL_FEDR', $pfr);        
+        // $this->db->where('SPL_DOC', $pspl)->where('SPL_CAT', $pcat)->where('SPL_LINE', $pline)->where('SPL_FEDR', $pfr);
         $query = $this->db->get();
         return $query->result_array();
     }
@@ -360,7 +359,7 @@ class SPL_mod extends CI_Model
         $qry = "select PPSN2_PSNNO,PIS3_WONO,TWOR_MDLCD,PPSN2_ITMCAT,PPSN2_LINENO,PPSN2_FR,PPSN2_MCZ, PPSN2_SUBPN,PIS2_QTPER,PPSN2_MSFLG,TWOR_LOTSZ, TWOR_LOTSZ*PIS2_QTPER MYQTREQ ,PDPP_CUSCD
         from  SRVMEGA.PSI_MEGAEMS.dbo.PPSN2_TBL a LEFT JOIN SRVMEGA.PSI_MEGAEMS.dbo.PIS3_TBL b
          on a.PPSN2_DOCNO=b.PIS3_DOCNO and a.PPSN2_LINENO=b.PIS3_LINENO and a.PPSN2_PROCD=b.PIS3_PROCD and
-        a.PPSN2_MCZ=b.PIS3_MCZ AND 
+        a.PPSN2_MCZ=b.PIS3_MCZ AND
         PPSN2_SUBPN=(case when PPSN2_MSFLG='M' THEN PIS3_MPART ELSE PIS3_ITMCD END)
         LEFT JOIN SRVMEGA.PSI_MEGAEMS.dbo.PIS2_TBL x on b.PIS3_DOCNO=PIS2_DOCNO and PIS3_WONO=PIS2_WONO AND PIS3_LINENO=PIS2_LINENO AND
         PIS3_FR=PIS2_FR AND PIS3_MCZ=PIS2_MCZ AND PIS3_MPART=PIS2_MPART
@@ -373,7 +372,7 @@ class SPL_mod extends CI_Model
     }
     public function select_z_getpsn_byjob($pjob)
     {
-        $qry  = "select RTRIM(PPSN1_PSNNO) PPSN1_PSNNO,RTRIM(PPSN1_DOCNO) PPSN1_DOCNO,RTRIM(PPSN1_MDLCD) PPSN1_MDLCD,RTRIM(MAX(PPSN1_BSGRP)) PPSN1_BSGRP FROM XPPSN1 WHERE PPSN1_WONO IN ($pjob) 
+        $qry = "select RTRIM(PPSN1_PSNNO) PPSN1_PSNNO,RTRIM(PPSN1_DOCNO) PPSN1_DOCNO,RTRIM(PPSN1_MDLCD) PPSN1_MDLCD,RTRIM(MAX(PPSN1_BSGRP)) PPSN1_BSGRP FROM XPPSN1 WHERE PPSN1_WONO IN ($pjob)
                 AND PPSN1_PSNNO NOT IN ('SP-IEI-2022-02-0590')
                 GROUP BY PPSN1_PSNNO,PPSN1_DOCNO,PPSN1_MDLCD";
         $query = $this->db->query($qry);
@@ -396,7 +395,7 @@ class SPL_mod extends CI_Model
             $query = $this->db->query($qry, [$pwo]);
         } else {
             $qry = "select RTRIM(PIS3_LINENO) PIS3_LINENO,RTRIM(PIS3_FR) PIS3_FR,rtrim(UPPER(PIS3_PROCD)) PIS3_PROCD,PIS3_MC,PIS3_MCZ,SUM(PIS3_REQQT) PIS3_REQQTSUM,SUM(PIS3_REQQT)/SIMQT MYPER, RTRIM(PIS3_MPART) PIS3_MPART,ISNULL(PDPP_WORQT,SIMQT) PDPP_WORQT
-            ,RTRIM(MITM_ITMD1) MITM_ITMD1,rtrim(MITM_SPTNO) MITM_SPTNO,SIMQT from XPIS3 
+            ,RTRIM(MITM_ITMD1) MITM_ITMD1,rtrim(MITM_SPTNO) MITM_SPTNO,SIMQT from XPIS3
             LEFT JOIN XWO ON PIS3_WONO=PDPP_WONO
             LEFT JOIN (SELECT PPSN1_WONO,MAX(PPSN1_SIMQT) SIMQT FROM XPPSN1
             GROUP BY PPSN1_WONO) VPPSN1 ON PPSN1_WONO=PIS3_WONO
@@ -424,14 +423,14 @@ class SPL_mod extends CI_Model
             $qry = "select PPSN1_MDLCD PDPP_MDLCD,RTRIM(PIS3_WONO) PIS3_WONO,RTRIM(PIS3_LINENO) PIS3_LINENO, RTRIM(PIS3_FR) PIS3_FR
             ,UPPER(RTRIM(PIS3_PROCD)) PIS3_PROCD, RTRIM(PIS3_MC) PIS3_MC
             ,RTRIM(PIS3_MCZ) PIS3_MCZ
-            ,CASE WHEN PDPP_WORQT!=SIMQT THEN 
+            ,CASE WHEN PDPP_WORQT!=SIMQT THEN
                 SUM(PIS3_REQQT)+(SUM(PIS3_REQQT)/SIMQT * (PDPP_WORQT-SIMQT)) else SUM(PIS3_REQQT)
             END PIS3_REQQTSUM
-            ,CASE WHEN PDPP_WORQT!=SIMQT THEN 
+            ,CASE WHEN PDPP_WORQT!=SIMQT THEN
                 (SUM(PIS3_REQQT)+(SUM(PIS3_REQQT)/SIMQT * (PDPP_WORQT-SIMQT))) / PDPP_WORQT else SUM(PIS3_REQQT)/SIMQT
             END MYPER
-            ,max(RTRIM(PIS3_ITMCD)) PIS3_ITMCD,RTRIM(PIS3_MPART) PIS3_MPART	
-            from XPIS3 
+            ,max(RTRIM(PIS3_ITMCD)) PIS3_ITMCD,RTRIM(PIS3_MPART) PIS3_MPART
+            from XPIS3
             left JOIN XWO ON PIS3_WONO=PDPP_WONO
             LEFT JOIN (SELECT PPSN1_WONO,MAX(PPSN1_SIMQT) SIMQT, RTRIM(PPSN1_MDLCD) PPSN1_MDLCD FROM XPPSN1
             GROUP BY PPSN1_WONO, PPSN1_MDLCD) VPPSN1 ON PPSN1_WONO=PIS3_WONO
@@ -445,12 +444,25 @@ class SPL_mod extends CI_Model
     public function select_psnjob_req_from_CIMS($pwo, $assycode)
     {
         $qry = "SELECT PDPP_MDLCD,PDPP_WONO PIS3_WONO, RTRIM(MBLA_LINENO) PIS3_LINENO, RTRIM(MBLA_FR) PIS3_FR, RTRIM(MBLA_PROCD) PIS3_PROCD, RTRIM(MBLA_MC) PIS3_MC
-        , RTRIM(MBLA_MCZ) PIS3_MCZ, PDPP_WORQT*SUM(MBLA_QTY) PIS3_REQQTSUM, SUM(MBLA_QTY) MYPER, MAX(RTRIM(MBLA_SPART)) PIS3_ITMCD, RTRIM(MBLA_ITMCD) PIS3_MPART  
+        , RTRIM(MBLA_MCZ) PIS3_MCZ, PDPP_WORQT*SUM(MBLA_QTY) PIS3_REQQTSUM, SUM(MBLA_QTY) MYPER, MAX(RTRIM(MBLA_SPART)) PIS3_ITMCD, RTRIM(MBLA_ITMCD) PIS3_MPART
                 FROM VCIMS_MBLA_TBL
                 inner join XWO ON MBLA_MDLCD=PDPP_MDLCD AND MBLA_BOMRV=PDPP_BOMRV
                 WHERE PDPP_WONO=? AND MBLA_MDLCD=? and MBLA_LINENO in (select PPSN1_LINENO from XPPSN1 where PDPP_WONO=?)
             GROUP BY PDPP_MDLCD,PDPP_WONO,MBLA_LINENO,MBLA_FR,MBLA_PROCD,MBLA_MC,MBLA_MCZ,MBLA_ITMCD,PDPP_WORQT";
-        $query = $this->db->query($qry, [$pwo, $assycode,$pwo]);
+        $query = $this->db->query($qry, [$pwo, $assycode, $pwo]);
+        return $query->result_array();
+    }
+    public function selectRequirementWhenCIMSUpdatesAvailable($pwo, $assycode)
+    {
+        $qry = "SELECT PDPP_MDLCD,PDPP_WONO PIS3_WONO, RTRIM(MBLA_LINENO) PIS3_LINENO, RTRIM(MBLA_FR) PIS3_FR, RTRIM(MBLA_PROCD) PIS3_PROCD, RTRIM(MBLA_MC) PIS3_MC
+        , RTRIM(MBLA_MCZ) PIS3_MCZ, PDPP_WORQT*SUM(MBLA_QTY) PIS3_REQQTSUM, SUM(MBLA_QTY) MYPER, MAX(RTRIM(MBLA_SPART)) PIS3_ITMCD, RTRIM(MBLA_ITMCD) PIS3_MPART
+                FROM VCIMS_MBLA_TBL
+                inner join XWO ON MBLA_MDLCD=PDPP_MDLCD AND MBLA_BOMRV=PDPP_BOMRV
+                inner join (select PPSN1_LINENO,PPSN1_PROCD,PPSN1_FR from XPPSN1 where PPSN1_WONO=?
+                group by PPSN1_LINENO,PPSN1_PROCD,PPSN1_FR) v1 on MBLA_LINENO=PPSN1_LINENO and MBLA_PROCD=PPSN1_PROCD and MBLA_FR=PPSN1_FR
+                WHERE PDPP_WONO=? AND MBLA_MDLCD=? and MBLA_LINENO in (select PPSN1_LINENO from XPPSN1 where PDPP_WONO=?)
+            GROUP BY PDPP_MDLCD,PDPP_WONO,MBLA_LINENO,MBLA_FR,MBLA_PROCD,MBLA_MC,MBLA_MCZ,MBLA_ITMCD,PDPP_WORQT";
+        $query = $this->db->query($qry, [$pwo, $pwo, $assycode, $pwo]);
         return $query->result_array();
     }
     public function select_psnjob_req_basepwop($pwo)
@@ -460,8 +472,8 @@ class SPL_mod extends CI_Model
         ,'' PIS3_MCZ
         ,PWOP_WORQT PIS3_REQQTSUM
         ,PWOP_PER MYPER
-        ,max(RTRIM(PWOP_SUBPN)) PIS3_ITMCD,RTRIM(PWOP_BOMPN) PIS3_MPART 
-		from XPWOP         
+        ,max(RTRIM(PWOP_SUBPN)) PIS3_ITMCD,RTRIM(PWOP_BOMPN) PIS3_MPART
+		from XPWOP
         LEFT JOIN (SELECT PPSN1_WONO,MAX(PPSN1_SIMQT) SIMQT, RTRIM(PPSN1_MDLCD) PPSN1_MDLCD FROM XPPSN1
         GROUP BY PPSN1_WONO, PPSN1_MDLCD) VPPSN1 ON PPSN1_WONO=PWOP_WONO
         WHERE PWOP_WONO=?
@@ -474,7 +486,7 @@ class SPL_mod extends CI_Model
         $qry = "select PIS3_DOCNO SIMNO,PDPP_MDLCD,RTRIM(PIS3_WONO) PIS3_WONO,
         SUM(PIS3_REQQT) PIS3_REQQTSUM
         ,SUM(PIS3_REQQT)/PDPP_WORQT MYPER
-        ,CASE WHEN min(RTRIM(PIS3_ITMCD)) =RTRIM(PIS3_MPART) THEN  '' else min(RTRIM(PIS3_ITMCD)) end  PIS3_ITMCD,RTRIM(PIS3_MPART) PIS3_MPART,rtrim(MITM_SPTNO) MITM_SPTNO,PDPP_WORQT*SUM(PIS3_REQQT)/PDPP_WORQT REQQTY, 0 PLOTQTY, 0 PLOTSUBQTY from XPIS3 
+        ,CASE WHEN min(RTRIM(PIS3_ITMCD)) =RTRIM(PIS3_MPART) THEN  '' else min(RTRIM(PIS3_ITMCD)) end  PIS3_ITMCD,RTRIM(PIS3_MPART) PIS3_MPART,rtrim(MITM_SPTNO) MITM_SPTNO,PDPP_WORQT*SUM(PIS3_REQQT)/PDPP_WORQT REQQTY, 0 PLOTQTY, 0 PLOTSUBQTY from XPIS3
         INNER JOIN XWO ON PIS3_WONO=PDPP_WONO
 		left join XMITM_V on PIS3_MPART=MITM_ITMCD
         WHERE PIS3_DOCNO=?
@@ -487,8 +499,8 @@ class SPL_mod extends CI_Model
     public function select_sim_item_stock($pdocno)
     {
         $qry = "select PIS3_MPART ITEMCODE,ISNULL(TSTKQTY,0) TSTKQTY,PIS3_ITMCD ITEMCODESUB,ISNULL(TSTKSUBQTY,0) TSTKSUBQTY from
-        (select 
-                CASE WHEN min(RTRIM(PIS3_ITMCD)) =RTRIM(PIS3_MPART) THEN  '' else min(RTRIM(PIS3_ITMCD)) end  PIS3_ITMCD,RTRIM(PIS3_MPART) PIS3_MPART from XPIS3 
+        (select
+                CASE WHEN min(RTRIM(PIS3_ITMCD)) =RTRIM(PIS3_MPART) THEN  '' else min(RTRIM(PIS3_ITMCD)) end  PIS3_ITMCD,RTRIM(PIS3_MPART) PIS3_MPART from XPIS3
                 WHERE PIS3_DOCNO IN ($pdocno)
                 GROUP BY PIS3_MPART) vg
         LEFT JOIN
@@ -518,8 +530,8 @@ class SPL_mod extends CI_Model
 
     public function select_jobper_req($pdocno, $pwo)
     {
-        $qry = "select PIS3_WONO,SUM(MYPER) MYPER from 
-        (select PDPP_MDLCD,PIS3_WONO,PIS3_LINENO,PIS3_FR,PIS3_PROCD,PIS3_MC,PIS3_MCZ,SUM(PIS3_REQQT) PIS3_REQQTSUM,SUM(PIS3_REQQT)/PDPP_WORQT MYPER,max(PIS3_ITMCD) PIS3_ITMCD,PIS3_MPART from XPIS3 
+        $qry = "select PIS3_WONO,SUM(MYPER) MYPER from
+        (select PDPP_MDLCD,PIS3_WONO,PIS3_LINENO,PIS3_FR,PIS3_PROCD,PIS3_MC,PIS3_MCZ,SUM(PIS3_REQQT) PIS3_REQQTSUM,SUM(PIS3_REQQT)/PDPP_WORQT MYPER,max(PIS3_ITMCD) PIS3_ITMCD,PIS3_MPART from XPIS3
                 INNER JOIN XWO ON PIS3_WONO=PDPP_WONO
                 WHERE PIS3_WONO=? and PIS3_DOCNO=?
                 GROUP BY PIS3_WONO,PIS3_LINENO,PIS3_MC,PIS3_MCZ,PDPP_WORQT,PDPP_MDLCD,PIS3_FR,PIS3_PROCD,PIS3_MPART) V1
@@ -530,30 +542,30 @@ class SPL_mod extends CI_Model
 
     public function select_jobper_wmscal($pwo, $pdo)
     {
-        $qry = "SELECT SERD2_JOB,SUM(SERD2_QTPER) SERD2_QTPER,max(SERD2_SER) SERD2_SER,max(SERD2_FGQTY) SERD2_FGQTY, RTRIM(ISNULL(MAX(SER_RMUSE_COMFG),'-')) SER_RMUSE_COMFG  FROM vserd2_cims SERDA         
+        $qry = "SELECT SERD2_JOB,SUM(SERD2_QTPER) SERD2_QTPER,max(SERD2_SER) SERD2_SER,max(SERD2_FGQTY) SERD2_FGQTY, RTRIM(ISNULL(MAX(SER_RMUSE_COMFG),'-')) SER_RMUSE_COMFG  FROM vserd2_cims SERDA
         left join SER_TBL ON SERD2_SER=SER_ID
-        where SERD2_JOB=? and SERD2_SER = (select MAX(SERD2_SER) from SERD2_TBL INNER JOIN DLV_TBL ON SERD2_SER=DLV_SER where SERD2_JOB=SERDA.SERD2_JOB AND DLV_ID=? )        
+        where SERD2_JOB=? and SERD2_SER = (select MAX(SERD2_SER) from SERD2_TBL INNER JOIN DLV_TBL ON SERD2_SER=DLV_SER where SERD2_JOB=SERDA.SERD2_JOB AND DLV_ID=? )
         group by SERD2_JOB";
         $query = $this->db->query($qry, [$pwo, $pdo]);
         return $query->result_array();
     }
     public function select_jobper_wmscal_byseruse($pwo, $pser, $pttluse)
     {
-        $qry = "SELECT SERD2_JOB,SUM(SERD2_QTPER) SERD2_QTPER,max(SERD2_SER) SERD2_SER,max(SERD2_FGQTY) SERD2_FGQTY, RTRIM(ISNULL(MAX(SER_RMUSE_COMFG),'-')) SER_RMUSE_COMFG  FROM vserd2_cims SERDA         
+        $qry = "SELECT SERD2_JOB,SUM(SERD2_QTPER) SERD2_QTPER,max(SERD2_SER) SERD2_SER,max(SERD2_FGQTY) SERD2_FGQTY, RTRIM(ISNULL(MAX(SER_RMUSE_COMFG),'-')) SER_RMUSE_COMFG  FROM vserd2_cims SERDA
         left join SER_TBL ON SERD2_SER=SER_ID
         where SERD2_JOB=? and SERD2_SER = ?
-        group by SERD2_JOB 
+        group by SERD2_JOB
         HAVING CONVERT(VARCHAR,SUM(SERD2_QTPER))=?";
         $query = $this->db->query($qry, [$pwo, $pser, $pttluse]);
         return $query->result_array();
     }
     public function select_jobper_wmscal_alike($pwo, $pttluse)
     {
-        // $qry = "SELECT SERD2_JOB,SUM(SERD2_QTPER) SERD2_QTPER,SERD2_SER,max(SERD2_FGQTY) SERD2_FGQTY FROM vserd2_cims SERDA        
+        // $qry = "SELECT SERD2_JOB,SUM(SERD2_QTPER) SERD2_QTPER,SERD2_SER,max(SERD2_FGQTY) SERD2_FGQTY FROM vserd2_cims SERDA
         // where SERD2_JOB=?
         // group by SERD2_JOB, SERD2_SER
         // having SUM(SERD2_QTPER)=?";
-        $qry = "SELECT SERD2_JOB,SUM(SERD2_QTPER) SERD2_QTPER,SERD2_SER,max(SERD2_FGQTY) SERD2_FGQTY FROM vserd2_cims SERDA        
+        $qry = "SELECT SERD2_JOB,SUM(SERD2_QTPER) SERD2_QTPER,SERD2_SER,max(SERD2_FGQTY) SERD2_FGQTY FROM vserd2_cims SERDA
         where SERD2_JOB=?
         group by SERD2_JOB, SERD2_SER
         HAVING CONVERT(VARCHAR,SUM(SERD2_QTPER)) LIKE ?";
@@ -592,8 +604,7 @@ class SPL_mod extends CI_Model
 
     public function update_rec_rm($ppsn)
     {
-        $qry = "UPDATE SPL_TBL SET SPL_JOBNO_REC_RM ='1' WHERE 
-        SPL_DOC in ($ppsn)";
+        $qry = "UPDATE SPL_TBL SET SPL_JOBNO_REC_RM ='1' WHERE SPL_DOC in ($ppsn)";
         $this->db->query($qry);
         return $this->db->affected_rows();
     }
@@ -671,13 +682,12 @@ class SPL_mod extends CI_Model
         return $query->result_array();
     }
 
-    function select_outstanding($ppsn)
+    public function select_outstanding($ppsn)
     {
         $qry = "wms_sp_outstanding_psn ?";
         $query = $this->db->query($qry, [$ppsn]);
         return $query->result_array();
     }
-
 
     public function select_line_mfg()
     {
@@ -698,7 +708,7 @@ class SPL_mod extends CI_Model
     public function select_but_diff_machine_bypsn($ppsn)
     {
         $qry = "SELECT SPL_DOC, SPL_CAT, SPL_LINE, SPL_FEDR,SPL_ORDERNO,SPL_ITMCD FROM SPL_TBL
-        where SPL_DOC = ? 
+        where SPL_DOC = ?
         group by SPL_DOC, SPL_CAT, SPL_LINE, SPL_FEDR,SPL_ORDERNO,SPL_ITMCD
         HAVING COUNT(*)>1";
         $query = $this->db->query($qry, [$ppsn]);
@@ -777,7 +787,7 @@ class SPL_mod extends CI_Model
         $this->db->select("XPPSN2.*,RTRIM(MITM_ITMD1) MITM_ITMD1, MITM_SPTNO");
         $this->db->from("XPPSN2");
         $this->db->join("MITM_TBL", "PPSN2_SUBPN=MITM_ITMCD");
-        $this->db->where_in('PPSN2_PSNNO', $ppsn)->where("PPSN2_PROCD IS NOT NULL", NULL, FALSE);
+        $this->db->where_in('PPSN2_PSNNO', $ppsn)->where("PPSN2_PROCD IS NOT NULL", null, false);
         $this->db->order_by('PPSN2_PSNNO,PPSN2_MCZ,PPSN2_MC,PPSN2_PROCD');
         $query = $this->db->get();
         return $query->result_array();
@@ -834,9 +844,9 @@ class SPL_mod extends CI_Model
         $qry = "select * from
         (select PPSN1_PSNNO from XPPSN1 where PPSN1_WONO in ?
         group by PPSN1_PSNNO) v1 left join
-        (select SPLSCN_DOC,max(SPLSCN_LUPDT) LTSSCAN from SPLSCN_TBL 
+        (select SPLSCN_DOC,max(SPLSCN_LUPDT) LTSSCAN from SPLSCN_TBL
         group by SPLSCN_DOC) v2 on PPSN1_PSNNO=SPLSCN_DOC
-        LEFT JOIN 
+        LEFT JOIN
         (SELECT SERD_PSNNO, max(SERD_LUPDT) LTSCAL FROM SERD_TBL
         GROUP BY SERD_PSNNO) v3 on PPSN1_PSNNO=SERD_PSNNO
         WHERE LTSSCAN>LTSCAL";
@@ -858,7 +868,7 @@ class SPL_mod extends CI_Model
     public function select_sim_job_not_in_psn($pbg)
     {
         $qry = "select PDPP_WONO,RTRIM(vpis.PIS2_DOCNO) SIMNO,xwo.PDPP_WORQT from
-        (select PIS2_WONO,PIS2_BSGRP,PIS2_DOCNO from XPIS2 
+        (select PIS2_WONO,PIS2_BSGRP,PIS2_DOCNO from XPIS2
         group by PIS2_WONO, PIS2_BSGRP,PIS2_DOCNO) vpis
         left join XWO on PIS2_WONO=PDPP_WONO
         right join v_sim_not_in_psn on vpis.PIS2_DOCNO=v_sim_not_in_psn.PIS2_DOCNO
@@ -890,7 +900,7 @@ class SPL_mod extends CI_Model
     {
         $qry = "select TOP 200 SPL_DOC,max(SPL_LUPDT) DT, MAX(MSTEMP_FNM) FNM,max(SPL_REFDOCCAT) CTG , MAX(SPL_RMRK) SPL_RMRK
         , MAX(SPL_USRGRP) SPL_USRGRP, MAX(SPL_LINE) SPL_LINE, ISNULL(MAX(SPL_FMDL),'') SPL_FMDL from SPL_TBL
-        INNER JOIN MSTEMP_TBL ON SPL_USRID=MSTEMP_ID        
+        INNER JOIN MSTEMP_TBL ON SPL_USRID=MSTEMP_ID
         where SPL_DOC LIKE 'PR-%' AND SPL_DOC LIKE ?
         group by SPL_DOC";
         $query = $this->db->query($qry, ['%' . $pdok . '%']);
@@ -900,7 +910,7 @@ class SPL_mod extends CI_Model
     {
         $qry = "select TOP 200 SPL_DOC,max(SPL_LUPDT) DT, MAX(MSTEMP_FNM) FNM,max(SPL_REFDOCCAT) CTG , MAX(SPL_RMRK) SPL_RMRK
         , MAX(SPL_USRGRP) SPL_USRGRP, MAX(SPL_LINE) SPL_LINE, ISNULL(MAX(SPL_FMDL),'') SPL_FMDL from SPL_TBL
-        INNER JOIN MSTEMP_TBL ON SPL_USRID=MSTEMP_ID        
+        INNER JOIN MSTEMP_TBL ON SPL_USRID=MSTEMP_ID
         where SPL_DOC LIKE 'PR-%' AND SPL_ITMCD LIKE ?
         group by SPL_DOC";
         $query = $this->db->query($qry, ['%' . $pPart . '%']);
@@ -938,11 +948,11 @@ class SPL_mod extends CI_Model
 
     public function select_recap_partreq($pdate1, $pdate2)
     {
-        $qry = "select v1.*,SPL_RMRK,SPL_LINE,UPPER(SPL_REFDOCNO) SPL_REFDOCNO,RQSRMRK_DESC,SPL_FMDL from 
+        $qry = "select v1.*,SPL_RMRK,SPL_LINE,UPPER(SPL_REFDOCNO) SPL_REFDOCNO,RQSRMRK_DESC,SPL_FMDL from
         (select UPPER(SPLSCN_DOC) SPLSCN_DOC,SPLSCN_ITMCD,SUM(SPLSCN_QTY) SCNQTY,SPLSCN_LOTNO,SPLSCN_DATE from V_SPLSCN_TBLC
         WHERE SPLSCN_DOC LIKE 'PR-%' AND (SPLSCN_DATE >= ? AND SPLSCN_DATE <= ?)
         group by SPLSCN_DOC,SPLSCN_ITMCD,SPLSCN_LOTNO,SPLSCN_DATE) v1 left join
-        (select SPL_DOC,SPL_ITMCD,MAX(SPL_RMRK) SPL_RMRK,MAX(SPL_LINE) SPL_LINE, max(SPL_REFDOCNO) SPL_REFDOCNO,ISNULL(max(SPL_FMDL),'') SPL_FMDL from SPL_TBL 
+        (select SPL_DOC,SPL_ITMCD,MAX(SPL_RMRK) SPL_RMRK,MAX(SPL_LINE) SPL_LINE, max(SPL_REFDOCNO) SPL_REFDOCNO,ISNULL(max(SPL_FMDL),'') SPL_FMDL from SPL_TBL
         GROUP BY SPL_DOC,SPL_ITMCD) v2 on v1.SPLSCN_DOC=v2.SPL_DOC and v1.SPLSCN_ITMCD=v2.SPL_ITMCD
         LEFT JOIN RQSRMRK_TBL ON ISNULL(SPL_RMRK,'') = RQSRMRK_CD
         ORDER BY SPLSCN_DATE desc, SPLSCN_ITMCD";
@@ -951,11 +961,11 @@ class SPL_mod extends CI_Model
     }
     public function select_recap_partreq_business($pdate1, $pdate2, $pbusiness)
     {
-        $qry = "select v1.*,SPL_RMRK,SPL_LINE,UPPER(SPL_REFDOCNO) SPL_REFDOCNO,RQSRMRK_DESC,SPL_FMDL from 
+        $qry = "select v1.*,SPL_RMRK,SPL_LINE,UPPER(SPL_REFDOCNO) SPL_REFDOCNO,RQSRMRK_DESC,SPL_FMDL from
         (select UPPER(SPLSCN_DOC) SPLSCN_DOC,SPLSCN_ITMCD,SUM(SPLSCN_QTY) SCNQTY,SPLSCN_LOTNO,SPLSCN_DATE from V_SPLSCN_TBLC
         WHERE SPLSCN_DOC LIKE 'PR-%' AND (SPLSCN_DATE >= ? AND SPLSCN_DATE <= ?)
         group by SPLSCN_DOC,SPLSCN_ITMCD,SPLSCN_LOTNO,SPLSCN_DATE) v1 INNER join
-        (select SPL_DOC,SPL_ITMCD,MAX(SPL_RMRK) SPL_RMRK,MAX(SPL_LINE) SPL_LINE, max(SPL_REFDOCNO) SPL_REFDOCNO,ISNULL(max(SPL_FMDL),'') SPL_FMDL,MAX(SPL_BG) SPL_BG from SPL_TBL         
+        (select SPL_DOC,SPL_ITMCD,MAX(SPL_RMRK) SPL_RMRK,MAX(SPL_LINE) SPL_LINE, max(SPL_REFDOCNO) SPL_REFDOCNO,ISNULL(max(SPL_FMDL),'') SPL_FMDL,MAX(SPL_BG) SPL_BG from SPL_TBL
         GROUP BY SPL_DOC,SPL_ITMCD) v2 on v1.SPLSCN_DOC=v2.SPL_DOC and v1.SPLSCN_ITMCD=v2.SPL_ITMCD AND SPL_BG=?
         LEFT JOIN RQSRMRK_TBL ON ISNULL(SPL_RMRK,'') = RQSRMRK_CD
         ORDER BY SPLSCN_DATE desc, SPLSCN_ITMCD";
@@ -1093,10 +1103,10 @@ class SPL_mod extends CI_Model
         return $query->result_array();
     }
 
-    function select_ppsn2_xwo($wo)
+    public function select_ppsn2_xwo($wo)
     {
-        # returned column 
-        # PPSN1_PSNNO	PPSN1_WONO	PPSN2_ITMCAT	PPSN2_SUBPN	PPSN2_REQQT	PPSN2_ACTQT	PDPP_WORQT
+        # returned column
+        # PPSN1_PSNNO    PPSN1_WONO    PPSN2_ITMCAT    PPSN2_SUBPN    PPSN2_REQQT    PPSN2_ACTQT    PDPP_WORQT
         $qry = "sp_ppsn2_xwo ?";
         $query = $this->db->query($qry, [$wo]);
         return $query->result_array();
