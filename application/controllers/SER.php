@@ -580,6 +580,10 @@ class SER extends CI_Controller
         }
 
         $originWH = '';
+        $RSNonJM = $this->SERRC_mod->selectWHBySerahTerimaRC($pser);
+        foreach ($RSNonJM as $r) {
+            $originWH = $r['RCV_WH'];
+        }
 
         if ($jmmode) {
             $rsjmmode = $this->SERRC_mod->select_out_usage($pser);
@@ -588,11 +592,6 @@ class SER extends CI_Controller
                 $rs_out[] = [
                     'ITH_ITMCD' => $r['SER_ITMID'], 'ITH_DATE' => $current_date, 'ITH_FORM' => $r['SER_ITMID'] == $r['SERRC_NASSYCD'] ? 'OUT' : 'OUT-C', 'ITH_DOC' => $r['SER_DOC'], 'ITH_QTY' => -$r['OUTQTY'], 'ITH_WH' => $r['STKTRND1_LOCCDFR'] === 'NFWH4RT' ? 'AFQART' : 'AFQART2', 'ITH_SER' => $r['SERRC_SER'], 'ITH_REMARK' => $r['SERRC_SERX'], 'ITH_LUPDT' => $currrtime, 'ITH_USRID' => $this->session->userdata('nama'),
                 ];
-            }
-        } else {
-            $RSNonJM = $this->SERRC_mod->selectWHBySerahTerimaRC($pser);
-            foreach ($RSNonJM as $r) {
-                $originWH = $r['RCV_WH'];
             }
         }
 
