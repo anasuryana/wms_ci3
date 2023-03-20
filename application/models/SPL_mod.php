@@ -448,9 +448,9 @@ class SPL_mod extends CI_Model
         , RTRIM(MBLA_MCZ) PIS3_MCZ, PDPP_WORQT*SUM(MBLA_QTY) PIS3_REQQTSUM, SUM(MBLA_QTY) MYPER, MAX(RTRIM(MBLA_SPART)) PIS3_ITMCD, RTRIM(MBLA_ITMCD) PIS3_MPART  
                 FROM VCIMS_MBLA_TBL
                 inner join XWO ON MBLA_MDLCD=PDPP_MDLCD AND MBLA_BOMRV=PDPP_BOMRV
-                WHERE PDPP_WONO=? AND MBLA_MDLCD=?
+                WHERE PDPP_WONO=? AND MBLA_MDLCD=? and MBLA_LINENO in (select PPSN1_LINENO from XPPSN1 where PDPP_WONO=?)
             GROUP BY PDPP_MDLCD,PDPP_WONO,MBLA_LINENO,MBLA_FR,MBLA_PROCD,MBLA_MC,MBLA_MCZ,MBLA_ITMCD,PDPP_WORQT";
-        $query = $this->db->query($qry, [$pwo, $assycode]);
+        $query = $this->db->query($qry, [$pwo, $assycode,$pwo]);
         return $query->result_array();
     }
     public function select_psnjob_req_basepwop($pwo)
@@ -466,18 +466,6 @@ class SPL_mod extends CI_Model
         GROUP BY PPSN1_WONO, PPSN1_MDLCD) VPPSN1 ON PPSN1_WONO=PWOP_WONO
         WHERE PWOP_WONO=?
         GROUP BY PWOP_WONO,PWOP_PER,SIMQT,PPSN1_MDLCD,PWOP_WORQT,PWOP_BOMPN";
-        // $qry = "select PDPP_MDLCD,RTRIM(PIS3_WONO) PIS3_WONO,RTRIM(PIS3_LINENO) PIS3_LINENO, RTRIM(PIS3_FR) PIS3_FR
-        // ,UPPER(RTRIM(PIS3_PROCD)) PIS3_PROCD, RTRIM(PIS3_MC) PIS3_MC
-        // ,RTRIM(PIS3_MCZ) PIS3_MCZ
-        // ,(1404 * SUM(PIS3_REQQT)/SIMQT) + SUM(PIS3_REQQT) PIS3_REQQTSUM
-        // ,SUM(PIS3_REQQT)/SIMQT MYPER
-        // ,max(RTRIM(PIS3_ITMCD)) PIS3_ITMCD,RTRIM(PIS3_MPART) PIS3_MPART from XPIS3 
-        // INNER JOIN XWO ON PIS3_WONO=PDPP_WONO
-        // LEFT JOIN (SELECT PPSN1_WONO,MAX(PPSN1_SIMQT) SIMQT FROM XPPSN1
-        // GROUP BY PPSN1_WONO) VPPSN1 ON PPSN1_WONO=PIS3_WONO
-        // WHERE PIS3_WONO=? and PIS3_DOCNO=?
-        // GROUP BY PIS3_WONO,PIS3_LINENO,PIS3_MC,PIS3_MCZ,PDPP_WORQT,PDPP_MDLCD,PIS3_FR,PIS3_PROCD,PIS3_MPART,SIMQT
-        // ORDER BY PIS3_MCZ,PIS3_MC,PIS3_PROCD ";
         $query = $this->db->query($qry, [$pwo]);
         return $query->result_array();
     }
