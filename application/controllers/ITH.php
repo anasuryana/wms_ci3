@@ -16,7 +16,7 @@ class ITH extends CI_Controller
         $this->load->model('MSTLOCG_mod');
         $this->load->model('SER_mod');
         $this->load->model('MSTITM_mod');
-        $this->load->model('XBGROUP_mod');
+        $this->load->model('BGROUP_mod');
         $this->load->model('LOGXDATA_mod');
         $this->load->model('RETFG_mod');
         $this->load->model('BCBLC_mod');
@@ -43,7 +43,7 @@ class ITH extends CI_Controller
 
     public function create()
     {
-        $rs = $this->XBGROUP_mod->selectall();
+        $rs = $this->BGROUP_mod->selectall();
         $todis = '<option value="-">ALL</option>';
         foreach ($rs as $r) {
             $todis .= '<option value="' . trim($r->MBSG_BSGRP) . '">' . trim($r->MBSG_DESC) . '</option>';
@@ -105,7 +105,7 @@ class ITH extends CI_Controller
     public function get_bs_group()
     {
         header('Content-Type: application/json');
-        $rs = $this->XBGROUP_mod->selectall();
+        $rs = $this->BGROUP_mod->selectall();
         $rs_j = [];
         foreach ($rs as $r) {
             $rs_j[] = [
@@ -118,7 +118,7 @@ class ITH extends CI_Controller
     public function get_bs_group_ith()
     {
         header('Content-Type: application/json');
-        $rs = $this->XBGROUP_mod->selectall();
+        $rs = $this->BGROUP_mod->selectall();
         $rs_j = [];
         foreach ($rs as $r) {
             $rs_j[] = [
@@ -130,37 +130,37 @@ class ITH extends CI_Controller
 
     public function vroutput_prd_daily()
     {
-        $data['lgroup'] = $this->XBGROUP_mod->selectall();
+        $data['lgroup'] = $this->BGROUP_mod->selectall();
         $this->load->view('wms_report/vrpt_output_prd', $data);
     }
     public function vroutput_qc_daily()
     {
-        $data['lgroup'] = $this->XBGROUP_mod->selectall();
+        $data['lgroup'] = $this->BGROUP_mod->selectall();
         $this->load->view('wms_report/vrpt_output_qc', $data);
     }
     public function vroutput_qcsa_daily()
     {
-        $data['lgroup'] = $this->XBGROUP_mod->selectall();
+        $data['lgroup'] = $this->BGROUP_mod->selectall();
         $this->load->view('wms_report/vrpt_output_qcsubassy', $data);
     }
     public function vroutput_prdsa_daily()
     {
-        $data['lgroup'] = $this->XBGROUP_mod->selectall();
+        $data['lgroup'] = $this->BGROUP_mod->selectall();
         $this->load->view('wms_report/vrpt_output_prdsubassy', $data);
     }
     public function vroutput_wh_daily()
     {
-        $data['lgroup'] = $this->XBGROUP_mod->selectall();
+        $data['lgroup'] = $this->BGROUP_mod->selectall();
         $this->load->view('wms_report/vrpt_output_wh', $data);
     }
     public function vroutput_wh_rtn_daily()
     {
-        $data['lgroup'] = $this->XBGROUP_mod->selectall();
+        $data['lgroup'] = $this->BGROUP_mod->selectall();
         $this->load->view('wms_report/vrpt_output_whrtn', $data);
     }
     public function vroutgoing_wh()
     {
-        $data['lgroup'] = $this->XBGROUP_mod->selectall();
+        $data['lgroup'] = $this->BGROUP_mod->selectall();
         $this->load->view('wms_report/vrpt_outgoing_fg', $data);
     }
     public function vunscan_qcwh()
@@ -1119,7 +1119,7 @@ class ITH extends CI_Controller
 
     public function form_report_critical_part()
     {
-        $data['lgroup'] = $this->XBGROUP_mod->selectall();
+        $data['lgroup'] = $this->BGROUP_mod->selectall();
         $this->load->view('wms_report/vcritical_part', $data);
     }
 
