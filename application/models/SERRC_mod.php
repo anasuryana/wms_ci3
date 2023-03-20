@@ -163,7 +163,7 @@ class SERRC_mod extends CI_Model
         return $query->result_array();
     }
 
-    public function selectWHBySerahTerimaRC($doc)
+    public function selectWHBySerahTerimaRC($pdoc)
     {
         # Kolom kembalian : RCV_WH
         $qry = "wms_sp_select_WH_by_serah_terima_RC ?";
