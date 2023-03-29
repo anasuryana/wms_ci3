@@ -78,30 +78,6 @@
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
     var wms_usergroupid = '<?=$wms_usergroup_id;?>';
-    var wms_scan_pipe = setInterval(wms_check_unscan_wh, 15000);
-
-    function wms_check_unscan_wh() {
-        if (wms_usergroupid == 'INC') {
-            $.ajax({
-                url: "<?=base_url('ITH/get_unscanned_FG_v1')?>",
-                dataType: "JSON",
-                success: function(response) {
-                    if (response.status[0].cd != '0') {
-                        alertify.warning(response.status[0].msg);
-                    } else {
-                        if (response.status[0].msg != '') {
-                            alertify.warning(response.status[0].msg);
-                        } else {
-                            alertify.dismissAll();
-                        }
-                    }
-                },
-                error: function(xhr, xopt, xthrow) {
-                    alertify.error(xthrow);
-                }
-            });
-        }
-    }
     var indexnya = 0;
     const devNode = $('#mmenu').tree({
         url: '<?=base_url("menu")?>',
