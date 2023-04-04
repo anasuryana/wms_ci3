@@ -62,6 +62,11 @@ class ITH extends CI_Controller
     {
         $this->load->view('wms_report/vfg_slowmoving');
     }
+    public function form_change_ith_date()
+    {
+        $this->checkSession();
+        $this->load->view('wms/vchangedate_ith');
+    }
 
     public function form_minus_stock()
     {
@@ -3214,8 +3219,8 @@ class ITH extends CI_Controller
             $sheet->setCellValueByColumnAndRow(5, $y, "=" . $r['LOC_AFWH3'] . "+" . $r['LOC_ARSHP']);
             $sheet->setCellValueByColumnAndRow(6, $y, $r['LOC_QAFG']);
             $sheet->setCellValueByColumnAndRow(7, $y, $r['LOC_AFQART']);
-            $sheet->setCellValueByColumnAndRow(8, $y, "=" . $r['LOC_NFWH4RT'] . "+" . $r['LOC_ARSHPRTN']);
-            $sheet->setCellValueByColumnAndRow(9, $y, "=" . $r['LOC_AFWH3RT'] . "+" . $r['LOC_ARSHPRTN2']);
+            $sheet->setCellValueByColumnAndRow(8, $y, "=" . $r['LOC_AFQART'] . "+". $r['LOC_NFWH4RT'] . "+" . $r['LOC_ARSHPRTN']);
+            $sheet->setCellValueByColumnAndRow(9, $y, "=" . $r['LOC_AFQART2'] . "+" . $r['LOC_AFWH3RT'] . "+" . $r['LOC_ARSHPRTN2']);
             $y++;
         }
         foreach (range('A', 'I') as $v) {
@@ -3609,6 +3614,39 @@ class ITH extends CI_Controller
         $date = $this->input->post('date');
         $items = $this->input->post('items');
         $rs = $this->ITH_mod->select_doc_vs_datec_withIn_items($doc, $date, $items);
+        $tmpTime = strtotime($date . ' +1 days');
+        $date0 = date('Y-m-d', $tmpTime);
+        $thedate = $date;
+        $affectedRows = 0;
+        foreach ($rs as &$r) {
+            $r['TIME'] = substr($r['ITH_LUPDT'], 11, 8);
+            if ($r['TIME'] >= '00:00:00' && $r['TIME'] <= '07:00:00') {
+                $r['TO_LUPDT'] = $date0 . " " . $r['TIME'];
+                $thedate = $date0;
+            } else {
+                $r['TO_LUPDT'] = $date . " " . $r['TIME'];
+            }
+            $affectedRows += $this->ITH_mod->update_kitting_date(
+                $doc,
+                $thedate,
+                $r['TO_LUPDT'],
+                $r['ITH_LUPDT'],
+                $r['ITH_ITMCD']
+            );
+        }
+        unset($r);
+        die(json_encode([
+            'status' => ['cd' => '1', 'msg' => $affectedRows . ' row(s) updated'], 'data' => $rs,
+        ]));
+    }
+    public function change_cancelling_date()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');
+        $doc = $this->input->post('doc');
+        $date = $this->input->post('date');
+        $items = $this->input->post('items');
+        $rs = $this->ITH_mod->selectForCancellingwithIn_items($doc, $date, $items);
         $tmpTime = strtotime($date . ' +1 days');
         $date0 = date('Y-m-d', $tmpTime);
         $thedate = $date;

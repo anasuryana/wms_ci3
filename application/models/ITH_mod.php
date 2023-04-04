@@ -59,6 +59,19 @@ class ITH_mod extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
+    public function selectViewAllWhereLikeWHIn($pwhere, $plike,$pWarehouse)
+    {
+        $this->db->select("a.*,b.*,CONCAT(MSTEMP_FNM , ' ', MSTEMP_LNM) PIC");
+        $this->db->from('v_ith_tblc a');
+        $this->db->join('MITM_TBL b', 'a.ITH_ITMCD=b.MITM_ITMCD');
+        $this->db->join('MSTEMP_TBL c', 'ITH_USRID=MSTEMP_ID', 'left');
+        $this->db->where_in("ITH_WH", $pWarehouse);
+        $this->db->where($pwhere);
+        $this->db->like($plike);
+        $this->db->order_by('ITH_LUPDT ASC,ITH_FORM DESC,ITH_WH, ITH_QTY ASC');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 
     public function insert($data)
     {
@@ -2126,12 +2139,38 @@ class ITH_mod extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
+
+    public function select_doc_vs_datec_about_change_date_of_cancel($pDoc, $pDate)
+    {
+        $this->db->from('v_ith_tblc');
+        $this->db->like("ITH_DOC", $pDoc, 'after')
+            ->like("ITH_DOC", 'SP-')
+            ->where_in("ITH_FORM", ['CANCELING-RM-PSN-IN'])
+            ->where("ITH_DATEC !=", $pDate);
+        $this->db->order_by("ITH_LUPDT");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function select_doc_vs_datec_withIn_items($pDoc, $pDate, $pItems)
     {
         $this->db->from('v_ith_tblc');
         $this->db->like("ITH_DOC", $pDoc, 'after')
             ->like("ITH_DOC", 'SP-')
             ->where_not_in("ITH_FORM", ['INC-RET', 'OUT-RET'])
+            ->where("ITH_DATEC !=", $pDate)
+            ->where_in("ITH_ITMCD", $pItems);
+        $this->db->order_by("ITH_LUPDT");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function selectForCancellingwithIn_items($pDoc, $pDate, $pItems)
+    {
+        $this->db->from('v_ith_tblc');
+        $this->db->like("ITH_DOC", $pDoc, 'after')
+            ->like("ITH_DOC", 'SP-')
+            ->where_in("ITH_FORM", ['CANCELING-RM-PSN-IN'])
             ->where("ITH_DATEC !=", $pDate)
             ->where_in("ITH_ITMCD", $pItems);
         $this->db->order_by("ITH_LUPDT");
@@ -2486,18 +2525,15 @@ class ITH_mod extends CI_Model
             ,ISNULL(SUM(CASE WHEN ITH_WH='ARSHP' THEN ITH_QTY END),0) LOC_ARSHP
             ,ISNULL(SUM(CASE WHEN ITH_WH='QAFG' THEN ITH_QTY END),0) LOC_QAFG
             ,ISNULL(SUM(CASE WHEN ITH_WH='AFQART' THEN ITH_QTY END),0) LOC_AFQART
+            ,ISNULL(SUM(CASE WHEN ITH_WH='AFQART2' THEN ITH_QTY END),0) LOC_AFQART2
             ,ISNULL(SUM(CASE WHEN ITH_WH='NFWH4RT' THEN ITH_QTY END),0) LOC_NFWH4RT
             ,ISNULL(SUM(CASE WHEN ITH_WH='AFWH3RT' THEN ITH_QTY END),0) LOC_AFWH3RT
             ,ISNULL(SUM(CASE WHEN ITH_WH='ARSHPRTN' THEN ITH_QTY END),0) LOC_ARSHPRTN
             ,ISNULL(SUM(CASE WHEN ITH_WH='ARSHPRTN2' THEN ITH_QTY END),0) LOC_ARSHPRTN2
             FROM v_ith_tblc
             LEFT JOIN SER_TBL ON ITH_SER=SER_ID
-            WHERE ITH_WH IN ('ARPRD1','ARQA1','AFWH3','ARSHP','QAFG','AFQART','NFWH4RT','AFWH3RT','ARSHPRTN','ARSHPRTN2')
+            WHERE ITH_WH IN ('ARPRD1','ARQA1','AFWH3','ARSHP','QAFG','AFQART','AFQART2','NFWH4RT','AFWH3RT','ARSHPRTN','ARSHPRTN2')
             AND ITH_ITMCD IN (
-                SELECT SSO2_MDLCD FROM XSSO2
-                WHERE SSO2_BSGRP=?
-                GROUP BY SSO2_MDLCD
-                union
                 select SER_ITMID SSO2_MDLCD from SER_TBL where SER_BSGRP=?
                 group by SER_ITMID
                 )
@@ -2508,7 +2544,7 @@ class ITH_mod extends CI_Model
             GROUP BY ITH_ITMCD
         ) V1
         LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD";
-        $query = $this->db->query($qry, [$bg, $bg, $date]);
+        $query = $this->db->query($qry, [$bg,  $date]);
         return $query->result_array();
     }
 
