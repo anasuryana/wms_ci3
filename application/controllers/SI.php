@@ -503,7 +503,7 @@ class SI extends CI_Controller
 
         $pdf->SetXY(6, 17);
         $pdf->Cell(10, 5, 'No', 1, 0, 'L');
-        $pdf->Cell(20, 5, 'Kanban No', 1, 0, 'L');
+        $pdf->Cell(20, 5, 'Doc No', 1, 0, 'L');
         $pdf->Cell(60, 5, 'Item Code', 1, 0, 'C');
         $pdf->Cell(50, 5, 'Model', 1, 0, 'C');
         $pdf->Cell(25, 5, 'ETA', 1, 0, 'C');
@@ -539,7 +539,7 @@ class SI extends CI_Controller
 
                 $pdf->SetXY(6, 17);
                 $pdf->Cell(10, 5, 'No', 1, 0, 'L');
-                $pdf->Cell(20, 5, 'Kanban No', 1, 0, 'L');
+                $pdf->Cell(20, 5, 'Doc No', 1, 0, 'L');
                 $pdf->Cell(60, 5, 'Item Code', 1, 0, 'C');
                 $pdf->Cell(50, 5, 'Model', 1, 0, 'C');
                 $pdf->Cell(25, 5, 'ETA', 1, 0, 'C');
@@ -693,7 +693,7 @@ class SI extends CI_Controller
 
                 $pdf->SetXY(6, 17);
                 $pdf->Cell(10, 5, 'No', 1, 0, 'L');
-                $pdf->Cell(25, 5, 'Kanban No', 1, 0, 'L');
+                $pdf->Cell(25, 5, 'Doc No', 1, 0, 'L');
                 $pdf->Cell(83, 5, 'Item Code', 1, 0, 'C');
                 $pdf->Cell(50, 5, 'Model', 1, 0, 'C');
                 $pdf->Cell(25, 5, 'ETA', 1, 0, 'C');
