@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+// use PHPJasper\PHPJasper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -21,6 +22,36 @@ class ITHHistory extends CI_Controller
     public function index()
     {
         echo "sorry";
+        // =================
+        // $input = 'D:/apache24/htdocs/wms/vendor/geekcom/phpjasper/examples/hello_world.jasper';
+        // $output = 'D:/apache24/htdocs/wms/vendor/geekcom/phpjasper/examples';
+        // $options = [
+        //     'format' => ['pdf', 'rtf']
+        // ];
+        // $jasper = new PHPJasper;
+
+        // $jasper->process(
+        //     $input,
+        //     $output,
+        //     $options
+        // )->execute();
+        // =================
+
+        // =================
+        // $input = FCPATH. '/vendor/geekcom/phpjasper/examples/hello_world.jrxml';
+
+        // $jasper = new PHPJasper;
+        // $jasper->compile($input)->execute();
+        // =================
+
+        // $input = FCPATH . '/vendor/geekcom/phpjasper/examples/hello_world_params.jrxml';
+
+        // $jasper = new PHPJasper;
+        // $output = $jasper->listParameters($input)->execute();
+
+        // foreach ($output as $parameter_description) {
+        //     print $parameter_description . '<pre>';
+        // }
     }
 
     public function getLocations()
@@ -299,8 +330,8 @@ class ITHHistory extends CI_Controller
         header('Content-Type: application/json');
         $item_code = $this->input->get('item_code');
         $location = [];
-		# variable rsMega & rs dipisah , karena ketika saya eksekusi dalam satu query (UNION ALL) maka efeknya
-		# memakan waktu lama (mungkin karena beda server atau bagaimana)
+        # variable rsMega & rs dipisah , karena ketika saya eksekusi dalam satu query (UNION ALL) maka efeknya
+        # memakan waktu lama (mungkin karena beda server atau bagaimana)
 
         $rsMega = $this->XITRN_mod->selectEXBCReconsiliator($item_code);
         $rsFix = [];
@@ -324,7 +355,7 @@ class ITHHistory extends CI_Controller
             }
         }
 
-		# inisialisasi nilai 'baris dan kolom kanan'
+        # inisialisasi nilai 'baris dan kolom kanan'
         foreach ($rsMega as $r) {
             $isFound = false;
             foreach ($rsFix as &$n) {
@@ -335,15 +366,14 @@ class ITHHistory extends CI_Controller
             }
             unset($n);
 
-			
             if (!$isFound) {
-                $row = ['ITRN_ITMCD' => $r['ITRN_ITMCD'], 'SPTNO' => $r['MITM_SPTNO'], 'D1' => $r['MITM_ITMD1'] ];
+                $row = ['ITRN_ITMCD' => $r['ITRN_ITMCD'], 'SPTNO' => $r['MITM_SPTNO'], 'D1' => $r['MITM_ITMD1']];
                 foreach ($location as $l) {
                     $row[$l] = 0;
                 }
                 $rsFix[] = $row;
             }
-        }		
+        }
 
         foreach ($rsEquipment as $r) {
             $isFound = false;
@@ -355,44 +385,39 @@ class ITHHistory extends CI_Controller
             }
             unset($n);
 
-			
             if (!$isFound) {
-                $row = ['ITRN_ITMCD' => $r['ITH_ITMCD'], 'SPTNO' => $r['MITM_SPTNO'], 'D1' => $r['MITM_ITMD1'] ];
+                $row = ['ITRN_ITMCD' => $r['ITH_ITMCD'], 'SPTNO' => $r['MITM_SPTNO'], 'D1' => $r['MITM_ITMD1']];
                 foreach ($location as $l) {
                     $row[$l] = 0;
                 }
                 $rsFix[] = $row;
             }
-        }		
+        }
 
-		#isi nilai
-		# -----------------------
-		# PART 	|	LOKASI?
-		# -----------------------
-		# PART1	|	SETVALUE?
-		# PART2	|	SETVALUE?
-		foreach($rsFix as &$r)
-		{
-			foreach($rsMega as $m)
-			{
-				if($r['ITRN_ITMCD'] === $m['ITRN_ITMCD']){
-					$r[$m['ITRN_LOCCD']] += $m['RMQT'];
-				}
-			}
-			foreach($rs as $m)
-			{
-				if($r['ITRN_ITMCD'] === $m['ITRN_ITMCD']){
-					$r[$m['ITRN_LOCCD']] += $m['RMQT'];
-				}
-			}
-			foreach($rsEquipment as $m)
-			{
-				if($r['ITRN_ITMCD'] === $m['ITH_ITMCD']){
-					$r[$m['ITH_WH']] += $m['EQUIPQT'];
-				}
-			}
-		}
-		unset($r);
+        #isi nilai
+        # -----------------------
+        # PART     |    LOKASI?
+        # -----------------------
+        # PART1    |    SETVALUE?
+        # PART2    |    SETVALUE?
+        foreach ($rsFix as &$r) {
+            foreach ($rsMega as $m) {
+                if ($r['ITRN_ITMCD'] === $m['ITRN_ITMCD']) {
+                    $r[$m['ITRN_LOCCD']] += $m['RMQT'];
+                }
+            }
+            foreach ($rs as $m) {
+                if ($r['ITRN_ITMCD'] === $m['ITRN_ITMCD']) {
+                    $r[$m['ITRN_LOCCD']] += $m['RMQT'];
+                }
+            }
+            foreach ($rsEquipment as $m) {
+                if ($r['ITRN_ITMCD'] === $m['ITH_ITMCD']) {
+                    $r[$m['ITH_WH']] += $m['EQUIPQT'];
+                }
+            }
+        }
+        unset($r);
         die(json_encode(['data_location' => $location, 'rsFix' => $rsFix, '$rsEquipment' => $rsEquipment]));
     }
 }
