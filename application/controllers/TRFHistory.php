@@ -16,26 +16,64 @@ class TRFHistory extends CI_Controller
         die("sorry");
     }
 
-    function search(){
+    public function search()
+    {
         header('Content-Type: application/json');
         $search = $this->input->get('search');
         $searchBy = $this->input->get('searchBy');
         $RS = [];
         $Like = [];
-        switch($searchBy){
+        switch ($searchBy) {
             case 'ic':
-                $Like = ['MITM_ITMCD' => $search];break;
+                $Like = ['MITM_ITMCD' => $search];
+                break;
             case 'in':
-                $Like = ['MITM_ITMD1' => $search];break;
+                $Like = ['MITM_ITMD1' => $search];
+                break;
         }
         $RS = $this->TRF_mod->selectHeaderLike($Like);
         die(json_encode(['data' => $RS]));
     }
-    
-    function getDetail(){
+
+    public function getDetail()
+    {
         header('Content-Type: application/json');
         $doc = $this->input->get('doc');
         $RS = $this->TRF_mod->selectDetailWhere(['TRFD_DOC' => $doc]);
         die(json_encode(['data' => $RS]));
+    }
+
+    public function getDetailUnconform()
+    {
+        header('Content-Type: application/json');
+        $doc = $this->input->get('doc');
+        $RS = $this->TRF_mod->selectDetailUnconformWhere(['TRFD_DOC' => $doc]);
+        die(json_encode(['data' => $RS]));
+    }
+
+    public function openDocuments()
+    {
+        header('Content-Type: application/json');
+        $rs = $this->TRF_mod->selectOpenForID($this->session->userdata('nama'));
+        $rsToFollow = $this->TRF_mod->selectOpenToFollowForID($this->session->userdata('nama'));
+        $needToApproveQty = 0;
+        $needToApproveDateTime = '-';
+        $needToFollowQty = 0;
+        $needToFollowDateTime = '-';
+        foreach ($rs as $r) {
+            $needToApproveQty++;
+            $needToApproveDateTime = $r['LUPDTD'];
+        }
+        foreach ($rsToFollow as $r) {
+            $needToFollowQty++;
+            $needToFollowDateTime = $r['LUPDTD'];
+        }
+        $data = [
+            'TO_APPROVE_QTY' => $needToApproveQty,
+            'TO_APPROVE_DATETIME' => $needToApproveDateTime,
+            'TO_FOLLOW_QTY' => $needToFollowQty,
+            'TO_FOLLOW_DATETIME' => $needToFollowDateTime,
+        ];
+        die(json_encode(['data' => $data, 'rs' => $rs, 'rs2' => $rsToFollow]));
     }
 }

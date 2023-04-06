@@ -35,6 +35,15 @@ class TRF_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectDetailUnconformWhere($where)
+    {
+        $this->db->from($this->TABLENAME_D);
+        $this->db->where($where)->where("TRFD_DELETED_DT is null", null, false);
+        $this->db->where($where)->where("TRFD_RECEIVE_DT is null", null, false);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function selectHeaderLike($like)
     {
         $this->db->from($this->TABLENAME);
@@ -85,6 +94,49 @@ class TRF_mod extends CI_Model
         $this->db->group_by("TRFD_ITEMCD");
         $this->db->select("TRFD_ITEMCD,SUM(TRFD_QTY) DQT,SUM(TRFD_QTY) BACKUP_DQT");
         $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function selectOpenAll()
+    {
+        $qry = "SELECT TRFH_DOC,TRFH_LOC_FR,MSTLOCG_NM,MAX(ISNULL(TRFD_UPDATED_DT,TRFD_CREATED_DT)) LUPDTD,COUNT(*) TTLITEM FROM TRFH_TBL LEFT JOIN TRFD_TBL ON TRFH_DOC=TRFD_DOC
+        LEFT JOIN MSTLOCG_TBL TFR ON  TRFH_LOC_FR=TFR.MSTLOCG_ID
+                WHERE TRFD_DELETED_DT IS NULL
+                GROUP BY TRFH_DOC,TRFH_LOC_FR,MSTLOCG_NM";
+        $query = $this->db->query($qry);
+        return $query->result_array();
+    }
+
+    public function selectOpenForID($UserId)
+    {
+        $qry = "SELECT TRFH_DOC,TRFH_LOC_FR,MSTLOCG_NM,MAX(ISNULL(TRFD_UPDATED_DT,TRFD_CREATED_DT)) LUPDTD,COUNT(*) TTLITEM FROM TRFH_TBL LEFT JOIN TRFD_TBL ON TRFH_DOC=TRFD_DOC
+        LEFT JOIN MSTLOCG_TBL TFR ON  TRFH_LOC_FR=TFR.MSTLOCG_ID
+                WHERE TRFD_DELETED_DT IS NULL AND TRFH_LOC_TO IN (SELECT TRFSET_WH FROM TRFSET_TBL WHERE TRFSET_APPROVER=?)
+                AND TRFD_RECEIVE_DT IS NULL
+                GROUP BY TRFH_DOC,TRFH_LOC_FR,MSTLOCG_NM";
+        $query = $this->db->query($qry, [$UserId]);
+        return $query->result_array();
+    }
+
+    public function selectOpenToFollowForID($UserId)
+    {
+        $qry = "SELECT TRFH_DOC,TRFH_LOC_TO,MSTLOCG_NM,MAX(ISNULL(TRFD_UPDATED_DT,TRFD_CREATED_DT)) LUPDTD,COUNT(*) TTLITEM FROM TRFH_TBL LEFT JOIN TRFD_TBL ON TRFH_DOC=TRFD_DOC
+        LEFT JOIN MSTLOCG_TBL TTO ON  TRFH_LOC_TO=TTO.MSTLOCG_ID
+                WHERE TRFD_DELETED_DT IS NULL AND TRFH_LOC_FR IN (SELECT TRFSET_WH FROM TRFSET_TBL WHERE TRFSET_APPROVER=?)
+                AND TRFD_RECEIVE_DT IS NULL
+                GROUP BY TRFH_DOC,TRFH_LOC_TO,MSTLOCG_NM";
+        $query = $this->db->query($qry, [$UserId]);
+        return $query->result_array();
+    }
+
+    public function selectOpenForIDWhereItem($UserId, $Item, $Doc)
+    {
+        $qry = "SELECT TRFH_DOC,TRFD_ITEMCD,TRFH_LOC_FR,TRFH_LOC_TO,SUM(TRFD_QTY) TTLQTY FROM TRFH_TBL LEFT JOIN TRFD_TBL ON TRFH_DOC=TRFD_DOC
+        LEFT JOIN MSTLOCG_TBL TFR ON  TRFH_LOC_FR=TFR.MSTLOCG_ID
+                WHERE TRFD_DELETED_DT IS NULL AND TRFH_LOC_TO IN (SELECT TRFSET_WH FROM TRFSET_TBL WHERE TRFSET_APPROVER=?)
+                AND TRFD_ITEMCD = ? AND TRFH_DOC=? AND TRFD_RECEIVE_DT IS NULL
+                GROUP BY TRFH_DOC,TRFH_LOC_FR,TRFH_LOC_TO,MSTLOCG_NM,TRFD_ITEMCD";
+        $query = $this->db->query($qry, [$UserId, $Item, $Doc]);
         return $query->result_array();
     }
 }

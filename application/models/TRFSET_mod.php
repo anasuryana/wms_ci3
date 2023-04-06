@@ -40,4 +40,10 @@ class TRFSET_mod extends CI_Model
         $this->db->update($this->TABLENAME, $pdata);
         return $this->db->affected_rows();
     }
+
+    public function selectApproverByNIK($nik){
+        $qry = "wms_sp_select_approver_by_nik ?";
+        $query = $this->db->query($qry, [$nik]);
+        return $query->result_array();
+    }
 }

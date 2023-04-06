@@ -288,4 +288,47 @@ class TRF extends CI_Controller
         $RSCurrentPIC = $this->TRFSET_mod->selectDetailWhere(['TRFSET_WH' => $wh]);
         die(json_encode(['data' => $RSCurrentPIC, 'status' => $respon]));
     }
+
+    public function conformTransfer()
+    {
+        header('Content-Type: application/json');
+        $this->checkSession();
+        $doc = $this->input->post('doc');
+        $item = $this->input->post('item');
+        $rs = $this->TRF_mod->selectOpenForIDWhereItem($this->session->userdata('nama'), $item, $doc);
+        foreach ($rs as $r) {
+            $this->TRF_mod->updatebyId(['TRFD_DOC' => $doc
+                , 'TRFD_ITEMCD' => $r['TRFD_ITEMCD']]
+                , ['TRFD_RECEIVE_BY' => $this->session->userdata('nama')
+                    , 'TRFD_RECEIVE_DT' => date('Y-m-d H:i:s')]);
+            $RsToBeSaved[] = [
+                'ITH_ITMCD' => $r['TRFD_ITEMCD'],
+                'ITH_DATE' => date('Y-m-d'),
+                'ITH_FORM' => 'TRF-INC',
+                'ITH_DOC' => $r['TRFH_DOC'],
+                'ITH_QTY' => $r['TTLQTY'] * 1,
+                'ITH_WH' => $r['TRFH_LOC_TO'],
+                'ITH_LUPDT' => date('Y-m-d H:i:s'),
+                'ITH_USRID' => $this->session->userdata('nama'),
+            ];
+            $RsToBeSaved[] = [
+                'ITH_ITMCD' => $r['TRFD_ITEMCD'],
+                'ITH_DATE' => date('Y-m-d'),
+                'ITH_FORM' => 'TRF-OUT',
+                'ITH_DOC' => $r['TRFH_DOC'],
+                'ITH_QTY' => $r['TTLQTY'] * -1,
+                'ITH_WH' => $r['TRFH_LOC_FR'],
+                'ITH_LUPDT' => date('Y-m-d H:i:s'),
+                'ITH_USRID' => $this->session->userdata('nama'),
+            ];
+        }
+        if (!empty($RsToBeSaved)) {
+            $this->ITH_mod->insertb($RsToBeSaved);
+            $myar[] = ['cd' => 1, 'msg' => 'OK'];
+        } else {
+            $myar[] = ['cd' => 0, 'msg' => 'could not be processed'];
+        }
+        $rs = $this->TRF_mod->selectOpenForID($this->session->userdata('nama'));
+        die(json_encode(['data' => $rs, 'status' => $myar]));
+    }
 }
