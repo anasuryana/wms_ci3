@@ -358,6 +358,11 @@
                 alertify.warning('could not transfer to same location')
                 return
             }
+
+            if(trfnonref_to_loc.value === 'ENGLINEEQUIP' && trfnonref_fr_loc.value!= 'ENGEQUIP'){
+                alertify.warning('Engineering line Equipment Location is only from Engineering Equipment Location')
+                return
+            }
             alertify.confirm('Are you sure ?', `Transfer from ${trfnonref_fr_loc.value} to ${trfnonref_to_loc.value}`,
             function(){
                 p.disabled = true
