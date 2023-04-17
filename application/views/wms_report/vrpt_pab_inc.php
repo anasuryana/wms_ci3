@@ -116,6 +116,7 @@ foreach ($lsup as $r) {
                                 <th rowspan="2" class="align-middle">HS CODE</th>
                                 <th rowspan="2" class="align-middle">JUMLAH</th>
                                 <th rowspan="2" class="align-middle">SATUAN</th>
+                                <th rowspan="2" class="align-middle">Valuta</th>
                                 <th rowspan="2" class="align-middle">NILAI PABEAN</th>
                                 <th rowspan="2" class="align-middle">BERAT(KG)</th>
                                 <th colspan="2" class="align-middle text-center"><span id="rpab_in_tpbtype">KB</span> ASAL PERUSAHAAN </th>
@@ -309,55 +310,46 @@ foreach ($lsup as $r) {
                     newcell.style.cssText= "white-space: nowrap";
                     newcell.appendChild(newText);
                     newcell = newrow.insertCell(4);
-                    newText = document.createTextNode(mnomorpendaftarandis);
                     newcell.style.cssText= "white-space: nowrap";
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = mnomorpendaftarandis
                     newcell = newrow.insertCell(5);
-                    newText = document.createTextNode(mnomorin);
                     newcell.style.cssText= 'text-align:center';
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = mnomorin
                     newcell = newrow.insertCell(6);
-                    newText = document.createTextNode(response.data[i].MITM_ITMD1.trim());
                     newcell.style.cssText= "white-space: nowrap";
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].MITM_ITMD1.trim()
                     newcell = newrow.insertCell(7);
-                    newText = document.createTextNode(response.data[i].RCV_ITMCD.trim());
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].RCV_ITMCD.trim()
                     newcell = newrow.insertCell(8);
-                    newText = document.createTextNode(response.data[i].RCV_HSCD);
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].RCV_HSCD
                     newcell = newrow.insertCell(9);
-                    newText = document.createTextNode(numeral(response.data[i].RCV_QTY).format('0,0'));
+                    newcell.innerHTML = numeral(response.data[i].RCV_QTY).format('0,0')
                     newcell.style.cssText = "text-align: right";
-                    newcell.appendChild(newText);
                     newcell = newrow.insertCell(10);
-                    newText = document.createTextNode(response.data[i].MITM_STKUOM);
+                    newcell.innerHTML = response.data[i].MITM_STKUOM
                     newcell.style.cssText = "text-align: center";
-                    newcell.appendChild(newText);
                     newcell = newrow.insertCell(11);
-                    newText = document.createTextNode(mnilaipabdis);
-                    newcell.style.cssText = "text-align: right";
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].MSUP_CURCD
+                    newcell.style.cssText = "text-align: center";
+
                     newcell = newrow.insertCell(12);
-                    newText = document.createTextNode(mberatpabdis);
+                    newcell.innerHTML = mnilaipabdis
                     newcell.style.cssText = "text-align: right";
-                    newcell.appendChild(newText);
                     newcell = newrow.insertCell(13);
-                    newText = document.createTextNode(msupdis);
-                    newcell.style.cssText= "white-space: nowrap";
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = mberatpabdis
+                    newcell.style.cssText = "text-align: right";
                     newcell = newrow.insertCell(14);
-                    newText = document.createTextNode(malamdis);
+                    newcell.innerHTML = msupdis
                     newcell.style.cssText= "white-space: nowrap";
-                    newcell.appendChild(newText);
                     newcell = newrow.insertCell(15);
-                    newText = document.createTextNode(mdodis);
                     newcell.style.cssText= "white-space: nowrap";
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = malamdis
                     newcell = newrow.insertCell(16);
-                    newText = document.createTextNode(response.data[i].URAIAN_TUJUAN_PENGIRIMAN);
                     newcell.style.cssText= "white-space: nowrap";
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = mdodis
+                    newcell = newrow.insertCell(17);
+                    newcell.innerHTML = response.data[i].URAIAN_TUJUAN_PENGIRIMAN
+                    newcell.style.cssText= "white-space: nowrap";
                 }
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
