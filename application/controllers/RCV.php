@@ -2674,7 +2674,7 @@ class RCV extends CI_Controller
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('SHEETMASUK');
         $sheet->mergeCells('C1:O1');
-        $sheet->setCellValueByColumnAndRow(3, 1, 'Pembukuan Masuk');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'Pembukuan Masuk '.$cdoctype);
         $sheet->getStyle('C1')->getAlignment()->setHorizontal('center');
         $sheet->setCellValueByColumnAndRow(2, 2, 'PT. SMT INDONESIA');
         $sheet->setCellValueByColumnAndRow(2, 3, 'Kawasan EJIP Plot 5C2 Cikarang Selatan');
