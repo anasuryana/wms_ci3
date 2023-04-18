@@ -182,4 +182,78 @@ class WO extends CI_Controller
     {
         return str_replace(['"', "'"], "", $element);
     }
+
+    public function ProcessHistory()
+    {
+        $woAssy = $this->input->post('woAssy');
+        $outputType = $this->input->post('outputType');
+        $status = $RS = [];
+        if (is_array($woAssy)) {
+            $uniqueAssy = array_unique($woAssy);
+            # implementasi fungsi untuk membuang karakter 'quot' di tiap elemen dari array
+            $woAssyTest = array_map(function ($value) {
+                return $this->UnnecessaryCharRemover($value);
+            }, $uniqueAssy);
+            $woAssyStr = "'" . implode("','", $woAssyTest) . "'";
+            $RS = $this->XWO_mod->selectHistory($woAssyStr);
+
+            # ambil versi data bom revisi terakhir dari MEGA
+            $RSMegaBom = $this->XMBOM_mod->selectVersionWhereItemIn($uniqueAssy);
+
+            # tempel versi
+            foreach ($RS as &$r) {
+                $MegaBomVersion = null;
+                foreach ($RSMegaBom as $m) {
+                    if ($r['MBLA_MDLCD'] === $m['MBOM_MDLCD']) {
+                        $MegaBomVersion = $m['MBOM_BOMRV'];
+                        break;
+                    }
+                }
+                $r['MEGABOMREV'] = $MegaBomVersion;
+            }
+            unset($r);
+            $status[] = ['cd' => 1, 'msg' => 'ok'];
+        } else {
+            $status[] = ['cd' => 0, 'msg' => 'array is required'];
+        }
+
+        if (strtolower($outputType) === 'json') {
+            header('Content-Type: application/json');
+            die(json_encode(['status' => $status, 'data' => $RS]));
+        } else {
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('result');
+            $sheet->setCellValueByColumnAndRow(1, 1, 'History');
+            $sheet->setCellValueByColumnAndRow(1, 2, 'Model Name');
+            $sheet->setCellValueByColumnAndRow(2, 2, 'Assy Code');
+            $sheet->setCellValueByColumnAndRow(3, 2, 'Process');
+            $sheet->setCellValueByColumnAndRow(4, 2, 'Assy Rev.');
+            $sheet->setCellValueByColumnAndRow(5, 2, 'Line');
+            $sheet->setCellValueByColumnAndRow(6, 2, 'Group');
+            $sheet->setCellValueByColumnAndRow(7, 2, 'Mega Bom Latest Rev');
+            $y = 3;
+            foreach ($RS as $r) {
+                $sheet->setCellValueByColumnAndRow(1, $y, $r['MITM_ITMD1']);
+                $sheet->setCellValueByColumnAndRow(2, $y, $r['MBLA_MDLCD']);
+                $sheet->setCellValueByColumnAndRow(3, $y, $r['MBLA_PROCD']);
+                $sheet->setCellValueByColumnAndRow(4, $y, $r['MBLA_BOMRV']);
+                $sheet->setCellValueByColumnAndRow(5, $y, $r['XLINE']);
+                $sheet->setCellValueByColumnAndRow(6, $y, $r['MBLA_ITMCD']);
+                $sheet->setCellValueByColumnAndRow(7, $y, $r['MEGABOMREV']);
+                $y++;
+            }
+            foreach (range('A', 'R') as $r) {
+                $sheet->getColumnDimension($r)->setAutoSize(true);
+            }
+            $sheet->freezePane('A3');
+            $stringjudul = "process history " . date('Y-m-d H:i:s');
+            $writer = new Xlsx($spreadsheet);
+            $filename = $stringjudul;
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+            header('Cache-Control: max-age=0');
+            $writer->save('php://output');
+        }
+    }
 }

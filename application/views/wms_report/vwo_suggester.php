@@ -51,34 +51,67 @@
         if(ReffList.length>0 && ReffList.length === AssyList.length) {
             p.disabled = true
             p.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'
-            $.ajax({
-                type: "POST",
-                url: "<?=base_url('WO/suggestProcess')?>",
-                data: { woReff: ReffList, woAssy: AssyList,woProdQty:  ProdQtyList,  outputType:'spreadsheet' },
-                success: function (response) {
-                    let waktuSekarang = moment().format('YYYY MMM DD, h_mm')
-                    const blob = new Blob([response], { type: "application/vnd.ms-excel" })
-                    const fileName = `wo ${waktuSekarang}.xlsx`
-                    saveAs(blob, fileName)
-                    p.innerHTML = '<i class="fas fa-file-excel"></i>'
-                    p.disabled = false
-                    alertify.success('Done')
-                },
-                xhr: function () {
-                    const xhr = new XMLHttpRequest()
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState == 2) {
-                            if (xhr.status == 200) {
-                                xhr.responseType = "blob";
-                            } else {
-                                p.innerHTML = '<i class="fas fa-file-excel"></i>'
-                                p.disabled = false
-                                xhr.responseType = "text";
+            $.when(
+                $.ajax({
+                    type: "POST",
+                    url: "<?=base_url('WO/suggestProcess')?>",
+                    data: { woReff: ReffList, woAssy: AssyList,woProdQty:  ProdQtyList,  outputType:'spreadsheet' },
+                    success: function (response) {
+                        let waktuSekarang = moment().format('YYYY MMM DD, h_mm')
+                        const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                        const fileName = `wo ${waktuSekarang}.xlsx`
+                        saveAs(blob, fileName)
+
+                        alertify.success('Done')
+                    },
+                    xhr: function () {
+                        const xhr = new XMLHttpRequest()
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState == 2) {
+                                if (xhr.status == 200) {
+                                    xhr.responseType = "blob";
+                                } else {
+                                    p.innerHTML = '<i class="fas fa-file-excel"></i>'
+                                    p.disabled = false
+                                    xhr.responseType = "text";
+                                }
                             }
                         }
-                    }
-                    return xhr
-                },
+                        return xhr
+                    },
+                })
+            ).then(function(data, textStatus, jqXHR){
+                let assyCodeUnique = [...new Set(AssyList)]
+                $.ajax({
+                    type: "POST",
+                    url: "<?=base_url('WO/ProcessHistory')?>",
+                    data: { woAssy: assyCodeUnique,  outputType:'spreadsheet' },
+                    success: function (response) {
+                        let waktuSekarang = moment().format('YYYY MMM DD, h_mm')
+                        const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                        const fileName = `process history ${waktuSekarang}.xlsx`
+                        saveAs(blob, fileName)
+
+                        alertify.success('Done')
+                    },
+                    xhr: function () {
+                        const xhr = new XMLHttpRequest()
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState == 2) {
+                                if (xhr.status == 200) {
+                                    xhr.responseType = "blob";
+                                    p.innerHTML = '<i class="fas fa-file-excel"></i>'
+                                    p.disabled = false
+                                } else {
+                                    p.innerHTML = '<i class="fas fa-file-excel"></i>'
+                                    p.disabled = false
+                                    xhr.responseType = "text";
+                                }
+                            }
+                        }
+                        return xhr
+                    },
+                })
             })
         } else {
             alertify.message('could not continue')
