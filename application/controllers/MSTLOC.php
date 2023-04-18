@@ -72,7 +72,10 @@ class MSTLOC extends CI_Controller
             'PPICEQUIP',
             'PRCSCREQUIP',
             'PSIEQUIP',
-            'QAEQUIP']);
+            'QAEQUIP',
+            'QASCREQUIP',
+            'ICTEQUIP',
+        ]);
         die(json_encode(['data' => $rs]));
     }
 
