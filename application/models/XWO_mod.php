@@ -148,7 +148,7 @@ class XWO_mod extends CI_Model
                         ,RTRIM(MBLA_MDLCD) MBLA_MDLCD
                         ,RTRIM(MBLA_PROCD) MBLA_PROCD
                         ,MBLA_BOMRV
-                        ,MAX(MBLA_LINENO) XLINE
+                        ,MBLA_LINENO XLINE
                     FROM VCIMS_MBLA_TBL
                     LEFT JOIN MITM_TBL M ON MBLA_MDLCD = M.MITM_ITMCD
                     LEFT JOIN XMITM_VCIMS MCIMS ON MBLA_ITMCD = MCIMS.MITM_ITMCD
@@ -157,6 +157,7 @@ class XWO_mod extends CI_Model
                         ,MBLA_BOMRV
                         ,MBLA_PROCD
                         ,MITM_ITMD1
+                        ,MBLA_LINENO
                     ) VMAIN
                 LEFT JOIN (
                     SELECT RTRIM(MBLA_MDLCD) MBLA_MDLCD
@@ -187,7 +188,7 @@ class XWO_mod extends CI_Model
                         where MITM_ITMCAT='PCB'
                         GROUP BY MBLA_MDLCD,MBLA_ITMCD
                     ) VITMCD ON VMAIN.MBLA_MDLCD=VITMCD.MBLA_MDLCD
-                    ORDER BY MBLA_MDLCD,MBLA_BOMRV
+                    ORDER BY MBLA_MDLCD,MBLA_BOMRV,MBLA_PROCD
                 ";
         $query = $this->db->query($qry);
         return $query->result_array();

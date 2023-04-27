@@ -74,10 +74,7 @@ class WO extends CI_Controller
                 for ($i = 0; $i < $CounReff; $i++) {
                     foreach ($RS as $r) {
                         if ($woAssy[$i] === $r['MBLA_MDLCD']) {
-                            switch ($r['XLINE']) {
-                                case 'SMT-S3':
-                                    $lineCode = 'SMT-PS3';
-                                    break;
+                            switch ($r['XLINE']) {                                
                                 case 'SMT-S1':
                                     $lineCode = 'SMT-PS1';
                                     break;
