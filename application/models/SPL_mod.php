@@ -126,7 +126,9 @@ class SPL_mod extends CI_Model
     {
         $qry = "select CONVERT(bigint,(PDPP_WORQT-coalesce(LBLTTL,0))) OSTQTY,PDPP_BSGRP,PDPP_CUSCD,PDPP_WORQT,PDPP_GRNQT,PDPP_COMFG,CONVERT(bigint,(PDPP_WORQT-PDPP_GRNQT)) OSTQTYMG,PDPP_ISUDT,RTRIM(PDPP_WONO) PDPP_WONO from
         XWO a LEFT JOIN  ( select SER_DOC,SUM(SER_QTYLOT) LBLTTL from SER_TBL x WHERE SER_ITMID LIKE ? and SER_DOC = ? AND SER_ID=ISNULL(SER_REFNO,SER_ID)
-        GROUP BY SER_DOC ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_MDLCD LIKE ? and PDPP_WONO = ? ORDER BY PDPP_WONO DESC";
+        GROUP BY SER_DOC ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_MDLCD LIKE ? and PDPP_WONO = ? 
+        AND PDPP_BSGRP = 'PSI1PPZIEP' 
+        ORDER BY PDPP_WONO DESC";
         $query = $this->db->query($qry, ["%" . $pitem . "%", $pwo, "%" . $pitem . "%", $pwo]);
         return $query->result_array();
     }
@@ -420,24 +422,54 @@ class SPL_mod extends CI_Model
             WHERE PDPP_WONO=?";
             $query = $this->db->query($qry, [$pwo]);
         } else {
-            $qry = "select PPSN1_MDLCD PDPP_MDLCD,RTRIM(PIS3_WONO) PIS3_WONO,RTRIM(PIS3_LINENO) PIS3_LINENO, RTRIM(PIS3_FR) PIS3_FR
-            ,UPPER(RTRIM(PIS3_PROCD)) PIS3_PROCD, RTRIM(PIS3_MC) PIS3_MC
-            ,RTRIM(PIS3_MCZ) PIS3_MCZ
-            ,CASE WHEN PDPP_WORQT!=SIMQT THEN
-                SUM(PIS3_REQQT)+(SUM(PIS3_REQQT)/SIMQT * (PDPP_WORQT-SIMQT)) else SUM(PIS3_REQQT)
-            END PIS3_REQQTSUM
-            ,CASE WHEN PDPP_WORQT!=SIMQT THEN
-                (SUM(PIS3_REQQT)+(SUM(PIS3_REQQT)/SIMQT * (PDPP_WORQT-SIMQT))) / PDPP_WORQT else SUM(PIS3_REQQT)/SIMQT
-            END MYPER
-            ,max(RTRIM(PIS3_ITMCD)) PIS3_ITMCD,RTRIM(PIS3_MPART) PIS3_MPART
-            from XPIS3
-            left JOIN XWO ON PIS3_WONO=PDPP_WONO
-            LEFT JOIN (SELECT PPSN1_WONO,MAX(PPSN1_SIMQT) SIMQT, RTRIM(PPSN1_MDLCD) PPSN1_MDLCD FROM XPPSN1
-            GROUP BY PPSN1_WONO, PPSN1_MDLCD) VPPSN1 ON PPSN1_WONO=PIS3_WONO
-            WHERE PIS3_WONO=? and PIS3_DOCNO=?
-            GROUP BY PIS3_WONO,PIS3_LINENO,PIS3_MC,PIS3_MCZ,PDPP_WORQT,PPSN1_MDLCD,PIS3_FR,PIS3_PROCD,PIS3_MPART,SIMQT
-            ORDER BY PIS3_MCZ,PIS3_MC,PIS3_PROCD ";
-            $query = $this->db->query($qry, [$pwo, $pdocno]);
+            $qry = "SELECT PPSN1_MDLCD PDPP_MDLCD
+                ,RTRIM(PIS3_WONO) PIS3_WONO
+                ,RTRIM(PIS3_LINENO) PIS3_LINENO
+                ,RTRIM(PIS3_FR) PIS3_FR
+                ,UPPER(RTRIM(PIS3_PROCD)) PIS3_PROCD
+                ,RTRIM(PIS3_MC) PIS3_MC
+                ,RTRIM(PIS3_MCZ) PIS3_MCZ
+                ,CASE 
+                    WHEN SIMQT != LQT
+                        THEN (SUM(PIS3_REQQT) / SIMQT * LQT)
+                    ELSE SUM(PIS3_REQQT)
+                    END PIS3_REQQTSUM
+                ,SUM(PIS3_REQQT) / SIMQT MYPER
+                ,max(RTRIM(PIS3_ITMCD)) PIS3_ITMCD
+                ,RTRIM(PIS3_MPART) PIS3_MPART
+            FROM XPIS3
+            LEFT JOIN XWO ON PIS3_WONO = PDPP_WONO
+            LEFT JOIN (
+                SELECT PPSN1_WONO
+                    ,MAX(PPSN1_SIMQT) SIMQT
+                    ,RTRIM(PPSN1_MDLCD) PPSN1_MDLCD
+                FROM XPPSN1
+                GROUP BY PPSN1_WONO
+                    ,PPSN1_MDLCD
+                ) VPPSN1 ON PPSN1_WONO = PIS3_WONO
+            LEFT JOIN (
+                SELECT SER_DOC
+                    ,SUM(SER_QTY) LQT
+                FROM SER_TBL
+                WHERE SER_DOC = ?
+                GROUP BY SER_DOC
+                ) VSER ON PDPP_WONO = SER_DOC
+            WHERE PIS3_WONO = ? and PIS3_DOCNO=?
+            GROUP BY PIS3_WONO
+                ,PIS3_LINENO
+                ,PIS3_MC
+                ,PIS3_MCZ
+                ,PDPP_WORQT
+                ,PPSN1_MDLCD
+                ,PIS3_FR
+                ,PIS3_PROCD
+                ,PIS3_MPART
+                ,SIMQT
+                ,LQT
+            ORDER BY PIS3_MCZ
+                ,PIS3_MC
+                ,PIS3_PROCD";
+            $query = $this->db->query($qry, [$pwo, $pwo, $pdocno]);
         }
         return $query->result_array();
     }
