@@ -1010,15 +1010,14 @@ class ITH_mod extends CI_Model
 
     public function select_output_qc($dtfrom, $dtto, $assyno, $pbg)
     {
-        $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,PDPP_BSGRP
+        $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,SER_BSGRP PDPP_BSGRP
         ,CASE WHEN ISNULL(SER_CAT,'')='' AND MAX(SER_BSGRP) ='PSI1PPZIEP' and ISNULL(SER_RMRK,'')!='NG MAKER' THEN  '' ELSE COALESCE(SER_RMRK,'') END SER_RMRK
         FROM ITH_TBL inner join SER_TBL
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
-        INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
-        INNER JOIN XWO ON SER_DOC=PDPP_WONO
+        INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID        
         WHERE ITH_WH='ARQA1' AND (ITH_LUPDT BETWEEN ? AND ?)
-         AND ITH_FORM='INC-QA-FG' AND ITH_ITMCD LIKE ?  and PDPP_BSGRP IN ($pbg)
-        group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,PDPP_BSGRP,SER_RMRK,SER_CAT
+         AND ITH_FORM='INC-QA-FG' AND ITH_ITMCD LIKE ?  and SER_BSGRP IN ($pbg)
+        group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,SER_BSGRP,SER_RMRK,SER_CAT
         order by ITH_LUPDT ASC ";
         $query = $this->db->query($qry, array($dtfrom, $dtto, '%' . $assyno . '%'));
         return $query->result_array();
@@ -1051,14 +1050,13 @@ class ITH_mod extends CI_Model
     }
     public function select_output_qc_byjob($dtfrom, $dtto, $pjob, $pbg)
     {
-        $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,PDPP_BSGRP
+        $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,SER_BSGRP PDPP_BSGRP
         ,CASE WHEN ISNULL(SER_CAT,'')='' AND MAX(SER_BSGRP) ='PSI1PPZIEP' and ISNULL(SER_RMRK,'')!='NG MAKER' THEN  '' ELSE ISNULL(SER_RMRK,'') END SER_RMRK FROM ITH_TBL inner join SER_TBL
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
-        INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
-        INNER JOIN XWO ON SER_DOC=PDPP_WONO
+        INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID        
         WHERE ITH_WH='ARQA1' AND (ITH_LUPDT BETWEEN ? AND ?)
-         AND ITH_FORM='INC-QA-FG' AND ITH_DOC LIKE ?  and PDPP_BSGRP IN ($pbg)
-        group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,PDPP_BSGRP,SER_RMRK,SER_CAT
+         AND ITH_FORM='INC-QA-FG' AND ITH_DOC LIKE ?  and SER_BSGRP IN ($pbg)
+        group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,SER_BSGRP,SER_RMRK,SER_CAT
         order by ITH_LUPDT ASC ";
         $query = $this->db->query($qry, array($dtfrom, $dtto, '%' . $pjob . '%'));
         return $query->result_array();
