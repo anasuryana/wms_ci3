@@ -18,6 +18,7 @@ class DELV extends CI_Controller
         $this->load->library('Code39e128');
         $this->load->library('RMCalculator');
         $this->load->library('TXBridge');
+        $this->load->library('user_agent');
         $this->load->model('Usergroup_mod');
         $this->load->model('DELV_mod');
         $this->load->model('DLVCK_mod');
@@ -71,6 +72,10 @@ class DELV extends CI_Controller
         $this->load->model('refceisa/TPB_DETIL_STATUS_imod');
         $this->load->model('refceisa/TPB_RESPON_imod');
         date_default_timezone_set('Asia/Jakarta');
+    }
+
+    function checkBrowser(){
+        echo $this->agent->browser();
     }
 
     public function exception_handler($exception)
@@ -10880,8 +10885,54 @@ class DELV extends CI_Controller
     public function dispose_fromFG_draft()
     {
         header('Content-Type: application/json');
-        $date = '2022-03-18';
-        $rsRM = $this->DisposeDraft_mod->select_resume_fg($date);
+        $date = '2022-12-02';
+        // $rsRM = $this->DisposeDraft_mod->select_resume_fg($date);
+        $str = "
+        'G31ZJ1YFT41I1P8P',
+        'G3R3D802A51I1FQE',
+        'G4PUO3QA1YIX16FD',
+        'GEXJ3S9TG6IX2SG6',
+        'GEXJ44PPSQIX39D2',
+        'GEXJ4LVCJOIX1UPO',
+        'GEZEJFT0EN2UZSKG',
+        'GHLVX9DM7V1I2PX6',
+        'GHM2G4SLM4IX2ZV0',
+        'GHN6HZF59T2U3EPZ',
+        'FVWSHP4L5RMC3NSM',
+        'GEFQUE9R2MMC1O5C',
+        'GEGVTD7FOXIX2YNH',
+        'GEZS6VLSLEIX240H',
+        'FPD5WDHH8PIX3TJO',
+        'GE5EQX8HSGMCEPYN',
+        'G0TU3U022R2A46BY',
+        'G6X4B2UPXFMCF0Q5',
+        'GFRCG2RPMY1I107M',
+        'G9ANPDE9MXMC3G2X',
+        'GGTYMRF3C92U10A1',
+        'G2JUAXJ69BIXIN55',
+        'G75LKSTAPJIX19T2',
+        'GE7RXPNLXEIXECB2',
+        'GE8SXU9WFLIX2T2W',
+        'G9W3RZPG4S2UZ7W1',
+        'G9W3MN48M22USCHY',
+        'G1WBFRKDGJMC1G75',
+        'GAT91D2BLZ2UH2L0',
+        'GAT91D2BA02U215O',
+        'G146ZZKM9G1I1FKT',
+        'G146ZZKM9L1I20NJ',
+        'GFPORI80Z0MCWRBJ',
+        'GAX50DZ88W1I3UMU',
+        'GAX50DZ88S1I1AX5',
+        'GAX01FQAIUMCX4LT',
+        'G15AT5FPDAIX190Y',
+        'GAT9S9HDLF2UQ6AQ',
+        'G15YXDW06X1I10BI',
+        'GAT9S9HDLC2U1RJF',
+        'G1654IUZFU1I1MVJ',
+        'G99KHV8M1YMCYOKK',
+        'G9YLKPWUERIXZDK6'
+        ";
+        $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($str);
         $itemcd = [];
         foreach ($rsRM as $r) {
             if (!in_array($r['PART_CODE'], $itemcd)) {
@@ -10920,18 +10971,64 @@ class DELV extends CI_Controller
         unset($r);
 
         die(json_encode([
-            'rsRM' => $rsRM, 'rsfix' => $rsfix,
+            'rsRM' => $rsRM,
+            // , 'rsfix' => $rsfix,
         ]));
     }
 
     public function dispose_lock_FG()
     {
         header('Content-Type: application/json');
-        $date = '2022-03-18';
-        $rsRM = $this->DisposeDraft_mod->select_resume_fg($date);
+        $date = '2022-12-02';
+        // $rsRM = $this->DisposeDraft_mod->select_resume_fg($date);
+        $str = "'G31ZJ1YFT41I1P8P',
+        'G3R3D802A51I1FQE',
+        'G4PUO3QA1YIX16FD',
+        'GEXJ3S9TG6IX2SG6',
+        'GEXJ44PPSQIX39D2',
+        'GEXJ4LVCJOIX1UPO',
+        'GEZEJFT0EN2UZSKG',
+        'GHLVX9DM7V1I2PX6',
+        'GHM2G4SLM4IX2ZV0',
+        'GHN6HZF59T2U3EPZ',
+        'FVWSHP4L5RMC3NSM',
+        'GEFQUE9R2MMC1O5C',
+        'GEGVTD7FOXIX2YNH',
+        'GEZS6VLSLEIX240H',
+        'FPD5WDHH8PIX3TJO',
+        'GE5EQX8HSGMCEPYN',
+        'G0TU3U022R2A46BY',
+        'G6X4B2UPXFMCF0Q5',
+        'GFRCG2RPMY1I107M',
+        'G9ANPDE9MXMC3G2X',
+        'GGTYMRF3C92U10A1',
+        'G2JUAXJ69BIXIN55',
+        'G75LKSTAPJIX19T2',
+        'GE7RXPNLXEIXECB2',
+        'GE8SXU9WFLIX2T2W',
+        'G9W3RZPG4S2UZ7W1',
+        'G9W3MN48M22USCHY',
+        'G1WBFRKDGJMC1G75',
+        'GAT91D2BLZ2UH2L0',
+        'GAT91D2BA02U215O',
+        'G146ZZKM9G1I1FKT',
+        'G146ZZKM9L1I20NJ',
+        'GFPORI80Z0MCWRBJ',
+        'GAX50DZ88W1I3UMU',
+        'GAX50DZ88S1I1AX5',
+        'GAX01FQAIUMCX4LT',
+        'G15AT5FPDAIX190Y',
+        'GAT9S9HDLF2UQ6AQ',
+        'G15YXDW06X1I10BI',
+        'GAT9S9HDLC2U1RJF',
+        'G1654IUZFU1I1MVJ',
+        'G99KHV8M1YMCYOKK',
+        'G9YLKPWUERIXZDK6'
+        ";
+        $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($str);
         $czdocbctype = '27';
         $cztujuanpengiriman = '1';
-        $csj = 'DISD2206_FG';
+        $csj = 'DISD2212_FG_AGING';
         $rsallitem_cd = [];
         $rsallitem_qty = [];
         $rsallitem_qtyplot = [];
@@ -10951,7 +11048,7 @@ class DELV extends CI_Controller
                 $rsallitem_qtyplot[] = 0;
             }
         }
-        $ccustdate = '2022-06-3';
+        $ccustdate = '2023-02-23';
         $count_rsallitem = count($rsallitem_cd);
         $rstemp = $this->inventory_getstockbc_v2($czdocbctype, $cztujuanpengiriman, $csj, $rsallitem_cd, $rsallitem_qty, [], $ccustdate);
         $rsbc = json_decode($rstemp);
@@ -10978,11 +11075,11 @@ class DELV extends CI_Controller
                 unset($o);
             } else {
                 $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !", "api_respon" => $rstemp];
-                $this->inventory_cancelDO($csj);
+                // $this->inventory_cancelDO($csj);
                 die('{"status":' . json_encode($myar) . '}');
             }
         } else {
-            $this->inventory_cancelDO($csj);
+            // $this->inventory_cancelDO($csj);
             $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin", "api_respon" => $rstemp];
             die('{"status":' . json_encode($myar) . '}');
         }
@@ -11054,17 +11151,14 @@ class DELV extends CI_Controller
                         $r['QTYPLOT'] += $reqPlot;
                     }
                     $rsfix[] = [
-                        'ASSYDESC' => $r['FGDESC'],
-                        'ASSYCODE' => $r['ITH_ITMCD'],
-                        'ASSYQT' => $r['STOCKQTY'],
-                        'ASSYREFF' => $r['ITH_SER'],
-                        'ASSYUOM' => $r['FGUOM'],
-                        'RMDESC' => $r['RMDESC'],
-                        'RMCODE' => $r['PART_CODE'],
-                        'USE' => $r['QTY'] / $r['STOCKQTY'],
-                        'RMUOM' => $r['RMUOM'],
-                        'BCQT' => $theqty,
-                        'BCTYPE' => $k['RPSTOCK_BCTYPE'],
+                        'ASSY_DESCRIPTION' => $r['FGDESC'],
+                        'ASSY_CODE' => $r['ITH_ITMCD'],
+                        'ASSY_QTY' => $r['LQT'],
+                        'ASSY_KEY' => $r['ITH_SER'],                       
+                        'ITEM_DESCRIPTION' => $r['RMDESC'],
+                        'ITEM_CODE' => $r['SERD2_ITMCD'],
+                        'USE' => $r['SERD2_QTY'] / $r['LQT'],                        
+                        'ITEM_QTY' => $theqty,                        
                         'BCNO' => $k['RPSTOCK_BCNUM'],
                         'BCDATE' => $k['RPSTOCK_BCDATE'],
                     ];
@@ -11140,61 +11234,46 @@ class DELV extends CI_Controller
     }
     public function dispose_report2()
     {
-        header('Content-Type: application/json');
+        // header('Content-Type: application/json');
 
-        $str = "'FRGO02OOTCMC2D8Z',
-        'FRGO02OOTEMC1X83',
-        'FRGO02OOTFMC2TKU',
-        'FRGO02OOTHMC2GSZ',
-        'FRGO02OOTJMC23DP',
-        'FRGO02OOTKMC1TCR',
-        'FRGO02OOTMMC37OI',
-        'FRGO02OOTOMC5MTB',
-        'FRGO02OOTPMC2ZRK',
-        'FRGO02OOTRMC3TWI',
-        'FRGO02OOTTMC3G82',
-        'FRGO02OOTUMC1MVW',
-        'FRGO02OOTWMC2O4G',
-        'FRGO02OOTYMC3W03',
-        'FRGO02OOTZMC389H',
-        'FRGO02OOU1MCZAMA',
-        'FRGO02OOU3MC1ZWU',
-        'FRGO02OOU4MC3O6Q',
-        'FRGO02OOU6MCZHG0',
-        'FRGO02OOU8MCN3KT',
-        'FRGO02OOU9MC3VOP',
-        'FRGO02OOUBMC2JGD',
-        'FRGO02OOUCMC3DXU',
-        'FRGO02OOUEMC19E9',
-        'FRGO02OOUMMC2CEO',
-        'FRGO02OOUOMCAKBK',
-        'FU25FT7TH7MC3U82',
-        'G7RARQW5B8MC1ENZ',
-        'G7RARQW5BBMC4IS5',
-        'G7RARQW5BCMC37Y6',
-        'G7RARQW5BEMC20Z1',
-        'G7RARQW5BHMC8IGZ',
-        'G7RARQW5BIMC2RF5',
-        'G7RARQW5BKMC1WEE',
-        'G7RARQW5BLMC1HIX',
-        'G7RARQW5BMMC1IXN',
-        'G7RARQW5BOMC27J5',
-        'G7RARQW5BQMCGKKY',
-        'G0AGEPYKIZ1I2TF0',
-        'G0KQVA2S6A2A3UEW',
-        'FHTJV266RWMC2QRK',
-        'I07020211114239030',
-        'G7F0W5EJO2MCRZ7N',
-        'G1L0JKV28H1I2VX0',
-        'G1L0JZ2D6K1I2TCB',
-        'FY39AJ8CJO1I36S9',
-        'FY39AVJ2OY1I3C39'";
+        $str = "'F4YG801IVT1UMJWW',
+        'FJYG4B3KGAIX1J5D',
+        'G7AMR3B8BEMC2K54',
+        'G7AMR3B8BHMCWISM',
+        'G1PS451ERQ2A3KC3',
+        'FQZWLX7HB1MC3KZV',
+        'FDA2BQFI3V36U8XC',
+        'FCH67T8R1S3LBTXX',
+        'FCH67T8R1H3L3N8H',
+        'FCH67T8R263LRP84',
+        'FCH67T8R1N3L2KSG',
+        'FCH67T8R193L1593',
+        'FCH67T8R203L19P9',
+        'FCFJUPMP3QAC1E9V',
+        'FCFJUPMP3FAC1BYM',
+        'FCFJUPMP3NAC3SSL',
+        'FCFJUPMP3IAC2FGO',
+        'FCFJUPMP36AC324M',
+        'FCFJX1WUFBACI46S',
+        'FCFHT1WRNXAC3MWV',
+        'G7BT2ELM4FMC18B9',
+        'FBVECX6B5AAC274R',
+        'FCAO0MO4L9AC2U5E',
+        'G6A4B2M6URIX1J7N',
+        'G6A4BK794RIXKAU0',
+        'FDOP86PC9A3L1MD7',
+        'FDOP86PC8Z3LC0U9',
+        'FEK7290QD5361R37',
+        'FFQ3QERXFOAC1AP2',
+        'FI39NQVZLRIX2M0D',
+        'G7F0YFI9DYMC2QN7',
+        'G7F0YFI9E2MCAR50'";
         $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($str);
         $rsEXBC = $this->ZRPSTOCK_mod->select_columns_where(
             [
                 "rtrim(RPSTOCK_ITMNUM) ITMNUM", "ABS(RPSTOCK_QTY) BCQTY", "RPSTOCK_DOC", "RPSTOCK_NOAJU", "RPSTOCK_BCNUM", "RPSTOCK_BCDATE", "RPSTOCK_BCTYPE",
             ],
-            ["RPSTOCK_REMARK" => "DISD2206_FG_2"]
+            ["RPSTOCK_REMARK" => "DISD2212_FG_AGING"]
         );
         $rsfix = [];
         foreach ($rsRM as &$r) {
@@ -11236,7 +11315,7 @@ class DELV extends CI_Controller
         unset($r);
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('DISD2206_FG_2');
+        $sheet->setTitle('DISD2212_FG_AGING');
         $sheet->setCellValueByColumnAndRow(1, 2, 'Assy Name');
         $sheet->setCellValueByColumnAndRow(2, 2, 'Assy Code');
         $sheet->setCellValueByColumnAndRow(3, 2, 'Assy Qty');
@@ -11286,7 +11365,7 @@ class DELV extends CI_Controller
             $sheet->getColumnDimension($v)->setAutoSize(true);
         }
         $sheet->freezePane('A3');
-        $stringjudul = "DISD2206_FG_2";
+        $stringjudul = "DISD2212_FG_AGING";
         $writer = new Xlsx($spreadsheet);
         $filename = $stringjudul; //save our workbook as this file name
 
@@ -11295,6 +11374,79 @@ class DELV extends CI_Controller
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
         // die(json_encode(['data'=>$rsfix]));
+    }
+
+    public function dispose_report202212()
+    {
+        header('Content-Type: application/json');
+        $rsSer = $this->ITH_mod->select_report_dispose202212();
+        $rsBooked = $this->ZRPSTOCK_mod->select_booked_dispose_202212();
+        $rsFix = [];
+        foreach ($rsSer as &$r) {
+            $r['PLOTQTY'] = 0;
+            if ($r['SERD2_ITMCD']) {
+                foreach ($rsBooked as &$b) {
+                    $reqPlot = $r['SERD2_QTY'] - $r['PLOTQTY'];
+                    if ($r['SERD2_ITMCD'] === $b['ITMNUM'] && $reqPlot && $b['BCQT']) {                        
+                        $theqt = $reqPlot;
+                        if ($reqPlot > $b['BCQT']) {
+                            $theqt = $b['BCQT'];
+                            $r['PLOTQTY'] += $theqt;
+                            $b['BCQT'] = 0;
+                        } else {
+                            $b['BCQT'] -= $reqPlot;
+                            $r['PLOTQTY'] += $reqPlot;
+                        }
+                        $rsFix[] = [
+                            'ASSY_DESCRIPTION' => $r['FGDESC'],
+                            'ASSY_CODE' => $r['ITH_ITMCD'],
+                            'ASSY_QTY' => $r['LQT'],
+                            'ASSY_KEY' => $r['ITH_SER'],                       
+                            'ITEM_DESCRIPTION' => $r['RMDESC'],
+                            'ITEM_CODE' => $r['SERD2_ITMCD'],
+                            'USE' => $r['SERD2_QTY'] / $r['LQT'],                        
+                            'ITEM_QTY' => $theqt,                        
+                            'AJU' => $b['RPSTOCK_NOAJU'],
+                            'BCNO' => $b['RPSTOCK_BCNUM'],
+                            'BCDATE' => $b['RPSTOCK_BCDATE'],
+                            'ITEM_HSCODE' => $b['HSCD'],
+                            'BM' => $b['BM'],
+                            'PPN' => $b['PPN'],
+                            'PPH' => $b['PPH'],
+                        ];
+                        if ($r['SERD2_QTY'] == $r['PLOTQTY']) {
+                            break;
+                        }
+                    }                    
+                }
+                unset($b);
+            }  else {
+                $rsFix[] = [
+                    'ASSY_DESCRIPTION' => $r['FGDESC'],
+                    'ASSY_CODE' => $r['ITH_ITMCD'],
+                    'ASSY_QTY' => $r['LQT'],
+                    'ASSY_KEY' => $r['ITH_SER'],                       
+                    'ITEM_DESCRIPTION' => $r['RMDESC'],
+                    'ITEM_CODE' => $r['SERD2_ITMCD'],
+                    'USE' => 0,                        
+                    'ITEM_QTY' => 0,                        
+                    'AJU' => "-",
+                    'BCNO' => "-",
+                    'BCDATE' => "",
+                    'ITEM_HSCODE' => "",
+                    'BM' => "",
+                    'PPN' => "",
+                    'PPH' => "",
+                ];
+            }           
+        }
+        unset($r);
+        die(json_encode([    
+        'rsFix' => $rsFix    
+        ]));
+        // die(json_encode(['rsSer' => $rsSer     
+        // ,'rsBooked' => $rsBooked    
+        // ]));
     }
 
     public function posting_rm41()
@@ -13455,7 +13607,7 @@ class DELV extends CI_Controller
     {
         $mdo = base64_encode($psj);
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8081/api_inventory/api/stock/onDelivery/' . $mdo);
+        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/api/stock/onDelivery/' . $mdo);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         $data = curl_exec($ch);
@@ -13466,7 +13618,7 @@ class DELV extends CI_Controller
     public function inventory___getstockbc($pbc_type, $ptujuan, $psj, $prm, $pqty, $plot, $pbcdate)
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8081/api_inventory/api/inventory/getStockBC');
+        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/api/inventory/getStockBC');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, "bc=$pbc_type&tujuan=$ptujuan&doc=$psj&date_out=$pbcdate&item_num=$prm&qty=$pqty&lot=$plot");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -13492,7 +13644,7 @@ class DELV extends CI_Controller
         ];
         $fields_string = http_build_query($fields);
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8081/api_inventory/api/inventory/getStockBCArray');
+        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/api/inventory/getStockBCArray');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -13517,7 +13669,7 @@ class DELV extends CI_Controller
         ];
         $fields_string = http_build_query($fields);
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8081/api_inventory/api/inventory/getStockBCArray');
+        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/api/inventory/getStockBCArray');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -13532,7 +13684,7 @@ class DELV extends CI_Controller
     {
         $mdo = base64_encode($pdo);
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8081/api_inventory/api/inventory/cancelDO/' . $mdo);
+        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/api/inventory/cancelDO/' . $mdo);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300); //5sdfdfs
         curl_setopt($ch, CURLOPT_TIMEOUT, 660);
