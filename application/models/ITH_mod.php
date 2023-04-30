@@ -1201,7 +1201,7 @@ class ITH_mod extends CI_Model
         GROUP BY ITH_REMARK,ITH_DOC) vra on ITH_SER=EXTLBL
         left join XVU_RTN on vra.ITH_DOC=STKTRND1_DOCNO
         WHERE (ITH_LUPDT BETWEEN ? AND ?)
-         AND ITH_FORM='INC-WHRTN-FG' AND ITH_ITMCD LIKE ? and MBSG_BSGRP = ?
+         AND ITH_FORM IN ('INC-WHRTN-FG','INC-WHRTN-FG-C') AND ITH_ITMCD LIKE ? and MBSG_BSGRP = ?
         order by ITH_LUPDT ASC ";
         $query = $this->db->query($qry, [$dtfrom, $dtto, '%' . $assyno . '%', $pbg]);
         return $query->result_array();
@@ -1231,7 +1231,7 @@ class ITH_mod extends CI_Model
         GROUP BY ITH_REMARK,ITH_DOC) vra on ITH_SER=EXTLBL
         left join XVU_RTN on vra.ITH_DOC=STKTRND1_DOCNO
         WHERE (ITH_LUPDT BETWEEN ? AND ?)
-         AND ITH_FORM='INC-WHRTN-FG' AND vra.ITH_DOC LIKE ? and MBSG_BSGRP = ?
+         AND ITH_FORM IN ('INC-WHRTN-FG','INC-WHRTN-FG-C') AND vra.ITH_DOC LIKE ? and MBSG_BSGRP = ?
         order by ITH_LUPDT ASC ";
         $query = $this->db->query($qry, [$dtfrom, $dtto, '%' . $pjob . '%', $pbg]);
         return $query->result_array();
@@ -1261,7 +1261,7 @@ class ITH_mod extends CI_Model
         GROUP BY ITH_REMARK,ITH_DOC) vra on ITH_SER=EXTLBL
         left join XVU_RTN on vra.ITH_DOC=STKTRND1_DOCNO
         WHERE (ITH_LUPDT BETWEEN ? AND ?)
-         AND ITH_FORM='INC-WHRTN-FG' AND ITH_SER LIKE ? and MBSG_BSGRP = ?
+         AND ITH_FORM IN ('INC-WHRTN-FG','INC-WHRTN-FG-C') AND ITH_SER LIKE ? and MBSG_BSGRP = ?
         order by ITH_LUPDT ASC ";
         $query = $this->db->query($qry, [$dtfrom, $dtto, '%' . $preff . '%', $pbg]);
         return $query->result_array();
