@@ -136,6 +136,7 @@
                         <option value="DIJUAL">DIJUAL</option>
                         <option value="DISPOSE">DISPOSE</option>
                         <option value="DIPERBAIKI">DIPERBAIKI</option>
+                        <option value="LAINNYA">LAINNYA</option>
                     </select>
                 </div>
             </div>
