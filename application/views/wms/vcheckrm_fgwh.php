@@ -14,7 +14,7 @@
                 </div>
             </div>
         </div>
-        <div class="row" id="checksbb_stack2">            
+        <div class="row" id="checksbb_stack2">
             <div class="col-md-6 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" type="button" id="checksbb_btn_sync" onclick="checksbb_btn_sync_e_click()" title="Refresh"><i class="fas fa-sync"></i></button>
@@ -23,10 +23,10 @@
                 <span id="checksbb_lblinfo" class="badge bg-info"></span>
             </div>
             <div class="col-md-6 mb-1 text-end">
-                <div class="btn-group btn-group-sm">                    
+                <div class="btn-group btn-group-sm">
                     <button class="btn btn-warning" type="button" id="checksbb_btn_simulate" onclick="checksbb_btn_simulate_e_click()" >Resimulation</button>
                 </div>
-            </div>            
+            </div>
         </div>
         <div class="row">
             <div class="col-md-12 mb-1">
@@ -44,55 +44,61 @@
                                 <th class="align-middle" title="reset"></th>
                             </tr>
                         </thead>
-                        <tbody>                        
+                        <tbody>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div> 
+        </div>
     </div>
 </div>
-<div id="checksbb_w_jobreq"  class="easyui-window" title="Simulation" 
+<div id="checksbb_w_jobreq"  class="easyui-window" title="Simulation"
     data-options="modal:false,closed:true,iconCls:'icon-analyze',collapsible:true,minimizable:false,
     top: 305,
     left: 0,
     onClose:function(){
         $('#checksbb_reqtbl_rm tbody').empty();
-        }" 
+        }"
     style="width:600px;height:350px;padding:5px;" >
     <div style="padding:1px" >
         <div class="container">
             <div class="row">
                 <div class="col-md-6 mb-1">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Job Number</span>                        
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Job Number</span>
                         <input type="text" class="form-control" id="checksbb_req_job" readonly>
                     </div>
                 </div>
                 <div class="col-md-3 mb-1">
                     <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text" >Lot Size</span>                        
+                        <span class="input-group-text" >Lot Size</span>
                         <input type="text" class="form-control" id="checksbb_req_itmqty" readonly>
                     </div>
                 </div>
                 <div class="col-md-3 mb-1">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text">Sim QT</span>                        
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text">Sim QT</span>
                         <input type="text" class="form-control" id="checksbb_req_simqt" readonly>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6 mb-1">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Assy Code</span>                        
+                <div class="col-md-5 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Assy Code</span>
                         <input type="text" class="form-control" id="checksbb_req_itmcd" readonly>
                     </div>
                 </div>
-                <div class="col-md-6 mb-1">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Assy Name</span>                        
+                <div class="col-md-5 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Assy Name</span>
                         <input type="text" class="form-control" id="checksbb_req_itmnm" readonly>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Rev</span>
+                        <input type="text" class="form-control" id="checksbb_req_bomrev" readonly>
                     </div>
                 </div>
             </div>
@@ -121,7 +127,7 @@
                                     <th class="text-center">PER</th>
                                     <th>Item Code</th>
                                     <th>Item Name</th>
-                                    <th class="text-end">QTY</th>                                    
+                                    <th class="text-end">QTY</th>
                                     <th class="text-center">Kind</th>
                                 </tr>
                             </thead>
@@ -135,7 +141,7 @@
                 <div class="col-md-12 mb-1">
                     <div class="table-responsive" id="checksbb_reqdiv_rm_resume">
                         <table id="checksbb_reqtbl_rm_resume" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">   
+                            <thead class="table-light">
                                 <tr>
                                     <th colspan="5">Resume</th>
                                 </tr>
@@ -156,16 +162,16 @@
         </div>
     </div>
 </div>
-<div id="checksbb_w_psnjob"  class="easyui-window" title="Detail of PSN" 
-    data-options="modal:false,closed:true,iconCls:'icon-analyze',collapsible:true, minimizable:false,    
+<div id="checksbb_w_psnjob"  class="easyui-window" title="Detail of PSN"
+    data-options="modal:false,closed:true,iconCls:'icon-analyze',collapsible:true, minimizable:false,
     right: 0,
-    top: 0,    
+    top: 0,
     onClose:function(){
-        $('#checksbb_psn_list').tagbox('setValues', []);        
-    }" 
+        $('#checksbb_psn_list').tagbox('setValues', []);
+    }"
     style="width:100%;height:300px;padding:5px;">
     <div style="padding:1px" >
-        <div class="container-fluid">  
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12 mb-1">
                     <input type="text" style="width:100%" id="checksbb_psn_list" readonly>
@@ -175,7 +181,7 @@
                 <div class="col-md-12 mb-1">
                     <div class="table-responsive" id="checksbb_divdetailpsn">
                         <table id="checksbb_tbldetailpsn" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">                                
+                            <thead class="table-light">
                                 <tr>
                                     <th>DOC NO</th>
                                     <th>PSN NO</th>
@@ -184,7 +190,7 @@
                                     <th>FR</th>
                                     <th>Category</th>
                                     <th class="text-center">MC</th>
-                                    <th class="text-center">MCZ</th>          
+                                    <th class="text-center">MCZ</th>
                                     <th class="text-center">S/M</th>
                                     <th class="text-center">Item Code</th>
                                     <th class="text-center">Item Name</th>
@@ -203,10 +209,10 @@
         </div>
     </div>
 </div>
-<div id="checksbb_w_calculation"  class="easyui-window" title="Calculation Result" 
+<div id="checksbb_w_calculation"  class="easyui-window" title="Calculation Result"
     data-options="modal:false,closed:true,iconCls:'icon-analyze',collapsible:true,minimizable:false,
-    right:601,    
-    top:305,    
+    right:601,
+    top:305,
     onClose:function(){
         $('#checksbb_caltbl_rm tbody').empty();
         $('#checksbb_w_psnjob').window('close');
@@ -217,13 +223,13 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-6 mb-1">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >ID Sample</span>                        
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >ID Sample</span>
                         <input type="text" class="form-control" id="checksbb_cal_ID" readonly>
                     </div>
                 </div>
                 <div class="col-md-6 mb-1">
-                    <div class="input-group input-group-sm mb-1">                        
+                    <div class="input-group input-group-sm mb-1">
                         <span class="input-group-text" >Qty</span>
                         <input type="text" class="form-control" id="checksbb_cal_ID_qty" readonly>
                     </div>
@@ -231,7 +237,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12 mb-1">
-                    <div class="btn-group btn-group-sm">                        
+                    <div class="btn-group btn-group-sm">
                         <button title="Copy to clipboard" onclick="checksbb_cal_btnclip()" class="btn btn-success" ><i class="fas fa-clipboard"></i></button>
                     </div>
                 </div>
@@ -257,7 +263,7 @@
                                     <th class="text-center">PER</th>
                                     <th>Item Code</th>
                                     <th>Item Name</th>
-                                    <th class="text-end">DLV QTY</th>                                    
+                                    <th class="text-end">DLV QTY</th>
                                     <th class="text-center">Kind</th>
                                 </tr>
                             </thead>
@@ -292,18 +298,18 @@
         </div>
     </div>
 </div>
-<div id="checksbb_w_psnfilter"  class="easyui-window" title="Action" 
-    data-options="modal:true,closed:true,iconCls:'icon-analyze',collapsible:true, minimizable:false,    
+<div id="checksbb_w_psnfilter"  class="easyui-window" title="Action"
+    data-options="modal:true,closed:true,iconCls:'icon-analyze',collapsible:true, minimizable:false,
     right: 0,
     top: 0,
     cls: 'c6',
     onClose:function(){
         $('#checksbb_alert').html('');
         }
-    " 
+    "
     style="width:100%;height:500px;padding:5px;">
     <div style="padding:1px" >
-        <div class="container-fluid"> 
+        <div class="container-fluid">
             <input type="hidden" id="checksbb_txt_line">
             <input type="hidden" id="checksbb_txt_mc">
             <input type="hidden" id="checksbb_txt_mcz">
@@ -339,29 +345,29 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
+
                         </tbody>
-                    </table>                    
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div id="checksbb_w_psnfilter_special"  class="easyui-window" title="Special Acceptance" 
-    data-options="modal:true,closed:true,iconCls:'icon-analyze',collapsible:true, minimizable:false,    
+<div id="checksbb_w_psnfilter_special"  class="easyui-window" title="Special Acceptance"
+    data-options="modal:true,closed:true,iconCls:'icon-analyze',collapsible:true, minimizable:false,
     right: 0,
     top: 0,
     cls: 'c6',
     onClose:function(){
         $('#checksbb_alert_special').html('');
         }
-    " 
+    "
     style="width:100%;height:500px;padding:5px;">
     <div style="padding:1px" >
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-6 mb-1">
-                    <button class="btn btn-sm btn-primary" id="checksbb_add_special" onclick="checksbb_e_addto_cal_special()">Add selected data to calculation</button>                    
+                    <button class="btn btn-sm btn-primary" id="checksbb_add_special" onclick="checksbb_e_addto_cal_special()">Add selected data to calculation</button>
                 </div>
                 <div class="col-md-6 mb-1">
                     <div class="input-group input-group-sm">
@@ -395,9 +401,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
+
                         </tbody>
-                    </table>                    
+                    </table>
                 </div>
             </div>
         </div>
@@ -405,21 +411,21 @@
 </div>
 <div class="modal fade" id="checksbb_MODFILTERJOB">
     <div class="modal-dialog">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Filter</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
-        <div class="modal-body">            
+        <div class="modal-body">
             <div class="row">
                 <div class="col-md-12 mb-1 p-1">
-                    <div class="input-group input-group-sm">                        
-                        <span class="input-group-text" >Job Number</span>                        
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text" >Job Number</span>
                         <select class="form-select" id="checksbb_cmb_job" multiple>
-                            
+
                         </select>
                     </div>
                 </div>
@@ -433,13 +439,13 @@
 </div>
 <div class="modal fade" id="checksbb_MODEDITQTYCAL">
     <div class="modal-dialog modal-lg">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Editing Calculation QTY</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
@@ -458,7 +464,7 @@
                 <div class="col-md-12 mb-1 p-1">
                     <div class="table-responsive" id="checksbb_caltbl_rm_edit_div">
                         <table id="checksbb_caltbl_rm_edit" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">                               
+                            <thead class="table-light">
                                 <tr>
                                     <th>Line No</th>
                                     <th>Process</th>
@@ -468,7 +474,7 @@
                                     <th class="text-center">PER</th>
                                     <th>Item Code</th>
                                     <th>Item Name</th>
-                                    <th class="text-end">DLV QTY</th>                                    
+                                    <th class="text-end">DLV QTY</th>
                                     <th class="text-center">Kind</th>
                                     <th class="text-center"></th>
                                 </tr>
@@ -487,7 +493,7 @@
                     </div>
                 </div>
                 <div class="col-md-6 mb-1 p-1">
-                    <div class="input-group input-group-sm">                        
+                    <div class="input-group input-group-sm">
                         <span class="input-group-text" >New Qty</span>
                         <input type="text" class="form-control" id="checksbb_newqty">
                     </div>
@@ -508,15 +514,15 @@
             <h4 class="modal-title">Filter</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
-        <div class="modal-body">            
+        <div class="modal-body">
             <div class="row">
                 <div class="col-md-12 mb-1 p-1">
-                    <div class="input-group input-group-sm">                        
-                        <span class="input-group-text" >Item Code</span>                        
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text" >Item Code</span>
                         <select class="form-select" id="checksbb_cmb_item" multiple>
-                            
+
                         </select>
                     </div>
                 </div>
@@ -536,7 +542,7 @@
             <h4 class="modal-title">Resimulation</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
@@ -545,7 +551,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-frown" viewBox="0 0 16 16">
                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                         <path d="M4.285 12.433a.5.5 0 0 0 .683-.183A3.498 3.498 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.498 4.498 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>
-                        </svg>         
+                        </svg>
                     </h1>
                     Sorry this function is no longer available. We still need to display this view as history that it used to be available.
                     <br>
@@ -553,12 +559,12 @@
                 </div>
             </div>
             <!-- <div class="row">
-                <div class="col-md-12 mb-1 p-1">                    
+                <div class="col-md-12 mb-1 p-1">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text" >Job</span>
                         <input type="text" class="form-control" id="checksbb_jobno" onkeypress="checksbb_jobno_eKP(event)" maxlength="50">
                         <button class="btn btn-primary btn-sm" id="checksbb_btn_prepare_resim" onclick="checksbb_resimulate_wo_sync(this)"><i class="fas fa-sync"></i></button>
-                    </div>                    
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -575,7 +581,7 @@
                                     <th class="align-middle text-center"><input type="checkbox" class="form-check-input" id="checksbb_ckall" ></th>
                                 </tr>
                             </thead>
-                            <tbody>                        
+                            <tbody>
                             </tbody>
                         </table>
                     </div>
@@ -599,7 +605,7 @@
                     <div class="col-md-6 mb-1">
                         <!-- <button type="button" class="btn btn-primary btn-sm" onclick="checksbb_e_resimulate(this)">Resimulate</button> -->
                     </div>
-                </div>            
+                </div>
             </div>
         </div>
       </div>
@@ -607,31 +613,31 @@
 </div>
 <div class="modal fade" id="checksbb_Emergency">
     <div class="modal-dialog modal-lg">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Emergency</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
-        <div class="modal-body">            
+        <div class="modal-body">
             <div class="row">
                 <div class="col-md-4 mb-1 p-1">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text" >ID</span>                        
+                        <span class="input-group-text" >ID</span>
                         <input type="text" class="form-control" id="checksbb_txtemer_ID" readonly>
                     </div>
                 </div>
                 <div class="col-md-4 mb-1 p-1">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text" >Job</span>                        
+                        <span class="input-group-text" >Job</span>
                         <input type="text" class="form-control" id="checksbb_txtemer_JOB" readonly>
                     </div>
                 </div>
                 <div class="col-md-4 mb-1 p-1">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text" >Qty</span>                        
+                        <span class="input-group-text" >Qty</span>
                         <input type="text" class="form-control" id="checksbb_txtemer_QTY" readonly>
                     </div>
                 </div>
@@ -661,10 +667,10 @@
         alert("Copied")
     }
     function checksbb_e_filterjob(){
-        $("#checksbb_MODFILTERJOB").modal('show');        
+        $("#checksbb_MODFILTERJOB").modal('show');
     }
     function checksbb_e_filteritem(){
-        $("#checksbb_MODFILTERITEM").modal('show');        
+        $("#checksbb_MODFILTERITEM").modal('show');
     }
     function checksbb_cmb_filter_eChange(){
         const txtsearch = document.getElementById('checksbb_txt_search');
@@ -677,27 +683,27 @@
             txtsearch.focus()
         }
     }
-    function checksbb_ck_recalcualte(e, pjob){        
-        let tabel_PLOT = document.getElementById("checksbb_tbl");                    
+    function checksbb_ck_recalcualte(e, pjob){
+        let tabel_PLOT = document.getElementById("checksbb_tbl");
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
         const ttlrows = tabel_PLOT_body0.getElementsByTagName('tr').length;
         let serlist = [];
         let joblist = [];
         let qtylist = [];
         for(let i=0;i<ttlrows;i++){
-            let sjob = tabel_PLOT_body0.rows[i].cells[0].innerText;                        
-            if(sjob==pjob){                
-                if(tabel_PLOT_body0.rows[i].cells[6].getElementsByTagName('input')[0].disabled){                    
+            let sjob = tabel_PLOT_body0.rows[i].cells[0].innerText;
+            if(sjob==pjob){
+                if(tabel_PLOT_body0.rows[i].cells[6].getElementsByTagName('input')[0].disabled){
                     serlist.push(tabel_PLOT_body0.rows[i].cells[3].innerText);
                     joblist.push(pjob);
                     qtylist.push(numeral(tabel_PLOT_body0.rows[i].cells[4].innerText).value());
                 }
             }
-        }         
+        }
         if(serlist.length>0){
             if(confirm("Are you sure ?")){
                 document.getElementById('checksbb_lblinfo').innerText = "Please wait.,,";
-                
+
                 $.ajax({
                     type: "post",
                     url: "<?=base_url('SER/resetcalculation')?>",
@@ -717,17 +723,17 @@
             }
         }
     }
-        
-    $("#checksbb_divku").css('height', $(window).height()   
-    -document.getElementById('checksbb_stack1').offsetHeight 
-    -document.getElementById('checksbb_stack2').offsetHeight    
+
+    $("#checksbb_divku").css('height', $(window).height()
+    -document.getElementById('checksbb_stack1').offsetHeight
+    -document.getElementById('checksbb_stack2').offsetHeight
     -100);
-    function checksbb_cksi_e_click(e,elem,pjob){        
+    function checksbb_cksi_e_click(e,elem,pjob){
         if(elem.checked){
-            let tabel_PLOT = document.getElementById("checksbb_tbl");                    
+            let tabel_PLOT = document.getElementById("checksbb_tbl");
             let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
             let ttlrows = tabel_PLOT_body0.getElementsByTagName('tr').length;
-            let ttlchecked =0;            
+            let ttlchecked =0;
             for(let i=0;i<ttlrows;i++){
                 let sjob = tabel_PLOT_body0.rows[i].cells[0].innerText;
                 let qty = numeral(tabel_PLOT_body0.rows[i].cells[4].innerText).value();
@@ -759,8 +765,8 @@
                 let myfrag = document.createDocumentFragment();
                 let mtabel = document.getElementById("checksbb_tbl");
                 let cln = mtabel.cloneNode(true);
-                myfrag.appendChild(cln); 
-                let tabell = myfrag.getElementById("checksbb_tbl");                    
+                myfrag.appendChild(cln);
+                let tabell = myfrag.getElementById("checksbb_tbl");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let newrow, newcell, newText;
                 tableku2.innerHTML='';
@@ -788,7 +794,7 @@
                     newText = document.createTextNode(response.data[i].MITM_ITMD1);
                     newcell.appendChild(newText);
                     newcell = newrow.insertCell(3)
-                    newcell.style.cssText = "text-align:center";                    
+                    newcell.style.cssText = "text-align:center";
                     newcell.innerHTML = response.data[i].ITH_SER
                     newcell.ondblclick = () => {
                         alertify.message('weellll')
@@ -799,15 +805,15 @@
                     newcell.appendChild(newText);
                     newcell = newrow.insertCell(5);
                     if(Number(response.data[i].CALPER)==0){
-                        newText = document.createTextNode('Not calculated yet'); 
+                        newText = document.createTextNode('Not calculated yet');
                         newcell.appendChild(newText);
                         newcell = newrow.insertCell(6);
                         newText = document.createElement('input');
-                        newText.setAttribute('type', 'checkbox');  
+                        newText.setAttribute('type', 'checkbox');
                         newText.onclick = function(){checksbb_cksi_e_click(event, this,response.data[i].SER_DOC )};
                         newcell.appendChild(newText);
                         newcell = newrow.insertCell(7);
-                        newText = document.createTextNode(''); 
+                        newText = document.createTextNode('');
                         newcell.appendChild(newText);
                     } else {
                         newText = document.createTextNode('Edit required');
@@ -825,8 +831,8 @@
                         newText = document.createElement('span');
                         newText.classList.add('badge','bg-warning');
                         newText.innerText = "Reset calculation ?";
-                        newcell.appendChild(newText);                        
-                    }                    
+                        newcell.appendChild(newText);
+                    }
                 }
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
@@ -836,12 +842,12 @@
                 for(let i=0; i< joblist_c; i++){
                     tohtml += "<option value='"+joblist[i]+"'>"+joblist[i]+"</option>";
                 }
-                $("#checksbb_cmb_job").html(tohtml);                
+                $("#checksbb_cmb_job").html(tohtml);
                 tohtml = '<option value="-">-</option>';
                 for(let i=0; i< itemcdlist_c; i++){
                     tohtml += "<option value='"+itemcdlist[i]+"'>"+itemcdlist[i]+"</option>";
                 }
-                $("#checksbb_cmb_item").html(tohtml);                
+                $("#checksbb_cmb_item").html(tohtml);
             }, error(xhr, xopt, xthrow){
                 alertify.error(xthrow);
             }
@@ -849,7 +855,7 @@
     }
 
     function checksbb_e_addto_cal_special() {
-        const datanya = checksbb_DTABLE_psn.rows( { selected: true } ).nodes()[0];        
+        const datanya = checksbb_DTABLE_psn.rows( { selected: true } ).nodes()[0];
         if (typeof datanya == 'undefined'){
             alert("there is no selected data");
         } else {
@@ -894,18 +900,18 @@
                         ,initmcd: itemcd, inttluse: ttluse, inqtytosave: qtytosave
                         ,inser: idsample, inserqty: qtyFG},
                         dataType: "json",
-                        success: function (response) {   
+                        success: function (response) {
                             document.getElementById('checksbb_add_special').disabled=false;
                             if(response.status[0].cd=='1'){
                                 $("#checksbb_alert_special").html('<div class="alert alert-success alert-dismissible" role="alert">'+
                                 response.status[0].msg+
-                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+                                        
+                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+
                                     '</button>'+
                                 '</div>');
                             } else {
                                 $("#checksbb_alert_special").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
                                 response.status[0].msg+
-                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+                                       
+                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+
                                     '</button>'+
                                 '</div>');
                             }
@@ -915,12 +921,12 @@
                         }
                     });
                 }
-            });            
+            });
         }
     }
 
     function checksbb_e_addto_cal(){
-        const datanya = checksbb_DTABLE_psn.rows( { selected: true } ).nodes()[0];        
+        const datanya = checksbb_DTABLE_psn.rows( { selected: true } ).nodes()[0];
         if (typeof datanya == 'undefined'){
             alert("there is no selected data");
         } else {
@@ -935,7 +941,7 @@
             const itmcat = datanya.cells[5].innerText.trim();
             const fr = datanya.cells[4].innerText.trim();
             const itemcd = datanya.cells[8].innerText.trim();
-            const actqty = numeral(datanya.cells[11].innerText).value()            
+            const actqty = numeral(datanya.cells[11].innerText).value()
             const strdis = "Add below data <br>"+
                 "<b>PSN</b>: "+psn+
                 "<br><b>Process</b>: "+checksbb_procd+
@@ -946,7 +952,7 @@
                 "<br><b>PER</b>: "+per+
                 "<br><b>MC</b>: "+mc+
                 "<br><b>MCZ</b>: "+mcz+
-                "<br><b>Item Code</b>: "+itemcd+                
+                "<br><b>Item Code</b>: "+itemcd+
                 "<br>=======TO======="+
                 "<br><b>ID</b>: "+idsample+" alike";
 
@@ -961,18 +967,18 @@
                         ,infr: fr, injob: job, inactqt: actqty, inper: per, inmc: mc, inmcz: mcz
                         ,initmcd: itemcd, inttluse: ttluse },
                         dataType: "json",
-                        success: function (response) {   
+                        success: function (response) {
                             document.getElementById('checksbb_add').disabled=false;
                             if(response.status[0].cd=='1'){
                                 $("#checksbb_alert").html('<div class="alert alert-success alert-dismissible" role="alert">'+
                                 response.status[0].msg+
-                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+                                        
+                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+
                                     '</button>'+
                                 '</div>');
                             } else {
                                 $("#checksbb_alert").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
                                 response.status[0].msg+
-                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+                                       
+                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+
                                     '</button>'+
                                 '</div>');
                             }
@@ -982,12 +988,12 @@
                         }
                     });
                 }
-            });            
+            });
         }
     }
 
     function checksbb_e_flagok(){
-        if(confirm("Are you sure ?")){            
+        if(confirm("Are you sure ?")){
             let sjob = document.getElementById('checksbb_req_job').value;
             let ttluse = numeral(document.getElementById('checksbb_cal_ttl_per').innerText).value();
             $.ajax({
@@ -996,16 +1002,16 @@
                 data: {injob: sjob, inttluse: ttluse},
                 dataType: "json",
                 success: function (response) {
-                    if(response.status[0].cd==1){                        
+                    if(response.status[0].cd==1){
                         $("#checksbb_alert").html('<div class="alert alert-success alert-dismissible" role="alert">'+
                         response.status[0].msg+
-                            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+                                
+                            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+
                             '</button>'+
                         '</div>');
                     } else {
                         $("#checksbb_alert").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
                         response.status[0].msg+
-                            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+                                
+                            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">'+
                             '</button>'+
                         '</div>');
                     }
@@ -1043,7 +1049,7 @@
                         success: function (response) {
                             alertify.success("Done");
                             let ttlrows_sts = response.status.length;
-                            let tabel_PLOT = document.getElementById("checksbb_tbl");                    
+                            let tabel_PLOT = document.getElementById("checksbb_tbl");
                             let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
                             let ttlrows = tabel_PLOT_body0.getElementsByTagName('tr').length;
                             for(let i=0; i<ttlrows_sts; i++){
@@ -1057,7 +1063,7 @@
                                 }
                             }
                         }, error: function(xhr, xopt, xthrow){
-                            alertify.error(xthrow);                            
+                            alertify.error(xthrow);
                         }
                     });
                 }
@@ -1100,14 +1106,14 @@
                 };
                 newrow.cells[10].onclick = function(){checksbb_show_possible_supply(objk)};
             }
-        }        
+        }
     }
 
-    function checksbb_show_possible_supply(pdata){         
+    function checksbb_show_possible_supply(pdata){
         document.getElementById("checksbb_txt_line").value = pdata.line;
         document.getElementById("checksbb_txt_mc").value = pdata.mc;
         document.getElementById("checksbb_txt_mcz").value = pdata.mcz;
-        document.getElementById("checksbb_txt_per").value = pdata.per;        
+        document.getElementById("checksbb_txt_per").value = pdata.per;
         checksbb_procd = pdata.process;
         let assycode = document.getElementById('checksbb_req_itmcd').value;
         let mjob = document.getElementById('checksbb_req_job').value;
@@ -1138,7 +1144,7 @@
                 { "data": 'MITM_SPTNO'},
                 { "data": 'MITM_ITMD1'},
                 { "data": 'PPSN2_ACTQT', render: $.fn.dataTable.render.number(',', '.', 0,'')}
-            ], 
+            ],
             columnDefs: [
                 {
                     targets: 10,
@@ -1147,11 +1153,11 @@
             ]
         });
     }
-    function checksbb_show_possible_supply_special(pdata){         
+    function checksbb_show_possible_supply_special(pdata){
         document.getElementById("checksbb_txt_line").value = pdata.line;
         document.getElementById("checksbb_txt_mc").value = pdata.mc;
         document.getElementById("checksbb_txt_mcz").value = pdata.mcz;
-        document.getElementById("checksbb_txt_per").value = pdata.per;        
+        document.getElementById("checksbb_txt_per").value = pdata.per;
         checksbb_procd = pdata.process;
         const assycode = document.getElementById('checksbb_req_itmcd').value;
         const mjob = document.getElementById('checksbb_req_job').value;
@@ -1169,7 +1175,7 @@
                 && ttlbal > 0
                 ) {
                 document.getElementById('checksbb_txt_qty_special').value = ttlbal; break
-            }            
+            }
         }
         $('#checksbb_w_psnfilter_special').window('open');
         checksbb_DTABLE_psn =  $('#checksbb_tblpsnfilter_special').DataTable({
@@ -1198,7 +1204,7 @@
                 { "data": 'MITM_SPTNO'},
                 { "data": 'MITM_ITMD1'},
                 { "data": 'PPSN2_ACTQT', render: $.fn.dataTable.render.number(',', '.', 0,'')}
-            ], 
+            ],
             columnDefs: [
                 {
                     targets: 10,
@@ -1211,9 +1217,10 @@
     function checksbb_e_compare(pjob, passycd, passynm, pid, pqty){
         document.getElementById('checksbb_req_job').value=pjob;
         document.getElementById('checksbb_req_itmcd').value=passycd;
-        document.getElementById('checksbb_req_itmnm').value=passynm;  
+        document.getElementById('checksbb_req_itmnm').value=passynm;
         document.getElementById('checksbb_cal_ID').value  = "Please wait"
         document.getElementById('checksbb_cal_ID_qty').value  = "Please wait"
+        checksbb_req_bomrev.value = `please wait`
         $("#checksbb_caltbl_rm tbody").empty();
         $.ajax({
             type: "get",
@@ -1230,9 +1237,9 @@
                 let myfrag_req = document.createDocumentFragment();
                 let mtabel_req = document.getElementById("checksbb_reqtbl_rm");
                 let cln_req = mtabel_req.cloneNode(true);
-                myfrag_req.appendChild(cln_req);                
-                let tabell_req = myfrag_req.getElementById("checksbb_reqtbl_rm");  
-                let percontainer_req = myfrag_req.getElementById("checksbb_req_ttl_per");                  
+                myfrag_req.appendChild(cln_req);
+                let tabell_req = myfrag_req.getElementById("checksbb_reqtbl_rm");
+                let percontainer_req = myfrag_req.getElementById("checksbb_req_ttl_per");
                 let tableku2_req = tabell_req.getElementsByTagName("tbody")[0];
                 let newrow, newcell, newText;
                 tableku2_req.innerHTML='';
@@ -1240,13 +1247,12 @@
                 let simqt = 0
                 let ttlper_req = 0
                 if(ttlrows_req>0){
-                    for(let i=0; i<1; i++){
-                        lotsize = response.datareq[i].PDPP_WORQT;
-                    }
+                    checksbb_req_bomrev.value = response.datareq[0].PDPP_BOMRV
+                    lotsize = response.datareq[0].PDPP_WORQT;
                     document.getElementById('checksbb_req_simqt').value = numeral(response.datareq[0].SIMQT).format(',');
                 }
                 document.getElementById('checksbb_req_itmqty').value = numeral(lotsize).format(',');
-                let ca_resumereq = [];                
+                let ca_resumereq = [];
                 for(let i=0; i<ttlrows_req; i++){
                     ttlper_req+=numeral(response.datareq[i].MYPER).value();
                     newrow = tableku2_req.insertRow(-1);
@@ -1271,14 +1277,14 @@
                         && ca_resumereq[c].lineno == response.datareq[i].PIS3_LINENO.trim() ){
                             ca_resumereq[c].per += numeral(response.datareq[i].MYPER).value();
                             isfound = true;
-                            break;                            
+                            break;
                         }
                     }
                     if(!isfound){
                         let newobku = {
-                            process : response.datareq[i].PIS3_PROCD.trim(), 
-                            mc : response.datareq[i].PIS3_MC.trim(), 
-                            mcz : response.datareq[i].PIS3_MCZ.trim(), 
+                            process : response.datareq[i].PIS3_PROCD.trim(),
+                            mc : response.datareq[i].PIS3_MC.trim(),
+                            mcz : response.datareq[i].PIS3_MCZ.trim(),
                             per: numeral(response.datareq[i].MYPER).value(),
                             lineno: response.datareq[i].PIS3_LINENO.trim(),
                             match: false
@@ -1295,7 +1301,7 @@
                     newText = document.createTextNode(response.datareq[i].PIS3_FR.trim());
                     newcell.appendChild(newText);
                     newcell = newrow.insertCell(3);
-                    newText = document.createTextNode(response.datareq[i].PIS3_MC.trim());                    
+                    newText = document.createTextNode(response.datareq[i].PIS3_MC.trim());
                     newcell.appendChild(newText);
                     newcell = newrow.insertCell(4);
                     newText = document.createTextNode(response.datareq[i].PIS3_MCZ.trim());
@@ -1320,13 +1326,13 @@
                     newcell = newrow.insertCell(10);
                     newText = document.createTextNode('');
                     newcell.appendChild(newText);
-                }                
+                }
                 percontainer_req.innerText = ttlper_req;
-                let mrows_req = tableku2_req.getElementsByTagName("tr");                
+                let mrows_req = tableku2_req.getElementsByTagName("tr");
                 let mrows_req_length = mrows_req.length;
-                
 
-                //Calculation result                
+
+                //Calculation result
                 let mydes = document.getElementById("checksbb_caldiv_rm");
                 let myfrag = document.createDocumentFragment();
                 let mtabel = document.getElementById("checksbb_caltbl_rm");
@@ -1335,7 +1341,7 @@
                 let tabell = myfrag.getElementById("checksbb_caltbl_rm");
                 let percontainer = myfrag.getElementById("checksbb_cal_ttl_per");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
-                tableku2.innerHTML=''; 
+                tableku2.innerHTML='';
                 if(ttlrows_cal>0){
                     document.getElementById('checksbb_cal_ID').value = pid
                     document.getElementById('checksbb_cal_ID_qty').value = numeral(pqty).value()
@@ -1356,7 +1362,7 @@
                     }
                     if(!isfound){
                         let newobku = {
-                            process : response.datacal[i].SERD2_PROCD, 
+                            process : response.datacal[i].SERD2_PROCD,
                             mc: response.datacal[i].SERD2_MC,
                             mcz: response.datacal[i].SERD2_MCZ,
                             per: numeral(response.datacal[i].SERD2_QTPER).value(),
@@ -1366,18 +1372,18 @@
                     }
                     ttlper_cal+=numeral(response.datacal[i].SERD2_QTPER).value();
                     newrow = tableku2.insertRow(-1);
-                    newcell = newrow.insertCell(0);                    
+                    newcell = newrow.insertCell(0);
                     newcell.innerHTML = response.datacal[i].SERD2_LINENO
-                    newcell = newrow.insertCell(1);                    
+                    newcell = newrow.insertCell(1);
                     newcell.innerHTML = response.datacal[i].SERD2_PROCD
-                    newcell = newrow.insertCell(2);                    
+                    newcell = newrow.insertCell(2);
                     newcell.innerHTML = response.datacal[i].SERD2_FR
-                    newcell = newrow.insertCell(3);                    
+                    newcell = newrow.insertCell(3);
                     newcell.innerHTML = response.datacal[i].SERD2_MC
-                    newcell = newrow.insertCell(4);                    
+                    newcell = newrow.insertCell(4);
                     newcell.innerHTML = response.datacal[i].SERD2_MCZ
                     newcell = newrow.insertCell(5);
-                    newcell.style.cssText = "text-align: right";                    
+                    newcell.style.cssText = "text-align: right";
                     newcell.innerHTML = numeral(response.datacal[i].SERD2_QTPER).format('0.00')
                     newcell = newrow.insertCell(6);
                     newcell.innerHTML = response.datacal[i].SERD2_ITMCD
@@ -1411,7 +1417,7 @@
                 for(let c in ca_resumereq){
                     newrow = tableku2.insertRow(-1);
                     for(let i in ca_resumecal){
-                        if(ca_resumereq[c].process.trim()==ca_resumecal[i].process.trim() 
+                        if(ca_resumereq[c].process.trim()==ca_resumecal[i].process.trim()
                         && ca_resumereq[c].mc.trim()==ca_resumecal[i].mc.trim()
                         && ca_resumereq[c].mcz.trim()==ca_resumecal[i].mcz.trim()
                         && ca_resumereq[c].lineno==ca_resumecal[i].lineno
@@ -1449,29 +1455,29 @@
                         ca_unmatch.push(ca_resumereq[r]);
                     }
                 }
-                for(let u in ca_unmatch){                    
-                    for(let n=0; n<ttlrows_cal; n++){                        
-                        if(
-                        response.datacal[n].SERD2_PROCD==ca_unmatch[u].process
-                        && response.datacal[n].SERD2_MC==ca_unmatch[u].mc
-                        && response.datacal[n].SERD2_MCZ==ca_unmatch[u].mcz                        
-                        && response.datacal[n].SERD2_LINENO==ca_unmatch[u].lineno                        
-                        )
-                        {
-                            ca_unmatch[u].itemcode = response.datacal[n].SERD2_ITMCD;                                                    
-                            break;
-                        }
-                    }
-                }                
-                for(let u in ca_unmatch){ 
-                    for(let n=0; n<ttlrows_cal; n++){                        
+                for(let u in ca_unmatch){
+                    for(let n=0; n<ttlrows_cal; n++){
                         if(
                         response.datacal[n].SERD2_PROCD==ca_unmatch[u].process
                         && response.datacal[n].SERD2_MC==ca_unmatch[u].mc
                         && response.datacal[n].SERD2_MCZ==ca_unmatch[u].mcz
                         && response.datacal[n].SERD2_LINENO==ca_unmatch[u].lineno
                         )
-                        {                            
+                        {
+                            ca_unmatch[u].itemcode = response.datacal[n].SERD2_ITMCD;
+                            break;
+                        }
+                    }
+                }
+                for(let u in ca_unmatch){
+                    for(let n=0; n<ttlrows_cal; n++){
+                        if(
+                        response.datacal[n].SERD2_PROCD==ca_unmatch[u].process
+                        && response.datacal[n].SERD2_MC==ca_unmatch[u].mc
+                        && response.datacal[n].SERD2_MCZ==ca_unmatch[u].mcz
+                        && response.datacal[n].SERD2_LINENO==ca_unmatch[u].lineno
+                        )
+                        {
                             let nob = {
                                         process: ca_unmatch[u].process
                                         ,mc: ca_unmatch[u].mc
@@ -1480,20 +1486,20 @@
                                         ,itemcode: response.datacal[n].SERD2_ITMCD
                                         ,fr: response.datacal[n].SERD2_FR
                                     };
-                            ca_unmatch_2.push(nob);                            
+                            ca_unmatch_2.push(nob);
                         }
                     }
-                }               
+                }
                 //show modified req. table
                 for(let u in ca_unmatch){
                     for(let i = 0; i<mrows_req_length; i++ ){
                         if(ca_unmatch[u].process==tableku2_req.rows[i].cells[1].innerText
                         && ca_unmatch[u].mc==tableku2_req.rows[i].cells[3].innerText
                         && ca_unmatch[u].mcz==tableku2_req.rows[i].cells[4].innerText
-                        && ca_unmatch[u].lineno==tableku2_req.rows[i].cells[0].innerText)                        
+                        && ca_unmatch[u].lineno==tableku2_req.rows[i].cells[0].innerText)
                         {
                             if(ca_unmatch[u].itemcode!=tableku2_req.rows[i].cells[6].innerText){
-                                tableku2_req.rows[i].classList.remove('table-success');                               
+                                tableku2_req.rows[i].classList.remove('table-success');
                             }
                         }
                     }
@@ -1522,7 +1528,7 @@
                         && ca_unmatch_2[u].fr.trim()==tableku2_req.rows[i].cells[2].innerText.trim()
                         && ca_unmatch_2[u].lineno.trim()==tableku2_req.rows[i].cells[0].innerText.trim())
                         {
-                            tableku2_req.rows[i].classList.add('table-success');                            
+                            tableku2_req.rows[i].classList.add('table-success');
                         }
                     }
                 }
@@ -1535,11 +1541,11 @@
                         && ca_unmatch_2[u].mcz==tableku2_req.rows[i].cells[4].innerText
                         && ca_unmatch_2[u].lineno==tableku2_req.rows[i].cells[0].innerText
                         )
-                        {                            
+                        {
                             for(let n =0 ; n<ttlrows_cal; n++){
                                 let issubpriority = false;
                                 for(let s=0; s<ttlrows_msp; s++ ){
-                                    if(response.datamsp[s].MSPP_BOMPN==tableku2_req.rows[i].cells[6].innerText.trim() 
+                                    if(response.datamsp[s].MSPP_BOMPN==tableku2_req.rows[i].cells[6].innerText.trim()
                                     && response.datamsp[s].MSPP_SUBPN==response.datacal[n].SERD2_ITMCD){
                                         issubpriority = true;
                                         break;
@@ -1552,13 +1558,13 @@
                                 && issubpriority){
                                     tableku2_req.rows[i].classList.add('table-success');
                                 }
-                            }                                                                                    
+                            }
                         }
                     }
                 }
                 // n sub checking
 
-                for(let i = 0; i<mrows_req_length; i++ ){  
+                for(let i = 0; i<mrows_req_length; i++ ){
                     let objk = {
                         docno: checksbb_docno
                         ,line: tableku2_req.rows[i].cells[0].innerText
@@ -1569,17 +1575,17 @@
                         ,per: tableku2_req.rows[i].cells[5].innerText
                         ,mpart: tableku2_req.rows[i].cells[6].innerText
                         ,mpartname: tableku2_req.rows[i].cells[9].innerText
-                    };                      
+                    };
                     if(!tableku2_req.rows[i].classList.contains('table-success')){
                         tableku2_req.rows[i].cells[10].innerHTML = "<span class='fas fa-screwdriver text-warning'></span>";
                         tableku2_req.rows[i].cells[10].style.cssText = "cursor:pointer;text-align:center";
-                        tableku2_req.rows[i].cells[10].title = "action is required";                    
+                        tableku2_req.rows[i].cells[10].title = "action is required";
                         tableku2_req.rows[i].cells[10].onclick = function(){checksbb_show_possible_supply(objk)}
                     } else {
                         tableku2_req.rows[i].cells[0].ondblclick = function(){checksbb_show_possible_supply_special(objk)}
                     }
                 }
-                // end new marking logic                
+                // end new marking logic
                 checksbb_req_rows =  tabell_req.cloneNode(true);
 
                 mydes_req.innerHTML='';
@@ -1591,13 +1597,13 @@
                 mtabel = document.getElementById("checksbb_caltbl_rm_resume");
                 cln = mtabel.cloneNode(true);
                 myfrag.appendChild(cln);
-                tabell = myfrag.getElementById("checksbb_caltbl_rm_resume");                
+                tabell = myfrag.getElementById("checksbb_caltbl_rm_resume");
                 tableku2 = tabell.getElementsByTagName("tbody")[0];
                 tableku2.innerHTML='';
                 for(let c in ca_resumecal){
                     newrow = tableku2.insertRow(-1);
                     for(let i in ca_resumereq){
-                        if(ca_resumereq[i].process.trim()==ca_resumecal[c].process.trim() 
+                        if(ca_resumereq[i].process.trim()==ca_resumecal[c].process.trim()
                         && ca_resumereq[i].mc.trim()==ca_resumecal[c].mc.trim()
                         && ca_resumereq[i].mcz.trim()==ca_resumecal[c].mcz.trim()
                         && ca_resumereq[i].lineno.trim()==ca_resumecal[c].lineno.trim()
@@ -1634,7 +1640,7 @@
                 mtabel = document.getElementById("checksbb_tbldetailpsn");
                 cln = mtabel.cloneNode(true);
                 myfrag.appendChild(cln);
-                tabell = myfrag.getElementById("checksbb_tbldetailpsn");                
+                tabell = myfrag.getElementById("checksbb_tbldetailpsn");
                 tableku2 = tabell.getElementsByTagName("tbody")[0];
                 tableku2.innerHTML = '';
                 let apsn = [];
@@ -1643,7 +1649,7 @@
                         apsn.push(response.datapsn[i].PPSN2_PSNNO.trim());
                     }
                     newrow = tableku2.insertRow(-1);
-                    for(let n=0; n< ttlrows_req; n++){                        
+                    for(let n=0; n< ttlrows_req; n++){
                         if(response.datareq[n].PIS3_LINENO.trim() == response.datapsn[i].PPSN2_LINENO.trim()
                         && response.datareq[n].PIS3_PROCD.trim() == response.datapsn[i].PPSN2_PROCD.trim()
                         && response.datareq[n].PIS3_FR.trim() == response.datapsn[i].PPSN2_FR.trim()
@@ -1705,9 +1711,11 @@
                 }
                 $('#checksbb_psn_list').tagbox('setValues', apsn);
                 mydes.innerHTML='';
-                mydes.appendChild(myfrag);           
+                mydes.appendChild(myfrag);
             }, error(xhr, xopt, xthrow){
                 alertify.error(xthrow);
+                alertify.message('Please try again...');
+                checksbb_req_bomrev.value = ``
             }
         });
         $('#checksbb_w_jobreq').window('open');
@@ -1725,14 +1733,14 @@
             dataType: "JSON",
             success: function (response) {
                 lblinfo.innerHTML = ''
-                const ttlrows = response.data.length;                
+                const ttlrows = response.data.length;
                 if(ttlrows>0){
                     let mydes = document.getElementById("checksbb_caltbl_rm_edit_div");
                     let myfrag = document.createDocumentFragment();
                     let mtabel = document.getElementById("checksbb_caltbl_rm_edit");
                     let cln = mtabel.cloneNode(true);
-                    myfrag.appendChild(cln);                    
-                    let tabell = myfrag.getElementById("checksbb_caltbl_rm_edit");                    
+                    myfrag.appendChild(cln);
+                    let tabell = myfrag.getElementById("checksbb_caltbl_rm_edit");
                     let tableku2 = tabell.getElementsByTagName("tbody")[0];
                     let newrow, newcell, newText;
                     tableku2.innerHTML=''
@@ -1761,12 +1769,12 @@
                         newcell.classList.add('text-end')
                         newcell.innerHTML = response.data[i].SERD2_QTY
                         newcell = newrow.insertCell(9)
-                        newcell.innerHTML = response.data[i].MITM_ITMD1                        
+                        newcell.innerHTML = response.data[i].MITM_ITMD1
                         newcell = newrow.insertCell(10)
                         newcell.style.cssText = "cursor:pointer"
-                        newcell.innerHTML = `<i class="fas fa-trash text-danger"></i>`                        
+                        newcell.innerHTML = `<i class="fas fa-trash text-danger"></i>`
                         newcell.onclick = () => {checksbb_e_remove({
-                                reffno: pdata.reffno, 
+                                reffno: pdata.reffno,
                                 itemCD: response.data[i].SERD2_ITMCD,
                                 mcz: response.data[i].SERD2_MCZ,
                                 qty: response.data[i].SERD2_QTY,
@@ -1804,9 +1812,9 @@
     }
 
     $('#checksbb_psn_list').tagbox({
-        label: 'PSN No',        
+        label: 'PSN No',
         onRemoveTag :function(e) {
-            e.preventDefault()           
+            e.preventDefault()
         }
     });
     function checksbb_btn_sync_e_click(){
@@ -1827,12 +1835,12 @@
                 let myfrag = document.createDocumentFragment();
                 let mtabel = document.getElementById("checksbb_tbl");
                 let cln = mtabel.cloneNode(true);
-                myfrag.appendChild(cln); 
-                let tabell = myfrag.getElementById("checksbb_tbl");                    
+                myfrag.appendChild(cln);
+                let tabell = myfrag.getElementById("checksbb_tbl");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let newrow, newcell, newText;
                 tableku2.innerHTML='';
-                document.getElementById('checksbb_lblinfo').innerText= ttlrows+" row(s) found";                
+                document.getElementById('checksbb_lblinfo').innerText= ttlrows+" row(s) found";
                 let itemcdlist = new Set()
                 let newjob = new Set()
                 for(let i=0; i<ttlrows; i++){
@@ -1842,16 +1850,16 @@
                     newcell = newrow.insertCell(0);
                     newcell.ondblclick = () => {
                         checksbb_calculate_from_oldata(i);
-                    }                    
+                    }
                     newcell.innerHTML = response.data[i].SER_DOC
-                    newcell = newrow.insertCell(1);                    
+                    newcell = newrow.insertCell(1);
                     newcell.innerHTML = response.data[i].SER_ITMID
-                    newcell = newrow.insertCell(2);                    
+                    newcell = newrow.insertCell(2);
                     newcell.innerHTML = response.data[i].MITM_ITMD1
                     newcell = newrow.insertCell(3);
                     newcell.style.cssText = "text-align:center";
                     newcell.innerHTML = response.data[i].ITH_SER
-                    newcell.ondblclick = () => {                        
+                    newcell.ondblclick = () => {
                         document.getElementById('checksbb_txtemer_ID').value = response.data[i].ITH_SER
                         document.getElementById('checksbb_txtemer_JOB').value = response.data[i].SER_DOC
                         document.getElementById('checksbb_txtemer_QTY').value = numeral(response.data[i].SER_QTY).format(',')
@@ -1879,11 +1887,11 @@
                             }
                         })
                     }
-                    newcell = newrow.insertCell(4);                    
+                    newcell = newrow.insertCell(4);
                     newcell.style.cssText = "text-align:right";
                     newcell.innerHTML = numeral(response.data[i].SER_QTY).format(',')
                     newcell = newrow.insertCell(5);
-                    if(Number(response.data[i].CALPER)==0){                        
+                    if(Number(response.data[i].CALPER)==0){
                         newcell.innerHTML = 'Not calculated yet'
                         newcell = newrow.insertCell(6);
                         newText = document.createElement('input');
@@ -1891,7 +1899,7 @@
                         newText.classList.add('form-check-input')
                         newText.onclick = function() {checksbb_cksi_e_click(event, this,response.data[i].SER_DOC )};
                         newcell.appendChild(newText);
-                        newcell = newrow.insertCell(7);                        
+                        newcell = newrow.insertCell(7);
                         newcell.innerHTML = ''
                     } else {
                         if(Number(response.data[i].CALPER)>=Number(response.data[i].MYPER) || response.data[i].FLG === 'flg_ok'){
@@ -1903,7 +1911,7 @@
                             newText.disabled = true;
                             newcell.appendChild(newText);
                             newcell = newrow.insertCell(7);
-                            newcell.onclick = () => {checksbb_e_compare(response.data[i].SER_DOC, response.data[i].SER_ITMID, response.data[i].MITM_ITMD1, response.data[i].ITH_SER, response.data[i].SER_QTY);};                     
+                            newcell.onclick = () => {checksbb_e_compare(response.data[i].SER_DOC, response.data[i].SER_ITMID, response.data[i].MITM_ITMD1, response.data[i].ITH_SER, response.data[i].SER_QTY);};
                             newcell.style.cssText = "cursor:pointer";
                             newText = document.createElement('span');
                             newText.classList.add('badge','bg-success');
@@ -1928,30 +1936,30 @@
                             newcell.appendChild(newText);
 
                         }
-                    }                    
+                    }
                 }
-                
+
                 mydes.innerHTML=''
                 mydes.appendChild(myfrag)
                 let tohtml = '<option value="-">-</option>'
                 for(let i of newjob){
                     tohtml += "<option value='"+i+"'>"+i+"</option>"
                 }
-                $("#checksbb_cmb_job").html(tohtml);                
+                $("#checksbb_cmb_job").html(tohtml);
                 tohtml = '<option value="-">-</option>';
                 for(let i of itemcdlist){
                     tohtml += "<option value='"+i+"'>"+i+"</option>"
                 }
-                $("#checksbb_cmb_item").html(tohtml);                
+                $("#checksbb_cmb_item").html(tohtml);
             }, error(xhr, xopt, xthrow){
-                alertify.error(xthrow);                
+                alertify.error(xthrow);
                 document.getElementById('checksbb_btn_sync').disabled = false;
             }
         });
     }
 
     function checksbb_calculate_from_oldata(pRowIndex){
-        let tabel_PLOT = document.getElementById("checksbb_tbl");                    
+        let tabel_PLOT = document.getElementById("checksbb_tbl");
         let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
         let ttlrows = tabel_PLOT_body0.getElementsByTagName('tr').length;
         let aser = [];
@@ -1959,24 +1967,24 @@
         let aserjob = [];
         let flagJob = tabel_PLOT_body0.rows[pRowIndex].cells[0].innerText;
         let flagReffno = tabel_PLOT_body0.rows[pRowIndex].cells[3].innerText;
-        let flagRemark = tabel_PLOT_body0.rows[pRowIndex].cells[5].innerText;        
+        let flagRemark = tabel_PLOT_body0.rows[pRowIndex].cells[5].innerText;
         if(flagRemark.includes("not complete")){
             for(let i=0;i<ttlrows;i++){
                 if(tabel_PLOT_body0.rows[i].cells[0].innerText.includes(flagJob)){
                     aser.push(tabel_PLOT_body0.rows[i].cells[3].innerText);
                     aserqty.push(numeral(tabel_PLOT_body0.rows[i].cells[4].innerText).value());
-                    aserjob.push(tabel_PLOT_body0.rows[i].cells[0].innerText);                    
+                    aserjob.push(tabel_PLOT_body0.rows[i].cells[0].innerText);
                 }
             }
             if(aser.length>0){
                 if(aser.length<=67){
                     if(confirm("Calculate RM directly from MEGA ?")){
                         for(let i=0;i<ttlrows;i++){
-                            if(tabel_PLOT_body0.rows[i].cells[0].innerText.includes(flagJob)){                                
+                            if(tabel_PLOT_body0.rows[i].cells[0].innerText.includes(flagJob)){
                                 tabel_PLOT_body0.rows[i].cells[5].innerText = "Please wait...";
                             }
                         }
-                        
+
                         $.ajax({
                             type: "post",
                             url: "<?=base_url('SER/calculate_raw_material_oldata_resume')?>",
@@ -1985,7 +1993,7 @@
                             success: function (response) {
                                 alertify.success("Done");
                                 let ttlrows_sts = response.status.length;
-                                let tabel_PLOT = document.getElementById("checksbb_tbl");                    
+                                let tabel_PLOT = document.getElementById("checksbb_tbl");
                                 let tabel_PLOT_body0 = tabel_PLOT.getElementsByTagName("tbody")[0];
                                 let ttlrows = tabel_PLOT_body0.getElementsByTagName('tr').length;
                                 for(let i=0; i<ttlrows_sts; i++){
@@ -2001,17 +2009,17 @@
                             }, error: function(xhr, xopt, xthrow){
                                 alertify.error(xthrow)
                             }
-                        });                        
+                        });
                     }
                 }
             }
-        }        
+        }
     }
 
     function checksbb_e_concfirm_edit_qtycal(){
         const itemcode = document.getElementById('checksbb_caltbl_rm_edit').getElementsByTagName('tbody')[0].rows[0].cells[6].innerText
         const oldqty = numeral(document.getElementById('checksbb_oldqty').value).value()
-        const newqty = numeral(document.getElementById('checksbb_newqty').value).value()        
+        const newqty = numeral(document.getElementById('checksbb_newqty').value).value()
         if(confirm("Are you sure ?") && oldqty){
             const txtid = document.getElementById('checksbb_cal_ID').value
             $.ajax({
@@ -2032,7 +2040,7 @@
         }
     }
 
-    function checksbb_btnemer_calculate_eCK(){        
+    function checksbb_btnemer_calculate_eCK(){
         let reffno = []
         let job = []
         let qty = []
@@ -2059,13 +2067,13 @@
         btnRemove.innerText = 'Please wait...'
         const mpin = prompt("PIN")
         if(confirm("Are you sure ?")){
-            $.ajax({            
+            $.ajax({
                 url: "<?=base_url('SER/removecalculation_byid')?>",
                 data: {id: id,pin : mpin},
                 dataType: "json",
                 success: function (response) {
                     btnRemove.disabled = false
-                    btnRemove.innerText = 'Remove Calculation'                
+                    btnRemove.innerText = 'Remove Calculation'
                     document.getElementById('checksbb_txtemer_msg').value = JSON.stringify(response)
                 }, error:function(xhr,ajaxOptions, throwError) {
                     alert(throwError)
@@ -2082,14 +2090,14 @@
     }
 
     function checksbb_e_resimulate(p)
-    {        
+    {
         if(checksbb_cmb_remark.value==='-')
         {
             alertify.message('Reason is required')
             checksbb_cmb_remark.focus()
             return
         }
-        
+
         let tabel_PLOT_body0 = checksbb_tbl2.getElementsByTagName("tbody")[0];
         let ttlrows = tabel_PLOT_body0.getElementsByTagName('tr').length;
         let reffno_l = []
@@ -2103,7 +2111,7 @@
                 qty_l.push(qty)
             }
         }
-        
+
         if(checksbb_jobno.value.trim().length===0)
         {
             checksbb_jobno.focus()
@@ -2153,43 +2161,43 @@
                 let myfrag = document.createDocumentFragment();
                 let mtabel = document.getElementById("checksbb_tbl2");
                 let cln = mtabel.cloneNode(true);
-                myfrag.appendChild(cln); 
-                let tabell = myfrag.getElementById("checksbb_tbl2");                    
+                myfrag.appendChild(cln);
+                let tabell = myfrag.getElementById("checksbb_tbl2");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let newrow, newcell;
                 let ck_all = myfrag.getElementById('checksbb_ckall')
                 ck_all.onclick = () => {
-                    let ttlrows = tableku2.getElementsByTagName('tr').length;                    
+                    let ttlrows = tableku2.getElementsByTagName('tr').length;
                     for(let i=0;i<ttlrows;i++){
-                        if(numeral(tableku2.rows[i].cells[4].innerText).value()>0) 
+                        if(numeral(tableku2.rows[i].cells[4].innerText).value()>0)
                         {
                             tableku2.rows[i].cells[5].getElementsByTagName('input')[0].checked = ck_all.checked
                         }
                     }
                 }
                 tableku2.innerHTML=''
-                for(let i=0; i<ttlrows; i++){                    
+                for(let i=0; i<ttlrows; i++){
                     newrow = tableku2.insertRow(-1);
                     newcell = newrow.insertCell(0);
                     newcell.innerHTML = response.data[i].SER_DOC
-                    newcell = newrow.insertCell(1);                    
+                    newcell = newrow.insertCell(1);
                     newcell.innerHTML = response.data[i].SER_ITMID
-                    newcell = newrow.insertCell(2);                    
+                    newcell = newrow.insertCell(2);
                     newcell.innerHTML = response.data[i].MITM_ITMD1
                     newcell = newrow.insertCell(3);
                     newcell.style.cssText = "text-align:center";
-                    newcell.innerHTML = response.data[i].ITH_SER                    
+                    newcell.innerHTML = response.data[i].ITH_SER
                     newcell = newrow.insertCell(4);
                     newcell.style.cssText = "text-align:right";
-                    newcell.innerHTML = numeral(response.data[i].SER_QTY).format(',')                    
+                    newcell.innerHTML = numeral(response.data[i].SER_QTY).format(',')
                     newcell = newrow.insertCell(5)
                     newcell.classList.add('text-center')
                     newcell.innerHTML = `<input type="checkbox" class="form-check-input">`
-                }                
+                }
                 mydes.innerHTML=''
-                mydes.appendChild(myfrag)                            
+                mydes.appendChild(myfrag)
             }, error(xhr, xopt, xthrow){
-                alertify.error(xthrow);                
+                alertify.error(xthrow);
                 document.getElementById('checksbb_btn_sync').disabled = false;
             }
         });
@@ -2205,5 +2213,5 @@
             checksbb_btn_prepare_resim.focus()
         }
     }
-    
+
 </script>
