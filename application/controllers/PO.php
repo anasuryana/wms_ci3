@@ -831,7 +831,7 @@ class PO extends CI_Controller
             $pdf->SetFont('Times', 'BIU', 9);
             $pdf->SetXY(140, 294 - $_y);
             $pdf->Cell(60, 5, 'Nama / Tanggal / Cap Perusahaan', 0, 0, 'C');
-        } else {
+        } else {                 
             $MAXLENGTH_LINE_TO_BOTTOM = 75;
             $pdf->SetFont('Times', '', 9);
             $pdf->SetXY(6, 104 - $_y);
@@ -843,7 +843,7 @@ class PO extends CI_Controller
             $pdf->Cell(27.5, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C'); #unit price
             $pdf->Cell(27.5, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C'); #amount
             $nomor_urut = 1;
-            $YStart = (104 - $_y) - 5 + 5;
+            $YStart = (104 - $_y);
             $YExtra = 0;
             $total_amount_test = 0;
             foreach ($rs as $r) {
@@ -999,7 +999,7 @@ class PO extends CI_Controller
                 $total_amount_test += $amount;
                 $pdf->SetXY(6, $YStart);
                 $pdf->Cell(10, 5, $nomor_urut++, 0, 0, 'C');
-                if (strpos($itemcd, " ") !== false) {
+                if (strpos($itemcd, " ") !== false) {                    
                     $pdf->MultiCell(30, 5, $itemcd, 0, 'L');
                     $YExtra_candidate = $pdf->GetY();
                     $YExtra2 = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
@@ -1028,7 +1028,7 @@ class PO extends CI_Controller
                 $pdf->Cell(27.5, 5, number_format($amount, 2), 0, 0, 'R');
                 $total_amount += $finalamount;
                 if ($YExtra2 > 0) {
-                    $YStart += (5 + $YExtra2 + 5);
+                    $YStart += (5 + $YExtra2);
                 } else {
                     $YStart += (5 + $YExtra);
                 }
