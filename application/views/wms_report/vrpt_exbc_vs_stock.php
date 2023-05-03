@@ -101,113 +101,148 @@
                             <tr class="second">
                             <th class="text-center">...</th>
                             </tr>`
-        mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center">Please wait</td></tr>`
-        xstock_resume_part_qty.innerHTML = '-'
-        xstock_resume_exbc_qty.innerHTML = '-'
-        xstock_resume_diff_qty.innerHTML = '-'
-        $.ajax({
-            url: "<?=base_url('ITHHistory/compareStockVSExbc')?>",
-            data: {item_code : xstock_txt_search.value},
-            dataType: "json",
-            success: function (response) {
-                xstock_txt_search.readOnly = false
-                e.innerHTML = `<i class="fas fa-search"></i>`
-                e.disabled = false
-                let mydes = document.getElementById("xstock_divku");
-                let myfrag = document.createDocumentFragment();
-                let cln = mtabel.cloneNode(true);
-                myfrag.appendChild(cln);
-                let tabell = myfrag.getElementById("xstock_tbl");
-                let tableku2 = tabell.getElementsByTagName("tbody")[0];
-                let resume_part_qty,resume_exbc_qty,resume_diff_qty
-                resume_part_qty = 0
-                resume_exbc_qty = 0
-                resume_diff_qty = 0
-                tableku2.innerHTML='';
-                let columnReport = '';
-                let totalColumn = response.data_location.length
-                for(let i=0; i<totalColumn ; i++)
-                {
-                    columnReport += `<th class="text-center">${response.data_location[i]}</th>`
-                }
-                tabell.getElementsByTagName('thead')[0].innerHTML = `<tr class="first">
-                                <th class="align-middle" rowspan="2">Item Code</th>
-                                <th class="align-middle" rowspan="2">Item Name</th>
-                                <th class="align-middle" rowspan="2">Description</th>
-                                <th class="align-middle text-center" colspan="${totalColumn}">Location</th>
-                                <th class="align-middle text-center" rowspan="2">Balance</th>
-                            </tr>
-                            <tr class="second">
-                                ${columnReport}
-                            </tr>`
-                for(let x of response.rsFix)
-                {
-                    let ExbcQty = 0
-                    let NonExbcQty = 0
-                    let BalanceQty = 0
-                    newrow = tableku2.insertRow(-1);
-                    for(const [index, [key , value]] of Object.entries(Object.entries(x)) )
-                    {
-                        newcell = newrow.insertCell(index)
-                        if(['ITRN_ITMCD','SPTNO', 'D1'].includes(key)){
-                            newcell.innerHTML = value                            
-                        } else {
-                            newcell.innerHTML = numeral(value < 0 ? 0 : value).format(',')
-                            newcell.classList.add('text-end')
-                            if(key === 'EXBC'){
-                                ExbcQty = numeral(value).value()
-                                resume_exbc_qty += value
+                            xstock_resume_part_qty.innerHTML = '-'
+                            xstock_resume_exbc_qty.innerHTML = '-'
+                            xstock_resume_diff_qty.innerHTML = '-'
+        if(xstock_txt_search.value.trim().length <=3 ){
+            mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center"></td></tr>`
+            $.ajax({
+                type: "GET",
+                url: "<?=base_url('ITHHistory/compareStockVSExbc')?>",
+                data: { item_code : xstock_txt_search.value, outputType:'spreadsheet' },
+                success: function (response) {
+                    let waktuSekarang = moment().format('YYYY MMM DD, h_mm')
+                    const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                    const fileName = `exbc vs stock ${waktuSekarang}.xlsx`
+                    saveAs(blob, fileName)
+                    alertify.success('Done')
+                    xstock_txt_search.readOnly = false
+                    e.innerHTML = `<i class="fas fa-search"></i>`
+                    e.disabled = false
+                },
+                xhr: function () {
+                    const xhr = new XMLHttpRequest()
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 2) {
+                            if (xhr.status == 200) {
+                                xhr.responseType = "blob";
                             } else {
-                                NonExbcQty += numeral(value < 0 ? 0 : value).value()
-                                resume_part_qty += numeral(value < 0 ? 0 : value).value()
+                                xstock_txt_search.readOnly = false
+                                e.innerHTML = `<i class="fas fa-search"></i>`
+                                e.disabled = false
+                                xhr.responseType = "text";
                             }
                         }
                     }
-                    newcell = newrow.insertCell(-1)
-                    newcell.classList.add('text-end')
-                    BalanceQty = ExbcQty-NonExbcQty
-                    newcell.innerHTML = numeral(BalanceQty).format(',')
-                    if(BalanceQty<0){
-                        newcell.classList.add('bg-danger')
-                    } else {
-                        if(BalanceQty>0){
-                            newcell.classList.add('bg-warning')
+                    return xhr
+                },
+            })
+        } else {
+            mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center">Please wait</td></tr>`
+            $.ajax({
+                url: "<?=base_url('ITHHistory/compareStockVSExbc')?>",
+                data: {item_code : xstock_txt_search.value, outputType:'json'},
+                dataType: "json",
+                success: function (response) {
+                    xstock_txt_search.readOnly = false
+                    e.innerHTML = `<i class="fas fa-search"></i>`
+                    e.disabled = false
+                    let mydes = document.getElementById("xstock_divku");
+                    let myfrag = document.createDocumentFragment();
+                    let cln = mtabel.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    let tabell = myfrag.getElementById("xstock_tbl");
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    let resume_part_qty,resume_exbc_qty,resume_diff_qty
+                    resume_part_qty = 0
+                    resume_exbc_qty = 0
+                    resume_diff_qty = 0
+                    tableku2.innerHTML='';
+                    let columnReport = '';
+                    let totalColumn = response.data_location.length
+                    for(let i=0; i<totalColumn ; i++)
+                    {
+                        columnReport += `<th class="text-center">${response.data_location[i]}</th>`
+                    }
+                    tabell.getElementsByTagName('thead')[0].innerHTML = `<tr class="first">
+                                    <th class="align-middle" rowspan="2">Item Code</th>
+                                    <th class="align-middle" rowspan="2">Item Name</th>
+                                    <th class="align-middle" rowspan="2">Description</th>
+                                    <th class="align-middle text-center" colspan="${totalColumn}">Location</th>
+                                    <th class="align-middle text-center" rowspan="2">Balance</th>
+                                </tr>
+                                <tr class="second">
+                                    ${columnReport}
+                                </tr>`
+                    for(let x of response.rsFix)
+                    {
+                        let ExbcQty = 0
+                        let NonExbcQty = 0
+                        let BalanceQty = 0
+                        newrow = tableku2.insertRow(-1);
+                        for(const [index, [key , value]] of Object.entries(Object.entries(x)) )
+                        {
+                            newcell = newrow.insertCell(index)
+                            if(['ITRN_ITMCD','SPTNO', 'D1'].includes(key)){
+                                newcell.innerHTML = value
+                            } else {
+                                newcell.innerHTML = numeral(value < 0 ? 0 : value).format(',')
+                                newcell.classList.add('text-end')
+                                if(key === 'EXBC'){
+                                    ExbcQty = numeral(value).value()
+                                    resume_exbc_qty += value
+                                } else {
+                                    NonExbcQty += numeral(value < 0 ? 0 : value).value()
+                                    resume_part_qty += numeral(value < 0 ? 0 : value).value()
+                                }
+                            }
+                        }
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-end')
+                        BalanceQty = ExbcQty-NonExbcQty
+                        newcell.innerHTML = numeral(BalanceQty).format(',')
+                        if(BalanceQty<0){
+                            newcell.classList.add('bg-danger')
+                        } else {
+                            if(BalanceQty>0){
+                                newcell.classList.add('bg-warning')
+                            }
                         }
                     }
-                }
-                resume_diff_qty = resume_exbc_qty - resume_part_qty
-                xstock_resume_part_qty.innerHTML = numeral(resume_part_qty).format(',')
-                xstock_resume_exbc_qty.innerHTML = numeral(resume_exbc_qty).format(',')
-                xstock_resume_diff_qty.innerHTML = numeral(resume_diff_qty).format(',')
-                if(resume_diff_qty===0)
-                {
-                    xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.remove('bg-warning')
-                    xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.remove('bg-danger')
-                    xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.add('bg-success')
-                } else {
-                    if(resume_diff_qty<0)
+                    resume_diff_qty = resume_exbc_qty - resume_part_qty
+                    xstock_resume_part_qty.innerHTML = numeral(resume_part_qty).format(',')
+                    xstock_resume_exbc_qty.innerHTML = numeral(resume_exbc_qty).format(',')
+                    xstock_resume_diff_qty.innerHTML = numeral(resume_diff_qty).format(',')
+                    if(resume_diff_qty===0)
                     {
                         xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.remove('bg-warning')
-                        xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.remove('bg-success')
-                        xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.add('bg-danger')
-                    } else {
-                        xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.add('bg-warning')
-                        xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.remove('bg-success')
                         xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.remove('bg-danger')
+                        xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.add('bg-success')
+                    } else {
+                        if(resume_diff_qty<0)
+                        {
+                            xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.remove('bg-warning')
+                            xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.remove('bg-success')
+                            xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.add('bg-danger')
+                        } else {
+                            xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.add('bg-warning')
+                            xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.remove('bg-success')
+                            xstock_resume_tbl.getElementsByTagName('tbody')[0].rows[0].cells[2].classList.remove('bg-danger')
+                        }
                     }
+                    mydes.innerHTML='';
+                    mydes.appendChild(myfrag);
+                }, error: function(xhr, xopt, xthrow){
+                    alertify.error(xthrow);
+                    e.innerHTML = `<i class="fas fa-search"></i>`
+                    e.disabled = false
+                    mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="5" class="text-center">${xthrow}, please try again if still happen try contact administrator</td></tr>`
+                    xstock_resume_part_qty.innerHTML = '-'
+                    xstock_resume_exbc_qty.innerHTML = '-'
+                    xstock_resume_diff_qty.innerHTML = '-'
+                    xstock_txt_search.readOnly = false
                 }
-                mydes.innerHTML='';
-                mydes.appendChild(myfrag);
-            }, error: function(xhr, xopt, xthrow){
-                alertify.error(xthrow);
-                e.innerHTML = `<i class="fas fa-search"></i>`
-                e.disabled = false
-                mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="5" class="text-center">${xthrow}, please try again if still happen try contact administrator</td></tr>`
-                xstock_resume_part_qty.innerHTML = '-'
-                xstock_resume_exbc_qty.innerHTML = '-'
-                xstock_resume_diff_qty.innerHTML = '-'
-                xstock_txt_search.readOnly = false
-            }
-        });
+            });
+        }
     }
 </script>

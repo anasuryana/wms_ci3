@@ -329,6 +329,7 @@ class ITHHistory extends CI_Controller
     {
         header('Content-Type: application/json');
         $item_code = $this->input->get('item_code');
+        $outputType = strtolower($this->input->get('outputType'));
         $location = [];
         # variable rsMega & rs dipisah , karena ketika saya eksekusi dalam satu query (UNION ALL) maka efeknya
         # memakan waktu lama (mungkin karena beda server atau bagaimana)
@@ -339,8 +340,8 @@ class ITHHistory extends CI_Controller
             if (!in_array($r['ITRN_LOCCD'], $location)) {
                 $location[] = $r['ITRN_LOCCD'];
             }
-
         }
+
         $rs = $this->ZRPSTOCK_mod->selectStockItemVSBC($item_code);
         foreach ($rs as $r) {
             if (!in_array($r['ITRN_LOCCD'], $location)) {
@@ -418,6 +419,98 @@ class ITHHistory extends CI_Controller
             }
         }
         unset($r);
-        die(json_encode(['data_location' => $location, 'rsFix' => $rsFix, '$rsEquipment' => $rsEquipment]));
+        if ($outputType === 'json') {
+            die(json_encode(['data_location' => $location, 'rsFix' => $rsFix, '$rsEquipment' => $rsEquipment]));
+        } else {
+            $textColumn = ['ITRN_ITMCD', 'SPTNO', 'D1'];
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('result');
+            $sheet->getStyle('A2:Z3')->getFont()->setBold(true);
+            $sheet->setCellValueByColumnAndRow(1, 2, 'Item Code');
+            $sheet->setCellValueByColumnAndRow(2, 2, 'Item Name');
+            $sheet->setCellValueByColumnAndRow(3, 2, 'Description');
+            $sheet->setCellValueByColumnAndRow(4, 2, 'Location');
+            $columnIndex = 4;
+            $BalanceCell = 5;
+            foreach ($location as $l) {
+                $sheet->setCellValueByColumnAndRow($columnIndex, 3, $l);
+                $columnIndex++;
+            }
+            if ($columnIndex != 4) {
+                $BalanceCell = $sheet->getCellByColumnAndRow($columnIndex, 2)->getColumn();
+                $sheet->setCellValueByColumnAndRow($columnIndex, 2, 'Balance');
+                $LocationsCell = $sheet->getCellByColumnAndRow(--$columnIndex, 2)->getColumn();
+                $sheet->mergeCells('A2:A3');
+                $sheet->mergeCells('B2:B3');
+                $sheet->mergeCells('C2:C3');
+                $sheet->mergeCells('D2:' . $LocationsCell . '2');
+                $sheet->mergeCells($BalanceCell . '2:' . $BalanceCell . '3');
+            }
+            $rowAt = 4;
+            foreach ($rsFix as $r) {
+                $ExbcQty = 0;
+                $NonExbcQty = 0;
+                $columnIndex = 1;
+                foreach ($r as $key => $value) {
+                    $sheet->setCellValueByColumnAndRow($columnIndex, $rowAt, $value);
+                    if ($key === 'EXBC') {
+                        $ExbcQty = $value;
+                    } else {
+                        if (!in_array($key, $textColumn)) {
+                            $NonExbcQty += $value;
+                        }
+                    }
+                    $columnIndex++;
+                }
+                $sheet->setCellValueByColumnAndRow($columnIndex, $rowAt, ($ExbcQty - $NonExbcQty));
+                $rowAt++;
+            }
+            foreach (range('A', $BalanceCell) as $r) {
+                $sheet->getColumnDimension($r)->setAutoSize(true);
+            }
+
+            $sheet->freezePane('A4');
+
+            # terapkan rata kiri untuk item code
+            $sheet->getStyle('A:A')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+
+            # inisialisasi conditional formatting
+            $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional ();
+            $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+            $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_GREATERTHAN);
+            $conditional->addCondition(0);
+            $conditional->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+            $conditional->getStyle()->getFill()->getEndColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_YELLOW);
+
+            $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional ();
+            $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+            $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_LESSTHAN);
+            $conditional2->addCondition(0);
+            $conditional2->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+            $conditional2->getStyle()->getFill()->getEndColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+
+            $conditionalStyles[] = $conditional;
+            $conditionalStyles[] = $conditional2;
+
+            # terapkan conditional formatting yang telah diinisialisasi
+            $spreadsheet->getActiveSheet()->getStyle($BalanceCell . '4:' . $BalanceCell . $rowAt)->setConditionalStyles($conditionalStyles);
+
+            # terapkan filter
+            $spreadsheet->getActiveSheet()->setAutoFilter('A3:' . $BalanceCell . '3');
+
+            # format number
+            $rang = "D4:" . $BalanceCell . $rowAt;
+            $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0');
+
+            # atur nama file
+            $stringjudul = "exbc vs stock " . date('Y-m-d H:i:s');
+            $writer = new Xlsx($spreadsheet);
+            $filename = $stringjudul;
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+            header('Cache-Control: max-age=0');
+            $writer->save('php://output');
+        }
     }
 }
