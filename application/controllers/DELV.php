@@ -12648,7 +12648,7 @@ class DELV extends CI_Controller
         $tujuan_pengiriman = $this->input->get('instatus');
         $nomaju = $this->input->get('innoaju');
         $itemtype = $this->input->get('itemtype');
-        $where = ['DLV_BCDATE >=' => $date1, 'DLV_BCDATE <= ' => $date2];
+        $where = ['TGLPEN >=' => $date1, 'TGLPEN <= ' => $date2];
         if ($nomaju != '') {
             $where['NOMAJU'] = $nomaju;
         }
