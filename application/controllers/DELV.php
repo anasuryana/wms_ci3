@@ -74,7 +74,8 @@ class DELV extends CI_Controller
         date_default_timezone_set('Asia/Jakarta');
     }
 
-    function checkBrowser(){
+    public function checkBrowser()
+    {
         echo $this->agent->browser();
     }
 
@@ -1572,7 +1573,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?", ];
+                                Are you sure want to continue ?"];
                     die(json_encode($myar));
                 }
             }
@@ -1876,7 +1877,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?", ];
+                                Are you sure want to continue ?"];
                     die(json_encode($myar));
                 }
             }
@@ -11154,11 +11155,11 @@ class DELV extends CI_Controller
                         'ASSY_DESCRIPTION' => $r['FGDESC'],
                         'ASSY_CODE' => $r['ITH_ITMCD'],
                         'ASSY_QTY' => $r['LQT'],
-                        'ASSY_KEY' => $r['ITH_SER'],                       
+                        'ASSY_KEY' => $r['ITH_SER'],
                         'ITEM_DESCRIPTION' => $r['RMDESC'],
                         'ITEM_CODE' => $r['SERD2_ITMCD'],
-                        'USE' => $r['SERD2_QTY'] / $r['LQT'],                        
-                        'ITEM_QTY' => $theqty,                        
+                        'USE' => $r['SERD2_QTY'] / $r['LQT'],
+                        'ITEM_QTY' => $theqty,
                         'BCNO' => $k['RPSTOCK_BCNUM'],
                         'BCDATE' => $k['RPSTOCK_BCDATE'],
                     ];
@@ -11387,7 +11388,7 @@ class DELV extends CI_Controller
             if ($r['SERD2_ITMCD']) {
                 foreach ($rsBooked as &$b) {
                     $reqPlot = $r['SERD2_QTY'] - $r['PLOTQTY'];
-                    if ($r['SERD2_ITMCD'] === $b['ITMNUM'] && $reqPlot && $b['BCQT']) {                        
+                    if ($r['SERD2_ITMCD'] === $b['ITMNUM'] && $reqPlot && $b['BCQT']) {
                         $theqt = $reqPlot;
                         if ($reqPlot > $b['BCQT']) {
                             $theqt = $b['BCQT'];
@@ -11401,11 +11402,11 @@ class DELV extends CI_Controller
                             'ASSY_DESCRIPTION' => $r['FGDESC'],
                             'ASSY_CODE' => $r['ITH_ITMCD'],
                             'ASSY_QTY' => $r['LQT'],
-                            'ASSY_KEY' => $r['ITH_SER'],                       
+                            'ASSY_KEY' => $r['ITH_SER'],
                             'ITEM_DESCRIPTION' => $r['RMDESC'],
                             'ITEM_CODE' => $r['SERD2_ITMCD'],
-                            'USE' => $r['SERD2_QTY'] / $r['LQT'],                        
-                            'ITEM_QTY' => $theqt,                        
+                            'USE' => $r['SERD2_QTY'] / $r['LQT'],
+                            'ITEM_QTY' => $theqt,
                             'AJU' => $b['RPSTOCK_NOAJU'],
                             'BCNO' => $b['RPSTOCK_BCNUM'],
                             'BCDATE' => $b['RPSTOCK_BCDATE'],
@@ -11417,19 +11418,19 @@ class DELV extends CI_Controller
                         if ($r['SERD2_QTY'] == $r['PLOTQTY']) {
                             break;
                         }
-                    }                    
+                    }
                 }
                 unset($b);
-            }  else {
+            } else {
                 $rsFix[] = [
                     'ASSY_DESCRIPTION' => $r['FGDESC'],
                     'ASSY_CODE' => $r['ITH_ITMCD'],
                     'ASSY_QTY' => $r['LQT'],
-                    'ASSY_KEY' => $r['ITH_SER'],                       
+                    'ASSY_KEY' => $r['ITH_SER'],
                     'ITEM_DESCRIPTION' => $r['RMDESC'],
                     'ITEM_CODE' => $r['SERD2_ITMCD'],
-                    'USE' => 0,                        
-                    'ITEM_QTY' => 0,                        
+                    'USE' => 0,
+                    'ITEM_QTY' => 0,
                     'AJU' => "-",
                     'BCNO' => "-",
                     'BCDATE' => "",
@@ -11438,14 +11439,14 @@ class DELV extends CI_Controller
                     'PPN' => "",
                     'PPH' => "",
                 ];
-            }           
+            }
         }
         unset($r);
-        die(json_encode([    
-        'rsFix' => $rsFix    
+        die(json_encode([
+            'rsFix' => $rsFix,
         ]));
-        // die(json_encode(['rsSer' => $rsSer     
-        // ,'rsBooked' => $rsBooked    
+        // die(json_encode(['rsSer' => $rsSer
+        // ,'rsBooked' => $rsBooked
         // ]));
     }
 
@@ -12701,7 +12702,7 @@ class DELV extends CI_Controller
         $tujuan_pengiriman = isset($_COOKIE["RP_PAB_RCVSTATUS"]) ? $_COOKIE["RP_PAB_RCVSTATUS"] : '';
         $itemtype = isset($_COOKIE["RP_PAB_ITMTYPE"]) ? $_COOKIE["RP_PAB_ITMTYPE"] : '';
 
-        $where = ['DLV_BCDATE >=' => $cdate0, 'DLV_BCDATE <= ' => $cdate1];
+        $where = ['TGLPEN >=' => $cdate0, 'TGLPEN <= ' => $cdate1];
         if ($nomaju != '') {
             $where['NOMAJU'] = $nomaju;
         }
