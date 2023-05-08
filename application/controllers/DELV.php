@@ -59,7 +59,7 @@ class DELV extends CI_Controller
         $this->load->model('XITRN_mod');
         $this->load->model('DisposeDraft_mod');
         $this->load->model('POSTING_mod');
-        $this->load->model(['CSMLOG_mod', 'DLVH_mod']);
+        $this->load->model(['CSMLOG_mod', 'DLVH_mod','RPSAL_BCSTOCK_mod']);
         $this->load->model('refceisa/TPB_HEADER_imod');
         $this->load->model('refceisa/TPB_KEMASAN_imod');
         $this->load->model('refceisa/TPB_DOKUMEN_imod');
@@ -11123,6 +11123,14 @@ class DELV extends CI_Controller
                 . ',"itemqtysend":' . json_encode($rsallitem_qty)
                 . ',"responresume":' . json_encode($responseResume) . '}');
         }
+    }
+
+    function cancelBookExbcById(){
+        header('Content-Type: application/json');
+        $id = $this->input->post('id');
+        $respon = $this->RPSAL_BCSTOCK_mod->updatebyVAR(['deleted_at' => date('Y-m-d H:i:s')],['id' => $id]);
+        $myar = $respon ? ['cd' => 1, 'msg' => 'OK'] : ['cd' => 0, 'msg' => 'sorry could not fix'];
+        die(json_encode(['status' => $myar]));
     }
 
     public function dispose_report()
