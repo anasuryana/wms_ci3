@@ -1402,18 +1402,25 @@ class SPL extends CI_Controller
         $myar = [];
         $ttlrows = $this->SPL_mod->check_Primary(['SPL_DOC' => $cpsn]);
         if ($ttlrows > 0) {
-            $rs2 = substr($cpsn, 0, 3) == "PR-" ? [["PPSN1_WONO" => "_"]] : $this->SPL_mod->selecthead_psnonly($cpsn);
+            if (substr($cpsn, 0, 3) == "PR-") {
+                # jika dokumen part req maka WO nya blank (_)
+                $RSWO = [["PPSN1_WONO" => "_"]];
+
+                # cari referensi dokumen kitting
+                $RSKittingReferenceDocument = $this->SPL_mod->select_reffdoc($cpsn);
+            } else {
+                $RSWO = $this->SPL_mod->selecthead_psnonly($cpsn);
+
+                # cari referensi dokumen kitting
+                $RSKittingReferenceDocument = $this->SPL_mod->selectKittingDocWhereReffDoc($cpsn);
+            }
             $myar[] = ["cd" => $ttlrows, "msg" => "Go ahead"];
-            echo '{"status":'
-            . json_encode($myar)
-            . ',"datahead":'
-            . json_encode($rs2)
-                . '}';
+            die(
+                json_encode(['status' => $myar, 'datahead' => $RSWO, 'dataReff' => $RSKittingReferenceDocument])
+            );
         } else {
             $myar[] = ["cd" => $ttlrows, "msg" => "Data not found"];
-            echo '{"status":'
-            . json_encode($myar)
-                . '}';
+            die(json_encode(['status' => $myar]));
         }
     }
 

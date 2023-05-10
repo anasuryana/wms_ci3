@@ -928,6 +928,16 @@ class SPL_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectKittingDocWhereReffDoc($doc)
+    {
+        $this->db->select("SPL_DOC SPL_REFDOCNO,MAX(SPL_REFDOCCAT) REFDOCCAT");
+        $this->db->from("SPL_TBL");
+        $this->db->group_by("SPL_DOC");
+        $this->db->where("SPL_REFDOCNO", $doc);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function select_partreq_h_bydoc($pdok)
     {
         $qry = "select TOP 200 SPL_DOC,max(SPL_LUPDT) DT, MAX(MSTEMP_FNM) FNM,max(SPL_REFDOCCAT) CTG , MAX(SPL_RMRK) SPL_RMRK
