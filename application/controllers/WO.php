@@ -44,8 +44,14 @@ class WO extends CI_Controller
         $_modelVersion = [];
         $_modelProcess = [];
         $RSAlternativeLine = [];
+
+        $woFlagPassOK = [];
         if (is_array($woReff) && is_array($woAssy)) {
             $CounReff = count($woReff);
+
+            foreach ($woReff as $r) {
+                $woFlagPassOK[] = 0;
+            }
             if ($CounReff === count($woAssy)) {
                 $uniqueAssy = array_unique($woAssy);
                 # implementasi fungsi untuk membuang karakter 'quot' di tiap elemen dari array
@@ -63,53 +69,122 @@ class WO extends CI_Controller
                 # buat deretan dar field 'MEGAREV' sesuai dengan deretan input, agar ketika diiterasi sekali jalan
                 foreach ($woAssy as $n) {
                     foreach ($RSMegaBom as $y) {
-                        if ($n === $y['MBOM_MDLCD']) {
+                        if ($n == $y['MBOM_MDLCD']) {
                             $_woMegaRev[] = $y['MBOM_BOMRV'];
                             break;
                         }
                     }
                 }
 
-                # olah
-                for ($i = 0; $i < $CounReff; $i++) {
-                    foreach ($RS as $r) {
-                        if ($woAssy[$i] === $r['MBLA_MDLCD']) {
-                            switch ($r['XLINE']) {                                
-                                case 'SMT-S1':
-                                    $lineCode = 'SMT-PS1';
-                                    break;
-                                default:
-                                    $lineCode = $r['XLINE'];
+                if (count($_woMegaRev) != $CounReff) {
+                    # ketika ada assy code yang belum terdaftar
+                    for ($i = 0; $i < $CounReff; $i++) {
+                        $isExist = 0;
+                        foreach ($RS as $r) {
+                            if ($woAssy[$i] === $r['MBLA_MDLCD']) {
+                                $_megabom = '';
+                                foreach ($RSMegaBom as $z) {
+                                    if ($r['MBLA_MDLCD'] === $z['MBOM_MDLCD']) {
+                                        $_megabom = $z['MBOM_BOMRV'];
+                                        break;
+                                    }
+                                }
+
+                                switch ($r['XLINE']) {
+                                    case 'SMT-S1':
+                                        $lineCode = 'SMT-PS1';
+                                        break;
+                                    default:
+                                        $lineCode = $r['XLINE'];
+                                }
+                                $toPush = [
+                                    'RefNo' => $woReff[$i],
+                                    'ProdLine' => $lineCode,
+                                    'Process' => $r['MBLA_PROCD'],
+                                    'AssyCode' => $woAssy[$i],
+                                    'AssyRev' => $r['MBLA_BOMRV'],
+                                    'ProdQty' => $woProdQty[$i],
+                                    'Group' => $r['MBLA_ITMCD'],
+                                    'MEGALatestRev' => $_megabom,
+                                    'Model' => $r['MITM_ITMD1'] . "_",
+                                ];
+
+                                $dataFix[] = $toPush;
+                                $isExist = 1;
+
+                                if ($r['CNT'] > 1) {
+                                    if (!in_array($r['MBLA_MDLCD'], $_modelCode)) {
+                                        $_modelCode[] = $r['MBLA_MDLCD'];
+                                    }
+                                    if (!in_array($r['MBLA_PROCD'], $_modelProcess)) {
+                                        $_modelProcess[] = $r['MBLA_PROCD'];
+                                    }
+                                    if (!in_array($r['MBLA_BOMRV'], $_modelVersion)) {
+                                        $_modelVersion[] = $r['MBLA_BOMRV'];
+                                    }
+                                }
                             }
-                            $toPush = [
+                        }
+                        $woFlagPassOK[$i] = $isExist;
+                    }
+
+                    # tambahkan yang belum terdaftar ke daftar data yang akan ditampilkan
+                    for ($i = 0; $i < $CounReff; $i++) {
+                        if ($woFlagPassOK[$i] == 0) {
+                            $dataFix[] = [
                                 'RefNo' => $woReff[$i],
                                 'ProdLine' => $lineCode,
-                                'Process' => $r['MBLA_PROCD'],
+                                'Process' => '???',
                                 'AssyCode' => $woAssy[$i],
-                                'AssyRev' => $r['MBLA_BOMRV'],
+                                'AssyRev' => '???',
                                 'ProdQty' => $woProdQty[$i],
-                                'Group' => $r['MBLA_ITMCD'],
-                                'MEGALatestRev' => $_woMegaRev[$i],
-                                'Model' => $r['MITM_ITMD1'],
+                                'Group' => '???',
+                                'MEGALatestRev' => '??',
+                                'Model' => '???',
                             ];
-
-                            $dataFix[] = $toPush;
-
-                            if ($r['CNT'] > 1) {
-                                if (!in_array($r['MBLA_MDLCD'], $_modelCode)) {
-                                    $_modelCode[] = $r['MBLA_MDLCD'];
+                        }
+                    }
+                } else {
+                    # olah
+                    for ($i = 0; $i < $CounReff; $i++) {
+                        foreach ($RS as $r) {
+                            if ($woAssy[$i] === $r['MBLA_MDLCD']) {
+                                switch ($r['XLINE']) {
+                                    case 'SMT-S1':
+                                        $lineCode = 'SMT-PS1';
+                                        break;
+                                    default:
+                                        $lineCode = $r['XLINE'];
                                 }
-                                if (!in_array($r['MBLA_PROCD'], $_modelProcess)) {
-                                    $_modelProcess[] = $r['MBLA_PROCD'];
-                                }
-                                if (!in_array($r['MBLA_BOMRV'], $_modelVersion)) {
-                                    $_modelVersion[] = $r['MBLA_BOMRV'];
+                                $toPush = [
+                                    'RefNo' => $woReff[$i],
+                                    'ProdLine' => $lineCode,
+                                    'Process' => $r['MBLA_PROCD'],
+                                    'AssyCode' => $woAssy[$i],
+                                    'AssyRev' => $r['MBLA_BOMRV'],
+                                    'ProdQty' => $woProdQty[$i],
+                                    'Group' => $r['MBLA_ITMCD'],
+                                    'MEGALatestRev' => $_woMegaRev[$i],
+                                    'Model' => $r['MITM_ITMD1'],
+                                ];
+
+                                $dataFix[] = $toPush;
+
+                                if ($r['CNT'] > 1) {
+                                    if (!in_array($r['MBLA_MDLCD'], $_modelCode)) {
+                                        $_modelCode[] = $r['MBLA_MDLCD'];
+                                    }
+                                    if (!in_array($r['MBLA_PROCD'], $_modelProcess)) {
+                                        $_modelProcess[] = $r['MBLA_PROCD'];
+                                    }
+                                    if (!in_array($r['MBLA_BOMRV'], $_modelVersion)) {
+                                        $_modelVersion[] = $r['MBLA_BOMRV'];
+                                    }
                                 }
                             }
                         }
                     }
                 }
-
                 # cari alternatif line
                 $RSAlternativeLine = $this->XWO_mod->selectLineWhereInModelProcessAndVersion($_modelCode, $_modelProcess, $_modelVersion);
             } else {
@@ -125,7 +200,7 @@ class WO extends CI_Controller
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
             $sheet->setTitle('result');
-            $sheet->setCellValueByColumnAndRow(1, 1, 'Upload Work Order');
+            $sheet->setCellValueByColumnAndRow(1, 1, 'Upload Work Order' . count($_woMegaRev) . "!=" . $CounReff . "rsbom" . count($RSMegaBom));
             $sheet->setCellValueByColumnAndRow(1, 2, 'Reference No');
             $sheet->setCellValueByColumnAndRow(2, 2, 'Production Line');
             $sheet->setCellValueByColumnAndRow(3, 2, 'Process');
