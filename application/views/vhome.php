@@ -233,7 +233,7 @@
                     _EleDivBold.classList.add('fw-bold')
                     _EleDivBold.innerText = arrayItem['TRFH_DOC']
                     let _EleDivNonBold = document.createElement('span')
-                    _EleDivNonBold.innerText = `from ${arrayItem['MSTLOCG_NM']}`
+                    _EleDivNonBold.innerText = `from ${arrayItem['MSTLOCG_NM']} to ${arrayItem['MSTLOCG_NMTO']}`
                     _EleDiv.append(_EleDivBold)
                     _EleDiv.append(_EleDivNonBold)
                     _EleLi.append(_EleDiv)
@@ -279,7 +279,7 @@
                     _EleDivBold.classList.add('fw-bold')
                     _EleDivBold.innerText = arrayItem['TRFH_DOC']
                     let _EleDivNonBold = document.createElement('span')
-                    _EleDivNonBold.innerText = `to ${arrayItem['MSTLOCG_NM']}`
+                    _EleDivNonBold.innerText = `from ${arrayItem['MSTLOCG_NMFROM']} to ${arrayItem['MSTLOCG_NM']}`
                     _EleDiv.append(_EleDivBold)
                     _EleDiv.append(_EleDivNonBold)
                     _EleLi.append(_EleDiv)
