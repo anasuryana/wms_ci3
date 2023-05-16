@@ -40,11 +40,11 @@
         let ProdQtyList = []
 
         dataList.forEach((arrayItem) => {
-            let _wo = arrayItem[0]+'-'+arrayItem[1]
+            let _wo = arrayItem[0].trim()+'-'+arrayItem[1].trim()
             if( !WOList.includes(_wo) ) {
                 WOList.push(_wo)
-                ReffList.push(arrayItem[0])
-                AssyList.push(arrayItem[1])
+                ReffList.push(arrayItem[0].trim())
+                AssyList.push(arrayItem[1].trim())
                 ProdQtyList.push(arrayItem[2].replaceAll(',',''))
             }
         })

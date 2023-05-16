@@ -133,7 +133,7 @@ class WO extends CI_Controller
                         if ($woFlagPassOK[$i] == 0) {
                             $dataFix[] = [
                                 'RefNo' => $woReff[$i],
-                                'ProdLine' => $lineCode,
+                                'ProdLine' => '???',
                                 'Process' => '???',
                                 'AssyCode' => $woAssy[$i],
                                 'AssyRev' => '???',
@@ -186,7 +186,11 @@ class WO extends CI_Controller
                     }
                 }
                 # cari alternatif line
-                $RSAlternativeLine = $this->XWO_mod->selectLineWhereInModelProcessAndVersion($_modelCode, $_modelProcess, $_modelVersion);
+                if(!empty($_modelCode) && !empty($_modelProcess) && !empty($_modelVersion)){
+                    $RSAlternativeLine = $this->XWO_mod->selectLineWhereInModelProcessAndVersion($_modelCode, $_modelProcess, $_modelVersion);
+                } else {
+                    $RSAlternativeLine = [];
+                }
             } else {
                 $status[] = ['cd' => 0, 'msg' => 'array input size should be same'];
             }
