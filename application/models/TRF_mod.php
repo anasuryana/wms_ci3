@@ -37,7 +37,9 @@ class TRF_mod extends CI_Model
 
     public function selectDetailUnconformWhere($where)
     {
+        $this->db->select("TRFD_ITEMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,TRFD_QTY,TRFD_DOC");
         $this->db->from($this->TABLENAME_D);
+        $this->db->join('MITM_TBL', 'TRFD_ITEMCD=MITM_ITMCD','left');
         $this->db->where($where)->where("TRFD_DELETED_DT is null", null, false);
         $this->db->where($where)->where("TRFD_RECEIVE_DT is null", null, false);
         $query = $this->db->get();

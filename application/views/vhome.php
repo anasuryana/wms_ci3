@@ -168,6 +168,7 @@
                                     <thead class="table-light">
                                         <tr>
                                             <th class="align-middle">Item Code</th>
+                                            <th class="align-middle">Item Name</th>
                                             <th class="text-end align-middle">Qty</th>
                                             <th class="text-center"><input id="home_ck_all" class="form-check-input" type="checkbox"></th>
                                         </tr>
@@ -203,7 +204,7 @@
 
     function home_h1_to_approve_qty_eClick(){
         home_div_document_list.innerHTML = ''
-        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="3" class="text-center">-</td></tr>'
+        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">-</td></tr>'
         $.ajax({
             type: "GET",
             url: "<?=base_url('TRFHistory/openDocuments')?>",
@@ -249,7 +250,7 @@
     }
     function home_h1_to_follow_qty_eClick(){
         home_div_document_list.innerHTML = ''
-        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="3" class="text-center">-</td></tr>'
+        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">-</td></tr>'
         $.ajax({
             type: "GET",
             url: "<?=base_url('TRFHistory/openDocuments')?>",
@@ -295,7 +296,7 @@
     }
 
     function home_get_document_detail(pdata){
-        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="3" class="text-center">Please wait</td></tr>'
+        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">Please wait</td></tr>'
         $.ajax({
             type: "GET",
             url: "<?=base_url('TRFHistory/getDetailUnconform')?>",
@@ -327,9 +328,11 @@
                     newcell = newrow.insertCell(0)
                     newcell.innerHTML = arrayItem['TRFD_ITEMCD']
                     newcell = newrow.insertCell(1)
+                    newcell.innerHTML = arrayItem['MITM_ITMD1'].trim()
+                    newcell = newrow.insertCell(2)
                     newcell.classList.add('text-end')
                     newcell.innerHTML = numeral(arrayItem['TRFD_QTY']).format(',')
-                    newcell = newrow.insertCell(2)
+                    newcell = newrow.insertCell(3)
                     newcell.classList.add('text-center')
                     let _EleInput = document.createElement('input')
                     _EleInput.type = 'checkbox'
@@ -345,12 +348,12 @@
                 mydes.appendChild(myfrag)
             }, error:function(xhr,ajaxOptions, throwError) {
                 alertify.error('Please try again');
-                home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="2" class="text-center">Please try again</td></tr>'
+                home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">Please try again</td></tr>'
             }
         });
     }
     function home_get_document_detail_tofollow(pdata){
-        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="3" class="text-center">Please wait</td></tr>'
+        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">Please wait</td></tr>'
         $.ajax({
             type: "GET",
             url: "<?=base_url('TRFHistory/getDetailUnconform')?>",
@@ -383,9 +386,11 @@
                     newcell = newrow.insertCell(0)
                     newcell.innerHTML = arrayItem['TRFD_ITEMCD']
                     newcell = newrow.insertCell(1)
+                    newcell.innerHTML = arrayItem['MITM_ITMD1']
+                    newcell = newrow.insertCell(2)
                     newcell.classList.add('text-end')
                     newcell.innerHTML = numeral(arrayItem['TRFD_QTY']).format(',')
-                    newcell = newrow.insertCell(2)
+                    newcell = newrow.insertCell(3)
                     newcell.classList.add('text-center')
                     let _EleInput = document.createElement('input')
                     _EleInput.type = 'checkbox'
@@ -397,7 +402,7 @@
                 mydes.appendChild(myfrag)
             }, error:function(xhr,ajaxOptions, throwError) {
                 alertify.error('Please try again');
-                home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="2" class="text-center">Please try again</td></tr>'
+                home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">Please try again</td></tr>'
             }
         });
     }
