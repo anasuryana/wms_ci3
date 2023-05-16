@@ -2160,7 +2160,7 @@ class SPL extends CI_Controller
         if (!isset($_COOKIE["CKPSI_DPSN"])) {
             exit('no data to be found');
         }
-        $cpsn = $_COOKIE["CKPSI_DPSN"];
+        $cpsn = strtoupper($_COOKIE["CKPSI_DPSN"]);
         $rspsn_group = $this->SPL_mod->select_header_psn($cpsn);
         $pdf = new PDF_Code39e128('P', 'mm', 'A4');
         if (substr($cpsn, 0, 2) == 'SP') {
