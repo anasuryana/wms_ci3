@@ -1666,7 +1666,7 @@ class SPL extends CI_Controller
         $cline = trim($this->input->post('inline'));
         $cfr = trim($this->input->post('infr'));
         $cdoc = $cpsn . "|" . $ccat . "|" . $cline . "|" . $cfr;
-        $cwh_out = $_COOKIE["CKPSI_WH"];
+        $cwh_out = '';
         $cwh_inc = '';
         $flag_insert = 0;
         $flag_update = 0;
