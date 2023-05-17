@@ -48,7 +48,7 @@ class SPLSCN_mod extends CI_Model {
         $this->db->limit(2500);
         $this->db->from($this->TABLENAME);        
         $this->db->like($pwhere);
-        $this->db->order_by('SPLSCN_DOC ASC, SPLSCN_CAT ASC, SPLSCN_LINE ASC, SPLSCN_FEDR ASC, SPLSCN_ORDERNO ASC , SPLSCN_ITMCD ASC');
+        $this->db->order_by('SPLSCN_LUPDT DESC,SPLSCN_DOC ASC, SPLSCN_CAT ASC, SPLSCN_LINE ASC, SPLSCN_FEDR ASC, SPLSCN_ORDERNO ASC , SPLSCN_ITMCD ASC');
 		$query = $this->db->get();
 		return $query->result_array();
     }
