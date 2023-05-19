@@ -64,6 +64,18 @@ class DisposeDraft_mod extends CI_Model {
         return $query->result_array();
     }
 
+    public function select_arwh9sc($date){
+        $qry = "SELECT ITEM PART_CODE,sum(TQTY) QTY FROM 
+        (select ISNULL(MITMGRP_ITMCD,ITH_ITMCD) ITEM,SUM(ITH_QTY) TQTY from v_ith_tblc 
+        LEFT JOIN MITMGRP_TBL ON ITH_ITMCD=MITMGRP_ITMCD_GRD        
+		WHERE ITH_DATEC<=? AND ITH_WH='ARWH9SC'
+        GROUP BY MITMGRP_ITMCD,ITH_ITMCD) VITEM
+        GROUP BY ITEM
+        ORDER BY ITEM";
+        $query = $this->db->query($qry, [$date]);
+        return $query->result_array();
+    }
+
     public function select_resume_rm_additional1(){
         $qry = "SELECT ITEM PART_CODE,sum(TQTY) QTY FROM 
         (select ISNULL(MITMGRP_ITMCD,PART_CODE) ITEM,SUM(QTY) TQTY from DISPOSEDRAFT2
@@ -111,6 +123,100 @@ class DisposeDraft_mod extends CI_Model {
         GROUP BY ITH_ITMCD,SERD2_ITMCD, RM.MITM_ITMD1,ITH_SER,STOCKQTY,VDETAIL.MITM_ITMD1, VDETAIL.MITM_STKUOM,RM.MITM_STKUOM
         ORDER BY ITH_ITMCD,ITH_SER,SERD2_ITMCD ASC";        
 		$query = $this->db->query($qry, [$pDate]);
+        return $query->result_array();
+    }
+    public function select_detail_fg_202212_additional(){
+        $qry = "SELECT SER_ITMID ITH_ITMCD
+        ,RTRIM(SERD2_ITMCD) PART_CODE
+        ,round(SUM(RMQT), 0) QTY
+        ,RTRIM(RM.MITM_ITMD1) RMDESC
+        ,RTRIM(VDETAIL.MITM_STKUOM) FGUOM
+        ,RTRIM(RM.MITM_STKUOM) RMUOM
+        ,VDETAIL.MITM_ITMD1 FGDESC
+        ,SER_ID ITH_SER
+        ,SER_QTY LQT
+    FROM (
+        SELECT SER_ID
+            ,SER_QTY
+            ,SER_ITMID
+            ,MITM_STKUOM
+            ,MITM_ITMD1
+        FROM SER_TBL
+        LEFT JOIN MITM_TBL ON SER_ITMID = MITM_ITMCD
+        WHERE SER_ID IN (
+                'GHSWX6UWE81I1NPI'
+                ,'GHSWX6UWE31I28TO'
+                ,'GHSWX6UWE51II2CQ'
+                ,'GHSWX6UWDZ1I2K1G'
+                ,'GHSWX6UWE71I3EI1'
+                )
+        ) VDETAIL
+    LEFT JOIN (
+        SELECT SERD2_SER
+            ,SERD2_ITMCD
+            ,SUM(SERD2_QTY) RMQT
+        FROM SERD2_TBL
+        LEFT JOIN MITM_TBL ON SERD2_ITMCD=MITM_ITMCD WHERE MITM_MODEL='0'
+        GROUP BY SERD2_SER
+            ,SERD2_ITMCD
+        ) VSERD2 ON SER_ID = SERD2_SER
+    LEFT JOIN MITM_TBL RM ON SERD2_ITMCD = RM.MITM_ITMCD
+    GROUP BY SER_ITMID
+        ,SERD2_ITMCD
+        ,RM.MITM_ITMD1
+        ,SER_ID
+        ,SER_QTY
+        ,VDETAIL.MITM_ITMD1
+        ,VDETAIL.MITM_STKUOM
+        ,RM.MITM_STKUOM
+    
+    union all
+    
+    SELECT SER_ITMID ITH_ITMCD
+        ,RTRIM(SERD2_ITMCD) PART_CODE
+        ,round(SUM(RMQT), 0) QTY
+        ,RTRIM(RM.MITM_ITMD1) RMDESC
+        ,RTRIM(VDETAIL.MITM_STKUOM) FGUOM
+        ,RTRIM(RM.MITM_STKUOM) RMUOM
+        ,VDETAIL.MITM_ITMD1 FGDESC
+        ,SER_ID ITH_SER
+        ,SER_QTY STOCKQTY
+    FROM (
+        SELECT SERML_NEWID SER_ID
+            ,SERML_COMID 
+            ,MITM_STKUOM
+            ,MITM_ITMD1
+            ,SER_QTY
+            ,SER_ITMID
+        FROM SERML_TBL
+        LEFT JOIN SER_TBL ON SERML_NEWID = SER_ID
+        LEFT JOIN MITM_TBL ON SER_ITMID = MITM_ITMCD
+        WHERE SERML_NEWID IN (
+                'GHSWX6UWE81I1NPI'
+                ,'GHSWX6UWE31I28TO'
+                ,'GHSWX6UWE51II2CQ'
+                ,'GHSWX6UWDZ1I2K1G'
+                ,'GHSWX6UWE71I3EI1'
+                )	
+        ) VDETAIL
+    LEFT JOIN (
+        SELECT SERD2_SER
+            ,SERD2_ITMCD
+            ,SUM(SERD2_QTY) RMQT
+        FROM SERD2_TBL
+        GROUP BY SERD2_SER
+            ,SERD2_ITMCD
+        ) VSERD2 ON SERML_COMID = SERD2_SER
+    LEFT JOIN MITM_TBL RM ON SERD2_ITMCD = RM.MITM_ITMCD
+    GROUP BY SER_ITMID
+        ,SERD2_ITMCD
+        ,RM.MITM_ITMD1
+        ,SER_ID
+        ,SER_QTY
+        ,VDETAIL.MITM_ITMD1
+        ,VDETAIL.MITM_STKUOM
+        ,RM.MITM_STKUOM";        
+		$query = $this->db->query($qry);
         return $query->result_array();
     }
     public function select_resume_fg_dedicated($pSER){
