@@ -690,6 +690,18 @@ class DELV_mod extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
+    public function selectCalculationSerRmOnlyBySerID($arraySerID)
+    {
+        $this->db->select("RTRIM(SERD2_ITMCD) PART_CODE,ISNULL(MITMGRP_ITMCD,'') ITMGR,SUM(RMQT) QTY");
+        $this->db->from("SER_TBL");
+        $this->db->join('(SELECT SERD2_SER,SERD2_ITMCD,SUM(SERD2_QTY) RMQT FROM SERD2_TBL GROUP BY SERD2_SER,SERD2_ITMCD,SERD2_FGQTY) V1', 'SER_ID=SERD2_SER', 'INNER');        
+        $this->db->join('VFG_AS_BOM', 'SERD2_ITMCD=PWOP_BOMPN', 'LEFT');
+        $this->db->join('MITMGRP_TBL', 'SERD2_ITMCD=MITMGRP_ITMCD_GRD', 'LEFT');
+        $this->db->where_in('SER_ID', $arraySerID)->where("PWOP_BOMPN", null);
+        $this->db->group_by("SERD2_ITMCD,MITMGRP_ITMCD");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
     public function select_dlv_ser_sub_only($pdo)
     {
         $this->db->select("UPPER(SER_ITMID) SER_ITMID,SERD2_FGQTY,DLV_SER SERD2_SER,LOTNO,RTRIM(SERD2_ITMCD) SERD2_ITMCD,ISNULL(MITMGRP_ITMCD,'') ITMGR,SERD2_QTPER");
@@ -700,6 +712,19 @@ class DELV_mod extends CI_Model
         $this->db->join('MITMGRP_TBL', 'SERD2_ITMCD=MITMGRP_ITMCD_GRD', 'LEFT');
         $this->db->where('DLV_ID', $pdo);
         $this->db->order_by('DLV_SER');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+    public function selectCalculationSubOnlyBySerID($arraySerID)
+    {
+        $this->db->select("RTRIM(SERD2_ITMCD) PART_CODE,ISNULL(MITMGRP_ITMCD,'') ITMGR,sum(RMQT) QTY");
+        $this->db->from("SER_TBL");
+        $this->db->join('SERML_TBL', 'SER_ID=SERML_NEWID', 'LEFT');
+        $this->db->join('(SELECT SERD2_SER,SERD2_ITMCD,SUM(SERD2_QTY) RMQT FROM SERD2_TBL GROUP BY SERD2_SER,SERD2_ITMCD) V1', 'SERML_COMID=SERD2_SER');
+        $this->db->join('MITMGRP_TBL', 'SERD2_ITMCD=MITMGRP_ITMCD_GRD', 'LEFT');
+        $this->db->where_in('SER_ID', $arraySerID);
+        $this->db->group_by("SERD2_ITMCD,MITMGRP_ITMCD");
+        $this->db->order_by('SERD2_ITMCD');        
         $query = $this->db->get();
         return $query->result_array();
     }
