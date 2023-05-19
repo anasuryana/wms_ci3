@@ -44,7 +44,7 @@
             </div>
             <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm">
-                    <label class="input-group-text">Type</label>
+                    <label class="input-group-text">Item Type</label>
                     <select class="form-select" id="rpab_in_cmb_itemtype">
                         <option value='-'>All</option>
                         <?=$modell?>
