@@ -593,7 +593,7 @@ class SER extends CI_Controller
                 $reffNumber = $r['SERRC_SER'];
                 break;
             }
-            if($this->ITH_mod->check_Primary(['ITH_SER' => $reffNumber, 'AFQART'])){
+            if($this->ITH_mod->check_Primary(['ITH_SER' => $reffNumber, 'ITH_WH' => 'AFQART'])){
                 $originWH = 'NFWH4RT';
             } else {
                 $originWH = 'AFWH3RT';
