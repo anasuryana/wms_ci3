@@ -587,10 +587,30 @@ class SER extends CI_Controller
 
         if ($jmmode) {
             $rsjmmode = $this->SERRC_mod->select_out_usage($pser);
+            # periksa contoh/sample 1 Reff Number
+            $reffNumber = '';
             foreach ($rsjmmode as $r) {
-                $originWH = $r['STKTRND1_LOCCDFR'];
+                $reffNumber = $r['SERRC_SER'];
+                break;
+            }
+            if($this->ITH_mod->check_Primary(['ITH_SER' => $reffNumber, 'AFQART'])){
+                $originWH = 'NFWH4RT';
+            } else {
+                $originWH = 'AFWH3RT';
+            }
+            # akhir periksa
+            foreach ($rsjmmode as $r) {                
                 $rs_out[] = [
-                    'ITH_ITMCD' => $r['SER_ITMID'], 'ITH_DATE' => $current_date, 'ITH_FORM' => $r['SER_ITMID'] == $r['SERRC_NASSYCD'] ? 'OUT' : 'OUT-C', 'ITH_DOC' => $r['SER_DOC'], 'ITH_QTY' => -$r['OUTQTY'], 'ITH_WH' => $r['STKTRND1_LOCCDFR'] === 'NFWH4RT' ? 'AFQART' : 'AFQART2', 'ITH_SER' => $r['SERRC_SER'], 'ITH_REMARK' => $r['SERRC_SERX'], 'ITH_LUPDT' => $currrtime, 'ITH_USRID' => $this->session->userdata('nama'),
+                    'ITH_ITMCD' => $r['SER_ITMID']
+                    , 'ITH_DATE' => $current_date
+                    , 'ITH_FORM' => $r['SER_ITMID'] == $r['SERRC_NASSYCD'] ? 'OUT' : 'OUT-C'
+                    , 'ITH_DOC' => $r['SER_DOC']
+                    , 'ITH_QTY' => -$r['OUTQTY']
+                    , 'ITH_WH' => $originWH === 'NFWH4RT' ? 'AFQART' : 'AFQART2'
+                    , 'ITH_SER' => $r['SERRC_SER']
+                    , 'ITH_REMARK' => $r['SERRC_SERX']
+                    , 'ITH_LUPDT' => $currrtime
+                    , 'ITH_USRID' => $this->session->userdata('nama'),
                 ];
             }
         }
