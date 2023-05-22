@@ -3630,6 +3630,30 @@ class ITH extends CI_Controller
         die(json_encode(['data' => $rsTobeSaved]));
     }
 
+    public function raw_change_date_return()
+    {
+        header('Content-Type: application/json');
+        $date = $this->input->get('date');
+        $item_doc = $this->input->get('doc');
+        $rs = $this->ITH_mod->select_doc_vs_datec_about_change_date_of_return($item_doc, $date);
+        $tmpTime = strtotime($date . ' +1 days');
+        $date0 = date('Y-m-d', $tmpTime);
+        $rsTobeSaved = [];
+        foreach ($rs as &$r) {
+            $r['TIME'] = substr($r['ITH_LUPDT'], 11, 8);
+            if ($r['TIME'] >= '00:00:00' && $r['TIME'] <= '07:00:00') {
+                $r['TO_LUPDT'] = $date0 . " " . $r['TIME'];
+            } else {
+                $r['TO_LUPDT'] = $date . " " . $r['TIME'];
+            }
+
+            $r['ITH_QTY'] = abs($r['ITH_QTY']);
+            $rsTobeSaved[] = $r;
+        }
+        unset($r);
+        die(json_encode(['data' => $rsTobeSaved]));
+    }
+
     public function change_kitting_date()
     {
         date_default_timezone_set('Asia/Jakarta');
@@ -3699,6 +3723,53 @@ class ITH extends CI_Controller
                 'CSMLOG_SUPZAJU' => '',
                 'CSMLOG_SUPZNOPEN' => '',
                 'CSMLOG_DESC' => 'change date of cancel, psn ' . $doc . ', part code ' . $r['ITH_ITMCD'],
+                'CSMLOG_LINE' => $lastLineLog,
+                'CSMLOG_TYPE' => 'INC',
+                'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
+                'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+            ]);
+        }
+        unset($r);
+        die(json_encode([
+            'status' => ['cd' => '1', 'msg' => $affectedRows . ' row(s) updated'], 'data' => $rs,
+        ]));
+    }
+    public function change_returned_psn_date()
+    {
+        $this->checkSession();
+        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');
+        $doc = $this->input->post('doc');
+        $date = $this->input->post('date');
+        $items = $this->input->post('items');
+        $dates = $this->input->post('dates');
+        $rs = $this->ITH_mod->selectForReturningwithIn_items($doc, $date, $items, $dates);
+        $tmpTime = strtotime($date . ' +1 days');
+        $date0 = date('Y-m-d', $tmpTime);
+        $thedate = $date;
+        $affectedRows = 0;
+        foreach ($rs as &$r) {
+            $r['TIME'] = substr($r['ITH_LUPDT'], 11, 8);
+            if ($r['TIME'] >= '00:00:00' && $r['TIME'] <= '07:00:00') {
+                $r['TO_LUPDT'] = $date0 . " " . $r['TIME'];
+                $thedate = $date0;
+            } else {
+                $r['TO_LUPDT'] = $date . " " . $r['TIME'];
+                $thedate = $date;
+            }
+            $affectedRows += $this->ITH_mod->update_cancel_kitting_date(
+                $doc,
+                $thedate,
+                $r['TO_LUPDT'],
+                $r['ITH_LUPDT'],
+                $r['ITH_ITMCD']
+            );
+            $lastLineLog = $this->CSMLOG_mod->select_lastLine($doc, '') + 1;
+            $this->CSMLOG_mod->insert([
+                'CSMLOG_DOCNO' => $doc,
+                'CSMLOG_SUPZAJU' => '',
+                'CSMLOG_SUPZNOPEN' => '',
+                'CSMLOG_DESC' => 'change date of return, psn ' . $doc . ', part code ' . $r['ITH_ITMCD'],
                 'CSMLOG_LINE' => $lastLineLog,
                 'CSMLOG_TYPE' => 'INC',
                 'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
