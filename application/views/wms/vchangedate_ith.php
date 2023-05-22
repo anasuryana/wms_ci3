@@ -364,6 +364,10 @@
     .on('changeDate', function(e) {
         chgDateIth_filter()
     });
+    $('#chgDateIth_rtn_reqdate').datepicker()
+    .on('changeDate', function(e) {
+        chgDateIth_rtn_filter()
+    });
 
     function chgDateIth_btn_new_eClick(){
         chgDateIth_doc.value = ''

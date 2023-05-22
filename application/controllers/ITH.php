@@ -3757,24 +3757,26 @@ class ITH extends CI_Controller
                 $r['TO_LUPDT'] = $date . " " . $r['TIME'];
                 $thedate = $date;
             }
-            $affectedRows += $this->ITH_mod->update_cancel_kitting_date(
+            if($this->ITH_mod->update_return_kitting_date(
                 $doc,
                 $thedate,
                 $r['TO_LUPDT'],
                 $r['ITH_LUPDT'],
                 $r['ITH_ITMCD']
-            );
-            $lastLineLog = $this->CSMLOG_mod->select_lastLine($doc, '') + 1;
-            $this->CSMLOG_mod->insert([
-                'CSMLOG_DOCNO' => $doc,
-                'CSMLOG_SUPZAJU' => '',
-                'CSMLOG_SUPZNOPEN' => '',
-                'CSMLOG_DESC' => 'change date of return, psn ' . $doc . ', part code ' . $r['ITH_ITMCD'],
-                'CSMLOG_LINE' => $lastLineLog,
-                'CSMLOG_TYPE' => 'INC',
-                'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
-                'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
-            ]);
+            )){
+                $affectedRows += 1;
+                $lastLineLog = $this->CSMLOG_mod->select_lastLine($doc, '') + 1;
+                $this->CSMLOG_mod->insert([
+                    'CSMLOG_DOCNO' => $doc,
+                    'CSMLOG_SUPZAJU' => '',
+                    'CSMLOG_SUPZNOPEN' => '',
+                    'CSMLOG_DESC' => 'change date of return, psn ' . $doc . ', part code ' . $r['ITH_ITMCD'],
+                    'CSMLOG_LINE' => $lastLineLog,
+                    'CSMLOG_TYPE' => 'INC',
+                    'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
+                    'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+                ]);
+            }
         }
         unset($r);
         die(json_encode([
