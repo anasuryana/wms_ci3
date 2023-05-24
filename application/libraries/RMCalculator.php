@@ -3194,7 +3194,7 @@ class RMCalculator
         ];
         $fields_string = http_build_query($fields);
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8081/api-report-custom/api/inventory/calculate_raw_material_resume');
+        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api-report-custom/api/inventory/calculate_raw_material_resume');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
