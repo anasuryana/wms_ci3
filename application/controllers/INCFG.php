@@ -196,8 +196,11 @@ class INCFG extends CI_Controller
                             $citem = str_replace("_", " ", $citem);
                             $cjob = str_replace("_", " ", $cjob);
                         } else {
-                            $myar[] = ["cd" => "0", "msg" => "Item is not registered in WMS Master Data ($citem)"];
-                            exit(json_encode($myar));
+                            $RSItemLike = $this->MSTITM_mod->selectfgbyid_lk($citem);
+                            if (empty($RSItemLike)) {
+                                $myar[] = ["cd" => "0", "msg" => "Item is not registered in WMS Master Data ($citem)"];
+                                exit(json_encode($myar));
+                            }
                         }
                     }
                     $rsser = $this->SER_mod->selectbyVAR(["SER_ID" => $creffcd]);
@@ -205,10 +208,15 @@ class INCFG extends CI_Controller
                         $myar[] = ["cd" => "0", "msg" => "The label is already scanned"];
                         exit(json_encode($myar));
                     }
-
+                    #Pengkhususan logika karena salah buat WO
+                    if (strtoupper($cjob) === '23-5A16-222279401') {
+                        $cjob = '23-5A16-22279401ES';
+                        $citem = $citem . 'ES2';
+                    }
+                    # Akhir pengkhususan
                     $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
                     $rsostku0 = $rsostqty;
-                    if (count($rsostqty) > 0) {
+                    if (!empty($rsostqty)) {
                     } else {
                         $newjob = substr($cjob, 2, 100);
                         $cjob = $nextYear . $newjob;
@@ -220,7 +228,7 @@ class INCFG extends CI_Controller
                             $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
                         }
                     }
-                    if (count($rsostqty) > 0) {
+                    if (!empty($rsostqty)) {
                         $ostqty = 0;
                         $lotsizeqty = 0;
                         $grnqty = 0;
