@@ -20,6 +20,38 @@ class TRF extends CI_Controller
         die("sorry");
     }
 
+    public function getBalanceTransferByPO()
+    {
+        header('Content-Type: application/json');
+        $PONumber = $this->input->get('PONumber');
+        $LocationFR = $this->input->get('LocationFR');
+        $RS = $this->TRF_mod->selectBalanceTransferByPO($PONumber);
+        $ItemDistinct = [];
+        foreach ($RS as $r) {
+            if (!in_array($r['PO_ITMCD'],$ItemDistinct)) {
+                $ItemDistinct[] = $r['PO_ITMCD'];
+            }
+        }
+        if(!empty($ItemDistinct)){
+            # set maksimal transfer qty = stock qty berjalan
+            $RSStock = $this->ITH_mod->selectStockWhereItemIn($ItemDistinct, $LocationFR);
+            foreach ($RS as &$r) {
+                foreach ($RSStock as $s) {
+                    if ($r['PO_ITMCD'] === $s['ITH_ITMCD']) {
+                        if($r['BALQT']>$s['SQT']){
+                            $r['BALQT'] = $s['SQT'];
+                        } else {
+    
+                        }                    
+                        break;
+                    }
+                }
+            }
+            unset($r);
+        }
+        die(json_encode(['data' => $RS]));
+    }
+
     public function form_part()
     {
         $todiswh = $FromWH = '';
@@ -68,6 +100,7 @@ class TRF extends CI_Controller
         $LineID = $this->input->post('LineID');
         $LineItemCode = $this->input->post('LineItemCode');
         $LineItemQty = $this->input->post('LineItemQty');
+        $LineRefDocument = $this->input->post('LineRefDocument');
         $TotalRows = is_array($LineItemCode) ? count($LineItemCode) : 0;
         $RSOK = [];
         $RSResume = [];
@@ -122,7 +155,7 @@ class TRF extends CI_Controller
             }
             if ($isStockEnough) {
                 # buat nomor transaksi
-                $RSLOrder = $this->TRF_mod->selectLastOrder($MonthIssue, $YearIssue);
+                $RSLOrder = $this->TRF_mod->selectLastOrder(date('m'), date('Y'));
                 $LOrder = 0;
                 $NewDocument = '';
                 foreach ($RSLOrder as $r) {
@@ -166,6 +199,7 @@ class TRF extends CI_Controller
                             'TRFD_DOC' => $NewDocument,
                             'TRFD_ITEMCD' => $LineItemCode[$i],
                             'TRFD_QTY' => $LineItemQty[$i],
+                            'TRFD_REFFERENCE_DOCNO' => $LineRefDocument[$i],
                             'TRFD_CREATED_BY' => $this->session->userdata('nama'),
                             'TRFD_CREATED_DT' => $CurrentDateTime,
                         ];
@@ -200,12 +234,17 @@ class TRF extends CI_Controller
         $LineID = $this->input->post('LineID');
         $LineItemCode = $this->input->post('LineItemCode');
         $LineItemQty = $this->input->post('LineItemQty');
+        $LineRefDocument = $this->input->post('LineRefDocument');
         $RSStock = !empty($LineItemCode) ? $this->ITH_mod->selectStockWhereItemIn([$LineItemCode], $frLoc) : [];
         $AffectedRows = 0;
         foreach ($RSStock as $r) {
             if ($r['SQT'] >= $LineItemQty) {
                 $AffectedRows += $this->TRF_mod->updatebyId(['TRFD_LINE' => $LineID]
-                    , ['TRFD_ITEMCD' => $LineItemCode, 'TRFD_QTY' => $LineItemQty, 'TRFD_LAST_UPDATED_BY' => $this->session->userdata('nama'), 'TRFD_UPDATED_DT' => $CurrentDateTime]);
+                    , ['TRFD_ITEMCD' => $LineItemCode
+                        , 'TRFD_QTY' => $LineItemQty
+                        , 'TRFD_REFFERENCE_DOCNO' => $LineRefDocument
+                        , 'TRFD_LAST_UPDATED_BY' => $this->session->userdata('nama')
+                        , 'TRFD_UPDATED_DT' => $CurrentDateTime]);
             }
         }
         $response[] = $AffectedRows ? ['cd' => '1', 'msg' => 'Updated'] : ['cd' => '0', 'msg' => 'Could not update'];

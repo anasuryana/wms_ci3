@@ -11,7 +11,7 @@ class TRF_mod extends CI_Model
     public function selectLastOrder($Month, $Year)
     {
         $this->db->select("ISNULL(MAX(TRFH_ORDER),0) LORDER");
-        $this->db->where("MONTH(TRFH_ISSUE_DT)", $Month)->where("YEAR(TRFH_ISSUE_DT)", $Year);
+        $this->db->where("MONTH(TRFH_CREATED_DT)", $Month)->where("YEAR(TRFH_CREATED_DT)", $Year);
         $query = $this->db->get($this->TABLENAME);
         return $query->result();
     }
@@ -142,6 +142,35 @@ class TRF_mod extends CI_Model
                 AND TRFD_ITEMCD = ? AND TRFH_DOC=? AND TRFD_RECEIVE_DT IS NULL
                 GROUP BY TRFH_DOC,TRFH_LOC_FR,TRFH_LOC_TO,MSTLOCG_NM,TRFD_ITEMCD";
         $query = $this->db->query($qry, [$UserId, $Item, $Doc]);
+        return $query->result_array();
+    }
+
+    function selectBalanceTransferByPO($PONumber){
+        $qry = "SELECT VPO.*
+                    ,TRFQT
+                    ,RTRIM(MITM_ITMD1) ITMD
+                    ,TTLPOQT-ISNULL(TRFQT,0) BALQT
+                FROM (
+                    SELECT PO_NO
+                        ,UPPER(PO_ITMCD) PO_ITMCD
+                        ,sum(PO_QTY) TTLPOQT
+                    FROM PO_TBL
+                    WHERE PO_ITMCD IS NOT NULL AND PO_NO = ?
+                    GROUP BY PO_NO
+                        ,PO_ITMCD
+                    ) VPO
+                LEFT JOIN (
+                    SELECT TRFD_REFFERENCE_DOCNO
+                        ,TRFD_ITEMCD
+                        ,SUM(TRFD_QTY) TRFQT
+                    FROM TRFD_TBL
+                    WHERE TRFD_REFFERENCE_DOCNO = ?
+                    GROUP BY TRFD_REFFERENCE_DOCNO
+                        ,TRFD_ITEMCD
+                    ) VTRF ON VPO.PO_NO = VTRF.TRFD_REFFERENCE_DOCNO
+                    AND VPO.PO_ITMCD = VTRF.TRFD_REFFERENCE_DOCNO
+                LEFT JOIN MITM_TBL ON PO_ITMCD=MITM_ITMCD";
+        $query = $this->db->query($qry, [$PONumber, $PONumber]);
         return $query->result_array();
     }
 }
