@@ -898,6 +898,8 @@ class DELV extends CI_Controller
         $pser = $this->input->get('inunique');
         $pserqty = $this->input->get('inunique_qty');
         $pjob = $this->input->get('inunique_job');
+        $Calc_lib = new RMCalculator();
+
         $myar = [];
         $rsusage = [];
         $showed_cols = ['SERD2_PSNNO', 'SERD2_LINENO', 'SERD2_PROCD', 'SERD2_CAT', 'SERD2_FR', 'SERD2_ITMCD', 'SERD2_QTY', 'SERD2_FGQTY', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'RTRIM(MITM_SPTNO) MITM_SPTNO', 'SERD2_QTPER MYPER', 'SERD2_MC', 'SERD2_MCZ'];
@@ -918,13 +920,13 @@ class DELV extends CI_Controller
                         $res0 = $this->get_usage_rmwelcat_perjob($n['SERC_COMJOB']);
                         $res = json_decode($res0);
                         if ($res->status[0]->cd != 0) {
-                            $res2 = json_decode($this->get_usage_rm_perjob_peruniq($n['SERC_COMID'], $n['SERC_COMQTY'], $n['SERC_COMJOB']));
+                            $res2 = json_decode($Calc_lib->get_usage_rm_perjob_peruniq($n['SERC_COMID'], $n['SERC_COMQTY'], $n['SERC_COMJOB']));
                             if ($res2->status[0]->cd != 0) {
                                 $ttlcalculated++;
                             }
                         }
                     } else {
-                        $res2 = json_decode($this->get_usage_rm_perjob_peruniq($n['SERC_COMID'], $n['SERC_COMQTY'], $n['SERC_COMJOB']));
+                        $res2 = json_decode($Calc_lib->get_usage_rm_perjob_peruniq($n['SERC_COMID'], $n['SERC_COMQTY'], $n['SERC_COMJOB']));
                         if ($res2->status[0]->cd != 0) {
                             $ttlcalculated++;
                         }
@@ -954,7 +956,7 @@ class DELV extends CI_Controller
                         }
                         if (!$issame) {
                             $retdel = $this->SERD_mod->deletebyID_label(['SERD2_SER' => $pser]);
-                            $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob));
+                            $res2 = json_decode($Calc_lib->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob));
                             if ($res2->status[0]->cd != 0) {
                                 $myar[] = ['cd' => 1, 'msg' => 'recalculated ok'];
                                 $rsusage = $this->SERD_mod->select_calculatedlabel_where($showed_cols, ['SERD2_SER' => $pser]);
@@ -966,7 +968,7 @@ class DELV extends CI_Controller
                             $rsusage = $rscalculated;
                         }
                     } else { //if not yet calculated beforehand
-                        $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob));
+                        $res2 = json_decode($Calc_lib->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob));
                         if ($res2->status[0]->cd != 0) {
                             $myar[] = ['cd' => 1, 'msg' => 'recalculated ok'];
                             $rsusage = $this->SERD_mod->select_calculatedlabel_where($showed_cols, ['SERD2_SER' => $pser]);
@@ -989,7 +991,7 @@ class DELV extends CI_Controller
                     }
                     if (!$issame) {
                         $retdel = $this->SERD_mod->deletebyID_label(['SERD2_SER' => $pser]);
-                        $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob));
+                        $res2 = json_decode($Calc_lib->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob));
                         if ($res2->status[0]->cd != 0) {
                             $myar[] = ['cd' => 1, 'msg' => 'recalculated, ok.'];
                             $rsusage = $this->SERD_mod->select_calculatedlabel_where($showed_cols, ['SERD2_SER' => $pser]);
@@ -1001,7 +1003,7 @@ class DELV extends CI_Controller
                         $rsusage = $rscalculated;
                     }
                 } else { //if not yet calculated beforehand
-                    $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob));
+                    $res2 = json_decode($Calc_lib->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob));
                     if ($res2->status[0]->cd != 0) {
                         $myar[] = ['cd' => 1, 'msg' => 'recalculated ok.'];
                         $rsusage = $this->SERD_mod->select_calculatedlabel_where($showed_cols, ['SERD2_SER' => $pser]);
@@ -1035,96 +1037,6 @@ class DELV extends CI_Controller
         $Calc_lib = new RMCalculator();
         $rs = $Calc_lib->get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob);
         die($rs);
-    }
-
-    public function get_usage_rm_perjob_peruniq($pser, $pserqty, $pjob)
-    {
-        $currrtime = date('Y-m-d H:i:s');
-        $rsjobrm_d = $this->SERD_mod->selectd_byjob($pjob);
-        $pserqty = str_replace(",", "", $pserqty);
-        $rsjobrm = $this->SERD_mod->selecth_byjob($pjob, $pserqty);
-        $rsser_d = [];
-        $myar = [];
-        if (count($rsjobrm) > 0) {
-            foreach ($rsjobrm as &$n) {
-                $processs = true;
-                while ($processs) {
-                    $isready = false;
-                    foreach ($rsjobrm_d as $x) {
-                        if (($n['SERD_QTPER'] == $x['SERD_QTPER']) &&
-                            (trim($n['SERD_CAT']) == trim($x['SERD_CAT'])) && (trim($n['SERD_LINENO']) == trim($x['SERD_LINENO'])) && (trim($n['SERD_PROCD']) == trim($x['SERD_PROCD'])) &&
-                            (trim($n['SERD_FR']) == trim($x['SERD_FR'])) && (trim($n['SERD_MC']) == trim($x['SERD_MC'])) && (trim($n['SERD_MCZ']) == trim($x['SERD_MCZ']))
-                        ) {
-                            if ($x['SERD_QTY'] > 0) {
-                                $isready = true;
-                                break;
-                            }
-                        }
-                    }
-                    if ($isready) {
-                        foreach ($rsjobrm_d as &$x) {
-                            if (($n['SERD_QTPER'] == $x['SERD_QTPER']) &&
-                                (trim($n['SERD_CAT']) == trim($x['SERD_CAT'])) && (trim($n['SERD_LINENO']) == trim($x['SERD_LINENO'])) && (trim($n['SERD_PROCD']) == trim($x['SERD_PROCD'])) &&
-                                (trim($n['SERD_FR']) == trim($x['SERD_FR'])) && (trim($n['SERD_MC']) == trim($x['SERD_MC'])) && (trim($n['SERD_MCZ']) == trim($x['SERD_MCZ']))
-                            ) {
-                                $process2 = true;
-                                while ($process2) {
-                                    if (($n['SERREQQTY'] > $n["SUPSERQTY"])) { //sinii
-                                        if ($x['SERD_QTY'] > 0) { //for awesome plotting , should add 'what next function'
-                                            $n["SUPSERQTY"] += 1;
-                                            $x['SERD_QTY']--;
-                                            $islotfound = false;
-                                            foreach ($rsser_d as &$u) {
-                                                if (($u["SERD2_JOB"] == trim($n['SERD_JOB']))
-                                                    && ($u["SERD2_ITMCD"] == trim($x["SERD_ITMCD"]))
-                                                    && ($u['SERD2_QTPER'] == $n['SERD_QTPER'])
-                                                    && ($u["SERD2_LOTNO"] == trim($x["SERD_LOTNO"]))
-                                                    && ($u['SERD2_MC'] == trim($x['SERD_MC']))
-                                                    && ($u['SERD2_MCZ'] == trim($x['SERD_MCZ']))
-                                                    && ($u['SERD2_PROCD'] == trim($x['SERD_PROCD']))
-                                                    && ($u['SERD2_FR'] == trim($x['SERD_FR']))
-                                                ) {
-                                                    $u["SERD2_QTY"] += 1;
-                                                    $islotfound = true;
-                                                    break;
-                                                }
-                                            }
-                                            unset($u);
-
-                                            if (!$islotfound) {
-                                                $rsser_d[] = [
-                                                    "SERD2_SER" => $pser, "SERD2_JOB" => trim($n['SERD_JOB']), "SERD2_QTPER" => $n['SERD_QTPER'], "SERD2_ITMCD" => trim($x['SERD_ITMCD']), "SERD2_FGQTY" => intval($pserqty), "SERD2_QTY" => 1, "SERD2_LOTNO" => trim($x['SERD_LOTNO']), "SERD2_PSNNO" => trim($x['SERD_PSNNO']), "SERD2_LINENO" => trim($n['SERD_LINENO']), "SERD2_PROCD" => trim($n['SERD_PROCD']), "SERD2_CAT" => trim($n['SERD_CAT']), "SERD2_FR" => trim($n['SERD_FR']), "SERD2_MC" => trim($n['SERD_MC']), "SERD2_MCZ" => trim($n['SERD_MCZ']), "SERD2_MSCANTM" => $x['SERD_MSCANTM'], "SERD2_LUPDT" => $currrtime,
-                                                ];
-                                            }
-                                        } else {
-                                            $process2 = false;
-                                        }
-                                    } else {
-                                        $process2 = false;
-                                        $processs = false;
-                                    }
-                                }
-                            }
-                        }
-                        unset($x);
-                    } else {
-                        $processs = false;
-                    }
-                }
-            }
-            unset($n);
-
-            if (count($rsser_d) > 0) {
-                $this->SERD_mod->insertb2($rsser_d);
-                $myar[] = ['cd' => 1, 'msg' => 'calculated per label ,ok'];
-            } else {
-                $myar[] = ['cd' => 0, 'msg' => 'calculated per label , not ok'];
-            }
-        } else {
-            $myar[] = ['cd' => 0, 'msg' => 'Raw material usage has not been calculated yet'];
-        }
-
-        return ('{"status": ' . json_encode($myar) . '}');
     }
 
     public function get_newdono()
@@ -7232,7 +7144,6 @@ class DELV extends CI_Controller
         foreach ($rsitem_p_price as $r) {
             $t_HARGA_PENYERAHAN = $r['CIF'];
             $cz_h_NETTO += $r['NWG'];
-            // $cz_h_BRUTO += $r['GWG'];
             $cz_h_HARGA_PENYERAHAN_FG += $t_HARGA_PENYERAHAN;
             $tpb_barang[] = [
                 'KODE_BARANG' => $r['SSO2_MDLCD'], 'POS_TARIF' => $r['MITM_HSCD'], 'URAIAN' => $r['MITM_ITMD1'], 'JUMLAH_SATUAN' => $r['SISOQTY'], 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 'NETTO' => $r['NWG'], 'HARGA_PENYERAHAN' => round($r['CIF'], 2), 'SERI_BARANG' => $SERI_BARANG, 'KODE_STATUS' => '02',
@@ -10805,15 +10716,9 @@ class DELV extends CI_Controller
                     unset($v);
                 }
                 unset($o);
-            } else {
-                // $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !", "api_respon" => $rstemp];
-                // $this->inventory_cancelDO($csj);
-                // die('{"status":' . json_encode($myar) . '}');
+            } else {                
             }
-        } else {
-            // $this->inventory_cancelDO($csj);
-            // $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin", "api_respon" => $rstemp];
-            // die('{"status":' . json_encode($myar) . '}');
+        } else {           
         }
         #CHECK IS REQ!=RES
         $listNeedExBC = []; #outstanding list
@@ -10958,47 +10863,7 @@ class DELV extends CI_Controller
         $str = "
         'G31ZJ1YFT41I1P8P',
         'G3R3D802A51I1FQE',
-        'G4PUO3QA1YIX16FD',
-        'GEXJ3S9TG6IX2SG6',
-        'GEXJ44PPSQIX39D2',
-        'GEXJ4LVCJOIX1UPO',
-        'GEZEJFT0EN2UZSKG',
-        'GHLVX9DM7V1I2PX6',
-        'GHM2G4SLM4IX2ZV0',
-        'GHN6HZF59T2U3EPZ',
-        'FVWSHP4L5RMC3NSM',
-        'GEFQUE9R2MMC1O5C',
-        'GEGVTD7FOXIX2YNH',
-        'GEZS6VLSLEIX240H',
-        'FPD5WDHH8PIX3TJO',
-        'GE5EQX8HSGMCEPYN',
-        'G0TU3U022R2A46BY',
-        'G6X4B2UPXFMCF0Q5',
-        'GFRCG2RPMY1I107M',
-        'G9ANPDE9MXMC3G2X',
-        'GGTYMRF3C92U10A1',
-        'G2JUAXJ69BIXIN55',
-        'G75LKSTAPJIX19T2',
-        'GE7RXPNLXEIXECB2',
-        'GE8SXU9WFLIX2T2W',
-        'G9W3RZPG4S2UZ7W1',
-        'G9W3MN48M22USCHY',
-        'G1WBFRKDGJMC1G75',
-        'GAT91D2BLZ2UH2L0',
-        'GAT91D2BA02U215O',
-        'G146ZZKM9G1I1FKT',
-        'G146ZZKM9L1I20NJ',
-        'GFPORI80Z0MCWRBJ',
-        'GAX50DZ88W1I3UMU',
-        'GAX50DZ88S1I1AX5',
-        'GAX01FQAIUMCX4LT',
-        'G15AT5FPDAIX190Y',
-        'GAT9S9HDLF2UQ6AQ',
-        'G15YXDW06X1I10BI',
-        'GAT9S9HDLC2U1RJF',
-        'G1654IUZFU1I1MVJ',
-        'G99KHV8M1YMCYOKK',
-        'G9YLKPWUERIXZDK6'
+        'G4PUO3QA1YIX16FD',              
         ";
         $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($str);
         $itemcd = [];
@@ -11055,46 +10920,7 @@ class DELV extends CI_Controller
         // $str = "'G31ZJ1YFT41I1P8P',
         // 'G3R3D802A51I1FQE',
         // 'G4PUO3QA1YIX16FD',
-        // 'GEXJ3S9TG6IX2SG6',
-        // 'GEXJ44PPSQIX39D2',
-        // 'GEXJ4LVCJOIX1UPO',
-        // 'GEZEJFT0EN2UZSKG',
-        // 'GHLVX9DM7V1I2PX6',
-        // 'GHM2G4SLM4IX2ZV0',
-        // 'GHN6HZF59T2U3EPZ',
-        // 'FVWSHP4L5RMC3NSM',
-        // 'GEFQUE9R2MMC1O5C',
-        // 'GEGVTD7FOXIX2YNH',
-        // 'GEZS6VLSLEIX240H',
-        // 'FPD5WDHH8PIX3TJO',
-        // 'GE5EQX8HSGMCEPYN',
-        // 'G0TU3U022R2A46BY',
-        // 'G6X4B2UPXFMCF0Q5',
-        // 'GFRCG2RPMY1I107M',
-        // 'G9ANPDE9MXMC3G2X',
-        // 'GGTYMRF3C92U10A1',
-        // 'G2JUAXJ69BIXIN55',
-        // 'G75LKSTAPJIX19T2',
-        // 'GE7RXPNLXEIXECB2',
-        // 'GE8SXU9WFLIX2T2W',
-        // 'G9W3RZPG4S2UZ7W1',
-        // 'G9W3MN48M22USCHY',
-        // 'G1WBFRKDGJMC1G75',
-        // 'GAT91D2BLZ2UH2L0',
-        // 'GAT91D2BA02U215O',
-        // 'G146ZZKM9G1I1FKT',
-        // 'G146ZZKM9L1I20NJ',
-        // 'GFPORI80Z0MCWRBJ',
-        // 'GAX50DZ88W1I3UMU',
-        // 'GAX50DZ88S1I1AX5',
-        // 'GAX01FQAIUMCX4LT',
-        // 'G15AT5FPDAIX190Y',
-        // 'GAT9S9HDLF2UQ6AQ',
-        // 'G15YXDW06X1I10BI',
-        // 'GAT9S9HDLC2U1RJF',
-        // 'G1654IUZFU1I1MVJ',
-        // 'G99KHV8M1YMCYOKK',
-        // 'G9YLKPWUERIXZDK6'
+        // 'GEXJ3S9TG6IX2SG6',              
         // ";
         // $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($str);
 
@@ -11337,34 +11163,7 @@ class DELV extends CI_Controller
 
         $str = "'F4YG801IVT1UMJWW',
         'FJYG4B3KGAIX1J5D',
-        'G7AMR3B8BEMC2K54',
-        'G7AMR3B8BHMCWISM',
-        'G1PS451ERQ2A3KC3',
-        'FQZWLX7HB1MC3KZV',
-        'FDA2BQFI3V36U8XC',
-        'FCH67T8R1S3LBTXX',
-        'FCH67T8R1H3L3N8H',
-        'FCH67T8R263LRP84',
-        'FCH67T8R1N3L2KSG',
-        'FCH67T8R193L1593',
-        'FCH67T8R203L19P9',
-        'FCFJUPMP3QAC1E9V',
-        'FCFJUPMP3FAC1BYM',
-        'FCFJUPMP3NAC3SSL',
-        'FCFJUPMP3IAC2FGO',
-        'FCFJUPMP36AC324M',
-        'FCFJX1WUFBACI46S',
-        'FCFHT1WRNXAC3MWV',
-        'G7BT2ELM4FMC18B9',
-        'FBVECX6B5AAC274R',
-        'FCAO0MO4L9AC2U5E',
-        'G6A4B2M6URIX1J7N',
-        'G6A4BK794RIXKAU0',
-        'FDOP86PC9A3L1MD7',
-        'FDOP86PC8Z3LC0U9',
-        'FEK7290QD5361R37',
-        'FFQ3QERXFOAC1AP2',
-        'FI39NQVZLRIX2M0D',
+        'G7AMR3B8BEMC2K54', 
         'G7F0YFI9DYMC2QN7',
         'G7F0YFI9E2MCAR50'";
         $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($str);
@@ -11542,10 +11341,7 @@ class DELV extends CI_Controller
         unset($r);
         die(json_encode([
             'rsFix' => $rsFix,
-        ]));
-        // die(json_encode(['rsSer' => $rsSer
-        // ,'rsBooked' => $rsBooked
-        // ]));
+        ]));      
     }
 
     public function posting_rm41()
@@ -13492,6 +13288,13 @@ class DELV extends CI_Controller
         $writer->save('php://output');
     }
 
+    public function postingCEISA40BC27()
+    {
+        header('Content-Type: application/json');
+        $doc = $this->input->post('doc');
+        $RSHeader = $this->DELV_mod->selectPostedDocument();
+    }
+
     public function gotoque($psj)
     {
         $mdo = base64_encode($psj);
@@ -13511,25 +13314,22 @@ class DELV extends CI_Controller
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, "bc=$pbc_type&tujuan=$ptujuan&doc=$psj&date_out=$pbcdate&item_num=$prm&qty=$pqty&lot=$plot");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300); //5sdfdfs
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
         curl_setopt($ch, CURLOPT_TIMEOUT, 660);
         $data = curl_exec($ch);
         curl_close($ch);
-        // return json_decode($data);
         return $data;
     }
     public function inventory_getstockbc_v2($pbc_type, $ptujuan, $psj, $prm, $pqty, $plot, $pbcdate, $pkontrak = "")
     {
         $fields = [
-            // 'isNotSaved' => true,
             'bc' => $pbc_type,
             'tujuan' => $ptujuan,
             'date_out' => $pbcdate,
             'doc' => $psj,
             'kontrak' => $pkontrak,
             'item_num' => $prm,
-            'qty' => $pqty, //,
-            // 'lot' => $plot
+            'qty' => $pqty,
         ];
         $fields_string = http_build_query($fields);
         $ch = curl_init();
@@ -13541,7 +13341,6 @@ class DELV extends CI_Controller
         curl_setopt($ch, CURLOPT_TIMEOUT, 3600);
         $data = curl_exec($ch);
         curl_close($ch);
-        // return json_decode($data);
         return $data;
     }
     public function inventory_getstockbc_v2_witDO($pbc_type, $ptujuan, $psj, $prm, $pqty, $pbcdate, $pdoNum)
@@ -13566,7 +13365,6 @@ class DELV extends CI_Controller
         curl_setopt($ch, CURLOPT_TIMEOUT, 3600);
         $data = curl_exec($ch);
         curl_close($ch);
-        // return json_decode($data);
         return $data;
     }
     public function inventory_cancelDO($pdo)
@@ -13579,7 +13377,29 @@ class DELV extends CI_Controller
         curl_setopt($ch, CURLOPT_TIMEOUT, 660);
         $data = curl_exec($ch);
         curl_close($ch);
-        // return json_decode($data);
+        return $data;
+    }
+    public function inventory_ceisa40($data)
+    {
+        $fields = [
+            'txid' => $data['txid'],
+            'cif' => $data['cif'],
+            'hargaPenyerahan' => $data['hargaPenyerahan'],
+            'netto' => $data['netto'],
+            'jumlahKemasan' => $data['jumlahKemasan'],
+            'ListBarangByPrice' => $data['RSBarang'],
+            'ListBahanBakuList' => $data['RSBahanBaku'],
+        ];
+        $fields_string = http_build_query($fields);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/public/api/ceisafour/sendPosting/' . $data['BCTYPE']);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3600);
+        $data = curl_exec($ch);
+        curl_close($ch);
         return $data;
     }
 }
