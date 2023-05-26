@@ -547,6 +547,15 @@ class SER extends CI_Controller
         $current_date = date('Y-m-d');
         $jmmode = false;
         $bisgrup = '';
+        $originWH = '';
+        foreach ($rsc as $r) {
+            if ($this->ITH_mod->check_Primary(['ITH_SER' => $r['SERRC_SER'], 'ITH_WH' => 'AFQART'])) {
+                $originWH = 'NFWH4RT';
+            } else {
+                $originWH = 'AFWH3RT';
+            }
+            break;
+        }
         foreach ($rsc as $r) {
             $bisgrup = $r['MBSG_BSGRP'];
             $isfound = false;
@@ -572,14 +581,22 @@ class SER extends CI_Controller
             }
             if ($r['SERRC_JM'] == '') {
                 $rs_out[] = [
-                    'ITH_ITMCD' => $r['SER_ITMID'], 'ITH_DATE' => $current_date, 'ITH_FORM' => $r['SER_ITMID'] == $r['SERRC_NASSYCD'] ? 'OUT' : 'OUT-C', 'ITH_DOC' => $r['SER_DOC'], 'ITH_QTY' => $r['SERRC_SERXQTY'] > $r['SER_QTY'] ? -$r['SER_QTY'] : -$r['SERRC_SERXQTY'], 'ITH_WH' => $r['STKTRND1_LOCCDFR'] === 'NFWH4RT' ? 'AFQART' : 'AFQART2', 'ITH_SER' => $r['SERRC_SER'], 'ITH_REMARK' => $r['SERRC_SERX'], 'ITH_LUPDT' => $currrtime, 'ITH_USRID' => $this->session->userdata('nama'),
+                    'ITH_ITMCD' => $r['SER_ITMID']
+                    , 'ITH_DATE' => $current_date
+                    , 'ITH_FORM' => $r['SER_ITMID'] == $r['SERRC_NASSYCD'] ? 'OUT' : 'OUT-C'
+                    , 'ITH_DOC' => $r['SER_DOC']
+                    , 'ITH_QTY' => $r['SERRC_SERXQTY'] > $r['SER_QTY'] ? -$r['SER_QTY'] : -$r['SERRC_SERXQTY']
+                    , 'ITH_WH' => $originWH === 'NFWH4RT' ? 'AFQART' : 'AFQART2'
+                    , 'ITH_SER' => $r['SERRC_SER']
+                    , 'ITH_REMARK' => $r['SERRC_SERX']
+                    , 'ITH_LUPDT' => $currrtime
+                    , 'ITH_USRID' => $this->session->userdata('nama'),
                 ];
             } else {
                 $jmmode = true;
             }
         }
 
-        $originWH = '';
         $RSNonJM = $this->SERRC_mod->selectWHBySerahTerimaRC($pser);
         foreach ($RSNonJM as $r) {
             $originWH = $r['RCV_WH'];
@@ -593,13 +610,13 @@ class SER extends CI_Controller
                 $reffNumber = $r['SERRC_SER'];
                 break;
             }
-            if($this->ITH_mod->check_Primary(['ITH_SER' => $reffNumber, 'ITH_WH' => 'AFQART'])){
+            if ($this->ITH_mod->check_Primary(['ITH_SER' => $reffNumber, 'ITH_WH' => 'AFQART'])) {
                 $originWH = 'NFWH4RT';
             } else {
                 $originWH = 'AFWH3RT';
             }
             # akhir periksa
-            foreach ($rsjmmode as $r) {                
+            foreach ($rsjmmode as $r) {
                 $rs_out[] = [
                     'ITH_ITMCD' => $r['SER_ITMID']
                     , 'ITH_DATE' => $current_date
@@ -5887,96 +5904,12 @@ class SER extends CI_Controller
         die(json_encode(['data' => $myar]));
     }
 
-    public function fix_ng_transaction()
+    public function removeCalculationPerJob()
     {
         header('Content-Type: application/json');
-        $wo = $this->input->get('wo');
-        $partcode = $this->input->get('partcode');
-        $okid = $this->input->get('okid');
-
-        $rs = $this->ZRPSTOCK_mod->select_doubled_transaction($partcode, $wo, $okid);
-        foreach ($rs as &$r) {
-            $where = ['RPSTOCK_REMARK' => $r['DLV_ID'], 'RPSTOCK_ITMNUM' => $partcode];
-            $rs_ = $this->ZRPSTOCK_mod->select_columns_where(['*'], $where);
-            $r['COUNT_ROWS'] = count($rs_);
-            if ($r['COUNT_ROWS'] === 1) {
-                foreach ($rs_ as $k) {
-                    $r['SHOULD_EXECUTE'] = true;
-                    $r['EXBCSHOULDBE'] = $k['RPSTOCK_QTY'] * 1 + $r['DIFF'];
-                    $r['STATUS'] = $this->ZRPSTOCK_mod->updatebyId($where, ['RPSTOCK_QTY' => $k['RPSTOCK_QTY'] * 1 + $r['DIFF']]);
-                }
-            } else {
-                $r['SHOULD_EXECUTE'] = false;
-            }
-        }
-        unset($r);
-        die(json_encode(['partcode' => $partcode, 'data' => $rs]));
-    }
-
-    public function refix_split_tx()
-    {
-        header('Content-Type: application/json');
-        $year = $this->input->get('year');
-        $month = $this->input->get('month');
-        $rsNeedFix = $this->SER_mod->select_split_need_fix($year, $month);
-        $rsFocus = [];
-        foreach ($rsNeedFix as &$r) {
-            $rsReff = $this->SER_mod->select_tools_ser($r['ITH_SER']);
-            $itemcode_distinct = [];
-            $RowShouldBeUpdated = [];
-            $RowShouldBeAdded = [];
-            foreach ($rsReff as $s) {
-                if (!in_array($s['SER_ITMID'], $itemcode_distinct)) {
-                    $itemcode_distinct[] = $s['SER_ITMID'];
-                }
-                if ($r['ITH_ITMCD'] != $s['SER_ITMID']) {
-                    if (empty($RowShouldBeUpdated)) {
-                        $RowShouldBeUpdated = $r;
-                        $RowShouldBeUpdated['ITH_QTY'] = -$s['ITH_QTY'];
-                        $RowShouldBeUpdated['ITH_FORM'] = 'SPLIT-CNV-FG-OUT';
-                    } else {
-                        $RowShouldBeUpdated['ITH_QTY'] -= $s['ITH_QTY'];
-                    }
-                } else {
-                    $RowShouldBeAdded = $r;
-                }
-            }
-
-            $RowShouldBeAdded['ITH_QTY'] = -($RowShouldBeUpdated['ITH_QTY'] + abs((int) $r['ITH_QTY']));
-            if (count($itemcode_distinct) == 1) {
-                $r['STATUS'] = 'OK FULL CONVERT';
-                $r['datareff'] = [$RowShouldBeUpdated];
-                $rsFocus[] = $r;
-            } else {
-                $r['STATUS'] = 'Should be refixed';
-                $r['datareff'] = [$RowShouldBeUpdated, $RowShouldBeAdded];
-            }
-        }
-        unset($r);
-        foreach ($rsFocus as &$r) {
-            if ($r['STATUS'] === 'OK FULL CONVERT') {
-                # update ITH_FORM only
-                foreach ($r['datareff'] as &$s) {
-                    // $this->ITH_mod->updatebyId(['ITH_SER' => $s['ITH_SER'], 'ITH_REMARK' => 'WIL-SPLIT'], ['ITH_FORM' => 'SPLIT-CNV-FG-OUT']);
-                    $s['EXECUTE'] = 'UPDATE';
-                }
-                unset($s);
-            } else {
-                foreach ($r['datareff'] as &$s) {
-                    if ($s['ITH_FORM'] === 'SPLIT-CNV-FG-OUT') {
-                        #insert
-                        // $this->ITH_mod->insert($s);
-                        $s['EXECUTE'] = 'INSERT';
-                    } else {
-                        # update ITH_QTY
-                        // $this->ITH_mod->updatebyId(['ITH_SER' => $s['ITH_SER'], 'ITH_REMARK' => 'WIL-SPLIT'], ['ITH_QTY' => $s['ITH_QTY']]);
-                        $s['EXECUTE'] = 'UPDATE';
-                    }
-                }
-                unset($s);
-            }
-        }
-        unset($r);
-        die(json_encode(['data_need_fix' => $rsFocus]));
+        $id = $this->input->post('job');
+        $AffectedRows = $this->SERD_mod->deletebyID(['SERD_JOB' => $id]);
+        $result = $AffectedRows ? ['msg' => 'OK'] : ['msg' => 'Sorry could not reset'];
+        die(json_encode($result));
     }
 }
