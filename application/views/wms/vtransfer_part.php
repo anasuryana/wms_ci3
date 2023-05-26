@@ -167,7 +167,7 @@
                                         <th>Item Code</th>
                                         <th>Description</th>
                                         <th class="text-end">Balance Qty</th>
-                                        <th class="text-end">Transfer Qty</th>
+                                        <th class="text-end table-info">Transfer Qty</th>
                                         <th class="text-center">PO Number</th>
                                     </tr>
                                 </thead>
@@ -693,8 +693,9 @@
                         newcell.classList.add('text-end')
                         newcell.innerHTML = numeral(arrayItem['BALQT']).format(',')
                         newcell = newrow.insertCell(3)
-                        newcell.classList.add('text-end')
+                        newcell.classList.add('text-end','fw-bold')
                         newcell.contentEditable = true
+                        newcell.innerHTML = numeral(arrayItem['BALQT']).value()
                         newcell = newrow.insertCell(4)
                         newcell.innerHTML = arrayItem['PO_NO']
                     })
