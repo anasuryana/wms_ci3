@@ -3877,26 +3877,28 @@ class SPL extends CI_Controller
         unset($d);
         //end 2nd loop
         foreach ($rsret as $r) {
-            if (count($dr_machine) == 0) {
-                $dr_machine[] = trim($r['RETSCN_ORDERNO']);
-                $dr_item[] = trim($r['RETSCN_ITMCD']);
-                $dr_qty[] = $r['RETSCN_QTYAFT'];
-                $dr_used[] = false;
-            } else {
-                $isfound = false;
-                $ttldata = count($dr_machine);
-                for ($i = 0; $i < $ttldata; $i++) {
-                    if (($dr_machine[$i] == trim($r['RETSCN_ORDERNO'])) && ($d_item[$i] == trim($r['RETSCN_ITMCD']))) {
-                        $dr_qty[$i] += $r['RETSCN_QTYAFT'];
-                        $isfound = true;
-                        break;
-                    }
-                }
-                if (!$isfound) {
+            if ($r['RETSCN_CNFRMDT']) {
+                if (count($dr_machine) == 0) {
                     $dr_machine[] = trim($r['RETSCN_ORDERNO']);
                     $dr_item[] = trim($r['RETSCN_ITMCD']);
                     $dr_qty[] = $r['RETSCN_QTYAFT'];
                     $dr_used[] = false;
+                } else {
+                    $isfound = false;
+                    $ttldata = count($dr_machine);
+                    for ($i = 0; $i < $ttldata; $i++) {
+                        if (($dr_machine[$i] == trim($r['RETSCN_ORDERNO'])) && ($d_item[$i] == trim($r['RETSCN_ITMCD']))) {
+                            $dr_qty[$i] += $r['RETSCN_QTYAFT'];
+                            $isfound = true;
+                            break;
+                        }
+                    }
+                    if (!$isfound) {
+                        $dr_machine[] = trim($r['RETSCN_ORDERNO']);
+                        $dr_item[] = trim($r['RETSCN_ITMCD']);
+                        $dr_qty[] = $r['RETSCN_QTYAFT'];
+                        $dr_used[] = false;
+                    }
                 }
             }
         }
