@@ -21,19 +21,19 @@ class RCVHistory extends CI_Controller
         echo "sorry";
     }
 
-    function form_receiving()
+    public function form_receiving()
     {
         $this->load->view('wms_report/vrpt_receiving_list');
     }
 
-    function receiving()
+    public function receiving()
     {
         header('Content-Type: application/json');
         $searchby = $this->input->get('searchby');
         $search = $this->input->get('search');
         $dateFrom = $this->input->get('date0');
         $dateTo = $this->input->get('date1');
-        switch($searchby){
+        switch ($searchby) {
             case 'id':
                 $likeFilter = ['ITEMCODE' => $search];
                 break;
@@ -43,12 +43,12 @@ class RCVHistory extends CI_Controller
             case 'supname':
                 $likeFilter = ['SUPNM' => $search];
                 break;
-        }        
+        }
         $rs = $this->RCVNI_mod->select_receiving_like($likeFilter, $dateFrom, $dateTo);
         die(json_encode(['data' => $rs]));
     }
 
-    function receivingAsXLS()
+    public function receivingAsXLS()
     {
         $searchby = $this->input->get('searchby');
         $search = $this->input->get('search');
@@ -84,16 +84,27 @@ class RCVHistory extends CI_Controller
         $sheet->setCellValueByColumnAndRow(19, 5, 'Amount');
         $sheet->freezePane('A6');
         $i = 6;
+        $sheet->getStyle("E5:E" . 6 + count($rs))->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DDMMYYYY);
         foreach ($rs as $r) {
+            $BCDATE = '';
+            if ($r['RCV_RPDATE']) {
+                $ArrayBCDATE = explode('-', $r['RCV_RPDATE']);
+                $BCDATE = $ArrayBCDATE[2] . '-' . $ArrayBCDATE[1] . '-' . $ArrayBCDATE[0];
+            }
+            $RCVDate = '';
+            if ($r['RCV_RCVDATE']) {
+                $ArrayRCVDate = explode('-', $r['RCV_RCVDATE']);
+                $RCVDate = $ArrayRCVDate[2] . '-' . $ArrayRCVDate[1] . '-' . $ArrayRCVDate[0];
+            }
             $sheet->setCellValueByColumnAndRow(1, $i, $r['RCV_BCTYPE']);
             $sheet->setCellValueByColumnAndRow(2, $i, $r['RCV_RPNO']);
             $sheet->setCellValueByColumnAndRow(3, $i, $r['RCV_BCNO']);
             $sheet->setCellValueByColumnAndRow(4, $i, $r['PO_VAT']);
-            $sheet->setCellValueByColumnAndRow(5, $i, $r['RCV_RPDATE']);
+            $sheet->setCellValueByColumnAndRow(5, $i, $BCDATE);
             $sheet->setCellValueByColumnAndRow(6, $i, $r['POSUBJECT']);
             $sheet->setCellValueByColumnAndRow(7, $i, $r['PODEPT']);
             $sheet->setCellValueByColumnAndRow(8, $i, $r['RECEIVINGNO']);
-            $sheet->setCellValueByColumnAndRow(9, $i, $r['RCV_RCVDATE']);
+            $sheet->setCellValueByColumnAndRow(9, $i, $RCVDate);
             $sheet->setCellValueByColumnAndRow(10, $i, $r['RCV_PO']);
             $sheet->setCellValueByColumnAndRow(11, $i, $r['RCV_SUPCD']);
             $sheet->setCellValueByColumnAndRow(12, $i, $r['SUPNM']);
@@ -106,10 +117,10 @@ class RCVHistory extends CI_Controller
             $sheet->setCellValueByColumnAndRow(19, $i, $r['AMOUNT']);
             $i++;
         }
-        foreach (range('B', 'R') as $v) {
+        foreach (range('B', 'S') as $v) {
             $sheet->getColumnDimension($v)->setAutoSize(true);
         }
-        $rang = "A5:R" . $i;
+        $rang = "A5:S" . $i;
         $sheet->getStyle($rang)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)
             ->setColor(new Color('1F1812'));
         $sheet->getStyle("Q5:R" . $i)->getNumberFormat()->setFormatCode('#,##0');
