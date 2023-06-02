@@ -10716,9 +10716,9 @@ class DELV extends CI_Controller
                     unset($v);
                 }
                 unset($o);
-            } else {                
+            } else {
             }
-        } else {           
+        } else {
         }
         #CHECK IS REQ!=RES
         $listNeedExBC = []; #outstanding list
@@ -10863,7 +10863,7 @@ class DELV extends CI_Controller
         $str = "
         'G31ZJ1YFT41I1P8P',
         'G3R3D802A51I1FQE',
-        'G4PUO3QA1YIX16FD',              
+        'G4PUO3QA1YIX16FD',
         ";
         $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($str);
         $itemcd = [];
@@ -10920,7 +10920,7 @@ class DELV extends CI_Controller
         // $str = "'G31ZJ1YFT41I1P8P',
         // 'G3R3D802A51I1FQE',
         // 'G4PUO3QA1YIX16FD',
-        // 'GEXJ3S9TG6IX2SG6',              
+        // 'GEXJ3S9TG6IX2SG6',
         // ";
         // $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($str);
 
@@ -11163,7 +11163,7 @@ class DELV extends CI_Controller
 
         $str = "'F4YG801IVT1UMJWW',
         'FJYG4B3KGAIX1J5D',
-        'G7AMR3B8BEMC2K54', 
+        'G7AMR3B8BEMC2K54',
         'G7F0YFI9DYMC2QN7',
         'G7F0YFI9E2MCAR50'";
         $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($str);
@@ -11341,7 +11341,7 @@ class DELV extends CI_Controller
         unset($r);
         die(json_encode([
             'rsFix' => $rsFix,
-        ]));      
+        ]));
     }
 
     public function posting_rm41()
@@ -13292,7 +13292,271 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectPostedDocument();
+        $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID'], ['DLV_ID' => $doc]);
+        $data = [];
+        if (empty($RSHeader)) {
+            $data[] = ['message' => 'Please posting to local first'];
+        } else {
+            $cz_h_CIF_FG = 0;
+            $cz_h_HARGA_PENYERAHAN_FG = 0;
+            $t_HARGA_PENYERAHAN = 0;
+            $cz_h_NETTO = 0;
+            $tpb_barang = [];
+            $SERI_BARANG = 1;
+            $aspBOX = 0;
+            $cz_JUMLAH_KEMASAN = $this->DELV_mod->check_Primary(['DLV_ID' => $doc]);
+            $rsitem_p_price = $this->setPriceRS(base64_encode($doc));
+            $rsplotrm_per_fgprice = $this->perprice($doc, $rsitem_p_price);
+            foreach ($rsitem_p_price as &$r) {
+                $cz_h_CIF_FG += $r['CIF'];
+                $cz_h_NETTO += $r['NWG'];
+                $cz_h_HARGA_PENYERAHAN_FG += $t_HARGA_PENYERAHAN;
+                if (strpos(strtoupper($r['SSO2_MDLCD']), 'ASP') !== false) {
+                    $aspBOX += $r['SISOQTY'];
+                }
+                $tpb_barang[] = [
+                    'KODE_BARANG' => $r['SSO2_MDLCD']
+                    , 'POS_TARIF' => $r['MITM_HSCD']
+                    , 'URAIAN' => $r['MITM_ITMD1']
+                    , 'JUMLAH_SATUAN' => $r['SISOQTY']
+                    , 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM']
+                    , 'NETTO' => $r['NWG']
+                    , 'CIF' => round($r['CIF'], 2)
+                    , 'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN
+                    , 'SERI_BARANG' => $SERI_BARANG
+                    , 'KODE_STATUS' => '02',
+                ];                
+                $SERI_BARANG++;
+            }
+            unset($r);
+            if ($aspBOX) {
+                $cz_JUMLAH_KEMASAN = $aspBOX;
+            }
+
+            # cari HSCODE
+            $rsRMOnly = $this->DELV_mod->select_pertxid_rmOnly($doc);
+            $rsSubOnly = $this->DELV_mod->select_pertxid_subOnly($doc);
+            $rsnull = $this->DELV_mod->select_dlv_ser_rm_null_v1($doc);
+            $rsMerge = array_merge($rsRMOnly, $rsSubOnly);
+            foreach ($rsnull as $r) {
+                $rscomb_d = $this->SERC_mod->select_cols_where_id(['SERC_COMID'], $r['DLV_SER']);
+                $serlist = [];
+                if (count($rscomb_d)) {
+                    foreach ($rscomb_d as $n) {
+                        $serlist[] = $n['SERC_COMID'];
+                    }
+                    if (count($serlist) > 0) {
+                        $rscom = $this->DELV_mod->select_pertxid_byser($serlist);
+                        $rs = array_merge($rs, $rscom);
+                    }
+                } else {
+                    $rscomb_d = $this->SERC_mod->select_cols_where_id(['SERC_COMID'], $r['SER_REFNO']);
+                    foreach ($rscomb_d as $n) {
+                        $serlist[] = $n['SERC_COMID'];
+                    }
+                    if (count($serlist) > 0) {
+                        $rscom = $this->DELV_mod->select_pertxid_byser($serlist);
+                        $rs = array_merge($rs, $rscom);
+                    }
+                }
+            }
+            $rsallitem_cd = [];
+            $rsallitem_hscd = [];
+            $rsallitem_qty = [];
+            $rsallitem_qtyplot = [];
+            $rsallitem_ppn = [];
+            $rsallitem_pph = [];
+            $rsallitem_bm = [];
+            foreach ($rsMerge as $r) {
+                $itemtosend = $r['ITMGR'] == '' ? trim($r['SERD2_ITMCD']) : $r['ITMGR'];
+                $i = array_search($itemtosend, $rsallitem_cd);
+                if ($i !== false) {
+                    $rsallitem_qty[$i] += $r['DLVQT'];
+                } else {
+                    $rsallitem_cd[] = $itemtosend;
+                    $rsallitem_hscd[] = '';
+                    $rsallitem_qty[] = $r['DLVQT'];
+                    $rsallitem_qtyplot[] = 0;
+                    $rsallitem_ppn[] = '';
+                    $rsallitem_pph[] = '';
+                    $rsallitem_bm[] = '';
+                }
+            }
+            $count_rsallitem = count($rsallitem_cd);
+
+            # susun array bahan baku
+            $rsbc = $this->DELV_mod->selectBookeEXCBByTXID($doc);
+            foreach ($rsplotrm_per_fgprice as &$r) {
+                $r['PLOTRQTY'] = 0;
+                foreach ($rsbc as &$v) {
+                    if ($r['RITEMCDGR'] === $v->BC_ITEM || $r['RITEMCD'] === $v->BC_ITEM && $v->BC_QTY > 0) {
+                        $balreq = $r['RQTY'] - $r['PLOTRQTY'];
+                        $theqty = 0;
+
+                        if ($balreq == 0) {
+                            break;
+                        }
+
+                        if ($balreq > $v->BC_QTY) {
+                            $theqty = $v->BC_QTY;
+                            $r['PLOTRQTY'] += $v->BC_QTY;
+                            $v->BC_QTY = 0;
+                        } else {
+                            $theqty = $balreq;
+                            $r['PLOTRQTY'] += $balreq;
+                            $v->BC_QTY -= $balreq;
+                        }
+                        $thehscode = '';
+                        $theppn = '';
+                        $thepph = '';
+                        $thebm = '';
+
+                        if (!empty($v->RCV_HSCD)) {
+                            $thehscode = $v->RCV_HSCD;
+                            $theppn = $v->RCV_PPN;
+                            $thepph = $v->RCV_PPH;
+                            $thebm = substr($v->RCV_BM, 0, 1) == '.' ? ('0' . $v->RCV_BM) : ($v->RCV_BM);
+                        } else {
+                            for ($h = 0; $h < $count_rsallitem; $h++) {
+                                if ($v->BC_ITEM == $rsallitem_cd[$h]) {
+                                    $thehscode = $rsallitem_hscd[$h];
+                                    $theppn = $rsallitem_ppn[$h];
+                                    $thepph = $rsallitem_pph[$h];
+                                    $thebm = $rsallitem_bm[$h];
+                                    break;
+                                }
+                            }
+                        }
+
+                        if ($v->RCV_KPPBC != '-') {
+                            $tpb_bahan_baku[] = [
+                                'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE
+                                , 'NOMOR_DAFTAR_DOK_ASAL' => $v->BC_NUM
+                                , 'TANGGAL_DAFTAR_DOK_ASAL' => $v->BC_DATE
+                                , 'KODE_KANTOR' => $v->RCV_KPPBC
+                                , 'NOMOR_AJU_DOK_ASAL' => strlen($v->BC_AJU) == 6 ? substr('000000000000000000000000', 0, 26) : $v->BC_AJU
+                                , 'SERI_BARANG_DOK_ASAL' => empty($v->RCV_ZNOURUT) ? 0 : $v->RCV_ZNOURUT
+                                , 'SPESIFIKASI_LAIN' => null
+                                , 'CIF' => substr($v->RCV_PRPRC, 0, 1) == '.' ? ('0' . $v->RCV_PRPRC * $theqty) : ($v->RCV_PRPRC * $theqty)
+                                , 'HARGA_PENYERAHAN' => 0
+                                , 'KODE_BARANG' => $v->BC_ITEM
+                                , 'KODE_STATUS' => "03"
+                                , 'POS_TARIF' => $thehscode
+                                , 'URAIAN' => $v->MITM_ITMD1
+                                , 'TIPE' => $v->MITM_SPTNO
+                                , 'JUMLAH_SATUAN' => $theqty
+                                , 'JENIS_SATUAN' => ($v->MITM_STKUOM == 'PCS') ? 'PCE' : $v->MITM_STKUOM
+                                , 'KODE_ASAL_BAHAN_BAKU' => ($v->BC_TYPE == '27' || $v->BC_TYPE == '23') ? '0' : '1'                                
+                                , 'RASSYCODE' => $r['RASSYCODE']
+                                , 'RPRICEGROUP' => $r['RPRICEGROUP']
+                                , 'RBM' => $thebm
+                                , 'PPN' => 11
+                                , 'PPH' => $thepph,
+                            ];
+                        } else {
+                            $tpb_bahan_baku[] = [
+                                'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE
+                                , 'NOMOR_DAFTAR_DOK_ASAL' => $v->BC_NUM
+                                , 'TANGGAL_DAFTAR_DOK_ASAL' => $v->BC_DATE
+                                , 'KODE_KANTOR' => null
+                                , 'NOMOR_AJU_DOK_ASAL' => strlen($v->BC_AJU) == 6 ? substr('000000000000000000000000', 0, 26) : $v->BC_AJU
+                                , 'SERI_BARANG_DOK_ASAL' => empty($v->RCV_ZNOURUT) ? 0 : $v->RCV_ZNOURUT
+                                , 'SPESIFIKASI_LAIN' => null
+                                , 'CIF' => 0
+                                , 'HARGA_PENYERAHAN' => 0
+                                , 'KODE_BARANG' => $v->BC_ITEM
+                                , 'KODE_STATUS' => "02"
+                                , 'POS_TARIF' => $thehscode
+                                , 'URAIAN' => $v->MITM_ITMD1
+                                , 'TIPE' => $v->MITM_SPTNO
+                                , 'JUMLAH_SATUAN' => $theqty
+                                , 'JENIS_SATUAN' => 'PCE'
+                                , 'KODE_ASAL_BAHAN_BAKU' => 0                                
+                                , 'RASSYCODE' => $r['RASSYCODE']
+                                , 'RPRICEGROUP' => $r['RPRICEGROUP']
+                                , 'RBM' => 0
+                                , 'PPN' => $theppn
+                                , 'PPH' => $thepph,
+                            ];
+                        }
+                        #end
+                    }
+                }
+                unset($v);
+            }
+            unset($r);
+
+            # atur seri bahan baku
+            foreach ($rsplotrm_per_fgprice as $r) {
+                $nomor = 1;
+                foreach ($tpb_bahan_baku as &$n) {
+                    if (
+                        $r['RASSYCODE'] == $n['RASSYCODE']
+                        && $r['RPRICEGROUP'] == $n['RPRICEGROUP']
+                    ) {
+                        $n['SERI_BAHAN_BAKU'] = $nomor;
+                        $nomor++;
+                    }
+                }
+                unset($n);
+            }
+
+            # atur bahan baku tarif
+            foreach ($tpb_bahan_baku as &$r) {
+                $tpb_bahan_baku_tarif = [
+                    [
+                        'JENIS_TARIF' => 'BM'
+                        , 'KODE_TARIF' => 1
+                        , 'NILAI_BAYAR' => 0
+                        , 'NILAI_FASILITAS' => 0
+                        , 'KODE_FASILITAS' => 2
+                        , 'TARIF_FASILITAS' => 100
+                        , 'TARIF' => $r['RBM']
+                        , 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                    ],
+                    [
+                        'JENIS_TARIF' => 'PPN'
+                        , 'KODE_TARIF' => 1
+                        , 'NILAI_BAYAR' => 0
+                        , 'NILAI_FASILITAS' => 0
+                        , 'KODE_FASILITAS' => 2
+                        , 'TARIF_FASILITAS' => 100
+                        , 'TARIF' => $r['PPN']
+                        , 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                    ],
+                    [
+                        'JENIS_TARIF' => 'PPH'
+                        , 'KODE_TARIF' => 1
+                        , 'NILAI_BAYAR' => 0
+                        , 'NILAI_FASILITAS' => 0
+                        , 'KODE_FASILITAS' => 2
+                        , 'TARIF_FASILITAS' => 100
+                        , 'TARIF' => $r['PPH']
+                        , 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                    ],
+                ];
+                $r['tarif'] = $tpb_bahan_baku_tarif;
+            }
+            unset($r);
+            foreach ($tpb_barang as $n) {
+                foreach ($tpb_bahan_baku as &$b) {
+                    if ($n['KODE_BARANG'] == $b['RASSYCODE'] && $n['CIF'] == $b['RPRICEGROUP']) {                        
+                        $b['SERI_BARANG'] = $n['SERI_BARANG'];
+                    }
+                }
+                unset($b);
+            }
+            $data[] = ['data' => [
+                'txid' => $doc,
+                'cif' => $cz_h_CIF_FG,
+                'hargaPenyerahan' => $cz_h_HARGA_PENYERAHAN_FG,
+                'netto' => $cz_h_NETTO,
+                'jumlahKemasan' => $cz_JUMLAH_KEMASAN,
+                'ListBarangByPrice' => $tpb_barang,
+                'ListBahanBakuList' => $tpb_bahan_baku,
+            ]];
+        }
+        die(json_encode($data));
     }
 
     public function gotoque($psj)

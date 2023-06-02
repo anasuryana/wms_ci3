@@ -1117,6 +1117,13 @@ class DELV_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectBookeEXCBByTXID($pdoc)
+    {
+        $qry = "wms_sp_select_booked_exbc_by_txid ?";
+        $query = $this->db->query($qry, [$pdoc]);
+        return $query->result();
+    }
+
     public function select_for_rm_h($pdoc)
     {
         $qry = "SELECT DLV_ID,ISNULL(DLV_PURPOSE,'-') DLV_PURPOSE,ISNULL(DLV_CONSIGN,'-') DLV_CONSIGN
@@ -1182,6 +1189,16 @@ class DELV_mod extends CI_Model
         $this->db->select($pColumns);
         $this->db->from($this->TABLENAME);
         $this->db->where($pWhere);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function selectPostedDocument($pColumns, $pWhere)
+    {
+        $this->db->limit(1);
+        $this->db->select($pColumns);
+        $this->db->from($this->TABLENAME);
+        $this->db->where($pWhere)->where('DLV_POST IS NOT NULL', null, false);
         $query = $this->db->get();
         return $query->result_array();
     }
