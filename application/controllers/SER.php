@@ -540,9 +540,7 @@ class SER extends CI_Controller
 
         $rs_ext_u = [];
         $rs_ser_tbl = [];
-        $rs_out = [];
-        echo json_encode($rsc);
-        // die('sini');
+        $rs_out = [];      
         $currrtime = date('Y-m-d H:i:s');
         $current_date = date('Y-m-d');
         $jmmode = false;
@@ -606,12 +604,7 @@ class SER extends CI_Controller
                 $originWH = $r['RCV_WH'];
             }
         }
-
-        die(json_encode([
-            'line' => 'sini3',
-            '$originWH' => $originWH,
-            '$RSNonJM' => $RSNonJM
-        ]));
+        
         if ($jmmode) {
             $rsjmmode = $this->SERRC_mod->select_out_usage($pser);
             # periksa contoh/sample 1 Reff Number
