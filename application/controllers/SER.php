@@ -48,6 +48,7 @@ class SER extends CI_Controller
         $this->load->model('XWO_mod');
         $this->load->model('ZRPSTOCK_mod');
         $this->load->model('refceisa/TPB_HEADER_imod');
+        date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
     {
@@ -115,8 +116,7 @@ class SER extends CI_Controller
     }
 
     public function convert_rank()
-    {
-        date_default_timezone_set('Asia/Jakarta');
+    {        
         header('Content-Type: application/json');
         $oldreff = $this->input->post('oldreff');
         $oldrank = $this->input->post('oldrank');
@@ -215,8 +215,7 @@ class SER extends CI_Controller
 
     public function set_rc_bom()
     {
-        header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');        
         $current_time = date('Y-m-d H:i:s');
         $jm_opt = $this->input->post('jmopt');
         $qalabel = $this->input->post('qalabel');
@@ -542,20 +541,24 @@ class SER extends CI_Controller
         $rs_ext_u = [];
         $rs_ser_tbl = [];
         $rs_out = [];
-        date_default_timezone_set('Asia/Jakarta');
+        echo json_encode($rsc);
+        // die('sini');
         $currrtime = date('Y-m-d H:i:s');
         $current_date = date('Y-m-d');
         $jmmode = false;
         $bisgrup = '';
         $originWH = '';
+
         foreach ($rsc as $r) {
             if ($this->ITH_mod->check_Primary(['ITH_SER' => $r['SERRC_SER'], 'ITH_WH' => 'AFQART'])) {
                 $originWH = 'NFWH4RT';
             } else {
                 $originWH = 'AFWH3RT';
             }
+            // die('sini2');
             break;
         }
+        
         foreach ($rsc as $r) {
             $bisgrup = $r['MBSG_BSGRP'];
             $isfound = false;
@@ -599,9 +602,16 @@ class SER extends CI_Controller
 
         $RSNonJM = $this->SERRC_mod->selectWHBySerahTerimaRC($pser);
         foreach ($RSNonJM as $r) {
-            $originWH = $r['RCV_WH'];
+            if($r['RCV_WH']){
+                $originWH = $r['RCV_WH'];
+            }
         }
 
+        die(json_encode([
+            'line' => 'sini3',
+            '$originWH' => $originWH,
+            '$RSNonJM' => $RSNonJM
+        ]));
         if ($jmmode) {
             $rsjmmode = $this->SERRC_mod->select_out_usage($pser);
             # periksa contoh/sample 1 Reff Number
@@ -892,8 +902,7 @@ class SER extends CI_Controller
     }
 
     public function setsync()
-    {
-        date_default_timezone_set('Asia/Jakarta');
+    {        
         $currrtime = date('Y-m-d H:i:s');
         $csheet = "1";
         $cproddt = "2020-07-21";
@@ -930,9 +939,7 @@ class SER extends CI_Controller
 
     public function dummylabel()
     {
-        $rs = $this->SER_mod->select_dummy_ser();
-
-        date_default_timezone_set('Asia/Jakarta');
+        $rs = $this->SER_mod->select_dummy_ser();        
         $currrtime = date('Y-m-d H:i:s');
         foreach ($rs as $r) {
             $citem = $r['MIGSCR_ITMCD'];
@@ -972,8 +979,7 @@ class SER extends CI_Controller
     }
 
     public function setfg()
-    {
-        date_default_timezone_set('Asia/Jakarta');
+    {        
         $currrtime = date('Y-m-d H:i:s');
         $citem = $this->input->post('initemcd');
         $cjob = $this->input->post('injob');
@@ -1028,8 +1034,7 @@ class SER extends CI_Controller
     }
     public function setfg_status()
     {
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $current_date = date('Y-m-d');
         $currrtime = date('Y-m-d H:i:s');
         $citem = $this->input->post('initemcd');
@@ -1090,8 +1095,7 @@ class SER extends CI_Controller
 
     public function setfg_return()
     {
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $currrtime = date('Y-m-d H:i:s');
         $cproddt = $this->input->post('indate');
         $cjob = $this->input->post('indoc');
@@ -1290,8 +1294,7 @@ class SER extends CI_Controller
     }
 
     public function setrm()
-    {
-        date_default_timezone_set('Asia/Jakarta');
+    {        
         $currdate = date('Y-m-d');
         $currrtime = date('Y-m-d H:i:s');
         $citem = $this->input->post('initemcd');
@@ -1980,8 +1983,7 @@ class SER extends CI_Controller
     }
 
     public function printrmlabel()
-    {
-        date_default_timezone_set('Asia/Jakarta');
+    {        
         $currrtime = date('d/m/Y H:i:s');
         global $wid, $hgt, $padX, $padY, $noseri, $cmitmid, $cmitmsptno, $host, $cfristname, $c3n1, $v3n1, $cserqty, $currrtime, $c3n2, $v3n2, $c1p, $v1p, $cuserid, $crohs, $cmade;
         function fnLeftrm($pdf, $cleft, $pword)
@@ -2158,8 +2160,7 @@ class SER extends CI_Controller
 
     public function gettodaylist_infg()
     {
-        header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');        
         $currdt = date('Y-m-d');
         $rs = $this->ITH_mod->selectAll_by(array('convert(date,ITH_LUPDT)' => $currdt, 'ITH_FORM' => 'INC'));
         echo json_encode($rs);
@@ -2167,8 +2168,7 @@ class SER extends CI_Controller
 
     public function release_penfg()
     {
-        header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');        
         $currdt = date('Y-m-d');
         $currdt_ptn = date('Ymd');
         $currdt_time = date('Y-m-d H:i:s');
@@ -2302,8 +2302,7 @@ class SER extends CI_Controller
 
     public function release_penfg1()
     {
-        header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');        
         $currdt = date('Y-m-d');
         $currdt_ptn = date('Ymd');
         $currdt_time = date('Y-m-d H:i:s');
@@ -2653,8 +2652,7 @@ class SER extends CI_Controller
     public function test_prc_splitplant1()
     {
         header('Content-Type: application/json');
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $currrtime = date('Y-m-d H:i:s');
         $currdate = date('Y-m-d');
         $myar = array();
@@ -2890,8 +2888,7 @@ class SER extends CI_Controller
 
     public function prc_splitplant1()
     {
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $currrtime = date('Y-m-d H:i:s');
         $currdate = date('Y-m-d');
         $myar = [];
@@ -3238,8 +3235,7 @@ class SER extends CI_Controller
 
     public function validate_newreffall()
     {
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $currrtime = date('Y-m-d H:i:s');
         $currdate = date('Y-m-d');
         $myar = array();
@@ -3595,8 +3591,7 @@ class SER extends CI_Controller
 
     public function split_returncontrol_label()
     {
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $currrtime = date('Y-m-d H:i:s');
         $myar = [];
         $cproddt = $this->input->post('inprddt');
@@ -3706,8 +3701,7 @@ class SER extends CI_Controller
 
     public function validate_prep()
     {
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $currrtime = date('Y-m-d H:i:s');
         $myar = [];
         $cproddt = $this->input->post('inprddt');
@@ -3826,8 +3820,7 @@ class SER extends CI_Controller
 
     public function split_label_status()
     {
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $currrtime = date('Y-m-d H:i:s');
         $myar = [];
         $cproddt = $this->input->post('inprddt');
@@ -4025,7 +4018,6 @@ class SER extends CI_Controller
 
     public function validate_relable()
     {
-        date_default_timezone_set('Asia/Jakarta');
         $currrtime = date('Y-m-d H:i:s');
         $myar = [];
         $coldreff = $this->input->post('inoldreff');
@@ -4319,8 +4311,7 @@ class SER extends CI_Controller
 
     public function combine2_save()
     {
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $currrtime = date('Y-m-d H:i:s');
         $cproddt = date('Y-m-d');
         $cmdl = 1;
@@ -4578,8 +4569,7 @@ class SER extends CI_Controller
     }
     public function combine1_save()
     {
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $currrtime = date('Y-m-d H:i:s');
         $cproddt = date('Y-m-d');
 
@@ -4779,8 +4769,7 @@ class SER extends CI_Controller
 
     public function convertlabel_save()
     {
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $currrtime = date('Y-m-d H:i:s');
         $currdate = date('Y-m-d');
         $myar = [];
@@ -5150,8 +5139,7 @@ class SER extends CI_Controller
     }
 
     public function add_rm_to_boxID()
-    {
-        date_default_timezone_set('Asia/Jakarta');
+    {        
         $currtime = date('Y-m-d H:i:s');
         header('Content-Type: application/json');
         $cpsn = $this->input->post('inpsn');
@@ -5191,8 +5179,7 @@ class SER extends CI_Controller
         die('{"status": ' . json_encode($myar) . '}');
     }
     public function add_rm_to_boxID_special()
-    {
-        date_default_timezone_set('Asia/Jakarta');
+    {    
         $currtime = date('Y-m-d H:i:s');
         header('Content-Type: application/json');
         $cpsn = $this->input->post('inpsn');
@@ -5226,8 +5213,7 @@ class SER extends CI_Controller
 
     public function flag_rmuse_ok()
     {
-        $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->checkSession();        
         $currtime = date('Y-m-d H:i:s');
         $cjob = $this->input->get('injob');
         $ttluse = $this->input->get('inttluse');
@@ -5475,8 +5461,7 @@ class SER extends CI_Controller
 
     public function setwiptowh()
     {
-        header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');        
         $current_datetime = date('Y-m-d H:i:s');
         $current_date = date('Y-m-d');
         $aReffNo = $this->input->post('areffno');
@@ -5586,8 +5571,7 @@ class SER extends CI_Controller
 
     public function combine_rmlbl_desktop()
     {
-        header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+        header('Content-Type: application/json');        
         $currdate = date('YmdHis');
         $myar = [];
         $currrtime = date('Y-m-d H:i:s');
