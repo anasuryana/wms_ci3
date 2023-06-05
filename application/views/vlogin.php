@@ -109,15 +109,7 @@ $("#btnnext").click(function(e){
 });
 
 function btnLogin_eClick(e){
-	e.preventDefault()
-	if (inputUserid.value.length <= 3) {
-		inputUserid.focus()
-		return
-	}
-	if (inputPassword.value.length <= 5) {
-		inputPassword.focus()
-		return
-	}
+	e.preventDefault()	
 	const data = {
 		inputUserid: inputUserid.value,
 		inputPassword: inputPassword.value,
