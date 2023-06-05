@@ -94,6 +94,7 @@ $route['po_list'] = 'PO/report';
 $route['master_hscode_as_xls'] = 'MSTITM/searchrm_exim_xls';
 $route['master_hscode_fg_as_xls'] = 'MSTITM/searchfg_exim_xls';
 $route['double_key_transaction'] = 'ITHHistory/double_unique_tx';
+$route['actionlogin'] = 'Pages/login';
 $route['logx/(:any)'] = 'ITH/getlogexport/$1';
 $route['404_override'] = '';
 $route['translate_uri_dashes']  = FALSE;

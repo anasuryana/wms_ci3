@@ -78,12 +78,14 @@ class Pages extends CI_Controller
 
     public function login()
     {
+        header('Content-Type: application/json');
         date_default_timezone_set('Asia/Jakarta');
         $currrtime = date('Y-m-d H:i:s');
+        $respon = [];
         $this->form_validation->set_rules('inputUserid', 'Username', 'trim|required|xss_clean');
         $this->form_validation->set_rules('inputPassword', 'inPass', 'trim|required|xss_clean');
         if ($this->form_validation->run() == false) {
-            redirect(base_url("Home"));
+            $respon = ['message' => 'sorry please try again'];
         } else {
             $username = $this->input->post('inputUserid');
             $this->m_userid = $username;
@@ -93,8 +95,7 @@ class Pages extends CI_Controller
                 'MSTEMP_PW' => hash('sha256', $password),
                 'MSTEMP_ACTSTS' => true,
                 'MSTEMP_STS' => true,
-            ];
-            echo json_encode($where) . "<br>";
+            ];            
 
             $dlogses = $this->Usr_mod->cek_login($where);
             $dloghis = $this->Usrlog_mod->selectLastOne();
@@ -134,11 +135,12 @@ class Pages extends CI_Controller
                     'gid' => $this->m_grupid,
                 ];
                 $this->session->set_userdata($data_session);
-                redirect(base_url("home"));
+                $respon = ['message' => 'OK' , 'tokennya' => base64_encode($username)];
             } else {
-                redirect(base_url("home"));
+                $respon = ['message' => 'sorry please try again'];
             }
         }
+        die(json_encode($respon));
     }
 
     public function loginPerApp()
