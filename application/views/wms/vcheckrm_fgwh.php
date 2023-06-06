@@ -15,14 +15,24 @@
             </div>
         </div>
         <div class="row" id="checksbb_stack2">
-            <div class="col-md-6 mb-1">
+            <div class="col-md-4 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" type="button" id="checksbb_btn_sync" onclick="checksbb_btn_sync_e_click()" title="Refresh"><i class="fas fa-sync"></i></button>
                     <button class="btn btn-primary" type="button" id="checksbb_btn_calc" onclick="checksbb_btn_calc_e_click()" >Calculate selected data</button>
                 </div>
                 <span id="checksbb_lblinfo" class="badge bg-info"></span>
             </div>
-            <div class="col-md-6 mb-1 text-end">
+            <div class="col-md-4 mb-1 text-center">
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" id="checksbb_btn_reset_job" href="#" onclick="checksbb_btn_reset_job_eClick()">Reset Calculation per Job</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4 mb-1 text-end">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-warning" type="button" id="checksbb_btn_simulate" onclick="checksbb_btn_simulate_e_click()" >Resimulation</button>
                 </div>
@@ -2214,4 +2224,33 @@
         }
     }
 
+    function checksbb_btn_reset_job_eClick(){
+        if(checksbb_cmb_filter.value === 'job'){
+            if(checksbb_txt_search.value.trim().length<=6 || !checksbb_txt_search.value.includes('-')){
+                checksbb_txt_search.focus()
+                alertify.message(`Please enter valid job number`)
+                return 
+            }
+            if(confirm(`Are you sure ?`))
+            {
+                checksbb_btn_reset_job.classList.add('disabled')
+                $.ajax({
+                    type: "POST",
+                    url: "<?=base_url('SER/removeCalculationPerJob')?>",
+                    data: {job : checksbb_txt_search.value},
+                    dataType: "json",
+                    success: function (response) {
+                        alertify.message(response.msg)
+                        checksbb_btn_reset_job.classList.remove('disabled')
+                    }, error(xhr, xopt, xthrow){
+                        alertify.error(xthrow);
+                        checksbb_btn_reset_job.classList.remove('disabled')
+                    }
+                });
+            }
+        } else {
+            checksbb_cmb_filter.focus()
+            alertify.message('Job is required as a confirmation')
+        }
+    }
 </script>
