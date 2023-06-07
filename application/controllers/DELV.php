@@ -7703,9 +7703,9 @@ class DELV extends CI_Controller
                 , 'SERI_BARANG' => $SERI_BARANG
                 , 'KODE_STATUS' => '02'
                 , 'KODE_PERHITUNGAN' => '0'
-                , 'BM' => $r['MITM_BM']
-                , 'PPN' => $r['MITM_PPN']
-                , 'PPH' => $r['MITM_PPH'],
+                , 'BM' => $r['BM']
+                , 'PPN' => $r['PPN']
+                , 'PPH' => $r['PPH'],
             ];
             $SERI_BARANG++;
         }
@@ -8064,7 +8064,26 @@ class DELV extends CI_Controller
         ##4 TPB BARANG & BAHAN BAKU
         $tpb_barang_tarif = [];
         foreach ($tpb_barang as $n) {
-            $ZR_TPB_BARANG = $this->TPB_BARANG_imod->insert($n);
+            $ZR_TPB_BARANG = $this->TPB_BARANG_imod->insert([
+                'KODE_GUNA' => $n['KODE_GUNA']
+                , 'KATEGORI_BARANG' => $n['KATEGORI_BARANG']
+                , 'KONDISI_BARANG' => $n['KONDISI_BARANG']
+                , 'KODE_BARANG' => $n['KODE_BARANG']
+                , 'KODE_NEGARA_ASAL' => $n['KODE_NEGARA_ASAL']
+                , 'POS_TARIF' => $n['POS_TARIF']
+                , 'URAIAN' => $n['URAIAN']
+                , 'JUMLAH_SATUAN' => $n['JUMLAH_SATUAN']
+                , 'KODE_SATUAN' => $n['KODE_SATUAN']
+                , 'NETTO' => $n['NETTO']
+                , 'KODE_KEMASAN' => $n['KODE_KEMASAN']
+                , 'CIF' => $n['CIF']
+                , 'HARGA_PENYERAHAN' => $n['HARGA_PENYERAHAN']
+                , 'SERI_BARANG' => $n['SERI_BARANG']
+                , 'KODE_STATUS' => $n['KODE_STATUS']
+                , 'KODE_PERHITUNGAN' => $n['KODE_PERHITUNGAN']
+                , 'ID_HEADER' => $n['ID_HEADER']
+                , 'JUMLAH_BAHAN_BAKU' => $n['JUMLAH_BAHAN_BAKU']
+            ]);
             $tpb_barang_tarif[] = [
                 'JENIS_TARIF' => 'BM', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => $n['BM'], 'TARIF_FASILITAS' => 100, 'ID_BARANG' => $ZR_TPB_BARANG, 'ID_HEADER' => $ZR_TPB_HEADER,
             ];
