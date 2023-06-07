@@ -21,7 +21,7 @@
 	<link rel="stylesheet" href="<?=base_url("assets/bootstrap_dt/css/tempus-dominus.min.css")?>">	
 	<link rel="stylesheet" href="<?=base_url("assets/tablesorter/css/theme.bootstrap_4.min.css")?>">	
 	<link rel="stylesheet" href="<?=base_url("assets/tablesorter/css/theme.blue.css")?>">	
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jspreadsheet/jexcel.css")?>">	
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jspreadsheet/jspreadsheet.css")?>">	
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jsuites/jsuites.css")?>">	
 	<script type="text/javascript" src="<?=base_url("assets/chart/chart.umd.js") ?>"></script>
 	<script type="text/javascript" src="<?=base_url("assets/jquery/jquery.min.js") ?>"></script>
@@ -45,7 +45,7 @@
 	<script src="<?=base_url("assets/jqmap/js/jquery.mapael.js")?>"></script>
 	<script src="<?=base_url("assets/jqmap/js/maps/pt_smt_fg_map.js")?>"></script>
 	<script src="<?=base_url("assets/socket/socket.io.min.js")?>"></script>	
-	<script src="<?=base_url("assets/jspreadsheet/jexcel.js")?>"></script>	
+	<script src="<?=base_url("assets/jspreadsheet/index.js")?>"></script>	
 	<script src="<?=base_url("assets/jsuites/jsuites.js")?>"></script>	
 	<script src='<?=base_url("assets/js/tesseract.min.js")?>'></script>
 	
