@@ -883,6 +883,9 @@
                     if(response.status[0].cd===1){
                         itm_bu_ss_category.setStyle('A'+(response.status[0].reff+1), 'background-color', '#91ffb4')
                         itm_bu_ss_category.setStyle('B'+(response.status[0].reff+1), 'background-color', '#91ffb4')
+                    } else {
+                        itm_bu_ss_category.setStyle('A'+(response.status[0].reff+1), 'background-color', '#fbae85')
+                        itm_bu_ss_category.setStyle('B'+(response.status[0].reff+1), 'background-color', '#fbae85')
                     }
                 }, error: function(xhr,xopt,xthrow){
                     alertify.error(xthrow);
