@@ -8083,6 +8083,7 @@ class DELV extends CI_Controller
                 , 'KODE_PERHITUNGAN' => $n['KODE_PERHITUNGAN']
                 , 'ID_HEADER' => $n['ID_HEADER']
                 , 'JUMLAH_BAHAN_BAKU' => $n['JUMLAH_BAHAN_BAKU']
+                , 'JUMLAH_KEMASAN' => $n['JUMLAH_KEMASAN']
             ]);
             $tpb_barang_tarif[] = [
                 'JENIS_TARIF' => 'BM', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => $n['BM'], 'TARIF_FASILITAS' => 100, 'ID_BARANG' => $ZR_TPB_BARANG, 'ID_HEADER' => $ZR_TPB_HEADER,
