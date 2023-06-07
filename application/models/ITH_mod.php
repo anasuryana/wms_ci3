@@ -59,7 +59,7 @@ class ITH_mod extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
-    public function selectViewAllWhereLikeWHIn($pwhere, $plike,$pWarehouse)
+    public function selectViewAllWhereLikeWHIn($pwhere, $plike, $pWarehouse)
     {
         $this->db->select("a.*,b.*,CONCAT(MSTEMP_FNM , ' ', MSTEMP_LNM) PIC");
         $this->db->from('v_ith_tblc a');
@@ -638,7 +638,7 @@ class ITH_mod extends CI_Model
                         FROM XITRN_TBL
                         LEFT JOIN XMITM_V ON ITRN_ITMCD=MITM_ITMCD
                         WHERE ITRN_ISUDT<='$pdate' AND ITRN_LOCCD='$whclosing'
-                        GROUP BY ITRN_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VMEGA ON ITH_ITMCD=ITRN_ITMCD                        
+                        GROUP BY ITRN_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1) VMEGA ON ITH_ITMCD=ITRN_ITMCD
                         ORDER BY ITH_ITMCD ASC";
         }
         $query = $this->db->query($qry);
@@ -1014,7 +1014,7 @@ class ITH_mod extends CI_Model
         ,CASE WHEN ISNULL(SER_CAT,'')='' AND MAX(SER_BSGRP) ='PSI1PPZIEP' and ISNULL(SER_RMRK,'')!='NG MAKER' THEN  '' ELSE COALESCE(SER_RMRK,'') END SER_RMRK
         FROM ITH_TBL inner join SER_TBL
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
-        INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID        
+        INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
         WHERE ITH_WH='ARQA1' AND (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-QA-FG' AND ITH_ITMCD LIKE ?  and SER_BSGRP IN ($pbg)
         group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,SER_BSGRP,SER_RMRK,SER_CAT
@@ -1053,7 +1053,7 @@ class ITH_mod extends CI_Model
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,SER_BSGRP PDPP_BSGRP
         ,CASE WHEN ISNULL(SER_CAT,'')='' AND MAX(SER_BSGRP) ='PSI1PPZIEP' and ISNULL(SER_RMRK,'')!='NG MAKER' THEN  '' ELSE ISNULL(SER_RMRK,'') END SER_RMRK FROM ITH_TBL inner join SER_TBL
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
-        INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID        
+        INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
         WHERE ITH_WH='ARQA1' AND (ITH_LUPDT BETWEEN ? AND ?)
          AND ITH_FORM='INC-QA-FG' AND ITH_DOC LIKE ?  and SER_BSGRP IN ($pbg)
         group by ITH_ITMCD,MITM_ITMD1, SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) ,ITH_LUPDT,SER_BSGRP,SER_RMRK,SER_CAT
@@ -2175,7 +2175,7 @@ class ITH_mod extends CI_Model
         return $query->result_array();
     }
 
-    public function selectForCancellingwithIn_items($pDoc, $pDate, $pItems,$pDates)
+    public function selectForCancellingwithIn_items($pDoc, $pDate, $pItems, $pDates)
     {
         $this->db->from('v_ith_tblc');
         $this->db->like("ITH_DOC", $pDoc, 'after')
@@ -2189,7 +2189,7 @@ class ITH_mod extends CI_Model
         return $query->result_array();
     }
 
-    public function selectForReturningwithIn_items($pDoc, $pDate, $pItems,$pDates)
+    public function selectForReturningwithIn_items($pDoc, $pDate, $pItems, $pDates)
     {
         $this->db->from('v_ith_tblc');
         $this->db->like("ITH_DOC", $pDoc, 'after')
@@ -2588,7 +2588,7 @@ class ITH_mod extends CI_Model
             GROUP BY ITH_ITMCD
         ) V1
         LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD";
-        $query = $this->db->query($qry, [$bg,  $date]);
+        $query = $this->db->query($qry, [$bg, $date]);
         return $query->result_array();
     }
 
@@ -2826,6 +2826,18 @@ class ITH_mod extends CI_Model
         LEFT JOIN MITM_TBL FG ON ITH_ITMCD=FG.MITM_ITMCD
         ORDER BY ITH_SER,ITH_ITMCD,SERD2_ITMCD";
         $query = $this->db->query($qry);
+        return $query->result_array();
+    }
+
+    public function selectLastTransactionBeforeDate($date, $item, $form)
+    {
+        $this->db->limit(1)
+            ->from($this->TABLENAME)
+            ->where('ITH_DATE <', $date)
+            ->where('ITH_ITMCD', $item)
+            ->where('ITH_FORM', $form)
+            ->order_by('ITH_LUPDT DESC');
+        $query = $this->db->get();
         return $query->result_array();
     }
 }

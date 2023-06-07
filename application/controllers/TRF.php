@@ -28,21 +28,21 @@ class TRF extends CI_Controller
         $RS = $this->TRF_mod->selectBalanceTransferByPO($PONumber);
         $ItemDistinct = [];
         foreach ($RS as $r) {
-            if (!in_array($r['PO_ITMCD'],$ItemDistinct)) {
+            if (!in_array($r['PO_ITMCD'], $ItemDistinct)) {
                 $ItemDistinct[] = $r['PO_ITMCD'];
             }
         }
-        if(!empty($ItemDistinct)){
+        if (!empty($ItemDistinct)) {
             # set maksimal transfer qty = stock qty berjalan
             $RSStock = $this->ITH_mod->selectStockWhereItemIn($ItemDistinct, $LocationFR);
             foreach ($RS as &$r) {
                 foreach ($RSStock as $s) {
                     if ($r['PO_ITMCD'] === $s['ITH_ITMCD']) {
-                        if($r['BALQT']>$s['SQT']){
+                        if ($r['BALQT'] > $s['SQT']) {
                             $r['BALQT'] = $s['SQT'];
                         } else {
-    
-                        }                    
+
+                        }
                         break;
                     }
                 }
@@ -196,8 +196,9 @@ class TRF extends CI_Controller
                 $AffectedRows = $this->TRF_mod->insert($TobeSaved);
                 if ($AffectedRows) {
                     $TobeSaved_d = [];
+                    $RSAutoConform = [];
                     for ($i = 0; $i < $TotalRows; $i++) {
-                        $TobeSaved_d[] = [
+                        $_TobeSaved = [
                             'TRFD_DOC' => $NewDocument,
                             'TRFD_ITEMCD' => $LineItemCode[$i],
                             'TRFD_QTY' => $LineItemQty[$i],
@@ -205,10 +206,53 @@ class TRF extends CI_Controller
                             'TRFD_CREATED_BY' => $this->session->userdata('nama'),
                             'TRFD_CREATED_DT' => $CurrentDateTime,
                         ];
+                        if (strtoupper(strlen($LineItemCode[$i])) === 'N2GAS') {
+                            $RSAutoConform[] = [
+                                'ITH_ITMCD' => $LineItemCode[$i],
+                                'ITH_DATE' => $docDate,
+                                'ITH_FORM' => 'TRF-INC',
+                                'ITH_DOC' => $NewDocument,
+                                'ITH_QTY' => $LineItemQty[$i] * 1,
+                                'ITH_WH' => $toLoc,
+                                'ITH_LUPDT' => $docDate . date(' H:i:s'),
+                                'ITH_USRID' => $this->session->userdata('nama'),
+                            ];
+                            $RSAutoConform[] = [
+                                'ITH_ITMCD' => $LineItemCode[$i],
+                                'ITH_DATE' => $docDate,
+                                'ITH_FORM' => 'TRF-OUT',
+                                'ITH_DOC' => $NewDocument,
+                                'ITH_QTY' => $LineItemQty[$i] * -1,
+                                'ITH_WH' => $frLoc,
+                                'ITH_LUPDT' => $docDate . date(' H:i:s'),
+                                'ITH_USRID' => $this->session->userdata('nama'),
+                            ];
+                            $_TobeSaved['TRFD_RECEIVE_BY'] = $this->session->userdata('nama');
+                            $_TobeSaved['TRFD_RECEIVE_DT'] = $CurrentDateTime;
+                        }
+                        $TobeSaved_d[] = $_TobeSaved;
                     }
                     if (!empty($TobeSaved_d)) {
                         # simpan Detail
                         $this->TRF_mod->insertb($TobeSaved_d);
+
+                        # simpan data autoconform jika perlu
+                        if (!empty($RSAutoConform)) {
+                            $this->ITH_mod->insertb($RSAutoConform);
+
+                            # cari transaksi sebelumnya untuk dikeluarkan
+                            $RSLastTransaction = $this->ITH_mod->selectLastTransactionBeforeDate($docDate, 'N2GAS', 'INC-DO');
+                            foreach ($RSLastTransaction as &$r) {
+                                $r['ITH_FORM'] = 'OUT-USE';
+                                $r['ITH_DATE'] = $docDate;
+                                $r['ITH_QTY'] = $r['ITH_QTY'] * -1;
+                                $r['ITH_WH'] = $toLoc;
+                                $r['ITH_LUPDT'] = $docDate . date(' H:i:s');
+                            }
+                            unset($r);
+                            $this->ITH_mod->insert($RSLastTransaction);
+                        }
+
                         $response[] = ['cd' => '1', 'msg' => 'OK', 'reff' => $NewDocument];
                         $RSOK = $this->TRF_mod->selectDetailWhere(['TRFD_DOC' => $NewDocument]);
                     }
@@ -371,5 +415,14 @@ class TRF extends CI_Controller
         }
         $rs = $this->TRF_mod->selectOpenForID($this->session->userdata('nama'));
         die(json_encode(['data' => $rs, 'status' => $myar]));
+    }
+
+    public function testLastRecord()
+    {
+        header('Content-Type: application/json');
+        $date = $this->input->get('date');
+        $item = $this->input->get('itemcode');
+        $RS = $this->ITH_mod->selectLastTransactionBeforeDate($date, $item, 'INC-DO');
+        die(json_encode(['message' => 'OK', 'data' => $RS]));
     }
 }
