@@ -61,6 +61,7 @@
                                 <th rowspan="2" class="align-middle">Warehouse</th>
                                 <th  class="text-center" colspan="2">IO Qty</th>
                                 <th  class="text-center" colspan="2">Balance Qty</th>
+                                <th  class="text-center align-middle" rowspan="2">Balance Gap Qty</th>
                             </tr>
                             <tr class="second">
                                 <th class="text-center">MEGA</th>
@@ -209,6 +210,7 @@
                     let mhead = false;
                     let rowClass = ''
                     for(let i=0; i< ttlrows; i++){
+                        const balGAP = numeral(response.data[i].MGABAL).value()-numeral(response.data[i].WBAL).value()
                         rowClass = response.data[i].MGABAL!=response.data[i].WBAL ? 'table-warning' : 'table-success'                        
                         newrow = tableku2.insertRow(-1);
                         newrow.classList.add(rowClass)
@@ -238,6 +240,9 @@
                         newcell = newrow.insertCell(6);
                         newcell.classList.add('text-end')
                         newcell.innerHTML = numeral(response.data[i].WBAL).format(',')
+                        newcell = newrow.insertCell(7);
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(balGAP).format(',')
                     }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
