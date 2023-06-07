@@ -608,15 +608,34 @@ class DELV_mod extends CI_Model
     }
     public function select_item_per_price_V2($pdo)
     {
-        $qry = "SELECT DLV_ID,DLVQTY SISOQTY,UPPER(RTRIM(SI_ITMCD)) SSO2_MDLCD,(DLVQTY*isnull(MITM_NWG,0.123)) NWG,(DLVQTY*isnull(MITM_GWG,0.123)) GWG,RTRIM(ISNULL(MITM_HSCD,'')) MITM_HSCD,
-        rtrim(MITM_STKUOM) MITM_STKUOM, 0 SISOQTY_X,RTRIM(MITM_ITMD1) MITM_ITMD1,SI_BSGRP,SI_CUSCD  FROM
-        (SELECT DLV_ID,SISCN_LINENO,SUM(DLV_QTY) DLVQTY FROM DLV_TBL
-        INNER JOIN SISCN_TBL ON DLV_SER=SISCN_SER
-        WHERE DLV_ID=?
-        GROUP BY DLV_ID,SISCN_LINENO) V1
-        LEFT JOIN SI_TBL ON SISCN_LINENO=SI_LINENO
-        LEFT JOIN MITM_TBL ON SI_ITMCD=MITM_ITMCD
-        ORDER BY SI_ITMCD";
+        $qry = "SELECT DLV_ID
+                    ,DLVQTY SISOQTY
+                    ,UPPER(RTRIM(SI_ITMCD)) SSO2_MDLCD
+                    ,(DLVQTY * isnull(MITM_NWG, 0.123)) NWG
+                    ,(DLVQTY * isnull(MITM_GWG, 0.123)) GWG
+                    ,RTRIM(ISNULL(MITM_HSCD, '')) MITM_HSCD
+                    ,rtrim(MITM_STKUOM) MITM_STKUOM
+                    ,0 SISOQTY_X
+                    ,RTRIM(MITM_ITMD1) MITM_ITMD1
+                    ,SI_BSGRP
+                    ,SI_CUSCD
+                    ,MITM_BM
+					,MITM_PPN
+					,MITM_PPH
+                FROM (
+                    SELECT DLV_ID
+                        ,SISCN_LINENO
+                        ,SUM(DLV_QTY) DLVQTY
+                    FROM DLV_TBL
+                    INNER JOIN SISCN_TBL ON DLV_SER = SISCN_SER
+                    WHERE DLV_ID = ?
+                    GROUP BY DLV_ID
+                        ,SISCN_LINENO
+                    ) V1
+                LEFT JOIN SI_TBL ON SISCN_LINENO = SI_LINENO
+                LEFT JOIN MITM_TBL ON SI_ITMCD = MITM_ITMCD
+                ORDER BY SI_ITMCD
+                ";
         $query = $this->db->query($qry, [$pdo]);
         return $query->result_array();
     }

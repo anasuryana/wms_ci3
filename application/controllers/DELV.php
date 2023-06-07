@@ -1485,7 +1485,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?", ];
+                                Are you sure want to continue ?"];
                     die(json_encode($myar));
                 }
             }
@@ -1789,7 +1789,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?", ];
+                                Are you sure want to continue ?"];
                     die(json_encode($myar));
                 }
             }
@@ -7688,7 +7688,24 @@ class DELV extends CI_Controller
             $cz_h_NETTO += $r['NWG'];
             $cz_h_HARGA_PENYERAHAN_FG += $t_HARGA_PENYERAHAN;
             $tpb_barang[] = [
-                'KODE_GUNA' => '3', 'KATEGORI_BARANG' => '1', 'KONDISI_BARANG' => '1', 'KODE_BARANG' => $r['SSO2_MDLCD'], 'KODE_NEGARA_ASAL' => 'ID', 'POS_TARIF' => $r['MITM_HSCD'], 'URAIAN' => $r['MITM_ITMD1'], 'JUMLAH_SATUAN' => $r['SISOQTY'], 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 'NETTO' => $r['NWG'], 'KODE_KEMASAN' => 'BX', 'CIF' => $r['CIF'], 'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN, 'SERI_BARANG' => $SERI_BARANG, 'KODE_STATUS' => '02', 'KODE_PERHITUNGAN' => '0',
+                'KODE_GUNA' => '3'
+                , 'KATEGORI_BARANG' => '1'
+                , 'KONDISI_BARANG' => '1'
+                , 'KODE_BARANG' => $r['SSO2_MDLCD']
+                , 'KODE_NEGARA_ASAL' => 'ID'
+                , 'POS_TARIF' => $r['MITM_HSCD']
+                , 'URAIAN' => $r['MITM_ITMD1']
+                , 'JUMLAH_SATUAN' => $r['SISOQTY']
+                , 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM']
+                , 'NETTO' => $r['NWG'], 'KODE_KEMASAN' => 'BX'
+                , 'CIF' => $r['CIF']
+                , 'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN
+                , 'SERI_BARANG' => $SERI_BARANG
+                , 'KODE_STATUS' => '02'
+                , 'KODE_PERHITUNGAN' => '0'
+                , 'BM' => $r['MITM_BM']
+                , 'PPN' => $r['MITM_PPN']
+                , 'PPH' => $r['MITM_PPH'],
             ];
             $SERI_BARANG++;
         }
@@ -8049,13 +8066,13 @@ class DELV extends CI_Controller
         foreach ($tpb_barang as $n) {
             $ZR_TPB_BARANG = $this->TPB_BARANG_imod->insert($n);
             $tpb_barang_tarif[] = [
-                'JENIS_TARIF' => 'BM', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => 0, 'TARIF_FASILITAS' => 100, 'ID_BARANG' => $ZR_TPB_BARANG, 'ID_HEADER' => $ZR_TPB_HEADER,
+                'JENIS_TARIF' => 'BM', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => $n['BM'], 'TARIF_FASILITAS' => 100, 'ID_BARANG' => $ZR_TPB_BARANG, 'ID_HEADER' => $ZR_TPB_HEADER,
             ];
             $tpb_barang_tarif[] = [
-                'JENIS_TARIF' => 'PPN', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => 11, 'TARIF_FASILITAS' => 100, 'ID_BARANG' => $ZR_TPB_BARANG, 'ID_HEADER' => $ZR_TPB_HEADER,
+                'JENIS_TARIF' => 'PPN', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => $n['PPN'], 'TARIF_FASILITAS' => 100, 'ID_BARANG' => $ZR_TPB_BARANG, 'ID_HEADER' => $ZR_TPB_HEADER,
             ];
             $tpb_barang_tarif[] = [
-                'JENIS_TARIF' => 'PPH', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => 2.5, 'TARIF_FASILITAS' => 100, 'ID_BARANG' => $ZR_TPB_BARANG, 'ID_HEADER' => $ZR_TPB_HEADER,
+                'JENIS_TARIF' => 'PPH', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => $n['PPH'], 'TARIF_FASILITAS' => 100, 'ID_BARANG' => $ZR_TPB_BARANG, 'ID_HEADER' => $ZR_TPB_HEADER,
             ];
             $this->TPB_BARANG_TARIF_imod->insertb($tpb_barang_tarif);
             foreach ($tpb_bahan_baku as $b) {
@@ -8742,8 +8759,23 @@ class DELV extends CI_Controller
                     unset($b);
                     if (!$isfound) {
                         $rsPriceItemSer[] = [
-                            'DLV_ID' => $doc, 'SISOQTY' => $qtyuse, 'SSO2_SLPRC' => $s['SSO2_SLPRC'], 'SSO2_MDLCD' => $s['ITMID']#
-                            , 'CIF' => $qtyuse * $s['SSO2_SLPRC'], 'NWG' => $k['NWG'], 'MITM_HSCD' => $k['MITM_HSCD'], 'MITM_STKUOM' => $k['MITM_STKUOM'], 'SISOQTY_X' => 0, 'MITM_ITMD1' => $k['MITM_ITMD1'], 'SISO_SOLINE' => $s['SISO_SOLINE'], 'SI_BSGRP' => $k['SI_BSGRP'], 'SI_CUSCD' => $k['SI_CUSCD'], 'CPO' => $s['SISO_CPONO'],
+                            'DLV_ID' => $doc
+                            , 'SISOQTY' => $qtyuse
+                            , 'SSO2_SLPRC' => $s['SSO2_SLPRC']
+                            , 'SSO2_MDLCD' => $s['ITMID']#
+                            , 'CIF' => $qtyuse * $s['SSO2_SLPRC']
+                            , 'NWG' => $k['NWG']
+                            , 'MITM_HSCD' => $k['MITM_HSCD']
+                            , 'MITM_STKUOM' => $k['MITM_STKUOM']
+                            , 'SISOQTY_X' => 0
+                            , 'MITM_ITMD1' => $k['MITM_ITMD1']
+                            , 'SISO_SOLINE' => $s['SISO_SOLINE']
+                            , 'SI_BSGRP' => $k['SI_BSGRP']
+                            , 'SI_CUSCD' => $k['SI_CUSCD']
+                            , 'CPO' => $s['SISO_CPONO']
+                            , 'BM' => $k['MITM_BM']
+                            , 'PPN' => $k['MITM_PPN']
+                            , 'PPH' => $k['MITM_PPH'],
                         ];
                     }
                     if ($k['SISOQTY'] === $k['SISOQTY_X']) {
@@ -13325,7 +13357,7 @@ class DELV extends CI_Controller
                     , 'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN
                     , 'SERI_BARANG' => $SERI_BARANG
                     , 'KODE_STATUS' => '02',
-                ];                
+                ];
                 $SERI_BARANG++;
             }
             unset($r);
@@ -13446,7 +13478,7 @@ class DELV extends CI_Controller
                                 , 'TIPE' => $v->MITM_SPTNO
                                 , 'JUMLAH_SATUAN' => $theqty
                                 , 'JENIS_SATUAN' => ($v->MITM_STKUOM == 'PCS') ? 'PCE' : $v->MITM_STKUOM
-                                , 'KODE_ASAL_BAHAN_BAKU' => ($v->BC_TYPE == '27' || $v->BC_TYPE == '23') ? '0' : '1'                                
+                                , 'KODE_ASAL_BAHAN_BAKU' => ($v->BC_TYPE == '27' || $v->BC_TYPE == '23') ? '0' : '1'
                                 , 'RASSYCODE' => $r['RASSYCODE']
                                 , 'RPRICEGROUP' => $r['RPRICEGROUP']
                                 , 'RBM' => $thebm
@@ -13471,7 +13503,7 @@ class DELV extends CI_Controller
                                 , 'TIPE' => $v->MITM_SPTNO
                                 , 'JUMLAH_SATUAN' => $theqty
                                 , 'JENIS_SATUAN' => 'PCE'
-                                , 'KODE_ASAL_BAHAN_BAKU' => 0                                
+                                , 'KODE_ASAL_BAHAN_BAKU' => 0
                                 , 'RASSYCODE' => $r['RASSYCODE']
                                 , 'RPRICEGROUP' => $r['RPRICEGROUP']
                                 , 'RBM' => 0
@@ -13538,14 +13570,44 @@ class DELV extends CI_Controller
                 $r['tarif'] = $tpb_bahan_baku_tarif;
             }
             unset($r);
+
             foreach ($tpb_barang as $n) {
                 foreach ($tpb_bahan_baku as &$b) {
-                    if ($n['KODE_BARANG'] == $b['RASSYCODE'] && $n['CIF'] == $b['RPRICEGROUP']) {                        
+                    if ($n['KODE_BARANG'] == $b['RASSYCODE'] && $n['CIF'] == $b['RPRICEGROUP']) {
                         $b['SERI_BARANG'] = $n['SERI_BARANG'];
                     }
                 }
                 unset($b);
             }
+
+            $data[] = ['data' => [
+                'txid' => $doc,
+                'cif' => $cz_h_CIF_FG,
+                'hargaPenyerahan' => $cz_h_HARGA_PENYERAHAN_FG,
+                'netto' => $cz_h_NETTO,
+                'jumlahKemasan' => $cz_JUMLAH_KEMASAN,
+                'ListBarangByPrice' => $tpb_barang,
+                'ListBahanBakuList' => $tpb_bahan_baku,
+            ]];
+        }
+        die(json_encode($data));
+    }
+
+    public function postingCEISA40BC27Return()
+    {
+        header('Content-Type: application/json');
+        $doc = $this->input->post('doc');
+        $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID'], ['DLV_ID' => $doc]);
+        $data = [];
+        if (empty($RSHeader)) {
+            $data[] = ['message' => 'Please posting to local first'];
+        } else {
+            $rswhSI = $this->SI_mod->select_wh_by_txid($doc);
+            if ($rswhSI === '??') {
+                $myar[] = ["cd" => "0", "msg" => "SI WH is not recognized"];
+                die(json_encode(['status' => $myar]));
+            }
+            $rsitem_p_price = [];
             $data[] = ['data' => [
                 'txid' => $doc,
                 'cif' => $cz_h_CIF_FG,
