@@ -416,13 +416,4 @@ class TRF extends CI_Controller
         $rs = $this->TRF_mod->selectOpenForID($this->session->userdata('nama'));
         die(json_encode(['data' => $rs, 'status' => $myar]));
     }
-
-    public function testLastRecord()
-    {
-        header('Content-Type: application/json');
-        $date = $this->input->get('date');
-        $item = $this->input->get('itemcode');
-        $RS = $this->ITH_mod->selectLastTransactionBeforeDate($date, $item, 'INC-DO');
-        die(json_encode(['message' => 'OK', 'data' => $RS]));
-    }
 }
