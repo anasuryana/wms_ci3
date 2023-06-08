@@ -1041,7 +1041,7 @@
                     return
                 }
                 an_rowid.push(datanya_nonitem[i][0])
-                an_itemnm.push(datanya_nonitem[i][1].trim())
+                an_itemnm.push(datanya_nonitem[i][1].replace(/\s+/g, ' ').trim())
                 an_umeasure.push(datanya_nonitem[i][2])
                 an_qty.push(numeral(datanya_nonitem[i][3]).value())
                 an_price.push(numeral(datanya_nonitem[i][4]).value())
