@@ -63,7 +63,8 @@ class TRF extends CI_Controller
             'PRCSCREQUIP',
             'PSIEQUIP',
             'QAEQUIP',
-            'FCTEQUIP',
+            'FCTEQUIP',            
+            'ICTEQUIP',
         ]);
         foreach ($rs as $r) {
             $todiswh .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . ' (' . $r['MSTLOCG_ID'] . ')</option>';

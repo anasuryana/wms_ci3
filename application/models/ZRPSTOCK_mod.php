@@ -113,7 +113,7 @@ class ZRPSTOCK_mod extends CI_Model {
                 SELECT ''
                     ,''					
                     ,'EXBC'
-                    ,RTRIM(RPSTOCK_ITMNUM) ITRN_ITMCD
+                    ,UPPER(RTRIM(RPSTOCK_ITMNUM)) ITRN_ITMCD
                     ,SUM(RPSTOCK_QTY) RMQT
                 FROM ZRPSAL_BCSTOCK
                 WHERE RPSTOCK_ITMNUM LIKE ?

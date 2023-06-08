@@ -1722,11 +1722,16 @@ class ITH_mod extends CI_Model
         $this->db->from($this->TABLENAME);
         $this->db->join("MITM_TBL", "ITH_ITMCD = MITM_ITMCD", "LEFT");
         $this->db->where_in("ITH_WH", ['ENGEQUIP'
+            , 'ENGLINEEQUIP'
             , 'MFG1EQUIP'
             , 'MFG2EQUIP'
             , 'PPICEQUIP'
+            , 'PRCSCREQUIP'
             , 'PSIEQUIP'
-            , 'QAEQUIP']);
+            , 'QAEQUIP'
+            , 'FCTEQUIP'
+            , 'ICTEQUIP',
+        ]);
         $this->db->like($pLike);
         $this->db->group_by("ITH_ITMCD,ITH_WH,MITM_SPTNO,MITM_ITMD1");
         $query = $this->db->get();
