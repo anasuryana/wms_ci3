@@ -949,7 +949,7 @@ echo $tohtml;
                                     </li>
                                 </ul>
                             </div>
-                        </div>                        
+                        </div>
                     </div>
                     <div class="col mb-1">
                         <div class="card">
@@ -961,12 +961,12 @@ echo $tohtml;
                                     <li class="list-group-item">
                                         <input class="form-check-input" type="checkbox" value="1" id="txfg_ckBarcode">
                                         <label class="form-check-label" for="txfg_ckBarcode">Show TX ID Barcode</label>
-                                    </li>                                    
+                                    </li>
                                 </ul>
                             </div>
-                        </div>                        
+                        </div>
                     </div>
-                </div>                
+                </div>
             </div>
             <div class="modal-footer">
                 <div class="col mb-1 text-center">
@@ -1467,73 +1467,6 @@ echo $tohtml;
                                     <th>Item Name</th>
                                     <th class="text-end">QTY</th>
                                     <th class="text-center">Kind</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="txfg_w_psnjob" class="easyui-window" title="Detail of PSN" data-options="modal:false,closed:true,iconCls:'icon-analyze',collapsible:true, minimizable:false,
-    onClose:function(){$('#txfg_psn_list').tagbox('setValues', []);  }" style="width:500px;height:200px;padding:5px;">
-    <div style="padding:1px">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="table-responsive" id="txfg_divjoblist">
-                        <table id="txfg_tbljoblist" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Job Number</th>
-                                    <th>Combined Job</th>
-                                    <th class="text-end">Lot Size</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <input type="text" style="width:100%" id="txfg_psn_list" readonly>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text">MCZ</span>
-                        <select id="txfg_filter_mcz" class="form-select">
-                            <option value="-">All</option>
-                        </select>
-                        <button class="btn btn-primary" onclick="txfg_btn_psn_ftr_mcz()"><i class="fas fa-filter"></i></button>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="table-responsive" id="txfg_divdetailpsn">
-                        <table id="txfg_tbldetailpsn" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>DOC NO</th>
-                                    <th>PSN NO</th>
-                                    <th>LINE NO</th>
-                                    <th>Process</th>
-                                    <th>FR</th>
-                                    <th>Category</th>
-                                    <th class="text-center">MC</th>
-                                    <th class="text-center">MCZ</th>
-                                    <th class="text-center">S/M</th>
-                                    <th class="text-center">ITEM CODE</th>
-                                    <th class="text-end">REQ QTY</th>
-                                    <th class="text-end">ACT QTY</th>
-                                    <th class="text-end">RTN QTY</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -4588,9 +4521,6 @@ echo $tohtml;
                                     newText = document.createTextNode(txfg_ar_item_ser[b]);
                                     newcell.appendChild(newText);
                                     newcell = newrow.insertCell(1);
-                                    newcell.ondblclick = function() {
-                                        txfg_e_getpsn_list(txfg_ar_item_job[b])
-                                    };
                                     newText = document.createTextNode(txfg_ar_item_job[b]);
                                     newcell.appendChild(newText);
                                     newcell = newrow.insertCell(2);
@@ -4625,9 +4555,6 @@ echo $tohtml;
                                     newText = document.createTextNode(txfg_ar_item_ser[b]);
                                     newcell.appendChild(newText);
                                     newcell = newrow.insertCell(1);
-                                    newcell.ondblclick = function() {
-                                        txfg_e_getpsn_list(txfg_ar_item_job[b])
-                                    };
                                     newText = document.createTextNode(txfg_ar_item_job[b]);
                                     newcell.appendChild(newText);
                                     newcell = newrow.insertCell(2);
@@ -4823,125 +4750,6 @@ echo $tohtml;
             }
         }
     }
-
-    function txfg_e_getpsn_list(pjob) {
-        $('#txfg_w_psnjob').window('open');
-        $("#txfg_tbldetailpsn tbody").empty();
-        $("#txfg_tbljoblist tbody").html("<td colspan='3'>Please wait...</td>");
-        $.ajax({
-            type: "get",
-            url: "<?=base_url('SPL/getpsn_byjob_delv')?>",
-            data: {
-                injob: pjob
-            },
-            dataType: "json",
-            success: function(response) {
-                let mpsn = [];
-                for (let x = 0; x < response.data_h.length; x++) {
-                    if (!mpsn.includes(response.data_h[x].PPSN1_PSNNO)) {
-                        mpsn.push(response.data_h[x].PPSN1_PSNNO);
-                    }
-                }
-                $('#txfg_psn_list').tagbox('setValues', mpsn);
-
-                let ttlmcz = response.datamcz.length;
-                let mmcz = "<option value='-'>All</option>";
-
-                for (let i = 0; i < ttlmcz; i++) {
-                    mmcz += "<option value='" + response.datamcz[i].PPSN2_MCZ.trim() + "'>" + response.datamcz[i].PPSN2_MCZ.trim() + "</option>";
-                }
-                document.getElementById('txfg_filter_mcz').innerHTML = mmcz;
-
-                let ttlrows = response.data.length;
-                let mydes = document.getElementById("txfg_divdetailpsn");
-                let myfrag = document.createDocumentFragment();
-                let mtabel = document.getElementById("txfg_tbldetailpsn");
-                let cln = mtabel.cloneNode(true);
-                myfrag.appendChild(cln);
-                let tabell = myfrag.getElementById("txfg_tbldetailpsn");
-                let tableku2 = tabell.getElementsByTagName("tbody")[0];
-                let newrow, newcell, newText;
-                tableku2.innerHTML = '';
-                let tominqty = 0;
-                let tempqty = 0;
-                let todisqty = 0;
-                let ttljobs = response.datajob.length;
-                let tabeljobs = document.getElementById("txfg_tbljoblist");
-                let tabeljobsbody = tabeljobs.getElementsByTagName("tbody")[0];
-                tabeljobsbody.innerHTML = "";
-                for (let i = 0; i < ttljobs; i++) {
-                    newrow = tabeljobsbody.insertRow(-1);
-                    newcell = newrow.insertCell(0);
-                    newText = document.createTextNode(response.datajob[i].PDPP_WONO);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(1);
-                    newText = document.createTextNode(response.datajob[i].CWONO);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(2);
-                    newcell.style.cssText = "text-align:right";
-                    newText = document.createTextNode(numeral(response.datajob[i].PDPP_WORQT).format(','));
-                    newcell.appendChild(newText);
-                }
-                for (let i = 0; i < ttlrows; i++) {
-                    newrow = tableku2.insertRow(-1);
-                    newcell = newrow.insertCell(0);
-                    newText = document.createTextNode(response.data[i].PPSN2_DOCNO);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(1);
-                    newText = document.createTextNode(response.data[i].PPSN2_PSNNO);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(2);
-                    newText = document.createTextNode(response.data[i].PPSN2_LINENO);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(3);
-                    newText = document.createTextNode(response.data[i].PPSN2_PROCD);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(4);
-                    newText = document.createTextNode(response.data[i].PPSN2_FR);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(5);
-                    newText = document.createTextNode(response.data[i].PPSN2_ITMCAT);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(6);
-                    newText = document.createTextNode(response.data[i].PPSN2_MC);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(7);
-                    newText = document.createTextNode(response.data[i].PPSN2_MCZ);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(8);
-                    newText = document.createTextNode(response.data[i].PPSN2_MSFLG);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(9);
-                    newText = document.createTextNode(response.data[i].PPSN2_SUBPN);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(10);
-                    newText = document.createTextNode(numeral(response.data[i].PPSN2_REQQT).format(','));
-                    newcell.style.cssText = "text-align:right";
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(11);
-                    newText = document.createTextNode(numeral(response.data[i].PPSN2_ACTQT).format(','));
-                    newcell.style.cssText = "text-align:right";
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(12);
-                    newText = document.createTextNode(numeral(response.data[i].PPSN2_RTNQT).format(','));
-                    newcell.style.cssText = "text-align:right";
-                    newcell.appendChild(newText);
-                }
-                mydes.innerHTML = '';
-                mydes.appendChild(myfrag);
-            },
-            error: function(xhr, xopt, xthrow) {
-                alertify.error(xthrow);
-            }
-        });
-    }
-
-    $('#txfg_psn_list').tagbox({
-        label: 'PSN No',
-        onRemoveTag: function(e) {
-            e.preventDefault();
-        }
-    })
 
     function txfg_btn_toomi_xls() {
         const txid = document.getElementById('txfg_txt_id').value.trim()
@@ -5687,85 +5495,6 @@ echo $tohtml;
         }
     }
 
-    function txfg_btn_psn_ftr_mcz() {
-        let mmcz = document.getElementById('txfg_filter_mcz').value;
-        let mjob = document.getElementById('txfg_detpsn_job').value;
-        $.ajax({
-            type: "get",
-            url: "<?=base_url('SPL/getpsn_byjob_mcz')?>",
-            data: {
-                inmcz: mmcz,
-                injob: mjob
-            },
-            dataType: "json",
-            success: function(response) {
-                let ttlrows = response.data.length;
-                let mydes = document.getElementById("txfg_divdetailpsn");
-                let myfrag = document.createDocumentFragment();
-                let mtabel = document.getElementById("txfg_tbldetailpsn");
-                let cln = mtabel.cloneNode(true);
-                myfrag.appendChild(cln);
-                let tabell = myfrag.getElementById("txfg_tbldetailpsn");
-                let tableku2 = tabell.getElementsByTagName("tbody")[0];
-                let newrow, newcell, newText;
-                tableku2.innerHTML = '';
-                let tominqty = 0;
-                let tempqty = 0;
-                let todisqty = 0;
-                for (let i = 0; i < ttlrows; i++) {
-                    newrow = tableku2.insertRow(-1);
-                    newcell = newrow.insertCell(0);
-                    newText = document.createTextNode(response.data[i].PPSN2_DOCNO);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(1);
-                    newText = document.createTextNode(response.data[i].PPSN2_PSNNO);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(2);
-                    newText = document.createTextNode(response.data[i].PPSN2_LINENO);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(3);
-                    newText = document.createTextNode(response.data[i].PPSN2_PROCD);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(4);
-                    newText = document.createTextNode(response.data[i].PPSN2_FR);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(5);
-                    newText = document.createTextNode(response.data[i].PPSN2_ITMCAT);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(6);
-                    newText = document.createTextNode(response.data[i].PPSN2_MC);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(7);
-                    newText = document.createTextNode(response.data[i].PPSN2_MCZ);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(8);
-                    newText = document.createTextNode(response.data[i].PPSN2_MSFLG);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(9);
-                    newText = document.createTextNode(response.data[i].PPSN2_SUBPN);
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(10);
-                    newText = document.createTextNode(numeral(response.data[i].PPSN2_REQQT).format(','));
-                    newcell.style.cssText = "text-align:right";
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(11);
-                    newText = document.createTextNode(numeral(response.data[i].PPSN2_ACTQT).format(','));
-                    newcell.style.cssText = "text-align:right";
-                    newcell.appendChild(newText);
-                    newcell = newrow.insertCell(12);
-                    newText = document.createTextNode(numeral(response.data[i].PPSN2_RTNQT).format(','));
-                    newcell.style.cssText = "text-align:right";
-                    newcell.appendChild(newText);
-                }
-                mydes.innerHTML = '';
-                mydes.appendChild(myfrag);
-            },
-            error: function(xhr, xopt, xthrow) {
-                alertify.error(xthrow);
-            }
-        });
-    }
-
     function txfg_btn_showweight_e_click() {
         const txtid = document.getElementById('txfg_txt_id').value
         if (txtid.length == 0) {
@@ -6031,31 +5760,15 @@ echo $tohtml;
         p.innerHTML = 'Please wait'
         $.ajax({
             type: "POST",
-            url: "<?=base_url('DELV/ceisa_spreadsheet')?>",
+            url: "<?=base_url('DELV/postingCEISA40BC')?>"+txfg_cmb_bcdoc.value,
             data: {doc: doc},
             success: function (response) {
-                const blob = new Blob([response], { type: "application/vnd.ms-excel" })
-                const fileName = `ceisa.${doc}.xlsx`
-                saveAs(blob, fileName)
-                p.innerHTML = 'CEISA 4.0'
                 p.classList.remove('disabled')
-                alertify.success('Done')
-            },
-            xhr: function () {
-                const xhr = new XMLHttpRequest()
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState == 2) {
-                        if (xhr.status == 200) {
-                            xhr.responseType = "blob";
-                        } else {
-                            p.classList.remove('disabled')
-                            p.innerHTML = 'CEISA 4.0'
-                            xhr.responseType = "text";
-                        }
-                    }
-                }
-                return xhr
-            },
+
+            }, error: function(xhr, ajaxOptions, throwError) {
+                p.classList.remove('disabled')
+                alert(throwError);
+            }
         })
     }
 </script>
