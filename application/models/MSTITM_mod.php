@@ -357,6 +357,13 @@ class MSTITM_mod extends CI_Model
         return $this->db->affected_rows();
     }
 
+    public function updatebyIdAndModel($pdata, $pItemCode, $pModel)
+    {
+        $this->db->where('MITM_ITMCD', $pItemCode)->where('MITM_MODEL', $pModel);
+        $this->db->update($this->TABLENAME, $pdata);
+        return $this->db->affected_rows();
+    }
+
     public function selectfgbyid_lk($pid)
     {
         $this->db->select("MITM_ITMCD,MITM_ITMD1,MITM_ITMD2,MITM_SPTNO,MITM_MODEL,MITM_INDIRMT,MITM_HSCD,MITM_HSCODET");

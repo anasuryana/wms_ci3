@@ -810,6 +810,64 @@ class MSTITM extends CI_Controller
         }
         die(json_encode(['status' => $myar]));
     }
+
+    public function updateFGExim()
+    {
+        header('Content-Type: application/json');
+        $itemcd = $this->input->post('ItemCode');
+        $itemhscd = $this->input->post('HSCode');
+        $netweight = $this->input->post('NetWeight');
+        $grosweight = $this->input->post('BoxWeight');
+        $BM = $this->input->post('BM');
+        $PPN = $this->input->post('PPN');
+        $PPH = $this->input->post('PPH');
+        if (!is_array($itemcd)) {
+            die(json_encode(['message' => 'Input is not valid']));
+        }
+        $ttlRows = count($itemcd);
+
+        for ($i = 0; $i < $ttlRows; $i++) {
+            $this->saveHistoryHSCODE(['ITEMCD' => $itemcd[$i]]);
+            $affectedRow = $this->MSTITM_mod->updatebyIdAndModel([
+                'MITM_HSCD' => $itemhscd[$i],
+                'MITM_NWG' => $netweight[$i] == 'null' ? null : $netweight[$i],
+                'MITM_BOXWEIGHT' => $grosweight[$i] == 'null' ? null : $grosweight[$i],
+                'MITM_BM' => $BM[$i],
+                'MITM_PPN' => $PPN[$i],
+                'MITM_PPH' => $PPH[$i],
+                'MITM_LUPDT' => date('Y-m-d H:i:s'),
+                'MITM_USRID' => $this->session->userdata('nama'),
+            ], $itemcd[$i], '1');
+            if ($affectedRow) {
+                $message = 'updated';
+            } else {
+                $message = 'could not be updated';
+            }
+            $data[] = ['ItemCode' => $itemcd[$i], 'message' => $message];
+        }
+
+        die(json_encode(['message' => 'Processed', 'data' => $data]));
+
+    }
+
+    public function saveHistoryHSCODE($data)
+    {
+        $rsbefore = $this->MSTITM_mod->selectbyid($data['ITEMCD']);
+        foreach ($rsbefore as $r) {
+            $lastLine = $this->MITMHSCD_HIS_mod->lastserialid($data['ITEMCD']) + 1;
+            $this->MITMHSCD_HIS_mod->insert([
+                'MITMHSCD_HIS_ITMCD' => $r->MITM_ITMCD,
+                'MITMHSCD_HIS_HSCD' => $r->MITM_HSCD,
+                'MITMHSCD_HIS_BM' => $r->MITM_BM,
+                'MITMHSCD_HIS_PPN' => $r->MITM_PPN,
+                'MITMHSCD_HIS_PPH' => $r->MITM_PPH,
+                'MITMHSCD_HIS_UPDATED_AT' => $r->MITM_LUPDT,
+                'MITMHSCD_HIS_UPDATED_BY' => $r->MITM_USRID,
+                'MITMHSCD_HIS_LINE' => $lastLine,
+            ]);
+        }
+    }
+
     public function rm_exim()
     {
         header('Content-Type: application/json');
@@ -822,20 +880,7 @@ class MSTITM extends CI_Controller
         $pph = $this->input->post('pph');
         $currrtime = date('Y-m-d H:i:s');
         #record old data
-        $rsbefore = $this->MSTITM_mod->selectbyid($itemcd);
-        foreach ($rsbefore as $r) {
-            $lastLine = $this->MITMHSCD_HIS_mod->lastserialid($itemcd) + 1;
-            $this->MITMHSCD_HIS_mod->insert([
-                'MITMHSCD_HIS_ITMCD' => $r->MITM_ITMCD,
-                'MITMHSCD_HIS_HSCD' => $r->MITM_HSCD,
-                'MITMHSCD_HIS_BM' => $r->MITM_BM,
-                'MITMHSCD_HIS_PPN' => $r->MITM_PPN,
-                'MITMHSCD_HIS_PPH' => $r->MITM_PPH,
-                'MITMHSCD_HIS_UPDATED_AT' => $r->MITM_LUPDT,
-                'MITMHSCD_HIS_UPDATED_BY' => $r->MITM_USRID,
-                'MITMHSCD_HIS_LINE' => $lastLine,
-            ]);
-        }
+        $this->saveHistoryHSCODE(['ITEMCD' => $itemcd]);
 
         $ret = $this->MSTITM_mod->updatebyId([
             'MITM_HSCD' => $itemhscd,
