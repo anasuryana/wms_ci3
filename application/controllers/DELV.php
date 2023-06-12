@@ -5525,6 +5525,7 @@ class DELV extends CI_Controller
                     'KODE_BARANG' => $r['KODE_BARANG'], 'POS_TARIF' => $r['POS_TARIF'], 'URAIAN' => $r['URAIAN'], 'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN'], 'KODE_SATUAN' => $r['KODE_SATUAN'], 'NETTO' => $r['NETTO'], 'CIF' => $r['CIF'], 'HARGA_PENYERAHAN' => $r['HARGA_PENYERAHAN'], 'SERI_BARANG' => $r['SERI_BARANG'], 'KODE_STATUS' => $r['KODE_STATUS'],
                 ];
             }
+            $this->setPriceFGNonSales(base64_encode($csj));
         } else {
             $myar[] = ["cd" => "0", "msg" => "SI WH should be AFWH3RT or NFWH4RT"];
             die(json_encode(['status' => $myar]));
@@ -8927,6 +8928,45 @@ class DELV extends CI_Controller
         }
         unset($k);
         return $rsPriceItemSer;
+    }
+
+    public function setPriceFGNonSales($pdoc = '')
+    {
+        header('Content-Type: application/json');
+        $doc = base64_decode($pdoc);
+        $RSWHSI = $this->SI_mod->select_wh_by_txid($doc);
+        $RSPickingResult = $this->SISCN_mod->select_exbc_fgrtn($doc);
+        $RSSIScan = $this->SISCN_mod->selectColumnsWhere(['SISCN_SER', 'SISCN_LINENO'],
+            ['DLV_ID' => $doc]);
+        $RStobeSaved = [];
+        $line = 1;
+        foreach ($RSPickingResult as $r) {
+            $_SIScanLine = '';
+            foreach ($RSSIScan as $s) {
+                if ($r['AX_SER'] == $s['SISCN_SER']) {
+                    $_SIScanLine = $s['SISCN_LINENO'];
+                    break;
+                }
+            }
+            $RStobeSaved[] = [
+                'DLVPRC_SER' => $r['AX_SER'],
+                'DLVPRC_LINENO' => $line,
+                'DLVPRC_PRC' => (float) $r['RCV_PRPRC'],
+                'DLVPRC_QTY' => (int) $r['INTQTY'],
+                'DLVPRC_SILINE' => $_SIScanLine,
+                'DLVPRC_TXID' => $doc,
+                'DLVPRC_CPO' => null,
+                'DLVPRC_CPOLINE' => null,
+                'DLVPRC_CREATEDAT' => date('Y-m-d H:i:s'),
+                'DLVPRC_CREATEDBY' => null,
+            ];
+            $line++;
+        }
+        $this->DLVPRC_mod->deleteby_filter(['DLVPRC_TXID' => $doc]);
+        $affectedRows = 0;
+        if (!empty($RStobeSaved)) {
+            $affectedRows = $this->DLVPRC_mod->insertb($RStobeSaved);
+        }
     }
 
     public function setPrice($pdoc = '')
