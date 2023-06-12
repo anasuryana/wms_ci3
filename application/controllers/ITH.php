@@ -3660,8 +3660,9 @@ class ITH extends CI_Controller
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
         $date = $this->input->post('date');
+        $dateTime = $this->input->post('dateTime');
         $items = $this->input->post('items');
-        $rs = $this->ITH_mod->select_doc_vs_datec_withIn_items($doc, $date, $items);
+        $rs = $this->ITH_mod->select_doc_vs_datec_withIn_itemsAndDates($doc, $date, $items, $dateTime);
         $tmpTime = strtotime($date . ' +1 days');
         $date0 = date('Y-m-d', $tmpTime);
         $thedate = $date;

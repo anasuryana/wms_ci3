@@ -1558,11 +1558,13 @@
                 return
             }
             let aItems = []
+            let aDateTime = []
             for(let i=0;i<ttlrows;i++)
             {
                 if(spl_cid_tbldetissu.getElementsByTagName('tbody')[0].rows[i].cells[4].getElementsByTagName('input')[0].checked)
                 {
                     aItems.push(spl_cid_tbldetissu.getElementsByTagName('tbody')[0].rows[i].cells[0].innerText)
+                    aDateTime.push(spl_cid_tbldetissu.getElementsByTagName('tbody')[0].rows[i].cells[2].innerText)
                 }
             }
 
@@ -1573,7 +1575,7 @@
                 $.ajax({
                     type: "POST",
                     url: "<?=base_url('ITH/change_kitting_date')?>",
-                    data: {doc: spl_cid_txtpsn.value, date: spl_cid_txtdate.value, items: aItems },
+                    data: {doc: spl_cid_txtpsn.value, date: spl_cid_txtdate.value, items: aItems, dateTime : aDateTime },
                     dataType: "json",
                     success: function (response) {
                         spl_cid_save.innerText = `Save changes`
