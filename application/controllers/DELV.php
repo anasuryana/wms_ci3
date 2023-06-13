@@ -1789,7 +1789,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?"];
+                                Are you sure want to continue ?", ];
                     die(json_encode($myar));
                 }
             }
@@ -6243,6 +6243,7 @@ class DELV extends CI_Controller
                 }
             }
             if (count($rs_filtered) > 0) {
+                $this->setFinishPosting($csj);
                 $myar[] = ['cd' => 100, 'msg' => 'RM is null, please check again data in the table below'];
                 die('{"status" : ' . json_encode($myar) . ', "data": ' . json_encode($rs_filtered) . '}');
             } else {
@@ -6305,16 +6306,19 @@ class DELV extends CI_Controller
         }
 
         if ($cztujuanpengiriman == '-') {
+            $this->setFinishPosting($csj);
             $myar[] = ['cd' => 0, 'msg' => 'please set TUJUAN PENGIRIMAN (' . $cztujuanpengiriman . ')'];
             die('{"status" : ' . json_encode($myar) . '}');
         }
 
         if ($consignee == '-') {
+            $this->setFinishPosting($csj);
             $myar[] = ['cd' => 0, 'msg' => 'please set consignment (' . $consignee . ')'];
             die('{"status" : ' . json_encode($myar) . '}');
         }
 
         if ($czinvoice == '') {
+            $this->setFinishPosting($csj);
             $myar[] = ['cd' => 0, 'msg' => 'please add invoice number (' . $czinvoice . ') custdate (' . $ccustdate . ') consign (' . $consignee . ')'];
             die('{"status" : ' . json_encode($myar) . '}');
         }
@@ -6337,11 +6341,13 @@ class DELV extends CI_Controller
         }
 
         if ($czdocbctype == '-') {
+            $this->setFinishPosting($csj);
             $myar[] = ['cd' => 0, 'msg' => 'please select bc type!'];
             die('{"status" : ' . json_encode($myar) . '}');
         }
 
         if (strlen($nomoraju) != 6) {
+            $this->setFinishPosting($csj);
             $myar[] = ['cd' => 0, 'msg' => 'NOMOR AJU is not valid, please re-check (' . $nomoraju . ')'];
             die('{"status" : ' . json_encode($myar) . '}');
         }
@@ -6349,26 +6355,31 @@ class DELV extends CI_Controller
         $cnoaju = substr($czkantorasal, 0, 4) . $czdocbctype . $czidmodul . $cz_ymd . $nomoraju;
         if (($cbusiness_group == 'PSI2PPZOMC' || $cbusiness_group == 'PSI2PPZOMI')) {
             if (strlen($ccustomer_do) < 5) {
+                $this->setFinishPosting($csj);
                 $myar[] = ['cd' => 0, 'msg' => 'please enter valid Customer DO!'];
                 die('{"status" : ' . json_encode($myar) . '}');
             }
             $czsj = $ccustomer_do;
         }
         if (strlen($nomoraju) != 6) {
+            $this->setFinishPosting($csj);
             $myar[] = ['cd' => 0, 'msg' => 'please enter valid Nomor Pengajuan!'];
             die('{"status" : ' . json_encode($myar) . '}');
         }
         if (strlen($ccustdate) != 10) {
+            $this->setFinishPosting($csj);
             $myar[] = ['cd' => 0, 'msg' => 'please enter valid customs date!'];
             die('{"status" : ' . json_encode($myar) . '}');
         }
 
         if ($this->DELV_mod->check_Primary(['DLV_ID' => $csj]) == 0) {
+            $this->setFinishPosting($csj);
             $myar[] = ['cd' => 0, 'msg' => 'DO is not found'];
             die('{"status" : ' . json_encode($myar) . '}');
         }
 
         if ($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $cnoaju])) {
+            $this->setFinishPosting($csj);
             $myar[] = ['cd' => 0, 'msg' => 'Already posted'];
             die('{"status" : ' . json_encode($myar) . '}');
         }
@@ -6380,6 +6391,7 @@ class DELV extends CI_Controller
 
         $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
         if (count($rscurr) == 0) {
+            $this->setFinishPosting($csj);
             $myar[] = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
             die('{"status":' . json_encode($myar) . '}');
         } else {
@@ -6431,6 +6443,7 @@ class DELV extends CI_Controller
 
         if (count($rsmultiprice) > 0) {
             if ($consignee === 'IEI') {
+                $this->setFinishPosting($csj);
                 $myar[] = ["cd" => "0", "msg" => "Multi price detected please, click 'Price Detail' to confirm "];
                 die('{"status":' . json_encode($myar) . ',"data":' . json_encode($rsitem_p_price) . ',"data2":' . json_encode($rsmultiprice) . '}');
             }
@@ -6580,11 +6593,13 @@ class DELV extends CI_Controller
                     }
                     unset($o);
                 } else {
+                    $this->setFinishPosting($csj);
                     $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !", "api_respon" => $rstemp];
                     $this->inventory_cancelDO($csj);
                     die('{"status":' . json_encode($myar) . '}');
                 }
             } else {
+                $this->setFinishPosting($csj);
                 $this->inventory_cancelDO($csj);
                 $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin", "api_respon" => $rstemp];
                 die('{"status":' . json_encode($myar) . '}');
@@ -6614,6 +6629,7 @@ class DELV extends CI_Controller
                 }
             }
             if (count($listNeedExBC) > 0) {
+                $this->setFinishPosting($csj);
                 $this->inventory_cancelDO($csj);
                 $myar[] = ['cd' => 110, 'msg' => 'EX-BC for ' . count($listNeedExBC) . ' item(s) is not found. ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman];
                 die('{"status" : ' . json_encode($myar) . ', "data":' . json_encode($listNeedExBC)
@@ -6711,12 +6727,14 @@ class DELV extends CI_Controller
             #END
             log_message('error', $_SERVER['REMOTE_ADDR'] . ',step3#, finish, receive request');
         } catch (Exception $e) {
+            $this->setFinishPosting($csj);
             $this->inventory_cancelDO($csj);
             $myar[] = ['cd' => 110, 'msg' => $e->getMessage()];
             die('{"status" : ' . json_encode($myar) . ',"data":"' . $rstemp . '"}');
         }
 
         if ($rsaju_need_hscode) {
+            $this->setFinishPosting($csj);
             $rsajudo = $this->RCV_mod->select_ajudo_byAJU_in($rsaju_need_hscode);
             $this->inventory_cancelDO($csj);
             $myar[] = ['cd' => 120, 'msg' => 'Need to update HSCODE'];
@@ -6892,16 +6910,7 @@ class DELV extends CI_Controller
         ##N
 
         #set finished time
-        $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
-        $finishTM = $now->format('Y-m-d H:i:s:v');
-        $this->POSTING_mod->update_where(
-            ['POSTING_FINISHED_AT' => $finishTM],
-            [
-                'POSTING_DOC' => $csj,
-                'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
-                'POSTING_FINISHED_AT' => null,
-            ]
-        );
+        $this->setFinishPosting($csj);
         #end
 
         log_message('error', $_SERVER['REMOTE_ADDR'] . ',step4#, finish, INSERT TPB ');
@@ -6916,6 +6925,20 @@ class DELV extends CI_Controller
             'cd' => '1', 'msg' => 'Done, check your TPB', 'rsbc' => $rsbc, 'tpb_barang' => $tpb_barang, 'tpb_bahan_baku' => $tpb_bahan_baku, 'rsitem_p_price' => $rsitem_p_price,
         ];
         die('{"status" : ' . json_encode($myar) . '}');
+    }
+
+    public function setFinishPosting($doc)
+    {
+        $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
+        $finishTM = $now->format('Y-m-d H:i:s:v');
+        $this->POSTING_mod->update_where(
+            ['POSTING_FINISHED_AT' => $finishTM],
+            [
+                'POSTING_DOC' => $doc,
+                'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
+                'POSTING_FINISHED_AT' => null,
+            ]
+        );
     }
 
     public function sendto_delivery_checking($ptxid)
@@ -8084,7 +8107,7 @@ class DELV extends CI_Controller
                 , 'KODE_PERHITUNGAN' => $n['KODE_PERHITUNGAN']
                 , 'ID_HEADER' => $n['ID_HEADER']
                 , 'JUMLAH_BAHAN_BAKU' => $n['JUMLAH_BAHAN_BAKU']
-                , 'JUMLAH_KEMASAN' => $n['JUMLAH_KEMASAN']
+                , 'JUMLAH_KEMASAN' => $n['JUMLAH_KEMASAN'],
             ]);
             $tpb_barang_tarif[] = [
                 'JENIS_TARIF' => 'BM', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => $n['BM'], 'TARIF_FASILITAS' => 100, 'ID_BARANG' => $ZR_TPB_BARANG, 'ID_HEADER' => $ZR_TPB_HEADER,
