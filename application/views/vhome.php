@@ -437,10 +437,11 @@
     home_get_open_documents()
 
     function homeSetNotifQT(total){
-        homeQTNotif.innerText = total
         if(total>0){
+            homeQTNotif.innerText = total
             linkNotif.classList.add('anastylesel_home')
         } else {
+            homeQTNotif.innerText = ''
             linkNotif.classList.remove('anastylesel_home')
         }
     }
