@@ -2,6 +2,14 @@
 #home_div_document_list li:hover{
     background-color: #dee2e6;
 }
+.anastylesel_home{
+        background: red;
+        animation: anamoveHome 1s infinite;
+    }
+    @keyframes anamoveHome {
+        from {background: #fc033d;}
+        to {background: #11faea;}
+    }
  </style>
  <div  data-options="region:'center',title:''" style="background: #D3CCE3;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #E9E4F0, #D3CCE3);  /* Chrome 10-25, Safari 5.1-6 */
@@ -13,7 +21,7 @@
     </div>
 
     <div id="tab-tools">
-    <a href="#" title="Tasks" class="easyui-linkbutton" onclick="home_btn_task_eCK()"><span class="fas fa-tasks"></span></a>
+    <a href="#" title="Tasks" class="easyui-linkbutton" onclick="home_btn_task_eCK()" id="linkNotif"><span class="fas fa-tasks"></span> <i class="badge bg-info" id="homeQTNotif"></i></a>
     <a href="#" title="Change your password" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-change_pw'" onclick="dlgChangePW();"></a>
     <a href="#" title="Exit" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-exit'" onclick="dlgExit()"></a>
       </div>
@@ -213,7 +221,7 @@
                 home_h1_to_approve_qty.innerText = response.data.TO_APPROVE_QTY
                 home_h1_to_approve_time.innerText = response.data.TO_APPROVE_DATETIME==='-' ? '-' : moment(response.data.TO_APPROVE_DATETIME).startOf('hour').fromNow()
                 home_h1_to_approve_time.title = response.data.TO_APPROVE_DATETIME
-
+                homeSetNotifQT(response.data.TO_APPROVE_QTY+response.data.TO_FOLLOW_QTY)
                 let rowNum = 1
                 response.rs.forEach((arrayItem) => {
                     let _EleLi = document.createElement('li')
@@ -259,7 +267,7 @@
                 home_h1_to_follow_qty.innerText = response.data.TO_FOLLOW_QTY
                 home_h1_to_follow_time.innerText = response.data.TO_FOLLOW_DATETIME==='-' ? '-' : moment(response.data.TO_FOLLOW_DATETIME).startOf('hour').fromNow()
                 home_h1_to_follow_time.title = response.data.TO_FOLLOW_DATETIME
-
+                homeSetNotifQT(response.data.TO_APPROVE_QTY+response.data.TO_FOLLOW_QTY)
                 let rowNum = 1
                 response.rs2.forEach((arrayItem) => {
                     let _EleLi = document.createElement('li')
@@ -426,6 +434,17 @@
         });
     }
 
+    home_get_open_documents()
+
+    function homeSetNotifQT(total){
+        homeQTNotif.innerText = total
+        if(total>0){
+            linkNotif.classList.add('anastylesel_home')
+        } else {
+            linkNotif.classList.remove('anastylesel_home')
+        }
+    }
+
     function home_get_open_documents(){
         $.ajax({
             type: "GET",
@@ -439,6 +458,7 @@
                 home_h1_to_follow_qty.innerText = response.data.TO_FOLLOW_QTY
                 home_h1_to_follow_time.innerText = response.data.TO_FOLLOW_DATETIME==='-' ? '-' : moment(response.data.TO_FOLLOW_DATETIME).startOf('hour').fromNow()
                 home_h1_to_follow_time.title = response.data.TO_FOLLOW_DATETIME
+                homeSetNotifQT(response.data.TO_APPROVE_QTY+response.data.TO_FOLLOW_QTY)
             }, error:function(xhr,ajaxOptions, throwError) {
                 alertify.error('Please try again');
             }
