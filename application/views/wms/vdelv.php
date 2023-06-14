@@ -5235,11 +5235,8 @@ echo $tohtml;
                     document.getElementById("txfg_txt_postedby").value = appr;
                     document.getElementById("txfg_txt_postedtime").value = response.status[0].time;
                     txfg_centerRight();
-                } else if (response.status[0].cd == '11') {
-                    alertify.success(response.status[0].msg);
-                    document.getElementById("txfg_txt_postedby").value = response.status[0].user;
-                    document.getElementById("txfg_txt_postedtime").value = response.status[0].time;
-                    txfg_centerRight();
+                    document.getElementById('txfg_btn_addsi').disabled = true
+                    document.getElementById('txfg_status').value = "Posted";
                 } else if (response.status[0].cd == '100') {
                     document.getElementById('txfg_alert_rmnull').innerHTML = response.status[0].msg;
                     let mydes = document.getElementById("txfg_divrmnull");
