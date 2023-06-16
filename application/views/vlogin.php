@@ -109,7 +109,7 @@ $("#btnnext").click(function(e){
 });
 
 function btnLogin_eClick(e){
-	e.preventDefault()	
+	e.preventDefault()
 	const data = {
 		inputUserid: inputUserid.value,
 		inputPassword: inputPassword.value,
@@ -129,6 +129,11 @@ function btnLogin_eClick(e){
                 </div>`
 				inputUserid.value = ''
 				inputPassword.value = ''
+				$("#ln2").hide('slow', function(){
+					$("#ln1").show();
+					$("#inputUserid").focus();
+					$("#inputUserid").select();
+				});
 			} else {
 				sessionStorage.setItem('tokenGue', response.tokennya)
 				location.href = '<?=base_url("home")?>'
@@ -141,10 +146,10 @@ function btnLogin_eClick(e){
 	});
 }
 document.onkeydown = function(e) {
-	if (e.ctrlKey && 
-		(e.keyCode === 67 || 
-			e.keyCode === 86 || 
-			e.keyCode === 85 || 
+	if (e.ctrlKey &&
+		(e.keyCode === 67 ||
+			e.keyCode === 86 ||
+			e.keyCode === 85 ||
 			e.keyCode === 117)) {
 		console.log('go')
 		return false;

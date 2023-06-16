@@ -137,7 +137,7 @@ class Pages extends CI_Controller
                 $this->session->set_userdata($data_session);
                 $respon = ['message' => 'OK' , 'tokennya' => base64_encode($username)];
             } else {
-                $respon = ['message' => 'sorry please try again'];
+                $respon = ['message' => 'sorry please try again, check user id and password '];
             }
         }
         die(json_encode($respon));
