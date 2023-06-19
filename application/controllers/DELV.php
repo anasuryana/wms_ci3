@@ -1485,7 +1485,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?"];
+                                Are you sure want to continue ?", ];
                     die(json_encode($myar));
                 }
             }
@@ -1789,7 +1789,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?", ];
+                                Are you sure want to continue ?"];
                     die(json_encode($myar));
                 }
             }
@@ -3482,6 +3482,9 @@ class DELV extends CI_Controller
                         $rsfixINV[] = [
                             'ITMQT' => $useqt, 'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC'], 'DLV_ITMD1' => $r['DLV_ITMD1'], 'DLVRMDOC_TYPE' => $r['DLVRMDOC_TYPE'], 'MITM_STKUOM' => $r['MITM_STKUOM'], 'DLVRMDOC_PRPRC' => $r['DLVRMDOC_PRPRC'], 'DLVRMDOC_ITMID' => $r['DLVRMDOC_ITMID'], 'MITM_ITMCDCUS' => $r['MITM_ITMCDCUS'],
                         ];
+                        if ((float) $r['DLVRMDOC_PRPRC'] != (float) $x['RCV_PRPRC']) {
+                            $MultipliedNumber = 1;
+                        }
                         if ($r['ITMQT'] == $r['PLOTQT']) {
                             break;
                         }
@@ -3492,6 +3495,7 @@ class DELV extends CI_Controller
             unset($r);
 
             if (count($rsrmdoc) && count($rsrmdocFromSO) <= 0) {
+
                 $h_delnm = '';
                 $h_deladdress = '';
                 $h_invno = '';
@@ -3549,6 +3553,7 @@ class DELV extends CI_Controller
                         $amount_ = $r['ITMQT'] * ($r['DLVRMDOC_PRPRC'] * $MultipliedNumber);
                         $perprice_ = ($r['DLVRMDOC_PRPRC'] * $MultipliedNumber);
                     }
+
                     if ($ttlbrs > $MAX_INVD_PERPAGE) {
                         $pdf->AddPage();
                         $pdf->SetAutoPageBreak(true, 1);
