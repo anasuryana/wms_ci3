@@ -3947,23 +3947,24 @@ class DELV extends CI_Controller
                 $pdf->SetXY(10, $curY);
                 $pdf->Cell(14.75, 4, $nourutDODis, 0, 0, 'C');
 
-                $ttlwidth = $pdf->GetStringWidth(trim($ItemDis2));
-                if ($ttlwidth > 85) {
-                    $ukuranfont = 8.5;
-                    while ($ttlwidth > 85) {
-                        $pdf->SetFont('Arial', '', $ukuranfont);
-                        $ttlwidth = $pdf->GetStringWidth(trim($ItemDis2));
-                        $ukuranfont = $ukuranfont - 0.5;
-                    }
-                }
                 $pdf->SetXY(30.75, $curY);
-                $pdf->Cell(85, 4, $ItemDis2, 0, 0, 'L');
+                $pdf->MultiCell(85, 4, $ItemDis2, 0, 'L');
+                $YExtra_candidate = $pdf->GetY();
+                if ($YExtra_candidate != ($curY + 4)) {
+                    $additionalRow = 1;
+                    $YExtra = $YExtra_candidate - ($curY - 4) - 4;
+                } else {
+                    $YExtra = 0;
+                    $additionalRow = 0;
+                }
 
                 $pdf->SetFont('Arial', '', 9);
-                $pdf->SetXY(30.75, $curY + 4);
+                $pdf->SetXY(30.75, $curY + 4 + $YExtra);
                 $pdf->Cell(85, 4, $ItemDis, 0, 0, 'L');
-                $pdf->SetXY(30.75, $curY + 8);
+
+                $pdf->SetXY(30.75, $curY + 8 + $YExtra);
                 $pdf->Cell(85, 4, $r['TYPE'], 0, 0, 'L');
+
                 $pdf->SetXY(90, $curY);
                 if ($isDecimal) {
                     $pdf->Cell(43.43, 4, number_format($r['DLVRMDOC_ITMQT'], 2) . " " . $r['MITM_STKUOM'], 0, 0, 'R');
@@ -3979,7 +3980,7 @@ class DELV extends CI_Controller
                 if (!in_array($r['MITM_STKUOM'], $a_stkuom)) {
                     $a_stkuom[] = $r['MITM_STKUOM'];
                 }
-                $curY += 16;
+                $curY += (16 + $YExtra);
                 $ttlbaris++;
             }
             $pdf->SetXY(90, 220);
