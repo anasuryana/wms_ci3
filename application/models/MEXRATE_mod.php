@@ -57,7 +57,7 @@ class MEXRATE_mod extends CI_Model
    }
    function select_minimum_lastupdate($where)
    {
-      $this->db->select("CONVERT(DATE,MIN(MEXRATE_LUPDT)) MEXRATE_LUPDT")->where($where);
+      $this->db->select("CONVERT(DATE,MIN(MEXRATE_LUPDT)) MEXRATE_LUPDT")->where($where)->where_not_in('MEXRATE_CURR', ['RPH']);
       $query = $this->db->get($this->TABLENAME);
       return $query->result_array();
    }
