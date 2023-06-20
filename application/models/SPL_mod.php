@@ -448,11 +448,11 @@ class SPL_mod extends CI_Model
                     ,PPSN1_MDLCD
                 ) VPPSN1 ON PPSN1_WONO = PIS3_WONO
             LEFT JOIN (
-                SELECT SER_DOC
-                    ,SUM(SER_QTY) LQT
-                FROM SER_TBL
-                WHERE SER_DOC = ?
-                GROUP BY SER_DOC
+                SELECT ITH_DOC SER_DOC
+                    ,SUM(ITH_QTY) LQT
+                FROM ITH_TBL
+                WHERE ITH_DOC = ? AND ITH_FORM='INC-PRD-FG'
+                GROUP BY ITH_DOC
                 ) VSER ON PDPP_WONO = SER_DOC
             WHERE PIS3_WONO = ? and PIS3_DOCNO=?
             GROUP BY PIS3_WONO
