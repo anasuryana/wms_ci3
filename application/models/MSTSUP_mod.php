@@ -38,7 +38,7 @@ class MSTSUP_mod extends CI_Model
 
     public function select_like($plike)
     {
-        $this->db->select("MSUP_SUPCD,MSUP_SUPCR,MSUP_SUPNM,MSUP_ABBRV,RTRIM(MSUP_ADDR1) MSUP_ADDR1,MSUP_TELNO,MSUP_FAXNO,RTRIM(MSUP_TAXREG) MSUP_TAXREG,RTRIM(MSUP_PTERM) MSUP_PTERM");
+        $this->db->select("MSUP_SUPCD,MSUP_SUPCR,MSUP_SUPNM,MSUP_ABBRV,RTRIM(MSUP_ADDR1) MSUP_ADDR1,RTRIM(MSUP_ADDR2) MSUP_ADDR2,MSUP_TELNO,MSUP_FAXNO,RTRIM(MSUP_TAXREG) MSUP_TAXREG,RTRIM(MSUP_PTERM) MSUP_PTERM");
         $this->db->like($plike);
         $query = $this->db->get($this->TABLENAME, 10);
         return $query->result();

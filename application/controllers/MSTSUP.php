@@ -78,6 +78,7 @@ class MSTSUP extends CI_Controller {
         $cnm = $this->input->post('innm');
         $cabbr = $this->input->post('inabbr');
         $caddr = $this->input->post('inaddr');
+        $caddr2 = $this->input->post('inaddr2');
         $mphone = str_replace(" ", "", $this->input->post('mphone'));
         $mfax = str_replace(" ", "",$this->input->post('mfax'));
         $mtax = str_replace(" ", "",$this->input->post('mtax'));
@@ -89,6 +90,7 @@ class MSTSUP extends CI_Controller {
                 'MSUP_SUPNM' => $cnm,
                 'MSUP_ABBRV' => $cabbr,
                 'MSUP_ADDR1' => $caddr,
+                'MSUP_ADDR2' => $caddr2,
                 'MSUP_TELNO' => $mphone,
                 'MSUP_FAXNO' => $mfax,
                 'MSUP_TAXREG' => $mtax,
@@ -103,6 +105,7 @@ class MSTSUP extends CI_Controller {
                 'MSUP_SUPNM' => $cnm,
                 'MSUP_ABBRV' => $cabbr,
                 'MSUP_ADDR1' => $caddr,
+                'MSUP_ADDR2' => $caddr2,
                 'MSUP_TELNO' => $mphone,
                 'MSUP_FAXNO' => $mfax,
                 'MSUP_TAXREG' => $mtax,
