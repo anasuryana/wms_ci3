@@ -6533,6 +6533,7 @@ class DELV extends CI_Controller
                 }
             }
             $rsallitem_cd = [];
+            $rsallitem_lot = [];
             $rsallitem_hscd = [];
             $rsallitem_qty = [];
             $rsallitem_qtyplot = [];
@@ -6546,6 +6547,7 @@ class DELV extends CI_Controller
                     $rsallitem_qty[$i] += $r['DLVQT'];
                 } else {
                     $rsallitem_cd[] = $itemtosend;
+                    $rsallitem_lot[] = '';
                     $rsallitem_hscd[] = '';
                     $rsallitem_qty[] = $r['DLVQT'];
                     $rsallitem_qtyplot[] = 0;
@@ -6573,7 +6575,7 @@ class DELV extends CI_Controller
 
             log_message('error', $_SERVER['REMOTE_ADDR'] . ',step2#, finish, posting group by assy code , price, item');
             log_message('error', $_SERVER['REMOTE_ADDR'] . ',step3#, start, send request');
-            $rstemp = $this->inventory_getstockbc_v2($czdocbctype, $cztujuanpengiriman, $csj, $rsallitem_cd, $rsallitem_qty, [], $ccustdate);
+            $rstemp = $this->inventory_getstockbc_v2($czdocbctype, $cztujuanpengiriman, $csj, $rsallitem_cd, $rsallitem_qty, $rsallitem_lot, $ccustdate);
             $rsbc = json_decode($rstemp);
             log_message('error', $_SERVER['REMOTE_ADDR'] . ',step3#, start, receive request');
             if (!is_null($rsbc)) {
@@ -6642,6 +6644,7 @@ class DELV extends CI_Controller
                     . ',"rawdata":' . json_encode($rstemp)
                     . ',"itemsend":' . json_encode($rsallitem_cd)
                     . ',"itemqtysend":' . json_encode($rsallitem_qty)
+                    . ',"item_lot":' . json_encode($rsallitem_lot)
                     . ',"responresume":' . json_encode($responseResume) . '}');
             }
 
@@ -13745,6 +13748,7 @@ class DELV extends CI_Controller
             'kontrak' => $pkontrak,
             'item_num' => $prm,
             'qty' => $pqty,
+            'lot' => $plot,
         ];
         $fields_string = http_build_query($fields);
         $ch = curl_init();
