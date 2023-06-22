@@ -13747,8 +13747,7 @@ class DELV extends CI_Controller
             'doc' => $psj,
             'kontrak' => $pkontrak,
             'item_num' => $prm,
-            'qty' => $pqty,
-            'lot' => $plot,
+            'qty' => $pqty,            
         ];
         $fields_string = http_build_query($fields);
         $ch = curl_init();
