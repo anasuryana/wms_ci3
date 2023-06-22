@@ -609,7 +609,7 @@ class ITH_mod extends CI_Model
     {
         $whclosing = $wh == 'AFSMT' ? 'AFWH3' : $wh;
         $closingcolumn = $wh == 'AFSMT' ? "(STOCKQTY+ISNULL(PRPQTY,0))" : "STOCKQTY";
-        if ($whclosing == 'AFWH9SC' || $whclosing == 'AFWH3' || $whclosing == 'AWIP1' || $whclosing == 'QAFG' || $whclosing == 'NFWH9SC' || $whclosing == 'NFWH4RT') {
+        if (in_array($whclosing, ['AFWH9SC','AFWH3','AWIP1','QAFG','NFWH9SC','NFWH4RT']) ) {
             $qry = "SELECT ITH_WH,ISNULL(ITH_ITMCD,ITRN_ITMCD) ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, STOCKQTY, MITM_STKUOM,MGAQTY,ITRN_ITMCD,MGMITM_SPTNO,MGMITM_STKUOM,MGMITM_ITMD1 FROM(
                 SELECT ITH_WH,VSTOCK.ITH_ITMCD,MITM_ITMD1,MITM_SPTNO, $closingcolumn STOCKQTY, MITM_STKUOM FROM
                     (select ITH_WH,ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,RTRIM(MITM_STKUOM) MITM_STKUOM from v_ith_tblc a inner join MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD
