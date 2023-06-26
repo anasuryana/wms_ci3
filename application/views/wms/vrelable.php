@@ -216,6 +216,7 @@
             let rawtext = nreff.toUpperCase();
             let oldreff = document.getElementById('relable_oldreff').value;
             let olditem = document.getElementById('relable_olditemcd').value;
+            let olditemFullDigit = olditem;
             let oldqty = document.getElementById('relable_oldqty').value;
             let oldjob = document.getElementById('relable_oldjob').value.toUpperCase().trim();
             let oldyear = oldjob.substr(0, 2);
@@ -237,10 +238,12 @@
                 ///#1 check item code
                 let olditem_ = olditem.substr(0, 9)
                 let newitem_ = newitem
-                if (newitem_ != olditem_) {
-                    alertify.warning('New Item is not same with old item, please compare the label !');
-                    $(this).val('');
-                    return;
+                if (newitem_ != olditem_) {                    
+                    if(newitem_ != olditemFullDigit){
+                        alertify.warning('New Item is not same with old item, please compare the label !');
+                        $(this).val('');
+                        return;
+                    }
                 }
                 ///# check qty
                 if (numeral(newqty).value() != oldqty) {
