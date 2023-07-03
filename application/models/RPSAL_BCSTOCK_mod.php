@@ -65,37 +65,51 @@ class RPSAL_BCSTOCK_mod extends CI_Model
     public function selectDiscrepancy($itemCode)
     {
         $qry = "SELECT VBC.*
-                    ,BOMQT
-                    ,RESPONSEQT + BOMQT BAL
-                    ,FGQT
-                    ,BOMQT / FGQT PER
-                    ,DELVPURPOSE
-                FROM (
-                    SELECT RPSTOCK_REMARK
-                        ,RPSTOCK_ITMNUM
-                        ,sum(RPSTOCK_QTY) RESPONSEQT
-                    FROM ZRPSAL_BCSTOCK
-                    WHERE RPSTOCK_QTY < 0
-                        AND RPSTOCK_ITMNUM = ?
-                    GROUP BY RPSTOCK_REMARK
-                        ,RPSTOCK_ITMNUM
-                    ) VBC
-                LEFT JOIN (
-                    SELECT DLV_ID
-                        ,SERD2_ITMCD
-                        ,SUM(SERD2_FGQTY) FGQT
-                        ,SUM(SERD2_QTY) BOMQT
-                        ,MAX(DLV_PURPOSE) DELVPURPOSE
-                    FROM DLV_TBL
-                    LEFT JOIN SERD2_TBL ON DLV_SER = SERD2_SER
-                    WHERE SERD2_ITMCD = ?
-                    GROUP BY DLV_ID
-                        ,SERD2_ITMCD
-                    ) VDELV ON RPSTOCK_REMARK = DLV_ID
-                    AND RPSTOCK_ITMNUM = SERD2_ITMCD
-                WHERE ISNULL(RESPONSEQT, 0) + ISNULL(BOMQT, 0) != 0
-                ORDER BY RPSTOCK_REMARK";
-        $query = $this->db->query($qry, [$itemCode, $itemCode]);
+                ,ISNULL(BOMQT,BOMQT2) BOMQT
+                ,RESPONSEQT + ISNULL(BOMQT,BOMQT2) BAL
+                ,ISNULL(FGQT,FGQT2) FGQT
+                ,ISNULL(BOMQT,BOMQT2) / ISNULL(FGQT,FGQT2) PER
+                ,DELVPURPOSE
+            FROM (
+                SELECT RPSTOCK_REMARK
+                    ,RPSTOCK_ITMNUM
+                    ,sum(RPSTOCK_QTY) RESPONSEQT
+                FROM ZRPSAL_BCSTOCK
+                WHERE RPSTOCK_QTY < 0
+                    AND RPSTOCK_ITMNUM = ?
+                GROUP BY RPSTOCK_REMARK
+                    ,RPSTOCK_ITMNUM
+                ) VBC
+            LEFT JOIN (
+                SELECT DLV_ID
+                    ,SERD2_ITMCD
+                    ,SUM(SERD2_FGQTY) FGQT
+                    ,SUM(SERD2_QTY) BOMQT
+                    ,MAX(DLV_PURPOSE) DELVPURPOSE
+                FROM DLV_TBL
+                LEFT JOIN SERD2_TBL ON DLV_SER = SERD2_SER
+                WHERE SERD2_ITMCD = ?
+                GROUP BY DLV_ID
+                    ,SERD2_ITMCD
+                ) VDELV ON RPSTOCK_REMARK = DLV_ID
+                AND RPSTOCK_ITMNUM = SERD2_ITMCD
+            LEFT JOIN (
+                SELECT DLV_ID DLV_ID2
+                    ,SERD2_ITMCD SERD2_ITMCD2
+                    ,SUM(SERD2_FGQTY) FGQT2
+                    ,SUM(SERD2_QTY) BOMQT2
+                    ,MAX(DLV_PURPOSE) DELVPURPOSE2
+                FROM serml_tbl
+                LEFT JOIN dlv_tbl ON serml_newid = dlv_Ser
+                LEFT JOIN SERD2_TBL ON serml_comid = serd2_ser
+                WHERE serd2_itmcd = ?
+                GROUP BY DLV_ID
+                    ,SERD2_ITMCD
+                ) VDELV2 ON RPSTOCK_REMARK = DLV_ID2
+                AND RPSTOCK_ITMNUM = SERD2_ITMCD2
+            WHERE ISNULL(RESPONSEQT, 0) + ISNULL(BOMQT, ISNULL(BOMQT2,0)) != 0
+            ORDER BY RPSTOCK_REMARK";
+        $query = $this->db->query($qry, [$itemCode, $itemCode, $itemCode]);
         return $query->result_array();
     }
 }
