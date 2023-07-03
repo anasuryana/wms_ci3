@@ -103,31 +103,8 @@
 </div>
 <script>
     function rhistorycustoms_btn_cancelbook_eCK(){
-        if(confirm("Are you sure ?")){
-            const mpin = prompt("PIN")
-            if ( mpin !== '') {
-                const incdoc = document.getElementById('rhistorycustoms_h_doc_inc').value
-                const incitem = document.getElementById('rhistorycustoms_h_doc_item').value
-                const outdoc = document.getElementById('rhistorycustoms_h_doc_out').value
-                $.ajax({
-                    type: "POST",
-                    url: "<?=base_url('ITH/bcstock_cancel')?>",
-                    data: {incdoc: incdoc, incitem: incitem, outdoc: outdoc, inpin: mpin},
-                    dataType: "JSON",
-                    success: function (response) {
-                        if(response.status[0].cd==1){
-                            alertify.success(response.status[0].msg)
-                            rhistorycustoms_btn_gen_eCK()
-                            $("#rhistorycustoms_TXLIST").modal('hide')
-                        } else {
-                            alertify.message(response.status[0].msg)
-                        }
-                    }, error : function(xhr, xopt, xthrow){                
-                        alertify.error(xthrow);
-                    }
-                })
-            }
-        }
+        alertify.message('this function is not available')
+        return
     }
     function rhistorycustoms_wh_seachby_eChange(){
         document.getElementById('rhistorycustoms_txt_assy').focus()
