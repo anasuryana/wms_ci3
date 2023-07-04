@@ -1190,7 +1190,12 @@ class RCV extends CI_Controller
             }
         }
         if (count($rstosave)) {
-            $this->ITH_mod->insertb($rstosave);
+            foreach($rstosave as $r) {
+                if($this->ITH_mod->check_Primary(['ITH_ITMCD' => $r['ITH_ITMCD'] , 'ITH_DOC' => $r['ITH_DOC']])==0)
+                {
+                    $this->ITH_mod->insert($r);
+                }
+            }
         }
     }
 
