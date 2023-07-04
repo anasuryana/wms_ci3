@@ -77,14 +77,7 @@ class SPLSCN_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
-    public function selectby_kitting_status($pbg){
-        $this->db->from("VKITTINGSTATUS");
-        $this->db->like("PPSN1_BSGRP", $pbg);
-        $this->db->order_by('SPL_DOC ASC');
-		$query = $this->db->get();
-		return $query->result_array();
-    }
-
+    
     public function selectby_filter_formega_v1($pwhere){
         $this->db->select("concat('1',convert(varchar(30), SPLSCN_LUPDT,12),RIGHT(SPLSCN_ID,4) ) AS SPLSCN_ID,
         UPPER(RTRIM(SPLSCN_ITMCD)) SPLSCN_ITMCD,SPLSCN_QTY,(convert(varchar(30), SPLSCN_LUPDT,21)) SPLSCN_LUPDT
@@ -132,9 +125,9 @@ class SPLSCN_mod extends CI_Model {
         $query = $this->db->query($qry);
         return $query->result_array();
     }
-    public function select_kittingstatus_byjob($pjob){
-        $qry = "sp_kittingstatus_byjob ?";
-        $query = $this->db->query($qry, [$pjob]);
+    public function select_kittingstatus_byjob($pjob, $pBusiness){
+        $qry = "sp_kittingstatus_byjob ?, ?";
+        $query = $this->db->query($qry, [$pjob, $pBusiness]);
         return $query->result_array();
     }
     public function select_supplied_vs_confirmed($doc) {

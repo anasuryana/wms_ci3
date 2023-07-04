@@ -191,14 +191,7 @@ class SPL extends CI_Controller
     {
         $this->load->view('wms/vtracelot');
     }
-
-    public function get_kitting_status()
-    {
-        header('Content-Type: application/json');
-        $bg = $this->input->get('bg');
-        $rs = $this->SPLSCN_mod->selectby_kitting_status($bg);
-        die('{"data":' . json_encode($rs) . '}');
-    }
+    
     public function get_partreq_status()
     {
         header('Content-Type: application/json');
@@ -210,8 +203,10 @@ class SPL extends CI_Controller
     {
         header('Content-Type: application/json');
         $jobno = $this->input->get('jobno');
-        $status = $this->XWO_mod->check_Primary(['PDPP_WONO' => $jobno]) ? ['cd' => '1', 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'Job is not found'];
-        $rs = $this->SPLSCN_mod->select_kittingstatus_byjob($jobno);
+        $business = $this->input->get('business');
+        $rs = $this->SPLSCN_mod->select_kittingstatus_byjob($jobno, $business);
+        $status = $rs ? ['cd' => '1', 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'Job is not found'];
+
         die(json_encode(['data' => $rs, 'status' => $status]));
     }
 
