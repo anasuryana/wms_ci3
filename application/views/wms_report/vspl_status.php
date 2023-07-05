@@ -120,8 +120,8 @@ echo $todis;
         </div>
     </div>
 </div>
-<div class="modal fade" id="itemModal">
-    <div class="modal-dialog">
+<div class="modal fade" id="StatusKittingItemModal">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
@@ -132,21 +132,28 @@ echo $todis;
             <!-- Modal body -->
             <div class="modal-body">
                 <div class="row">
+                    <div class="col mb-1">
+                        <span id="StatusKittingSelectedPSN" class="badge bg-info"></span>
+                        <span id="StatusKittingSelectedPSNCategory" class="badge bg-info"></span>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col">
                         <div class="table-responsive" id="outstandingItemTableContainer">
                             <table id="outstandingItemTable" class="table table-hover table-sm table-bordered">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>MCZ</th>
-                                        <th>MC</th>
-                                        <th>Part Code</th>
-                                        <th>Part Name</th>
-                                        <th>M/S</th>
-                                        <th colspan="2">Qty</th>
+                                        <th rowspan="2" class="align-middle">MCZ</th>
+                                        <th rowspan="2" class="align-middle">MC</th>
+                                        <th rowspan="2" class="align-middle">Part Code</th>
+                                        <th rowspan="2" class="align-middle">Part Name</th>
+                                        <th rowspan="2" class="align-middle text-center">M/S</th>
+                                        <th colspan="3" class="text-center">Qty</th>
                                     </tr>
                                     <tr>
-                                        <th class="text-end">Req. Qty</th>
-                                        <th class="text-end">Total Issue</th>
+                                        <th class="text-end">Requirement</th>
+                                        <th class="text-end">Issue</th>
+                                        <th class="text-end">Balance</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -312,7 +319,9 @@ echo $todis;
                             newcell.style.cssText = 'cursor:pointer'
                             newcell.innerHTML = numeral(response.data[i].PRC_CHIP).format('0,0') + '%'
                             newcell.onclick = () => {
-                                $("#itemModal").modal('show')
+                                StatusKittingSelectedPSN.innerText = response.data[i].SPL_DOC
+                                StatusKittingSelectedPSNCategory.innerText = 'CHIP'
+                                $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
                             newcell.innerHTML = response.data[i].STSCHIP
@@ -330,7 +339,9 @@ echo $todis;
                             newcell.style.cssText = 'cursor:pointer'
                             newcell.innerHTML = numeral(response.data[i].PRC_HW).format('0,0') + '%'
                             newcell.onclick = () => {
-                                $("#itemModal").modal('show')
+                                StatusKittingSelectedPSN.innerText = response.data[i].SPL_DOC
+                                StatusKittingSelectedPSNCategory.innerText = 'HW'
+                                $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
                             newcell.innerHTML = response.data[i].STSHW
@@ -348,7 +359,9 @@ echo $todis;
                             newcell.style.cssText = 'cursor:pointer'
                             newcell.innerHTML = numeral(response.data[i].PRC_IC).format('0,0') + '%'
                             newcell.onclick = () => {
-                                $("#itemModal").modal('show')
+                                StatusKittingSelectedPSN.innerText = response.data[i].SPL_DOC
+                                StatusKittingSelectedPSNCategory.innerText = 'IC'
+                                $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
                             newcell.innerHTML = response.data[i].STSIC
@@ -367,7 +380,9 @@ echo $todis;
                             newcell.style.cssText = 'cursor:pointer'
                             newcell.innerHTML = numeral(response.data[i].PRC_KANBAN).format('0,0') + '%'
                             newcell.onclick = () => {
-                                $("#itemModal").modal('show')
+                                StatusKittingSelectedPSN.innerText = response.data[i].SPL_DOC
+                                StatusKittingSelectedPSNCategory.innerText = 'KANBAN'
+                                $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
                             newcell.innerHTML = response.data[i].STSKANBAN
@@ -385,7 +400,9 @@ echo $todis;
                             newcell.style.cssText = 'cursor:pointer'
                             newcell.innerHTML = numeral(response.data[i].PRC_PCB).format('0,0') + '%'
                             newcell.onclick = () => {
-                                $("#itemModal").modal('show')
+                                StatusKittingSelectedPSN.innerText = response.data[i].SPL_DOC
+                                StatusKittingSelectedPSNCategory.innerText = 'PCB'
+                                $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
                             newcell.innerHTML = response.data[i].STSPCB
@@ -403,7 +420,9 @@ echo $todis;
                             newcell.style.cssText = 'cursor:pointer'
                             newcell.innerHTML = numeral(response.data[i].PRC_PREPARE).format('0,0') + '%'
                             newcell.onclick = () => {
-                                $("#itemModal").modal('show')
+                                StatusKittingSelectedPSN.innerText = response.data[i].SPL_DOC
+                                StatusKittingSelectedPSNCategory.innerText = 'PREPARE'
+                                $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
                             newcell.innerHTML = response.data[i].STSPREPARE
@@ -422,7 +441,9 @@ echo $todis;
                             newcell.style.cssText = 'cursor:pointer'
                             newcell.innerHTML = numeral(response.data[i].PRC_SP).format('0,0') + '%'
                             newcell.onclick = () => {
-                                $("#itemModal").modal('show')
+                                StatusKittingSelectedPSN.innerText = response.data[i].SPL_DOC
+                                StatusKittingSelectedPSNCategory.innerText = 'SP'
+                                $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
                             newcell.innerHTML = response.data[i].STSSP
@@ -441,6 +462,75 @@ echo $todis;
             }
         });
     }
+
+    $("#StatusKittingItemModal").on('shown.bs.modal', function() {
+        outstandingItemTable.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="8" class="text-center">Please wait...</td></tr>'
+        const data = {
+            doc : StatusKittingSelectedPSN.innerText
+            ,category : StatusKittingSelectedPSNCategory.innerText
+            }        
+        $.ajax({
+            type: "GET",
+            url: "http://<?=$_SERVER['HTTP_HOST']?>/ems-glue/api/supply/outstanding-scan",
+            data: data,
+            dataType: "JSON",
+            success: function (response) {
+                if(response.data.length === 0){
+                    outstandingItemTable.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="8" class="text-center">Not found</td></tr>'
+                } else {
+                    let mydes = document.getElementById("outstandingItemTableContainer");
+                    let myfrag = document.createDocumentFragment();
+                    let cln = outstandingItemTable.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    let tabell = myfrag.getElementById("outstandingItemTable");
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    tableku2.innerHTML = '';
+                    response.data.sort((a,b) => {
+                        let fa = a.SPL_ORDERNO.toLowerCase(),
+                            fb = b.SPL_ORDERNO.toLowerCase();
+
+                        if (fa < fb) {
+                            return -1;
+                        }
+                        if (fa > fb) {
+                            return 1;
+                        }
+                        return 0;
+                    })
+                    
+                    response.data.forEach((arrayItem) => {
+                        const balanceQT = numeral(arrayItem['REQQT']).value() - numeral(arrayItem['PLOTQT']).value()
+                        newrow = tableku2.insertRow(-1)
+                        newcell = newrow.insertCell(0)
+                        newcell.innerHTML = arrayItem['SPL_ORDERNO']
+                        newcell = newrow.insertCell(1)
+                        newcell.innerHTML = arrayItem['SPL_MC']
+                        newcell = newrow.insertCell(2)
+                        newcell.innerHTML = arrayItem['SPL_ITMCD']
+                        newcell = newrow.insertCell(3)
+                        newcell.innerHTML = arrayItem['MITM_SPTNO']
+                        newcell = newrow.insertCell(4)
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = arrayItem['SPL_MS']
+                        newcell = newrow.insertCell(5)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(arrayItem['REQQT']).format(',')
+                        newcell = newrow.insertCell(6)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(arrayItem['PLOTQT']).format(',')
+                        newcell = newrow.insertCell(7)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(balanceQT).format(',')
+                    })
+                    mydes.innerHTML = ''
+                    mydes.appendChild(myfrag)
+                }
+            },
+            error: function(xhr, xopt, xthrow) {
+                outstandingItemTable.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="8" class="text-center">${xthrow}</td></tr>`
+            }
+        })
+    });
 
 
     function stakti_searchjob(ppsn) {
