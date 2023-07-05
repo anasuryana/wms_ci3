@@ -4056,9 +4056,9 @@
             arowid.push(tableku2.rows[i].cells[0].innerText)
             aitem.push(mitemcode)
             aqty.push(numeral(tableku2.rows[i].cells[2].innerText).value())
-            aremark.push(tableku2.rows[i].cells[3].innerText)
-            aitemdesc.push(tableku2.rows[i].cells[4].innerText)
-            aitemsptno.push(tableku2.rows[i].cells[5].innerText)
+            aremark.push(tableku2.rows[i].cells[3].innerText.replace(/\s+/g, ' ').trim())
+            aitemdesc.push(tableku2.rows[i].cells[4].innerText.replace(/\s+/g, ' ').trim())
+            aitemsptno.push(tableku2.rows[i].cells[5].innerText.replace(/\s+/g, ' ').trim())
         }
 
         if (aitem.length == 0) {
