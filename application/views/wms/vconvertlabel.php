@@ -520,6 +520,18 @@
         let ka_remark = document.getElementById('cvtlabel_txt_newmodel_ka').value;
         let fgtype = $("input[name='cvtlabel_typefg']:checked").val();
 
+        let newItemCode = document.getElementById('cvtlabel_txt_itemcode').value + fgtype
+        if(rg_rawtxt.includes('|')){
+            newItemCode+=rg_remark
+        } else {
+            newItemCode+=ka_remark
+        }
+        if(olditemcd === newItemCode)
+        {
+            alertify.warning('Item Code should be different.')
+            return
+        }        
+
         document.getElementById('cvtlabel_btn_save').disabled = true;
         if (document.getElementById('cvtlabel_oldreff').readOnly) {
             if (document.getElementById('cvtlabel_newreff').readOnly ||
@@ -695,6 +707,12 @@
                 document.getElementById('cvtlabel_txt_qty').value = akurkey[3].substr(2, akurkey[3].length)
                 document.getElementById('cvtlabel_txt_code').value = akurkey[5].substr(2, akurkey[5].length)
                 reff_ka = akurkey[5].substr(2, akurkey[5].length)
+            }
+            const newItemCode = document.getElementById('cvtlabel_txt_itemcode').value + m_kdasp + remark1
+            if(olditem === newItemCode)
+            {
+                alertify.warning('Item Code should be different')
+                return
             }
             if (reff_ka.length == 18 || reff_ka.length == 16) {
 
