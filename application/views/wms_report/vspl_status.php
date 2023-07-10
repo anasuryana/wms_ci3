@@ -121,7 +121,7 @@ echo $todis;
     </div>
 </div>
 <div class="modal fade" id="StatusKittingItemModal">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
@@ -148,9 +148,10 @@ echo $todis;
                                         <th rowspan="2" class="align-middle">Part Code</th>
                                         <th rowspan="2" class="align-middle">Part Name</th>
                                         <th rowspan="2" class="align-middle text-center">M/S</th>
-                                        <th colspan="3" class="text-center">Qty</th>
+                                        <th colspan="4" class="text-center">Qty</th>
                                     </tr>
                                     <tr>
+                                        <th class="text-center">Use</th>
                                         <th class="text-end">Requirement</th>
                                         <th class="text-end">Issue</th>
                                         <th class="text-end">Balance</th>
@@ -312,7 +313,7 @@ echo $todis;
                         if (!response.data[i].PRC_CHIP) {
                             stschip = 'abuabu'
                         } else {
-                            newcell.title = numeral(response.data[i].PRC_CHIP).format('0,0') + '%'
+                            newcell.title = numeral(response.data[i].PRC_CHIP).format('0,0') + '%'                            
                         }
                         newcell.classList.add('text-center', stschip)
                         if(response.data[i].STSCHIP === 'T'){
@@ -324,7 +325,7 @@ echo $todis;
                                 $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
-                            newcell.innerHTML = response.data[i].STSCHIP
+                            newcell.innerHTML = stschip == 'abuabu' ? '' : response.data[i].STSCHIP
                         }
 
                         newcell = newrow.insertCell(2);
@@ -344,7 +345,7 @@ echo $todis;
                                 $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
-                            newcell.innerHTML = response.data[i].STSHW
+                            newcell.innerHTML = stshw == 'abuabu' ? '' : response.data[i].STSHW
                         }
 
                         newcell = newrow.insertCell(3);
@@ -364,7 +365,7 @@ echo $todis;
                                 $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
-                            newcell.innerHTML = response.data[i].STSIC
+                            newcell.innerHTML = stsic == 'abuabu' ? '' : response.data[i].STSIC
                         }
 
                         newcell = newrow.insertCell(4);
@@ -385,27 +386,33 @@ echo $todis;
                                 $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
-                            newcell.innerHTML = response.data[i].STSKANBAN
+                            newcell.innerHTML = stskanban == 'abuabu' ? '' : response.data[i].STSKANBAN
                         }
+
+                        let pcbQtyPercentage = response.data[i].SUP_PCB/response.data[i].REQ_PCB*100                        
 
                         newcell = newrow.insertCell(5);
                         newcell.title = "PCB";
                         if (!response.data[i].PRC_PCB) {
                             stspcb = 'abuabu'
                         } else {
-                            newcell.title = numeral(response.data[i].PRC_PCB).format('0,0') + '%'
+                            newcell.title = response.data[i].LINEDATA_PCB==1 ? numeral(pcbQtyPercentage).format('0,0') + '%' : numeral(response.data[i].PRC_PCB).format('0,0') + '%'
                         }
                         newcell.classList.add('text-center', stspcb);
                         if(response.data[i].STSPCB === 'T'){
                             newcell.style.cssText = 'cursor:pointer'
-                            newcell.innerHTML = numeral(response.data[i].PRC_PCB).format('0,0') + '%'
+                            newcell.innerHTML = response.data[i].LINEDATA_PCB==1 ? numeral(pcbQtyPercentage).format('0,0') + '%' : numeral(response.data[i].PRC_PCB).format('0,0') + '%'
                             newcell.onclick = () => {
                                 StatusKittingSelectedPSN.innerText = response.data[i].SPL_DOC
                                 StatusKittingSelectedPSNCategory.innerText = 'PCB'
                                 $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
-                            newcell.innerHTML = response.data[i].STSPCB
+                            if(stspcb == 'abuabu'){
+
+                            } else {
+                                newcell.innerHTML = response.data[i].STSPCB
+                            }
                         }
 
                         newcell = newrow.insertCell(6);
@@ -425,7 +432,7 @@ echo $todis;
                                 $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
-                            newcell.innerHTML = response.data[i].STSPREPARE
+                            newcell.innerHTML = stsprepare == 'abuabu' ? '' : response.data[i].STSPREPARE
                         }
 
                         newcell = newrow.insertCell(7);
@@ -446,7 +453,7 @@ echo $todis;
                                 $("#StatusKittingItemModal").modal('show')
                             }
                         } else {
-                            newcell.innerHTML = response.data[i].STSSP
+                            newcell.innerHTML = stssp == 'abuabu' ? '' : response.data[i].STSSP
                         }
                     }
                     mydes.innerHTML = '';
@@ -464,7 +471,7 @@ echo $todis;
     }
 
     $("#StatusKittingItemModal").on('shown.bs.modal', function() {
-        outstandingItemTable.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="8" class="text-center">Please wait...</td></tr>'
+        outstandingItemTable.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="9" class="text-center">Please wait...</td></tr>'
         const data = {
             doc : StatusKittingSelectedPSN.innerText
             ,category : StatusKittingSelectedPSNCategory.innerText
@@ -476,7 +483,7 @@ echo $todis;
             dataType: "JSON",
             success: function (response) {
                 if(response.data.length === 0){
-                    outstandingItemTable.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="8" class="text-center">Not found</td></tr>'
+                    outstandingItemTable.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="9" class="text-center">Not found</td></tr>'
                 } else {
                     let mydes = document.getElementById("outstandingItemTableContainer");
                     let myfrag = document.createDocumentFragment();
@@ -513,12 +520,15 @@ echo $todis;
                         newcell.classList.add('text-center')
                         newcell.innerHTML = arrayItem['SPL_MS']
                         newcell = newrow.insertCell(5)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = numeral(arrayItem['REQQT']).format(',')
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = numeral(arrayItem['SPL_QTYUSE']).format(',')
                         newcell = newrow.insertCell(6)
                         newcell.classList.add('text-end')
-                        newcell.innerHTML = numeral(arrayItem['PLOTQT']).format(',')
+                        newcell.innerHTML = numeral(arrayItem['REQQT']).format(',')
                         newcell = newrow.insertCell(7)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(arrayItem['PLOTQT']).format(',')
+                        newcell = newrow.insertCell(8)
                         newcell.classList.add('text-end')
                         newcell.innerHTML = numeral(balanceQT).format(',')
                     })
@@ -527,7 +537,7 @@ echo $todis;
                 }
             },
             error: function(xhr, xopt, xthrow) {
-                outstandingItemTable.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="8" class="text-center">${xthrow}</td></tr>`
+                outstandingItemTable.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="9" class="text-center">${xthrow}</td></tr>`
             }
         })
     });
