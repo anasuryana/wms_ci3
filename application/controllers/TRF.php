@@ -63,7 +63,7 @@ class TRF extends CI_Controller
             'PRCSCREQUIP',
             'PSIEQUIP',
             'QAEQUIP',
-            'FCTEQUIP',            
+            'FCTEQUIP',
             'ICTEQUIP',
         ]);
         foreach ($rs as $r) {
@@ -207,7 +207,7 @@ class TRF extends CI_Controller
                             'TRFD_CREATED_BY' => $this->session->userdata('nama'),
                             'TRFD_CREATED_DT' => $CurrentDateTime,
                         ];
-                        if (strtoupper(strlen($LineItemCode[$i])) === 'N2GAS') {
+                        if (strtoupper(trim($LineItemCode[$i])) === 'N2GAS') {
                             $RSAutoConform[] = [
                                 'ITH_ITMCD' => $LineItemCode[$i],
                                 'ITH_DATE' => $docDate,
@@ -251,7 +251,7 @@ class TRF extends CI_Controller
                                 $r['ITH_LUPDT'] = $docDate . date(' H:i:s');
                             }
                             unset($r);
-                            $this->ITH_mod->insert($RSLastTransaction);
+                            $this->ITH_mod->insertb($RSLastTransaction);
                         }
 
                         $response[] = ['cd' => '1', 'msg' => 'OK', 'reff' => $NewDocument];
