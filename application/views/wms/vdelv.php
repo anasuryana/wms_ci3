@@ -5747,6 +5747,7 @@ echo $tohtml;
 
     function txfg_btn_toceisa_e_click(p) {
         const doc = txfg_txt_id.value
+        const docType = txfg_cmb_bcdoc.value + (doc.includes('RTN') ? 'rtn' : '')
         if(doc.length<=3)
         {
             alertify.warning('TX ID is required')
@@ -5757,14 +5758,17 @@ echo $tohtml;
         p.innerHTML = 'Please wait'
         $.ajax({
             type: "POST",
-            url: "<?=base_url('DELV/postingCEISA40BC')?>"+txfg_cmb_bcdoc.value,
+            url: "DELV/postingCEISA40BC" + docType,
             data: {doc: doc},
+            dataType: "json",
             success: function (response) {
                 p.classList.remove('disabled')
-
+                p.innerHTML = 'CEISA 4.0'
+                alertify.message(response.message)
             }, error: function(xhr, ajaxOptions, throwError) {
                 p.classList.remove('disabled')
                 alert(throwError);
+                p.innerHTML = 'CEISA 4.0'
             }
         })
     }
