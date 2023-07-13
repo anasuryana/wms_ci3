@@ -1216,6 +1216,7 @@ class DELV_mod extends CI_Model
     {
         $this->db->limit(1);
         $this->db->select($pColumns);
+        $this->db->join("MCUS_TBL", "DLV_CUSTCD=MCUS_CUSCD");
         $this->db->from($this->TABLENAME);
         $this->db->where($pWhere)->where('DLV_POST IS NOT NULL', null, false);
         $query = $this->db->get();
