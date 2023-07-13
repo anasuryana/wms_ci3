@@ -799,25 +799,6 @@ class DELV extends CI_Controller
         die($rs);
     }
 
-    public function get_newdono()
-    {
-        header('Content-Type: application/json');
-        $cip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-        $cuserid = $this->session->userdata('nama');
-        $myar = [];
-        $rs = [];
-        if ($this->PTTRN_mod->select_total_rows() > 0) {
-            $searchpar = ['PTTRN_USRID' => $cuserid, 'PTTRN_ID' => $cip];
-            if ($this->PTTRN_mod->check_Primary($searchpar) > 0) {
-                $rs = $this->PTTRN_mod->select_all_where($searchpar);
-                $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
-            } else {
-            }
-        } else {
-        }
-        die('{"status" : ' . json_encode($myar) . ', "data" : ' . json_encode($rs) . '}');
-    }
-
     public function searchcustomer_si()
     {
         header('Content-Type: application/json');
@@ -4157,7 +4138,7 @@ class DELV extends CI_Controller
                     $pdf->SetXY(32, $curY + 2);
                     $pdf->Cell(63.73, 4, $dis_item, 0, 0, 'L');
                     $pdf->SetXY(90, $curY - 3);
-                    $pdf->Cell(16.63, 4, $dis_qty, 0, 0, 'R'); #number_format($r['SISCN_SERQTY'] * $r['TTLBOX'])
+                    $pdf->Cell(16.63, 4, $dis_qty, 0, 0, 'R');
                     $pdf->SetXY(110, $curY - 3);
                     $pdf->Cell(24.71, 4, number_format($r['MITM_NWG'], 4), 0, 0, 'R');
                     $pdf->SetXY(137.07, $curY - 3);
@@ -4296,18 +4277,18 @@ class DELV extends CI_Controller
                         $pdf->SetXY(30.75, $curY);
                         $pdf->Cell(63.91, 4, $ItemDis2, 0, 0, 'L');
                         $pdf->SetXY(30.75, $curY + 4);
-                        $pdf->Cell(63.91, 4, $ItemDis, 0, 0, 'L'); //LINE2
+                        $pdf->Cell(63.91, 4, $ItemDis, 0, 0, 'L');
                         $pdf->SetXY(94.66, $curY);
                         $pdf->Cell(43.43, 4, number_format($n['TTLDLV']) . " " . $n['MITM_STKUOM'], 0, 0, 'R');
                         $pdf->SetXY(138.09, $curY);
                         $pdf->Cell(58.34, 4, "EX.BC 40 : " . $n['RCV_BCNO'], 0, 0, 'L');
                         $pdf->SetXY(138.09, $curY + 4);
-                        $pdf->Cell(58.34, 4, "LOT. : " . number_format($n['TTLALLDLV']) . " / " . number_format($n['MTTL']), 0, 0, 'L'); //LINE2
+                        $pdf->Cell(58.34, 4, "LOT. : " . number_format($n['TTLALLDLV']) . " / " . number_format($n['MTTL']), 0, 0, 'L');
                         $pdf->SetXY(138.09, $curY + 8);
-                        $pdf->Cell(58.34, 4, "Sisa. : " . number_format($n['MTTL'] - $n['TTLALLDLV']), 0, 0, 'L'); //LINE
+                        $pdf->Cell(58.34, 4, "Sisa. : " . number_format($n['MTTL'] - $n['TTLALLDLV']), 0, 0, 'L');
                         if ($n['DLV_CONA'] != '') {
                             $pdf->SetXY(138.09, $curY + 12);
-                            $pdf->Cell(58.34, 4, "PK. NO : " . $n['DLV_CONA'], 0, 0, 'L'); //LINE
+                            $pdf->Cell(58.34, 4, "PK. NO : " . $n['DLV_CONA'], 0, 0, 'L');
                         }
                         $curY += 16;
                         $ttlbaris++;
@@ -4626,12 +4607,6 @@ class DELV extends CI_Controller
         die(json_encode($myar));
     }
 
-    public function testIsNonUnique()
-    {
-        $cid = $this->input->get('doc');
-        echo $this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']);
-    }
-
     public function NonReffnumberDeliveryConfirmation($data)
     {
         $dedicatedWarehouse = ['AIWH1', 'NRWH2', 'ARWH9SC'];
@@ -4681,19 +4656,6 @@ class DELV extends CI_Controller
             }
         }
         return $resith;
-    }
-
-    public function testdeduction()
-    {
-        $ctpb_tgl_daftar = $this->input->get('intgldaftar');
-        $cid = $this->input->get('inid');
-
-        if ($ctpb_tgl_daftar) {
-            if ($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) > 0) {
-                $this->NonReffnumberDeliveryConfirmation(['DOC' => $cid, 'DATE' => $ctpb_tgl_daftar, 'DATETIME' => $ctpb_tgl_daftar . ' 15:15:15']);
-            }
-        }
-        echo 'done ' . date('Y-m-d H:i:s');
     }
 
     public function change41()
@@ -6734,13 +6696,6 @@ class DELV extends CI_Controller
             $ret = 0;
         }
         return $ret;
-    }
-
-    public function setprice_manual()
-    {
-        $csj = $this->input->get('txid');
-        $this->setPrice(base64_encode($csj));
-        echo 'done' . $csj;
     }
 
     public function posting41()
@@ -13525,19 +13480,6 @@ class DELV extends CI_Controller
         return $data;
     }
 
-    public function inventory___getstockbc($pbc_type, $ptujuan, $psj, $prm, $pqty, $plot, $pbcdate)
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/api/inventory/getStockBC');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "bc=$pbc_type&tujuan=$ptujuan&doc=$psj&date_out=$pbcdate&item_num=$prm&qty=$pqty&lot=$plot");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 660);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        return $data;
-    }
     public function inventory_getstockbc_v2($pbc_type, $ptujuan, $psj, $prm, $pqty, $plot, $pbcdate, $pkontrak = "")
     {
         $fields = [
