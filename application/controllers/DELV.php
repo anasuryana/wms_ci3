@@ -101,59 +101,7 @@ class DELV extends CI_Controller
     {
         throw new Exception('ERROR NO : ' . $errno . ' MESSAGE : ' . $errstr . ' LINE : ' . $errline);
     }
-
-    public function testCalculator()
-    {
-        $calc = new RMCalculator();
-        $apsn = ['SP-IEI-2021-11-0580'];
-        $rspsn_sup = $calc->tobexported_list_for_serd($apsn);
-        $rsused = $this->SERD_mod->selectall_where_psn_in($apsn);
-
-        #decrease usage by Used RM of another JOB
-        foreach ($rsused as &$d) {
-            if (!array_key_exists("USED", $d)) {
-                $d["USED"] = false;
-            }
-        }
-        unset($d);
-
-        foreach ($rspsn_sup as &$r) {
-            $r['SPLSCN_QTY_BAK'] = $r['SPLSCN_QTY'];
-            foreach ($rsused as &$k) {
-                if (
-                    $r['SPLSCN_FEDR'] == trim($k['SERD_FR'])
-                    && $r['SPLSCN_DOC'] == trim($k['SERD_PSNNO'])
-                    && $r['PPSN2_MSFLG'] == trim($k['SERD_MSFLG'])
-                    && $r['SPLSCN_ITMCD'] == trim($k['SERD_ITMCD'])
-                    && $r['SPLSCN_LOTNO'] == trim($k['SERD_LOTNO'])
-                    && $r['SPLSCN_ORDERNO'] == trim($k['SERD_MCZ'])
-                    && $r['SPLSCN_LINE'] == trim($k['SERD_LINENO'])
-                    && $r['PPSN2_MC'] == trim($k['SERD_MC'])
-                    && $r['PPSN2_PROCD'] == trim($k['SERD_PROCD'])
-                    && !$k['USED']
-                ) {
-                    if (intval($r['SPLSCN_QTY']) > $k['SERD_QTY']) {
-                        $r['SPLSCN_QTY'] -= $k['SERD_QTY'];
-                        $k['SERD_QTY'] = 0;
-                        $k['USED'] = true;
-                        $r['SPLSCN_QTY_BAK'] = $r['SPLSCN_QTY'];
-                    } else {
-                        $k['SERD_QTY'] -= $r['SPLSCN_QTY'] * 1;
-                        $r['SPLSCN_QTY'] = 0;
-                        $r['SPLSCN_QTY_BAK'] = $r['SPLSCN_QTY'];
-                        if ($k['SERD_QTY'] == 0) {
-                            $k['USED'] = true;
-                        }
-                        break;
-                    }
-                }
-            }
-            unset($k);
-        }
-        unset($r);
-        die(json_encode($rspsn_sup));
-    }
-
+   
     public function index()
     {
         die("sorry");
@@ -205,194 +153,6 @@ class DELV extends CI_Controller
     public function form_report_summary_part_return()
     {
         $this->load->view('wms_report/vrpt_summary_part_return');
-    }
-
-    public function report_summary_part_return()
-    {
-        header('Content-Type: application/json');
-        $pdate1 = $this->input->get('date1');
-        $pdate2 = $this->input->get('date2');
-        $cbgroup = $this->input->get('bsgrp');
-        $sbgroup = "";
-        if (is_array($cbgroup)) {
-            for ($i = 0; $i < count($cbgroup); $i++) {
-                $sbgroup .= "'$cbgroup[$i]',";
-            }
-            $sbgroup = substr($sbgroup, 0, strlen($sbgroup) - 1);
-            if ($sbgroup == '') {
-                $sbgroup = "''";
-            }
-        } else {
-            $sbgroup = "''";
-        }
-        $rs = $this->ITH_mod->select_deliv_part_to3rdparty($pdate1, $pdate2, $sbgroup);
-        die(json_encode(['data' => $rs]));
-    }
-
-    public function report_summary_inv()
-    {
-        header('Content-Type: application/json');
-        $pdate1 = $this->input->get('date1');
-        $pdate2 = $this->input->get('date2');
-        $cbgroup = $this->input->get('bsgrp');
-        $sbgroup = "";
-        if (is_array($cbgroup)) {
-            for ($i = 0; $i < count($cbgroup); $i++) {
-                $sbgroup .= "'$cbgroup[$i]',";
-            }
-            $sbgroup = substr($sbgroup, 0, strlen($sbgroup) - 1);
-            if ($sbgroup == '') {
-                $sbgroup = "''";
-            }
-        } else {
-            $sbgroup = "''";
-        }
-        $rs = $this->ITH_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup);
-        die(json_encode(['data' => $rs]));
-    }
-    public function report_summary_inv_as_xls()
-    {
-        $bsgrp = '';
-        $pdate1 = '';
-        $pdate2 = '';
-        if (isset($_COOKIE["CKPSI_BG"])) {
-            $bsgrp = $_COOKIE["CKPSI_BG"];
-        } else {
-            exit('nothing to be exported');
-        }
-        $pdate1 = $_COOKIE["CKPSI_DATE1"];
-        $pdate2 = $_COOKIE["CKPSI_DATE2"];
-        $sbgroup = $bsgrp;
-        $rs = $this->ITH_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup);
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('RESUME');
-        $sheet->setCellValueByColumnAndRow(1, 1, 'SALES');
-        $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
-        $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
-
-        $sheet->setCellValueByColumnAndRow(1, 4, 'SHIP DATE');
-        $sheet->setCellValueByColumnAndRow(2, 4, 'DO NO');
-        $sheet->setCellValueByColumnAndRow(3, 4, 'Customer DO NO');
-        $sheet->setCellValueByColumnAndRow(4, 4, 'DELIVERY CODE');
-        $sheet->setCellValueByColumnAndRow(5, 4, 'No. Aju');
-        $sheet->setCellValueByColumnAndRow(6, 4, 'Nopen');
-        $sheet->setCellValueByColumnAndRow(7, 4, 'SPPB No');
-        $sheet->setCellValueByColumnAndRow(8, 4, 'Invoice Date (Confirmation)');
-        $sheet->setCellValueByColumnAndRow(9, 4, 'Invoice Date (Document)');
-        $sheet->setCellValueByColumnAndRow(10, 4, 'NO. Invoice STX');
-        $sheet->setCellValueByColumnAndRow(11, 4, 'No. Invoice SMT');
-        $sheet->setCellValueByColumnAndRow(12, 4, 'MODEL CODE');
-        $sheet->setCellValueByColumnAndRow(13, 4, 'MODEL DESCRIPTION');
-        $sheet->setCellValueByColumnAndRow(14, 4, 'CPO NO');
-        $sheet->setCellValueByColumnAndRow(15, 4, 'SHIP QTY');
-        $sheet->setCellValueByColumnAndRow(16, 4, 'SALES PRICE');
-        $sheet->setCellValueByColumnAndRow(17, 4, 'AMOUNT');
-        $inx = 5;
-        foreach ($rs as $r) {
-            $sheet->setCellValueByColumnAndRow(1, $inx, $r['ITH_DATEC']);
-            $sheet->setCellValueByColumnAndRow(2, $inx, $r['ITH_DOC']);
-            $sheet->setCellValueByColumnAndRow(3, $inx, $r['DLV_CUSTDO']);
-            $sheet->setCellValueByColumnAndRow(4, $inx, $r['DLV_CONSIGN']);
-            $sheet->setCellValueByColumnAndRow(5, $inx, $r['NOMAJU']);
-            $sheet->setCellValueByColumnAndRow(6, $inx, $r['NOMPEN']);
-            $sheet->setCellValueByColumnAndRow(7, $inx, $r['DLV_SPPBDOC']);
-            $sheet->setCellValueByColumnAndRow(8, $inx, $r['ITH_DATEC']);
-            $sheet->setCellValueByColumnAndRow(9, $inx, $r['INVDT']);
-            $sheet->setCellValueByColumnAndRow(10, $inx, $r['DLV_INVNO']);
-            $sheet->setCellValueByColumnAndRow(11, $inx, $r['DLV_SMTINVNO']);
-            $sheet->setCellValueByColumnAndRow(12, $inx, $r['ITH_ITMCD']);
-            $sheet->setCellValueByColumnAndRow(13, $inx, $r['ITMDESCD']);
-            $sheet->setCellValueByColumnAndRow(14, $inx, $r['DLVPRC_CPO']);
-            $sheet->setCellValueByColumnAndRow(15, $inx, $r['DLVPRC_QTY']);
-            $sheet->setCellValueByColumnAndRow(16, $inx, $r['DLVPRC_PRC']);
-            $sheet->setCellValueByColumnAndRow(17, $inx, "=ROUND(" . $r['AMOUNT'] . ",2)");
-            $inx++;
-        }
-        foreach (range('A', 'P') as $r) {
-            $sheet->getColumnDimension($r)->setAutoSize(true);
-        }
-        $rang = "P1:P" . $inx;
-        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-        $dodis = $pdate1 . " to " . $pdate2;
-        $stringjudul = "Summary Sales Invoice " . $dodis;
-        $writer = new Xlsx($spreadsheet);
-        $filename = $stringjudul; //save our workbook as this file name
-
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output');
-    }
-    public function report_summary_return_as_xls()
-    {
-        $bsgrp = '';
-        $pdate1 = '';
-        $pdate2 = '';
-        if (isset($_COOKIE["CKPSI_BG"])) {
-            $bsgrp = $_COOKIE["CKPSI_BG"];
-        } else {
-            exit('nothing to be exported');
-        }
-        $pdate1 = $_COOKIE["CKPSI_DATE1"];
-        $pdate2 = $_COOKIE["CKPSI_DATE2"];
-        $sbgroup = $bsgrp;
-        $rs = $this->ITH_mod->select_deliv_part_to3rdparty($pdate1, $pdate2, $sbgroup);
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('RESUME');
-        $sheet->setCellValueByColumnAndRow(1, 1, 'RETURN');
-        $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
-        $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
-
-        $sheet->setCellValueByColumnAndRow(1, 4, 'Business');
-        $sheet->setCellValueByColumnAndRow(2, 4, 'Trans Date');
-        $sheet->setCellValueByColumnAndRow(3, 4, 'TX ID');
-        $sheet->setCellValueByColumnAndRow(4, 4, 'Invoice');
-        $sheet->setCellValueByColumnAndRow(5, 4, 'MEGA Doc');
-        $sheet->setCellValueByColumnAndRow(6, 4, 'Consignee');
-        $sheet->setCellValueByColumnAndRow(7, 4, 'Reff Document');
-        $sheet->setCellValueByColumnAndRow(8, 4, 'Description');
-        $sheet->setCellValueByColumnAndRow(9, 4, 'Item Code');
-        $sheet->setCellValueByColumnAndRow(10, 4, 'Item Name');
-        $sheet->setCellValueByColumnAndRow(11, 4, 'Return Qty');
-        $sheet->setCellValueByColumnAndRow(12, 4, 'Location From');
-        $sheet->setCellValueByColumnAndRow(13, 4, 'Price');
-        $sheet->setCellValueByColumnAndRow(14, 4, 'Amount');
-        $sheet->setCellValueByColumnAndRow(15, 4, '3rd Party');
-        $inx = 5;
-        foreach ($rs as $r) {
-            $sheet->setCellValueByColumnAndRow(1, $inx, $r['DLV_BSGRP']);
-            $sheet->setCellValueByColumnAndRow(2, $inx, $r['DLV_DATE']);
-            $sheet->setCellValueByColumnAndRow(3, $inx, $r['ITH_DOC']);
-            $sheet->setCellValueByColumnAndRow(4, $inx, $r['DLV_SMTINVNO']);
-            $sheet->setCellValueByColumnAndRow(5, $inx, $r['DLV_PARENTDOC']);
-            $sheet->setCellValueByColumnAndRow(6, $inx, $r['DLV_CONSIGN']);
-            $sheet->setCellValueByColumnAndRow(7, $inx, $r['DLV_RPRDOC']);
-            $sheet->setCellValueByColumnAndRow(8, $inx, $r['DLV_DSCRPTN']);
-            $sheet->setCellValueByColumnAndRow(9, $inx, $r['ITH_ITMCD']);
-            $sheet->setCellValueByColumnAndRow(10, $inx, $r['ITMDESCD']);
-            $sheet->setCellValueByColumnAndRow(11, $inx, $r['DLVPRC_QTY']);
-            $sheet->setCellValueByColumnAndRow(12, $inx, $r['DLV_LOCFR']);
-            $sheet->setCellValueByColumnAndRow(13, $inx, $r['DLVPRC_PRC']);
-            $sheet->setCellValueByColumnAndRow(14, $inx, $r['AMOUNT']);
-            $sheet->setCellValueByColumnAndRow(15, $inx, $r['MSUP_SUPCR']);
-            $inx++;
-        }
-        foreach (range('B', 'N') as $r) {
-            $sheet->getColumnDimension($r)->setAutoSize(true);
-        }
-        $rang = "M1:M" . $inx;
-        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-        $dodis = $pdate1 . " to " . $pdate2;
-        $stringjudul = "Summary Part Return " . $dodis;
-        $writer = new Xlsx($spreadsheet);
-        $filename = $stringjudul; //save our workbook as this file name
-
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output');
     }
 
     public function vreturn_rm()
@@ -473,7 +233,7 @@ class DELV extends CI_Controller
                             ) {
                                 $process2 = true;
                                 while ($process2) {
-                                    if (($n['PIS3_REQQTSUM'] > $n["SUPQTY"])) { //sinii
+                                    if (($n['PIS3_REQQTSUM'] > $n["SUPQTY"])) {
                                         if ($x['SPLSCN_QTY'] > 0) {
                                             $n["SUPQTY"] += 1;
                                             $x['SPLSCN_QTY']--;
@@ -7179,7 +6939,15 @@ class DELV extends CI_Controller
             $cz_h_NETTO += $r['NWG'];
             $cz_h_HARGA_PENYERAHAN_FG += $t_HARGA_PENYERAHAN;
             $tpb_barang[] = [
-                'KODE_BARANG' => $r['SSO2_MDLCD'], 'POS_TARIF' => $r['MITM_HSCD'], 'URAIAN' => $r['MITM_ITMD1'], 'JUMLAH_SATUAN' => $r['SISOQTY'], 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 'NETTO' => $r['NWG'], 'HARGA_PENYERAHAN' => round($r['CIF'], 2), 'SERI_BARANG' => $SERI_BARANG, 'KODE_STATUS' => '02',
+                'KODE_BARANG' => $r['SSO2_MDLCD']
+                , 'POS_TARIF' => $r['MITM_HSCD']
+                , 'URAIAN' => $r['MITM_ITMD1']
+                , 'JUMLAH_SATUAN' => $r['SISOQTY']
+                , 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM']
+                , 'NETTO' => $r['NWG']
+                , 'HARGA_PENYERAHAN' => round($r['CIF'], 2)
+                , 'SERI_BARANG' => $SERI_BARANG
+                , 'KODE_STATUS' => '02',
             ];
             $SERI_BARANG++;
         }
@@ -8347,7 +8115,9 @@ class DELV extends CI_Controller
                 $myar[] = ['cd' => 0, 'msg' => 'NOMOR AJU is not found in ceisa local data', 'aju' => $nomorajufull];
             }
         }
-        die(json_encode(['status' => $myar, 'data' => $result_data, 'data2' => $response_data]));
+        $CeisaFourRespon = $this->Ceisa40GetStatus(['AJU' => $nomorajufull]);
+        die(json_encode(['status' => $myar, 'data' => $result_data, 'data2' => $response_data
+            , 'CeisaFourRespon' => $CeisaFourRespon]));
     }
 
     public function getjobstatus()
@@ -13416,11 +13186,26 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID'], ['DLV_ID' => $doc]);
+        $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD'], ['DLV_ID' => $doc]);
         $data = [];
         if (empty($RSHeader)) {
             $data[] = ['message' => 'Please posting to local first'];
         } else {
+            foreach ($RSHeader as $r) {
+                $ccustdate = $r['DLV_BCDATE'];
+                $czcurrency = $r['MCUS_CURCD'];
+            }
+            $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
+            if (count($rscurr) == 0) {
+                $this->setFinishPosting($csj);
+                $myar[] = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
+                die('{"status":' . json_encode($myar) . '}');
+            } else {
+                foreach ($rscurr as $r) {
+                    $czharga_matauang = $r->MEXRATE_VAL;
+                    break;
+                }
+            }
             $cz_h_CIF_FG = 0;
             $cz_h_HARGA_PENYERAHAN_FG = 0;
             $t_HARGA_PENYERAHAN = 0;
@@ -13432,6 +13217,7 @@ class DELV extends CI_Controller
             $rsitem_p_price = $this->setPriceRS(base64_encode($doc));
             $rsplotrm_per_fgprice = $this->perprice($doc, $rsitem_p_price);
             foreach ($rsitem_p_price as &$r) {
+                $t_HARGA_PENYERAHAN = $r['CIF'] * $czharga_matauang;
                 $cz_h_CIF_FG += $r['CIF'];
                 $cz_h_NETTO += $r['NWG'];
                 $cz_h_HARGA_PENYERAHAN_FG += $t_HARGA_PENYERAHAN;
@@ -13636,7 +13422,7 @@ class DELV extends CI_Controller
                         , 'KODE_FASILITAS' => 2
                         , 'TARIF_FASILITAS' => 100
                         , 'TARIF' => $r['RBM']
-                        , 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                        , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
                     ],
                     [
                         'JENIS_TARIF' => 'PPN'
@@ -13646,7 +13432,7 @@ class DELV extends CI_Controller
                         , 'KODE_FASILITAS' => 2
                         , 'TARIF_FASILITAS' => 100
                         , 'TARIF' => $r['PPN']
-                        , 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                        , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
                     ],
                     [
                         'JENIS_TARIF' => 'PPH'
@@ -13656,7 +13442,7 @@ class DELV extends CI_Controller
                         , 'KODE_FASILITAS' => 2
                         , 'TARIF_FASILITAS' => 100
                         , 'TARIF' => $r['PPH']
-                        , 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                        , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
                     ],
                 ];
                 $r['tarif'] = $tpb_bahan_baku_tarif;
@@ -13672,7 +13458,7 @@ class DELV extends CI_Controller
                 unset($b);
             }
 
-            $data[] = ['data' => [
+            $data = [
                 'txid' => $doc,
                 'cif' => $cz_h_CIF_FG,
                 'hargaPenyerahan' => $cz_h_HARGA_PENYERAHAN_FG,
@@ -13680,9 +13466,23 @@ class DELV extends CI_Controller
                 'jumlahKemasan' => $cz_JUMLAH_KEMASAN,
                 'ListBarangByPrice' => $tpb_barang,
                 'ListBahanBakuList' => $tpb_bahan_baku,
-            ]];
+                'BCTYPE' => 27,
+            ];
         }
-        die(json_encode($data));
+        $message = '';
+        if (!empty($data)) {
+            $message = 'OK';
+            log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
+            $responApi = $this->inventory_ceisa40($data);
+            log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
+        } else {
+            $message = 'OK, No data';
+        }
+        $respon = [
+            'message' => $message,
+            'Apirespon' => $responApi,
+        ];
+        die(json_encode($respon));
     }
 
     public function postingCEISA40BC27Return()
@@ -13747,7 +13547,7 @@ class DELV extends CI_Controller
             'doc' => $psj,
             'kontrak' => $pkontrak,
             'item_num' => $prm,
-            'qty' => $pqty,            
+            'qty' => $pqty,
         ];
         $fields_string = http_build_query($fields);
         $ch = curl_init();
@@ -13801,18 +13601,30 @@ class DELV extends CI_Controller
     {
         $fields = [
             'txid' => $data['txid'],
-            'cif' => $data['cif'],
-            'hargaPenyerahan' => $data['hargaPenyerahan'],
-            'netto' => $data['netto'],
-            'jumlahKemasan' => $data['jumlahKemasan'],
-            'ListBarangByPrice' => $data['RSBarang'],
-            'ListBahanBakuList' => $data['RSBahanBaku'],
+            'cif' => (float) $data['cif'],
+            'hargaPenyerahan' => (float) $data['hargaPenyerahan'],
+            'netto' => (float) $data['netto'],
+            'jumlahKemasan' => (float) $data['jumlahKemasan'],
+            'ListBarangByPrice' => $data['ListBarangByPrice'],
+            'ListBahanBakuList' => $data['ListBahanBakuList'],
         ];
         $fields_string = http_build_query($fields);
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/public/api/ceisafour/sendPosting/' . $data['BCTYPE']);
+        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/' . $data['BCTYPE']);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3600);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }
+
+    public function Ceisa40GetStatus($data)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $data['AJU']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
         curl_setopt($ch, CURLOPT_TIMEOUT, 3600);

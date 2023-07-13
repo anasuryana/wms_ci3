@@ -13,6 +13,7 @@ class DELVHistory extends CI_Controller
         $this->load->library('session');
         $this->load->model('SISO_mod');
         $this->load->model('DELV_mod');
+        $this->load->model('ITH_mod');
         $this->load->model('RPSAL_BCSTOCK_mod');
         $this->load->model('DisposeDraft_mod');
         $this->load->model('ZRPSTOCK_mod');
@@ -340,5 +341,194 @@ class DELVHistory extends CI_Controller
         header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
+    }
+
+    public function report_summary_inv_as_xls()
+    {
+        $bsgrp = '';
+        $pdate1 = '';
+        $pdate2 = '';
+        if (isset($_COOKIE["CKPSI_BG"])) {
+            $bsgrp = $_COOKIE["CKPSI_BG"];
+        } else {
+            exit('nothing to be exported');
+        }
+        $pdate1 = $_COOKIE["CKPSI_DATE1"];
+        $pdate2 = $_COOKIE["CKPSI_DATE2"];
+        $sbgroup = $bsgrp;
+        $rs = $this->ITH_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup);
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('RESUME');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'SALES');
+        $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
+        $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
+
+        $sheet->setCellValueByColumnAndRow(1, 4, 'SHIP DATE');
+        $sheet->setCellValueByColumnAndRow(2, 4, 'DO NO');
+        $sheet->setCellValueByColumnAndRow(3, 4, 'Customer DO NO');
+        $sheet->setCellValueByColumnAndRow(4, 4, 'DELIVERY CODE');
+        $sheet->setCellValueByColumnAndRow(5, 4, 'No. Aju');
+        $sheet->setCellValueByColumnAndRow(6, 4, 'Nopen');
+        $sheet->setCellValueByColumnAndRow(7, 4, 'SPPB No');
+        $sheet->setCellValueByColumnAndRow(8, 4, 'Invoice Date (Confirmation)');
+        $sheet->setCellValueByColumnAndRow(9, 4, 'Invoice Date (Document)');
+        $sheet->setCellValueByColumnAndRow(10, 4, 'NO. Invoice STX');
+        $sheet->setCellValueByColumnAndRow(11, 4, 'No. Invoice SMT');
+        $sheet->setCellValueByColumnAndRow(12, 4, 'MODEL CODE');
+        $sheet->setCellValueByColumnAndRow(13, 4, 'MODEL DESCRIPTION');
+        $sheet->setCellValueByColumnAndRow(14, 4, 'CPO NO');
+        $sheet->setCellValueByColumnAndRow(15, 4, 'SHIP QTY');
+        $sheet->setCellValueByColumnAndRow(16, 4, 'SALES PRICE');
+        $sheet->setCellValueByColumnAndRow(17, 4, 'AMOUNT');
+        $inx = 5;
+        foreach ($rs as $r) {
+            $sheet->setCellValueByColumnAndRow(1, $inx, $r['ITH_DATEC']);
+            $sheet->setCellValueByColumnAndRow(2, $inx, $r['ITH_DOC']);
+            $sheet->setCellValueByColumnAndRow(3, $inx, $r['DLV_CUSTDO']);
+            $sheet->setCellValueByColumnAndRow(4, $inx, $r['DLV_CONSIGN']);
+            $sheet->setCellValueByColumnAndRow(5, $inx, $r['NOMAJU']);
+            $sheet->setCellValueByColumnAndRow(6, $inx, $r['NOMPEN']);
+            $sheet->setCellValueByColumnAndRow(7, $inx, $r['DLV_SPPBDOC']);
+            $sheet->setCellValueByColumnAndRow(8, $inx, $r['ITH_DATEC']);
+            $sheet->setCellValueByColumnAndRow(9, $inx, $r['INVDT']);
+            $sheet->setCellValueByColumnAndRow(10, $inx, $r['DLV_INVNO']);
+            $sheet->setCellValueByColumnAndRow(11, $inx, $r['DLV_SMTINVNO']);
+            $sheet->setCellValueByColumnAndRow(12, $inx, $r['ITH_ITMCD']);
+            $sheet->setCellValueByColumnAndRow(13, $inx, $r['ITMDESCD']);
+            $sheet->setCellValueByColumnAndRow(14, $inx, $r['DLVPRC_CPO']);
+            $sheet->setCellValueByColumnAndRow(15, $inx, $r['DLVPRC_QTY']);
+            $sheet->setCellValueByColumnAndRow(16, $inx, $r['DLVPRC_PRC']);
+            $sheet->setCellValueByColumnAndRow(17, $inx, "=ROUND(" . $r['AMOUNT'] . ",2)");
+            $inx++;
+        }
+        foreach (range('A', 'P') as $r) {
+            $sheet->getColumnDimension($r)->setAutoSize(true);
+        }
+        $rang = "P1:P" . $inx;
+        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $dodis = $pdate1 . " to " . $pdate2;
+        $stringjudul = "Summary Sales Invoice " . $dodis;
+        $writer = new Xlsx($spreadsheet);
+        $filename = $stringjudul; //save our workbook as this file name
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+    public function report_summary_return_as_xls()
+    {
+        $bsgrp = '';
+        $pdate1 = '';
+        $pdate2 = '';
+        if (isset($_COOKIE["CKPSI_BG"])) {
+            $bsgrp = $_COOKIE["CKPSI_BG"];
+        } else {
+            exit('nothing to be exported');
+        }
+        $pdate1 = $_COOKIE["CKPSI_DATE1"];
+        $pdate2 = $_COOKIE["CKPSI_DATE2"];
+        $sbgroup = $bsgrp;
+        $rs = $this->ITH_mod->select_deliv_part_to3rdparty($pdate1, $pdate2, $sbgroup);
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('RESUME');
+        $sheet->setCellValueByColumnAndRow(1, 1, 'RETURN');
+        $sheet->setCellValueByColumnAndRow(1, 2, 'PERIOD : ' . str_replace('-', '/', $pdate1) . ' - ' . str_replace('-', '/', $pdate2));
+        $sheet->setCellValueByColumnAndRow(1, 3, 'BUSINESS : ' . str_replace("'", "", $sbgroup));
+
+        $sheet->setCellValueByColumnAndRow(1, 4, 'Business');
+        $sheet->setCellValueByColumnAndRow(2, 4, 'Trans Date');
+        $sheet->setCellValueByColumnAndRow(3, 4, 'TX ID');
+        $sheet->setCellValueByColumnAndRow(4, 4, 'Invoice');
+        $sheet->setCellValueByColumnAndRow(5, 4, 'MEGA Doc');
+        $sheet->setCellValueByColumnAndRow(6, 4, 'Consignee');
+        $sheet->setCellValueByColumnAndRow(7, 4, 'Reff Document');
+        $sheet->setCellValueByColumnAndRow(8, 4, 'Description');
+        $sheet->setCellValueByColumnAndRow(9, 4, 'Item Code');
+        $sheet->setCellValueByColumnAndRow(10, 4, 'Item Name');
+        $sheet->setCellValueByColumnAndRow(11, 4, 'Return Qty');
+        $sheet->setCellValueByColumnAndRow(12, 4, 'Location From');
+        $sheet->setCellValueByColumnAndRow(13, 4, 'Price');
+        $sheet->setCellValueByColumnAndRow(14, 4, 'Amount');
+        $sheet->setCellValueByColumnAndRow(15, 4, '3rd Party');
+        $inx = 5;
+        foreach ($rs as $r) {
+            $sheet->setCellValueByColumnAndRow(1, $inx, $r['DLV_BSGRP']);
+            $sheet->setCellValueByColumnAndRow(2, $inx, $r['DLV_DATE']);
+            $sheet->setCellValueByColumnAndRow(3, $inx, $r['ITH_DOC']);
+            $sheet->setCellValueByColumnAndRow(4, $inx, $r['DLV_SMTINVNO']);
+            $sheet->setCellValueByColumnAndRow(5, $inx, $r['DLV_PARENTDOC']);
+            $sheet->setCellValueByColumnAndRow(6, $inx, $r['DLV_CONSIGN']);
+            $sheet->setCellValueByColumnAndRow(7, $inx, $r['DLV_RPRDOC']);
+            $sheet->setCellValueByColumnAndRow(8, $inx, $r['DLV_DSCRPTN']);
+            $sheet->setCellValueByColumnAndRow(9, $inx, $r['ITH_ITMCD']);
+            $sheet->setCellValueByColumnAndRow(10, $inx, $r['ITMDESCD']);
+            $sheet->setCellValueByColumnAndRow(11, $inx, $r['DLVPRC_QTY']);
+            $sheet->setCellValueByColumnAndRow(12, $inx, $r['DLV_LOCFR']);
+            $sheet->setCellValueByColumnAndRow(13, $inx, $r['DLVPRC_PRC']);
+            $sheet->setCellValueByColumnAndRow(14, $inx, $r['AMOUNT']);
+            $sheet->setCellValueByColumnAndRow(15, $inx, $r['MSUP_SUPCR']);
+            $inx++;
+        }
+        foreach (range('B', 'N') as $r) {
+            $sheet->getColumnDimension($r)->setAutoSize(true);
+        }
+        $rang = "M1:M" . $inx;
+        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $dodis = $pdate1 . " to " . $pdate2;
+        $stringjudul = "Summary Part Return " . $dodis;
+        $writer = new Xlsx($spreadsheet);
+        $filename = $stringjudul; //save our workbook as this file name
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+
+    public function report_summary_inv()
+    {
+        header('Content-Type: application/json');
+        $pdate1 = $this->input->get('date1');
+        $pdate2 = $this->input->get('date2');
+        $cbgroup = $this->input->get('bsgrp');
+        $sbgroup = "";
+        if (is_array($cbgroup)) {
+            for ($i = 0; $i < count($cbgroup); $i++) {
+                $sbgroup .= "'$cbgroup[$i]',";
+            }
+            $sbgroup = substr($sbgroup, 0, strlen($sbgroup) - 1);
+            if ($sbgroup == '') {
+                $sbgroup = "''";
+            }
+        } else {
+            $sbgroup = "''";
+        }
+        $rs = $this->ITH_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup);
+        die(json_encode(['data' => $rs]));
+    }
+
+    public function report_summary_part_return()
+    {
+        header('Content-Type: application/json');
+        $pdate1 = $this->input->get('date1');
+        $pdate2 = $this->input->get('date2');
+        $cbgroup = $this->input->get('bsgrp');
+        $sbgroup = "";
+        if (is_array($cbgroup)) {
+            for ($i = 0; $i < count($cbgroup); $i++) {
+                $sbgroup .= "'$cbgroup[$i]',";
+            }
+            $sbgroup = substr($sbgroup, 0, strlen($sbgroup) - 1);
+            if ($sbgroup == '') {
+                $sbgroup = "''";
+            }
+        } else {
+            $sbgroup = "''";
+        }
+        $rs = $this->ITH_mod->select_deliv_part_to3rdparty($pdate1, $pdate2, $sbgroup);
+        die(json_encode(['data' => $rs]));
     }
 }

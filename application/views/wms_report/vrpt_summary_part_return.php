@@ -139,7 +139,7 @@ function rsumpartreq_btn_xls_eCK() {
     Cookies.set('CKPSI_BG', sbg, {expires:365});        
     Cookies.set('CKPSI_DATE1', mdate1, {expires:365});
     Cookies.set('CKPSI_DATE2', mdate2, {expires:365});
-    window.open("<?=base_url('DELV/report_summary_return_as_xls')?>",'_blank');
+    window.open("<?=base_url('DELVHistory/report_summary_return_as_xls')?>",'_blank');
 }
 
 $("#rsumpartreq_divku").css('height', $(window).height()   
@@ -156,7 +156,7 @@ function rsumpartreq_btn_gen_eCK() {
     btnprc.innerHTML = 'Please wait'
     $.ajax({
         type: "GET",
-        url: "<?=base_url('DELV/report_summary_part_return')?>",
+        url: "<?=base_url('DELVHistory/report_summary_part_return')?>",
         data: {date1: date1, date2: date2, bsgrp: bgroup },
         dataType: "json",
         success: function (response) {
