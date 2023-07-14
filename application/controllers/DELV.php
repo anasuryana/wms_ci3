@@ -77,7 +77,7 @@ class DELV extends CI_Controller
     public function checkBrowser()
     {
         echo $this->agent->browser();
-    }
+    }   
 
     public function exception_handler($exception)
     {
@@ -13376,7 +13376,7 @@ class DELV extends CI_Controller
                         , 'NILAI_FASILITAS' => 0
                         , 'KODE_FASILITAS' => 2
                         , 'TARIF_FASILITAS' => 100
-                        , 'TARIF' => $r['RBM']
+                        , 'TARIF' => (float)$r['RBM']
                         , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
                     ],
                     [
@@ -13386,7 +13386,7 @@ class DELV extends CI_Controller
                         , 'NILAI_FASILITAS' => 0
                         , 'KODE_FASILITAS' => 2
                         , 'TARIF_FASILITAS' => 100
-                        , 'TARIF' => $r['PPN']
+                        , 'TARIF' => (float)$r['PPN']
                         , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
                     ],
                     [
@@ -13396,7 +13396,7 @@ class DELV extends CI_Controller
                         , 'NILAI_FASILITAS' => 0
                         , 'KODE_FASILITAS' => 2
                         , 'TARIF_FASILITAS' => 100
-                        , 'TARIF' => $r['PPH']
+                        , 'TARIF' => (float)$r['PPH']
                         , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
                     ],
                 ];
@@ -13435,12 +13435,13 @@ class DELV extends CI_Controller
         }
         $respon = [
             'message' => $message,
+            'data' => $data,
             'Apirespon' => $responApi,
         ];
         die(json_encode($respon));
     }
 
-    public function postingCEISA40BC27Return()
+    public function postingCEISA40BC27rtn()
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
