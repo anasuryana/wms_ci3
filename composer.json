@@ -14,7 +14,8 @@
 		"php": ">=5.3.7",
 		"phpoffice/phpspreadsheet": "^1.10",
 		"spatie/async": "^1.5",
-		"geekcom/phpjasper": "^3.1"
+		"geekcom/phpjasper": "^3.1",
+		"rmccue/requests": "^2.0"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
