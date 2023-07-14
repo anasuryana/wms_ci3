@@ -109,13 +109,12 @@ class XWO_mod extends CI_Model
                     INNER JOIN (
                         SELECT MBLA_MDLCD
                             ,MAX(MBLA_BOMRV) LTSRV
-                            ,MAX(MBLA_ITMCD) MBLA_ITMCD
+                            ,MAX(CASE WHEN MITM_ITMCAT='PCB' THEN MBLA_ITMCD END) MBLA_ITMCD
                         FROM VCIMS_MBLA_TBL
                         LEFT JOIN XMITM_VCIMS ON MBLA_ITMCD=MITM_ITMCD
                         WHERE MBLA_MDLCD IN (
                             $passyCode
                                 )
-                        AND MITM_ITMCAT='PCB'
                         GROUP BY MBLA_MDLCD
                         ) v2 ON A.MBLA_MDLCD = v2.MBLA_MDLCD
                         AND A.MBLA_BOMRV = v2.LTSRV
