@@ -257,12 +257,12 @@
         });
     });
 
-    function rhistory_sync_Tx(doc, loccd, item, qty , reff, isudt){
+    function rhistory_sync_Tx(doc, loccd, item, qty , reff, isudt, docCode){
         if(confirm(`Are you sure sync ${doc} document ?`)) {
             $.ajax({
                 type: "POST",
                 url: "ITH/sync_parent_based_doc",
-                data: {doc: doc, loccd : loccd, item: item,qty: qty, reff: reff, isudt: isudt},
+                data: {doc: doc, loccd : loccd, item: item,qty: qty, reff: reff, isudt: isudt, docCode : docCode},
                 dataType: "JSON",
                 success: function (response) {
                     alertify.message(response.status[0].msg)
@@ -298,7 +298,7 @@
                     newcell.innerHTML = response.parent[i].ITRN_DOCCD
                     newcell = newrow.insertCell(2)
                     newcell.ondblclick = () => {
-                        rhistory_sync_Tx(response.parent[i].ITRN_DOCNO, pWH, pItem, numeral(response.parent[i].QTY).value(), response.parent[i].ITRN_REFNO1, response.parent[i].ITRN_ISUDT.substr(0,10))
+                        rhistory_sync_Tx(response.parent[i].ITRN_DOCNO, pWH, pItem, numeral(response.parent[i].QTY).value(), response.parent[i].ITRN_REFNO1, response.parent[i].ITRN_ISUDT.substr(0,10), response.parent[i].ITRN_DOCCD)
                     }
                     newcell.innerHTML = response.parent[i].ITRN_DOCNO
                     newcell = newrow.insertCell(3)

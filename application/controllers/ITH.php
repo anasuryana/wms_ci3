@@ -1788,9 +1788,10 @@ class ITH extends CI_Controller
         $qty = $this->input->post('qty');
         $reff = $this->input->post('reff');
         $isudt = $this->input->post('isudt');
+        $docCode = $this->input->post('docCode');
         $rs = [];
         $myar = [];
-        if (substr($doc, 0, 3) == 'TRF') {
+        if ($docCode == 'TRF') {
             $rs[] = [
                 'ITH_ITMCD' => $item,
                 'ITH_DATE' => $isudt,
@@ -1842,12 +1843,12 @@ class ITH extends CI_Controller
         $location = $this->input->get('location');
         if (in_array($location, $fg_wh)) {
             $rsParent = $this->XFTRN_mod->select_where(
-                ['CONVERT(DATE,FTRN_ISUDT) ITRN_ISUDT', 'RTRIM(FTRN_DOCCD) ITRN_DOCCD', 'RTRIM(FTRN_DOCNO) ITRN_DOCNO', "(CASE WHEN FTRN_IOFLG = '1' THEN FTRN_TRNQT ELSE -1*FTRN_TRNQT END) QTY", 'RTRIM(FTRN_REFNO1) ITRN_REFNO1'],
+                ['CONVERT(DATE,FTRN_ISUDT) ITRN_ISUDT', 'RTRIM(FTRN_DOCCD) ITRN_DOCCD', 'RTRIM(FTRN_DOCNO) ITRN_DOCNO', "IOQT QTY", 'RTRIM(FTRN_REFNO1) ITRN_REFNO1', 'RTRIM(FTRN_DOCCD) ITRN_DOCCD'],
                 ['FTRN_ISUDT' => $date, 'FTRN_ITMCD' => $item, 'FTRN_LOCCD' => $location]
             );
         } else {
             $rsParent = $this->XITRN_mod->select_where(
-                ['CONVERT(DATE,ITRN_ISUDT) ITRN_ISUDT', 'RTRIM(ITRN_DOCCD) ITRN_DOCCD', 'RTRIM(ITRN_DOCNO) ITRN_DOCNO', "(CASE WHEN ITRN_IOFLG = '1' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) QTY", 'RTRIM(ITRN_REFNO1) ITRN_REFNO1'],
+                ['CONVERT(DATE,ITRN_ISUDT) ITRN_ISUDT', 'RTRIM(ITRN_DOCCD) ITRN_DOCCD', 'RTRIM(ITRN_DOCNO) ITRN_DOCNO', "IOQT QTY", 'RTRIM(ITRN_REFNO1) ITRN_REFNO1', 'RTRIM(ITRN_DOCCD) ITRN_DOCCD'],
                 ['ITRN_ISUDT' => $date, 'ITRN_ITMCD' => $item, 'ITRN_LOCCD' => $location]
             );
         }
