@@ -677,7 +677,7 @@ class INCFG extends CI_Controller
                                     "SER_ID" => $ckeys, "SER_DOC" => $cjob, "SER_REFNO" => $ckeys, "SER_ITMID" => $citemcd . $cfgtype . $cremark_ka, "SER_LOTNO" => $cinlot, "SER_QTY" => $cinqty, "SER_QTYLOT" => $cinqty,
                                     "SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd, "SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama'),
                                 ];
-                                if (strlen($creason) != 0) {
+                                if (strlen($creason ? $creason : '') != 0) {
                                     $datas['SER_CAT'] = '2';
                                     $datas['SER_RMRK'] = $creason;
                                 }
