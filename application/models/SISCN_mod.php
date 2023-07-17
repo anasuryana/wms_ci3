@@ -156,6 +156,8 @@ class SISCN_mod extends CI_Model
                 ,ISNULL(RCV_PRPRC, 0) RCV_PRPRC
                 ,ISNULL(RCV_HSCD, 0) RCV_HSCD
                 ,ISNULL(RCV_BM, 0) RCV_BM
+                ,ISNULL(RCV_PPN, 0) RCV_PPN
+                ,ISNULL(RCV_PPH, 0) RCV_PPH
                 ,RCV_RPDATE
                 ,PERBOX
                 ,BOX
@@ -214,6 +216,8 @@ class SISCN_mod extends CI_Model
                     ,RCV_ITMCD
                     ,MAX(RCV_HSCD) RCV_HSCD
                     ,MAX(RCV_BM) RCV_BM
+                    ,MAX(RCV_PPN) RCV_PPN
+                    ,MAX(RCV_PPH) RCV_PPH
                 FROM RCV_TBL
                 GROUP BY RCV_INVNO
                     ,RCV_RPNO
