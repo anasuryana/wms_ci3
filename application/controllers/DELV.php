@@ -630,18 +630,6 @@ class DELV extends CI_Controller
         }
     }
 
-    public function rm_extract()
-    {
-        $rs = $this->SERD_mod->select_uncalculated();
-        ini_set('max_execution_time', '-1');
-        foreach ($rs as $r) {
-            if ($this->SERD_mod->check_Primary(['SERD_JOB' => $r['SER_DOC']]) == 0) {
-                $this->get_usage_rmwelcat_perjob($r['SER_DOC']);
-            }
-        }
-        die('finish');
-    }
-
     public function calculate_raw_material()
     {
         header('Content-Type: application/json');
@@ -828,13 +816,6 @@ class DELV extends CI_Controller
             $myar[] = ['cd' => 0, 'msg' => 'not found'];
         }
         die('{"status": ' . json_encode($myar) . ', "data": ' . json_encode($rs) . '}');
-    }
-
-    public function activation()
-    {
-        header('Content-Type: application/json');
-        $rs = $this->AKTIVASIAPLIKASI_imod->selectAll();
-        echo json_encode($rs);
     }
 
     public function create()
@@ -1227,7 +1208,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?", ];
+                                Are you sure want to continue ?"];
                     die(json_encode($myar));
                 }
             }
@@ -1452,12 +1433,6 @@ class DELV extends CI_Controller
         #N SAVE UNSAVED SI
     }
 
-    public function inv()
-    {
-        $respon = $this->DELV_mod->check_Primary(['DLV_ID !=' => '0321Z0364', 'DLV_INVNO' => '1019/12/21']);
-        echo $respon;
-    }
-
     public function set()
     {
         if ($this->session->userdata('status') != "login") {
@@ -1531,7 +1506,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?"];
+                                Are you sure want to continue ?", ];
                     die(json_encode($myar));
                 }
             }
@@ -4486,7 +4461,7 @@ class DELV extends CI_Controller
                         break;
                     }
                 }
-                $this->gotoque($cid);
+                $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/onDelivery/' . base64_encode($cid), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
                 # for RPR transaction deduction start from here
                 if ($ctglpen) {
                     if ($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) > 0) {
@@ -4510,7 +4485,7 @@ class DELV extends CI_Controller
         if (empty($nomor_pendaftaran)) {
             $myar[] = ["cd" => '0', "msg" => "Nomor Pendaftaran is empty"];
         } else {
-            $res = $this->gotoque($cid);
+            $res = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/onDelivery/' . base64_encode($cid), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
             $myar[] = ["cd" => '1', "msg" => "Done, please check IT Inventory", "res" => $res];
         }
         die(json_encode(['status' => $myar]));
@@ -4595,7 +4570,7 @@ class DELV extends CI_Controller
                 'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
             ]);
             if (!empty($cnopen)) {
-                $res = $this->gotoque($cid);
+                $res = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/onDelivery/' . base64_encode($cid), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
                 # for RPR transaction deduction start from here
                 if ($ctpb_tgl_daftar) {
                     if ($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) > 0) {
@@ -4694,7 +4669,7 @@ class DELV extends CI_Controller
         }
         if ($ttlPostedRows > 0 && $ttlPostedAndHasbc === 0) {
             if (!empty($cnopen)) {
-                $this->gotoque($cid);
+                $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/onDelivery/' . base64_encode($cid), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
             }
             $myar[] = ["cd" => '00', "msg" => "could not update, because the data is already posted"];
             die(json_encode($myar));
@@ -4732,7 +4707,7 @@ class DELV extends CI_Controller
             $ret = $this->DELV_mod->updatebyVAR($vals, $keys);
             $myar[] = $ret > 0 ? ["cd" => '11', "msg" => "Updated successfully"] : ["cd" => '00', "msg" => "No data to be updated"];
             if (!empty($cnopen)) {
-                $this->gotoque($cid);
+                $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/onDelivery/' . base64_encode($cid), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
                 if ($ctpb_tgl_daftar) {
                     if ($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) > 0) {
                         $this->NonReffnumberDeliveryConfirmation(['DOC' => $cid, 'DATE' => $ctpb_tgl_daftar, 'DATETIME' => $ctpb_tgl_daftar . ' 15:15:15']);
@@ -4805,7 +4780,7 @@ class DELV extends CI_Controller
             $ret = $this->DELV_mod->updatebyVAR($vals, $keys);
             $myar[] = $ret > 0 ? ["cd" => '11', "msg" => "Updated successfully"] : ["cd" => '00', "msg" => "No data to be updated"];
             if (!empty($cnopen)) {
-                $this->gotoque($cid);
+                $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/onDelivery/' . base64_encode($cid), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
                 # for RPR transaction deduction start from here
                 if ($ctpb_tgl_daftar) {
                     if ($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) > 0) {
@@ -4839,7 +4814,7 @@ class DELV extends CI_Controller
         $ret = $this->DELV_mod->updatebyVAR($vals, $keys);
         $myar[] = $ret > 0 ? ["cd" => '11', "msg" => "Updated successfully"] : ["cd" => '00', "msg" => "No data to be updated"];
         if (!empty($cnopen)) {
-            $this->gotoque($cid);
+            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/onDelivery/' . base64_encode($cid), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         }
         die(json_encode($myar));
     }
@@ -10472,7 +10447,6 @@ class DELV extends CI_Controller
             'cd' => '1', 'msg' => 'Done, check your TPB', 'tpb_barang' => $tpb_barang, 'tpb_bahan_baku' => $tpb_bahan_baku,
         ];
         $this->setPrice(base64_encode($csj));
-        $this->gotoque($csj);
         die('{"status" : ' . json_encode($myar) . '}');
     }
 
@@ -11560,7 +11534,6 @@ class DELV extends CI_Controller
             'cd' => '1', 'msg' => 'Done, check your TPB', 'tpb_barang' => $tpb_barang, 'tpb_bahan_baku' => $tpb_bahan_baku,
         ];
         $this->setPrice(base64_encode($csj));
-        $this->gotoque($csj);
         die('{"status" : ' . json_encode($myar) . '}');
     }
     public function posting_rm261()
@@ -11951,7 +11924,6 @@ class DELV extends CI_Controller
             'cd' => '1', 'msg' => 'Done, check your TPB', 'tpb_barang' => $tpb_barang, 'tpb_bahan_baku' => $tpb_bahan_baku,
         ];
         $this->setPrice(base64_encode($csj));
-        $this->gotoque($csj);
         die('{"status" : ' . json_encode($myar) . '}');
     }
 
@@ -13429,14 +13401,14 @@ class DELV extends CI_Controller
         if (!empty($data)) {
             $message = 'OK';
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
-            $responApi = Requests::post('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data);
+            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 300, 'connect_timeut' => 300]);
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
         } else {
             $message = 'OK, No data';
         }
         $respon = [
             'message' => $message,
-            'data' => $data,
+            // 'data' => $data,
             'Apirespon' => $responApi,
         ];
         die(json_encode($respon));
@@ -13728,7 +13700,7 @@ class DELV extends CI_Controller
         if (!empty($data)) {
             $message = 'OK';
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
-            $responApi = Requests::post('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data);
+            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 300, 'connect_timeout' => 300]);
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
         } else {
             $message = 'OK, No data';
@@ -13739,18 +13711,6 @@ class DELV extends CI_Controller
             'Apirespon' => $responApi->body,
         ];
         die(json_encode($respon));
-    }
-
-    public function gotoque($psj)
-    {
-        $mdo = base64_encode($psj);
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/api/stock/onDelivery/' . $mdo);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        return $data;
     }
 
     public function inventory_getstockbc_v2($pbc_type, $ptujuan, $psj, $prm, $pqty, $plot, $pbcdate, $pkontrak = "")
