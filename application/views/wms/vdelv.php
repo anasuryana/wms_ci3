@@ -3476,6 +3476,11 @@ echo $tohtml;
         if (txfg_gt_rm.innerText == 'Please wait') {
             alertify.warning('Please wait')
             return
+        } else {
+            if (numeral(txfg_gt_rm.innerText).value() > 900) {
+                alertify.warning('Maximum RM 900 per Document')
+                return
+            }
         }
         let mtxid = document.getElementById('txfg_txt_id').value;
         let mtxcustomerDO = document.getElementById('txfg_txt_customerDO').value;
