@@ -5341,8 +5341,8 @@ echo $tohtml;
             alertify.warning('Please wait')
             return
         } else {
-            if (numeral(txfg_gt_rm.innerText).value() > 700) {
-                alertify.warning('Maximum RM 700 per Document')
+            if (numeral(txfg_gt_rm.innerText).value() > 900) {
+                alertify.warning('Maximum RM 900 per Document')
                 return
             }
         }
