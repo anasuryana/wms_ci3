@@ -48,4 +48,11 @@ class DLVPRC_mod extends CI_Model {
 		$query = $this->db->query($qry, [$pdate1, $pdate2]);
 		return $query->result_array();
 	}
+
+	public function updatebyId($pdata, $pkey)
+    {
+        $this->db->where($pkey);
+        $this->db->update($this->TABLENAME, $pdata);
+        return $this->db->affected_rows();
+    }
 }
