@@ -51,10 +51,11 @@ class TRF_mod extends CI_Model
         $this->db->from($this->TABLENAME);
         $this->db->join($this->TABLENAME_D, "TRFH_DOC=TRFD_DOC", "left");
         $this->db->join("MSTEMP_TBL P1", "TRFH_CREATED_BY=P1.MSTEMP_ID", "left");
-        $this->db->join("MITM_TBL", "TRFD_ITEMCD=MITM_ITMCD", "left");
+        $this->db->join("MITM_TBL", "TRFD_ITEMCD=MITM_ITMCD", "left");        
         $this->db->like($like)->where("TRFD_DELETED_DT is null", null, false);
         $this->db->group_by("TRFH_DOC,TRFH_ISSUE_DT,P1.MSTEMP_FNM,P1.MSTEMP_LNM,TRFH_LOC_FR,TRFH_LOC_TO,TRFH_APPROVED_DT,TRFH_CREATED_DT,TRFH_CREATED_BY");
-        $this->db->select("TRFH_DOC,TRFH_ISSUE_DT,CONCAT(P1.MSTEMP_FNM, ' ', P1.MSTEMP_LNM) PIC,TRFH_LOC_FR,TRFH_LOC_TO,TRFH_APPROVED_DT,TRFH_CREATED_DT,TRFH_CREATED_BY");
+        $this->db->select("TRFH_DOC,TRFH_ISSUE_DT,CONCAT(P1.MSTEMP_FNM, ' ', P1.MSTEMP_LNM) PIC,TRFH_LOC_FR,TRFH_LOC_TO,TRFH_APPROVED_DT,TRFH_CREATED_DT,TRFH_CREATED_BY,MAX(TRFD_REFFERENCE_DOCNO) TRFD_REFFERENCE_DOCNO");
+        $this->db->order_by("TRFH_ISSUE_DT");
         $query = $this->db->get();
         return $query->result_array();
     }

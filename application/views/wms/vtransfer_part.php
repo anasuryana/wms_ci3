@@ -219,6 +219,7 @@
                                         <th>Created By</th>
                                         <th>Location From</th>
                                         <th>Location To</th>
+                                        <th>Reference Document</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -322,6 +323,8 @@
                         newcell.innerHTML = arrayItem['TRFH_LOC_FR']
                         newcell = newrow.insertCell(4)
                         newcell.innerHTML = arrayItem['TRFH_LOC_TO']
+                        newcell = newrow.insertCell(5)
+                        newcell.innerHTML = arrayItem['TRFD_REFFERENCE_DOCNO']
                     })
                     mydes.innerHTML = ''
                     mydes.appendChild(myfrag)
