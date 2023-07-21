@@ -5,6 +5,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use WpOrg\Requests\Requests;
 
 class RCV extends CI_Controller
 {
@@ -681,7 +682,7 @@ class RCV extends CI_Controller
             ]);
         }
 
-        $api_result = $h_nopen != '' ? $this->gotoque($h_do) : [];
+        $api_result = $h_nopen != '' ? Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode($h_do), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]) : [];
         if (count($datas) == 0) {
             $myar[] = ['cd' => 1, 'msg' => 'Updated successfully'];
         }
@@ -695,10 +696,7 @@ class RCV extends CI_Controller
         $rs = $this->RCV_mod->qry($qry);
         $api_result = '';
         foreach ($rs as $r) {
-            $api_result = $this->gotoque($r['RCV_DONO']);
-            // $this->toITH(['DOC' => $r['RCV_DONO'], 'WH' => $r['RCV_WH']
-            // , 'DATE' => $r['RCV_BCDATE'] , 'LUPDT' => $r['RCV_BCDATE'].' 07:01:00'
-            // , 'USRID' => $this->session->userdata('nama')]);
+            $api_result = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode($r['RCV_DONO']), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         }
         die('done' . $api_result . '(' . date('Y-m-d H:i:s') . ')');
     }
@@ -907,7 +905,7 @@ class RCV extends CI_Controller
             ]);
         }
 
-        $api_result = $this->gotoque($h_do);
+        $api_result = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode($h_do), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         if (count($datas) == 0) {
             $myar[] = ['cd' => 1, 'msg' => 'Updated successfully'];
         }
@@ -1147,10 +1145,10 @@ class RCV extends CI_Controller
             ]);
         }
 
-        $catccc = $this->gotoque($cdo);
+        $apiRespon = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode($cdo), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         $myar = [];
         $myar[] = [
-            "cd" => "1", "msg" => $myctr_saved . " saved, " . $myctr_edited . " edited [" . $catccc . "]", "extra" => trim($cwh[0]),
+            "cd" => "1", "msg" => $myctr_saved . " saved, " . $myctr_edited . " edited [" . $apiRespon . "]", "extra" => trim($cwh[0]),
         ];
         echo json_encode($myar);
     }
@@ -1190,9 +1188,8 @@ class RCV extends CI_Controller
             }
         }
         if (count($rstosave)) {
-            foreach($rstosave as $r) {
-                if($this->ITH_mod->check_Primary(['ITH_ITMCD' => $r['ITH_ITMCD'] , 'ITH_DOC' => $r['ITH_DOC']])==0)
-                {
+            foreach ($rstosave as $r) {
+                if ($this->ITH_mod->check_Primary(['ITH_ITMCD' => $r['ITH_ITMCD'], 'ITH_DOC' => $r['ITH_DOC']]) == 0) {
                     $this->ITH_mod->insert($r);
                 }
             }
@@ -1576,7 +1573,7 @@ class RCV extends CI_Controller
         ini_set('max_execution_time', '-1');
         $rs = $this->RCV_mod->select_do_only();
         foreach ($rs as $r) {
-            $catccc = $this->gotoque(trim($r->RCV_DONO));
+            $catccc = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode(trim($r->RCV_DONO)), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         }
         die('done');
     }
@@ -3780,17 +3777,5 @@ class RCV extends CI_Controller
             $myar[] = ['cd' => 0, 'msg' => 'NOMOR AJU is not found in ceisa local data', 'aju' => $nomorajufull];
         }
         die(json_encode(['status' => $myar, 'data' => $result_data, 'data2' => $response_data]));
-    }
-
-    public function gotoque($pdo)
-    {
-        $mdo = base64_encode($pdo);
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8081/api_inventory/api/stock/incomingPabean/' . $mdo);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        return $data;
     }
 }
