@@ -698,7 +698,7 @@ class RCV extends CI_Controller
         foreach ($rs as $r) {
             $api_result = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode($r['RCV_DONO']), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         }
-        die('done' . $api_result . '(' . date('Y-m-d H:i:s') . ')');
+        die(json_encode(['message' => 'done '. '(' . date('Y-m-d H:i:s') . ')', 'API' => $api_result]));
     }
 
     public function dump_to_rcv()
@@ -1148,7 +1148,8 @@ class RCV extends CI_Controller
         $apiRespon = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode($cdo), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         $myar = [];
         $myar[] = [
-            "cd" => "1", "msg" => $myctr_saved . " saved, " . $myctr_edited . " edited [" . $apiRespon . "]", "extra" => trim($cwh[0]),
+            "cd" => "1", "msg" => $myctr_saved . " saved, " . $myctr_edited . " edited", "extra" => trim($cwh[0]),
+            "apiRespon" => $apiRespon
         ];
         echo json_encode($myar);
     }
