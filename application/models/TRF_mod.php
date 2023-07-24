@@ -92,10 +92,10 @@ class TRF_mod extends CI_Model
         $this->db->from($this->TABLENAME);
         $this->db->join($this->TABLENAME_D, "TRFH_DOC=TRFD_DOC", "left");
         $this->db->where("TRFD_DELETED_DT is null", null, false)
-            ->where("TRFH_APPROVED_DT is null", null, false)
+            ->where("TRFD_RECEIVE_DT is null", null, false)
             ->where_in("TRFD_ITEMCD", $Item);
         $this->db->group_by("TRFD_ITEMCD");
-        $this->db->select("TRFD_ITEMCD,SUM(TRFD_QTY) DQT,SUM(TRFD_QTY) BACKUP_DQT");
+        $this->db->select("UPPER(TRFD_ITEMCD) TRFD_ITEMCD,SUM(TRFD_QTY) DQT,SUM(TRFD_QTY) BACKUP_DQT");
         $query = $this->db->get();
         return $query->result_array();
     }

@@ -116,14 +116,14 @@ class TRF extends CI_Controller
             for ($i = 0; $i < $TotalRows; $i++) {
                 $isFound = false;
                 foreach ($RSResume as &$r) {
-                    if ($r['ITEMCD'] === $LineItemCode[$i]) {
+                    if ($r['ITEMCD'] === strtoupper($LineItemCode[$i])) {
                         $r['ITEMCD'] += $LineItemQty[$i];
                     }
                 }
                 unset($r);
 
                 if (!$isFound) {
-                    $RSResume[] = ['ITEMCD' => $LineItemCode[$i], 'ITEMQT' => $LineItemQty[$i]];
+                    $RSResume[] = ['ITEMCD' => strtoupper($LineItemCode[$i]), 'ITEMQT' => $LineItemQty[$i]];
                 }
             }
 
@@ -265,7 +265,8 @@ class TRF extends CI_Controller
             $response[] = ['cd' => '0', 'msg' => 'something wrong happen, please refresh browser'];
         }
         die(json_encode(['status' => $response, 'data' => $RSOK, '$RSStock' => $RSStock
-            , '$RSStockUnreceive' => $RSStockUnreceive])
+            , '$RSStockUnreceive' => $RSStockUnreceive
+            , '$RSResume' => $RSResume])
         );
     }
 
