@@ -432,8 +432,10 @@ class SPL_mod extends CI_Model
                 ,CASE 
                     WHEN SIMQT != LQT
                         THEN (SUM(PIS3_REQQT) / SIMQT * LQT)
-                    ELSE SUM(PIS3_REQQT)
-                    END PIS3_REQQTSUM
+                    ELSE 
+                    SUM(PIS3_REQQT)
+                    END
+                PIS3_REQQTSUM
                 ,SUM(PIS3_REQQT) / SIMQT MYPER
                 ,max(RTRIM(PIS3_ITMCD)) PIS3_ITMCD
                 ,RTRIM(PIS3_MPART) PIS3_MPART
@@ -451,7 +453,9 @@ class SPL_mod extends CI_Model
                 SELECT ITH_DOC SER_DOC
                     ,SUM(ITH_QTY) LQT
                 FROM ITH_TBL
-                WHERE ITH_DOC = ? AND ITH_FORM='INC-PRD-FG'
+                LEFT JOIN SER_TBL ON ITH_SER=SER_ID
+                WHERE ITH_DOC = ? AND ITH_FORM IN ('INC-PRD-FG','INC') AND ITH_WH IN ('ARPRD1')
+                AND SER_QTYLOT IS NOT NULL
                 GROUP BY ITH_DOC
                 ) VSER ON PDPP_WONO = SER_DOC
             WHERE PIS3_WONO = ? and PIS3_DOCNO=?
