@@ -8,8 +8,11 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12 mb-1">
+            <div class="col-md-12 mb-1" id="rm_ua_divchart">
+              <div  style="margin: auto;height: 77vh;
+  width: 70vw;">
                 <canvas id="rm_ua_chart"></canvas>
+              </div>
             </div>
         </div>
     </div>
@@ -37,7 +40,7 @@ function rm_ua_btnsync_eCK() {
         dataType: "json",
         success: function (response) {
             myChart.data.labels = response.labels
-            myChart.data.datasets = response.datasets
+            myChart.data.datasets = response.datasets            
             myChart.update();
         }
     });
@@ -74,6 +77,7 @@ var config = {
   type: 'line',
   data: data,
   options: {
+    maintainAspectRatio: true,
     responsive: true,
     plugins: {
       legend: {

@@ -198,6 +198,10 @@ class User extends CI_Controller {
     {
         $this->load->view('UserMGR/vpassword_policy');
     }
+    function form_lock_policy()
+    {
+        $this->load->view('UserMGR/vaccount_lock');
+    }
 
     function form_change_password()
     {
