@@ -46,6 +46,8 @@ class SER extends CI_Controller
         $this->load->model('MSPP_mod');
         $this->load->model('C3LC_mod');
         $this->load->model('XWO_mod');
+        $this->load->model('DLVPRC_mod');
+        $this->load->model('DELV_mod');
         $this->load->model('ZRPSTOCK_mod');
         $this->load->model('refceisa/TPB_HEADER_imod');
         date_default_timezone_set('Asia/Jakarta');
@@ -2483,7 +2485,7 @@ class SER extends CI_Controller
         $rxtx = $this->ITH_mod->selectAll_by(['ITH_SER' => $cold_reff]);
         $myar = [];
         if (count($rsold_reff) > 0) {
-            if ($this->SISCN_mod->check_Primary(['SISCN_SER' => $cold_reff]) > 0) {
+            if ($this->ITH_mod->check_Primary(['ITH_SER' => $cold_reff, 'ITH_FORM' => 'OUT-SHP-FG']) > 0) {
                 $myar[] = ["cd" => '0', "msg" => "could not split/relable delivered item label"];
             } else {
                 $myar[] = ["cd" => '1', "msg" => "go ahead"];
@@ -4051,6 +4053,9 @@ class SER extends CI_Controller
                 //end update
                 if ($ret3 > 0) {
                     $this->SERD_mod->updatebyId(['SERD2_SER' => $newreff], ['SERD2_SER' => $coldreff]);
+                    $this->SISCN_mod->updatebyId(['SISCN_SER' => $newreff], ['SISCN_SER' => $coldreff]);
+                    $this->DELV_mod->updatebyVAR(['DLV_SER' => $newreff], ['DLV_SER' => $coldreff]);
+                    $this->DLVPRC_mod->updatebyId(['DLVPRC_SER' => $newreff], ['DLVPRC_SER' => $coldreff]);
                     //update ith
                     $cwhere = ["ITH_SER" => $coldreff];
                     $ctoupdate = ["ITH_SER" => $newreff];
@@ -4281,9 +4286,10 @@ class SER extends CI_Controller
                 if (count($rsith) > 0) {
                     foreach ($rsith as $r) {
                         if (trim($r['ITH_WH']) == 'AFWH3' && $r['ITH_QTY'] > 0) {
-                            $rs = $this->SER_mod->select_exact_byVAR(array('SER_ID' => $creff));
-                            foreach ($rs as $r) {
-                                if (trim($r['SER_PRDLINE']) == '') { //validate plant 2 label specification
+                            $rs = $this->SER_mod->select_exact_byVAR(['SER_ID' => $creff]);
+                            foreach ($rs as $n) {
+                                $prdLine = $n['SER_PRDLINE'] ? trim($n['SER_PRDLINE']) : '';
+                                if ($prdLine == '') { //validate plant 2 label specification
 
                                 } else {
                                     $datar = array("cd" => '0', "msg" => "this menu is only for Plant 1 Label");
