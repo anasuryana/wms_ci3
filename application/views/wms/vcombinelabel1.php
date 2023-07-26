@@ -25,7 +25,7 @@
                                 <th  class="align-middle">Job Number</th>
                                 <th  class="align-middle">Item Code</th>
                                 <th  class="align-middle">Item Name</th>
-                                <th  class="text-right">QTY</th>                                                           
+                                <th  class="text-end">QTY</th>                                                           
                             </tr>                          
                         </thead>
                         <tbody>
@@ -95,12 +95,7 @@
                 mreff = ar[5].substr(2,ar[5].length-2);
                 mitemcd = ar[0].substr(2,ar[0].length-2).toUpperCase()
                 mjob = ar[2].substr(2,ar[2].length-2);
-                mjob = mjob.substr(3,5);                
-                // if(mjob.substr(0,1)!='C'){
-                //     alertify.message('the new job must be start with "C" letter');
-                //     document.getElementById('combinelbl1_reffcdnew').value='';
-                //     return;
-                // }
+                mjob = mjob.substr(3,5);
                 mqty = ar[3].substr(2,ar[3].length-2);
                 document.getElementById('combinelbl1_reffcdnew').value=mreff;
             }
@@ -152,7 +147,7 @@
                 }
                 newjob  = abiggestjob[0] + '-C' + abiggestjob[1] + '-' + abiggestjob[2];        
             } else {
-                if(mjob.substr(0, 1) !='0'){//
+                if(mjob.substr(0, 1) !='0'){
                     if(mjob!=abiggestjob[1]){
                         alertify.warning('The job on the label is not same, please recheck the label ');
                         document.getElementById('combinelbl1_reffcdnew').value='';
@@ -322,12 +317,10 @@
                                 newText = document.createTextNode(response.data[i].SER_ITMID);
                                 newcell.appendChild(newText);
                                 newcell = newrow.insertCell(3);
-                                newText = document.createTextNode(response.data[i].MITM_ITMD1);
-                                newcell.appendChild(newText);
+                                newcell.innerText = response.data[i].MITM_ITMD1
                                 newcell = newrow.insertCell(4);
-                                newText = document.createTextNode(numeral(response.data[i].SER_QTY).value());
-                                newcell.style.cssText = 'text-align: right;';
-                                newcell.appendChild(newText);
+                                newcell.classList.add('text-end')
+                                newcell.innerHTML = numeral(response.data[i].SER_QTY).value()
                             }
                             ttlrows = mtbltr.length;
                             let tempqty = 0;
