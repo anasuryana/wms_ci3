@@ -650,7 +650,11 @@ abstract class CI_DB_driver {
 
 		// Start the Query Timer
 		$time_start = microtime(TRUE);
-		
+		if (strpos($sql, 'insert') !== false) {
+			
+		} else {
+			$sql = str_replace('"',"",$sql);
+		}
 		// Run the Query
 		if (FALSE === ($this->result_id = $this->simple_query($sql)))
 		{
