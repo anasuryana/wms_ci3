@@ -5,4 +5,9 @@ RewriteRule ^(.*)$ index.php/$1 [L]
 <IfModule mod_env.c>
     SetEnv CI_ENV development
 </IfModule>
+Require ip 127.0.0.1
+Require local
+<If "%{SERVER_PORT} = 8081">
+    #RewriteRule ^(.*)$ http://%{HTTP_HOST}:8080%{REQUEST_URI} [L,R=301]
+</If>
 php_value max_input_vars 300000
