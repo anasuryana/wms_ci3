@@ -13185,7 +13185,7 @@ class DELV extends CI_Controller
                     }
                     if (count($serlist) > 0) {
                         $rscom = $this->DELV_mod->select_pertxid_byser($serlist);
-                        $rs = array_merge($rs, $rscom);
+                        $rsMerge = array_merge($rsMerge, $rscom);
                     }
                 } else {
                     $rscomb_d = $this->SERC_mod->select_cols_where_id(['SERC_COMID'], $r['SER_REFNO']);
@@ -13194,7 +13194,7 @@ class DELV extends CI_Controller
                     }
                     if (count($serlist) > 0) {
                         $rscom = $this->DELV_mod->select_pertxid_byser($serlist);
-                        $rs = array_merge($rs, $rscom);
+                        $rsMerge = array_merge($rsMerge, $rscom);
                     }
                 }
             }
@@ -13401,7 +13401,7 @@ class DELV extends CI_Controller
         if (!empty($data)) {
             $message = 'OK';
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 300, 'connect_timeut' => 300]);
+            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
         } else {
             $message = 'OK, No data';
