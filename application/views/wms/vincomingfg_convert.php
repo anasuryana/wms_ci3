@@ -599,7 +599,7 @@
                         , aintqty: aintqty,  anewjob: anewjob, aoldjob: aoldjob, aolditemcd: aolditemcd},
                     dataType: "json",
                     success: function (response) {
-                        if(resposne.status[0].cd==1){
+                        if(response.status[0].cd==1){
                             alertify.success(response.status[0].msg);
                         } else {
                             alertify.warning(response.status[0].msg);
