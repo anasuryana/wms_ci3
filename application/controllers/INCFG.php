@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class INCFG extends CI_Controller
 {
+    protected $WOException = ['23-8A01-218354900'];
     public function __construct()
     {
         parent::__construct();
@@ -434,18 +435,22 @@ class INCFG extends CI_Controller
                                     $datar = ["cd" => "0", "msg" => "Already scanned (regular)"];
                                 }
                             } else {
-                                $rsPSN = $this->SPL_mod->select_check_PSN_by_job($cjob);
-                                if (count($rsPSN) == 0) {
-                                    $myar[] = ["cd" => "0", "msg" => "Kitting for The Job is not ready reguler"];
-                                    exit(json_encode($myar));
+                                if (!in_array($cjob, $this->WOException)) {
+                                    $rsPSN = $this->SPL_mod->select_check_PSN_by_job($cjob);
+                                    if (count($rsPSN) == 0) {
+                                        $myar[] = ["cd" => "0", "msg" => "Kitting for The Job is not ready reguler"];
+                                        exit(json_encode($myar));
+                                    }
                                 }
                                 $datas = [
                                     "SER_ID" => $creffcd, "SER_DOC" => $cjob, "SER_REFNO" => $creffcd, "SER_ITMID" => $citem, "SER_LOTNO" => $clot, "SER_QTY" => $cqty, "SER_QTYLOT" => $cqty, "SER_RAWTXT" => $ckeys,
                                     "SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd, "SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama'),
                                 ];
-                                if (strlen($creason) != 0) {
-                                    $datas['SER_CAT'] = '2';
-                                    $datas['SER_RMRK'] = $creason;
+                                if ($creason) {
+                                    if (strlen($creason) != 0) {
+                                        $datas['SER_CAT'] = '2';
+                                        $datas['SER_RMRK'] = $creason;
+                                    }
                                 }
                                 $retser = $this->SER_mod->insert($datas);
                                 if ($retser > 0) {
