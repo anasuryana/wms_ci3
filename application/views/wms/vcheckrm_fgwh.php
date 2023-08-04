@@ -659,8 +659,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-primary btn-sm" id="checksbb_btnemer_calculate" onclick="checksbb_btnemer_calculate_eCK()">Calculate RM</button>
-            <button type="button" class="btn btn-warning btn-sm" id="checksbb_btnemer_remove_calculation" onclick="checksbb_btnemer_remove_calculation_eCK()">Remove Calculation</button>
+            <button type="button" class="btn btn-primary btn-sm" id="checksbb_btnemer_calculate" onclick="checksbb_btnemer_calculate_eCK(this)">Calculate</button>
+            <button type="button" class="btn btn-warning btn-sm" id="checksbb_btnemer_remove_calculation" onclick="checksbb_btnemer_remove_calculation_eCK(this)">Remove Calculation</button>
         </div>
       </div>
     </div>
@@ -2050,45 +2050,50 @@
         }
     }
 
-    function checksbb_btnemer_calculate_eCK(){
+    function checksbb_btnemer_calculate_eCK(pthis){
         let reffno = []
         let job = []
         let qty = []
         reffno.push(document.getElementById('checksbb_txtemer_ID').value)
         job.push(document.getElementById('checksbb_txtemer_JOB').value)
         qty.push(document.getElementById('checksbb_txtemer_QTY').value)
+        pthis.disabled = true
+        pthis.innerText = `Please wait`
         $.ajax({
             type: "POST",
             url: "<?=base_url('DELV/calculate_raw_material_resume')?>",
             data: {inunique: reffno, inunique_qty: qty,inunique_job: job },
             dataType: "JSON",
             success: function (response) {
+                pthis.innerText = `Calculate`
+                pthis.disabled = false
                 document.getElementById('checksbb_txtemer_msg').value = JSON.stringify(response)
             }, error:function(xhr,ajaxOptions, throwError) {
+                pthis.innerText = `Calculate`
+                pthis.disabled = false
                 alert(throwError);
             }
         });
     }
 
-    function checksbb_btnemer_remove_calculation_eCK(){
-        const btnRemove = document.getElementById('checksbb_btnemer_remove_calculation')
+    function checksbb_btnemer_remove_calculation_eCK(pthis){
         const id = document.getElementById("checksbb_txtemer_ID").value
-        const mpin = prompt("PIN")
         if(confirm("Are you sure ?")){
-            btnRemove.disabled = true
-            btnRemove.innerText = 'Please wait...'
+            const mpin = prompt("PIN")
+            pthis.disabled = true
+            pthis.innerText = 'Please wait...'
             $.ajax({
                 url: "<?=base_url('SER/removecalculation_byid')?>",
                 data: {id: id,pin : mpin},
                 dataType: "json",
                 success: function (response) {
-                    btnRemove.disabled = false
-                    btnRemove.innerText = 'Remove Calculation'
+                    pthis.disabled = false
+                    pthis.innerText = 'Remove Calculation'
                     document.getElementById('checksbb_txtemer_msg').value = JSON.stringify(response)
                 }, error:function(xhr,ajaxOptions, throwError) {
                     alert(throwError)
-                    btnRemove.disabled = false
-                    btnRemove.innerText = 'Remove Calculation'
+                    pthis.disabled = false
+                    pthis.innerText = 'Remove Calculation'
                 }
             })
         }
