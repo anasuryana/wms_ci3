@@ -2073,10 +2073,10 @@
     function checksbb_btnemer_remove_calculation_eCK(){
         const btnRemove = document.getElementById('checksbb_btnemer_remove_calculation')
         const id = document.getElementById("checksbb_txtemer_ID").value
-        btnRemove.disabled = true
-        btnRemove.innerText = 'Please wait...'
         const mpin = prompt("PIN")
         if(confirm("Are you sure ?")){
+            btnRemove.disabled = true
+            btnRemove.innerText = 'Please wait...'
             $.ajax({
                 url: "<?=base_url('SER/removecalculation_byid')?>",
                 data: {id: id,pin : mpin},
