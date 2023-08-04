@@ -328,8 +328,6 @@ echo $todis;
                     }
                 });
             }
-
-
         }
     });
     $('#pndser_tbl tbody').on( 'click', 'tr', function () {
@@ -346,8 +344,7 @@ echo $todis;
         pndser_tblcolindexsel = $(this).index();
     });
     $("#pndser_btn_save").click(function (e) {
-        let konf = confirm('Are you sure want to save ?');
-        if(konf){
+        if(confirm('Are you sure want to save ?')){
             let mdoc = document.getElementById('pndser_txt_doc').value;
             let mdate = document.getElementById('pndser_txt_date').value;
             let mtbl = document.getElementById('pndser_tbl');
@@ -361,7 +358,7 @@ echo $todis;
                     mser = mtbl.rows[i].cells[1].innerText;
                     mitem = mtbl.rows[i].cells[2].innerText;
                     mlot = mtbl.rows[i].cells[3].innerText;
-                    mqty = mtbl.rows[i].cells[4].innerText;
+                    mqty = numeral(mtbl.rows[i].cells[4].innerText).value();
                     mremark = mtbl.rows[i].cells[5].innerText;
                     if(mitem.trim()!=''){
                         if(!isNaN(mqty)){
