@@ -2233,7 +2233,7 @@ class ITH_mod extends CI_Model
     {
         $qry = "UPDATE ITH_TBL SET ITH_DATE=?,ITH_LUPDT=? where ITH_DOC LIKE ?
         AND ITH_FORM NOT IN ('INC-RET','OUT-RET')
-        AND ITH_LUPDT=?
+        AND LEFT(RTRIM(CONVERT(DATETIMEOFFSET, ITH_LUPDT)), 19)=?
         AND ITH_ITMCD=?";
         $this->db->query($qry, [$newDate, $newDateTime, $PSN . '%', $oldDateTime, $itemcd]);
         return $this->db->affected_rows();

@@ -3681,7 +3681,7 @@ class ITH extends CI_Controller
                 $doc,
                 $thedate,
                 $r['TO_LUPDT'],
-                $r['ITH_LUPDT'],
+                substr($r['ITH_LUPDT'],0,19),
                 $r['ITH_ITMCD']
             );
         }
