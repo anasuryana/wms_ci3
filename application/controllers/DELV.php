@@ -1208,7 +1208,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?"];
+                                Are you sure want to continue ?", ];
                     die(json_encode($myar));
                 }
             }
@@ -1506,7 +1506,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?", ];
+                                Are you sure want to continue ?"];
                     die(json_encode($myar));
                 }
             }
@@ -8046,7 +8046,7 @@ class DELV extends CI_Controller
                 $myar[] = ['cd' => 0, 'msg' => 'NOMOR AJU is not found in ceisa local data', 'aju' => $nomorajufull];
             }
         }
-        $CeisaFourRespon = Requests::get('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $nomorajufull);
+        $CeisaFourRespon = []; #Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $nomorajufull, [], [], 'GET',  ['timeout' => 900, 'connect_timeout' => 900]);
         die(json_encode(['status' => $myar, 'data' => $result_data, 'data2' => $response_data
             , 'CeisaFourRespon' => $CeisaFourRespon]));
     }
@@ -13114,18 +13114,34 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD'], ['DLV_ID' => $doc]);
+        $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU'], ['DLV_ID' => $doc]);
         $data = [];
         if (empty($RSHeader)) {
             $data[] = ['message' => 'Please posting to local first'];
         } else {
+            $NomorAju = '';
             foreach ($RSHeader as $r) {
                 $ccustdate = $r['DLV_BCDATE'];
                 $czcurrency = $r['MCUS_CURCD'];
+                $NomorAju = $r['DLV_ZNOMOR_AJU'];
             }
+
+            # validasi apakah Nomor Aju sudah ada di CEISA4.0
+            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApiObj = json_decode($responApi->body);
+            if ($responApiObj->dataOri->message === 'sucess') {
+                $respon = [
+                    'message' => 'already in CEISA 4.0, please check',
+                    '$responApi' => $responApi,
+                ];
+                $this->output->set_status_header(409);
+                die(json_encode($respon));
+            }
+            # akhir validasi
+
+            # validasi exchange rate
             $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
             if (count($rscurr) == 0) {
-                $this->setFinishPosting($csj);
                 $myar[] = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
                 die('{"status":' . json_encode($myar) . '}');
             } else {
@@ -13134,6 +13150,8 @@ class DELV extends CI_Controller
                     break;
                 }
             }
+            # akhir validasi
+
             $cz_h_CIF_FG = 0;
             $cz_h_HARGA_PENYERAHAN_FG = 0;
             $t_HARGA_PENYERAHAN = 0;
@@ -13386,6 +13404,12 @@ class DELV extends CI_Controller
                 unset($b);
             }
 
+            $rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
+            $czizinpengusaha = '';
+            foreach ($rsaktivasi as $r) {
+                $czizinpengusaha = $r['NOMOR_SKEP'];
+            }
+
             $data = [
                 'txid' => $doc,
                 'cif' => $cz_h_CIF_FG,
@@ -13395,13 +13419,15 @@ class DELV extends CI_Controller
                 'ListBarangByPrice' => $tpb_barang,
                 'ListBahanBakuList' => $tpb_bahan_baku,
                 'BCTYPE' => 27,
+                'nomorIjinEntitas ' => $czizinpengusaha,
             ];
         }
         $message = '';
         if (!empty($data)) {
-            $message = 'OK';
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApiObj = json_decode($responApi->body);
+            $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
         } else {
             $message = 'OK, No data';
@@ -13418,18 +13444,33 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD'], ['DLV_ID' => $doc]);
+        $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU'], ['DLV_ID' => $doc]);
         $data = [];
         if (empty($RSHeader)) {
             $data[] = ['message' => 'Please posting to local first'];
         } else {
+            $NomorAju = '';
             foreach ($RSHeader as $r) {
                 $ccustdate = $r['DLV_BCDATE'];
                 $czcurrency = $r['MCUS_CURCD'];
+                $NomorAju = $r['DLV_ZNOMOR_AJU'];
             }
+
+            # validasi apakah Nomor Aju sudah ada di CEISA4.0
+            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApiObj = json_decode($responApi->body);
+            if ($responApiObj->dataOri->message === 'sucess') {
+                $respon = [
+                    'message' => 'already in CEISA 4.0, please check',
+                    '$responApi' => $responApi,
+                ];
+                $this->output->set_status_header(409);
+                die(json_encode($respon));
+            }
+            # akhir validasi
+
             $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
             if (count($rscurr) == 0) {
-                $this->setFinishPosting($doc);
                 $myar[] = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
                 die('{"status":' . json_encode($myar) . '}');
             } else {
@@ -13685,6 +13726,12 @@ class DELV extends CI_Controller
             }
             unset($r);
 
+            $rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
+            $czizinpengusaha = '';
+            foreach ($rsaktivasi as $r) {
+                $czizinpengusaha = $r['NOMOR_SKEP'];
+            }
+
             $data = [
                 'txid' => $doc,
                 'cif' => $cz_h_CIF_FG,
@@ -13694,23 +13741,30 @@ class DELV extends CI_Controller
                 'ListBarangByPrice' => $tpb_barang,
                 'ListBahanBakuList' => $tpb_bahan_baku,
                 'BCTYPE' => 27,
+                'nomorIjinEntitas ' => $czizinpengusaha,
             ];
         }
         $message = '';
         if (!empty($data)) {
-            $message = 'OK';
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 300, 'connect_timeout' => 300]);
+            $responApiObj = json_decode($responApi->body);
+            $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
         } else {
             $message = 'OK, No data';
         }
         $respon = [
             'message' => $message,
-            'data' => $data,
+            // 'data' => $data,
             'Apirespon' => $responApi->body,
         ];
         die(json_encode($respon));
+    }
+
+    public function postingCEISA40BC27rm()
+    {
+
     }
 
     public function inventory_getstockbc_v2($pbc_type, $ptujuan, $psj, $prm, $pqty, $plot, $pbcdate, $pkontrak = "")

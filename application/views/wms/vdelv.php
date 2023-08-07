@@ -21,6 +21,11 @@
 </style>
 <div style="padding:5px">
     <div class="container-fluid">
+        <div class="row">
+            <div class="col" id="txfg-div-alert">
+
+            </div>
+        </div>
         <div class="row" id="txfg_stack0">
             <div class="col-sm-12 mb-1 pr-1 pl-1">
                 <div class="card shadow-sm">
@@ -5756,6 +5761,10 @@ echo $tohtml;
         }
         p.classList.add('disabled')
         p.innerHTML = 'Please wait'
+        const div_alert = document.getElementById('txfg-div-alert')
+        div_alert.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
+                                <i class="fas fa-paper-plane fa-bounce"></i> Please wait
+                                            </div>`
         $.ajax({
             type: "POST",
             url: "DELV/postingCEISA40BC" + docType,
@@ -5765,11 +5774,52 @@ echo $tohtml;
                 p.classList.remove('disabled')
                 p.innerHTML = 'CEISA 4.0'
                 alertify.message(response.message)
+                try {
+                    const respon = Object.keys(response)
+                    let msg = ''
+                    for (const item of respon) {
+                        msg += `<p>${response[item]}</p>`
+                    }
+                    div_alert.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
+                                            ${msg}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+                } catch (ex) {
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            ${xhr.responseText}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+                }
             }, error: function(xhr, ajaxOptions, throwError) {
                 p.classList.remove('disabled')
                 alert(throwError);
                 p.innerHTML = 'CEISA 4.0'
+                try {
+                    const respon = Object.keys(xhr.responseJSON)
+                    let msg = ''
+                    for (const item of respon) {
+                        msg += `<p>${xhr.responseJSON[item]}</p>`
+                    }
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            ${msg}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+                } catch (ex) {
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            ${xhr.responseText}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+                }
             }
         })
+    }
+
+    function isJson(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
     }
 </script>
