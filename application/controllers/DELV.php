@@ -13365,7 +13365,7 @@ class DELV extends CI_Controller
                         , 'KODE_TARIF' => 1
                         , 'NILAI_BAYAR' => 0
                         , 'NILAI_FASILITAS' => 0
-                        , 'KODE_FASILITAS' => 2
+                        , 'KODE_FASILITAS' => 3 // DITANGGUHKAN
                         , 'TARIF_FASILITAS' => 100
                         , 'TARIF' => (float) $r['RBM']
                         , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
@@ -13375,7 +13375,7 @@ class DELV extends CI_Controller
                         , 'KODE_TARIF' => 1
                         , 'NILAI_BAYAR' => 0
                         , 'NILAI_FASILITAS' => 0
-                        , 'KODE_FASILITAS' => 2
+                        , 'KODE_FASILITAS' => 3 // DITANGGUHKAN
                         , 'TARIF_FASILITAS' => 100
                         , 'TARIF' => (float) $r['PPN']
                         , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
@@ -13385,7 +13385,7 @@ class DELV extends CI_Controller
                         , 'KODE_TARIF' => 1
                         , 'NILAI_BAYAR' => 0
                         , 'NILAI_FASILITAS' => 0
-                        , 'KODE_FASILITAS' => 2
+                        , 'KODE_FASILITAS' => 3 // DITANGGUHKAN
                         , 'TARIF_FASILITAS' => 100
                         , 'TARIF' => (float) $r['PPH']
                         , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
@@ -13694,7 +13694,7 @@ class DELV extends CI_Controller
                         , 'KODE_TARIF' => 1
                         , 'NILAI_BAYAR' => 0
                         , 'NILAI_FASILITAS' => 0
-                        , 'KODE_FASILITAS' => 2
+                        , 'KODE_FASILITAS' => 3 // DITANGGUHKAN
                         , 'TARIF_FASILITAS' => 100
                         , 'TARIF' => (float) $r['RBM']
                         , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU']
@@ -13706,7 +13706,7 @@ class DELV extends CI_Controller
                         , 'KODE_TARIF' => 1
                         , 'NILAI_BAYAR' => 0
                         , 'NILAI_FASILITAS' => 0
-                        , 'KODE_FASILITAS' => 2
+                        , 'KODE_FASILITAS' => 3 // DITANGGUHKAN
                         , 'TARIF_FASILITAS' => 100
                         , 'TARIF' => (float) $r['PPN']
                         , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
@@ -13716,7 +13716,7 @@ class DELV extends CI_Controller
                         , 'KODE_TARIF' => 1
                         , 'NILAI_BAYAR' => 0
                         , 'NILAI_FASILITAS' => 0
-                        , 'KODE_FASILITAS' => 2
+                        , 'KODE_FASILITAS' => 3 // DITANGGUHKAN
                         , 'TARIF_FASILITAS' => 100
                         , 'TARIF' => (float) $r['PPH']
                         , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
@@ -13764,7 +13764,8 @@ class DELV extends CI_Controller
 
     public function postingCEISA40BC27rm()
     {
-
+        header('Content-Type: application/json');
+        
     }
 
     public function inventory_getstockbc_v2($pbc_type, $ptujuan, $psj, $prm, $pqty, $plot, $pbcdate, $pkontrak = "")
