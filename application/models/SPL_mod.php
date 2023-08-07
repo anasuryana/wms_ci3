@@ -117,7 +117,7 @@ class SPL_mod extends CI_Model
         GROUP BY SER_DOC
         ) v2 on PDPP_WONO=v2.SER_DOC
         inner join v_assy_as_sub on SUBSTRING(PDPP_MDLCD,1,9)=PWOP_BOMPN
-        WHERE PDPP_WONO LIKE '%$pwo%' and PDPP_WORQT!=PDPP_GRNQT AND PDPP_COMFG=0";
+        WHERE PDPP_WONO LIKE '%$pwo%' and PDPP_WORQT!=PDPP_GRNQT AND PDPP_COMFG=0 and PDPP_WONO not like '%ASP'";
         $query = $this->db->query($qry);
         return $query->result_array();
     }
