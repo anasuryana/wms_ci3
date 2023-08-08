@@ -184,8 +184,8 @@ class PO extends CI_Controller
         $pdf->SetFont('Times', 'B', 9);
         $pdf->SetXY(6, 94 - $_y);
         $pdf->setFillColor($Rcolor, $Gcolor, $Bcolor);
-        $pdf->Cell(10, 10, '', 1, 0, 'C', 1); #item
-        $pdf->Cell(30, 10, '', 1, 0, 'C', 1); #part number
+        $pdf->Cell(9, 10, '', 1, 0, 'C', 1); #item
+        $pdf->Cell(31, 10, '', 1, 0, 'C', 1); #part number
         $pdf->Cell(60, 10, '', 1, 0, 'C', 1); #part name
         $pdf->Cell(15, 10, '', 1, 0, 'C', 1); #unit measure
         $pdf->Cell(25, 10, '', 1, 0, 'C', 1); #qty
@@ -193,8 +193,8 @@ class PO extends CI_Controller
         $pdf->Cell(27.5, 10, '', 1, 0, 'C', 1); #amount
 
         $pdf->SetXY(6, 94 - $_y);
-        $pdf->Cell(10, 5, 'Item', 0, 0, 'C');
-        $pdf->Cell(30, 5, 'Part Number', 0, 0, 'C');
+        $pdf->Cell(9, 5, 'Item', 0, 0, 'C');
+        $pdf->Cell(31, 5, 'Part Number', 0, 0, 'C');
         $pdf->Cell(60, 5, 'Part Name / Description', 0, 0, 'C'); #part name
         $pdf->Cell(15, 5, 'Unit', 0, 0, 'C'); #unit measure
         $pdf->Cell(25, 5, 'Qty', 0, 0, 'C'); #qty
@@ -203,8 +203,8 @@ class PO extends CI_Controller
 
         $pdf->SetFont('Times', 'BI', 9);
         $pdf->SetXY(6, 98 - $_y);
-        $pdf->Cell(10, 5, 'No', 0, 0, 'C');
-        $pdf->Cell(30, 5, 'Nomor Barang', 0, 0, 'C');
+        $pdf->Cell(9, 5, 'No', 0, 0, 'C');
+        $pdf->Cell(31, 5, 'Nomor Barang', 0, 0, 'C');
         $pdf->Cell(60, 5, 'Nama Barang / Keterangan', 0, 0, 'C'); #part name
         $pdf->Cell(15, 5, 'Satuan', 0, 0, 'C'); #unit measure
         $pdf->Cell(25, 5, 'Jumlah', 0, 0, 'C'); #qty
@@ -359,8 +359,8 @@ class PO extends CI_Controller
             $MAXLENGTH_LINE_TO_BOTTOM = 195;
             $pdf->SetFont('Times', '', 9);
             $pdf->SetXY(6, 104 - $_y);
-            $pdf->Cell(10, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C');
-            $pdf->Cell(30, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C');
+            $pdf->Cell(9, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C');
+            $pdf->Cell(31, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C');
             $pdf->Cell(60, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C'); #part name
             $pdf->Cell(15, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C'); #unit measure
             $pdf->Cell(25, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C'); #qty
@@ -517,23 +517,22 @@ class PO extends CI_Controller
                 $discount_price = $amount * ($r['PO_DISC'] / 100);
                 $finalamount = $amount - $discount_price;
                 $pdf->SetXY(6, $YStart);
-                $pdf->Cell(10, 5, $nomor_urut++, 0, 0, 'C');
+                $pdf->Cell(9, 5, $nomor_urut++, 0, 0, 'C');
                 if (strpos($itemcd, " ") !== false) {
-
-                    $pdf->MultiCell(30, 5, $itemcd, 0, 'L');
+                    $pdf->MultiCell(31, 5, $itemcd, 0, 'L');
                     $YExtra_candidate = $pdf->GetY();
                     $YExtra2 = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
                 } else {
                     $ttlwidth = $pdf->GetStringWidth(trim($itemcd));
-                    if ($ttlwidth > 30) {
+                    if ($ttlwidth > 31) {
                         $ukuranfont = 8.5;
-                        while ($ttlwidth > 30) {
+                        while ($ttlwidth > 31) {
                             $pdf->SetFont('Times', '', $ukuranfont);
                             $ttlwidth = $pdf->GetStringWidth(trim($itemcd));
                             $ukuranfont = $ukuranfont - 0.5;
                         }
                     }
-                    $pdf->Cell(30, 5, $itemcd, 0, 0, 'L');
+                    $pdf->Cell(31, 5, $itemcd, 0, 0, 'L');
                 }
 
                 $pdf->SetFont('Times', '', 9);
@@ -831,12 +830,12 @@ class PO extends CI_Controller
             $pdf->SetFont('Times', 'BIU', 9);
             $pdf->SetXY(140, 294 - $_y);
             $pdf->Cell(60, 5, 'Nama / Tanggal / Cap Perusahaan', 0, 0, 'C');
-        } else {                 
+        } else {
             $MAXLENGTH_LINE_TO_BOTTOM = 75;
             $pdf->SetFont('Times', '', 9);
             $pdf->SetXY(6, 104 - $_y);
-            $pdf->Cell(10, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C');
-            $pdf->Cell(30, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C');
+            $pdf->Cell(9, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C');
+            $pdf->Cell(31, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C');
             $pdf->Cell(60, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C'); #part name
             $pdf->Cell(15, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C'); #unit measure
             $pdf->Cell(25, $MAXLENGTH_LINE_TO_BOTTOM, '', 1, 0, 'C'); #qty
@@ -998,22 +997,22 @@ class PO extends CI_Controller
                 $finalamount = $amount - $discount_price_per;
                 $total_amount_test += $amount;
                 $pdf->SetXY(6, $YStart);
-                $pdf->Cell(10, 5, $nomor_urut++, 0, 0, 'C');
+                $pdf->Cell(9, 5, $nomor_urut++, 0, 0, 'C');
                 if (strpos($itemcd, " ") !== false) {                    
-                    $pdf->MultiCell(30, 5, $itemcd, 0, 'L');
+                    $pdf->MultiCell(31, 5, $itemcd, 0, 'L');
                     $YExtra_candidate = $pdf->GetY();
                     $YExtra2 = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
                 } else {
                     $ttlwidth = $pdf->GetStringWidth($itemcd);
-                    if ($ttlwidth > 30) {
+                    if ($ttlwidth > 31) {
                         $ukuranfont = 8.5;
-                        while ($ttlwidth > 30) {
+                        while ($ttlwidth > 31) {
                             $pdf->SetFont('Times', '', $ukuranfont);
                             $ttlwidth = $pdf->GetStringWidth(trim($itemcd));
                             $ukuranfont = $ukuranfont - 0.5;
                         }
                     }
-                    $pdf->Cell(30, 5, $itemcd, 0, 0, 'L');
+                    $pdf->Cell(31, 5, $itemcd, 0, 0, 'L');
                     $YExtra2 = 0;
                 }
                 $pdf->SetFont('Times', '', 9);
