@@ -1,6 +1,11 @@
 <div style="padding: 10px">
     <div class="container-fluid">
         <div class="row">
+            <div class="col" id="retrm-div-alert">
+
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <span class="input-group-text">TX ID</span>
@@ -56,12 +61,12 @@
                     <select class="form-select" id="retrm_out_inc_cmb_bg" onchange="retrm_out_inc_cmb_bg_e_change()" title="Business Management">
                         <option value="-">-</option>
                         <?php
-                        foreach ($lbg as $r) {
-                        ?>
-                            <option value="<?= trim($r->MBSG_BSGRP) ?>"><?= $r->MBSG_DESC ?></option>
+foreach ($lbg as $r) {
+    ?>
+                            <option value="<?=trim($r->MBSG_BSGRP)?>"><?=$r->MBSG_DESC?></option>
                         <?php
-                        }
-                        ?>
+}
+?>
                     </select>
                 </div>
             </div>
@@ -86,12 +91,12 @@
                     <select id="retrm_out_inc_consignee" class="form-select" title="Business Management">
                         <option value="-">-</option>
                         <?php
-                        foreach ($ldeliverycode as $r) {
-                        ?>
-                            <option value="<?= trim($r->MDEL_DELCD) ?>"><?= $r->MDEL_DELCD ?></option>
+foreach ($ldeliverycode as $r) {
+    ?>
+                            <option value="<?=trim($r->MDEL_DELCD)?>"><?=$r->MDEL_DELCD?></option>
                         <?php
-                        }
-                        ?>
+}
+?>
                     </select>
                 </div>
             </div>
@@ -101,12 +106,12 @@
                     <select class="form-select" id="retrm_out_inc_txt_transport" required>
                         <option value="-">-</option>
                         <?php
-                        $todis = "";
-                        foreach ($lplatno as $r) {
-                            $todis .= "<option value='" . $r->MSTTRANS_ID . "_" . $r->MSTTRANS_TYPE . "'>$r->MSTTRANS_ID</option>";
-                        }
-                        echo $todis;
-                        ?>
+$todis = "";
+foreach ($lplatno as $r) {
+    $todis .= "<option value='" . $r->MSTTRANS_ID . "_" . $r->MSTTRANS_TYPE . "'>$r->MSTTRANS_ID</option>";
+}
+echo $todis;
+?>
                     </select>
                     <input type="text" class="form-control" id="retrm_out_inc_txt_transporttype" required readonly>
                 </div>
@@ -173,6 +178,7 @@
                         <ul class="dropdown-menu" aria-labelledby="retrm_out_btn_export">
                             <li><a class="dropdown-item" href="#" onclick="retrm_out_btn_toxls_e_click()"><i class="fas text-success fa-file-excel"></i> XLS</a></li>
                             <li><a class="dropdown-item" href="#" onclick="retrm_out_btn_tostx_xls()"><i class="fas fa-file-excel text-success"></i> Invoice,PL,DO</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="retrm_out_btn_to_ceisa40(this)">CEISA 4.0</a></li>
                         </ul>
                     </div>
                     <button title="User's log" class="btn btn-outline-info" id="retrm_out_btn_showinfo" onclick="retrm_out_btn_showinfo_e_click()"><i class="fas fa-info-circle"></i></button>
@@ -183,7 +189,7 @@
                     <span class="input-group-text">Location From</span>
                     <select class="form-select" id="retrm_out_cmb_locfrom">
                         <option value="-">-</option>
-                        <?= $llocfrom ?>
+                        <?=$llocfrom?>
                     </select>
                 </div>
             </div>
@@ -880,12 +886,12 @@
                             <label class="input-group-text">Kantor Asal</label>
                             <select class="form-select" id="retrm_out_inc_fromoffice">
                                 <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($ldestoffice as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "<option value='-'>-</option>";
+foreach ($ldestoffice as $r) {
+    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -894,12 +900,12 @@
                             <label class="input-group-text">Kantor Tujuan</label>
                             <select class="form-select" id="retrm_out_inc_destoffice">
                                 <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($ldestoffice as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "<option value='-'>-</option>";
+foreach ($ldestoffice as $r) {
+    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -911,12 +917,12 @@
                             <select class="form-select" id="retrm_out_inc_cmb_jenisTPB">
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($lkantorpabean as  $r) {
-                                    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($lkantorpabean as $r) {
+    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -926,12 +932,12 @@
                             <select class="form-select" id="retrm_out_inc_cmb_jenisTPBtujuan">
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($lkantorpabean as  $r) {
-                                    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($lkantorpabean as $r) {
+    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -943,14 +949,14 @@
                             <select class="form-select" id="retrm_out_inc_cmb_tujuanpengiriman">
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($ltujuanpengiriman as  $r) {
-                                    if (trim($r['KODE_DOKUMEN']) == '27') {
-                                        $tohtml .= "<option value='" . trim($r['KODE_TUJUAN_PENGIRIMAN']) . "'>$r[URAIAN_TUJUAN_PENGIRIMAN]</option>";
-                                    }
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($ltujuanpengiriman as $r) {
+    if (trim($r['KODE_DOKUMEN']) == '27') {
+        $tohtml .= "<option value='" . trim($r['KODE_TUJUAN_PENGIRIMAN']) . "'>$r[URAIAN_TUJUAN_PENGIRIMAN]</option>";
+    }
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -967,6 +973,20 @@
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Contract Date</label>
                             <input type="text" id="retrm_out_inc_txt_tglkontrak" class="form-control" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text">Pemberitahu</label>
+                            <input type="text" class="form-control retrm_nama_pemberitahu" maxlength="50" value="GUSTI AYU KETUT Y">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text">Jabatan</label>
+                            <input type="text" class="form-control retrm_jabatan_pemberitahu" maxlength="50" value="J.SUPERVISOR">
                         </div>
                     </div>
                 </div>
@@ -1026,12 +1046,12 @@
                             <label class="input-group-text">Kantor Pabean</label>
                             <select class="form-select" id="retrm_out_inc_fromoffice41">
                                 <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($ldestoffice as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "<option value='-'>-</option>";
+foreach ($ldestoffice as $r) {
+    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -1041,12 +1061,12 @@
                             <select class="form-select" id="retrm_out_inc_cmb_jenisTPB41">
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($lkantorpabean as  $r) {
-                                    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($lkantorpabean as $r) {
+    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -1058,14 +1078,14 @@
                             <select class="form-select" id="retrm_out_inc_cmb_tujuanpengiriman41">
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($ltujuanpengiriman as  $r) {
-                                    if (trim($r['KODE_DOKUMEN']) == '41') {
-                                        $tohtml .= "<option value='" . trim($r['KODE_TUJUAN_PENGIRIMAN']) . "'>$r[URAIAN_TUJUAN_PENGIRIMAN]</option>";
-                                    }
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($ltujuanpengiriman as $r) {
+    if (trim($r['KODE_DOKUMEN']) == '41') {
+        $tohtml .= "<option value='" . trim($r['KODE_TUJUAN_PENGIRIMAN']) . "'>$r[URAIAN_TUJUAN_PENGIRIMAN]</option>";
+    }
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -1082,6 +1102,20 @@
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Contract Date</label>
                             <input type="text" id="retrm_out_inc_txt_tglkontrak41" class="form-control" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text">Pemberitahu</label>
+                            <input type="text" class="form-control retrm_nama_pemberitahu" maxlength="50" value="GUSTI AYU KETUT Y">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text">Jabatan</label>
+                            <input type="text" class="form-control retrm_jabatan_pemberitahu" maxlength="50" value="J.SUPERVISOR">
                         </div>
                     </div>
                 </div>
@@ -1141,12 +1175,12 @@
                             <label class="input-group-text">Kantor Pabean</label>
                             <select class="form-select" id="retrm_out_inc_fromoffice261">
                                 <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($ldestoffice as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "<option value='-'>-</option>";
+foreach ($ldestoffice as $r) {
+    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -1156,14 +1190,14 @@
                             <select class="form-select" id="retrm_out_inc_cmb_tujuanpengiriman261">
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($ltujuanpengiriman as  $r) {
-                                    if (trim($r['KODE_DOKUMEN']) == '261') {
-                                        $tohtml .= "<option value='" . trim($r['KODE_TUJUAN_PENGIRIMAN']) . "'>$r[URAIAN_TUJUAN_PENGIRIMAN]</option>";
-                                    }
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($ltujuanpengiriman as $r) {
+    if (trim($r['KODE_DOKUMEN']) == '261') {
+        $tohtml .= "<option value='" . trim($r['KODE_TUJUAN_PENGIRIMAN']) . "'>$r[URAIAN_TUJUAN_PENGIRIMAN]</option>";
+    }
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -1182,13 +1216,27 @@
                             <label class="input-group-text">Jenis Sarana Pengangkut</label>
                             <select class="form-select" id="retrm_out_inc_jenis_saranapengangkut261">
                                 <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($lwaytransport as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_CARA_ANGKUT]'>$r[URAIAN_CARA_ANGKUT]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "<option value='-'>-</option>";
+foreach ($lwaytransport as $r) {
+    $tohtml .= "<option value='$r[KODE_CARA_ANGKUT]'>$r[URAIAN_CARA_ANGKUT]</option>";
+}
+echo $tohtml;
+?>
                             </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text">Pemberitahu</label>
+                            <input type="text" class="form-control retrm_nama_pemberitahu" maxlength="50" value="GUSTI AYU KETUT Y">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text">Jabatan</label>
+                            <input type="text" class="form-control retrm_jabatan_pemberitahu" maxlength="50" value="J.SUPERVISOR">
                         </div>
                     </div>
                 </div>
@@ -1229,6 +1277,20 @@
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Tanggal Pendaftaran</label>
                             <input type="text" id="retrm_out_inc_txt_tglpen30" class="form-control" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text">Pemberitahu</label>
+                            <input type="text" class="form-control retrm_nama_pemberitahu" maxlength="50" value="GUSTI AYU KETUT Y">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text">Jabatan</label>
+                            <input type="text" class="form-control retrm_jabatan_pemberitahu" maxlength="50" value="J.SUPERVISOR">
                         </div>
                     </div>
                 </div>
@@ -1279,12 +1341,12 @@
                             <label class="input-group-text">Kantor Pabean</label>
                             <select class="form-select" id="retrm_out_inc_fromoffice25">
                                 <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($ldestoffice as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "<option value='-'>-</option>";
+foreach ($ldestoffice as $r) {
+    $tohtml .= "<option value='$r[KODE_KANTOR]'>$r[URAIAN_KANTOR]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -1294,12 +1356,12 @@
                             <select class="form-select" id="retrm_out_inc_cmb_jenisTPB25">
                                 <option value="-">-</option>
                                 <?php
-                                $tohtml = "";
-                                foreach ($lkantorpabean as  $r) {
-                                    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+$tohtml = "";
+foreach ($lkantorpabean as $r) {
+    $tohtml .= "<option value='" . trim($r['KODE_JENIS_TPB']) . "'>$r[URAIAN_JENIS_TPB]</option>";
+}
+echo $tohtml;
+?>
                             </select>
                         </div>
                     </div>
@@ -1323,14 +1385,27 @@
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Jenis Saran Pengangkut</label>
                             <select class="form-select" id="retrm_out_inc_jenis_saranapengangkut25">
-                                <?php
-                                $tohtml = "<option value='-'>-</option>";
-                                foreach ($lwaytransport as  $r) {
-                                    $tohtml .= "<option value='$r[KODE_CARA_ANGKUT]'>$r[URAIAN_CARA_ANGKUT]</option>";
-                                }
-                                echo $tohtml;
-                                ?>
+                                <?php $tohtml = "<option value='-'>-</option>";
+foreach ($lwaytransport as $r) {
+    $tohtml .= "<option value='$r[KODE_CARA_ANGKUT]'>$r[URAIAN_CARA_ANGKUT]</option>";
+}
+echo $tohtml;
+?>
                             </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text">Pemberitahu</label>
+                            <input type="text" class="form-control retrm_nama_pemberitahu" maxlength="50" value="GUSTI AYU KETUT Y">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text">Jabatan</label>
+                            <input type="text" class="form-control retrm_jabatan_pemberitahu" maxlength="50" value="J.SUPERVISOR">
                         </div>
                     </div>
                 </div>
@@ -1684,7 +1759,7 @@
         mymodal.show()
         $.ajax({
             type: "POST",
-            url: "<?= base_url('DELV/cancelposting') ?>",
+            url: "<?=base_url('DELV/cancelposting')?>",
             data: {
                 msj: msj.value
             },
@@ -1707,7 +1782,7 @@
         const itemcode = document.getElementById('retrm_out_inc_txt_DO').value;
         $.ajax({
             type: "get",
-            url: "<?= base_url('DELV/get_info_pendaftaran') ?>",
+            url: "<?=base_url('DELV/get_info_pendaftaran')?>",
             data: {
                 insj: itemcode
             },
@@ -1735,7 +1810,7 @@
         const itemcode = document.getElementById('retrm_out_inc_txt_DO').value;
         $.ajax({
             type: "get",
-            url: "<?= base_url('DELV/get_info_pendaftaran') ?>",
+            url: "<?=base_url('DELV/get_info_pendaftaran')?>",
             data: {
                 insj: itemcode
             },
@@ -1763,7 +1838,7 @@
         const itemcode = document.getElementById('retrm_out_inc_txt_DO').value;
         $.ajax({
             type: "get",
-            url: "<?= base_url('DELV/get_info_pendaftaran') ?>",
+            url: "<?=base_url('DELV/get_info_pendaftaran')?>",
             data: {
                 insj: itemcode
             },
@@ -1791,7 +1866,7 @@
         const itemcode = document.getElementById('retrm_out_inc_txt_DO').value;
         $.ajax({
             type: "get",
-            url: "<?= base_url('DELV/get_info_pendaftaran') ?>",
+            url: "<?=base_url('DELV/get_info_pendaftaran')?>",
             data: {
                 insj: itemcode
             },
@@ -1830,7 +1905,7 @@
                 if (doc.length > 0) {
                     $.ajax({
                         type: "POST",
-                        url: "<?= base_url('DELV/remove_delv_rm_per_txid') ?>",
+                        url: "<?=base_url('DELV/remove_delv_rm_per_txid')?>",
                         data: {
                             txid: doc
                         },
@@ -1863,7 +1938,7 @@
                 tblfifo.disabled = true
                 $.ajax({
                     type: "POST",
-                    url: "<?= base_url('RCV/simulatefifo') ?>",
+                    url: "<?=base_url('RCV/simulatefifo')?>",
                     data: {
                         iteml: iteml,
                         qtyl: qtyl
@@ -1955,7 +2030,7 @@
                             cardTable.appendChild(cardTableBody)
                             cardTableDiv.appendChild(cardTable)
                             containeur.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                <strong><i class="fas fa-info"></i> Need More exbc</strong> 
+                                <strong><i class="fas fa-info"></i> Need More exbc</strong>
                                 <br><br>
                                 ${cardTableDiv.innerHTML}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -1986,7 +2061,7 @@
         btnFRparentsys.disabled = true
         $.ajax({
             type: "GET",
-            url: "<?= base_url('DELV/xrpr') ?>",
+            url: "<?=base_url('DELV/xrpr')?>",
             data: {
                 doc: reffdoc.value
             },
@@ -2093,7 +2168,7 @@
             searchval.readOnly = true
             $.ajax({
                 type: "POST",
-                url: "<?= base_url('RCV/searchexbc_balance') ?>",
+                url: "<?=base_url('RCV/searchexbc_balance')?>",
                 data: {
                     itemcd: itemcd,
                     searchby: searchby,
@@ -2200,7 +2275,7 @@
         btnsearch.disabled = true
         $.ajax({
             type: "POST",
-            url: "<?= base_url('SO/outstanding_mega') ?>",
+            url: "<?=base_url('SO/outstanding_mega')?>",
             data: {
                 itemcd: itemcd,
                 bg: bisgrup,
@@ -2261,7 +2336,7 @@
 
     function retrm_out_doprc_tbody_tr_eC(e) {
         // retrm_out_inc_selected_row = e.srcElement.parentElement.rowIndex - 1
-        // console.log(retrm_out_inc_selected_row)        
+        // console.log(retrm_out_inc_selected_row)
     }
 
     function retrm_out_soprc_addrow(pdata) {
@@ -2324,7 +2399,7 @@
                 if (confirm("Are you sure ?")) {
                     $.ajax({
                         type: "post",
-                        url: "<?= base_url('DELV/remove_delv_rmso') ?>",
+                        url: "<?=base_url('DELV/remove_delv_rmso')?>",
                         data: {
                             txid: txid,
                             line: mylineid
@@ -2358,7 +2433,7 @@
                 if (confirm("Are you sure ?")) {
                     $.ajax({
                         type: "post",
-                        url: "<?= base_url('DELV/remove_delv_scr') ?>",
+                        url: "<?=base_url('DELV/remove_delv_scr')?>",
                         data: {
                             txid: txid,
                             line: mylineid
@@ -2495,7 +2570,7 @@
                 if (confirm("Are you sure ?")) {
                     $.ajax({
                         type: "post",
-                        url: "<?= base_url('DELV/remove_delv_rm') ?>",
+                        url: "<?=base_url('DELV/remove_delv_rm')?>",
                         data: {
                             txid: txid,
                             line: mylineid
@@ -2529,7 +2604,7 @@
                 if (confirm("Are you sure ?")) {
                     $.ajax({
                         type: "post",
-                        url: "<?= base_url('DELV/remove_delv_scrdoc') ?>",
+                        url: "<?=base_url('DELV/remove_delv_scrdoc')?>",
                         data: {
                             txid: txid,
                             line: mylineid
@@ -2658,7 +2733,7 @@
         retrm_out_timer()
         $.ajax({
             type: "get",
-            url: "<?= base_url("DELV/posting_rm") ?>" + doctype,
+            url: "<?=base_url("DELV/posting_rm")?>" + doctype,
             data: {
                 insj: msj
             },
@@ -2736,6 +2811,8 @@
         let mdestoffice = document.getElementById('retrm_out_inc_destoffice').value;
         let mpurpose = document.getElementById('retrm_out_inc_cmb_tujuanpengiriman').value;
         const mcona = document.getElementById('retrm_out_inc_txt_nokontrak').value.trim()
+        const namaPemberitahu = document.getElementsByClassName('retrm_nama_pemberitahu')[0].value
+        const jabatanPemberitahu = document.getElementsByClassName('retrm_jabatan_pemberitahu')[0].value
         if (mnoaju.value.includes(".")) {
             document.getElementById('retrm_out_inc_txt_noaju').focus()
             alertify.warning(`Nomor pengajuan is not valid`)
@@ -2749,7 +2826,7 @@
         if (confirm("Are You sure ?")) {
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/change27') ?>",
+                url: "<?=base_url('DELV/change27')?>",
                 data: {
                     inid: msj.value,
                     innopen: mnopen,
@@ -2760,7 +2837,9 @@
                     injenis_tpb_asal: mjenis_tpb_asal,
                     injenis_tpb_tujuan: mjenis_tpb_tujuan,
                     intgldaftar: mtglpen,
-                    incona: mcona
+                    incona: mcona,
+                    inPemberitahu : namaPemberitahu,
+                    inJabatan : jabatanPemberitahu
                 },
                 dataType: "json",
                 success: function(response) {
@@ -2795,6 +2874,8 @@
         const mjenis_tpb_asal = document.getElementById('retrm_out_inc_cmb_jenisTPB41').value;
         const mpurpose = document.getElementById('retrm_out_inc_cmb_tujuanpengiriman41').value;
         const mcona = document.getElementById('retrm_out_inc_txt_nokontrak41').value
+        let namaPemberitahu = document.getElementsByClassName('retrm_nama_pemberitahu')[0].value
+        let jabatanPemberitahu = document.getElementsByClassName('retrm_jabatan_pemberitahu')[0].value
         if (mnoaju.value.trim().length < 6) {
             alertify.warning("NO AJU is not valid")
             mnoaju.focus()
@@ -2803,7 +2884,7 @@
         if (confirm("Are You sure ?")) {
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/change41') ?>",
+                url: "<?=base_url('DELV/change41')?>",
                 data: {
                     inid: msj.value,
                     innopen: mnopen,
@@ -2812,7 +2893,9 @@
                     inpurpose: mpurpose,
                     injenis_tpb_asal: mjenis_tpb_asal,
                     intgldaftar: mtglpen,
-                    incona: mcona
+                    incona: mcona,
+                    inPemberitahu : namaPemberitahu,
+                    inJabatan : jabatanPemberitahu
                 },
                 dataType: "json",
                 success: function(response) {
@@ -2847,6 +2930,8 @@
         const mpurpose = document.getElementById('retrm_out_inc_cmb_tujuanpengiriman261').value
         const mcona = document.getElementById('retrm_out_inc_txt_nokontrak261').value
         const mejenis_sarana_angkut = document.getElementById('retrm_out_inc_jenis_saranapengangkut261').value
+        const namaPemberitahu = document.getElementsByClassName('retrm_nama_pemberitahu')[0].value
+        const jabatanPemberitahu = document.getElementsByClassName('retrm_jabatan_pemberitahu')[0].value
         if (mnoaju.value.trim().length < 6) {
             alertify.warning("NO AJU is not valid")
             mnoaju.focus()
@@ -2855,7 +2940,7 @@
         if (confirm("Are You sure ?")) {
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/change261') ?>",
+                url: "<?=base_url('DELV/change261')?>",
                 data: {
                     inid: msj.value,
                     innopen: mnopen,
@@ -2864,7 +2949,9 @@
                     inpurpose: mpurpose,
                     intgldaftar: mtglpen,
                     incona: mcona,
-                    injenis_sarana: mejenis_sarana_angkut
+                    injenis_sarana: mejenis_sarana_angkut,
+                    inPemberitahu : namaPemberitahu,
+                    inJabatan : jabatanPemberitahu
                 },
                 dataType: "json",
                 success: function(response) {
@@ -2895,6 +2982,8 @@
         const mnoaju = document.getElementById('retrm_out_inc_txt_noaju30')
         const mnopen = document.getElementById('retrm_out_inc_txt_nopen30').value;
         const mtglpen = document.getElementById('retrm_out_inc_txt_tglpen30').value;
+        const namaPemberitahu = document.getElementsByClassName('retrm_nama_pemberitahu')[0].value
+        const jabatanPemberitahu = document.getElementsByClassName('retrm_jabatan_pemberitahu')[0].value
         if (mnoaju.value.trim().length != 26) {
             alertify.warning("NO AJU is not valid")
             mnoaju.focus()
@@ -2903,12 +2992,14 @@
         if (confirm("Are You sure ?")) {
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/change30') ?>",
+                url: "<?=base_url('DELV/change30')?>",
                 data: {
                     inid: msj.value,
                     innopen: mnopen,
                     inaju: mnoaju.value,
-                    intgldaftar: mtglpen
+                    intgldaftar: mtglpen,
+                    inPemberitahu : namaPemberitahu,
+                    inJabatan : jabatanPemberitahu
                 },
                 dataType: "json",
                 success: function(response) {
@@ -2945,6 +3036,8 @@
         const mSKB_pph = document.getElementById('retrm_out_inc_txt_noskb').value
         const mSKB_pph_tgl = document.getElementById('retrm_out_inc_txt_noskb_tgl').value
         const mjenis_sarana_pengangkut = document.getElementById('retrm_out_inc_jenis_saranapengangkut25').value
+        const namaPemberitahu = document.getElementsByClassName('retrm_nama_pemberitahu')[0].value
+        const jabatanPemberitahu = document.getElementsByClassName('retrm_jabatan_pemberitahu')[0].value
         if (mnoaju.value.trim().length < 6) {
             alertify.warning("NO AJU is not valid")
             mnoaju.focus()
@@ -2953,7 +3046,7 @@
         if (confirm("Are You sure ?")) {
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/change25') ?>",
+                url: "<?=base_url('DELV/change25')?>",
                 data: {
                     inid: msj.value,
                     innopen: mnopen,
@@ -2964,7 +3057,9 @@
                     inskb_tgl: mSKB_pph_tgl,
                     injenis_sarana: mjenis_sarana_pengangkut,
                     innopen: mnopen,
-                    intglpen: mtglpen
+                    intglpen: mtglpen,
+                    inPemberitahu : namaPemberitahu,
+                    inJabatan : jabatanPemberitahu
                 },
                 dataType: "json",
                 success: function(response) {
@@ -3048,7 +3143,7 @@
             let yearperiod = document.getElementById('retrm_out_year').value;
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/search') ?>",
+                url: "<?=base_url('DELV/search')?>",
                 data: {
                     inkey: mkeys,
                     insearchby: ms_by,
@@ -3287,7 +3382,9 @@
                                 crparentdoc: response.data[i].DLV_PARENTDOC,
                                 cdocbcout: response.data[i].RPSTOCK_REMARK,
                                 DLV_ZNOMOR_AJU: response.data[i].DLV_ZNOMOR_AJU,
-                                cstatus: mstatus
+                                cstatus: mstatus,
+                                cPemberitahu: response.data[i].DLVH_PEMBERITAHU,
+                                cJabatan: response.data[i].DLVH_JABATAN
                             }
                             newrow.onclick = () => {
                                 retrm_out_cclick_hnd(pdata)
@@ -3398,7 +3495,20 @@
         document.getElementById('retrm_out_inc_txt_apprtime').value = ((mapprovedtime == 'null') || (mapprovedtime.trim() == '') ? '' : mapprovedtime);
         document.getElementById('retrm_out_inc_txt_postedby').value = ((mposted == 'null') || (mposted.trim() == '') ? '' : mposted);
         document.getElementById('retrm_out_inc_txt_postedtime').value = ((mpostedtime == 'null') || (mpostedtime.trim() == '') ? '' : mpostedtime);
-
+        if (mrow.cPemberitahu) {
+            let elNamaPemberitahu = document.getElementsByClassName('retrm_nama_pemberitahu')
+            for(let el of elNamaPemberitahu)
+            {
+                el.value = mrow.cPemberitahu
+            }
+        }
+        if (mrow.cJabatan) {
+            let elJabatanPemberitahu = document.getElementsByClassName('retrm_jabatan_pemberitahu')
+            for(let el of elJabatanPemberitahu)
+            {
+                el.value = mrow.cJabatan
+            }
+        }
         if (mrow.cstatus != 'Posted') {
             if (mrow.cdocbcout) {
                 document.getElementById('retrm_out_status').value = mrow.cstatus;
@@ -3493,7 +3603,7 @@
     function retrm_out_f_getdetail(ptxid) {
         $.ajax({
             type: "get",
-            url: "<?= base_url('DELV/getdetails') ?>",
+            url: "<?=base_url('DELV/getdetails')?>",
             data: {
                 intxid: ptxid,
                 intype: '0'
@@ -3743,7 +3853,7 @@
             expires: 365
         })
 
-        window.open("<?= base_url('printdocs_2') ?>", '_blank');
+        window.open("<?=base_url('printdocs_2')?>", '_blank');
     }
 
     function retrm_out_btn_customs_eC() {
@@ -4143,7 +4253,7 @@
             document.getElementById('retrm_out_btn_save').disabled = true
             $.ajax({
                 type: "post",
-                url: "<?= base_url('DELV/set_rm') ?>",
+                url: "<?=base_url('DELV/set_rm')?>",
                 data: {
                     indoc: docno,
                     indocdate: docnoDate,
@@ -4270,7 +4380,7 @@
                 const docnum = document.getElementById('retrm_out_inc_txt_DO').value
                 $.ajax({
                     type: "post",
-                    url: "<?= base_url('DELV/remove_rm') ?>",
+                    url: "<?=base_url('DELV/remove_rm')?>",
                     data: {
                         lineId: mylineid,
                         docNum: docnum
@@ -4303,7 +4413,7 @@
                 const docnum = document.getElementById('retrm_out_inc_txt_DO').value
                 $.ajax({
                     type: "post",
-                    url: "<?= base_url('DELV/remove_pkg') ?>",
+                    url: "<?=base_url('DELV/remove_pkg')?>",
                     data: {
                         lineId: mylineid,
                         docNum: docnum
@@ -4334,7 +4444,7 @@
             document.getElementById('retrm_out_tblsup').getElementsByTagName('tbody')[0].innerHTML = ''
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('MSTSUP/search_union') ?>",
+                url: "<?=base_url('MSTSUP/search_union')?>",
                 data: {
                     searchKey: txt.value
                 },
@@ -4412,7 +4522,7 @@
             $('#retrm_out_tblcus tbody').empty()
             $.ajax({
                 type: "get",
-                url: "<?= base_url('DELV/searchcustomer_si') ?>",
+                url: "<?=base_url('DELV/searchcustomer_si')?>",
                 data: {
                     cid: mkey,
                     csrchby: msearchby,
@@ -4460,9 +4570,9 @@
 
     function retrm_out_btn_print_eC() {
         // document.getElementById('retrm_out_div_infoAfterPost').innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
-        //     <strong><i class="fas fa-info"></i></strong> Total time consume 
+        //     <strong><i class="fas fa-info"></i></strong> Total time consume
         //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        // </div>`        
+        // </div>`
     }
 
     function retrm_out_btn_appr_eC() {
@@ -4481,7 +4591,7 @@
         if (confirm('Are you sure ?')) {
             $.ajax({
                 type: "post",
-                url: "<?= base_url('DELV/approve') ?>",
+                url: "<?=base_url('DELV/approve')?>",
                 data: {
                     inid: mtxid.value
                 },
@@ -4559,7 +4669,7 @@
         }
         $.ajax({
             type: "GET",
-            url: "<?= base_url('DELV/book_rm') ?>" + bctype.value,
+            url: "<?=base_url('DELV/book_rm')?>" + bctype.value,
             data: {
                 insj: txid.value.trim()
             },
@@ -4640,7 +4750,7 @@
         Cookies.set('CKPDLV_TGLAJU', txTGLAJU, {
             expires: 365
         })
-        window.open("<?= base_url('printdeliverydocs_rm') ?>", '_blank');
+        window.open("<?=base_url('printdeliverydocs_rm')?>", '_blank');
         $("#retrm_out_MODPRINT").modal('hide');
     }
 
@@ -4811,7 +4921,7 @@
         Cookies.set('CKPDLV_TGLAJU', retrm_out_inc_customs_date.value, {
             expires: 365
         })
-        window.open("<?= base_url('delivery_doc_rm_as_xls') ?>", '_blank')
+        window.open("<?=base_url('delivery_doc_rm_as_xls')?>", '_blank')
     }
 
     function retrm_out_cpk_txtpk_eKP(e) {
@@ -4820,7 +4930,7 @@
             pkno.readOnly = true
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('RCV/balancePK') ?>",
+                url: "<?=base_url('RCV/balancePK')?>",
                 data: {
                     pkno: pkno.value
                 },
@@ -4891,7 +5001,7 @@
             const date0 = document.getElementById('retrm_out_scr_period_search').value
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('ITH/scrap_balance') ?>",
+                url: "<?=base_url('ITH/scrap_balance')?>",
                 data: {
                     search: e.target.value,
                     date0: date0
@@ -4993,7 +5103,7 @@
             document.getElementById('retrm_out_scrdoc_tbl').getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="1" class="text-center"><i>Please wait...</i></td></tr>'
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('SCR/scrapreport_search') ?>",
+                url: "<?=base_url('SCR/scrapreport_search')?>",
                 data: {
                     search: e.target.value
                 },
@@ -5100,7 +5210,7 @@
         }
         $.ajax({
             type: "POST",
-            url: "<?= base_url('DELV/relink_it_inventory') ?>",
+            url: "<?=base_url('DELV/relink_it_inventory')?>",
             data: {
                 doc: txid
             },
@@ -5148,5 +5258,69 @@
             newcell.classList.add('text-center')
             newcell.innerHTML = `<span class="fas fa-trash text-danger"></span>`
         }
+    }
+
+    function retrm_out_btn_to_ceisa40(p){
+        const doc = retrm_out_inc_txt_DO.value
+        const docType = retrm_out_cmb_bcdoc.value
+        if(doc.length<=3)
+        {
+            alertify.warning('TX ID is required')
+            retrm_out_inc_txt_DO.focus()
+            return
+        }
+        p.classList.add('disabled')
+        p.innerHTML = 'Please wait'
+        const div_alert = document.getElementById('retrm-div-alert')
+        div_alert.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
+                                <i class="fas fa-paper-plane fa-bounce"></i> Please wait
+                                            </div>`
+        $.ajax({
+            type: "POST",
+            url: `DELV/postingCEISA40BC${docType}rm`,
+            data: {doc: doc},
+            dataType: "json",
+            success: function (response) {
+                p.classList.remove('disabled')
+                p.innerHTML = 'CEISA 4.0'
+                alertify.message(response.message)
+                try {
+                    const respon = Object.keys(response)
+                    let msg = ''
+                    for (const item of respon) {
+                        msg += `<p>${response[item]}</p>`
+                    }
+                    div_alert.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
+                                            ${msg}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+                } catch (ex) {
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            ${xhr.responseText}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+                }
+            }, error: function(xhr, ajaxOptions, throwError) {
+                p.classList.remove('disabled')
+                alert(throwError);
+                p.innerHTML = 'CEISA 4.0'
+                try {
+                    const respon = Object.keys(xhr.responseJSON)
+                    let msg = ''
+                    for (const item of respon) {
+                        msg += `<p>${xhr.responseJSON[item]}</p>`
+                    }
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            ${msg}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+                } catch (ex) {
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            ${xhr.responseText}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+                }
+            }
+        })
     }
 </script>

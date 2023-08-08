@@ -121,7 +121,9 @@ class DELV_mod extends CI_Model
         ,ISNULL(DLV_ZJENIS_TPB_ASAL,'-') DLV_ZJENIS_TPB_ASAL, ISNULL(DLV_ZJENIS_TPB_TUJUAN,'-') DLV_ZJENIS_TPB_TUJUAN,DLV_BCDATE
         ,isnull(DLV_ZSKB,'') DLV_ZSKB, isnull(DLV_ZKODE_CARA_ANGKUT,'-') DLV_ZKODE_CARA_ANGKUT,DLV_ZTANGGAL_SKB,ISNULL(DLV_CONA,'') DLV_CONA,DLV_RPDATE
         ,ISNULL(MAX(DLV_LOCFR),'') DLV_LOCFR,ISNULL(MAX(DLV_RPRDOC),'') DLV_RPRDOC, ISNULL(MAX(DLV_PARENTDOC),'') DLV_PARENTDOC,RPSTOCK_REMARK
-        ,ISNULL(MAX(DLV_ZNOMOR_AJU),'') DLV_ZNOMOR_AJU");
+        ,ISNULL(MAX(DLV_ZNOMOR_AJU),'') DLV_ZNOMOR_AJU
+        ,ISNULL(MAX(DLVH_PEMBERITAHU),'') DLVH_PEMBERITAHU
+        ,ISNULL(MAX(DLVH_JABATAN),'') DLVH_JABATAN");
         $this->db->from($this->TABLENAME . " a");
         $this->db->join("(SELECT MSUP_SUPCD MCUS_CUSCD,MAX(MSUP_SUPNM) MCUS_CUSNM, MAX(MSUP_SUPCR) MCUS_CURCD FROM v_supplier_customer_union GROUP BY MSUP_SUPCD) b", "a.DLV_CUSTCD=b.MCUS_CUSCD", "LEFT");
         $this->db->join("MSTTRANS_TBL c", "a.DLV_TRANS=c.MSTTRANS_ID", "left");
@@ -129,6 +131,7 @@ class DELV_mod extends CI_Model
         $this->db->join("MSTEMP_TBL lupd", "a.DLV_USRID=lupd.MSTEMP_ID", "left");
         $this->db->join("MSTEMP_TBL appr", "a.DLV_APPRV=appr.MSTEMP_ID", "left");
         $this->db->join("MSTEMP_TBL post", "a.DLV_POST=post.MSTEMP_ID", "left");
+        $this->db->join("DLVH_TBL", "DLV_ID=DLVH_ID", "left");
         $this->db->join("(SELECT RPSTOCK_REMARK FROM ZRPSAL_BCSTOCK GROUP BY RPSTOCK_REMARK) VEXBC", "a.DLV_ID=RPSTOCK_REMARK", "left");
         $this->db->like("DLV_ID", $ptxid)->where("ISNULL(DLV_SER,'')", "");
         $this->db->group_by("DLV_ID,DLV_DATE,DLV_DSCRPTN,DLV_CUSTCD,MCUS_CUSNM,DLV_INVNO,DLV_INVDT,DLV_SMTINVNO,DLV_TRANS,MCUS_CURCD,MSTTRANS_TYPE,DLV_CONSIGN,DLV_RPLCMNT,DLV_VAT,DLV_KNBNDLV,DLV_FROMOFFICE
@@ -181,7 +184,9 @@ class DELV_mod extends CI_Model
         ,ISNULL(DLV_ZJENIS_TPB_ASAL,'-') DLV_ZJENIS_TPB_ASAL, ISNULL(DLV_ZJENIS_TPB_TUJUAN,'-') DLV_ZJENIS_TPB_TUJUAN,DLV_BCDATE
         ,isnull(DLV_ZSKB,'') DLV_ZSKB, isnull(DLV_ZKODE_CARA_ANGKUT,'-') DLV_ZKODE_CARA_ANGKUT,DLV_ZTANGGAL_SKB,ISNULL(DLV_CONA,'') DLV_CONA,DLV_RPDATE
         ,ISNULL(MAX(DLV_LOCFR),'') DLV_LOCFR,ISNULL(MAX(DLV_RPRDOC),'') DLV_RPRDOC, ISNULL(MAX(DLV_PARENTDOC),'') DLV_PARENTDOC,RPSTOCK_REMARK
-        ,ISNULL(MAX(DLV_ZNOMOR_AJU),'') DLV_ZNOMOR_AJU");
+        ,ISNULL(MAX(DLV_ZNOMOR_AJU),'') DLV_ZNOMOR_AJU
+        ,ISNULL(MAX(DLVH_PEMBERITAHU),'') DLVH_PEMBERITAHU
+        ,ISNULL(MAX(DLVH_JABATAN),'') DLVH_JABATAN");
         $this->db->from($this->TABLENAME . " a");
         $this->db->join("(SELECT MSUP_SUPCD MCUS_CUSCD,MAX(MSUP_SUPNM) MCUS_CUSNM, MAX(MSUP_SUPCR) MCUS_CURCD FROM v_supplier_customer_union GROUP BY MSUP_SUPCD) b", "a.DLV_CUSTCD=b.MCUS_CUSCD", "LEFT");
         $this->db->join("MSTTRANS_TBL c", "a.DLV_TRANS=c.MSTTRANS_ID", "LEFT");
@@ -189,6 +194,7 @@ class DELV_mod extends CI_Model
         $this->db->join("MSTEMP_TBL lupd", "a.DLV_USRID=lupd.MSTEMP_ID", "left");
         $this->db->join("MSTEMP_TBL appr", "a.DLV_APPRV=appr.MSTEMP_ID", "left");
         $this->db->join("MSTEMP_TBL post", "a.DLV_POST=post.MSTEMP_ID", "left");
+        $this->db->join("DLVH_TBL", "DLV_ID=DLVH_ID", "left");
         $this->db->join("(SELECT RPSTOCK_REMARK FROM ZRPSAL_BCSTOCK GROUP BY RPSTOCK_REMARK) VEXBC", "a.DLV_ID=RPSTOCK_REMARK", "left");
         $this->db->like("DLV_ID", $ptxid)->where("ISNULL(DLV_SER,'')", "")->where("MONTH(DLV_CRTDTM)", $pmonth)->where("YEAR(DLV_CRTDTM)", $pyear);
         $this->db->group_by("DLV_ID,DLV_DATE,DLV_DSCRPTN,DLV_CUSTCD,MCUS_CUSNM,DLV_INVNO,DLV_INVDT,DLV_SMTINVNO,DLV_TRANS,MCUS_CURCD,MSTTRANS_TYPE,DLV_CONSIGN,DLV_RPLCMNT,DLV_VAT,DLV_KNBNDLV,DLV_FROMOFFICE
@@ -242,7 +248,9 @@ class DELV_mod extends CI_Model
         ,ISNULL(DLV_ZJENIS_TPB_ASAL,'-') DLV_ZJENIS_TPB_ASAL, ISNULL(DLV_ZJENIS_TPB_TUJUAN,'-') DLV_ZJENIS_TPB_TUJUAN,DLV_BCDATE
         ,isnull(DLV_ZSKB,'') DLV_ZSKB,isnull(DLV_ZKODE_CARA_ANGKUT,'-') DLV_ZKODE_CARA_ANGKUT,DLV_ZTANGGAL_SKB,ISNULL(DLV_CONA,'') DLV_CONA,DLV_RPDATE
         ,ISNULL(MAX(DLV_LOCFR),'') DLV_LOCFR,ISNULL(MAX(DLV_RPRDOC),'') DLV_RPRDOC, ISNULL(MAX(DLV_PARENTDOC),'') DLV_PARENTDOC,RPSTOCK_REMARK
-        ,ISNULL(MAX(DLV_ZNOMOR_AJU),'') DLV_ZNOMOR_AJU");
+        ,ISNULL(MAX(DLV_ZNOMOR_AJU),'') DLV_ZNOMOR_AJU
+        ,ISNULL(MAX(DLVH_PEMBERITAHU),'') DLVH_PEMBERITAHU
+        ,ISNULL(MAX(DLVH_JABATAN),'') DLVH_JABATAN");
         $this->db->from($this->TABLENAME . " a");
         $this->db->join("(SELECT MSUP_SUPCD MCUS_CUSCD,MAX(MSUP_SUPNM) MCUS_CUSNM, MAX(MSUP_SUPCR) MCUS_CURCD FROM v_supplier_customer_union GROUP BY MSUP_SUPCD) b", "a.DLV_CUSTCD=b.MCUS_CUSCD", "LEFT");
         $this->db->join("MSTTRANS_TBL c", "a.DLV_TRANS=c.MSTTRANS_ID", "LEFT");
@@ -250,6 +258,7 @@ class DELV_mod extends CI_Model
         $this->db->join("MSTEMP_TBL lupd", "a.DLV_USRID=lupd.MSTEMP_ID", "left");
         $this->db->join("MSTEMP_TBL appr", "a.DLV_APPRV=appr.MSTEMP_ID", "left");
         $this->db->join("MSTEMP_TBL post", "a.DLV_POST=post.MSTEMP_ID", "left");
+        $this->db->join("DLVH_TBL", "DLV_ID=DLVH_ID", "left");
         $this->db->join("(SELECT RPSTOCK_REMARK FROM ZRPSAL_BCSTOCK GROUP BY RPSTOCK_REMARK) VEXBC", "a.DLV_ID=RPSTOCK_REMARK", "left");
         $this->db->where("DLV_DATE", $ptxdt)->where("ISNULL(DLV_SER,'')", "");
         $this->db->group_by("DLV_ID,DLV_DATE,DLV_DSCRPTN,DLV_CUSTCD,MCUS_CUSNM,DLV_INVNO,DLV_INVDT,DLV_SMTINVNO,DLV_TRANS,MCUS_CURCD,MSTTRANS_TYPE,DLV_CONSIGN,DLV_RPLCMNT,DLV_VAT,DLV_KNBNDLV,DLV_FROMOFFICE
@@ -306,7 +315,9 @@ class DELV_mod extends CI_Model
         ,ISNULL(DLV_ZJENIS_TPB_TUJUAN,'-') DLV_ZJENIS_TPB_TUJUAN,DLV_BCDATE
         ,ISNULL(DLV_ZSKB,'') DLV_ZSKB,isnull(DLV_ZKODE_CARA_ANGKUT,'-') DLV_ZKODE_CARA_ANGKUT,DLV_ZTANGGAL_SKB,ISNULL(DLV_CONA,'') DLV_CONA,DLV_RPDATE
         ,ISNULL(MAX(DLV_LOCFR),'') DLV_LOCFR,ISNULL(MAX(DLV_RPRDOC),'') DLV_RPRDOC, ISNULL(MAX(DLV_PARENTDOC),'') DLV_PARENTDOC,RPSTOCK_REMARK
-        ,ISNULL(MAX(DLV_ZNOMOR_AJU),'') DLV_ZNOMOR_AJU");
+        ,ISNULL(MAX(DLV_ZNOMOR_AJU),'') DLV_ZNOMOR_AJU
+        ,ISNULL(MAX(DLVH_PEMBERITAHU),'') DLVH_PEMBERITAHU
+        ,ISNULL(MAX(DLVH_JABATAN),'') DLVH_JABATAN");
         $this->db->from($this->TABLENAME . " a");
         $this->db->join("(SELECT MSUP_SUPCD MCUS_CUSCD,MAX(MSUP_SUPNM) MCUS_CUSNM, MAX(MSUP_SUPCR) MCUS_CURCD FROM v_supplier_customer_union GROUP BY MSUP_SUPCD) b", "a.DLV_CUSTCD=b.MCUS_CUSCD", "LEFT");
         $this->db->join("MSTTRANS_TBL c", "a.DLV_TRANS=c.MSTTRANS_ID", "LEFT");
@@ -314,6 +325,7 @@ class DELV_mod extends CI_Model
         $this->db->join("MSTEMP_TBL lupd", "a.DLV_USRID=lupd.MSTEMP_ID", "left");
         $this->db->join("MSTEMP_TBL appr", "a.DLV_APPRV=appr.MSTEMP_ID", "left");
         $this->db->join("MSTEMP_TBL post", "a.DLV_POST=post.MSTEMP_ID", "left");
+        $this->db->join("DLVH_TBL", "DLV_ID=DLVH_ID", "left");
         $this->db->like("MCUS_CUSNM", $ptxcus)->where("ISNULL(DLV_SER,'')", "");
         $this->db->join("(SELECT RPSTOCK_REMARK FROM ZRPSAL_BCSTOCK GROUP BY RPSTOCK_REMARK) VEXBC", "a.DLV_ID=RPSTOCK_REMARK", "left");
         $this->db->group_by("DLV_ID,DLV_DATE,DLV_DSCRPTN,DLV_CUSTCD,MCUS_CUSNM,DLV_INVNO,DLV_INVDT,DLV_SMTINVNO,DLV_TRANS,MCUS_CURCD,MSTTRANS_TYPE,DLV_CONSIGN,DLV_RPLCMNT,DLV_VAT,DLV_KNBNDLV,DLV_FROMOFFICE
@@ -1216,7 +1228,8 @@ class DELV_mod extends CI_Model
     {
         $this->db->limit(1);
         $this->db->select($pColumns);
-        $this->db->join("MCUS_TBL", "DLV_CUSTCD=MCUS_CUSCD");
+        $this->db->join("MCUS_TBL", "DLV_CUSTCD=MCUS_CUSCD", "LEFT");
+        $this->db->join("MSUP_TBL", "DLV_CUSTCD=MSUP_SUPCD", "LEFT");
         $this->db->from($this->TABLENAME);
         $this->db->where($pWhere)->where('DLV_POST IS NOT NULL', null, false);
         $query = $this->db->get();
