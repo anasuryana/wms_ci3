@@ -1208,7 +1208,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?", ];
+                                Are you sure want to continue ?"];
                     die(json_encode($myar));
                 }
             }
@@ -1506,7 +1506,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?"];
+                                Are you sure want to continue ?", ];
                     die(json_encode($myar));
                 }
             }
@@ -5917,8 +5917,6 @@ class DELV extends CI_Controller
                 'POSTING_BY' => $this->session->userdata('nama'),
                 'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
             ]);
-        } else {
-            $myar[] = ['cd' => '130', 'msg' => 'there is another user posting this document'];
         }
         $czsj = $csj;
         $rs_head_dlv = $this->DELV_mod->select_header_bydo($csj);
@@ -5998,6 +5996,7 @@ class DELV extends CI_Controller
         $czConaDate = '';
         $czPemberitahu = '';
         $czJabatan = '';
+        $nomorAjuFull = '';
         foreach ($rs_head_dlv as $r) {
             if ($r['DLV_BCDATE']) {
                 $consignee = $r['DLV_CONSIGN'];
@@ -6023,9 +6022,22 @@ class DELV extends CI_Controller
                 $czConaDate = $r['MCONA_DATE'];
                 $czPemberitahu = $r['DLVH_PEMBERITAHU'];
                 $czJabatan = $r['DLVH_JABATAN'];
+                $nomorAjuFull = $r['DLV_ZNOMOR_AJU'];
                 break;
             }
         }
+
+        # validasi apakah Nomor Aju sudah ada di CEISA4.0
+        $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $nomorAjuFull, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+        $responApiObj = json_decode($responApi->body);
+        if ($responApiObj->dataOri->message === 'sucess') {
+            $respon[] = [
+                'cd' => 0,
+                'msg' => 'already in CEISA 4.0, please check',
+            ];
+            die(json_encode(['status' => $respon]));
+        }
+        # akhir validasi
 
         if ($cztujuanpengiriman == '-') {
             $this->setFinishPosting($csj);
@@ -6455,7 +6467,7 @@ class DELV extends CI_Controller
             $this->setFinishPosting($csj);
             $this->inventory_cancelDO($csj);
             $myar[] = ['cd' => 110, 'msg' => $e->getMessage()];
-            die('{"status" : ' . json_encode($myar) . ',"data":"' . $rstemp . '"}');
+            die(json_encode(['status' => $myar, 'data' => $rstemp]));
         }
 
         if ($rsaju_need_hscode) {
@@ -6463,7 +6475,7 @@ class DELV extends CI_Controller
             $rsajudo = $this->RCV_mod->select_ajudo_byAJU_in($rsaju_need_hscode);
             $this->inventory_cancelDO($csj);
             $myar[] = ['cd' => 120, 'msg' => 'Need to update HSCODE'];
-            die('{"status" : ' . json_encode($myar) . ', "data":' . json_encode($rsajudo) . '}');
+            die(json_encode(['status' => $myar, 'data' => $rsajudo]));
         }
 
         foreach ($rsplotrm_per_fgprice as $r) {
@@ -13128,6 +13140,582 @@ class DELV extends CI_Controller
         $writer->save('php://output');
     }
 
+    public function _posting27($DOC)
+    {
+        ini_set('max_execution_time', '-1');
+        $currentDate = date('Y-m-d H:i:s');
+        $csj = $DOC;
+        $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
+        $startTM = $now->format('Y-m-d H:i:s:v');
+        $rsUnfinished = $this->POSTING_mod->select_unfinished($csj);
+        if (empty($rsUnfinished)) {
+            $this->POSTING_mod->insert([
+                'POSTING_DOC' => $csj,
+                'POSTING_STATUS' => 1,
+                'POSTING_STARTED_AT' => $startTM,
+                'POSTING_BY' => $this->session->userdata('nama'),
+                'POSTING_IP' => $_SERVER['REMOTE_ADDR'],
+            ]);
+        }
+        $czsj = $csj;
+        $rs_head_dlv = $this->DELV_mod->select_header_bydo($csj);
+        $rs_rm_null = $this->DELV_mod->select_rm_null($csj);
+        if (count($rs_rm_null) > 0) {
+            #check com job
+            $ser_com_calcualted = [];
+            foreach ($rs_rm_null as $r) {
+                $rs_def = $this->SERC_mod->select_cols_where_id(['SERC_COMID', 'SERC_COMJOB', 'SERC_COMQTY'], $r['DLV_SER']); #detail combined ser
+                if (count($rs_def)) {
+                    foreach ($rs_def as $k) {
+                        $countrm_ = $this->SERD_mod->select_perlabel_resume_item($k['SERC_COMID']); #detail combined ser -> rm count
+                        if ($countrm_ == 0) {
+                            $ser_com_calcualted[] = ['NEWID' => $r['DLV_SER'], 'COMID' => $k['SERC_COMID'], 'RM' => $countrm_];
+                        }
+                    }
+                } else {
+                    $rs_def = $this->SERC_mod->select_cols_where_id(['SERC_COMID', 'SERC_COMJOB', 'SERC_COMQTY'], $r['SER_REFNO']); #detail combined ser
+                    foreach ($rs_def as $k) {
+                        $countrm_ = $this->SERD_mod->select_perlabel_resume_item($k['SERC_COMID']); #detail combined ser -> rm count
+                        if ($countrm_ == 0) {
+                            $ser_com_calcualted[] = ['NEWID' => $r['DLV_SER'], 'COMID' => $k['SERC_COMID'], 'RM' => $countrm_];
+                        }
+                    }
+                }
+            }
+
+            #filter rs_rm_null
+            $rs_filtered = [];
+            foreach ($rs_rm_null as $r) {
+                foreach ($ser_com_calcualted as $n) {
+                    if ($r['DLV_SER'] == $n['NEWID']) {
+                        $isfound = false;
+                        foreach ($rs_filtered as $n) {
+                            if ($n['DLV_SER'] == $r['DLV_SER']) {
+                                $isfound = true;
+                                break;
+                            }
+                        }
+                        if (!$isfound) {
+                            $rs_filtered[] = $r;
+                        }
+                    }
+                }
+            }
+            if (count($rs_filtered) > 0) {
+                $this->setFinishPosting($csj);
+                $myar[] = ['cd' => 100, 'msg' => 'RM is null, please check again data in the table below'];
+                return ['status' => $myar, 'data' => $rs_filtered];
+            } else {
+                #go ahead
+            }
+        }
+
+        $rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
+        $ccustdate = '';
+        $nomoraju = '';
+        $ccustomer_do = '';
+        $cbusiness_group = '';
+        $czcurrency = '';
+        $czdocbctype = '-';
+        $cz_KODE_JENIS_TPB = '';
+        $cz_KODE_TUJUAN_TPB = '';
+        $czinvoice = '';
+        $czkantorasal = $czidmodul = $czidmodul_asli = '';
+        $consignee = '-';
+        $cznmpenerima = '';
+        $czalamatpenerima = '';
+        $czizinpenerima = '';
+        $cznomorpolisi = '-';
+        $cznamapengangkut = '';
+        $czinvoicedt = '';
+        $czidpenerima = '';
+        $cztujuanpengiriman = '-';
+        $czkantortujuan = '';
+        $czConaNo = '';
+        $czConaDate = '';
+        $czPemberitahu = '';
+        $czJabatan = '';
+        foreach ($rs_head_dlv as $r) {
+            if ($r['DLV_BCDATE']) {
+                $consignee = $r['DLV_CONSIGN'];
+                $czdocbctype = $r['DLV_BCTYPE'];
+                $ccustdate = $r['DLV_BCDATE'];
+                $nomoraju = $r['DLV_NOAJU'];
+                $ccustomer_do = $r['DLV_CUSTDO'];
+                $czinvoice = trim($r['DLV_INVNO']);
+                $cbusiness_group = $r['DLV_BSGRP'];
+                $czcurrency = trim($r['MCUS_CURCD']);
+                $cz_KODE_JENIS_TPB = $r['DLV_ZJENIS_TPB_ASAL'];
+                $cz_KODE_TUJUAN_TPB = $r['DLV_ZJENIS_TPB_TUJUAN'];
+                $cznmpenerima = $r['MDEL_ZNAMA'];
+                $czalamatpenerima = $r['MDEL_ADDRCUSTOMS'];
+                $czizinpenerima = $r['MDEL_ZSKEP'];
+                $cznomorpolisi = $r['DLV_TRANS'];
+                $cznamapengangkut = $r['MSTTRANS_TYPE'];
+                $czinvoicedt = $r['DLV_INVDT'];
+                $czidpenerima = str_replace([".", "-"], "", $r['MCUS_TAXREG']);
+                $cztujuanpengiriman = $r['DLV_PURPOSE'];
+                $czkantortujuan = $r['DLV_DESTOFFICE'];
+                $czConaNo = $r['DLV_CONA'];
+                $czConaDate = $r['MCONA_DATE'];
+                $czPemberitahu = $r['DLVH_PEMBERITAHU'];
+                $czJabatan = $r['DLVH_JABATAN'];
+                break;
+            }
+        }
+
+        if ($cztujuanpengiriman == '-') {
+            $this->setFinishPosting($csj);
+            $myar[] = ['cd' => 0, 'msg' => 'please set TUJUAN PENGIRIMAN (' . $cztujuanpengiriman . ')'];
+            return ['status' => $myar];
+        }
+
+        if ($consignee == '-') {
+            $this->setFinishPosting($csj);
+            $myar[] = ['cd' => 0, 'msg' => 'please set consignment (' . $consignee . ')'];
+            return ['status' => $myar];
+        }
+
+        if ($czinvoice == '') {
+            $this->setFinishPosting($csj);
+            $myar[] = ['cd' => 0, 'msg' => 'please add invoice number (' . $czinvoice . ') custdate (' . $ccustdate . ') consign (' . $consignee . ')'];
+            return ['status' => $myar];
+        }
+        $ocustdate = date_create($ccustdate);
+        $cz_ymd = date_format($ocustdate, 'Ymd');
+
+        $czidpengusaha = '';
+        $cznmpengusaha = '';
+        $czalamatpengusaha = '';
+        $czizinpengusaha = '';
+
+        foreach ($rsaktivasi as $r) {
+            $czkantorasal = $r['KPPBC'];
+            $czidmodul = substr('00000' . $r['ID_MODUL'], -6);
+            $czidmodul_asli = $r['ID_MODUL'];
+            $czidpengusaha = $r['NPWP'];
+            $cznmpengusaha = $r['NAMA_PENGUSAHA'];
+            $czalamatpengusaha = $r['ALAMAT_PENGUSAHA'];
+            $czizinpengusaha = $r['NOMOR_SKEP'];
+        }
+
+        if ($czdocbctype == '-') {
+            $this->setFinishPosting($csj);
+            $myar[] = ['cd' => 0, 'msg' => 'please select bc type!'];
+            return ['status' => $myar];
+        }
+
+        if (strlen($nomoraju) != 6) {
+            $this->setFinishPosting($csj);
+            $myar[] = ['cd' => 0, 'msg' => 'NOMOR AJU is not valid, please re-check (' . $nomoraju . ')'];
+            return ['status' => $myar];
+        }
+
+        $cnoaju = substr($czkantorasal, 0, 4) . $czdocbctype . $czidmodul . $cz_ymd . $nomoraju;
+        if (($cbusiness_group == 'PSI2PPZOMC' || $cbusiness_group == 'PSI2PPZOMI')) {
+            if (strlen($ccustomer_do) < 5) {
+                $this->setFinishPosting($csj);
+                $myar[] = ['cd' => 0, 'msg' => 'please enter valid Customer DO!'];
+                return ['status' => $myar];
+            }
+            $czsj = $ccustomer_do;
+        }
+        if (strlen($nomoraju) != 6) {
+            $this->setFinishPosting($csj);
+            $myar[] = ['cd' => 0, 'msg' => 'please enter valid Nomor Pengajuan!'];
+            return ['status' => $myar];
+        }
+        if (strlen($ccustdate) != 10) {
+            $this->setFinishPosting($csj);
+            $myar[] = ['cd' => 0, 'msg' => 'please enter valid customs date!'];
+            return ['status' => $myar];
+        }
+
+        if ($this->DELV_mod->check_Primary(['DLV_ID' => $csj]) == 0) {
+            $this->setFinishPosting($csj);
+            $myar[] = ['cd' => 0, 'msg' => 'DO is not found'];
+            return ['status' => $myar];
+        }
+
+        if ($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $cnoaju])) {
+            $this->setFinishPosting($csj);
+            $myar[] = ['cd' => 0, 'msg' => 'Already posted'];
+            return ['status' => $myar];
+        }
+
+        $rsdlv = $this->DELV_mod->select_det_byid_p($csj);
+        $cz_JUMLAH_KEMASAN = count($rsdlv);
+
+        $myar = [];
+
+        $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
+        if (count($rscurr) == 0) {
+            $this->setFinishPosting($csj);
+            $myar[] = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
+            return ['status' => $myar];
+        } else {
+            foreach ($rscurr as $r) {
+                $czharga_matauang = $r->MEXRATE_VAL;
+                break;
+            }
+        }
+
+        #HEADER_HARGA
+        $cz_h_CIF_FG = 0;
+        $cz_h_HARGA_PENYERAHAN_FG = 0;
+        $rsitem_p_price = $this->setPriceRS(base64_encode($csj));
+
+        #INIT PRICE
+        $rsresume = [];
+        $rsmultiprice = [];
+        foreach ($rsitem_p_price as &$k) {
+            if ($k['SISO_SOLINE'] == 'X') {
+                $rs_mst_price = $this->XSO_mod->select_latestprice($k['SI_BSGRP'], $k['SI_CUSCD'], "'" . $k['SSO2_MDLCD'] . "'");
+                foreach ($rs_mst_price as $r) {
+                    $k['SSO2_SLPRC'] = substr($r['MSPR_SLPRC'], 0, 1) == '.' ? '0' . $r['MSPR_SLPRC'] : $r['MSPR_SLPRC'];
+                    $k['CIF'] = $k['SSO2_SLPRC'] * $k['SISOQTY'];
+                }
+            }
+            $isfound = false;
+            foreach ($rsresume as &$n) {
+                if ($n['RSI_ITMCD'] == $k['SSO2_MDLCD'] && $n['RSSO2_SLPRC'] != $k['SSO2_SLPRC']) {
+                    $n['RCOUNT']++;
+                    $isfound = true;
+                    break;
+                }
+            }
+            unset($n);
+
+            if (!$isfound) {
+                $rsresume[] = [
+                    'RSI_ITMCD' => $k['SSO2_MDLCD'], 'RSSO2_SLPRC' => $k['SSO2_SLPRC'], 'RCOUNT' => 1,
+                ];
+            }
+        }
+        unset($k);
+
+        foreach ($rsresume as $k) {
+            if ($k['RCOUNT'] > 1) {
+                $rsmultiprice[] = $k;
+            }
+        }
+
+        if (count($rsmultiprice) > 0) {
+            if ($consignee === 'IEI') {
+                $this->setFinishPosting($csj);
+                $myar[] = ["cd" => "0", "msg" => "Multi price detected please, click 'Price Detail' to confirm "];
+                return ['status' => $myar, 'data' => $rsitem_p_price, 'data2' => $rsmultiprice];
+            }
+        }
+        #END INIT PRICE
+        log_message('error', $_SERVER['REMOTE_ADDR'] . ', step0#, DO:' . $csj);
+        log_message('error', $_SERVER['REMOTE_ADDR'] . ', step1#, start, group by assy code , price, item');
+        $rspackinglist = $this->DELV_mod->select_packinglist_bydono($csj);
+        $rsplotrm_per_fgprice = $this->perprice($csj, $rsitem_p_price);
+        $cz_h_JUMLAH_BARANG = count($rsitem_p_price);
+        $cz_h_NETTO = 0;
+        $cz_h_BRUTO = 0;
+        $tpb_barang = [];
+        $SERI_BARANG = 1;
+        $aspBOX = 0;
+
+        foreach ($rspackinglist as $r) {
+            $cz_h_BRUTO += $r['MITM_GWG'];
+        }
+        foreach ($rsitem_p_price as $r) {
+            if ($r['MITM_HSCD'] == '') {
+                $myar[] = ["cd" => "0", "msg" => "HSCODE FG is empty"];
+                return ['status' => $myar, 'data' => $rsitem_p_price];
+            }
+            $t_HARGA_PENYERAHAN = $r['CIF'] * $czharga_matauang;
+            $cz_h_CIF_FG += $r['CIF'];
+            $cz_h_NETTO += $r['NWG'];
+            $cz_h_HARGA_PENYERAHAN_FG += $t_HARGA_PENYERAHAN;
+            $tpb_barang[] = [
+                'KODE_BARANG' => $r['SSO2_MDLCD']
+                , 'POS_TARIF' => $r['MITM_HSCD']
+                , 'URAIAN' => $r['MITM_ITMD1']
+                , 'JUMLAH_SATUAN' => $r['SISOQTY']
+                , 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM']
+                , 'NETTO' => $r['NWG']
+                , 'CIF' => round($r['CIF'], 2)
+                , 'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN
+                , 'SERI_BARANG' => $SERI_BARANG
+                , 'KODE_STATUS' => '02',
+            ];
+            $SERI_BARANG++;
+            if (strpos(strtoupper($r['SSO2_MDLCD']), 'ASP') !== false) {
+                $aspBOX += $r['SISOQTY'];
+            }
+        }
+        if ($aspBOX) {
+            $cz_JUMLAH_KEMASAN = $aspBOX;
+        }
+        #N
+        log_message('error', $_SERVER['REMOTE_ADDR'] . ',step1#, finish, group by assy code , price, item');
+        #BAHAN BAKU
+        $tpb_bahan_baku = [];
+        $responseResume = [];
+        
+        try {
+            log_message('error', $_SERVER['REMOTE_ADDR'] . ',step2#, start, posting group by assy code , price, item');
+            $rsRMOnly = $this->DELV_mod->select_pertxid_rmOnly($csj);
+            $rsSubOnly = $this->DELV_mod->select_pertxid_subOnly($csj);
+            $rsnull = $this->DELV_mod->select_dlv_ser_rm_null_v1($csj);
+            $rs = array_merge($rsRMOnly, $rsSubOnly);
+            foreach ($rsnull as $r) {
+                $rscomb_d = $this->SERC_mod->select_cols_where_id(['SERC_COMID'], $r['DLV_SER']);
+                $serlist = [];
+                if (count($rscomb_d)) {
+                    foreach ($rscomb_d as $n) {
+                        $serlist[] = $n['SERC_COMID'];
+                    }
+                    if (count($serlist) > 0) {
+                        $rscom = $this->DELV_mod->select_pertxid_byser($serlist);
+                        $rs = array_merge($rs, $rscom);
+                    }
+                } else {
+                    $rscomb_d = $this->SERC_mod->select_cols_where_id(['SERC_COMID'], $r['SER_REFNO']);
+                    foreach ($rscomb_d as $n) {
+                        $serlist[] = $n['SERC_COMID'];
+                    }
+                    if (count($serlist) > 0) {
+                        $rscom = $this->DELV_mod->select_pertxid_byser($serlist);
+                        $rs = array_merge($rs, $rscom);
+                    }
+                }
+            }
+            $rsallitem_cd = [];
+            $rsallitem_lot = [];
+            $rsallitem_hscd = [];
+            $rsallitem_qty = [];
+            $rsallitem_qtyplot = [];
+            $rsallitem_ppn = [];
+            $rsallitem_pph = [];
+            $rsallitem_bm = [];
+            foreach ($rs as $r) {
+                $itemtosend = $r['ITMGR'] == '' ? trim($r['SERD2_ITMCD']) : $r['ITMGR'];
+                $i = array_search($itemtosend, $rsallitem_cd);
+                if ($i !== false) {
+                    $rsallitem_qty[$i] += $r['DLVQT'];
+                } else {
+                    $rsallitem_cd[] = $itemtosend;
+                    $rsallitem_lot[] = '';
+                    $rsallitem_hscd[] = '';
+                    $rsallitem_qty[] = $r['DLVQT'];
+                    $rsallitem_qtyplot[] = 0;
+                    $rsallitem_ppn[] = '';
+                    $rsallitem_pph[] = '';
+                    $rsallitem_bm[] = '';
+                }
+            }
+            $count_rsallitem = count($rsallitem_cd);
+            if ($count_rsallitem) {
+                $rshscd = $this->MSTITM_mod->select_forcustoms($rsallitem_cd);
+                foreach ($rshscd as $b) {
+                    for ($i = 0; $i < $count_rsallitem; $i++) {
+                        if ($b['MITM_ITMCD'] == $rsallitem_cd[$i]) {
+                            $rsallitem_hscd[$i] = $b['MITM_HSCD'];
+                            $rsallitem_ppn[$i] = $b['MITM_PPN'];
+                            $rsallitem_pph[$i] = $b['MITM_PPH'];
+                            $rsallitem_bm[$i] = $b['MITM_BM'];
+                            break;
+                        }
+                    }
+                }
+            }
+            $isResponseIterable = false;
+
+            log_message('error', $_SERVER['REMOTE_ADDR'] . ',step2#, finish, posting group by assy code , price, item');
+            log_message('error', $_SERVER['REMOTE_ADDR'] . ',step3#, start, send request');
+            $rstemp = $this->inventory_getstockbc_v2($czdocbctype, $cztujuanpengiriman, $csj, $rsallitem_cd, $rsallitem_qty, $rsallitem_lot, $ccustdate);
+            $rsbc = json_decode($rstemp);
+            log_message('error', $_SERVER['REMOTE_ADDR'] . ',step3#, start, receive request');
+            if (!is_null($rsbc)) {
+                if (count($rsbc) > 0) {
+                    $isResponseIterable = true;
+                    foreach ($rsbc as &$o) {
+                        foreach ($o->data as &$v) {
+                            #resume respone
+                            $isfound = false;
+                            foreach ($responseResume as &$n) {
+                                if ($n['ITEM'] == $v->BC_ITEM) {
+                                    $n['BALRES'] += $v->BC_QTY;
+                                    $isfound = true;
+                                }
+                            }
+                            unset($n);
+                            if (!$isfound) {
+                                $responseResume[] = ['ITEM' => $v->BC_ITEM, 'BALRES' => $v->BC_QTY];
+                            }
+                            #end
+                        }
+                        unset($v);
+                    }
+                    unset($o);
+                } else {
+                    $this->setFinishPosting($csj);
+                    $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !", "api_respon" => $rstemp];
+                    $this->inventory_cancelDO($csj);
+                    return ['status' => $myar];
+                }
+            } else {
+                $this->setFinishPosting($csj);
+                $this->inventory_cancelDO($csj);
+                $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin", "api_respon" => $rstemp];
+                return ['status' => $myar];
+            }
+            #CHECK IS REQ!=RES
+            $listNeedExBC = []; #outstanding list
+            for ($i = 0; $i < $count_rsallitem; $i++) {
+                foreach ($responseResume as &$r) {
+                    if ($rsallitem_cd[$i] === $r['ITEM']) {
+                        $bal = $rsallitem_qty[$i] - $rsallitem_qtyplot[$i];
+                        if ($bal > $r['BALRES']) {
+                            $rsallitem_qtyplot[$i] += $r['BALRES'];
+                            $r['BALRES'] = 0;
+                        } else {
+                            $rsallitem_qtyplot[$i] += $bal;
+                            $r['BALRES'] -= $bal;
+                        }
+                        if ($rsallitem_qty[$i] == $rsallitem_qtyplot[$i]) {
+                            break;
+                        }
+                    }
+                }
+                unset($r);
+                $bal = $rsallitem_qty[$i] - $rsallitem_qtyplot[$i];
+                if ($bal) {
+                    $listNeedExBC[] = ['ITMCD' => $rsallitem_cd[$i], 'QTY' => $bal, 'LOTNO' => '?'];
+                }
+            }
+            if (count($listNeedExBC) > 0) {
+                $this->setFinishPosting($csj);
+                $this->inventory_cancelDO($csj);
+                $myar[] = ['cd' => 110, 'msg' => 'EX-BC for ' . count($listNeedExBC) . ' item(s) is not found. ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman];
+                return ['status' => $myar,
+                    'data' => $listNeedExBC,
+                    'rawdata' => $rstemp,
+                    'itemsend' => $rsallitem_cd,
+                    'itemqtysend' => $rsallitem_qty,
+                    'item_lot' => $rsallitem_lot,
+                    'responresume' => $responseResume,
+                ];
+            }
+
+            #PLOT FROM RESPONSE TO REQUEST
+            foreach ($rsplotrm_per_fgprice as &$r) {
+                $r['PLOTRQTY'] = 0;
+                if ($isResponseIterable) {
+                    foreach ($rsbc as &$o) {
+                        foreach ($o->data as &$v) {
+                            if ($r['RITEMCDGR'] === $v->BC_ITEM || $r['RITEMCD'] === $v->BC_ITEM && $v->BC_QTY > 0) {
+                                #_plot
+                                $balreq = $r['RQTY'] - $r['PLOTRQTY'];
+                                $theqty = 0;
+
+                                if ($balreq == 0) {
+                                    break;
+                                }
+
+                                if ($balreq > $v->BC_QTY) {
+                                    $theqty = $v->BC_QTY;
+                                    $r['PLOTRQTY'] += $v->BC_QTY;
+                                    $v->BC_QTY = 0;
+                                } else {
+                                    $theqty = $balreq;
+                                    $r['PLOTRQTY'] += $balreq;
+                                    $v->BC_QTY -= $balreq;
+                                }
+                                $thehscode = '';
+                                $theppn = '';
+                                $thepph = '';
+                                $thebm = '';
+
+                                if (!empty($v->RCV_HSCD)) {
+                                    $thehscode = $v->RCV_HSCD;
+                                    $theppn = $v->RCV_PPN;
+                                    $thepph = $v->RCV_PPH;
+                                    $thebm = substr($v->RCV_BM, 0, 1) == '.' ? ('0' . $v->RCV_BM) : ($v->RCV_BM);
+                                } else {
+                                    for ($h = 0; $h < $count_rsallitem; $h++) {
+                                        if ($v->BC_ITEM == $rsallitem_cd[$h]) {
+                                            $thehscode = $rsallitem_hscd[$h];
+                                            $theppn = $rsallitem_ppn[$h];
+                                            $thepph = $rsallitem_pph[$h];
+                                            $thebm = $rsallitem_bm[$h];
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if ($v->RCV_KPPBC != '-') {
+                                    $tpb_bahan_baku[] = [
+                                        'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE
+                                        , 'NOMOR_DAFTAR_DOK_ASAL' => $v->BC_NUM
+                                        , 'TANGGAL_DAFTAR_DOK_ASAL' => $v->BC_DATE
+                                        , 'KODE_KANTOR' => $v->RCV_KPPBC
+                                        , 'NOMOR_AJU_DOK_ASAL' => strlen($v->BC_AJU) == 6 ? substr('000000000000000000000000', 0, 26) : $v->BC_AJU
+                                        , 'SERI_BARANG_DOK_ASAL' => empty($v->RCV_ZNOURUT) ? 0 : $v->RCV_ZNOURUT
+                                        , 'SPESIFIKASI_LAIN' => null
+                                        , 'CIF' => substr($v->RCV_PRPRC, 0, 1) == '.' ? ('0' . $v->RCV_PRPRC * $theqty) : ($v->RCV_PRPRC * $theqty)
+                                        , 'HARGA_PENYERAHAN' => 0
+                                        , 'KODE_BARANG' => $v->BC_ITEM
+                                        , 'KODE_STATUS' => "03"
+                                        , 'POS_TARIF' => $thehscode
+                                        , 'URAIAN' => $v->MITM_ITMD1
+                                        , 'TIPE' => $v->MITM_SPTNO
+                                        , 'JUMLAH_SATUAN' => $theqty
+                                        , 'JENIS_SATUAN' => ($v->MITM_STKUOM == 'PCS') ? 'PCE' : $v->MITM_STKUOM
+                                        , 'KODE_ASAL_BAHAN_BAKU' => ($v->BC_TYPE == '27' || $v->BC_TYPE == '23') ? '0' : '1'
+                                        , 'RASSYCODE' => $r['RASSYCODE']
+                                        , 'RPRICEGROUP' => $r['RPRICEGROUP']
+                                        , 'RBM' => $thebm, 'PPN' => 11//bu gusti, terkait peraturan 1 april
+                                        , 'PPH' => $thepph,
+                                    ];
+                                } else {
+                                    $tpb_bahan_baku[] = [
+                                        'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE, 'NOMOR_DAFTAR_DOK_ASAL' => $v->BC_NUM, 'TANGGAL_DAFTAR_DOK_ASAL' => $v->BC_DATE, 'KODE_KANTOR' => null, 'NOMOR_AJU_DOK_ASAL' => strlen($v->BC_AJU) == 6 ? substr('000000000000000000000000', 0, 26) : $v->BC_AJU, 'SERI_BARANG_DOK_ASAL' => empty($v->RCV_ZNOURUT) ? 0 : $v->RCV_ZNOURUT, 'SPESIFIKASI_LAIN' => null, 'CIF' => 0, 'HARGA_PENYERAHAN' => 0, 'KODE_BARANG' => trim($v->BC_ITEM), 'KODE_STATUS' => "02", 'POS_TARIF' => $thehscode, 'URAIAN' => $v->MITM_ITMD1, 'TIPE' => $v->MITM_SPTNO, 'JUMLAH_SATUAN' => $theqty, 'JENIS_SATUAN' => 'PCE', 'KODE_ASAL_BAHAN_BAKU' => 0, 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RBM' => 0, 'PPN' => $theppn //bu gusti, terkait peraturan 1 april
+                                        , 'PPH' => $thepph,
+                                    ];
+                                }
+                                #end
+                            }
+                        }
+                        unset($v);
+                    }
+                    unset($o);
+                }
+            }
+            unset($r);
+            #END
+            log_message('error', $_SERVER['REMOTE_ADDR'] . ',step3#, finish, receive request');
+        } catch (Exception $e) {
+            $this->setFinishPosting($csj);
+            $this->inventory_cancelDO($csj);
+            $myar[] = ['cd' => 110, 'msg' => $e->getMessage()];
+            return ['status' => $myar, 'data' => $rstemp];
+        }
+
+
+        #set finished time
+        $this->setFinishPosting($csj);
+        #end
+
+        log_message('error', $_SERVER['REMOTE_ADDR'] . ',step4#, finish, INSERT TPB ');
+        $this->DELV_mod->updatebyVAR(['DLV_POST' => $this->session->userdata('nama'), 'DLV_POSTTM' => $currentDate], ['DLV_ID' => $csj]);
+        $this->setPrice(base64_encode($csj));
+        //delivery checking
+        if ($consignee != 'IEI') {
+            $this->sendto_delivery_checking($csj);
+        }
+
+        $myar[] = [
+            'cd' => 1, 'msg' => 'Done, check your TPB'
+        ];
+        return ['status' => $myar];
+    }
+
     public function postingCEISA40BC27()
     {
         header('Content-Type: application/json');
@@ -13437,7 +14025,7 @@ class DELV extends CI_Controller
                 'ListBarangByPrice' => $tpb_barang,
                 'ListBahanBakuList' => $tpb_bahan_baku,
                 'BCTYPE' => 27,
-                'nomorIjinEntitas ' => $czizinpengusaha,
+                'nomorIjinEntitas' => $czizinpengusaha,
             ];
         }
         $message = '';
@@ -13759,7 +14347,7 @@ class DELV extends CI_Controller
                 'ListBarangByPrice' => $tpb_barang,
                 'ListBahanBakuList' => $tpb_bahan_baku,
                 'BCTYPE' => 27,
-                'nomorIjinEntitas ' => $czizinpengusaha,
+                'nomorIjinEntitas' => $czizinpengusaha,
             ];
         }
         $message = '';
