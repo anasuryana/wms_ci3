@@ -1208,7 +1208,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?"];
+                                Are you sure want to continue ?", ];
                     die(json_encode($myar));
                 }
             }
@@ -1506,7 +1506,7 @@ class DELV extends CI_Controller
                 $rssiso = $this->SISO_mod->select_currentDiffPrice_byReffno($reffnoStr, $monthOfDO);
                 if (!empty($rssiso) && $cconfirmation === 'n') {
                     $myar[] = ["cd" => '22', "msg" => "Month of Sales Order is different than Month of Delivery Order.
-                                Are you sure want to continue ?", ];
+                                Are you sure want to continue ?"];
                     die(json_encode($myar));
                 }
             }
@@ -13203,7 +13203,7 @@ class DELV extends CI_Controller
             }
             if (count($rs_filtered) > 0) {
                 $this->setFinishPosting($csj);
-                $myar[] = ['cd' => 100, 'msg' => 'RM is null, please check again data in the table below'];
+                $myar = ['cd' => 100, 'msg' => 'RM is null, please check again data in the table below'];
                 return ['status' => $myar, 'data' => $rs_filtered];
             } else {
                 #go ahead
@@ -13266,19 +13266,19 @@ class DELV extends CI_Controller
 
         if ($cztujuanpengiriman == '-') {
             $this->setFinishPosting($csj);
-            $myar[] = ['cd' => 0, 'msg' => 'please set TUJUAN PENGIRIMAN (' . $cztujuanpengiriman . ')'];
+            $myar = ['cd' => 0, 'msg' => 'please set TUJUAN PENGIRIMAN (' . $cztujuanpengiriman . ')'];
             return ['status' => $myar];
         }
 
         if ($consignee == '-') {
             $this->setFinishPosting($csj);
-            $myar[] = ['cd' => 0, 'msg' => 'please set consignment (' . $consignee . ')'];
+            $myar = ['cd' => 0, 'msg' => 'please set consignment (' . $consignee . ')'];
             return ['status' => $myar];
         }
 
         if ($czinvoice == '') {
             $this->setFinishPosting($csj);
-            $myar[] = ['cd' => 0, 'msg' => 'please add invoice number (' . $czinvoice . ') custdate (' . $ccustdate . ') consign (' . $consignee . ')'];
+            $myar = ['cd' => 0, 'msg' => 'please add invoice number (' . $czinvoice . ') custdate (' . $ccustdate . ') consign (' . $consignee . ')'];
             return ['status' => $myar];
         }
         $ocustdate = date_create($ccustdate);
@@ -13301,13 +13301,13 @@ class DELV extends CI_Controller
 
         if ($czdocbctype == '-') {
             $this->setFinishPosting($csj);
-            $myar[] = ['cd' => 0, 'msg' => 'please select bc type!'];
+            $myar = ['cd' => 0, 'msg' => 'please select bc type!'];
             return ['status' => $myar];
         }
 
         if (strlen($nomoraju) != 6) {
             $this->setFinishPosting($csj);
-            $myar[] = ['cd' => 0, 'msg' => 'NOMOR AJU is not valid, please re-check (' . $nomoraju . ')'];
+            $myar = ['cd' => 0, 'msg' => 'NOMOR AJU is not valid, please re-check (' . $nomoraju . ')'];
             return ['status' => $myar];
         }
 
@@ -13315,31 +13315,31 @@ class DELV extends CI_Controller
         if (($cbusiness_group == 'PSI2PPZOMC' || $cbusiness_group == 'PSI2PPZOMI')) {
             if (strlen($ccustomer_do) < 5) {
                 $this->setFinishPosting($csj);
-                $myar[] = ['cd' => 0, 'msg' => 'please enter valid Customer DO!'];
+                $myar = ['cd' => 0, 'msg' => 'please enter valid Customer DO!'];
                 return ['status' => $myar];
             }
             $czsj = $ccustomer_do;
         }
         if (strlen($nomoraju) != 6) {
             $this->setFinishPosting($csj);
-            $myar[] = ['cd' => 0, 'msg' => 'please enter valid Nomor Pengajuan!'];
+            $myar = ['cd' => 0, 'msg' => 'please enter valid Nomor Pengajuan!'];
             return ['status' => $myar];
         }
         if (strlen($ccustdate) != 10) {
             $this->setFinishPosting($csj);
-            $myar[] = ['cd' => 0, 'msg' => 'please enter valid customs date!'];
+            $myar = ['cd' => 0, 'msg' => 'please enter valid customs date!'];
             return ['status' => $myar];
         }
 
         if ($this->DELV_mod->check_Primary(['DLV_ID' => $csj]) == 0) {
             $this->setFinishPosting($csj);
-            $myar[] = ['cd' => 0, 'msg' => 'DO is not found'];
+            $myar = ['cd' => 0, 'msg' => 'DO is not found'];
             return ['status' => $myar];
         }
 
         if ($this->TPB_HEADER_imod->check_Primary(['NOMOR_AJU' => $cnoaju])) {
             $this->setFinishPosting($csj);
-            $myar[] = ['cd' => 0, 'msg' => 'Already posted'];
+            $myar = ['cd' => 0, 'msg' => 'Already posted'];
             return ['status' => $myar];
         }
 
@@ -13351,7 +13351,7 @@ class DELV extends CI_Controller
         $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
         if (count($rscurr) == 0) {
             $this->setFinishPosting($csj);
-            $myar[] = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
+            $myar = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
             return ['status' => $myar];
         } else {
             foreach ($rscurr as $r) {
@@ -13403,7 +13403,7 @@ class DELV extends CI_Controller
         if (count($rsmultiprice) > 0) {
             if ($consignee === 'IEI') {
                 $this->setFinishPosting($csj);
-                $myar[] = ["cd" => "0", "msg" => "Multi price detected please, click 'Price Detail' to confirm "];
+                $myar = ["cd" => "0", "msg" => "Multi price detected please, click 'Price Detail' to confirm "];
                 return ['status' => $myar, 'data' => $rsitem_p_price, 'data2' => $rsmultiprice];
             }
         }
@@ -13456,7 +13456,7 @@ class DELV extends CI_Controller
         #BAHAN BAKU
         $tpb_bahan_baku = [];
         $responseResume = [];
-        
+
         try {
             log_message('error', $_SERVER['REMOTE_ADDR'] . ',step2#, start, posting group by assy code , price, item');
             $rsRMOnly = $this->DELV_mod->select_pertxid_rmOnly($csj);
@@ -13555,14 +13555,14 @@ class DELV extends CI_Controller
                     unset($o);
                 } else {
                     $this->setFinishPosting($csj);
-                    $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !", "api_respon" => $rstemp];
+                    $myar = ["cd" => "0", "msg" => "Could not find exbc, please contact admin !", "api_respon" => $rstemp];
                     $this->inventory_cancelDO($csj);
                     return ['status' => $myar];
                 }
             } else {
                 $this->setFinishPosting($csj);
                 $this->inventory_cancelDO($csj);
-                $myar[] = ["cd" => "0", "msg" => "Could not find exbc, please contact admin", "api_respon" => $rstemp];
+                $myar = ["cd" => "0", "msg" => "Could not find exbc, please contact admin", "api_respon" => $rstemp];
                 return ['status' => $myar];
             }
             #CHECK IS REQ!=RES
@@ -13592,7 +13592,7 @@ class DELV extends CI_Controller
             if (count($listNeedExBC) > 0) {
                 $this->setFinishPosting($csj);
                 $this->inventory_cancelDO($csj);
-                $myar[] = ['cd' => 110, 'msg' => 'EX-BC for ' . count($listNeedExBC) . ' item(s) is not found. ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman];
+                $myar = ['cd' => 110, 'msg' => 'EX-BC for ' . count($listNeedExBC) . ' item(s) is not found. ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman];
                 return ['status' => $myar,
                     'data' => $listNeedExBC,
                     'rawdata' => $rstemp,
@@ -13693,10 +13693,9 @@ class DELV extends CI_Controller
         } catch (Exception $e) {
             $this->setFinishPosting($csj);
             $this->inventory_cancelDO($csj);
-            $myar[] = ['cd' => 110, 'msg' => $e->getMessage()];
+            $myar = ['cd' => 110, 'msg' => $e->getMessage()];
             return ['status' => $myar, 'data' => $rstemp];
         }
-
 
         #set finished time
         $this->setFinishPosting($csj);
@@ -13710,8 +13709,8 @@ class DELV extends CI_Controller
             $this->sendto_delivery_checking($csj);
         }
 
-        $myar[] = [
-            'cd' => 1, 'msg' => 'Done, check your TPB'
+        $myar = [
+            'cd' => 1, 'msg' => 'Done, ready transfer to CEISA 4.0',
         ];
         return ['status' => $myar];
     }
@@ -13721,16 +13720,38 @@ class DELV extends CI_Controller
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
         $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU'], ['DLV_ID' => $doc]);
+        $NomorAju = '';
+        $message = '';
+        $responApi = null;
+        foreach ($RSHeader as $r) {
+            $ccustdate = $r['DLV_BCDATE'];
+            $czcurrency = $r['MCUS_CURCD'];
+            $NomorAju = $r['DLV_ZNOMOR_AJU'];
+        }
+        $TPBData = $this->TPB_HEADER_imod->select_where(
+            ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
+            ['NOMOR_AJU' => $NomorAju]
+        );
         $data = [];
-        if (empty($RSHeader)) {
-            $data[] = ['message' => 'Please posting to local first'];
+        if (empty($TPBData)) {
+            $message = 'Already exist in TPB';
         } else {
-            $NomorAju = '';
-            foreach ($RSHeader as $r) {
-                $ccustdate = $r['DLV_BCDATE'];
-                $czcurrency = $r['MCUS_CURCD'];
-                $NomorAju = $r['DLV_ZNOMOR_AJU'];
+            # jalankan fungsi request exbc
+            if (empty($RSHeader)) {
+                $result = $this->_posting27($doc);
+
+                # validasi apakah request berjalan dengan mulus
+                if($result['status']['cd'] != 1 )
+                {
+                    $respon = [
+                        'message' => $result['status']['msg'],
+                    ];
+                    $this->output->set_status_header(400);
+                    die(json_encode($respon));
+                }
+        
             }
+            # akhir jalankan
 
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
@@ -14028,15 +14049,13 @@ class DELV extends CI_Controller
                 'nomorIjinEntitas' => $czizinpengusaha,
             ];
         }
-        $message = '';
+        
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
-        } else {
-            $message = 'OK, No data';
         }
         $respon = [
             'message' => $message,
