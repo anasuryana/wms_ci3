@@ -1236,6 +1236,18 @@ class DELV_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectDocument($pColumns, $pWhere)
+    {
+        $this->db->limit(1);
+        $this->db->select($pColumns);
+        $this->db->join("MCUS_TBL", "DLV_CUSTCD=MCUS_CUSCD", "LEFT");
+        $this->db->join("MSUP_TBL", "DLV_CUSTCD=MSUP_SUPCD", "LEFT");
+        $this->db->from($this->TABLENAME);
+        $this->db->where($pWhere);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function select_aftersales($pdoc, $pfg)
     {
         $qry = "select vdet.*,DELQT, RMQT/DELQT*3 STKQTY,MITMGRP_ITMCD from
