@@ -2672,6 +2672,13 @@ echo $toprint;
         let ar_bm = [];
         let ar_ppn = [];
         let ar_pph = [];
+        if(mkppbc.value == '')
+        {
+            $("#RCVCUSTOMS_PROGRESS").modal('hide');
+            alertify.warning('KPPBC is required')
+            rcvcustoms_kppbc.focus()
+            return
+        }
 
         let tables = $("#rcvcustoms_tbl tbody");
         tables.find('tr').each(function(i) {
@@ -2797,6 +2804,13 @@ echo $toprint;
         }
         if (mnoaju.substr(4, 2) != rcvcustoms_typedoc.value) {
             alertify.warning("Document type is not equal with nomor aju")
+            return
+        }
+        if(rcvcustoms_kppbc.value == '')
+        {
+            $("#RCVCUSTOMS_PROGRESS").modal('hide');
+            alertify.warning('KPPBC is required')
+            rcvcustoms_kppbc.focus()
             return
         }
 
