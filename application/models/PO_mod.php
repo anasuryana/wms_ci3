@@ -134,7 +134,7 @@ class PO_mod extends CI_Model
 
     public function select_detail_where($pwhere)
     {
-        $this->db->select($this->TABLENAME . ".*, RTRIM(MITM_ITMD1) MITM_ITMD1,MITM_STKUOM,MSUP_SUPNM,MSUP_SUPCR,MSUP_ADDR1,MSUP_TELNO,MSUP_FAXNO");
+        $this->db->select($this->TABLENAME . ".*, RTRIM(MITM_ITMD1) MITM_ITMD1,MITM_STKUOM,MSUP_SUPNM,MSUP_SUPCR,RTRIM(MSUP_ADDR1) MSUP_ADDR1,RTRIM(MSUP_ADDR2) MSUP_ADDR2,MSUP_TELNO,MSUP_FAXNO");
         $this->db->from($this->TABLENAME);
         $this->db->join("MITM_TBL", "PO_ITMCD=MITM_ITMCD", "LEFT");
         $this->db->join("MSUP_TBL", "PO_SUPCD=MSUP_SUPCD", "left");

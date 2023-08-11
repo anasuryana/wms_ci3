@@ -83,7 +83,7 @@ class PO extends CI_Controller
             $currency = $r['MSUP_SUPCR'];
             $payment_term = $r['PO_PAYTERM'];
             $supplier = $r['MSUP_SUPNM'];
-            $supplier_address = RTRIM($r['MSUP_ADDR1']);
+            $supplier_address = RTRIM($r['MSUP_ADDR1']." ".$r['MSUP_ADDR2']);
             $supplier_telno = $r['MSUP_TELNO'];
             $supplier_faxno = $r['MSUP_FAXNO'];
             $ppn = $r['PO_VAT'] * 1;
