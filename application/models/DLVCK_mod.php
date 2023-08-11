@@ -31,6 +31,13 @@ class DLVCK_mod extends CI_Model {
         return $this->db->affected_rows();
     }
 
+    public function updateWMSDeliveryCheckByVAR($pdata, $pwhere)
+    {        
+        $this->db->where($pwhere);
+        $this->db->update('WMS_DLVCHK', $pdata);
+        return $this->db->affected_rows();
+    }
+
     public function select_lastline($pdoc){
         $qry = "SELECT MAX(DLVCK_LINE) lser FROM $this->TABLENAME WHERE DLVCK_TXID=?";
         $query = $this->db->query($qry, [$pdoc]);

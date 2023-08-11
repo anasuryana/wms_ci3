@@ -13719,9 +13719,11 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU'], ['DLV_ID' => $doc]);
+        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU'], ['DLV_ID' => $doc]);
         $NomorAju = '';
         $message = '';
+        $czcurrency = null;
+        $ccustdate = null;
         $responApi = null;
         foreach ($RSHeader as $r) {
             $ccustdate = $r['DLV_BCDATE'];
@@ -13733,25 +13735,12 @@ class DELV extends CI_Controller
             ['NOMOR_AJU' => $NomorAju]
         );
         $data = [];
-        if (empty($TPBData)) {
-            $message = 'Already exist in TPB';
-        } else {
-            # jalankan fungsi request exbc
-            if (empty($RSHeader)) {
-                $result = $this->_posting27($doc);
 
-                # validasi apakah request berjalan dengan mulus
-                if($result['status']['cd'] != 1 )
-                {
-                    $respon = [
-                        'message' => $result['status']['msg'],
-                    ];
-                    $this->output->set_status_header(400);
-                    die(json_encode($respon));
-                }
-        
-            }
-            # akhir jalankan
+        if (!empty($TPBData)) {
+            $message = 'Already exist in TPB';
+        // if (empty($TPBData)) {
+        //     $message = 'Please posting to TPB first';
+        } else {
 
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
@@ -13765,6 +13754,23 @@ class DELV extends CI_Controller
                 die(json_encode($respon));
             }
             # akhir validasi
+
+            $RSHeaderPosted = $this->DELV_mod->selectPostedDocument(['DLV_ID'], ['DLV_ID' => $doc]);
+            # jalankan fungsi request exbc
+            if (empty($RSHeaderPosted)) {
+                $result = $this->_posting27($doc);
+
+                # validasi apakah request berjalan dengan mulus
+                if($result['status']['cd'] != 1 )
+                {
+                    $respon = [
+                        'message' => $result['status']['msg'],
+                    ];
+                    $this->output->set_status_header(400);
+                    die(json_encode($respon));
+                }
+            }
+            # akhir jalankan
 
             # validasi exchange rate
             $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
@@ -14071,9 +14077,8 @@ class DELV extends CI_Controller
         $doc = $this->input->post('doc');
         $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU'], ['DLV_ID' => $doc]);
         $data = [];
-        if (empty($RSHeader)) {
-            $data[] = ['message' => 'Please posting to local first'];
-        } else {
+        $message = '';
+        
             $NomorAju = '';
             foreach ($RSHeader as $r) {
                 $ccustdate = $r['DLV_BCDATE'];
@@ -14368,8 +14373,7 @@ class DELV extends CI_Controller
                 'BCTYPE' => 27,
                 'nomorIjinEntitas' => $czizinpengusaha,
             ];
-        }
-        $message = '';
+       
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 300, 'connect_timeout' => 300]);
@@ -14381,7 +14385,7 @@ class DELV extends CI_Controller
         }
         $respon = [
             'message' => $message,
-            'data' => $data,
+            // 'data' => $data,
             'Apirespon' => $responApi->body,
         ];
         die(json_encode($respon));
@@ -14477,7 +14481,29 @@ class DELV extends CI_Controller
                         }
                         $thecif = number_format($x['RCV_PRPRC'] * $useqt, 2, ".", "");
                         $tpb_bahan_baku[] = [
-                            'KODE_JENIS_DOK_ASAL' => $x['RCV_BCTYPE'], 'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVRMDOC_NOPEN'], 'TANGGAL_DAFTAR_DOK_ASAL' => $x['RCV_BCDATE'], 'KODE_KANTOR' => $x['RCV_KPPBC'], 'NOMOR_AJU_DOK_ASAL' => strlen($r['DLVRMDOC_AJU']) == 6 ? substr('000000000000000000000000', 0, 26) : $r['DLVRMDOC_AJU'], 'SERI_BARANG_DOK_ASAL' => empty($x['RCV_ZNOURUT']) ? 0 : $x['RCV_ZNOURUT'], 'SPESIFIKASI_LAIN' => null, 'CIF' => $thecif, 'HARGA_PENYERAHAN' => 0, 'KODE_BARANG' => $r['DLVRMDOC_ITMID'], 'KODE_STATUS' => "03", 'POS_TARIF' => $x['RCV_HSCD'], 'URAIAN' => rtrim($r['DLV_ITMD1']), 'TIPE' => rtrim($r['DLV_ITMSPTNO']), 'JUMLAH_SATUAN' => $useqt, 'SERI_BAHAN_BAKU' => 1, 'JENIS_SATUAN' => ($r['MITM_STKUOM'] == 'PCS') ? 'PCE' : $r['MITM_STKUOM'], 'KODE_ASAL_BAHAN_BAKU' => ($x['RCV_BCTYPE'] == '27' || $x['RCV_BCTYPE'] == '23') ? '0' : '1', 'RBM' => $x['RCV_BM'] * 1, 'CURRENCY' => $x['MSUP_SUPCR'], 'PPN' => 11, //bu gusti, terkait peraturan 1 april
+                            'KODE_JENIS_DOK_ASAL' => $x['RCV_BCTYPE'], 
+                            'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVRMDOC_NOPEN'], 
+                            'TANGGAL_DAFTAR_DOK_ASAL' => $x['RCV_BCDATE'], 
+                            'KODE_KANTOR' => $x['RCV_KPPBC'], 
+                            'NOMOR_AJU_DOK_ASAL' => strlen($r['DLVRMDOC_AJU']) == 6 ? substr('000000000000000000000000', 0, 26) : $r['DLVRMDOC_AJU'], 
+                            'SERI_BARANG_DOK_ASAL' => empty($x['RCV_ZNOURUT']) ? 0 : $x['RCV_ZNOURUT'], 
+                            'SPESIFIKASI_LAIN' => null, 
+                            'CIF' => $thecif, 
+                            'HARGA_PENYERAHAN' => 0, 
+                            'KODE_BARANG' => $r['DLVRMDOC_ITMID'], 
+                            'KODE_STATUS' => "03", 
+                            'POS_TARIF' => $x['RCV_HSCD'], 
+                            'URAIAN' => rtrim($r['DLV_ITMD1']), 
+                            'TIPE' => rtrim($r['DLV_ITMSPTNO']), 
+                            'JUMLAH_SATUAN' => $useqt, 
+                            'SERI_BAHAN_BAKU' => 1, 
+                            'JENIS_SATUAN' => ($r['MITM_STKUOM'] == 'PCS') ? 'PCE' : $r['MITM_STKUOM'], 
+                            'KODE_ASAL_BAHAN_BAKU' => ($x['RCV_BCTYPE'] == '27' || $x['RCV_BCTYPE'] == '23') ? '0' : '1', 
+                            'RBM' => $x['RCV_BM'] * 1, 
+                            'CURRENCY' => $x['MSUP_SUPCR'], 
+                            'PPN' => 11, //bu gusti, terkait peraturan 1 april
+                            'RASSYCODE' => $r['DLVRMDOC_ITMID'],
+                            'RPRICEGROUP' => $thecif,
                         ];
                         $IncDateList[] = $x['RCV_BCDATE'];
                         $IncCRList[] = $x['MSUP_SUPCR'];
@@ -14556,6 +14582,7 @@ class DELV extends CI_Controller
                     'RBM' => $r['RBM'],
                     'CURRENCY' => $r['CURRENCY'],
                 ];
+                $r['SERI_BARANG'] = $SeriBarang;
                 $SeriBarang++;
             }
             unset($r);
