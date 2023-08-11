@@ -49,6 +49,7 @@ class SER extends CI_Controller
         $this->load->model('DLVPRC_mod');
         $this->load->model('DELV_mod');
         $this->load->model('ZRPSTOCK_mod');
+        $this->load->model('DLVCK_mod');
         $this->load->model('refceisa/TPB_HEADER_imod');
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -4023,7 +4024,7 @@ class SER extends CI_Controller
         $coldreff = $this->input->post('inoldreff');
         $crawtext = $this->input->post('innewreff');
 
-        if ($this->SISCN_mod->check_Primary(['SISCN_SER' => $coldreff]) > 0) {
+        if ($this->ITH_mod->check_Primary(['ITH_FORM' => 'OUT-SHP-FG','ITH_SER' => $coldreff]) > 0) {
             $myar[] = ["cd" => '0', "msg" => "could not split delivered item label"];
             exit('{"status":' . json_encode($myar) . '}');
         } else {
@@ -4056,6 +4057,7 @@ class SER extends CI_Controller
                     $this->SISCN_mod->updatebyId(['SISCN_SER' => $newreff], ['SISCN_SER' => $coldreff]);
                     $this->DELV_mod->updatebyVAR(['DLV_SER' => $newreff], ['DLV_SER' => $coldreff]);
                     $this->DLVPRC_mod->updatebyId(['DLVPRC_SER' => $newreff], ['DLVPRC_SER' => $coldreff]);
+                    $this->DLVCK_mod->updateWMSDeliveryCheckByVAR(['dlv_refno' => $newreff], ['dlv_refno' => $coldreff]);
                     //update ith
                     $cwhere = ["ITH_SER" => $coldreff];
                     $ctoupdate = ["ITH_SER" => $newreff];
