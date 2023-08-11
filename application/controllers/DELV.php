@@ -14076,9 +14076,15 @@ class DELV extends CI_Controller
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
         $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU'], ['DLV_ID' => $doc]);
+        $TPBData = $this->TPB_HEADER_imod->select_where(
+            ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
+            ['NOMOR_AJU' => $NomorAju]
+        );
         $data = [];
         $message = '';
-        
+        if (!empty($TPBData)) {
+            $message = 'Already exist in TPB';
+        } else {
             $NomorAju = '';
             foreach ($RSHeader as $r) {
                 $ccustdate = $r['DLV_BCDATE'];
@@ -14373,7 +14379,7 @@ class DELV extends CI_Controller
                 'BCTYPE' => 27,
                 'nomorIjinEntitas' => $czizinpengusaha,
             ];
-       
+        }
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 300, 'connect_timeout' => 300]);
