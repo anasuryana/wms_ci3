@@ -13926,7 +13926,7 @@ class DELV extends CI_Controller
                                 , 'NOMOR_AJU_DOK_ASAL' => strlen($v->BC_AJU) == 6 ? substr('000000000000000000000000', 0, 26) : $v->BC_AJU
                                 , 'SERI_BARANG_DOK_ASAL' => empty($v->RCV_ZNOURUT) ? 0 : $v->RCV_ZNOURUT
                                 , 'SPESIFIKASI_LAIN' => null
-                                , 'CIF' => substr($v->RCV_PRPRC, 0, 1) == '.' ? ('0' . $v->RCV_PRPRC * $theqty) : ($v->RCV_PRPRC * $theqty)
+                                , 'CIF' => (float)($v->RCV_PRPRC * $theqty)
                                 , 'HARGA_PENYERAHAN' => 0
                                 , 'KODE_BARANG' => $v->BC_ITEM
                                 , 'KODE_STATUS' => "03"
