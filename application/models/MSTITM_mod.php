@@ -254,7 +254,8 @@ class MSTITM_mod extends CI_Model
 			  ,MITM_LEDGRP
 			  ,MITM_PODCD
 			  ,MITM_POUOM
-			  ,MITM_INDIRMT)
+			  ,MITM_INDIRMT
+              ,MITM_NCAT)
 
 		SELECT  MITM_ITMCD, MITM_ITMD1
 			  ,MITM_ITMD2
@@ -326,7 +327,9 @@ class MSTITM_mod extends CI_Model
 			  ,MITM_LEDGRP
 			  ,MITM_PODCD
 			  ,MITM_POUOM
-			  ,MITM_INDIRMT FROM XMITM_V WHERE MITM_ITMCD='" . $pid . "' ";
+			  ,MITM_INDIRMT
+              ,CASE WHEN SUBSTRING(mitm_itmcd,1,1)='f' THEN 'TOYO' ELSE NULL END
+              FROM XMITM_V WHERE MITM_ITMCD='" . $pid . "' ";
         $resq = $this->db->query($qry);
         return $this->db->affected_rows();
     }
