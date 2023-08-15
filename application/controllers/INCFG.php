@@ -417,6 +417,13 @@ class INCFG extends CI_Controller
                             }
                             #end new rule
 
+                            # validasi sub assy
+                            $FGSubAssies = $this->SPL_mod->selectWOOpen_assy_as_sub($cjob);
+                            if(count($FGSubAssies)>0){
+                                $myar[] = ["cd" => "0", "msg" => "For sub-assy we agree to use status label"];
+                                die(json_encode($myar));
+                            }
+                            # akhir validasi
                             if (count($rsser) > 0) {
                                 $datac = ['ITH_FORM' => 'INC-PRD-FG', 'ITH_SER' => $creffcd];
                                 if ($this->ITH_mod->check_Primary($datac) == 0) {
