@@ -14075,7 +14075,14 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU'], ['DLV_ID' => $doc]);
+        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU'], ['DLV_ID' => $doc]);
+        $NomorAju = '';
+        $responApi = null;
+        foreach ($RSHeader as $r) {
+            $ccustdate = $r['DLV_BCDATE'];
+            $czcurrency = $r['MCUS_CURCD'];
+            $NomorAju = $r['DLV_ZNOMOR_AJU'];
+        }
         $TPBData = $this->TPB_HEADER_imod->select_where(
             ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
             ['NOMOR_AJU' => $NomorAju]
@@ -14085,13 +14092,6 @@ class DELV extends CI_Controller
         if (!empty($TPBData)) {
             $message = 'Already exist in TPB';
         } else {
-            $NomorAju = '';
-            foreach ($RSHeader as $r) {
-                $ccustdate = $r['DLV_BCDATE'];
-                $czcurrency = $r['MCUS_CURCD'];
-                $NomorAju = $r['DLV_ZNOMOR_AJU'];
-            }
-
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
@@ -14108,7 +14108,7 @@ class DELV extends CI_Controller
             $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
             if (count($rscurr) == 0) {
                 $myar[] = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
-                die('{"status":' . json_encode($myar) . '}');
+                die(json_encode(['status' => $myar, '$responApiObj' => $responApiObj, ' $responApi' => $responApi]));
             } else {
                 foreach ($rscurr as $r) {
                     $czharga_matauang = $r->MEXRATE_VAL;
