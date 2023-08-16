@@ -8610,10 +8610,16 @@ class DELV extends CI_Controller
                 $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
                 $responApiObj = json_decode($responApi->body);
                 if ($responApiObj->dataOri->message === 'sucess') {
+                    $_tanggalDaftar = $responApiObj->dataOri->data[0]->tanggalDaftar;
+                    $_tanggalDaftarFormatted = null;
+                    if($_tanggalDaftar) {
+                        $_arrayTanggal = explode('-', $_tanggalDaftar);
+                        $_tanggalDaftarFormatted = $_arrayTanggal[2].'-'.$_arrayTanggal[1].'-'.$_arrayTanggal[0];
+                    }
                     $result_data = [
                         [
                             'NOMOR_DAFTAR' => $responApiObj->dataOri->data[0]->nomorDaftar,
-                            'TANGGAL_DAFTAR' => $responApiObj->dataOri->data[0]->tanggalDaftar,
+                            'TANGGAL_DAFTAR' => $_tanggalDaftarFormatted,
                         ]
                     ];
                     $response_data = [
