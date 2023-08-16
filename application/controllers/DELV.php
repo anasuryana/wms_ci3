@@ -8582,6 +8582,7 @@ class DELV extends CI_Controller
         $myar = [];
         $result_data = [];
         $response_data = [];
+        $responApi = NULL;
         foreach ($rs_head_dlv as $r) {
             $czkantorasal = $r['DLV_FROMOFFICE'];
             $nomorajufull = $r['DLV_ZNOMOR_AJU'];
@@ -8602,10 +8603,30 @@ class DELV extends CI_Controller
             } else {
                 $myar[] = ['cd' => 0, 'msg' => 'NOMOR AJU is not found in ceisa local data', 'aju' => $nomorajufull];
             }
+
+            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $nomorajufull, [], [], 'GET',  ['timeout' => 900, 'connect_timeout' => 900]);
+            if( strpos($myar[0]['msg'], 'NOMOR AJU') !== false){
+                $myar = [];
+                $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
+                $responApiObj = json_decode($responApi->body);
+                if ($responApiObj->dataOri->message === 'sucess') {
+                    $result_data = [
+                        [
+                            'NOMOR_DAFTAR' => $responApiObj->dataOri->data[0]->nomorDaftar,
+                            'TANGGAL_DAFTAR' => $responApiObj->dataOri->data[0]->tanggalDaftar,
+                        ]
+                    ];
+                    $response_data = [
+                        [
+                            'NOMOR_RESPON' => $responApiObj->dataOri->data[0]->nomorRespon,
+                        ]
+                    ];
+
+                }
+            }
         }
-        $CeisaFourRespon = []; #Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $nomorajufull, [], [], 'GET',  ['timeout' => 900, 'connect_timeout' => 900]);
         die(json_encode(['status' => $myar, 'data' => $result_data, 'data2' => $response_data
-            , 'CeisaFourRespon' => $CeisaFourRespon]));
+            , 'CeisaFourRespon' => $responApi]));
     }
 
     public function getjobstatus()
