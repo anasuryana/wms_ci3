@@ -4461,7 +4461,7 @@ echo $toprint;
                 }
                 document.getElementById('rcvcustoms_zsts_1').innerHTML = str
                 if (c.value === '40') {
-                    rcvcustoms_zsts_1.disabled = true
+                    rcvcustoms_zsts_1.disabled = rcvcustoms_tax_invoice.value.trim().length>0 ? true : false
                     rcvcustoms_typetpb_1.disabled = true
                     rcvcustoms_typetpb_1.value = '1'
                     switch (rcvcustoms_tax_invoice.value.substr(0, 2)) {
@@ -4776,6 +4776,7 @@ echo $toprint;
 
     function rcvcustoms_tax_invoice_eKeyUp(e) {
         if (rcvcustoms_typedoc_1.value === '40') {
+            rcvcustoms_zsts_1.disabled = e.target.value.trim().length>0 ? true : false
             switch (e.target.value.substr(0, 2)) {
                 case '01':
                     rcvcustoms_zsts_1.value = 4
