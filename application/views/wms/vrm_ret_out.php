@@ -870,7 +870,7 @@ echo $todis;
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Nomor Pendaftaran</label>
                             <input type="text" id="retrm_out_inc_txt_nopen" class="form-control" maxlength="6" readonly>
-                            <button class="btn btn-primary" id="retrm_out_inc_btn_sync_pendaftaran" onclick="retrm_out_inc_btn_sync_pendaftaran_e_click()" title="Get Nomor & Tanggal Pendaftaran from CEISA"><i class="fas fa-sync"></i></button>
+                            <button class="btn btn-primary" id="retrm_out_inc_btn_sync_pendaftaran" onclick="retrm_out_inc_btn_sync_pendaftaran_e_click(this)" title="Get Nomor & Tanggal Pendaftaran from CEISA"><i class="fas fa-sync"></i></button>
                         </div>
                     </div>
                     <div class="col-md-6 mb-1">
@@ -1030,7 +1030,7 @@ echo $tohtml;
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Nomor Pendaftaran</label>
                             <input type="text" id="retrm_out_inc_txt_nopen41" class="form-control" maxlength="6" readonly>
-                            <button class="btn btn-primary" id="retrm_out_inc_btn_sync_pendaftaran41" onclick="retrm_out_inc_btn_sync_pendaftaran41_e_click()" title="Get Nomor & Tanggal Pendaftaran from CEISA"><i class="fas fa-sync"></i></button>
+                            <button class="btn btn-primary" id="retrm_out_inc_btn_sync_pendaftaran41" onclick="retrm_out_inc_btn_sync_pendaftaran41_e_click(this)" title="Get Nomor & Tanggal Pendaftaran from CEISA"><i class="fas fa-sync"></i></button>
                         </div>
                     </div>
                     <div class="col-md-6 mb-1">
@@ -1159,7 +1159,7 @@ echo $tohtml;
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Nomor Pendaftaran</label>
                             <input type="text" id="retrm_out_inc_txt_nopen261" class="form-control" maxlength="6" readonly>
-                            <button class="btn btn-primary" id="retrm_out_inc_btn_sync_pendaftaran261" onclick="retrm_out_inc_btn_sync_pendaftaran261_e_click()" title="Get Nomor & Tanggal Pendaftaran from CEISA"><i class="fas fa-sync"></i></button>
+                            <button class="btn btn-primary" id="retrm_out_inc_btn_sync_pendaftaran261" onclick="retrm_out_inc_btn_sync_pendaftaran261_e_click(this)" title="Get Nomor & Tanggal Pendaftaran from CEISA"><i class="fas fa-sync"></i></button>
                         </div>
                     </div>
                     <div class="col-md-6 mb-1">
@@ -1778,7 +1778,9 @@ echo $tohtml;
         })
     }
 
-    function retrm_out_inc_btn_sync_pendaftaran_e_click() {
+    function retrm_out_inc_btn_sync_pendaftaran_e_click(pElement) {
+        pElement.disabled = true
+        pElement.innerHTML = `<i class="fas fa-sync fa-spin"></i>`
         const itemcode = document.getElementById('retrm_out_inc_txt_DO').value;
         $.ajax({
             type: "get",
@@ -1788,6 +1790,8 @@ echo $tohtml;
             },
             dataType: "json",
             success: function(response) {
+                pElement.disabled = false
+                pElement.innerHTML = `<i class="fas fa-sync"></i>`
                 if (response.status[0].cd != '0') {
                     if (response.data[0].NOMOR_DAFTAR.length == 6) {
                         document.getElementById('retrm_out_inc_txt_nopen').value = response.data[0].NOMOR_DAFTAR;
@@ -1801,12 +1805,16 @@ echo $tohtml;
                 }
             },
             error: function(xhr, xopt, xthrow) {
+                pElement.disabled = false
+                pElement.innerHTML = `<i class="fas fa-sync"></i>`
                 alertify.error(xthrow);
             }
         })
     }
 
-    function retrm_out_inc_btn_sync_pendaftaran41_e_click() {
+    function retrm_out_inc_btn_sync_pendaftaran41_e_click(pElement) {
+        pElement.disabled = true
+        pElement.innerHTML = `<i class="fas fa-sync fa-spin"></i>`
         const itemcode = document.getElementById('retrm_out_inc_txt_DO').value;
         $.ajax({
             type: "get",
@@ -1816,6 +1824,8 @@ echo $tohtml;
             },
             dataType: "json",
             success: function(response) {
+                pElement.disabled = false
+                pElement.innerHTML = `<i class="fas fa-sync"></i>`
                 if (response.status[0].cd != '0') {
                     if (response.data[0].NOMOR_DAFTAR.length == 6) {
                         document.getElementById('retrm_out_inc_txt_nopen41').value = response.data[0].NOMOR_DAFTAR;
@@ -1829,12 +1839,16 @@ echo $tohtml;
                 }
             },
             error: function(xhr, xopt, xthrow) {
+                pElement.disabled = false
+                pElement.innerHTML = `<i class="fas fa-sync"></i>`
                 alertify.error(xthrow);
             }
         })
     }
 
-    function retrm_out_inc_btn_sync_pendaftaran261_e_click() {
+    function retrm_out_inc_btn_sync_pendaftaran261_e_click(pElement) {
+        pElement.disabled = true
+        pElement.innerHTML = `<i class="fas fa-sync fa-spin"></i>`
         const itemcode = document.getElementById('retrm_out_inc_txt_DO').value;
         $.ajax({
             type: "get",
@@ -1844,6 +1858,8 @@ echo $tohtml;
             },
             dataType: "json",
             success: function(response) {
+                pElement.disabled = false
+                pElement.innerHTML = `<i class="fas fa-sync"></i>`
                 if (response.status[0].cd != '0') {
                     if (response.data[0].NOMOR_DAFTAR.length == 6) {
                         document.getElementById('retrm_out_inc_txt_nopen261').value = response.data[0].NOMOR_DAFTAR
@@ -1857,12 +1873,16 @@ echo $tohtml;
                 }
             },
             error: function(xhr, xopt, xthrow) {
+                pElement.disabled = false
+                pElement.innerHTML = `<i class="fas fa-sync"></i>`
                 alertify.error(xthrow)
             }
         })
     }
 
-    function retrm_out_inc_btn_sync_pendaftaran25_e_click() {
+    function retrm_out_inc_btn_sync_pendaftaran25_e_click(pElement) {
+        pElement.disabled = true
+        pElement.innerHTML = `<i class="fas fa-sync fa-spin"></i>`
         const itemcode = document.getElementById('retrm_out_inc_txt_DO').value;
         $.ajax({
             type: "get",
@@ -1872,6 +1892,8 @@ echo $tohtml;
             },
             dataType: "json",
             success: function(response) {
+                pElement.disabled = false
+                pElement.innerHTML = `<i class="fas fa-sync"></i>`
                 if (response.status[0].cd != '0') {
                     if (response.data[0].NOMOR_DAFTAR.length == 6) {
                         document.getElementById('retrm_out_inc_txt_nopen25').value = response.data[0].NOMOR_DAFTAR;
@@ -1885,6 +1907,8 @@ echo $tohtml;
                 }
             },
             error: function(xhr, xopt, xthrow) {
+                pElement.disabled = false
+                pElement.innerHTML = `<i class="fas fa-sync"></i>`
                 alertify.error(xthrow);
             }
         })
