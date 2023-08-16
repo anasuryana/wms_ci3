@@ -14925,10 +14925,20 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectPostedDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(ISNULL(MCUS_CURCD,MSUP_SUPCR)) MCUS_CURCD', 'DLV_ZNOMOR_AJU', 'DLV_PURPOSE'], ['DLV_ID' => $doc]);
+        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(ISNULL(MCUS_CURCD,MSUP_SUPCR)) MCUS_CURCD', 'DLV_ZNOMOR_AJU', 'DLV_PURPOSE'], ['DLV_ID' => $doc]);
         $data = [];
-        if (empty($RSHeader)) {
-            $data[] = ['message' => 'Please posting to local first'];
+        $message = NULL;
+        foreach ($RSHeader as $r) {
+            $ccustdate = $r['DLV_BCDATE'];
+            $czcurrency = $r['MCUS_CURCD'];
+            $NomorAju = $r['DLV_ZNOMOR_AJU'];
+        }
+        $TPBData = $this->TPB_HEADER_imod->select_where(
+            ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
+            ['NOMOR_AJU' => $NomorAju]
+        );
+        if (!empty($TPBData)) {
+            $message = 'Already exist in TPB';
         } else {
             $netweight_represent = 0;
             $JumlahKemasan = 0;
@@ -15024,7 +15034,7 @@ class DELV extends CI_Controller
                             'KODE_STATUS' => "03",
                             'POS_TARIF' => $x['RCV_HSCD'],
                             'URAIAN' => rtrim($r['DLV_ITMD1']),
-                            'TIPE' => rtrim($r['DLV_ITMSPTNO']),
+                            'TIPE' => empty($r['DLV_ITMSPTNO']) ? '-' : $r['DLV_ITMSPTNO'],
                             'JUMLAH_SATUAN' => $useqt,
                             'SERI_BAHAN_BAKU' => 1,
                             'JENIS_SATUAN' => ($r['MITM_STKUOM'] == 'PCS') ? 'PCE' : $r['MITM_STKUOM'],
@@ -15219,7 +15229,7 @@ class DELV extends CI_Controller
         }
         $respon = [
             'message' => $message,
-            'data' => $data,
+            // 'data' => $data,
             'Apirespon' => $responApi,
         ];
         die(json_encode($respon));
