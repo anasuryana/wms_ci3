@@ -5029,7 +5029,7 @@ echo $tohtml;
                     intglpen: mtglpen,
                     sppbdoc: sppbdoc,
                     inPemberitahu: txfg_txt_pemberitahu25.value,
-                    inJabatan: txfg_txt_jabatan25.value
+                    inJabatan: txfg_txt_jabatan25.value,
                     inpurpose: mpurpose,
                 },
                 dataType: "json",
