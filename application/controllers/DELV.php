@@ -15284,6 +15284,7 @@ class DELV extends CI_Controller
         $czcurrency = null;
         $ccustdate = null;
         $responApi = null;
+        $NDPBM = 0;
         foreach ($RSHeader as $r) {
             $ccustdate = $r['DLV_BCDATE'];
             $czcurrency = $r['MCUS_CURCD'];
@@ -15336,7 +15337,12 @@ class DELV extends CI_Controller
                 die('{"status":' . json_encode($myar) . '}');
             } else {
                 foreach ($rscurr as $r) {
-                    $czharga_matauang = $r->MEXRATE_VAL;
+                    if($czcurrency === 'RPH'){
+                        $czharga_matauang = 1;
+                        $NDPBM = $r->MEXRATE_VAL;
+                    } else {
+                        $czharga_matauang = $r->MEXRATE_VAL;
+                    }
                     break;
                 }
             }
@@ -15494,7 +15500,8 @@ class DELV extends CI_Controller
                                 , 'RPRICEGROUP' => $r['RPRICEGROUP']
                                 , 'RBM' => $thebm
                                 , 'PPN' => 11
-                                , 'PPH' => $thepph,
+                                , 'PPH' => $thepph
+                                , 'NDPBM' => (float)$NDPBM
                             ];
                         } else {
                             $tpb_bahan_baku[] = [
@@ -15519,7 +15526,8 @@ class DELV extends CI_Controller
                                 , 'RPRICEGROUP' => $r['RPRICEGROUP']
                                 , 'RBM' => 0
                                 , 'PPN' => $theppn
-                                , 'PPH' => $thepph,
+                                , 'PPH' => $thepph
+                                , 'NDPBM' => (float)$NDPBM
                             ];
                         }
                         #end
@@ -15618,14 +15626,13 @@ class DELV extends CI_Controller
                 'jumlahKemasan' => $cz_JUMLAH_KEMASAN,
                 'ListBarangByPrice' => $tpb_barang,
                 'ListBahanBakuList' => $tpb_bahan_baku,
-                'BCTYPE' => 25,
                 'nomorIjinEntitas' => $czizinpengusaha,
             ];
         }
 
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/25', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
