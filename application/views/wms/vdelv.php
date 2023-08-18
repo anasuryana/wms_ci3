@@ -682,6 +682,21 @@ echo $tohtml;
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text">Tujuan Pengiriman</label>
+                            <select class="form-select" id="txfg_cmb_tujuanpengiriman25">
+                                <option value="-">-</option>
+                                <option value="1">PENYERAHAN BKP</option>
+                                <option value="2">PENYERAHAN JKP</option>
+                                <option value="3">RETUR</option>
+                                <option value="4">NON PENYERAHAN</option>
+                                <option value="5">LAINNYA</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-6 mb-1">
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Surat Keterangan Bebas (SKB) PPh</label>
@@ -3109,6 +3124,7 @@ echo $tohtml;
         document.getElementById('txfg_cmb_jenisTPB25').value = "-";
         document.getElementById('txfg_txt_noskb').value = "";
         document.getElementById('txfg_jenis_saranapengangkut25').value = "-";
+        document.getElementById('txfg_cmb_tujuanpengiriman25').value = "-"
         document.getElementById('txfg_txt_sppb25').value = ""
         document.getElementById('txfg_businessgroup').disabled = false;
         document.getElementById('txfg_businessgroup').value = '-';
@@ -4177,6 +4193,7 @@ echo $tohtml;
                                 document.getElementById('txfg_fromoffice25').value = mfromoffice;
                                 document.getElementById('txfg_cmb_jenisTPB25').value = mtpb_asal;
                                 document.getElementById('txfg_txt_noskb').value = mskb;
+                                document.getElementById('txfg_cmb_tujuanpengiriman25').value = mpurpose;
                                 $("#txfg_txt_noskb_tgl").datepicker('update', mskb_tgl);
                                 document.getElementById('txfg_jenis_saranapengangkut25').value = mnama_pengangkut;
                                 document.getElementById('txfg_txt_nopen25').value = mnopen.trim()
@@ -4984,6 +5001,7 @@ echo $tohtml;
         const mSKB_pph_tgl = document.getElementById('txfg_txt_noskb_tgl').value
         const mjenis_sarana_pengangkut = document.getElementById('txfg_jenis_saranapengangkut25').value
         const sppbdoc = document.getElementById('txfg_txt_sppb25').value
+        const mpurpose = document.getElementById('txfg_cmb_tujuanpengiriman25').value;
         if (mnoaju.includes(".")) {
             alertify.warning(`Nomor pengajuan is not valid`)
             document.getElementById('txfg_txt_noaju25').focus()
@@ -5012,6 +5030,7 @@ echo $tohtml;
                     sppbdoc: sppbdoc,
                     inPemberitahu: txfg_txt_pemberitahu25.value,
                     inJabatan: txfg_txt_jabatan25.value
+                    inpurpose: mpurpose,
                 },
                 dataType: "json",
                 success: function(response) {

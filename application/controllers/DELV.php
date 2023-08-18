@@ -4400,6 +4400,7 @@ class DELV extends CI_Controller
         $pemberitahu = $this->input->get('inPemberitahu');
         $jabatan = $this->input->get('inJabatan');
         $cjenis_sarana_pengangkut = $this->input->get('injenis_sarana');
+        $cpurpose = $this->input->get('inpurpose');
         $rs_head_dlv = $this->DELV_mod->select_header_bydo($cid);
         $customsyear = '';
         foreach ($rs_head_dlv as $r) {
@@ -4445,7 +4446,7 @@ class DELV extends CI_Controller
                 'DLV_NOPEN' => $cnopen, 'DLV_NOAJU' => $cnoaju, 'DLV_ZNOMOR_AJU' => $znomor_aju,
                 'DLV_ZJENIS_TPB_ASAL' => $ctpb_asal, 'DLV_ZSKB' => $cskb, 'DLV_ZTANGGAL_SKB' => $cskb_tgl,
                 'DLV_FROMOFFICE' => $cfromoffice, "DLV_RPDATE" => $ctglpen,
-                'DLV_ZKODE_CARA_ANGKUT' => $cjenis_sarana_pengangkut, 'DLV_SPPBDOC' => $sppbdoc,
+                'DLV_ZKODE_CARA_ANGKUT' => $cjenis_sarana_pengangkut, 'DLV_SPPBDOC' => $sppbdoc,'DLV_PURPOSE' => $cpurpose,
                 'DLV_LUPDT' => $crnt_dt, 'DLV_USRID' => $this->session->userdata('nama'),
             ];
             $ret = $this->DELV_mod->updatebyVAR($vals, $keys);
