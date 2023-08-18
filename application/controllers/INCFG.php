@@ -133,6 +133,10 @@ class INCFG extends CI_Controller
             $astr = explode("|", $ckeys);
             $creffcd = $astr[5];
             $creffcd = substr($creffcd, 2, strlen($creffcd));
+            if($creffcd[0] === '3'){
+                $myar[] = ["cd" => "0", "msg" => "this function is not for status label..."];
+                exit(json_encode($myar));
+            }
             $rsser = $this->SER_mod->select_exact_byVAR(["SER_ID" => $creffcd]);
             if (count($rsser) > 0) {
                 $jobno = '';
@@ -152,7 +156,7 @@ class INCFG extends CI_Controller
                     ];
                     $retITH = $this->ITH_mod->insert($datas);
                     if ($retITH > 0) {
-                        $datar = ["cd" => "11", "msg" => "Saved", "typefg" => $cfgtype];
+                        $datar = ["cd" => "11", "msg" => "Saved.", "typefg" => $cfgtype];
                     } else {
                         $datar = ["cd" => "0", "msg" => "Could not add stock"];
                     }
@@ -207,6 +211,10 @@ class INCFG extends CI_Controller
                                 exit(json_encode($myar));
                             }
                         }
+                    }
+                    if($creffcd[0]=='3'){
+                        $myar[] = ["cd" => "0", "msg" => "this function is not for status label."];
+                        exit(json_encode($myar));
                     }
                     $rsser = $this->SER_mod->selectbyVAR(["SER_ID" => $creffcd]);
                     if (count($rsser) > 0) {
