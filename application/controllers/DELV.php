@@ -15257,7 +15257,6 @@ class DELV extends CI_Controller
             ];
 
         }
-        $message = '';
         $responApi = null;
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
@@ -15265,8 +15264,6 @@ class DELV extends CI_Controller
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
-        } else {
-            $message = 'OK, No data';
         }
         $respon = [
             'message' => $message,
