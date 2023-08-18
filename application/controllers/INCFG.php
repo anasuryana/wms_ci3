@@ -110,6 +110,10 @@ class INCFG extends CI_Controller
         $cismanual = trim($this->input->post("inismanual"));
         $creason = $this->input->post("inreason");
         $ckeys = trim($ckeys);
+        if($ckeys[0]==='3'){
+            $myar[] = ["cd" => "0", "msg" => "this function is not for status label"];
+            exit(json_encode($myar));
+        }
         $datalogser = [
             'LOGSER_KEYS' => $ckeys, 'LOGSER_ITEM' => $citemcd, 'LOGSER_QTY' => $cinqty, 'LOGSER_LOT' => $cinlot,
             'LOGSER_JOB' => $cjob, 'LOGSER_USRID' => $this->session->userdata('nama'), "LOGSER_REMARK" => null,
