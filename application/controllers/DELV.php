@@ -14979,8 +14979,10 @@ class DELV extends CI_Controller
             ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
             ['NOMOR_AJU' => $NomorAju]
         );
-        if (!empty($TPBData)) {
-            $message = 'Already exist in TPB';
+        if (empty($TPBData)) {
+                $message = 'Please posting to TPB first';
+        // if (!empty($TPBData)) {
+        //     $message = 'Already exist in TPB';
         } else {
             $netweight_represent = 0;
             $JumlahKemasan = 0;
@@ -15493,7 +15495,7 @@ class DELV extends CI_Controller
                                 , 'POS_TARIF' => $thehscode
                                 , 'URAIAN' => $v->MITM_ITMD1
                                 , 'TIPE' => $v->MITM_SPTNO
-                                , 'JUMLAH_SATUAN' => $theqty
+                                , 'JUMLAH_SATUAN' => (float)$theqty
                                 , 'JENIS_SATUAN' => ($v->MITM_STKUOM == 'PCS') ? 'PCE' : $v->MITM_STKUOM
                                 , 'KODE_ASAL_BAHAN_BAKU' => ($v->BC_TYPE == '27' || $v->BC_TYPE == '23') ? '0' : '1'
                                 , 'RASSYCODE' => $r['RASSYCODE']
@@ -15519,7 +15521,7 @@ class DELV extends CI_Controller
                                 , 'POS_TARIF' => $thehscode
                                 , 'URAIAN' => $v->MITM_ITMD1
                                 , 'TIPE' => $v->MITM_SPTNO
-                                , 'JUMLAH_SATUAN' => $theqty
+                                , 'JUMLAH_SATUAN' => (float)$theqty
                                 , 'JENIS_SATUAN' => 'PCE'
                                 , 'KODE_ASAL_BAHAN_BAKU' => 0
                                 , 'RASSYCODE' => $r['RASSYCODE']
