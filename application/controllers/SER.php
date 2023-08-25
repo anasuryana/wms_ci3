@@ -4024,7 +4024,7 @@ class SER extends CI_Controller
         $coldreff = $this->input->post('inoldreff');
         $crawtext = $this->input->post('innewreff');
 
-        if ($this->ITH_mod->check_Primary(['ITH_FORM' => 'OUT-SHP-FG','ITH_SER' => $coldreff]) > 0) {
+        if ($this->ITH_mod->check_Primary(['ITH_FORM' => 'OUT-SHP-FG', 'ITH_SER' => $coldreff]) > 0) {
             $myar[] = ["cd" => '0', "msg" => "could not split delivered item label"];
             exit('{"status":' . json_encode($myar) . '}');
         } else {
@@ -5811,10 +5811,12 @@ class SER extends CI_Controller
         $arAJUUnique = [];
         $arFG = [];
         $rsCeisa = [];
+        $arrayDeliveryOrderNumber = [];
         $i = 0;
         foreach ($rs as $r) {
             if (!in_array($r['DLV_ZNOMOR_AJU'], $arAJUUnique)) {
                 $arAJUUnique[] = $r['DLV_ZNOMOR_AJU'];
+                $arrayDeliveryOrderNumber[] = $r['DLV_ID'];
             }
             if (!$r['PER']) {
                 $arIndex[] = $i;
@@ -5823,12 +5825,53 @@ class SER extends CI_Controller
             }
             $i++;
         }
-        foreach ($arIndex as $n) {
-            unset($rs[$n]);
-        }
-        $rs = array_values($rs);
+
         $rsnull = count($arAJU) && count($arFG) ? $this->SER_mod->select_combine_byAju_and_FG($arAJU, $arFG) : [];
+        $arrayBC = [];
+        if (!empty($arrayDeliveryOrderNumber)) {
+            $arrayBC = $this->ZRPSTOCK_mod->selectColumnsWhereRemarkIn($arrayDeliveryOrderNumber);
+        }
         if (count($rs)) {
+            foreach ($rs as &$r) {
+                $r['PART_PRICE'] = null;
+                $r['PLOTQT'] = 0;
+                foreach ($arrayBC as &$b) {
+                    # Jika item rank
+                    if ($r['MITMGRP_ITMCD']) {
+                        if ($r['DLV_ID'] === $b['RPSTOCK_REMARK'] && $r['MITMGRP_ITMCD'] === $b['RPSTOCK_ITMNUM'] && $b['BCQT'] > 0) {
+                            $need = $r['RMQT'] - $r['PLOTQT'];
+                            if ($need > $b['BCQT']) {
+                                $r['PLOTQT'] += $b['BCQT'];
+                                $b['BCQT'] = 0;
+                            } else {
+                                $r['PLOTQT'] += $need;
+                                $b['BCQT'] -= $need;
+                            }
+                            $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
+                            if ($r['RMQT'] == $r['PLOTQT']) {
+                                break;
+                            }
+                        }
+                    } else {
+                        if ($r['DLV_ID'] === $b['RPSTOCK_REMARK'] && $r['SERD2_ITMCD'] === $b['RPSTOCK_ITMNUM'] && $b['BCQT'] > 0) {
+                            $need = $r['RMQT'] - $r['PLOTQT'];
+                            if ($need > $b['BCQT']) {
+                                $r['PLOTQT'] += $b['BCQT'];
+                                $b['BCQT'] = 0;
+                            } else {
+                                $r['PLOTQT'] += $need;
+                                $b['BCQT'] -= $need;
+                            }
+                            $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
+                            if ($r['RMQT'] == $r['PLOTQT']) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                unset($b);
+            }
+            unset($r);
             $sort = [];
             foreach ($rs as $k => $v) {
                 $sort['DLV_ZNOMOR_AJU'][$k] = $v['DLV_ZNOMOR_AJU'];
@@ -5839,6 +5882,48 @@ class SER extends CI_Controller
                 'A.NOMOR_AJU', 'B.KODE_BARANG FG', 'B.JUMLAH_SATUAN FGQTY', 'C.*',
             ], $arAJUUnique);
         }
+
+        # Plot Combined RS
+        foreach ($rsnull as &$r) {
+            $r['PART_PRICE'] = null;
+            $r['PLOTQT'] = 0;
+            foreach ($arrayBC as &$b) {
+                # Jika item rank
+                if ($r['MITMGRP_ITMCD']) {
+                    if ($r['DLV_ID'] === $b['RPSTOCK_REMARK'] && $r['MITMGRP_ITMCD'] === $b['RPSTOCK_ITMNUM'] && $b['BCQT'] > 0) {
+                        $need = $r['RMQT'] - $r['PLOTQT'];
+                        if ($need > $b['BCQT']) {
+                            $r['PLOTQT'] += $b['BCQT'];
+                            $b['BCQT'] = 0;
+                        } else {
+                            $r['PLOTQT'] += $need;
+                            $b['BCQT'] -= $need;
+                        }
+                        $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
+                        if ($r['RMQT'] == $r['PLOTQT']) {
+                            break;
+                        }
+                    }
+                } else {
+                    if ($r['DLV_ID'] === $b['RPSTOCK_REMARK'] && $r['SERD2_ITMCD'] === $b['RPSTOCK_ITMNUM'] && $b['BCQT'] > 0) {
+                        $need = $r['RMQT'] - $r['PLOTQT'];
+                        if ($need > $b['BCQT']) {
+                            $r['PLOTQT'] += $b['BCQT'];
+                            $b['BCQT'] = 0;
+                        } else {
+                            $r['PLOTQT'] += $need;
+                            $b['BCQT'] -= $need;
+                        }
+                        $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
+                        if ($r['RMQT'] == $r['PLOTQT']) {
+                            break;
+                        }
+                    }
+                }
+            }
+            unset($b);
+        }
+        unset($r);
         return ['data' => $rs, 'data_' => $rsnull, 'data_ceisa' => $rsCeisa];
     }
 

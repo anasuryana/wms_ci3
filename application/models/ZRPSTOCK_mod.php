@@ -15,6 +15,15 @@ class ZRPSTOCK_mod extends CI_Model {
 		return $query->result_array();
     }
 
+    public function selectColumnsWhereRemarkIn($paramRemark) {
+        $this->db->where_in("RPSTOCK_REMARK", $paramRemark);
+        $this->db->select("RPSTOCK_REMARK,RPSTOCK_DOC,RPSTOCK_NOAJU,UPPER(RTRIM(RPSTOCK_ITMNUM)) RPSTOCK_ITMNUM,RCV_PRPRC, ABS(SUM(RPSTOCK_QTY)) BCQT");
+        $this->db->join('RCV_TBL', 'RPSTOCK_NOAJU=RCV_RPNO AND RPSTOCK_DOC=RCV_DONO', 'LEFT');
+        $this->db->group_by("RPSTOCK_REMARK,RPSTOCK_DOC,RPSTOCK_NOAJU,RPSTOCK_ITMNUM,RCV_PRPRC");
+		$query = $this->db->get($this->TABLENAME);
+		return $query->result_array();
+    }
+
     public function check_Primary($data)
     {
         return $this->db->get_where($this->TABLENAME,$data)->num_rows();

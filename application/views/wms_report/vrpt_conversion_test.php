@@ -76,6 +76,8 @@
                                 <th  class="align-middle ">Part Description</th>
                                 <th  class="align-middle text-center">PER</th>
                                 <th  class="align-middle text-end">Part Qty</th>
+                                <th  class="align-middle text-end">Part Price</th>
+                                <th  class="align-middle text-end">Amount</th>
                                 <th  class="align-middle text-center">Bom Revision</th>                                                          
                             </tr>                            
                         </thead>
@@ -85,7 +87,9 @@
                             <tr>
                                 <td colspan="5" class="text-center">Total</td>
                                 <td id="rconv_test_tbl_foot" class="text-center"></td>
-                                <td class="text-center"></td>                                
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -146,6 +150,7 @@
                 tableku2.innerHTML='';
                 let ttlper = 0          
                 for (let i = 0; i<ttlrows; i++){
+                    let Amount = response.data[i].RMQT * response.data[i].PART_PRICE
                     newrow = tableku2.insertRow(-1)
                     newcell = newrow.insertCell(0)
                     newcell.innerHTML = response.data[i].DLV_ZNOMOR_AJU
@@ -165,6 +170,12 @@
                     newcell.classList.add('text-end')
                     newcell.innerHTML = numeral(response.data[i].RMQT).format(',')
                     newcell = newrow.insertCell(7)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = response.data[i].PART_PRICE
+                    newcell = newrow.insertCell(8)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(Amount).format('0,0.0000')
+                    newcell = newrow.insertCell(9)
                     newcell.classList.add('text-center')
                     newcell.innerHTML = response.data[i].PPSN1_BOMRV
                     ttlper+=response.data[i].PER*1
@@ -190,6 +201,12 @@
                     newcell.classList.add('text-end')
                     newcell.innerHTML = numeral(response.data_[i].RMQT).format(',')
                     newcell = newrow.insertCell(7)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = response.data[i].PART_PRICE
+                    newcell = newrow.insertCell(8)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(Amount).format('0,0.0000')
+                    newcell = newrow.insertCell(9)
                     newcell.classList.add('text-center')
                     newcell.innerHTML = response.data_[i].PPSN1_BOMRV
                     ttlper+=response.data_[i].PER*1
