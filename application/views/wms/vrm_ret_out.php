@@ -3192,6 +3192,7 @@ echo $tohtml;
                         tableku2.innerHTML = ''
                         for (let i = 0; i < ttlrows; i++) {
                             newrow = tableku2.insertRow(-1)
+                            newrow.title = `BC ${response.data[i].DLV_BCTYPE}`
                             newcell = newrow.insertCell(0)
                             newcell.innerHTML = response.data[i].DLV_ID
 
