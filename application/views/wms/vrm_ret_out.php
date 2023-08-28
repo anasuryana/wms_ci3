@@ -4526,7 +4526,8 @@ echo $tohtml;
 
     function retrm_out_inc_btnfindmodcust_eC() {
         const cmbdescription = document.getElementById('retrm_out_description')
-        if (cmbdescription.value == 'DIKEMBALIKAN' || cmbdescription.value == 'DIKEMBALIKAN NG' || cmbdescription.value == 'DISPOSE') {
+        const Conditions = ['DIKEMBALIKAN','DIKEMBALIKAN NG','DISPOSE', 'DIPERBAIKI']
+        if (Conditions.includes(cmbdescription.value)) {
             $("#retrm_out_SUPPLIER").modal('show')
         } else {
             $("#retrm_out_MODCUS").modal('show')
