@@ -3127,6 +3127,8 @@ echo $tohtml;
         retrm_out_donprc_fifo.disabled = false
         retrm_out_donprc_tbl_add.disabled = false
         retrm_out_so_tbl_add.disabled = false
+        retrm_out_inc_btn_add.disabled = false
+        retrm_out_inc_btn_minus.disabled = false
 
         document.getElementById('retrm_out_inc_custname').value = ''
         document.getElementById('retrm_out_inc_curr').value = ''
