@@ -474,6 +474,7 @@ class RCV extends CI_Controller
         $h_mconaDate = $this->input->post('h_mconaDate');
         $h_mconaDueDate = $this->input->post('h_mconaDueDate');
         $h_supcd = $this->input->post('h_supcd');
+        $h_shippercd = $this->input->post('h_shippercd');
         $h_minvNo = $this->input->post('h_minvNo');
         $h_tax_invoice = $this->input->post('h_tax_invoice');
         $h_pl_num = $this->input->post('h_pl_num');
@@ -516,6 +517,7 @@ class RCV extends CI_Controller
                         'RCV_TTLAMT' => ($h_amount == '' ? null : $h_amount),
                         'RCV_TPB' => $h_type_tpb,
                         'RCV_SUPCD' => $h_supcd,
+                        'RCV_SHIPPERCD' => $h_shippercd,
                         'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
                         'RCV_NW' => ($h_nw == '' ? null : $h_nw),
                         'RCV_GW' => ($h_gw == '' ? null : $h_gw),
@@ -557,6 +559,7 @@ class RCV extends CI_Controller
                         'RCV_TPB' => $h_type_tpb,
                         'RCV_WH' => 'PSIEQUIP',
                         'RCV_SUPCD' => $h_supcd,
+                        'RCV_SHIPPERCD' => $h_shippercd,
                         'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
                         'RCV_NW' => ($h_nw == '' ? null : $h_nw),
                         'RCV_GW' => ($h_gw == '' ? null : $h_gw),
@@ -605,6 +608,7 @@ class RCV extends CI_Controller
                     'RCV_TPB' => $h_type_tpb,
                     'RCV_WH' => 'PSIEQUIP',
                     'RCV_SUPCD' => $h_supcd,
+                    'RCV_SHIPPERCD' => $h_shippercd,
                     'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
                     'RCV_NW' => ($h_nw == '' ? null : $h_nw),
                     'RCV_GW' => ($h_gw == '' ? null : $h_gw),

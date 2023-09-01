@@ -427,7 +427,7 @@ echo $toprint;
                 </div>
             </div>
             <div class="row" id="rcvcustoms_stack5_1">
-                <div class="col-md-6 mb-1">
+                <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Business Group</span>
                         <select class="form-select" id="rcvcustoms_businessgroup_1" required>
@@ -435,11 +435,18 @@ echo $toprint;
                         </select>
                     </div>
                 </div>
-                <div class="col-md-6 mb-1">
+                <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Supplier</label>
                         <input type="text" class="form-control" id="rcvcustoms_supplier_1" readonly>
                         <button class="btn btn-primary" id="rcvcustoms_btn_find_supplier_1" onclick="rcvcustoms_th_sup_eC(this)"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-1">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Shipper</label>
+                        <input type="text" class="form-control" id="rcvcustoms_shipper_1" readonly disabled>
+                        <button class="btn btn-primary" id="rcvcustoms_btn_find_shipper_1" onclick="rcvcustoms_btn_find_shipper_1_onClick(this)"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
             </div>
@@ -1278,6 +1285,45 @@ echo $toprint;
         </div>
     </div>
 </div>
+<div class="modal fade" id="RCVCUSTOMS_SHIPPER">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Shipper List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text">Search</span>
+                            <input type="text" class="form-control" id="rcvcustomsSearchShipper" onkeypress="rcvcustomsSearchShipperOnKeyPress(event)" maxlength="15" required placeholder="...">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="table-responsive" id="rcvcustomsTblShipperDiv">
+                            <table id="rcvcustomsTblShipper" class="table table-sm table-striped table-bordered table-hover" style="width:100%">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="RCVCUSTOMS_INTERNALITEM">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -1638,6 +1684,7 @@ echo $toprint;
 <div id='rcvcustoms_contextmenu'></div>
 <script>
     var rcvcustoms_suppliercode = ''
+    var rcvcustoms_shippercode = ''
     var rcvcustoms_selected_row = 0;
     var rcvcustoms_selected_col = 1;
     var rcvcustoms_selected_table = ''
@@ -1692,6 +1739,7 @@ echo $toprint;
         const minvNo = document.getElementById('rcvcustoms_invoicenum_1').value
         const mtax_invoice = document.getElementById('rcvcustoms_tax_invoice').value
         const supplier = rcvcustoms_suppliercode
+        const shipper = rcvcustoms_shippercode
         if (mrcvdate < mdate) {
             alertify.warning('receive date could not be less than document date')
             return
@@ -1771,6 +1819,7 @@ echo $toprint;
                     h_bisgrup: mbisgrup,
                     h_cona: mconaNum,
                     h_supcd: supplier,
+                    h_shippercd: shipper,
                     h_mconaDate: mconaDate,
                     h_mconaDueDate: mconaDueDate,
                     h_minvNo: minvNo,
@@ -1950,6 +1999,7 @@ echo $toprint;
         document.getElementById('rcvcustoms_NW_1').value = ''
         document.getElementById('rcvcustoms_GW_1').value = ''
         document.getElementById('rcvcustoms_supplier_1').value = ''
+        document.getElementById('rcvcustoms_shipper_1').value = ''
         document.getElementById('rcvcustoms_contractnum_1').value = ''
         document.getElementById('rcvcustoms_contractdate_1').value = ''
         document.getElementById('rcvcustoms_contractduedate_1').value = ''
@@ -1976,6 +2026,9 @@ echo $toprint;
 
     $("#RCVCUSTOMS_INTERNALITEM").on('shown.bs.modal', function() {
         document.getElementById('rcvcustoms_txtsearchNALITM').focus()
+    })
+    $("#RCVCUSTOMS_SHIPPER").on('shown.bs.modal', function() {
+        document.getElementById('rcvcustomsSearchShipper').focus()
     })
     $("#RCVCUSTOMS_DTLMOD_1").on('shown.bs.modal', function() {
         document.getElementById('rcvcustoms_txt_search_1').focus()
@@ -4112,6 +4165,8 @@ echo $toprint;
                             document.getElementById('rcvcustoms_contractdate_1').value = response.data[i].RCV_CONADT
                             document.getElementById('rcvcustoms_contractduedate_1').value = response.data[i].RCV_DUEDT
                             document.getElementById('rcvcustoms_tax_invoice').value = response.data[i].RCV_TAXINVOICE
+                            rcvcustoms_shippercode = response.data[i].SHIPPERCD
+                            rcvcustoms_shipper_1.value = response.data[i].SHIPPERNM
                         }
                         newcell.innerHTML = response.data[i].RCV_DONO
                         newcell = newrow.insertCell(1)
@@ -4805,6 +4860,60 @@ echo $toprint;
     function rcvcustoms_contractnum_1_eKeyUp(e) {
         if (rcvcustoms_typedoc_1.value === '40' && e.target.value.trim().length > 0 && rcvcustoms_tax_invoice.value.trim().length === 0) {
             rcvcustoms_zsts_1.value = 2
+        }
+    }
+
+    function rcvcustoms_btn_find_shipper_1_onClick(pElement){
+        $("#RCVCUSTOMS_SHIPPER").modal('show')
+    }
+
+    function rcvcustomsSearchShipperOnKeyPress(e){
+        if (e.key === 'Enter') {
+            e.target.readOnly = true
+            $.ajax({
+                type: "GET",
+                url: "<?=base_url('MSTSUP/search_union')?>",
+                data: {
+                    searchKey: e.target.value
+                },
+                dataType: "JSON",
+                success: function(response) {
+                    e.target.readOnly = false
+                    if (response.status[0].cd === 1) {
+                        const ttlrows = response.data.length
+                        let mydes = document.getElementById("rcvcustomsTblShipperDiv")
+                        let myfrag = document.createDocumentFragment()
+                        let mtabel = document.getElementById("rcvcustomsTblShipper")
+                        let cln = mtabel.cloneNode(true);
+                        myfrag.appendChild(cln)
+                        let tabell = myfrag.getElementById("rcvcustomsTblShipper")
+                        let tableku2 = tabell.getElementsByTagName("tbody")[0]
+                        let newrow, newcell, newText
+                        let myitmttl = 0;
+                        tableku2.innerHTML = ''
+                        for (let i = 0; i < ttlrows; i++) {
+                            newrow = tableku2.insertRow(-1)
+                            newcell = newrow.insertCell(0)
+                            newcell.style.cssText = "cursor:pointer"
+                            newcell.innerHTML = response.data[i].MSUP_SUPCD
+                            newcell.onclick = () => {
+                                $("#RCVCUSTOMS_SHIPPER").modal('hide');
+                                rcvcustoms_shippercode = response.data[i].MSUP_SUPCD
+                                rcvcustoms_shipper_1.value = response.data[i].MSUP_SUPNM
+                            }
+                            newcell = newrow.insertCell(1)
+                            newcell.innerHTML = response.data[i].MSUP_SUPNM
+                        }
+                        mydes.innerHTML = '';
+                        mydes.appendChild(myfrag);
+                    } else {
+                        alertify.message(response.status[0].msg)
+                    }
+                },
+                error: function(xhr, ajaxOptions, throwError) {
+                    e.target.readOnly = false
+                }
+            })
         }
     }
 </script>
