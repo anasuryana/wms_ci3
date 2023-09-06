@@ -1503,10 +1503,6 @@ class SER extends CI_Controller
                 for ($i = 1; $i <= 31; $i++) {
                     $AOMR_TGL[] = $i;
                 }
-                // $AOMR_TGL_ALIAS = [];
-                // for($i=1;$i<=9;$i++){
-                //     array_push($AOMR_TGL_ALIAS, $i);
-                // }
                 $AOMR_TGL_ALIAS = range(1, 9);
                 array_push($AOMR_TGL_ALIAS, 'A');
                 array_push($AOMR_TGL_ALIAS, 'B');
@@ -1605,7 +1601,6 @@ class SER extends CI_Controller
             $pdf->Rect($th_x + 1, $th_y + 1, $wid, $hgt);
             $pdf->SetFont('Tahoma', 'B', 8);
             $pdf->Text($th_x + 3, $th_y + 70, 'PT. SMT INDONESIA');
-            // $pdf->Code39($th_x +32, $th_y+71.5,$noseri,0.5,4);
 
             $pdf->Text($th_x + 68, $th_y + 70, $noseri);
         }
@@ -1650,6 +1645,12 @@ class SER extends CI_Controller
                 $cX = 0;
                 foreach ($rs as $r) {
                     $awo = explode('-', $r->SER_DOC == '20-2A21-F65255-05-1.00' ? '23-2A21-F65255-05-1.00' : $r->SER_DOC);
+                    if($r->SER_DOC==='9A04-9539598-2'){
+                        $awo = explode('-','23-9A04-9539598-2');
+                    }
+                    if($r->SER_DOC==='9A04-3263941-5'){
+                        $awo = explode('-','23-9A04-3263941-5');
+                    }
                     $ccustnm = $r->MCUS_CUSNM;
                     $cuscd = trim($r->PDPP_BSGRP);
                     $noseri = $r->SER_ID;
