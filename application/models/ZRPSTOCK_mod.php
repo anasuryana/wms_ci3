@@ -145,4 +145,19 @@ class ZRPSTOCK_mod extends CI_Model {
         $query =  $this->db->query($qry);
         return $query->result_array();
     }
+
+    function selectBookedDispose($doc)
+    {
+        $qry = "SELECT RTRIM(RPSTOCK_ITMNUM) ITMNUM, RPSTOCK_BCNUM,RPSTOCK_NOAJU,RPSTOCK_BCDATE  
+        ,PPN,PPH,BM,ABS(RPSTOCK_QTY) BCQT,URUT,HSCD
+        FROM ZRPSAL_BCSTOCK 
+        LEFT JOIN  (
+        SELECT RCV_RPNO,RCV_BCNO,RCV_DONO,RCV_ITMCD, MAX(RCV_PPN) PPN,MAX(RCV_PPH) PPH, MAX(RCV_BM) BM,MAX(RCV_ZNOURUT) URUT,MAX(RCV_HSCD) HSCD FROM RCV_TBL
+        GROUP BY RCV_RPNO,RCV_BCNO,RCV_DONO,RCV_ITMCD
+        ) VRCV ON RPSTOCK_NOAJU=RCV_RPNO AND RPSTOCK_BCNUM=RCV_BCNO AND RPSTOCK_DOC=RCV_DONO
+        AND RPSTOCK_ITMNUM=RCV_ITMCD
+        WHERE RPSTOCK_REMARK=?";
+        $query =  $this->db->query($qry, [$doc]);
+        return $query->result_array();
+    }
 }
