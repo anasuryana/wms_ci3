@@ -81,7 +81,7 @@
             $.ajax({
                 type: "POST",
                 url: "<?=base_url('MSTITM/register')?>",
-                data: {itmcd: itmcd, itmnm: itmnm,  itmunitmeasure: itmunitmeasure, itmconsignee: itmconsignee, itemreg_isnew: itemreg_isnew, 
+                data: {itmcd: itmcd.trim(), itmnm: itmnm,  itmunitmeasure: itmunitmeasure, itmconsignee: itmconsignee, itemreg_isnew: itemreg_isnew, 
                     itmcd_ext: itmcd_ext},
                 dataType: "JSON",
                 success: function (response) {
