@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use WpOrg\Requests\Requests;
 
 class MSTITM extends CI_Controller
 {
@@ -191,14 +192,10 @@ class MSTITM extends CI_Controller
         $search = $this->input->get('insearch');
         $searchby = $this->input->get('insearchby');
         $rs = [];
-        switch ($searchby) {
-            case 'itemcd':
-                $rs = $this->MSTITM_mod->select_fg_exim(['MITM_ITMCD' => $search]);
-                break;
-            case 'itemnm':
-                $rs = $this->MSTITM_mod->select_fg_exim(['MITM_ITMD1' => $search]);
-                break;
-        }
+        $responApi = Requests::request('http://192.168.0.29:8080/ems-glue/api/item/search?insearch=' . $search
+            . '&insearchby=' . $searchby, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+        $rs = json_decode($responApi->body, true);
+        die($responApi->body);
         foreach ($rs as &$r) {
             $r['MITM_NWG'] = substr($r['MITM_NWG'], 0, 1) == '.' ? '0' . $r['MITM_NWG'] : $r['MITM_NWG'];
             $r['MITM_GWG'] = substr($r['MITM_GWG'], 0, 1) == '.' ? '0' . $r['MITM_GWG'] : $r['MITM_GWG'];
