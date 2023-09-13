@@ -60,7 +60,7 @@ class DELV extends CI_Controller
         $this->load->model('XITRN_mod');
         $this->load->model('DisposeDraft_mod');
         $this->load->model('POSTING_mod');
-        $this->load->model(['CSMLOG_mod', 'DLVH_mod', 'RPSAL_BCSTOCK_mod']);
+        $this->load->model(['CSMLOG_mod', 'DLVH_mod', 'RPSAL_BCSTOCK_mod', 'WMS_DLVCHK_mod']);
         $this->load->model('refceisa/TPB_HEADER_imod');
         $this->load->model('refceisa/TPB_KEMASAN_imod');
         $this->load->model('refceisa/TPB_DOKUMEN_imod');
@@ -9341,6 +9341,8 @@ class DELV extends CI_Controller
             }
             $this->DELV_mod->updatebyVAR(['DLV_DATE' => $fixdate], ['DLV_ID' => $cdo]);
             $this->setPrice(base64_encode($cdo));
+            $this->WMS_DLVCHK_mod->updatebyId(['dlv_id' => $cdo],
+                ['dlv_PicSend' => $this->session->userdata('nama'), 'dlv_DateSend' => $ITHLUPDT, 'dlv_stcfm' => 1]);
             $rsstatus_ith[] = ["cd" => "1", "msg" => "Confirmed", "time" => $ITHLUPDT];
         } else {
             $resith = $this->NonReffnumberDeliveryConfirmation(['DOC' => $cdo, 'DATE' => $ITHDATE, 'DATETIME' => $ITHLUPDT]);
@@ -9358,7 +9360,7 @@ class DELV extends CI_Controller
                 $rsstatus_ith[] = ["cd" => "0", "msg" => "It is weird, nothing saved"];
             }
         }
-        die('{"status": ' . json_encode($rsstatus_ith) . '}');
+        die(json_encode(['status' => $rsstatus_ith]));
     }
 
     public function setPrice_BAK($pdoc = '')
