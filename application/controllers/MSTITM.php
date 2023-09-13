@@ -208,21 +208,10 @@ class MSTITM extends CI_Controller
         header('Content-Type: application/json');
         $search = $this->input->get('insearch');
         $searchby = $this->input->get('insearchby');
-        $rs = [];
-        switch ($searchby) {
-            case 'itemcd':
-                $rs = $this->MSTITM_mod->select_rm_exim(['MITM_ITMCD' => $search]);
-                break;
-            case 'itemnm':
-                $rs = $this->MSTITM_mod->select_rm_exim(['MITM_ITMD1' => $search]);
-                break;
-        }
-        foreach ($rs as &$r) {
-            $r['MITM_NWG'] = substr($r['MITM_NWG'], 0, 1) == '.' ? '0' . $r['MITM_NWG'] : $r['MITM_NWG'];
-            $r['MITM_GWG'] = substr($r['MITM_GWG'], 0, 1) == '.' ? '0' . $r['MITM_GWG'] : $r['MITM_GWG'];
-        }
-        unset($r);
-        die('{"data": ' . json_encode($rs) . '}');
+        $responApi = Requests::request('http://192.168.0.29:8080/ems-glue/api/item/searchRMExim?insearch=' . $search
+            . '&insearchby=' . $searchby, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+        $rs = json_decode($responApi->body, true);
+        die(json_encode($rs));
     }
 
     public function searchrm_exim_xls()
