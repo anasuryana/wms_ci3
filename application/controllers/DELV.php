@@ -15034,11 +15034,11 @@ class DELV extends CI_Controller
                 $JumlahKemasan = 0;
                 foreach ($Packagings as &$pack) {
                     if ($pack['SI_ITMCD'] === $r['SSO2_MDLCD'] && $pack['TTLBOX'] > 0) {
-                        $JumlahKemasan = $pack['TTLBOX'];
+                        $JumlahKemasan += $pack['TTLBOX'];
                         $pack['TTLBOX'] = 0;
-                        break;
                     }
                 }
+                unset($pack);
                 $t_HARGA_PENYERAHAN = $r['CIF'] * $czharga_matauang;
                 $cz_h_CIF_FG += $r['CIF'];
                 $cz_h_NETTO += $r['NWG'];
@@ -16395,11 +16395,11 @@ class DELV extends CI_Controller
                 $JumlahKemasan = 0;
                 foreach ($Packagings as &$pack) {
                     if ($pack['SI_ITMCD'] === $r['SSO2_MDLCD'] && $pack['TTLBOX'] > 0) {
-                        $JumlahKemasan = $pack['TTLBOX'];
+                        $JumlahKemasan += $pack['TTLBOX'];
                         $pack['TTLBOX'] = 0;
-                        break;
                     }
                 }
+                unset($pack);
                 $t_HARGA_PENYERAHAN = $r['CIF'] * $czharga_matauang;
                 $cz_h_CIF_FG += $r['CIF'];
                 $cz_h_NETTO += $r['NWG'];
