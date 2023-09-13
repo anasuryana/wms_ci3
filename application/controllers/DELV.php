@@ -15059,7 +15059,8 @@ class DELV extends CI_Controller
                     , 'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN
                     , 'SERI_BARANG' => $SERI_BARANG
                     , 'KODE_STATUS' => '02'
-                    , 'JUMLAH_KEMASAN' => $JumlahKemasan,
+                    , 'JUMLAH_KEMASAN' => $JumlahKemasan
+                    , 'KODE_KEMASAN' => 'BX'
                 ];
                 $SERI_BARANG++;
             }
@@ -16421,7 +16422,8 @@ class DELV extends CI_Controller
                     , 'BM' => $r['BM']
                     , 'PPN' => $r['PPN']
                     , 'PPH' => $r['PPH']
-                    , 'JUMLAH_KEMASAN' => $JumlahKemasan,
+                    , 'JUMLAH_KEMASAN' => $JumlahKemasan
+                    , 'KODE_KEMASAN' => 'BX'
                 ];
                 $SERI_BARANG++;
             }
