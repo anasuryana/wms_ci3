@@ -11777,124 +11777,7 @@ class DELV extends CI_Controller
         //     'GHSWX6UWE71I3EI1',
         // ]);
         $RSMaterialOnly = $this->DELV_mod->selectCalculationSerRmOnlyBySerID([
-            'GHSWX6UWE31I28TO',
-            'GHSWX6UWE81I1NPI',
-            'GHSWX6UWDZ1I2K1G',
-            'GHSWX6UWE71I3EI1',
-            'GHSWX6UWE51II2CQ',
-            'F8O8DYK4C91M3DUO',
-            'FRY78RLDE4MCUAFN',
-            'F8O8DYK4CB1M34IH',
-            'F8NVD9MZ811M2QE8',
-            'F3FA134O5136XTID',
-            'F0KK7D5XZ23636IV',
-            'F02A7T8YM7ACQTIP',
-            'F128IVYYRW1M18X1',
-            'FRFI6YADPTMC1SCH',
-            'FRFI6YADPVMCYLT8',
-            'FRFI6YADQ0MC16NE',
-            'FRFI6YADQ2MCLBA1',
-            'FRFI6YADPQMC1FH7',
-            'FRFI6YADPXMC3FIC',
-            'FRFI6YADPZMC13ES',
-            'GN1VW0439J1I22MY',
-            'FXCB7CKRM31I21OW',
-            'FXCB7CKRLY1IDWQ3',
-            'FX78XYZWQT2U17W4',
-            'G2TMBH2RATIX666Q',
-            'FX7IHJG5461I163X',
-            'FXCB7CKRLN1I2E7J',
-            'G7P3V239ES1I2MOJ',
-            'FYQJ9OJ1TO1I7G7M',
-            'FYEMJWVP691I2N3I',
-            'FYEKESISN11I30EK',
-            'FYEMJWVP661I3837',
-            'FYQJ9OJ1TU1I2GFW',
-            'FYEKESISN41I3D6T',
-            'FYQJAIHYF51IPE8B',
-            'FYQKGPBXZM1I19Q2',
-            'FYXH4QII1S2A1Q8U',
-            'FYQJ9OJ1TI1I3362',
-            'FZDLBS8FGG1I3L0X',
-            'GI07SJA9E8MC2Z39',
-            'GMWL6G7N4H1I3UG1',
-            'GA3WKCS77RIX181J',
-            'G20HCMB0LBIX1ZQX',
-            'G9W41QDYZVMCE9M3',
-            'G0AFTNX4ZP1I27OW',
-            'G0AFU2RHH61IVVGL',
-            'G9W41QDYZYMC325G',
-            'G0AFTNX4ZE1I3A62',
-            'G0B3A8Z0DJ1I1QGN',
-            'G0AFTNX4ZD1IRBKV',
-            'G0AFTNX4ZL1I1P9R',
-            'G0AFTNX4Z81I3EWA',
-            'G0AFTNX4ZR1I1WDE',
-            'G0AFTNX4ZG1I12Q4',
-            'G0AFTNX4ZO1I3660',
-            'G0AFTNX4ZK1I3U4Z',
-            'G20F6WCYGDIX2OCW',
-            'G0EAXFBCEL1I1ZMA',
-            'FYWSE2OBM21I2IDH',
-            'G20F5VDJATIX3OYV',
-            'FYX1491E261I1H0O',
-            'G28F5B1YIUIX1UVR',
-            'FYWPDIOVKMIX15O5',
-            'FYW845R6NAIX2F83',
-            'FYW841ZWD1IX1LL2',
-            'G6IWCL2CPVMC2SZH',
-            'FYW845R6NOIX38TI',
-            'FYW845R6NIIX1C6V',
-            'FYW845R6NKIXHQA1',
-            'FYW845R6NGIX8118',
-            'G07T4HLP8E2A2KA2',
-            'FYW841ZWCWIX3TIC',
-            'FYUBBZ3R131IY7DR',
-            'FYWSE2OBM51I22PX',
-            'FYW841ZWDDIX35UP',
-            'FYW841ZWDFIX69QJ',
-            'FYWSSMQ1KA1I11B2',
-            'FYWSE2OBMJ1I3ASI',
-            'FYWSE2OBLR1I3VWY',
-            'FYW845R6NDIX3AFA',
-            'G0OH2CYD5W1I8ULM',
-            'G0PEVDYFME1I2WJG',
-            'G0P9M2Z6KH1I1VF6',
-            'G7R48NKLOC1I2LRV',
-            'G0P9M2Z6KI1IE9FE',
-            'G0OH2CYD621I13MH',
-            'G0OJ63N8L3IXF4Q2',
-            'G0P9M2Z6KK1I2KPW',
-            'G0PEVDYFMH1INWT5',
-            'G0PEVDYFMK1I259R',
-            'G31IC8THWVMC23K9',
-            'G0OH2CYD4G1I1EN0',
-            'G0OH2CYD641IDYMV',
-            'GF2IX1TIJYIXQ2Q8',
-            'GBOAK5WZ3F1I3GXA',
-            'GBOIEND7U71IXMZ8',
-            'GBLDEA7YYA1IWRGO',
-            'GBOK07OSEQ1I11CE',
-            'GBLDEA7YYJ1I3F1L',
-            'GBLDEA7YY61I181B',
-            'GBLDEA7YYH1I1Q24',
-            'GBOIEND7U91I3DFV',
-            'GBOIEND7UC1I4MNW',
-            'GBLDEA7YZ41I3R9Y',
-            'GBLJ3K6RBY1I3RTM',
-            'GBLDEA7YYK1I1N7Z',
-            'GBOIEND7U51I2FBA',
-            'GBLDEA7YYZ1I279K',
-            'GBOCZZVLD4IX1AB7',
-            'GC2BGAZ1ZA1I3NZO',
-            'GBLDEA7YYC1I33FE',
-            'GBLDEA7YYF1I370B',
-            'GBLDEA7YZ11I18JL',
-            'GBLDEA7YYD1I2MAS',
-            'GBOAK5WZ371I2X8M',
-            'GBOAJXE1HQ1I2OFL',
-            'GBOAJXE1HM1I1J8Y',
-            'GBOIEND7UA1I2OEP',
+            'GENU3QM86EIX7XGB'
         ]);
 
         // $rsRM = array_merge($RSSubOnly, $RSMaterialOnly);
@@ -11903,7 +11786,7 @@ class DELV extends CI_Controller
 
         $czdocbctype = '27';
         $cztujuanpengiriman = '1';
-        $ccustdate = '2023-09-06';
+        $ccustdate = '2023-09-18';
         $csj = 'DISD2309_FG';
         $rsallitem_cd = [];
         $rsallitem_qty = [];
@@ -12238,8 +12121,9 @@ class DELV extends CI_Controller
         'GBOAK5WZ371I2X8M',
         'GBOAJXE1HQ1I2OFL',
         'GBOAJXE1HM1I1J8Y',
-        'GBOIEND7UA1I2OEP'";
-        $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated($str);
+        'GBOIEND7UA1I2OEP',
+        'GENU3QM86EIX7XGB'";
+        $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated_per_assy($str);
         $rsEXBC = $this->ZRPSTOCK_mod->select_columns_where(
             [
                 "rtrim(RPSTOCK_ITMNUM) ITMNUM", "ABS(RPSTOCK_QTY) BCQTY", "RPSTOCK_DOC", "RPSTOCK_NOAJU", "RPSTOCK_BCNUM", "RPSTOCK_BCDATE", "RPSTOCK_BCTYPE",
@@ -12318,8 +12202,8 @@ class DELV extends CI_Controller
         $passyuom = '';
         $tempSER = '';
         foreach ($rsfix as $r) {
-            if ($tempSER != $r['ASSYREFF']) {
-                $tempSER = $r['ASSYREFF'];
+            if ($tempSER != $r['ASSYCODE']) {
+                $tempSER = $r['ASSYCODE'];
                 $passycode = $r['ASSYCODE'];
                 $passyname = $r['ASSYDESC'];
                 $passyqty = $r['ASSYQT'];
@@ -15312,7 +15196,7 @@ class DELV extends CI_Controller
         }
         $respon = [
             'message' => $message,
-            // 'data' => $data,
+            'data' => $data,
             'Apirespon' => $responApi,
         ];
         die(json_encode($respon));
@@ -16396,10 +16280,12 @@ class DELV extends CI_Controller
             $rsplotrm_per_fgprice = $this->perprice($doc, $rsitem_p_price);
             foreach ($rsitem_p_price as &$r) {
                 $JumlahKemasan = 0;
+                $BeratKotor = 0;
                 foreach ($Packagings as &$pack) {
                     if ($pack['SI_ITMCD'] === $r['SSO2_MDLCD'] && $pack['TTLBOX'] > 0) {
                         $JumlahKemasan += $pack['TTLBOX'];
                         $pack['TTLBOX'] = 0;
+                        $BeratKotor += $pack['MITM_GWG']; 
                     }
                 }
                 unset($pack);
@@ -16424,6 +16310,7 @@ class DELV extends CI_Controller
                     , 'PPH' => $r['PPH']
                     , 'JUMLAH_KEMASAN' => $JumlahKemasan
                     , 'KODE_KEMASAN' => 'BX'
+                    , 'BRUTO' => $BeratKotor
                 ];
                 $SERI_BARANG++;
             }
@@ -16689,6 +16576,7 @@ class DELV extends CI_Controller
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-25, step0#, DO:' . $doc);
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/25', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
+            // $responApi = Requests::request('http://localhost/custom/api/ciesafour/sendPosting/25', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-25, step0#, DO:' . $doc);
