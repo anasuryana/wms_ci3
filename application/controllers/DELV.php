@@ -16509,9 +16509,9 @@ class DELV extends CI_Controller
                         , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
                     ],
                     [
-                        'JENIS_TARIF' => 'PPN'
+                        'JENIS_TARIF' => $r['KODE_JENIS_DOK_ASAL']==='40' ? 'PPNLOKAL' : 'PPN'
                         , 'KODE_TARIF' => 1
-                        , 'NILAI_BAYAR' => 0
+                        , 'NILAI_BAYAR' => $r['KODE_JENIS_DOK_ASAL']==='40' ? $r['KODE_JENIS_DOK_ASAL']*$r['PPN']/100 : 0
                         , 'NILAI_FASILITAS' => 0
                         , 'KODE_FASILITAS' => 3// DITANGGUHKAN
                         , 'TARIF_FASILITAS' => 100
