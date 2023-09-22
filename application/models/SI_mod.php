@@ -243,8 +243,7 @@ class SI_mod extends CI_Model {
 
     public function select_customer_like($pwhere){
         $this->db->select("MCUS_CUSCD,MCUS_CURCD,MCUS_CUSNM,MCUS_ABBRV,MCUS_ADDR1");   
-        $this->db->from("v_bg_cust_si");
-        $this->db->join("XMCUS", "SI_CUSCD=MCUS_CUSCD", "left");
+        $this->db->from("MCUS_TBL");
         $this->db->like($pwhere);        
 		$query = $this->db->get();
 		return $query->result_array();

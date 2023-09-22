@@ -798,16 +798,16 @@ class DELV extends CI_Controller
         $rs = [];
         switch ($ccolumn) {
             case 'nm':
-                $rs = $this->SI_mod->select_customer_like(['SI_BSGRP' => $cbg, 'MCUS_CUSNM' => $csearch]);
+                $rs = $this->SI_mod->select_customer_like(['MCUS_CUSNM' => $csearch]);
                 break;
             case 'cd':
-                $rs = $this->SI_mod->select_customer_like(['SI_BSGRP' => $cbg, 'MCUS_CUSCD' => $csearch]);
+                $rs = $this->SI_mod->select_customer_like(['MCUS_CUSCD' => $csearch]);
                 break;
             case 'ab':
-                $rs = $this->SI_mod->select_customer_like(['SI_BSGRP' => $cbg, 'MCUS_ABBRV' => $csearch]);
+                $rs = $this->SI_mod->select_customer_like(['MCUS_ABBRV' => $csearch]);
                 break;
             case 'ad':
-                $rs = $this->SI_mod->select_customer_like(['SI_BSGRP' => $cbg, 'MCUS_ADDR1' => $csearch]);
+                $rs = $this->SI_mod->select_customer_like(['MCUS_ADDR1' => $csearch]);
                 break;
         }
         if (count($rs) > 0) {
