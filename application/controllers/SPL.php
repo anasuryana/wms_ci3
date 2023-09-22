@@ -2158,22 +2158,22 @@ class SPL extends CI_Controller
         $cpsn = strtoupper($_COOKIE["CKPSI_DPSN"]);
         $rspsn_group = $this->SPL_mod->select_header_psn($cpsn);
 
-        # validasi [assy code type] vs [assy code type in wo]
-        $PPSN1 = $this->SPL_mod->selecthead_bypsn([$cpsn]);
-        $WorkOrdersNumber = [];
-        if (count($PPSN1)>0) {
-            foreach ($PPSN1 as $r) {
-                $WorkOrdersNumber[] = $r['PPSN1_WONO'];
-            }
-        }
-        $DifferentAssyTypes = $this->XWO_mod->selectDifferentAssyType($WorkOrdersNumber);
-        if(count($DifferentAssyTypes)>0){
-            foreach($DifferentAssyTypes as $r){
-                die($r['PDPP_WONO']. ' TYPE should be '. $r['TYPE_FIX']);
-            }
-        }
         $pdf = new PDF_Code39e128('P', 'mm', 'A4');
         if (substr($cpsn, 0, 2) == 'SP') {
+            # validasi [assy code type] vs [assy code type in wo]
+            $PPSN1 = $this->SPL_mod->selecthead_bypsn([$cpsn]);
+            $WorkOrdersNumber = [];
+            if (count($PPSN1) > 0) {
+                foreach ($PPSN1 as $r) {
+                    $WorkOrdersNumber[] = $r['PPSN1_WONO'];
+                }
+            }
+            $DifferentAssyTypes = $this->XWO_mod->selectDifferentAssyType($WorkOrdersNumber);
+            if (count($DifferentAssyTypes) > 0) {
+                foreach ($DifferentAssyTypes as $r) {
+                    die($r['PDPP_WONO'] . ' TYPE should be ' . $r['TYPE_FIX']);
+                }
+            }
             if ($this->SPLSCN_mod->check_Primary(['SPLSCN_DOC' => $cpsn])) {
                 $rshead = $this->SPL_mod->select_pi_head_bypsn($cpsn);
                 $rsdiff_mch = $this->SPL_mod->select_but_diff_machine_bypsn($cpsn);
@@ -3334,15 +3334,15 @@ class SPL extends CI_Controller
         # validasi [assy code type] vs [assy code type in wo]
         $PPSN1 = $this->SPL_mod->selecthead_bypsn([$cpsn]);
         $WorkOrdersNumber = [];
-        if (count($PPSN1)>0) {
+        if (count($PPSN1) > 0) {
             foreach ($PPSN1 as $r) {
                 $WorkOrdersNumber[] = $r['PPSN1_WONO'];
             }
         }
         $DifferentAssyTypes = $this->XWO_mod->selectDifferentAssyType($WorkOrdersNumber);
-        if(count($DifferentAssyTypes)>0){
-            foreach($DifferentAssyTypes as $r){
-                die($r['PDPP_WONO']. ' TYPE should be '. $r['TYPE_FIX']);
+        if (count($DifferentAssyTypes) > 0) {
+            foreach ($DifferentAssyTypes as $r) {
+                die($r['PDPP_WONO'] . ' TYPE should be ' . $r['TYPE_FIX']);
             }
         }
         $rshead = $this->SPL_mod->selecthead($cpsn, $cline, $cfedr);
