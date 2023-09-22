@@ -192,4 +192,12 @@ class XWO_mod extends CI_Model
         $query = $this->db->query($qry);
         return $query->result_array();
     }
+
+    public function selectDifferentAssyType($wo = [])
+    {
+        $this->db->from('DIFFERENT_TYPE_ASSY_WO');
+        $this->db->where_in("PDPP_WONO", $wo);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 }
