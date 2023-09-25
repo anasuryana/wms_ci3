@@ -11777,7 +11777,7 @@ class DELV extends CI_Controller
         //     'GHSWX6UWE71I3EI1',
         // ]);
         $RSMaterialOnly = $this->DELV_mod->selectCalculationSerRmOnlyBySerID([
-            'GENU3QM86EIX7XGB'
+            'GENU3QM86EIX7XGB',
         ]);
 
         // $rsRM = array_merge($RSSubOnly, $RSMaterialOnly);
@@ -14944,7 +14944,7 @@ class DELV extends CI_Controller
                     , 'SERI_BARANG' => $SERI_BARANG
                     , 'KODE_STATUS' => '02'
                     , 'JUMLAH_KEMASAN' => $JumlahKemasan
-                    , 'KODE_KEMASAN' => 'BX'
+                    , 'KODE_KEMASAN' => 'BX',
                 ];
                 $SERI_BARANG++;
             }
@@ -16285,7 +16285,7 @@ class DELV extends CI_Controller
                     if ($pack['SI_ITMCD'] === $r['SSO2_MDLCD'] && $pack['TTLBOX'] > 0) {
                         $JumlahKemasan += $pack['TTLBOX'];
                         $pack['TTLBOX'] = 0;
-                        $BeratKotor += $pack['MITM_GWG']; 
+                        $BeratKotor += $pack['MITM_GWG'];
                     }
                 }
                 unset($pack);
@@ -16310,7 +16310,7 @@ class DELV extends CI_Controller
                     , 'PPH' => $r['PPH']
                     , 'JUMLAH_KEMASAN' => $JumlahKemasan
                     , 'KODE_KEMASAN' => 'BX'
-                    , 'BRUTO' => $BeratKotor
+                    , 'BRUTO' => $BeratKotor,
                 ];
                 $SERI_BARANG++;
             }
@@ -16443,7 +16443,8 @@ class DELV extends CI_Controller
                                 , 'RBM' => $thebm
                                 , 'PPN' => 11
                                 , 'PPH' => $thepph
-                                , 'NDPBM' => (float) $NDPBM,
+                                , 'NDPBM' => (float) $NDPBM
+                                , 'CURRENCY' => $v->CURRENCY,
                             ];
                         } else {
                             $tpb_bahan_baku[] = [
@@ -16470,7 +16471,8 @@ class DELV extends CI_Controller
                                 , 'RBM' => 0
                                 , 'PPN' => $theppn
                                 , 'PPH' => $thepph
-                                , 'NDPBM' => (float) $NDPBM,
+                                , 'NDPBM' => (float) $NDPBM
+                                , 'CURRENCY' => $v->CURRENCY,
                             ];
                         }
                         #end
@@ -16509,9 +16511,9 @@ class DELV extends CI_Controller
                         , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
                     ],
                     [
-                        'JENIS_TARIF' => $r['KODE_JENIS_DOK_ASAL']==='40' ? 'PPNLOKAL' : 'PPN'
+                        'JENIS_TARIF' => $r['KODE_JENIS_DOK_ASAL'] === '40' ? 'PPNLOKAL' : 'PPN'
                         , 'KODE_TARIF' => 1
-                        , 'NILAI_BAYAR' => $r['KODE_JENIS_DOK_ASAL']==='40' ? $r['KODE_JENIS_DOK_ASAL']*$r['PPN']/100 : 0
+                        , 'NILAI_BAYAR' => $r['KODE_JENIS_DOK_ASAL'] === '40' ? $r['KODE_JENIS_DOK_ASAL'] * $r['PPN'] / 100 : 0
                         , 'NILAI_FASILITAS' => 0
                         , 'KODE_FASILITAS' => 3// DITANGGUHKAN
                         , 'TARIF_FASILITAS' => 100
