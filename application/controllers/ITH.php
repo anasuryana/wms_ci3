@@ -965,7 +965,6 @@ class ITH extends CI_Controller
         $a_cjob = explode("#", $cjob);
         $joblist_distinct = [];
         if (count($a_cjob) == 2) {
-
             if (is_array($cbg)) {
                 $therevision = $a_cjob[1] == '' ? 0 : $a_cjob[1];
                 $thejob = $a_cjob[0];
@@ -1000,7 +999,7 @@ class ITH extends CI_Controller
         $rssplit = $this->ITH_mod->select_split_production($joblist_distinct);
         foreach ($rs as &$r) {
             foreach ($rssplit as $l) {
-                if ($r['SER_DOC'] == $l['ITH_DOC']) {
+                if (strtoupper($r['SER_DOC']) == strtoupper($l['ITH_DOC'])) {
                     switch ($l['ITH_WH']) {
                         case 'ARQA1':
                             $r['QTY_QA'] += $l['ITH_QTY'];
