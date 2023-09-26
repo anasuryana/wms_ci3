@@ -788,7 +788,7 @@ class DELV extends CI_Controller
         die($rs);
     }
 
-    public function searchcustomer_si()
+    public function searchcustomer_out_rm()
     {
         header('Content-Type: application/json');
         $cbg = $this->input->get('cbg');
@@ -808,6 +808,36 @@ class DELV extends CI_Controller
                 break;
             case 'ad':
                 $rs = $this->SI_mod->select_customer_like(['MCUS_ADDR1' => $csearch]);
+                break;
+        }
+        if (count($rs) > 0) {
+            $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
+        } else {
+            $myar[] = ['cd' => 0, 'msg' => 'not found'];
+        }
+        die('{"status": ' . json_encode($myar) . ', "data": ' . json_encode($rs) . '}');
+    }
+
+    public function searchcustomer_si()
+    {
+        header('Content-Type: application/json');
+        $cbg = $this->input->get('cbg');
+        $ccolumn = $this->input->get('csrchby');
+        $csearch = $this->input->get('cid');
+        $myar = [];
+        $rs = [];
+        switch ($ccolumn) {
+            case 'nm':
+                $rs = $this->SI_mod->select_customer_shipping_info_like(['SI_BSGRP' => $cbg, 'MCUS_CUSNM' => $csearch]);
+                break;
+            case 'cd':
+                $rs = $this->SI_mod->select_customer_shipping_info_like(['SI_BSGRP' => $cbg, 'MCUS_CUSCD' => $csearch]);
+                break;
+            case 'ab':
+                $rs = $this->SI_mod->select_customer_shipping_info_like(['SI_BSGRP' => $cbg, 'MCUS_ABBRV' => $csearch]);
+                break;
+            case 'ad':
+                $rs = $this->SI_mod->select_customer_shipping_info_like(['SI_BSGRP' => $cbg, 'MCUS_ADDR1' => $csearch]);
                 break;
         }
         if (count($rs) > 0) {

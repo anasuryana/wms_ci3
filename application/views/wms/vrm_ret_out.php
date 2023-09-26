@@ -4550,7 +4550,7 @@ echo $tohtml;
             $('#retrm_out_tblcus tbody').empty()
             $.ajax({
                 type: "get",
-                url: "<?=base_url('DELV/searchcustomer_si')?>",
+                url: "<?=base_url('DELV/searchcustomer_out_rm')?>",
                 data: {
                     cid: mkey,
                     csrchby: msearchby,
