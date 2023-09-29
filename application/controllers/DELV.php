@@ -16529,38 +16529,53 @@ class DELV extends CI_Controller
 
             # atur bahan baku tarif
             foreach ($tpb_bahan_baku as &$r) {
-                $tpb_bahan_baku_tarif = [
-                    [
-                        'JENIS_TARIF' => 'BM'
-                        , 'KODE_TARIF' => 1
-                        , 'NILAI_BAYAR' => 0
-                        , 'NILAI_FASILITAS' => 0
-                        , 'KODE_FASILITAS' => 3// DITANGGUHKAN
-                        , 'TARIF_FASILITAS' => 100
-                        , 'TARIF' => (float) $r['RBM']
-                        , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
-                    ],
-                    [
-                        'JENIS_TARIF' => $r['KODE_JENIS_DOK_ASAL'] === '40' ? 'PPNLOKAL' : 'PPN'
-                        , 'KODE_TARIF' => 1
-                        , 'NILAI_BAYAR' => $r['KODE_JENIS_DOK_ASAL'] === '40' ? $r['KODE_JENIS_DOK_ASAL'] * $r['PPN'] / 100 : 0
-                        , 'NILAI_FASILITAS' => 0
-                        , 'KODE_FASILITAS' => 3// DITANGGUHKAN
-                        , 'TARIF_FASILITAS' => 100
-                        , 'TARIF' => (float) $r['PPN']
-                        , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
-                    ],
-                    [
-                        'JENIS_TARIF' => 'PPH'
-                        , 'KODE_TARIF' => 1
-                        , 'NILAI_BAYAR' => 0
-                        , 'NILAI_FASILITAS' => 0
-                        , 'KODE_FASILITAS' => 3// DITANGGUHKAN
-                        , 'TARIF_FASILITAS' => 100
-                        , 'TARIF' => (float) $r['PPH']
-                        , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
-                    ],
-                ];
+                if ($r['KODE_JENIS_DOK_ASAL'] === '40') {
+                    $tpb_bahan_baku_tarif = [
+                        [
+                            'JENIS_TARIF' => 'PPNLOKAL'
+                            , 'KODE_TARIF' => 1
+                            , 'NILAI_BAYAR' => 0
+                            , 'NILAI_FASILITAS' => 0
+                            , 'KODE_FASILITAS' => 3// DITANGGUHKAN
+                            , 'TARIF_FASILITAS' => 100
+                            , 'TARIF' => (float) $r['PPN']
+                            , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                        ],
+                    ];
+                } else {
+                    $tpb_bahan_baku_tarif = [
+                        [
+                            'JENIS_TARIF' => 'BM'
+                            , 'KODE_TARIF' => 1
+                            , 'NILAI_BAYAR' => 0
+                            , 'NILAI_FASILITAS' => 0
+                            , 'KODE_FASILITAS' => 3// DITANGGUHKAN
+                            , 'TARIF_FASILITAS' => 100
+                            , 'TARIF' => (float) $r['RBM']
+                            , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                        ],
+                        [
+                            'JENIS_TARIF' => 'PPN'
+                            , 'KODE_TARIF' => 1
+                            , 'NILAI_BAYAR' => 0
+                            , 'NILAI_FASILITAS' => 0
+                            , 'KODE_FASILITAS' => 3// DITANGGUHKAN
+                            , 'TARIF_FASILITAS' => 100
+                            , 'TARIF' => (float) $r['PPN']
+                            , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                        ],
+                        [
+                            'JENIS_TARIF' => 'PPH'
+                            , 'KODE_TARIF' => 1
+                            , 'NILAI_BAYAR' => $r['JUMLAH_SATUAN'] * $r['PPH'] / 100
+                            , 'NILAI_FASILITAS' => 0
+                            , 'KODE_FASILITAS' => 3// DITANGGUHKAN
+                            , 'TARIF_FASILITAS' => 100
+                            , 'TARIF' => (float) $r['PPH']
+                            , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                        ],
+                    ];
+                }
                 $r['tarif'] = $tpb_bahan_baku_tarif;
             }
             unset($r);
