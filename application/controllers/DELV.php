@@ -8195,14 +8195,14 @@ class DELV extends CI_Controller
         foreach ($tpb_bahan_baku as $r) {
             if ($r['KODE_JENIS_DOK_ASAL'] == '40') {
                 $tpb_bahan_baku_tarif[] = [
-                    'JENIS_TARIF' => 'PPN', 'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU'], 'KODE_TARIF' => 1, 'NILAI_BAYAR' => $r['CIF_RUPIAH'] * 10 / 100, 'NILAI_FASILITAS' => 0, 'KODE_FASILITAS' => 0, 'TARIF_FASILITAS' => 100, 'TARIF' => $r['PPN'], 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                    'JENIS_TARIF' => 'PPN', 'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU'], 'KODE_TARIF' => 1, 'NILAI_BAYAR' => $r['CIF_RUPIAH'] * $r['PPN'] / 100, 'NILAI_FASILITAS' => 0, 'KODE_FASILITAS' => 0, 'TARIF_FASILITAS' => 100, 'TARIF' => $r['PPN'], 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
                 ];
             } else {
                 $tpb_bahan_baku_tarif[] = [
                     'JENIS_TARIF' => 'BM', 'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU'], 'KODE_TARIF' => 1, 'NILAI_BAYAR' => $r['CIF_RUPIAH'] * $r['RBM'] / 100, 'NILAI_FASILITAS' => 0, 'KODE_FASILITAS' => 0, 'TARIF_FASILITAS' => 100, 'TARIF' => $r['RBM'], 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
                 ];
                 $tpb_bahan_baku_tarif[] = [
-                    'JENIS_TARIF' => 'PPN', 'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU'], 'KODE_TARIF' => 1, 'NILAI_BAYAR' => $r['CIF_RUPIAH'] * 10 / 100, 'NILAI_FASILITAS' => 0, 'KODE_FASILITAS' => 0, 'TARIF_FASILITAS' => 100, 'TARIF' => $r['PPN'], 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
+                    'JENIS_TARIF' => 'PPN', 'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU'], 'KODE_TARIF' => 1, 'NILAI_BAYAR' => $r['CIF_RUPIAH'] * $r['PPN'] / 100, 'NILAI_FASILITAS' => 0, 'KODE_FASILITAS' => 0, 'TARIF_FASILITAS' => 100, 'TARIF' => $r['PPN'], 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
                 ];
                 $tpb_bahan_baku_tarif[] = [
                     'JENIS_TARIF' => 'PPH', 'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU'], 'KODE_TARIF' => 1, 'NILAI_BAYAR' => $r['CIF_RUPIAH'] * 2.5, 'NILAI_FASILITAS' => 0, 'KODE_FASILITAS' => 0, 'TARIF_FASILITAS' => 100, 'TARIF' => $r['PPH'], 'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
@@ -16458,6 +16458,7 @@ class DELV extends CI_Controller
                                 , 'SERI_BARANG_DOK_ASAL' => empty($v->RCV_ZNOURUT) ? 0 : $v->RCV_ZNOURUT
                                 , 'SPESIFIKASI_LAIN' => null
                                 , 'CIF' => $tCIF
+                                , 'CIF_RUPIAH' => $v->BC_TYPE == '40' ? null : ($tCIF * $NDPBM)
                                 , 'KODE_BARANG' => $v->BC_ITEM
                                 , 'KODE_STATUS' => "03"
                                 , 'POS_TARIF' => $thehscode
@@ -16486,6 +16487,7 @@ class DELV extends CI_Controller
                                 , 'SERI_BARANG_DOK_ASAL' => empty($v->RCV_ZNOURUT) ? 0 : $v->RCV_ZNOURUT
                                 , 'SPESIFIKASI_LAIN' => null
                                 , 'CIF' => 0
+                                , 'CIF_RUPIAH' => 0
                                 , 'KODE_BARANG' => $v->BC_ITEM
                                 , 'KODE_STATUS' => "02"
                                 , 'POS_TARIF' => $thehscode
@@ -16536,7 +16538,6 @@ class DELV extends CI_Controller
                             , 'KODE_TARIF' => 1
                             , 'NILAI_BAYAR' => 0
                             , 'NILAI_FASILITAS' => 0
-                            , 'KODE_FASILITAS' => 3// DITANGGUHKAN
                             , 'TARIF_FASILITAS' => 100
                             , 'TARIF' => (float) $r['PPN']
                             , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
@@ -16547,9 +16548,8 @@ class DELV extends CI_Controller
                         [
                             'JENIS_TARIF' => 'BM'
                             , 'KODE_TARIF' => 1
-                            , 'NILAI_BAYAR' => 0
+                            , 'NILAI_BAYAR' => $r['CIF_RUPIAH'] * $r['RBM'] / 100
                             , 'NILAI_FASILITAS' => 0
-                            , 'KODE_FASILITAS' => 3// DITANGGUHKAN
                             , 'TARIF_FASILITAS' => 100
                             , 'TARIF' => (float) $r['RBM']
                             , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
@@ -16557,9 +16557,8 @@ class DELV extends CI_Controller
                         [
                             'JENIS_TARIF' => 'PPN'
                             , 'KODE_TARIF' => 1
-                            , 'NILAI_BAYAR' => 0
+                            , 'NILAI_BAYAR' => $r['CIF_RUPIAH'] * $r['PPN'] / 100
                             , 'NILAI_FASILITAS' => 0
-                            , 'KODE_FASILITAS' => 3// DITANGGUHKAN
                             , 'TARIF_FASILITAS' => 100
                             , 'TARIF' => (float) $r['PPN']
                             , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
@@ -16567,9 +16566,8 @@ class DELV extends CI_Controller
                         [
                             'JENIS_TARIF' => 'PPH'
                             , 'KODE_TARIF' => 1
-                            , 'NILAI_BAYAR' => $r['JUMLAH_SATUAN'] * $r['PPH'] / 100
+                            , 'NILAI_BAYAR' => $r['CIF_RUPIAH'] * $r['PPH'] / 100
                             , 'NILAI_FASILITAS' => 0
-                            , 'KODE_FASILITAS' => 3// DITANGGUHKAN
                             , 'TARIF_FASILITAS' => 100
                             , 'TARIF' => (float) $r['PPH']
                             , 'SERI_BAHAN_BAKU' => (int) $r['SERI_BAHAN_BAKU'], 'RASSYCODE' => $r['RASSYCODE'], 'RPRICEGROUP' => $r['RPRICEGROUP'], 'RITEMCD' => $r['KODE_BARANG'],
