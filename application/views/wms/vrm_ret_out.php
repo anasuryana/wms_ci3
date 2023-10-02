@@ -1242,7 +1242,16 @@ echo $tohtml;
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save261" onclick="retrm_out_inc_z_btn_save261_e_click()">Save changes</button>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" class="btn btn-primary btn-sm" id="retrm_out_btn_relink" onclick="retrm_out_btn_relink_e_click(this)">Re-link IT Inventory</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save261" onclick="retrm_out_inc_z_btn_save261_e_click()">Save changes</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -5350,5 +5359,33 @@ echo $tohtml;
                 }
             }
         })
+    }
+
+    function retrm_out_btn_relink_e_click(pThis) {
+        pThis.innerHTML = `Please wait`
+        pThis.disabled = true
+        const txid = retrm_out_inc_txt_DO.value.trim()
+        if (txid.length === 0) {
+            alertify.warning('TX ID is required')
+            return
+        }
+        $.ajax({
+            type: "POST",
+            url: "<?=base_url('DELV/relink_it_inventory')?>",
+            data: {
+                doc: txid
+            },
+            dataType: "json",
+            success: function(response) {
+                pThis.innerHTML = `Re-link IT Inventory`
+                pThis.disabled = false
+                alertify.message(response.status[0].msg)
+            },
+            error: function(xhr, ajaxOptions, throwError) {
+                pThis.innerHTML = `Re-link IT Inventory`
+                pThis.disabled = false
+                alert(throwError);
+            }
+        });
     }
 </script>
