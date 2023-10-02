@@ -1486,7 +1486,7 @@ class ITH extends CI_Controller
             foreach ($rsbef as $t) {
                 $rstoret[] = ['ITRN_ITMCD' => $t['ITRN_ITMCD'], 'ISUDT' => '', 'MGAQTY' => '', 'WQT' => '', 'MGABAL' => $t['MGAQTY'], 'WBAL' => $t['WQT']];
                 foreach ($rs as $r) {
-                    if ($r['ITRN_ITMCD'] == $t['ITRN_ITMCD']) {
+                    if (strtoupper($r['ITRN_ITMCD']) == strtoupper($t['ITRN_ITMCD'])) {
                         $rstoret[] = $r;
                     }
                 }
