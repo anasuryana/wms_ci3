@@ -268,4 +268,10 @@ class DisposeDraft_mod extends CI_Model {
 		$query = $this->db->query($qry);
         return $query->result_array();
     }
+
+    public function selectDraft($remark){
+        $qry = "SELECT * from DISPOSEDRAFT WHERE REMARK=?";
+        $query = $this->db->query($qry, [$remark]);
+        return $query->result_array();
+    }
 }
