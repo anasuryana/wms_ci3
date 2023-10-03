@@ -92,7 +92,7 @@ class DELV_mod extends CI_Model
         ,DLV_RPDATE, MAX(SI_WH) SI_WH,MAX(DLV_ZNOMOR_AJU) DLV_ZNOMOR_AJU,ISNULL(MAX(DLV_SPPBDOC),'') DLV_SPPBDOC");
         $this->db->from($this->TABLENAME . " a");
         $this->db->join("MCUS_TBL b", "a.DLV_CUSTCD=b.MCUS_CUSCD");
-        $this->db->join("MSTTRANS_TBL c", "a.DLV_TRANS=c.MSTTRANS_ID");
+        $this->db->join("MSTTRANS_TBL c", "a.DLV_TRANS=c.MSTTRANS_ID", "LEFT");
         $this->db->join("MSTEMP_TBL crtd", "a.DLV_CRTD=crtd.MSTEMP_ID", "LEFT");
         $this->db->join("MSTEMP_TBL lupd", "a.DLV_USRID=lupd.MSTEMP_ID", "left");
         $this->db->join("MSTEMP_TBL appr", "a.DLV_APPRV=appr.MSTEMP_ID", "left");
