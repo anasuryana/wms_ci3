@@ -16212,6 +16212,7 @@ class DELV extends CI_Controller
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-41, step0#, DO:' . $doc);
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/41', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
+            // $responApi = Requests::request('http://localhost/custom/api/ciesafour/sendPosting/41', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-41, step0#, DO:' . $doc);
@@ -16308,7 +16309,11 @@ class DELV extends CI_Controller
             $cz_JUMLAH_KEMASAN = $this->DELV_mod->check_Primary(['DLV_ID' => $doc]);
             $rsitem_p_price = $this->setPriceRS(base64_encode($doc));
             $rsplotrm_per_fgprice = $this->perprice($doc, $rsitem_p_price);
+            $BMFG = null;
             foreach ($rsitem_p_price as &$r) {
+                if (!$BMFG) {
+                    $BMFG = $r['BM'];
+                }
                 $JumlahKemasan = 0;
                 $BeratKotor = 0;
                 foreach ($Packagings as &$pack) {
@@ -16544,11 +16549,12 @@ class DELV extends CI_Controller
                         ],
                     ];
                 } else {
+                    $dedicatedBM = $BMFG > $r['RBM'] ? $r['RBM'] : $BMFG;
                     $tpb_bahan_baku_tarif = [
                         [
                             'JENIS_TARIF' => 'BM'
                             , 'KODE_TARIF' => 1
-                            , 'NILAI_BAYAR' => $r['CIF_RUPIAH'] * $r['RBM'] / 100
+                            , 'NILAI_BAYAR' => $r['CIF_RUPIAH'] * $dedicatedBM / 100
                             , 'NILAI_FASILITAS' => 0
                             , 'TARIF_FASILITAS' => 100
                             , 'TARIF' => (float) $r['RBM']
@@ -16963,7 +16969,8 @@ class DELV extends CI_Controller
 
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-41, step0#, DO:' . $doc);
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/41', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
+            // $responApi = Requests::request('http://192.168.0.29:8080/api_invesntory/public/api/ciesafour/sendPosting/41', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request('http://localhost/api_inventory/public/api/ciesafour/sendPosting/41', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-41, step0#, DO:' . $doc);
