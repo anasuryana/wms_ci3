@@ -4350,6 +4350,9 @@ class DELV extends CI_Controller
                     }
                     $pdf->SetXY(90, 220);
                     $pdf->Cell(43.43, 4, number_format($ttldoqty) . " " . $n['MITM_STKUOM'], 0, 0, 'R');
+                    $pdf->SetFont('Arial', '', 11);
+                    $pdf->SetXY(31, 227);
+                    $pdf->Cell(70, 4, "On behalf PT. Sumitronics Indonesia", 1, 0, 'C');
                 } else {
                     $ttlqty = 0;
                     $rs_ = $this->setPriceRS_PERSO(base64_encode($pid));
@@ -4407,6 +4410,7 @@ class DELV extends CI_Controller
                     }
                     $pdf->SetXY(90, 215);
                     $pdf->Cell(43.43, 4, number_format($ttlqty) . " " . trim($ar_itemUM[0]), 0, 0, 'R');
+                    
                 }
             }
             //END OF DO
@@ -11640,10 +11644,12 @@ class DELV extends CI_Controller
         header('Content-Type: application/json');
         ini_set('max_execution_time', '-1');
         // $rsRM = $this->DisposeDraft_mod->select_resume_rm_additional1();
-        $rsRM = $this->DisposeDraft_mod->select_arwh9sc('2022-12-02');
+        // $rsRM = $this->DisposeDraft_mod->select_arwh9sc('2022-12-02');
+        $rsRM = $this->DisposeDraft_mod->selectDraft('P-DEC22-JAN23');
+        // die(json_encode(['message' => 'stop first', 'data' => $rsRM]));
         $czdocbctype = '27';
         $cztujuanpengiriman = '1';
-        $csj = 'DISD221202_final1';
+        $csj = 'DISD2310_P-DEC22-JAN23';
         $rsallitem_cd = [];
         $rsallitem_qty = [];
         $rsallitem_qtyplot = [];
@@ -11653,7 +11659,7 @@ class DELV extends CI_Controller
             $rsallitem_qty[] = $r['QTY'];
             $rsallitem_qtyplot[] = 0;
         }
-        $ccustdate = '2023-01-21';
+        $ccustdate = '2023-10-04';
         $count_rsallitem = count($rsallitem_cd);
         $rstemp = $this->inventory_getstockbc_v2($czdocbctype, $cztujuanpengiriman, $csj, $rsallitem_cd, $rsallitem_qty, [], $ccustdate);
         $rsbc = json_decode($rstemp);
@@ -15220,13 +15226,14 @@ class DELV extends CI_Controller
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
+            // $responApi = Requests::request('http://localhost/custom/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
         }
         $respon = [
             'message' => $message,
-            'data' => $data,
+            // 'data' => $data,
             'Apirespon' => $responApi,
         ];
         die(json_encode($respon));
