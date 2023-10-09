@@ -1023,13 +1023,7 @@ class ITH_mod extends CI_Model
                         ) PIC
                     ,ITH_LUPDT
                     ,SER_BSGRP PDPP_BSGRP
-                    ,CASE
-                        WHEN ISNULL(SER_CAT, '') = ''
-                            AND MAX(SER_BSGRP) = 'PSI1PPZIEP'
-                            AND ISNULL(SER_RMRK, '') != 'NG MAKER'
-                            THEN ''
-                        ELSE ISNULL(SER_RMRK, '')
-                        END SER_RMRK
+                    ,ISNULL(SER_RMRK, '') SER_RMRK
                 FROM ITH_TBL
                 INNER JOIN SER_TBL ON ITH_SER = SER_ID
                 INNER JOIN MITM_TBL ON ITH_ITMCD = MITM_ITMCD
@@ -1091,7 +1085,8 @@ class ITH_mod extends CI_Model
     public function select_output_qc_byjob($dtfrom, $dtto, $pjob, $pbg)
     {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,SER_BSGRP PDPP_BSGRP
-        ,CASE WHEN ISNULL(SER_CAT,'')='' AND MAX(SER_BSGRP) ='PSI1PPZIEP' and ISNULL(SER_RMRK,'')!='NG MAKER' THEN  '' ELSE ISNULL(SER_RMRK,'') END SER_RMRK FROM ITH_TBL inner join SER_TBL
+        ,ISNULL(SER_RMRK,'') SER_RMRK 
+        FROM ITH_TBL inner join SER_TBL
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
         INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
         WHERE ITH_WH='ARQA1' AND (ITH_LUPDT BETWEEN ? AND ?)
