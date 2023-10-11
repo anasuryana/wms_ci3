@@ -241,7 +241,7 @@ class DisposeDraft_mod extends CI_Model {
     }
     public function select_resume_fg_dedicated_per_assy($pSER){
         $qry = "SELECT V1.*,STOCKQTY FROM
-        (SELECT ITH_ITMCD,RTRIM(SERD2_ITMCD) PART_CODE,round(SUM(RMQT),0) QTY
+        (SELECT ITH_ITMCD,UPPER(RTRIM(SERD2_ITMCD)) PART_CODE,round(SUM(RMQT),0) QTY
                 ,RTRIM(RM.MITM_ITMD1) RMDESC
                 ,RTRIM(VDETAIL.MITM_STKUOM) FGUOM
                 ,RTRIM(RM.MITM_STKUOM) RMUOM
