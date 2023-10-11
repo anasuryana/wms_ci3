@@ -34,7 +34,7 @@ class ZRPSCRAP_HIST_mod extends CI_Model
 
     public function selectByRefNo($strRefNo)
     {
-        $qry = "SELECT ID_TRANS,REF_NO,DOC_NO,ITEMNUM FROM ZRPSCRAP_HIST WHERE REF_NO IN ($strRefNo)
+        $qry = "SELECT ID_TRANS,REF_NO,DOC_NO,ITEMNUM FROM ZRPSCRAP_HIST WHERE REF_NO IN ($strRefNo) AND IS_CONFIRMED IS NOT NULL
         GROUP BY ID_TRANS,REF_NO,DOC_NO,ITEMNUM";
         $query = $this->db->query($qry);
         return $query->result_array();

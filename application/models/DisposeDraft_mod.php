@@ -253,7 +253,8 @@ class DisposeDraft_mod extends CI_Model {
                         INNER join MITM_TBL b on a.SER_ITMID=b.MITM_ITMCD
                         WHERE SER_ID IN ($pSER)
                         ) VDETAIL
-                LEFT JOIN (SELECT SERD2_SER,SERD2_ITMCD,SUM(SERD2_QTY) RMQT FROM SERD2_TBL GROUP BY SERD2_SER,SERD2_ITMCD) VSERD2 ON ITH_SER=SERD2_SER
+                LEFT JOIN (SELECT SERD2_SER,ISNULL(MITMGRP_ITMCD,SERD2_ITMCD) SERD2_ITMCD,SUM(SERD2_QTY) RMQT FROM SERD2_TBL 
+                    LEFT JOIN MITMGRP_TBL ON SERD2_ITMCD=MITMGRP_ITMCD_GRD GROUP BY SERD2_SER,SERD2_ITMCD,MITMGRP_ITMCD) VSERD2 ON ITH_SER=SERD2_SER
                 LEFT JOIN MITM_TBL RM ON SERD2_ITMCD=MITM_ITMCD
                 GROUP BY ITH_ITMCD,SERD2_ITMCD, RM.MITM_ITMD1,VDETAIL.MITM_ITMD1, VDETAIL.MITM_STKUOM,RM.MITM_STKUOM)
         V1
@@ -264,7 +265,41 @@ class DisposeDraft_mod extends CI_Model {
         WHERE SER_ID IN ($pSER)
         GROUP BY SER_ITMID
         ) V2 ON V1.ITH_ITMCD=V2.SER_ITMID
-                ORDER BY ITH_ITMCD,PART_CODE ASC";        
+        ORDER BY ITH_ITMCD,PART_CODE ASC";        
+		$query = $this->db->query($qry);
+        return $query->result_array();
+    }
+
+    public function select_resume_fg_dedicated_per_ser($pSER){
+        $qry = "SELECT V1.*,STOCKQTY,ID_TRANS FROM
+        (SELECT ITH_ITMCD,UPPER(RTRIM(SERD2_ITMCD)) PART_CODE,round(SUM(RMQT),0) QTY
+                ,RTRIM(RM.MITM_ITMD1) RMDESC
+                ,RTRIM(VDETAIL.MITM_STKUOM) FGUOM
+                ,RTRIM(RM.MITM_STKUOM) RMUOM
+                ,RTRIM(VDETAIL.MITM_ITMD1) FGDESC
+                ,ITH_SER
+                FROM
+                (select '' ITH_WH,SER_ITMID ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,MITM_STKUOM,SER_ID ITH_SER,SER_DOC,SER_LUPDT ITH_LUPDT
+                        from SER_TBL a 
+                        INNER join MITM_TBL b on a.SER_ITMID=b.MITM_ITMCD
+                        WHERE SER_ID IN ($pSER)
+                        ) VDETAIL
+                LEFT JOIN (SELECT SERD2_SER,ISNULL(MITMGRP_ITMCD,SERD2_ITMCD) SERD2_ITMCD,SUM(SERD2_QTY) RMQT FROM SERD2_TBL 
+                    LEFT JOIN MITMGRP_TBL ON SERD2_ITMCD=MITMGRP_ITMCD_GRD GROUP BY SERD2_SER,SERD2_ITMCD,MITMGRP_ITMCD) VSERD2 ON ITH_SER=SERD2_SER
+                LEFT JOIN MITM_TBL RM ON SERD2_ITMCD=MITM_ITMCD
+                GROUP BY ITH_ITMCD,SERD2_ITMCD,ITH_SER, RM.MITM_ITMD1,VDETAIL.MITM_ITMD1, VDETAIL.MITM_STKUOM,RM.MITM_STKUOM)
+        V1
+        LEFT JOIN
+        (
+        SELECT SER_ITMID, SUM(SER_qTY) STOCKQTY
+        FROM SER_TBL
+        WHERE SER_ID IN ($pSER)
+        GROUP BY SER_ITMID
+        ) V2 ON V1.ITH_ITMCD=V2.SER_ITMID
+		LEFT JOIN (
+		SELECT REF_NO,ID_TRANS FROM ZRPSCRAP_HIST WHERE REF_NO IN ($pSER) AND IS_CONFIRMED IS NOT NULL
+		) V3 ON ITH_SER=REF_NO
+        ORDER BY ITH_ITMCD,PART_CODE ASC";        
 		$query = $this->db->query($qry);
         return $query->result_array();
     }
