@@ -299,7 +299,7 @@ class DisposeDraft_mod extends CI_Model {
 		LEFT JOIN (
 		SELECT REF_NO,ID_TRANS FROM ZRPSCRAP_HIST WHERE REF_NO IN ($pSER) AND IS_CONFIRMED IS NOT NULL
 		) V3 ON ITH_SER=REF_NO
-        ORDER BY ITH_ITMCD,PART_CODE ASC";        
+        ORDER BY ITH_SER,ITH_ITMCD,PART_CODE ASC";        
 		$query = $this->db->query($qry);
         return $query->result_array();
     }
