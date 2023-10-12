@@ -74,7 +74,7 @@
             $.ajax({
                 type: "get",
                 url: "<?=base_url('DELV/confirm_delivery')?>",
-                data: {indo: event.data.DLV_ID, DLVH_TRANS : platNomor.value },
+                data: {indo: inputTXID.value, DLVH_TRANS : platNomor.value },
                 dataType: "json",
                 success: function (response) {
                     if(response.status[0].cd==1){
