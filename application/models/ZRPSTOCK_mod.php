@@ -49,6 +49,7 @@ class ZRPSTOCK_mod extends CI_Model {
 		$this->db->from("ZRPSAL_BCSTOCK");
         $this->db->join("(SELECT RCV_ITMCD,RCV_RPNO,MAX(RCV_HSCD) RCV_HSCD,MAX(RCV_BM) RCV_BM, MAX(RCV_PPN) RCV_PPN, MAX(RCV_PPH) RCV_PPH, MAX(RCV_ZNOURUT) URUT FROM RCV_TBL GROUP BY RCV_ITMCD,RCV_RPNO) V2", "RPSTOCK_ITMNUM=V2.RCV_ITMCD AND RPSTOCK_NOAJU=V2.RCV_RPNO");
 		$this->db->where_in('RPSTOCK_REMARK', $Remarks);
+        $this->db->order_by('RPSTOCK_BCDATE asc');
         $query = $this->db->get();
         return $query->result_array();
     }
