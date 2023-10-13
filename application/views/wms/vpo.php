@@ -544,6 +544,11 @@
         onbeforedeleterow: function(instance, y1) {
             let lineID = mpuror_sso_nonitem.getValueFromCoords(0, y1)
             mpuror_selected_row = lineID
+        },
+        onselection: function(el, x1, y1, x2,y2, origin){
+            if(x1 == x2 && y1 == y2 && x1 == 6) {
+                mpuror_sso_nonitem.openEditor(mpuror_sso_nonitem.records[y1][x1], false);
+            }
         }
     });
     var mpuror_vencd = ''
