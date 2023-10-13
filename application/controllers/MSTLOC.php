@@ -44,6 +44,9 @@ class MSTLOC extends CI_Controller
         $cid = $this->input->post('inid');
         //check primary
         $datac = ['MSTLOCG_ID' => $cid];
+        if (strlen(trim($cid)) === 0) {
+            die('Location Code is required');
+        }
         if ($this->MSTLOCG_mod->check_Primary($datac) > 0) {
             $datau = [
                 'MSTLOCG_NM' => $cnm, 'MSTLOCG_LUPDT' => $currrtime, 'MSTLOCG_USRID' => $this->session->userdata('nama'),
