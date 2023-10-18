@@ -1100,8 +1100,8 @@ class DELV extends CI_Controller
                 "<td class='text-center'><button class='btn btn-sm btn-primary'>Confirm</button></td>" .
                 "</tr>";
         }
-        foreach($rsTrans as $r){
-            $strTrans .= "<option value='".$r->MSTTRANS_ID."'>".$r->MSTTRANS_ID."</option>";
+        foreach ($rsTrans as $r) {
+            $strTrans .= "<option value='" . $r->MSTTRANS_ID . "'>" . $r->MSTTRANS_ID . "</option>";
         }
         $data['ldata'] = $strtemp;
         $data['ltrans'] = $strTrans;
@@ -11652,10 +11652,164 @@ class DELV extends CI_Controller
         ini_set('max_execution_time', '-1');
         // $rsRM = $this->DisposeDraft_mod->select_resume_rm_additional1();
         // $rsRM = $this->DisposeDraft_mod->select_arwh9sc('2022-12-02');
-        $rsRM = $this->DisposeDraft_mod->selectDraft('23/01/27/0002');
+        // $rsRM = $this->DisposeDraft_mod->selectDraft('23/01/27/0002XS');
+        $rsRM = $this->DisposeDraft_mod->selectOutsandingDraftVsBookedScrapReport("'22/11/28/0003',
+        '22/11/29/0004',
+        '22/12/01/0001',
+        '22/12/05/0001',
+        '22/12/07/0001',
+        '22/12/07/0004',
+        '22/12/12/0006',
+        '22/12/15/0003',
+        '22/12/15/0004',
+        '22/12/16/0003',
+        '22/12/17/0001',
+        '22/12/19/0003',
+        '22/12/20/0007',
+        '22/12/21/0002',
+        '22/12/27/0002',
+        '22/12/27/0005',
+        '22/12/27/0007',
+        '22/12/27/0009',
+        '22/12/29/0001',
+        '22/12/29/0002',
+        '22/12/29/0003',
+        '23/01/02/0001',
+        '23/01/02/0002',
+        '23/01/04/0002',
+        '23/01/09/0002',
+        '23/01/10/0001',
+        '23/01/10/0003',
+        '23/01/10/0004',
+        '23/01/12/0001',
+        '23/01/12/0002',
+        '23/01/12/0003',
+        '23/01/16/0003',
+        '23/01/17/0001',
+        '23/01/17/0002',
+        '23/01/18/0002',
+        '23/01/19/0001',
+        '23/01/19/0002',
+        '23/01/20/0001',
+        '23/01/23/0001',
+        '23/01/25/0005',
+        '23/01/26/0007',
+        '23/01/30/0001',
+        '23/02/01/0001',
+        '23/02/02/0002',
+        '23/02/06/0001',
+        '23/02/08/0002',
+        '23/02/08/0003',
+        '23/02/08/0004',
+        '23/02/09/0001',
+        '23/02/09/0002',
+        '23/02/09/0004',
+        '23/02/09/0005',
+        '23/02/10/0001',
+        '23/02/10/0002',
+        '23/02/13/0003',
+        '23/02/14/0004',
+        '23/02/14/0006',
+        '23/02/15/0001',
+        '23/02/15/0003',
+        '23/02/17/0004',
+        '23/02/20/0004',
+        '23/02/21/0001',
+        '23/02/22/0006',
+        '23/02/23/0003',
+        '23/02/23/0004',
+        '23/02/23/0005',
+        '23/02/27/0011',
+        '23/03/01/0003',
+        '23/03/01/0004',
+        '23/03/01/0005',
+        '23/03/06/0003',
+        '23/03/06/0002',
+        '23/03/06/0004',
+        '23/03/07/0004',
+        '23/03/13/0001',
+        '23/03/13/0002',
+        '23/03/13/0003',
+        '23/03/14/0002',
+        '23/03/15/0003',
+        '23/03/15/0004',
+        '23/03/17/0001',
+        '23/03/20/0002',
+        '23/03/21/0003',
+        '23/03/24/0001',
+        '23/03/24/0003',
+        '23/03/24/0013',
+        '23/03/27/0014',
+        '23/03/27/0015',
+        '23/03/27/0016',
+        '23/03/28/0002',
+        '23/03/28/0003',
+        '23/03/28/0004',
+        '23/03/30/0004',
+        '23/03/30/0006',
+        '23/03/30/0007',
+        '23/03/30/0008',
+        '23/03/31/0008',
+        '23/04/03/0009',
+        '23/04/03/0010',
+        '23/04/04/0003',
+        '23/04/04/0004',
+        '23/04/05/0001',
+        '23/04/10/0001',
+        '23/04/13/0001',
+        '23/04/17/0001',
+        '23/04/18/0001',
+        '23/04/18/0002',
+        '23/04/27/0006',
+        '23/04/27/0007',
+        '23/04/28/0008',
+        '23/04/28/0009',
+        '23/05/02/0008',
+        '23/05/02/0009',
+        '23/05/02/0010',
+        '23/05/03/0009',
+        '23/05/04/0014',
+        '23/05/04/0016',
+        '23/05/05/0011',
+        '23/05/05/0015',
+        '23/05/05/0018',
+        '23/05/05/0024',
+        '23/05/08/0001',
+        '23/05/09/0003',
+        '23/05/12/0002',
+        '23/05/17/0002',
+        '23/05/17/0003',
+        '23/05/17/0004',
+        '23/05/19/0002',
+        '23/05/22/0001',
+        '23/05/22/0002',
+        '23/05/22/0003',
+        '23/05/22/0004',
+        '23/05/26/0001',
+        '23/05/26/0003',
+        '23/05/29/0002',
+        '23/05/30/0001',
+        '23/05/31/0001',
+        '23/06/05/0001',
+        '23/06/06/0002',
+        '23/06/12/0001',
+        '23/06/12/0002',
+        '23/06/12/0003',
+        '23/06/12/0004',
+        '23/06/13/0001',
+        '23/06/14/0005',
+        '23/06/19/0001',
+        '23/06/19/0002',
+        '23/06/19/0003',
+        '23/06/23/0001',
+        '23/06/23/0002',
+        '23/06/23/0003',
+        '23/06/23/0004',
+        'P-DEC22-JAN23'");     
+        // die(json_encode(['data' => $rsRM]));
         $czdocbctype = '27';
         $cztujuanpengiriman = '1';
-        $csj = '23/01/27/0002';
+        $csj = 'P-DEC22-JAN23';
         $rsallitem_cd = [];
         $rsallitem_qty = [];
         $rsallitem_qtyplot = [];
@@ -11665,7 +11819,7 @@ class DELV extends CI_Controller
             $rsallitem_qty[] = $r['QTY'];
             $rsallitem_qtyplot[] = 0;
         }
-        $ccustdate = '2023-10-12';
+        $ccustdate = '2023-10-16';
         $count_rsallitem = count($rsallitem_cd);
         $rstemp = $this->inventory_getstockbc_v2($czdocbctype, $cztujuanpengiriman, $csj, $rsallitem_cd, $rsallitem_qty, [], $ccustdate);
         $rsbc = json_decode($rstemp);
@@ -11819,7 +11973,58 @@ class DELV extends CI_Controller
         //     'GHSWX6UWE71I3EI1',
         // ]);
         $RSMaterialOnly = $this->DELV_mod->selectCalculationSerRmOnlyBySerID([
-            'GENU3QM86EIX7XGB',
+            'EQVKXVPZIB1MBJ92',
+'ER0MTN8D401M17UP',
+'EOQCTZVDSK1MLMK5',
+'EQVKXVPZII1M1QRU',
+'EP9LTSQUQ3AC3EIV',
+'EQVKXVQ02A1M4NF3',
+'ER0MTN8D3T1M5YVV',
+'EQVKXVQ0281M93ZS',
+'ER0MTN8D3X1M270C',
+'EP9LTSQUQ9AC3V49',
+'EZSRDP5N2336SOHX',
+'EQVKXVQ02F1M4WTD',
+'EZ8GM5YSVV1M2PR4',
+'EP3NUT56QL1M291Y',
+'EQVKXVPZI61MP62C',
+'FAGDK8KIJU3L2CTN',
+'ER0TKI3JVOAC2FAE',
+'ER0MTN8D3Q1M30Q9',
+'ER0MTN8D3Y1M1OTH',
+'EQVKXVPZIK1M1JSR',
+'EQVKXVPZIG1M15OU',
+'EZSU0ZOORJ1M3F9J',
+'F42GA59OOU3612YC',
+'EZSU0ZOORG1M3HGO',
+'EZSU0ZOORO1M328N',
+'EZG1N0EDWI1M29EW',
+'EZSU0ZOORS1M13AM',
+'EZSU0ZOORC1MLHGE',
+'EZSU0ZOOR51MTLIY',
+'G7AMU67MZUMC2B9C',
+'EVC9FU0ATP1M2KKA',
+'EVC9FU0ATW1M1J7L',
+'EVC9FU0AU71MIT4A',
+'EVC9FRPG761M1YGC',
+'EVC9FU0ATZ1M174A',
+'EVC9FRPG741M3PRF',
+'EVC9FU0AU11M1ETW',
+'G7AMU67MZSMC1SX7',
+'FZVJ31T5ZUIX3PLH',
+'FZVJ31T5ZHIX1F1F',
+'G0X1FJLAZWIX3AVK',
+'FZVJ31T5ZOIXMOU5',
+'FZVJ28TDRXIX3DL5',
+'FZVJ28TDS0IX4O2V',
+'FZTROV5KMT1I1UXF',
+'FZVJ31T5ZMIX2AFT',
+'FZVJ31T5Z9IX1I3H',
+'FZTRPBHTRX1IHU5U',
+'FZWWFKF9YQ2A3HC0',
+'FZVY02V94JIX32XT',
+'FZTROJLOUB1I10OC',
+'FZVJ31T5ZCIXFILG'
         ]);
 
         // $rsRM = array_merge($RSSubOnly, $RSMaterialOnly);
@@ -11828,8 +12033,8 @@ class DELV extends CI_Controller
 
         $czdocbctype = '27';
         $cztujuanpengiriman = '1';
-        $ccustdate = '2023-09-18';
-        $csj = 'DISD2309_FG';
+        $ccustdate = '2023-10-16';
+        $csj = 'DISD2310_FG_ADD1';
         $rsallitem_cd = [];
         $rsallitem_qty = [];
         $rsallitem_qtyplot = [];
@@ -12046,181 +12251,58 @@ class DELV extends CI_Controller
     {
         // header('Content-Type: application/json');
 
-        $str = "'GGA90GFQKM2X18WW',
-        'GIA78KY9N42U148O',
-        'GFHJUY18IMIXD3O1',
-        'GJS68LJSDD1I35LT',
-        '323C300000000018',
-        'GI3AOVZF3S1I3FLI',
-        'GIFYTLCKTK1I2N2C',
-        'GHF122BPY5IX1OHI',
-        'GHFC69FVM71I281U',
-        'GHRTSSB4JQ2U2E0N',
-        'GIIPVSSY4N4K3LG9',
-        'GH6WVMWMXZ1I2ZWA',
-        'GHHADMMVOQ1ID62O',
-        'GH6ODQLANQ1I14TA',
-        'GHEYFUPY4KIXESTO',
-        'GLWXMQYLAPIXTJDI',
-        'GHM2J4EEF71IO5MM',
-        'GGAIAA3ZPC2X3O9B',
-        'GLPSUQC56S2U3087',
-        'GIIOSHTVMA4KLCGC',
-        'GLQSPIYLMV2UTFR6',
-        'GIGFTUL5P8IXAZA8',
-        'GFR36R310FIX2RJC',
-        'GM36FFTEWP1I2Z58',
-        'GMRJ62ICZ4MC2KHU',
-        'GGA91EEFWS2X1RPD',
-        'GH190N3VGR1I2MC9',
-        'GHCSV4OQD0IX1MNS',
-        'GGA8SD1S932X2ZAO',
-        'GH4OPP88VV1IH959',
-        'GHCYVUY7BP1IWXLE',
-        'GI04O6VML52UFRA2',
-        'GGF13BCWM22UJGL0',
-        'GIIPNQEIHO1IJBJL',
-        'GGF16DTKOS2U2KIV',
-        'GLA7TF44DN2U3LDP',
-        'GDXYIX4J5Z1IPIKI',
-        'GGF0ZS1OX32U126B',
-        'GK11B14LRK2U2D0A',
-        'GHBZKIK3AK1ICPLQ',
-        'GHCZQ81Y28IXCRKX',
-        'GIA6GPUS8Z2UT4XY',
-        'GI9QYEGGSM1I23H1',
-        'GDWIHGNBAP2U2O0H',
-        'GGIQPTGQ5K1I246Q',
-        'GGHYEI83771I1SET',
-        'GJR35K5Z6AMC3B88',
-        'GLXX1G2H261I176D',
-        'GEG2JTOYMGMCCXLL',
-        'GIA7GLTOC42U32BH',
-        'GGZZGQ436ZMC3D7E',
-        'GKNBVBY99M1I21J8',
-        'GLOQACFI3Q1I2FUA',
-        'GIU9KMU69QIX148X',
-        'GIA7N8L9PN2UT27P',
-        'GJ34366NH51I131I',
-        'GK506BIRWX1I2VB2',
-        'GK6HPY42VTIX3984',
-        'GIC2FR89L3IX1XU5',
-        'GIBWY9DRGSMCV1P2',
-        'GKRI0CO7RO2U2TRV',
-        'GHUHM64PK5IXZRGY',
-        'GESIX9IAY3MC1QDF',
-        'GHWIVWJ3GTIX39GS',
-        'GKTFU70MVJ1I3NOB',
-        'GHO8EC8Y6MMC2BL3',
-        'GHO8EC8Y6QMC2PC8',
-        'G5EWUXZYVKIXE657',
-        'G5EWUCISZ6IX3LG6',
-        'G5EWVRFVOLIX1NNA',
-        'G5EWWW9PPJIX3IVC',
-        'G5EWTANCSMIX2XC5',
-        'G5EWSLHLMMIX27TN',
-        'G5EMSZV0IC1I1XLS',
-        'G5EMSZV0I71I3M8R',
-        'GHO8COS60OMC371G',
-        'GHO8COS60KMCPW59',
-        'GHO8BRT4XJMC2XNW',
-        'GHO8BRT4XFMC9YE3',
-        'GLUYE9C5BA1I38WZ',
-        'GK4VNHT41HIXUS1M',
-        'GGLJKLTQCT1I1L84',
-        'GIPNGK5KTH2U144T',
-        'G5N3G6KG041I1QVY',
-        'G5N3G6KG091I13AC',
-        'G5N3GTGV4A1IDL0E',
-        'G5N3HORG6D1I26JP',
-        'G5N3HORG6I1I1P8X',
-        'G5N5HPBW3TIX2O45',
-        'G5N5HPBW3PIX18JQ',
-        'GHJWZVKFB4IXPJ14',
-        'GH0XEOOJDYIXAGWK',
-        'GHM5QUW4MBMCV0L6',
-        'GHUBWH25B31I3CV0',
-        'GLJ7UO2TEYIX1KMW',
-        'GLJ7VL11A0IX2OEP',
-        'GLMX7IEY7C1I1PQB',
-        'GFWB1EVCGY1I9BJH',
-        'GM30B758X42U246I',
-        'GKOHWSIOBP1I38G5',
-        'GKRI2E8JD92U1KZL',
-        'GHZB6EV920IX9VMA',
-        'GKVJHP8OEF1IA3ZK',
-        'GH091OEJMI2UZAWS',
-        'GGZILJF1D11I1I7V',
-        'GKN95S3S3FIXX4HK',
-        'GI2GV7UPJQMCWA5H',
-        'GHTZMUEJNHMCC3O1',
-        'GHJUDX00851I3LB2',
-        'GL6YCTWGFY2UGCBE',
-        'GLN1AFPTYT1IB6EZ',
-        'GH6IJK7U5O1I2MB6',
-        'GFR3J9B2U0IXR88A',
-        'GGA92U618G2XSU3Q',
-        'GEC9A4BR622UPIPO',
-        'GKRI5AWJW32U2ORH',
-        'GKL0NNC0LT1I10B2',
-        'GL7QWTTCB1IXWO1N',
-        'GKVM50V8KEIX24P6',        
-        '123D030000000051',
-        '123B170000000097',
-        '123F140000000044',
-        '122L090000000114',
-        '122G250000000012',
-        '123C240000000115',
-        '123C240000000113',
-        '123C240000000111',
-        '123C240000000109',
-        '123C270000000101',
-        '123C270000000100',
-        '123F130000000074',
-        '123F130000000071',        
-        '123A230000000138',
-        '123A230000000139',
-        '123A230000000136',
-        '123A230000000137',
-        '123A240000000075',        
-        '123C240000000031',
-        '123C240000000036',
-        '123A240000000077',        
-        '123A240000000079',
-        '123C240000000029',        
-        '123B270000000078',
-        '123B270000000077',
-        '123B060000000080',        
-        '123C290000000016',
-        '123B060000000085',        
-        '123C270000000071',
-        '123B060000000081',
-        '123C270000000069',        
-        '122L080000000048',        
-        '122L060000000063',
-        '123A030000000037',
-        '121F020000000053',
-        '121D200000000127',
-        '122B230000000055',
-        '122L220000000097',
-        '122L200000000140',
-        '122L220000000098',
-        '122L200000000141',
-        '123C270000000088',
-        '122L210000000079',
-        '122L220000000100',
-        '123C100000000063',
-        '122L220000000095',
-        '122L190000000058',
-        '122L190000000059',
-        '122L220000000096',
-        '122L220000000099',
-        '122L200000000142',
-        '123B230000000025',
-        '123B230000000024',
-        '123C280000000100',
-        '123C280000000090',
-        '123F060000000042'    
+        $str = "'EQVKXVPZIB1MBJ92',
+        'ER0MTN8D401M17UP',
+        'EOQCTZVDSK1MLMK5',
+        'EQVKXVPZII1M1QRU',
+        'EP9LTSQUQ3AC3EIV',
+        'EQVKXVQ02A1M4NF3',
+        'ER0MTN8D3T1M5YVV',
+        'EQVKXVQ0281M93ZS',
+        'ER0MTN8D3X1M270C',
+        'EP9LTSQUQ9AC3V49',
+        'EZSRDP5N2336SOHX',
+        'EQVKXVQ02F1M4WTD',
+        'EZ8GM5YSVV1M2PR4',
+        'EP3NUT56QL1M291Y',
+        'EQVKXVPZI61MP62C',
+        'FAGDK8KIJU3L2CTN',
+        'ER0TKI3JVOAC2FAE',
+        'ER0MTN8D3Q1M30Q9',
+        'ER0MTN8D3Y1M1OTH',
+        'EQVKXVPZIK1M1JSR',
+        'EQVKXVPZIG1M15OU',
+        'EZSU0ZOORJ1M3F9J',
+        'F42GA59OOU3612YC',
+        'EZSU0ZOORG1M3HGO',
+        'EZSU0ZOORO1M328N',
+        'EZG1N0EDWI1M29EW',
+        'EZSU0ZOORS1M13AM',
+        'EZSU0ZOORC1MLHGE',
+        'EZSU0ZOOR51MTLIY',
+        'G7AMU67MZUMC2B9C',
+        'EVC9FU0ATP1M2KKA',
+        'EVC9FU0ATW1M1J7L',
+        'EVC9FU0AU71MIT4A',
+        'EVC9FRPG761M1YGC',
+        'EVC9FU0ATZ1M174A',
+        'EVC9FRPG741M3PRF',
+        'EVC9FU0AU11M1ETW',
+        'G7AMU67MZSMC1SX7',
+        'FZVJ31T5ZUIX3PLH',
+        'FZVJ31T5ZHIX1F1F',
+        'G0X1FJLAZWIX3AVK',
+        'FZVJ31T5ZOIXMOU5',
+        'FZVJ28TDRXIX3DL5',
+        'FZVJ28TDS0IX4O2V',
+        'FZTROV5KMT1I1UXF',
+        'FZVJ31T5ZMIX2AFT',
+        'FZVJ31T5Z9IX1I3H',
+        'FZTRPBHTRX1IHU5U',
+        'FZWWFKF9YQ2A3HC0',
+        'FZVY02V94JIX32XT',
+        'FZTROJLOUB1I10OC',
+        'FZVJ31T5ZCIXFILG'
         ";
         // '423C021200000040',
         // '423C021200000039',
@@ -12232,13 +12314,13 @@ class DELV extends CI_Controller
         // '422L141400000002',
         // '423B210800000009'
         $rsRM = $this->DisposeDraft_mod->select_resume_fg_dedicated_per_assy($str);
-        $rsScrapDocs = $this->ZRPSCRAP_HIST_mod->selectByRefNo($str);
-        $ScrapDocs = [];
-        foreach ($rsScrapDocs as $r) {
-            if (!in_array($r['ID_TRANS'], $ScrapDocs)) {
-                $ScrapDocs[] = $r['ID_TRANS'];
-            }
-        }
+        // $rsScrapDocs = $this->ZRPSCRAP_HIST_mod->selectByRefNo($str);
+        $ScrapDocs = ['DISD2310_FG'];
+        // foreach ($rsScrapDocs as $r) {
+        //     if (!in_array($r['ID_TRANS'], $ScrapDocs)) {
+        //         $ScrapDocs[] = $r['ID_TRANS'];
+        //     }
+        // }
         $rsEXBC = $this->ZRPSTOCK_mod->select_columns_where_remark_in(
             [
                 "UPPER(rtrim(RPSTOCK_ITMNUM)) ITMNUM", "ABS(RPSTOCK_QTY) BCQTY", "ABS(RPSTOCK_QTY) BCBAKQTY", "RPSTOCK_DOC", "RPSTOCK_NOAJU", "RPSTOCK_BCNUM", "RPSTOCK_BCDATE", "RPSTOCK_BCTYPE",
@@ -12367,10 +12449,10 @@ class DELV extends CI_Controller
         $sheet->fromArray(array_keys($rsEXBC[0]), null, 'A1');
         $sheet->fromArray($rsEXBC, null, 'A2');
 
-        $sheet = $spreadsheet->createSheet();
-        $sheet->setTitle('TRACE_SCRAP_DOCS');
-        $sheet->fromArray(array_keys($rsScrapDocs[0]), null, 'A1');
-        $sheet->fromArray($rsScrapDocs, null, 'A2');
+        // $sheet = $spreadsheet->createSheet();
+        // $sheet->setTitle('TRACE_SCRAP_DOCS');
+        // $sheet->fromArray(array_keys($rsScrapDocs[0]), null, 'A1');
+        // $sheet->fromArray($rsScrapDocs, null, 'A2');
 
         $stringjudul = "DISD2310_FG";
         $writer = new Xlsx($spreadsheet);
@@ -15677,10 +15759,10 @@ class DELV extends CI_Controller
             ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
             ['NOMOR_AJU' => $NomorAju]
         );
-        if (empty($TPBData)) {
-            $message = 'Please posting to TPB first';
-            // if (!empty($TPBData)) {
-            //     $message = 'Already exist in TPB';
+        if (!empty($TPBData)) {
+            $message = 'Already exist in TPB';
+        // if (empty($TPBData)) {
+        //     $message = 'Please posting to TPB first';
         } else {
             $netweight_represent = 0;
             $JumlahKemasan = 0;
@@ -15883,6 +15965,7 @@ class DELV extends CI_Controller
                     'JENIS_SATUAN' => $r['JENIS_SATUAN'],
                     'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU'],
                     'SPESIFIKASI_LAIN' => null,
+                    'JUMLAH_KEMASAN' => 1,
                     'RBM' => $r['RBM'],
                     'CURRENCY' => $r['CURRENCY'],
                 ];
