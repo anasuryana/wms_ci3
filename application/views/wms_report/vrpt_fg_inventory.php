@@ -1,7 +1,7 @@
-<style>    
+<style>
     thead tr.first th, thead tr.first td {
         position: sticky;
-        top: 0;        
+        top: 0;
     }
 
     thead tr.second th, thead tr.second td {
@@ -12,9 +12,14 @@
 <div style="padding: 10px">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-12 mb-1 text-center">
+            <div class="col-md-6 mb-1 text-center">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-primary" type="button" id="fginventory_btn_gen"><i class="fas fa-sync"></i></button>
+                    <button class="btn btn-success" type="button" id="fginventory_btn_export" onclick="fginventory_btn_export_on_click()"><i class="fas fa-file-excel"></i></button>
+                </div>
+            </div>
+            <div class="col-md-6 mb-1 text-center border-start">
+                <div class="btn-group btn-group-sm">
                     <button class="btn btn-danger" type="button" id="fginventory_btn_trash"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
@@ -60,6 +65,9 @@
     </div>
 </div>
 <script>
+    function fginventory_btn_export_on_click(){
+        window.open("http://192.168.0.29:8080/ems-glue/api/export/inventory-fg", '_blank');
+    }
     $("#fginventory_divku").css('height', $(window).height()*72/100);
     $("#fginventory_btn_trash").click(function (e) {
         if(confirm("Are You sure ?")){
