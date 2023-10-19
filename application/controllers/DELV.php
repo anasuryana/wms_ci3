@@ -11805,7 +11805,7 @@ class DELV extends CI_Controller
         '23/06/23/0002',
         '23/06/23/0003',
         '23/06/23/0004',
-        'P-DEC22-JAN23'");     
+        'P-DEC22-JAN23'");
         // die(json_encode(['data' => $rsRM]));
         $czdocbctype = '27';
         $cztujuanpengiriman = '1';
@@ -11974,57 +11974,57 @@ class DELV extends CI_Controller
         // ]);
         $RSMaterialOnly = $this->DELV_mod->selectCalculationSerRmOnlyBySerID([
             'EQVKXVPZIB1MBJ92',
-'ER0MTN8D401M17UP',
-'EOQCTZVDSK1MLMK5',
-'EQVKXVPZII1M1QRU',
-'EP9LTSQUQ3AC3EIV',
-'EQVKXVQ02A1M4NF3',
-'ER0MTN8D3T1M5YVV',
-'EQVKXVQ0281M93ZS',
-'ER0MTN8D3X1M270C',
-'EP9LTSQUQ9AC3V49',
-'EZSRDP5N2336SOHX',
-'EQVKXVQ02F1M4WTD',
-'EZ8GM5YSVV1M2PR4',
-'EP3NUT56QL1M291Y',
-'EQVKXVPZI61MP62C',
-'FAGDK8KIJU3L2CTN',
-'ER0TKI3JVOAC2FAE',
-'ER0MTN8D3Q1M30Q9',
-'ER0MTN8D3Y1M1OTH',
-'EQVKXVPZIK1M1JSR',
-'EQVKXVPZIG1M15OU',
-'EZSU0ZOORJ1M3F9J',
-'F42GA59OOU3612YC',
-'EZSU0ZOORG1M3HGO',
-'EZSU0ZOORO1M328N',
-'EZG1N0EDWI1M29EW',
-'EZSU0ZOORS1M13AM',
-'EZSU0ZOORC1MLHGE',
-'EZSU0ZOOR51MTLIY',
-'G7AMU67MZUMC2B9C',
-'EVC9FU0ATP1M2KKA',
-'EVC9FU0ATW1M1J7L',
-'EVC9FU0AU71MIT4A',
-'EVC9FRPG761M1YGC',
-'EVC9FU0ATZ1M174A',
-'EVC9FRPG741M3PRF',
-'EVC9FU0AU11M1ETW',
-'G7AMU67MZSMC1SX7',
-'FZVJ31T5ZUIX3PLH',
-'FZVJ31T5ZHIX1F1F',
-'G0X1FJLAZWIX3AVK',
-'FZVJ31T5ZOIXMOU5',
-'FZVJ28TDRXIX3DL5',
-'FZVJ28TDS0IX4O2V',
-'FZTROV5KMT1I1UXF',
-'FZVJ31T5ZMIX2AFT',
-'FZVJ31T5Z9IX1I3H',
-'FZTRPBHTRX1IHU5U',
-'FZWWFKF9YQ2A3HC0',
-'FZVY02V94JIX32XT',
-'FZTROJLOUB1I10OC',
-'FZVJ31T5ZCIXFILG'
+            'ER0MTN8D401M17UP',
+            'EOQCTZVDSK1MLMK5',
+            'EQVKXVPZII1M1QRU',
+            'EP9LTSQUQ3AC3EIV',
+            'EQVKXVQ02A1M4NF3',
+            'ER0MTN8D3T1M5YVV',
+            'EQVKXVQ0281M93ZS',
+            'ER0MTN8D3X1M270C',
+            'EP9LTSQUQ9AC3V49',
+            'EZSRDP5N2336SOHX',
+            'EQVKXVQ02F1M4WTD',
+            'EZ8GM5YSVV1M2PR4',
+            'EP3NUT56QL1M291Y',
+            'EQVKXVPZI61MP62C',
+            'FAGDK8KIJU3L2CTN',
+            'ER0TKI3JVOAC2FAE',
+            'ER0MTN8D3Q1M30Q9',
+            'ER0MTN8D3Y1M1OTH',
+            'EQVKXVPZIK1M1JSR',
+            'EQVKXVPZIG1M15OU',
+            'EZSU0ZOORJ1M3F9J',
+            'F42GA59OOU3612YC',
+            'EZSU0ZOORG1M3HGO',
+            'EZSU0ZOORO1M328N',
+            'EZG1N0EDWI1M29EW',
+            'EZSU0ZOORS1M13AM',
+            'EZSU0ZOORC1MLHGE',
+            'EZSU0ZOOR51MTLIY',
+            'G7AMU67MZUMC2B9C',
+            'EVC9FU0ATP1M2KKA',
+            'EVC9FU0ATW1M1J7L',
+            'EVC9FU0AU71MIT4A',
+            'EVC9FRPG761M1YGC',
+            'EVC9FU0ATZ1M174A',
+            'EVC9FRPG741M3PRF',
+            'EVC9FU0AU11M1ETW',
+            'G7AMU67MZSMC1SX7',
+            'FZVJ31T5ZUIX3PLH',
+            'FZVJ31T5ZHIX1F1F',
+            'G0X1FJLAZWIX3AVK',
+            'FZVJ31T5ZOIXMOU5',
+            'FZVJ28TDRXIX3DL5',
+            'FZVJ28TDS0IX4O2V',
+            'FZTROV5KMT1I1UXF',
+            'FZVJ31T5ZMIX2AFT',
+            'FZVJ31T5Z9IX1I3H',
+            'FZTRPBHTRX1IHU5U',
+            'FZWWFKF9YQ2A3HC0',
+            'FZVY02V94JIX32XT',
+            'FZTROJLOUB1I10OC',
+            'FZVJ31T5ZCIXFILG',
         ]);
 
         // $rsRM = array_merge($RSSubOnly, $RSMaterialOnly);
@@ -12034,7 +12034,7 @@ class DELV extends CI_Controller
         $czdocbctype = '27';
         $cztujuanpengiriman = '1';
         $ccustdate = '2023-10-16';
-        $csj = 'DISD2310_FG_ADD1';
+        $csj = 'DISD2310_FG';
         $rsallitem_cd = [];
         $rsallitem_qty = [];
         $rsallitem_qtyplot = [];
@@ -15073,10 +15073,10 @@ class DELV extends CI_Controller
         );
         $data = [];
 
-        if (!empty($TPBData)) {
-            $message = 'Already exist in TPB';
-            // if (empty($TPBData)) {
-            //     $message = 'Please posting to TPB first';
+        // if (!empty($TPBData)) {
+        //     $message = 'Already exist in TPB';
+        if (empty($TPBData)) {
+            $message = 'Please posting to TPB first';
         } else {
 
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
@@ -15222,6 +15222,7 @@ class DELV extends CI_Controller
 
             # susun array bahan baku
             $rsbc = $this->DELV_mod->selectBookeEXCBByTXID($doc);
+            $tpb_bahan_baku = [];
             foreach ($rsplotrm_per_fgprice as &$r) {
                 $r['PLOTRQTY'] = 0;
                 foreach ($rsbc as &$v) {
@@ -15265,30 +15266,53 @@ class DELV extends CI_Controller
                         }
 
                         if ($v->RCV_KPPBC != '-') {
-                            $tpb_bahan_baku[] = [
-                                'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE
-                                , 'NOMOR_DAFTAR_DOK_ASAL' => $v->BC_NUM
-                                , 'TANGGAL_DAFTAR_DOK_ASAL' => $v->BC_DATE
-                                , 'KODE_KANTOR' => $v->RCV_KPPBC
-                                , 'NOMOR_AJU_DOK_ASAL' => strlen($v->BC_AJU) == 6 ? substr('000000000000000000000000', 0, 26) : $v->BC_AJU
-                                , 'SERI_BARANG_DOK_ASAL' => empty($v->RCV_ZNOURUT) ? 0 : $v->RCV_ZNOURUT
-                                , 'SPESIFIKASI_LAIN' => null
-                                , 'CIF' => (float) ($v->RCV_PRPRC * $theqty)
-                                , 'HARGA_PENYERAHAN' => 0
-                                , 'KODE_BARANG' => $v->BC_ITEM
-                                , 'KODE_STATUS' => "03"
-                                , 'POS_TARIF' => $thehscode
-                                , 'URAIAN' => $v->MITM_ITMD1
-                                , 'TIPE' => $v->MITM_SPTNO
-                                , 'JUMLAH_SATUAN' => $theqty
-                                , 'JENIS_SATUAN' => ($v->MITM_STKUOM == 'PCS') ? 'PCE' : $v->MITM_STKUOM
-                                , 'KODE_ASAL_BAHAN_BAKU' => ($v->BC_TYPE == '27' || $v->BC_TYPE == '23') ? '0' : '1'
-                                , 'RASSYCODE' => $r['RASSYCODE']
-                                , 'RPRICEGROUP' => $r['RPRICEGROUP']
-                                , 'RBM' => $thebm
-                                , 'PPN' => 11
-                                , 'PPH' => $thepph,
-                            ];
+
+                            $_nomorAjuDokumenAsal = strlen($v->BC_AJU) == 6 ? substr('000000000000000000000000', 0, 26) : $v->BC_AJU;
+                            $_isFound = false;
+                            $_cif = ($v->RCV_PRPRC * $theqty);
+                            $_seriBarangDokAsal = empty($v->RCV_ZNOURUT) ? 0 : $v->RCV_ZNOURUT;
+
+                            foreach ($tpb_bahan_baku as &$_s) {
+
+                                if ($_s['NOMOR_AJU_DOK_ASAL'] == $_nomorAjuDokumenAsal && $_s['KODE_BARANG'] == $v->BC_ITEM && $_s['SERI_BARANG_DOK_ASAL'] == $_seriBarangDokAsal
+                                    && $_s['RASSYCODE'] == $r['RASSYCODE'] && $_s['RPRICEGROUP'] == $r['RPRICEGROUP']) {
+
+                                    $_s['CIF'] += $_cif;
+                                    $_s['JUMLAH_SATUAN'] += $theqty;
+                                    $_isFound = true;
+                                    break;
+
+                                }
+
+                            }
+                            unset($_s);
+
+                            if (!$_isFound) {
+                                $tpb_bahan_baku[] = [
+                                    'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE
+                                    , 'NOMOR_DAFTAR_DOK_ASAL' => $v->BC_NUM
+                                    , 'TANGGAL_DAFTAR_DOK_ASAL' => $v->BC_DATE
+                                    , 'KODE_KANTOR' => $v->RCV_KPPBC
+                                    , 'NOMOR_AJU_DOK_ASAL' => $_nomorAjuDokumenAsal
+                                    , 'SERI_BARANG_DOK_ASAL' => $_seriBarangDokAsal
+                                    , 'SPESIFIKASI_LAIN' => null
+                                    , 'CIF' => $_cif
+                                    , 'HARGA_PENYERAHAN' => 0
+                                    , 'KODE_BARANG' => $v->BC_ITEM
+                                    , 'KODE_STATUS' => "03"
+                                    , 'POS_TARIF' => $thehscode
+                                    , 'URAIAN' => $v->MITM_ITMD1
+                                    , 'TIPE' => $v->MITM_SPTNO
+                                    , 'JUMLAH_SATUAN' => $theqty
+                                    , 'JENIS_SATUAN' => ($v->MITM_STKUOM == 'PCS') ? 'PCE' : $v->MITM_STKUOM
+                                    , 'KODE_ASAL_BAHAN_BAKU' => ($v->BC_TYPE == '27' || $v->BC_TYPE == '23') ? '0' : '1'
+                                    , 'RASSYCODE' => $r['RASSYCODE']
+                                    , 'RPRICEGROUP' => $r['RPRICEGROUP']
+                                    , 'RBM' => $thebm
+                                    , 'PPN' => 11
+                                    , 'PPH' => $thepph,
+                                ];
+                            }
                         } else {
                             $tpb_bahan_baku[] = [
                                 'KODE_JENIS_DOK_ASAL' => $v->BC_TYPE
@@ -15761,8 +15785,8 @@ class DELV extends CI_Controller
         );
         if (!empty($TPBData)) {
             $message = 'Already exist in TPB';
-        // if (empty($TPBData)) {
-        //     $message = 'Please posting to TPB first';
+            // if (empty($TPBData)) {
+            //     $message = 'Please posting to TPB first';
         } else {
             $netweight_represent = 0;
             $JumlahKemasan = 0;
