@@ -326,4 +326,28 @@ class DisposeDraft_mod extends CI_Model
         $query = $this->db->query($qry, [$remark]);
         return $query->result_array();
     }
+
+    public function selectOutsandingDraftVsBookedScrapReport($strRemarkDraft,$strArrayScrapDocument){
+        $qry = "SELECT PART_CODE, QTY+ISNULL(BCQT,0) QTY
+        from (SELECT PART_CODE, SUM(QTY) QTY
+            FROM
+                (
+        SELECT ISNULL(G.MITMGRP_ITMCD,PART_CODE) PART_CODE, SUM(X.QTY) QTY
+                FROM DISPOSEDRAFT X
+                    LEFT JOIN MITMGRP_TBL  G ON X.PART_CODE=G.MITMGRP_ITMCD_GRD
+                WHERE X.REMARK=? AND X.LOCCD='ARWH9SC'
+                GROUP BY G.MITMGRP_ITMCD,PART_CODE
+        ) VX
+            GROUP BY  PART_CODE) REQ
+            LEFT JOIN (
+        SELECT A.RPSTOCK_ITMNUM,
+                SUM (A.RPSTOCK_QTY) BCQT
+            FROM ZRPSAL_BCSTOCK A
+            WHERE A.RPSTOCK_REMARK IN ($strArrayScrapDocument)
+            GROUP BY RPSTOCK_ITMNUM
+        ) V1 ON PART_CODE=RPSTOCK_ITMNUM
+                WHERE QTY+ISNULL(BCQT,0)>0";
+        $query = $this->db->query($qry, [$strRemarkDraft]);
+        return $query->result_array();
+    }
 }
