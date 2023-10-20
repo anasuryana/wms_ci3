@@ -39,7 +39,7 @@
                     <table id="rhistorycustoms_tbl" class="table table-bordered table-sm table-hover" style="font-size:75%">
                         <thead class="table-light">
                             <tr>
-                                <th rowspan="2" class="align-middle text-center">Date</th>
+                                <th rowspan="2" class="align-middle text-center">Incoming/Delivery Date</th>
                                 <th rowspan="2" class="align-middle">Item Code</th>
                                 <th rowspan="2" class="align-middle">Item Name</th>                                
                                 <th colspan="2" class="align-middle text-center">Nomor</th>
