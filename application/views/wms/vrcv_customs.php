@@ -2344,7 +2344,7 @@ echo $toprint;
             $("#RCVCUSTOMS_INTERNALITEM").modal('show')
         }
         newcell.style.cssText = "cursor:pointer"
-        newcell.innerHTML = ''        
+        newcell.innerHTML = ''
 
         newcell = newrow.insertCell(4)
         newcell.classList.add('table-info')
@@ -3078,15 +3078,24 @@ echo $toprint;
                             m_ttlamt = 0;
                         }
 
-                        $("#rcvcustoms_typedoc").val(response[i].RCV_BCTYPE);
-                        $("#rcvcustoms_noaju").val(response[i].RCV_RPNO);
-                        $("#rcvcustoms_regno").val(response[i].RCV_BCNO);
-                        $("#rcvcustoms_dd").datepicker('update', response[i].RCV_RPDATE);
-                        $("#rcvcustoms_rcvdate").datepicker('update', response[i].RCV_RCVDATE);
-                        $("#rcvcustoms_typetpb").val(response[i].RCV_TPB);
-                        $("#rcvcustoms_kppbc").val(response[i].RCV_KPPBC);
-                        $("#rcvcustoms_NW").val(m_nw);
-                        $("#rcvcustoms_GW").val(m_gw);
+                    }
+
+                    $("#rcvcustoms_typedoc").val(response[0].RCV_BCTYPE);
+                    $("#rcvcustoms_noaju").val(response[0].RCV_RPNO);
+                    $("#rcvcustoms_regno").val(response[0].RCV_BCNO);
+                    $("#rcvcustoms_dd").datepicker('update', response[0].RCV_RPDATE);
+                    $("#rcvcustoms_rcvdate").datepicker('update', response[0].RCV_RCVDATE);
+                    $("#rcvcustoms_typetpb").val(response[0].RCV_TPB);
+                    $("#rcvcustoms_kppbc").val(response[0].RCV_KPPBC);
+                    $("#rcvcustoms_NW").val(m_nw);
+                    $("#rcvcustoms_GW").val(m_gw);
+
+                    if(rcvcustoms_noaju.value.trim().length==0){
+                        rcvcustoms_save.disabled = false
+                        rcvcustoms_hscode.disabled = false
+                    } else {
+                        rcvcustoms_save.disabled = true
+                        rcvcustoms_hscode.disabled = true
                     }
                 } else {
                     $("#rcvcustoms_typedoc").val('');
@@ -3096,6 +3105,9 @@ echo $toprint;
                     $("#rcvcustoms_kppbc").val('');
                     $("#rcvcustoms_NW").val('');
                     $("#rcvcustoms_GW").val('');
+
+                    rcvcustoms_save.disabled = false
+                    rcvcustoms_hscode.disabled = false
                 }
             },
             error: function(xhr, xopt, xthrow) {
@@ -4418,7 +4430,7 @@ echo $toprint;
                     $("#RCVCUSTOMS_INTERNALITEM").modal('show')
                 }
                 newcell.style.cssText = "cursor:pointer"
-                newcell.innerHTML = aItem[i]           
+                newcell.innerHTML = aItem[i]
 
                 newcell = newrow.insertCell(4)
                 newcell.classList.add('table-info')
