@@ -2888,7 +2888,20 @@ class RCV extends CI_Controller
                 }
             }
         }
+        
         array_push($myar, $anar);
+        $lastLineLog = $this->CSMLOG_mod->select_lastLine($cdo, '') + 1;
+        $msg = 'upload HSCODE,BM,PPN,PPH';
+        $this->CSMLOG_mod->insert([
+            'CSMLOG_DOCNO' => $cdo,
+            'CSMLOG_SUPZAJU' => '',
+            'CSMLOG_SUPZNOPEN' => '',
+            'CSMLOG_DESC' => $msg,
+            'CSMLOG_LINE' => $lastLineLog,
+            'CSMLOG_TYPE' => 'INC',
+            'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
+            'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+        ]);
         echo json_encode($myar);
     }
 

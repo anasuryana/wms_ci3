@@ -3092,10 +3092,10 @@ echo $toprint;
 
                     if(rcvcustoms_noaju.value.trim().length==0){
                         rcvcustoms_save.disabled = false
-                        rcvcustoms_hscode.disabled = false
+                        // rcvcustoms_hscode.disabled = false
                     } else {
                         rcvcustoms_save.disabled = true
-                        rcvcustoms_hscode.disabled = true
+                        // rcvcustoms_hscode.disabled = true
                     }
                 } else {
                     $("#rcvcustoms_typedoc").val('');
@@ -3107,7 +3107,7 @@ echo $toprint;
                     $("#rcvcustoms_GW").val('');
 
                     rcvcustoms_save.disabled = false
-                    rcvcustoms_hscode.disabled = false
+                    // rcvcustoms_hscode.disabled = false
                 }
             },
             error: function(xhr, xopt, xthrow) {
