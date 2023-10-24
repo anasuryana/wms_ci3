@@ -5322,15 +5322,12 @@ echo $tohtml;
                     for (let i = 0; i < ttlrows; i++) {
                         newrow = tableku2.insertRow(-1);
                         newcell = newrow.insertCell(0);
-                        newText = document.createTextNode(response.data[i].ITMCD);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].ITMCD
                         newcell = newrow.insertCell(1);
                         newcell.style.cssText = "text-align:right";
-                        newText = document.createTextNode(numeral(response.data[i].QTY).format(','));
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = numeral(response.data[i].QTY).format(',')
                         newcell = newrow.insertCell(2);
-                        newText = document.createTextNode(response.data[i].LOTNO);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].LOTNO
                     }
                     mydes.innerHTML = '';
                     mydes.appendChild(myfrag);
@@ -5812,6 +5809,31 @@ echo $tohtml;
                 p.innerHTML = 'CEISA 4.0'
                 alertify.message(response.message)
                 try {
+                    if (response.status.cd == '110') {
+                        document.getElementById('txfg_alert_rmexbcnull').innerText = response.status[0].msg;
+                        let mydes = document.getElementById("txfg_divrmexbcnull");
+                        let myfrag = document.createDocumentFragment();
+                        let mtabel = document.getElementById("txfg_tblrmexbcnull");
+                        let cln = mtabel.cloneNode(true);
+                        myfrag.appendChild(cln);
+                        let tabell = myfrag.getElementById("txfg_tblrmexbcnull");
+                        let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                        let ttlrows = response.data.length;
+                        tableku2.innerHTML = ''
+                        for (let i = 0; i < ttlrows; i++) {
+                            newrow = tableku2.insertRow(-1);
+                            newcell = newrow.insertCell(0);
+                            newcell.innerHTML = response.data[i].ITMCD
+                            newcell = newrow.insertCell(1);
+                            newcell.style.cssText = "text-align:right";
+                            newcell.innerHTML = numeral(response.data[i].QTY).format(',')
+                            newcell = newrow.insertCell(2);
+                            newcell.innerHTML = response.data[i].LOTNO
+                        }
+                        mydes.innerHTML = '';
+                        mydes.appendChild(myfrag);
+                        $('#txfg_w_rmexbcnull').window('open');
+                    }
                     const respon = Object.keys(response)
                     let msg = ''
                     for (const item of respon) {

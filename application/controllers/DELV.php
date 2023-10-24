@@ -12033,7 +12033,7 @@ class DELV extends CI_Controller
 
         $czdocbctype = '27';
         $cztujuanpengiriman = '1';
-        $ccustdate = '2023-10-16';
+        $ccustdate = '2023-10-19';
         $csj = 'DISD2310_FG';
         $rsallitem_cd = [];
         $rsallitem_qty = [];
@@ -15073,10 +15073,10 @@ class DELV extends CI_Controller
         );
         $data = [];
 
-        // if (!empty($TPBData)) {
-        //     $message = 'Already exist in TPB';
-        if (empty($TPBData)) {
-            $message = 'Please posting to TPB first';
+        if (!empty($TPBData)) {
+            $message = 'Already exist in TPB';
+        // if (empty($TPBData)) {
+        //     $message = 'Please posting to TPB first';
         } else {
 
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
@@ -15100,7 +15100,9 @@ class DELV extends CI_Controller
                 # validasi apakah request berjalan dengan mulus
                 if ($result['status']['cd'] != 1) {
                     $respon = [
+                        'status' => $result['status'],
                         'message' => $result['status']['msg'],
+                        'data' => $result['data'],
                     ];
                     $this->output->set_status_header(400);
                     die(json_encode($respon));
