@@ -15,6 +15,7 @@
             <div class="col-md-6 mb-1 text-center">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-primary" type="button" id="fginventory_btn_gen"><i class="fas fa-sync"></i></button>
+                    <button class="btn btn-outline-primary" type="button" id="fginventory_btn_edit" title="Edit" data-bs-toggle="modal" data-bs-target="#fginventoryModal"><i class="fas fa-pen"></i></button>
                     <button class="btn btn-success" type="button" id="fginventory_btn_export" onclick="fginventory_btn_export_on_click()"><i class="fas fa-file-excel"></i></button>
                 </div>
             </div>
@@ -64,6 +65,72 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="fginventoryModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Details</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text">Item Code</span>
+                            <input type="text" class="form-control" id="fginventoryModalItemFilter" onkeypress="fginventorFilter(event)" maxlength="25">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text">Location</span>
+                            <input type="text" class="form-control" id="fginventoryModalLocationFilter" onkeypress="fginventorFilter(event)" maxlength="25">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <div class="table-responsive" id="fginventoryModalTableContainer">
+                            <table id="fginventoryModalTable" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Item Code</th>
+                                        <th>Model</th>
+                                        <th>ID</th>
+                                        <th>Location</th>
+                                        <th class="text-end">Qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text">New Location</span>
+                            <input type="text" class="form-control" id="fginventoryModalLocationNew" maxlength="40">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col text-center">
+                            <button class="btn btn-primary btn-sm" onclick="fginventoryModalSaveChanges(this)">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="fginventorySelectedID" value="">
 <script>
     function fginventory_btn_export_on_click(){
         window.open("http://192.168.0.29:8080/ems-glue/api/export/inventory-fg", '_blank');
@@ -161,4 +228,114 @@
             }
         });
     });
+
+    function fginventorFilter(e){
+        if(e.key === 'Enter') {
+            if(fginventoryModalItemFilter.value.trim().length<=3)
+            {
+                alertify.warning('Please fill properly')
+                fginventoryModalItemFilter.focus()
+                return
+            }
+            if(fginventoryModalLocationFilter.value.trim().length===0)
+            {
+                alertify.warning('Please fill properly')
+                fginventoryModalLocationFilter.focus()
+                return
+            }
+            const data = {
+                itemCode : fginventoryModalItemFilter.value,
+                itemLocation : fginventoryModalLocationFilter.value,
+            }
+            $.ajax({
+                type: "GET",
+                url: "<?=base_url('Inventory/filter-fg')?>",
+                data: data,
+                dataType: "json",
+                success: function (response) {
+                    let myContainer = document.getElementById("fginventoryModalTableContainer");
+                    let myfrag = document.createDocumentFragment();
+                    let cln = fginventoryModalTable.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    let myTable = myfrag.getElementById("fginventoryModalTable");
+                    let myTableBody = myTable.getElementsByTagName("tbody")[0];
+                    myTableBody.innerHTML = ''
+                    response.data.forEach((arrayItem) => {
+                        newrow = myTableBody.insertRow(-1)
+                        newrow.onclick = (event) => {
+                            const selrow = fginventoryModalTable.rows[event.target.parentElement.rowIndex]
+                            if (selrow.title === 'selected') {
+                                selrow.title = 'not selected'
+                                selrow.classList.remove('table-info')
+                                fginventoryModalLocationOld.value = ''
+                                fginventoryModalLocationNew.value = ''
+                                fginventorySelectedID.value = ''
+                            } else {
+                                const ttlrows = fginventoryModalTable.rows.length
+                                for (let i = 1; i < ttlrows; i++) {
+                                    fginventoryModalTable.rows[i].classList.remove('table-info')
+                                    fginventoryModalTable.rows[i].title = 'not selected'
+                                }
+                                selrow.title = 'selected'
+                                selrow.classList.add('table-info')
+                                fginventoryModalLocationNew.value = arrayItem['CLOC']
+                                fginventorySelectedID.value = arrayItem['REFNO']
+                            }
+                        }
+
+                        newcell = newrow.insertCell(0)
+                        newcell.innerHTML = arrayItem['CASSYNO']
+                        newcell.style.cssText = 'cursor:pointer'
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = arrayItem['CMODEL']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = arrayItem['REFNO']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = arrayItem['CLOC']
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(arrayItem['CQTY']).format(',')
+                    })
+                    myContainer.innerHTML = ''
+                    myContainer.appendChild(myfrag)
+                }, error : function(xhr, xopt, xthrow) {
+                    alertify.error(xthrow);
+                }
+            });
+        }
+    }
+
+    function fginventoryModalSaveChanges(p) {
+        if(fginventoryModalLocationNew.value.trim().length === 0) {
+            alertify.warning('Location should not be empty')
+            fginventoryModalLocationNew.focus()
+            return
+        }
+        const data = {
+            REFNO : fginventorySelectedID.value,
+            CLOC : fginventoryModalLocationNew.value,
+        }
+        if(confirm('Are you sure ?')) {
+            p.disabled = true
+            p.innerHTML = 'Please wait'
+            $.ajax({
+                type: "POST",
+                url: "<?=base_url('Inventory/update-fg')?>",
+                data: data,
+                dataType: "json",
+                success: function (response) {
+                    p.innerHTML = 'Save changes'
+                    p.disabled = false
+                    fginventoryModalTable.getElementsByTagName("tbody")[0].innerHTML =''
+                    fginventoryModalLocationNew.value = ''
+                    alertify.message(response.message);
+                }, error : function(xhr, xopt, xthrow) {
+                    alertify.error(xthrow);
+                    p.disabled = false
+                    fginventoryModalTable.getElementsByTagName("tbody")[0].innerHTML =''
+                    fginventoryModalLocationNew.value = ''
+                }
+            })
+        }
+    }
 </script>

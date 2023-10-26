@@ -17,6 +17,19 @@ class Inventory_mod extends CI_Model {
         $query = $this->db->get();
         return $query->result_array();
 	}
+
+    public function selectFGWhereLike($Like)
+	{
+        $this->db->select("SER_ITMID CASSYNO,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,SER_DOC,CLOTNO,CLOC,REFNO,CQTY,CMODEL,CDATE");
+        $this->db->from($this->TABLENAME." a");
+        $this->db->join('MSTEMP_TBL b', 'cPic=MSTEMP_ID','left');    
+        $this->db->join('SER_TBL c', 'REFNO=SER_ID','left');  
+        $this->db->like($Like);  
+        $this->db->order_by('CDATE ASC');
+        $query = $this->db->get();
+        return $query->result_array();
+	}
+
 	public function selectAll_rm()
 	{	        
         $this->db->select("CPARTCODE,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOTNO,CLOC,CQTY,CDATE");
@@ -206,6 +219,13 @@ class Inventory_mod extends CI_Model {
         $qry = "INSERT INTO INVENTORY_TBL (ASSYNO,CLOTNO,CQTY,CLOC,CDATE,CPIC,CPERIOD)
         SELECT cPartCode,cLotNo,cQty,cLoc,cDate,cPic,? FROM $this->TABLENAMERM";
         $this->db->query($qry, [$period]);
+        return $this->db->affected_rows();
+    }
+
+    public function updatebyId($pdata, $pkey)
+    {
+        $this->db->where($pkey);
+        $this->db->update($this->TABLENAME, $pdata);
         return $this->db->affected_rows();
     }
 }
