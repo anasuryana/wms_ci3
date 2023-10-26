@@ -4883,99 +4883,10 @@ echo $tohtml;
                     mydes.appendChild(myfrag);
                 } else {
                     document.getElementById('txfg_tbldetailser_rm_hinfo').innerText = response.status[0].msg;
-                    if (confirm("the result show that usage RM is not complete, do you want to try to get usage RM from welcat ? \n JOB :" + pjob + ", ID: " + preffno)) {
-                        alertify.message('thank you please wait..');
-                        txfg_e_calculate_raw_material_welcat(preffno, pjob, pqty);
-                    }
                 }
             },
             error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow);
-            }
-        });
-    }
-
-    function txfg_e_calculate_raw_material_welcat(preffno, pjob, pqty) {
-        document.getElementById('txfg_tbldetailser_rm_hinfo').innerText = "Please wait....";
-        $("txfg_divdetailser_rm tbody").empty();
-        $.ajax({
-            type: "get",
-            url: "<?=base_url('DELV/calculate_raw_material_welcat')?>",
-            data: {
-                inunique: preffno,
-                inunique_job: pjob,
-                inunique_qty: pqty
-            },
-            dataType: "json",
-            success: function(response) {
-                document.getElementById('txfg_tbldetailser_rm_hinfo').innerText = '';
-                if (response.status[0].cd != 0) {
-                    document.getElementById('txfg_tbldetailser_rm_hinfo').innerText = response.status[0].msg;
-                    let ttlrows = response.data.length;
-                    let mydes = document.getElementById("txfg_divdetailser_rm");
-                    let myfrag = document.createDocumentFragment();
-                    let mtabel = document.getElementById("txfg_tbldetailser_rm");
-                    let cln = mtabel.cloneNode(true);
-                    myfrag.appendChild(cln);
-                    let tabell = myfrag.getElementById("txfg_tbldetailser_rm");
-                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
-                    let newrow, newcell, newText;
-                    tableku2.innerHTML = '';
-                    for (let i = 0; i < ttlrows; i++) {
-                        let myper = response.data[i].MYPER;
-                        newrow = tableku2.insertRow(-1);
-                        newcell = newrow.insertCell(0);
-                        newText = document.createTextNode(response.data[i].SERD2_PSNNO);
-                        newcell.appendChild(newText);
-                        newcell = newrow.insertCell(1);
-                        newText = document.createTextNode(response.data[i].SERD2_LINENO);
-                        newcell.appendChild(newText);
-                        newcell = newrow.insertCell(2);
-                        newText = document.createTextNode(response.data[i].SERD2_PROCD);
-                        newcell.appendChild(newText);
-                        newcell = newrow.insertCell(3);
-                        newText = document.createTextNode(response.data[i].SERD2_CAT);
-                        newcell.appendChild(newText);
-                        newcell = newrow.insertCell(4);
-                        newcell.style.cssText = "text-align:center";
-                        newText = document.createTextNode(response.data[i].SERD2_FR);
-                        newcell.appendChild(newText);
-                        newcell = newrow.insertCell(5);
-                        newcell.style.cssText = "text-align:center";
-                        newText = document.createTextNode(response.data[i].SERD2_MC);
-                        newcell.appendChild(newText);
-                        newcell = newrow.insertCell(6);
-                        newcell.style.cssText = "text-align:center";
-                        newText = document.createTextNode(response.data[i].SERD2_MCZ);
-                        newcell.appendChild(newText);
-                        newcell = newrow.insertCell(7);
-                        newcell.style.cssText = "text-align:right";
-                        newText = document.createTextNode(myper);
-                        newcell.appendChild(newText);
-                        newcell = newrow.insertCell(8);
-                        newText = document.createTextNode(response.data[i].SERD2_ITMCD);
-                        newcell.appendChild(newText);
-                        newcell = newrow.insertCell(9);
-                        newText = document.createTextNode(response.data[i].MITM_SPTNO);
-                        newcell.appendChild(newText);
-                        newcell = newrow.insertCell(10);
-                        newcell.style.cssText = "text-align:right";
-                        newText = document.createTextNode(response.data[i].SERD2_QTYSUM);
-                        newcell.appendChild(newText);
-                        newcell = newrow.insertCell(11);
-                        newText = document.createTextNode(response.data[i].MITM_ITMD1);
-                        newcell.appendChild(newText);
-                    }
-                    mydes.innerHTML = '';
-                    mydes.appendChild(myfrag);
-                } else {
-                    alertify.message('the result from welcat is also null, try ask the dev team');
-                    document.getElementById('txfg_tbldetailser_rm_hinfo').innerText = response.status[0].msg;
-                }
-            },
-            error: function(xhr, xopt, xthrow) {
-                alertify.error(xthrow);
-                document.getElementById('txfg_tbldetailser_rm_hinfo').innerText = 'please select the ID';
             }
         });
     }
