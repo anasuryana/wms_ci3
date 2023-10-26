@@ -2678,23 +2678,19 @@ echo $tohtml;
                             newrow = tabel_PLOT_body0.insertRow(-1)
 
                             newcell = newrow.insertCell(0);
-                            newText = document.createTextNode(response.data[i].SI_ITMCD);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].SI_ITMCD
 
                             newcell = newrow.insertCell(1);
                             newcell.style.cssText = "text-align:right";
-                            newText = document.createTextNode(numeral(response.data[i].SCNQTY).format(','));
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = numeral(response.data[i].SCNQTY).format(',')
 
                             newcell = newrow.insertCell(2);
                             newcell.style.cssText = "text-align:right";
-                            newText = document.createTextNode(price);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = price
 
                             newcell = newrow.insertCell(3);
                             newcell.style.cssText = "text-align:right";
-                            newText = document.createTextNode(ttlprice);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = ttlprice
                         }
 
                         let count_multiprice = response.datamultiprice.length
@@ -3261,51 +3257,41 @@ echo $tohtml;
                         newcell.appendChild(newText);
                         newcell.style.cssText = ''.concat('cursor: pointer;', 'text-align:center;');
                         newcell = newrow.insertCell(1);
-                        newText = document.createTextNode(response.data[i].SI_DOC);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SI_DOC
+
                         newcell = newrow.insertCell(2);
-                        newText = document.createTextNode(response.data[i].MITM_BOXTYPE);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].MITM_BOXTYPE
 
                         newcell = newrow.insertCell(3);
-                        newText = document.createTextNode(response.data[i].SER_ITMID.trim());
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SER_ITMID.trim()
 
                         newcell = newrow.insertCell(4);
-                        newText = document.createTextNode(response.data[i].MITM_ITMD1);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].MITM_ITMD1
 
                         newcell = newrow.insertCell(5);
-                        newText = document.createTextNode(numeral(response.data[i].SISCN_SERQTY).format(','));
-                        newcell.appendChild(newText);
                         newcell.style.cssText = 'text-align: right';
+                        newcell.innerHTML = numeral(response.data[i].SISCN_SERQTY).format(',')
 
                         newcell = newrow.insertCell(6);
-                        newText = document.createTextNode(response.data[i].SISCN_SER);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SISCN_SER
 
                         newcell = newrow.insertCell(7);
-                        newText = document.createTextNode(response.data[i].SI_MDL);
-                        newcell.appendChild(newText);
                         newcell.style.cssText = 'display:none';
+                        newcell.innerHTML = response.data[i].SI_MDL
 
                         newcell = newrow.insertCell(8);
-                        newText = document.createTextNode(response.data[i].SI_DOCREFFDT);
-                        newcell.appendChild(newText);
                         newcell.style.cssText = 'display:none';
+                        newcell.innerHTML = response.data[i].SI_DOCREFFDT
 
                         newcell = newrow.insertCell(9);
-                        newText = document.createTextNode((response.data[i].SI_DOCREFFPRC.substr(0, 1) == '.' ? '0' : '') + response.data[i].SI_DOCREFFPRC);
-                        newcell.appendChild(newText);
                         newcell.style.cssText = 'text-align: right';
+                        newcell.innerHTML = (response.data[i].SI_DOCREFFPRC.substr(0, 1) == '.' ? '0' : '') + response.data[i].SI_DOCREFFPRC
 
                         newcell = newrow.insertCell(10);
-                        newText = document.createTextNode(response.data[i].SER_DOC);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SER_DOC
 
                         newcell = newrow.insertCell(11);
-                        newText = document.createTextNode(response.data[i].SI_OTHRMRK);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SI_OTHRMRK
                     }
                     let mrows = tableku2.getElementsByTagName("tr");
 
@@ -3471,38 +3457,29 @@ echo $tohtml;
                 }
                 newrow = tableku2.insertRow(-1);
                 newcell = newrow.insertCell(0);
-                newText = document.createTextNode(dsptempso);
-                newcell.appendChild(newText);
+                newcell.innerHTML = dsptempso
                 newcell = newrow.insertCell(1);
-                newText = document.createTextNode(dspsodt);
-                newcell.appendChild(newText);
+                newcell.innerHTML = dspsodt
                 newcell = newrow.insertCell(2);
-                newText = document.createTextNode(dspitem);
-                newcell.appendChild(newText);
+                newcell.innerHTML = dspitem
 
                 newcell = newrow.insertCell(3);
-                newText = document.createTextNode(dspitemnm);
-                newcell.appendChild(newText);
+                newcell.innerHTML = dspitemnm
 
                 newcell = newrow.insertCell(4);
                 newcell.style.cssText = 'text-align: right';
-                newText = document.createTextNode('');
-                newcell.appendChild(newText);
 
                 newcell = newrow.insertCell(5);
-                newText = document.createTextNode(numeral(tmp_ar_item_box[i]).format(','));
-                newcell.appendChild(newText);
                 newcell.style.cssText = ''.concat('text-align: right;', 'cursor: pointer;');
+                newcell.innerHTML = numeral(tmp_ar_item_box[i]).format(',')
 
                 newcell = newrow.insertCell(6);
-                newText = document.createTextNode(tmp_ar_item_qty[i]);
-                newcell.appendChild(newText);
                 newcell.style.cssText = 'text-align: right';
+                newcell.innerHTML = tmp_ar_item_qty[i]
 
                 newcell = newrow.insertCell(7);
                 newcell.style.cssText = 'text-align: right';
-                newText = document.createTextNode('');
-                newcell.appendChild(newText);
+
             }
             txfg_e_calculate_raw_material_resume();
             txfg_e_last_resume();
@@ -3856,162 +3833,125 @@ echo $tohtml;
                         for (let i = 0; i < ttlrows; i++) {
                             newrow = tableku2.insertRow(-1);
                             newcell = newrow.insertCell(0);
-                            newText = document.createTextNode(response.data[i].DLV_ID);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_ID
                             newcell = newrow.insertCell(1);
-                            newText = document.createTextNode(response.data[i].DLV_DATE);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_DATE
                             newcell = newrow.insertCell(2);
                             newcell.style.cssText = 'display:none';
-                            newText = document.createTextNode(response.data[i].DLV_DSCRPTN);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_DSCRPTN
 
                             newcell = newrow.insertCell(3);
-                            newText = document.createTextNode(response.data[i].DLV_CUSTCD);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_CUSTCD
 
                             newcell = newrow.insertCell(4);
                             newcell.classList.add('d-none')
                             newcell.innerHTML = response.data[i].MCUS_CUSNM
 
                             newcell = newrow.insertCell(5);
-                            newText = document.createTextNode(response.data[i].DLV_INVNO);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_INVNO
 
                             newcell = newrow.insertCell(6);
-                            newText = document.createTextNode(response.data[i].DLV_SMTINVNO);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_SMTINVNO
 
                             newcell = newrow.insertCell(7);
-                            newText = document.createTextNode(response.data[i].DLV_TRANS);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_TRANS
 
                             newcell = newrow.insertCell(8);
-                            newText = document.createTextNode(response.data[i].DLV_RMRK);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_RMRK
 
                             newcell = newrow.insertCell(9);
                             newcell.style.cssText = 'display:none';
-                            newText = document.createTextNode(response.data[i].MCUS_CURCD);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].MCUS_CURCD
 
                             newcell = newrow.insertCell(10);
-                            newText = document.createTextNode(response.data[i].MSTTRANS_TYPE);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].MSTTRANS_TYPE
 
                             newcell = newrow.insertCell(11);
-                            newText = document.createTextNode(response.data[i].DLV_CONSIGN);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_CONSIGN
 
                             newcell = newrow.insertCell(12);
-                            newText = document.createTextNode(response.data[i].DLV_RPLCMNT);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_RPLCMNT
 
                             newcell = newrow.insertCell(13);
-                            newText = document.createTextNode(response.data[i].DLV_VAT);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_VAT
 
                             newcell = newrow.insertCell(14);
-                            newText = document.createTextNode(response.data[i].DLV_KNBNDLV);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_KNBNDLV
 
                             newcell = newrow.insertCell(15);
-                            newText = document.createTextNode(response.data[i].DLV_FROMOFFICE);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_FROMOFFICE
 
                             newcell = newrow.insertCell(16);
-                            newText = document.createTextNode(response.data[i].DLV_CRTD);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_CRTD
                             newcell = newrow.insertCell(17);
-                            newText = document.createTextNode(response.data[i].DLV_CRTDTM);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_CRTDTM
 
                             newcell = newrow.insertCell(18);
-                            newText = document.createTextNode(response.data[i].DLV_USRID);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_USRID
                             newcell = newrow.insertCell(19);
-                            newText = document.createTextNode(response.data[i].DLV_LUPDT);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_LUPDT
 
                             newcell = newrow.insertCell(20);
-                            newText = document.createTextNode(response.data[i].DLV_APPRV);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_APPRV
                             newcell = newrow.insertCell(21);
-                            newText = document.createTextNode(response.data[i].DLV_APPRVTM);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_APPRVTM
                             newcell = newrow.insertCell(22);
-                            newText = document.createTextNode(response.data[i].DLV_POST);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_POST
                             newcell = newrow.insertCell(23);
-                            newText = document.createTextNode(response.data[i].DLV_POSTTM);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_POSTTM
                             newcell = newrow.insertCell(24);
-                            newText = document.createTextNode(response.data[i].DLV_NOAJU);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_NOAJU
                             newcell = newrow.insertCell(25);
-                            newText = document.createTextNode(response.data[i].DLV_BCTYPE);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_BCTYPE
                             newcell = newrow.insertCell(26);
-                            newText = document.createTextNode(response.data[i].DLV_NOPEN);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_NOPEN
                             newcell = newrow.insertCell(27);
-                            newText = document.createTextNode(response.data[i].DLV_DESTOFFICE);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_DESTOFFICE
                             newcell = newrow.insertCell(28);
-                            newText = document.createTextNode(response.data[i].DLV_PURPOSE);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_PURPOSE
                             newcell = newrow.insertCell(29);
-                            newText = document.createTextNode(response.data[i].DLV_INVDT);
                             newcell.style.cssText = 'display:none';
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_INVDT
                             newcell = newrow.insertCell(30);
-                            newText = document.createTextNode(response.data[i].DLV_BSGRP);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_BSGRP
                             newcell = newrow.insertCell(31);
-                            newText = document.createTextNode(response.data[i].DLV_CUSTDO);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_CUSTDO
                             newcell = newrow.insertCell(32);
                             newcell.style.cssText = 'display:none';
-                            newText = document.createTextNode(response.data[i].DLV_ZJENIS_TPB_ASAL);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_ZJENIS_TPB_ASAL
                             newcell = newrow.insertCell(33);
                             newcell.style.cssText = 'display:none';
-                            newText = document.createTextNode(response.data[i].DLV_ZJENIS_TPB_TUJUAN);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_ZJENIS_TPB_TUJUAN
                             newcell = newrow.insertCell(34);
-                            newText = document.createTextNode(response.data[i].DLV_BCDATE);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_BCDATE
                             newcell = newrow.insertCell(35);
                             newcell.style.cssText = 'display:none';
-                            newText = document.createTextNode(response.data[i].DLV_ZSKB);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_ZSKB
                             newcell = newrow.insertCell(36);
                             newcell.style.cssText = 'display:none';
-                            newText = document.createTextNode(response.data[i].DLV_ZKODE_CARA_ANGKUT);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_ZKODE_CARA_ANGKUT
 
                             newcell = newrow.insertCell(37);
                             newcell.style.cssText = 'display:none';
-                            newText = document.createTextNode(response.data[i].DLV_ZTANGGAL_SKB);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = response.data[i].DLV_ZTANGGAL_SKB
 
                             let mstatus = '';
                             let mposted = String(response.data[i].DLV_POST);
@@ -4032,8 +3972,7 @@ echo $tohtml;
                             }
 
                             newcell = newrow.insertCell(38);
-                            newText = document.createTextNode(mstatus);
-                            newcell.appendChild(newText);
+                            newcell.innerHTML = mstatus
 
                             let pdata = {
                                 ctxid: response.data[i].DLV_ID,
@@ -4118,75 +4057,75 @@ echo $tohtml;
                             let mnama_pengangkut = mrow.cnamapengangkut;
                             let mskb_tgl = mrow.cskbdt;
                             const mcona = mrow.ccona;
-                            document.getElementById('txfg_tblsoother_plot').getElementsByTagName('tbody').innerHTML = ''
-                            document.getElementById("txfg_txt_remark").value = mremark
-                            document.getElementById("txfg_txt_id").focus();
-                            document.getElementById("txfg_txt_id").value = mtxid;
+                            txfg_tblsoother_plot.getElementsByTagName('tbody').innerHTML = ''
+                            txfg_txt_remark.value = mremark
+                            txfg_txt_id.focus();
+                            txfg_txt_id.value = mtxid;
                             txfg_modchangeprice_txid.innerText = mtxid;
-                            document.getElementById("txfg_txt_id").readOnly = true;
-                            document.getElementById('txfg_custname').value = mcusnm;
-                            document.getElementById('txfg_custname').readOnly = true;
-                            document.getElementById("txfg_curr").value = mcurrency;
-                            document.getElementById('txfg_txt_invno').value = minv;
-                            document.getElementById('txfg_txt_invsmt').value = minvsmt;
-                            document.getElementById('txfg_txt_transport').value = mtrans + '_' + mtrans_type;
-                            document.getElementById('txfg_txt_transporttype').value = mtrans_type;
-                            document.getElementById('txfg_businessgroup').value = mbg;
-                            document.getElementById('txfg_businessgroup').disabled = true;
-                            document.getElementById('txfg_txt_customerDO').value = mcustdo;
+                            txfg_txt_id.readOnly = true;
+                            txfg_custname.value = mcusnm;
+                            txfg_custname.readOnly = true;
+                            txfg_curr.value = mcurrency;
+                            txfg_txt_invno.value = minv;
+                            txfg_txt_invsmt.value = minvsmt;
+                            txfg_txt_transport.value = mtrans + '_' + mtrans_type;
+                            txfg_txt_transporttype.value = mtrans_type;
+                            txfg_businessgroup.value = mbg;
+                            txfg_businessgroup.disabled = true;
+                            txfg_txt_customerDO.value = mcustdo;
                             $("#txfg_txt_custdate").datepicker('update', mtanggalAju);
                             $("#txfg_txt_DOdate").datepicker('update', mtxdt);
 
                             const postedtime = ((mpostedtime == 'null') || (mpostedtime.trim() == '') ? '' : mpostedtime)
-                            document.getElementById('txfg_txt_createdby').value = mcreated;
-                            document.getElementById('txfg_txt_createdtime').value = mcreatedtime;
-                            document.getElementById('txfg_txt_luby').value = ((mupdated == 'null') || (mupdated.trim() == '') ? '' : mupdated);
-                            document.getElementById('txfg_txt_lutime').value = ((mupdatedtime == 'null') || (mupdatedtime.trim() == '') ? '' : mupdatedtime);
-                            document.getElementById('txfg_txt_apprby').value = ((mapproved == 'null') || (mapproved.trim() == '') ? '' : mapproved);
-                            document.getElementById('txfg_txt_apprtime').value = ((mapprovedtime == 'null') || (mapprovedtime.trim() == '') ? '' : mapprovedtime);
-                            document.getElementById('txfg_txt_postedby').value = ((mposted == 'null') || (mposted.trim() == '') ? '' : mposted);
-                            document.getElementById('txfg_txt_postedtime').value = postedtime
+                            txfg_txt_createdby.value = mcreated;
+                            txfg_txt_createdtime.value = mcreatedtime;
+                            txfg_txt_luby.value = ((mupdated == 'null') || (mupdated.trim() == '') ? '' : mupdated);
+                            txfg_txt_lutime.value = ((mupdatedtime == 'null') || (mupdatedtime.trim() == '') ? '' : mupdatedtime);
+                            txfg_txt_apprby.value = ((mapproved == 'null') || (mapproved.trim() == '') ? '' : mapproved);
+                            txfg_txt_apprtime.value = ((mapprovedtime == 'null') || (mapprovedtime.trim() == '') ? '' : mapprovedtime);
+                            txfg_txt_postedby.value = ((mposted == 'null') || (mposted.trim() == '') ? '' : mposted);
+                            txfg_txt_postedtime.value = postedtime
 
-                            document.getElementById('txfg_cmb_bcdoc').value = mbctype;
-                            document.getElementById("txfg_destoffice").value = mdestoffice;
+                            txfg_cmb_bcdoc.value = mbctype;
+                            txfg_destoffice.value = mdestoffice;
 
                             if (postedtime != '') {
-                                document.getElementById('txfg_btn_post_cancel').classList.remove('disabled')
+                                txfg_btn_post_cancel.classList.remove('disabled')
                             } else {
-                                document.getElementById('txfg_btn_post_cancel').classList.add('disabled')
+                                txfg_btn_post_cancel.classList.add('disabled')
                             }
 
                             if ((mposted == 'null') || (mposted.trim() == '')) {
-                                document.getElementById('txfg_btn_addsi').disabled = false
+                                txfg_btn_addsi.disabled = false
                                 if ((mapproved == 'null') || (mapproved.trim() == '')) {
                                     if ((mcreated == 'null') || (mcreated.trim() == '')) {
 
                                     } else {
-                                        document.getElementById('txfg_status').value = "Saved";
+                                        txfg_status.value = "Saved";
                                     }
                                 } else {
-                                    document.getElementById('txfg_status').value = "Approved";
+                                    txfg_status.value = "Approved";
                                 }
                             } else {
-                                document.getElementById('txfg_btn_addsi').disabled = true
-                                document.getElementById('txfg_status').value = "Posted";
+                                txfg_btn_addsi.disabled = true
+                                txfg_status.value = "Posted";
                             }
 
                             if (mbctype == '27') {
-                                document.getElementById('txfg_txt_noaju').value = mnoaju.trim();
-                                document.getElementById('txfg_fromoffice').value = mfromoffice;
-                                document.getElementById('txfg_cmb_jenisTPB').value = (mtpb_asal === '-') ? '1' : mtpb_asal;
-                                document.getElementById('txfg_cmb_jenisTPBtujuan').value = (mtpb_tujuan === '-') ? '1' : mtpb_tujuan
-                                document.getElementById('txfg_cmb_tujuanpengiriman').value = mpurpose;
-                                document.getElementById('txfg_txt_nopen').value = mnopen.trim()
-                                document.getElementById('txfg_txt_nokontrak').value = mcona
-                                document.getElementById('txfg_txt_sppb27').value = mrow.csppbdoc
-                                document.getElementById('txfg_txt_tglpen').value = mrow.cTglpen ? mrow.cTglpen : ''
+                                txfg_txt_noaju.value = mnoaju.trim();
+                                txfg_fromoffice.value = mfromoffice;
+                                txfg_cmb_jenisTPB.value = (mtpb_asal === '-') ? '1' : mtpb_asal;
+                                txfg_cmb_jenisTPBtujuan.value = (mtpb_tujuan === '-') ? '1' : mtpb_tujuan
+                                txfg_cmb_tujuanpengiriman.value = mpurpose;
+                                txfg_txt_nopen.value = mnopen.trim()
+                                txfg_txt_nokontrak.value = mcona
+                                txfg_txt_sppb27.value = mrow.csppbdoc
+                                txfg_txt_tglpen.value = mrow.cTglpen ? mrow.cTglpen : ''
                                 if (mrow.cPemberitahu) {
-                                    document.getElementById('txfg_txt_pemberitahu27').value = mrow.cPemberitahu
+                                    txfg_txt_pemberitahu27.value = mrow.cPemberitahu
                                 }
                                 if (mrow.cJabatan) {
-                                    document.getElementById('txfg_txt_jabatan27').value = mrow.cJabatan
+                                    txfg_txt_jabatan27.value = mrow.cJabatan
                                 }
                             } else if (mbctype == '25') {
                                 document.getElementById('txfg_txt_noaju25').value = mnoaju.trim();
@@ -4838,46 +4777,34 @@ echo $tohtml;
                         let myper = response.data[i].MYPER;
                         newrow = tableku2.insertRow(-1);
                         newcell = newrow.insertCell(0);
-                        newText = document.createTextNode(response.data[i].SERD2_PSNNO);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SERD2_PSNNO;
                         newcell = newrow.insertCell(1);
-                        newText = document.createTextNode(response.data[i].SERD2_LINENO);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SERD2_LINENO
                         newcell = newrow.insertCell(2);
-                        newText = document.createTextNode(response.data[i].SERD2_PROCD);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SERD2_PROCD
                         newcell = newrow.insertCell(3);
-                        newText = document.createTextNode(response.data[i].SERD2_CAT);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SERD2_CAT
                         newcell = newrow.insertCell(4);
                         newcell.style.cssText = "text-align:center";
-                        newText = document.createTextNode(response.data[i].SERD2_FR);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SERD2_FR
                         newcell = newrow.insertCell(5);
                         newcell.style.cssText = "text-align:center";
-                        newText = document.createTextNode(response.data[i].SERD2_MC);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SERD2_MC
                         newcell = newrow.insertCell(6);
                         newcell.style.cssText = "text-align:center";
-                        newText = document.createTextNode(response.data[i].SERD2_MCZ);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SERD2_MCZ
                         newcell = newrow.insertCell(7);
                         newcell.style.cssText = "text-align:right";
-                        newText = document.createTextNode(myper);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = myper
                         newcell = newrow.insertCell(8);
-                        newText = document.createTextNode(response.data[i].SERD2_ITMCD);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SERD2_ITMCD
                         newcell = newrow.insertCell(9);
-                        newText = document.createTextNode(response.data[i].MITM_SPTNO);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].MITM_SPTNO
                         newcell = newrow.insertCell(10);
                         newcell.style.cssText = "text-align:right";
-                        newText = document.createTextNode(response.data[i].SERD2_QTY);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SERD2_QTY
                         newcell = newrow.insertCell(11);
-                        newText = document.createTextNode(response.data[i].MITM_ITMD1);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].MITM_ITMD1
                     }
                     mydes.innerHTML = '';
                     mydes.appendChild(myfrag);
@@ -5203,18 +5130,14 @@ echo $tohtml;
                     for (let i = 0; i < ttlrows; i++) {
                         newrow = tableku2.insertRow(-1);
                         newcell = newrow.insertCell(0);
-                        newText = document.createTextNode(response.data[i].DLV_SER);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].DLV_SER
                         newcell = newrow.insertCell(1);
-                        newText = document.createTextNode(response.data[i].SER_ITMID);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SER_ITMID
                         newcell = newrow.insertCell(2);
-                        newText = document.createTextNode(response.data[i].SER_DOC);
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = response.data[i].SER_DOC
                         newcell = newrow.insertCell(3);
                         newcell.style.cssText = "text-align:right";
-                        newText = document.createTextNode(numeral(response.data[i].DLV_QTY).format(','));
-                        newcell.appendChild(newText);
+                        newcell.innerHTML = numeral(response.data[i].DLV_QTY).format(',')
                     }
                     mydes.innerHTML = '';
                     mydes.appendChild(myfrag);
