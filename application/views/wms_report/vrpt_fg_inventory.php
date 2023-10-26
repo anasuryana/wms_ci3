@@ -306,9 +306,13 @@
     }
 
     function fginventoryModalSaveChanges(p) {
-        if(fginventoryModalLocationNew.value.trim().length === 0) {
+        if (fginventoryModalLocationNew.value.trim().length === 0) {
             alertify.warning('Location should not be empty')
             fginventoryModalLocationNew.focus()
+            return
+        }
+        if (fginventorySelectedID.value.trim().length == 0) {
+            alertify.message('Please select a row from the table above')
             return
         }
         const data = {
