@@ -5743,6 +5743,7 @@ class SER extends CI_Controller
         $sheet->setCellValueByColumnAndRow(8, 3, 'Part Price');
         $sheet->setCellValueByColumnAndRow(9, 3, 'Amount');
         $sheet->setCellValueByColumnAndRow(10, 3, 'Bom Revision');
+        $sheet->setCellValueByColumnAndRow(11, 3, 'Jenis Dokumen Pabean Pemasukan');
         $i = 4;
         foreach ($rs['data'] as $r) {
             $sheet->setCellValueByColumnAndRow(1, $i, $r['DLV_ZNOMOR_AJU']);
@@ -5755,6 +5756,7 @@ class SER extends CI_Controller
             $sheet->setCellValueByColumnAndRow(8, $i, $r['PART_PRICE']);
             $sheet->setCellValueByColumnAndRow(9, $i, "=G" . $i . "*H" . $i);
             $sheet->setCellValueByColumnAndRow(10, $i, $r['PPSN1_BOMRV']);
+            $sheet->setCellValueByColumnAndRow(11, $i, $r['BCTYPE']);
             $i++;
         }
         $i2 = $i;
@@ -5766,7 +5768,10 @@ class SER extends CI_Controller
             $sheet->setCellValueByColumnAndRow(5, $i, $r['PARTDESCRIPTION']);
             $sheet->setCellValueByColumnAndRow(6, $i, $r['PER']);
             $sheet->setCellValueByColumnAndRow(7, $i, $r['RMQT']);
+            $sheet->setCellValueByColumnAndRow(8, $i, $r['PART_PRICE']);
+            $sheet->setCellValueByColumnAndRow(9, $i, "=G" . $i . "*H" . $i);
             $sheet->setCellValueByColumnAndRow(10, $i, $r['PPSN1_BOMRV']);
+            $sheet->setCellValueByColumnAndRow(11, $i, $r['BCTYPE']);
             $i++;
         }
         if (count($rs['data_'])) {
@@ -5840,6 +5845,7 @@ class SER extends CI_Controller
             foreach ($rs as &$r) {
                 $r['PART_PRICE'] = null;
                 $r['PLOTQT'] = 0;
+                $r['BCTYPE'] = '';
                 foreach ($arrayBC as &$b) {
                     # Jika item rank
                     if ($r['MITMGRP_ITMCD']) {
@@ -5852,6 +5858,9 @@ class SER extends CI_Controller
                                 $r['PLOTQT'] += $need;
                                 $b['BCQT'] -= $need;
                             }
+
+                            $r['BCTYPE'] = $b['RPSTOCK_BCTYPE'];
+
                             $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
                             if ($r['RMQT'] == $r['PLOTQT']) {
                                 break;
@@ -5860,6 +5869,7 @@ class SER extends CI_Controller
                     } else {
                         if ($r['DLV_ID'] === $b['RPSTOCK_REMARK'] && $r['SERD2_ITMCD'] === $b['RPSTOCK_ITMNUM'] && $b['BCQT'] > 0) {
                             $need = $r['RMQT'] - $r['PLOTQT'];
+
                             if ($need > $b['BCQT']) {
                                 $r['PLOTQT'] += $b['BCQT'];
                                 $b['BCQT'] = 0;
@@ -5867,6 +5877,9 @@ class SER extends CI_Controller
                                 $r['PLOTQT'] += $need;
                                 $b['BCQT'] -= $need;
                             }
+
+                            $r['BCTYPE'] = $b['RPSTOCK_BCTYPE'];
+
                             $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
                             if ($r['RMQT'] == $r['PLOTQT']) {
                                 break;
@@ -5892,6 +5905,7 @@ class SER extends CI_Controller
         foreach ($rsnull as &$r) {
             $r['PART_PRICE'] = null;
             $r['PLOTQT'] = 0;
+            $r['BCTYPE'] = '';
             foreach ($arrayBC as &$b) {
                 # Jika item rank
                 if ($r['MITMGRP_ITMCD']) {
@@ -5904,6 +5918,9 @@ class SER extends CI_Controller
                             $r['PLOTQT'] += $need;
                             $b['BCQT'] -= $need;
                         }
+                        
+                        $r['BCTYPE'] = $b['RPSTOCK_BCTYPE'];
+
                         $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
                         if ($r['RMQT'] == $r['PLOTQT']) {
                             break;
@@ -5919,6 +5936,9 @@ class SER extends CI_Controller
                             $r['PLOTQT'] += $need;
                             $b['BCQT'] -= $need;
                         }
+                        
+                        $r['BCTYPE'] = $b['RPSTOCK_BCTYPE'];
+
                         $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
                         if ($r['RMQT'] == $r['PLOTQT']) {
                             break;
