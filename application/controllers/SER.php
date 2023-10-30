@@ -1645,11 +1645,11 @@ class SER extends CI_Controller
                 $cX = 0;
                 foreach ($rs as $r) {
                     $awo = explode('-', $r->SER_DOC == '20-2A21-F65255-05-1.00' ? '23-2A21-F65255-05-1.00' : $r->SER_DOC);
-                    if($r->SER_DOC==='9A04-9539598-2'){
-                        $awo = explode('-','23-9A04-9539598-2');
+                    if ($r->SER_DOC === '9A04-9539598-2') {
+                        $awo = explode('-', '23-9A04-9539598-2');
                     }
-                    if($r->SER_DOC==='9A04-3263941-5'){
-                        $awo = explode('-','23-9A04-3263941-5');
+                    if ($r->SER_DOC === '9A04-3263941-5') {
+                        $awo = explode('-', '23-9A04-3263941-5');
                     }
                     $ccustnm = $r->MCUS_CUSNM;
                     $cuscd = trim($r->PDPP_BSGRP);
@@ -5740,7 +5740,9 @@ class SER extends CI_Controller
         $sheet->setCellValueByColumnAndRow(5, 3, 'Part Description');
         $sheet->setCellValueByColumnAndRow(6, 3, 'PER');
         $sheet->setCellValueByColumnAndRow(7, 3, 'Part Qty');
-        $sheet->setCellValueByColumnAndRow(8, 3, 'Bom Revision');
+        $sheet->setCellValueByColumnAndRow(8, 3, 'Part Price');
+        $sheet->setCellValueByColumnAndRow(9, 3, 'Amount');
+        $sheet->setCellValueByColumnAndRow(10, 3, 'Bom Revision');
         $i = 4;
         foreach ($rs['data'] as $r) {
             $sheet->setCellValueByColumnAndRow(1, $i, $r['DLV_ZNOMOR_AJU']);
@@ -5750,7 +5752,9 @@ class SER extends CI_Controller
             $sheet->setCellValueByColumnAndRow(5, $i, $r['PARTDESCRIPTION']);
             $sheet->setCellValueByColumnAndRow(6, $i, $r['PER']);
             $sheet->setCellValueByColumnAndRow(7, $i, $r['RMQT']);
-            $sheet->setCellValueByColumnAndRow(8, $i, $r['PPSN1_BOMRV']);
+            $sheet->setCellValueByColumnAndRow(8, $i, $r['PART_PRICE']);
+            $sheet->setCellValueByColumnAndRow(9, $i, "=G" . $i . "*H" . $i);
+            $sheet->setCellValueByColumnAndRow(10, $i, $r['PPSN1_BOMRV']);
             $i++;
         }
         $i2 = $i;
@@ -5762,11 +5766,11 @@ class SER extends CI_Controller
             $sheet->setCellValueByColumnAndRow(5, $i, $r['PARTDESCRIPTION']);
             $sheet->setCellValueByColumnAndRow(6, $i, $r['PER']);
             $sheet->setCellValueByColumnAndRow(7, $i, $r['RMQT']);
-            $sheet->setCellValueByColumnAndRow(8, $i, $r['PPSN1_BOMRV']);
+            $sheet->setCellValueByColumnAndRow(10, $i, $r['PPSN1_BOMRV']);
             $i++;
         }
         if (count($rs['data_'])) {
-            $sheet->getStyle('A' . $i2 . ':H' . ($i - 1))->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            $sheet->getStyle('A' . $i2 . ':L' . ($i - 1))->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('9EF9FF');
         }
         foreach (range('A', 'O') as $r) {
