@@ -5487,12 +5487,14 @@ class DELV extends CI_Controller
         # validasi apakah Nomor Aju sudah ada di CEISA4.0
         $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $nomorAjuFull, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
         $responApiObj = json_decode($responApi->body);
-        if ($responApiObj->dataOri->message === 'sucess') {
-            $respon[] = [
-                'cd' => 0,
-                'msg' => 'already in CEISA 4.0, please check',
-            ];
-            die(json_encode(['status' => $respon]));
+        if (isset($responApiObj->dataOri)) {
+            if ($responApiObj->dataOri->message === 'sucess') {
+                $respon[] = [
+                    'cd' => 0,
+                    'msg' => 'already in CEISA 4.0, please check',
+                ];
+                die(json_encode(['status' => $respon]));
+            }
         }
         # akhir validasi
 
@@ -7161,12 +7163,14 @@ class DELV extends CI_Controller
         # validasi apakah Nomor Aju sudah ada di CEISA4.0
         $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $nomorAjuFull, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
         $responApiObj = json_decode($responApi->body);
-        if ($responApiObj->dataOri->message === 'sucess') {
-            $respon[] = [
-                'cd' => 0,
-                'msg' => 'already in CEISA 4.0, please check',
-            ];
-            die(json_encode(['status' => $respon]));
+        if (isset($responApiObj->dataOri)) {
+            if ($responApiObj->dataOri->message === 'sucess') {
+                $respon[] = [
+                    'cd' => 0,
+                    'msg' => 'already in CEISA 4.0, please check',
+                ];
+                die(json_encode(['status' => $respon]));
+            }
         }
         # akhir validasi
 
@@ -14494,8 +14498,8 @@ class DELV extends CI_Controller
 
         if (!empty($TPBData)) {
             $message = 'Already exist in TPB';
-        // if (empty($TPBData)) {
-        //     $message = 'Please posting to TPB first';
+            // if (empty($TPBData)) {
+            //     $message = 'Please posting to TPB first';
         } else {
 
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
