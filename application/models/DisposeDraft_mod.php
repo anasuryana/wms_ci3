@@ -320,9 +320,28 @@ class DisposeDraft_mod extends CI_Model
         ,QTY
         ,RTRIM(MITM_ITMD1) RMDESC
         ,RTRIM(MITM_STKUOM) RMUOM
-        from DISPOSEDRAFT
+        from (SELECT
+            MITMGRP_ITMCD PART_CODE,
+            SUM(REQQT) QTY
+            FROM
+            (
+                SELECT
+                    PART_CODE,
+                    ISNULL(MITMGRP_ITMCD, PART_CODE) MITMGRP_ITMCD,
+                    SUM(QTY) REQQT
+                FROM
+                    DISPOSEDRAFT
+                LEFT JOIN MITMGRP_TBL ON PART_CODE = MITMGRP_ITMCD_GRD
+                WHERE
+                    REMARK = ?
+                GROUP BY
+                    MITMGRP_ITMCD,
+                    PART_CODE
+            ) V0
+            GROUP BY
+        MITMGRP_ITMCD) VREQ
         LEFT JOIN MITM_TBL ON PART_CODE=MITM_ITMCD
-        WHERE REMARK=?";
+        ";
         $query = $this->db->query($qry, [$remark]);
         return $query->result_array();
     }
