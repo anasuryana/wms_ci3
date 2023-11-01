@@ -1,3 +1,16 @@
+<style type="text/css">
+    thead tr.first th,
+    thead tr.first td {
+        position: sticky;
+        top: 0;
+    }
+
+    thead tr.second th,
+    thead tr.second td {
+        position: sticky;
+        top: 26px;
+    }
+</style>
 <div style="padding: 10px">
     <div class="container-fluid">        
         <div class="row" id="rhistorycustoms_stack1">
@@ -38,7 +51,7 @@
                 <div class="table-responsive" id="rhistorycustoms_divku">
                     <table id="rhistorycustoms_tbl" class="table table-bordered table-sm table-hover" style="font-size:75%">
                         <thead class="table-light">
-                            <tr>
+                            <tr class="first">
                                 <th rowspan="2" class="align-middle text-center">Incoming/Delivery Date</th>
                                 <th rowspan="2" class="align-middle">Item Code</th>
                                 <th rowspan="2" class="align-middle">Item Name</th>                                
@@ -46,7 +59,7 @@
                                 <th rowspan="2" class="align-middle text-center">Document</th>
                                 <th colspan="3" class="text-center">QTY</th>                          
                             </tr>
-                            <tr>
+                            <tr class="second">
                                 <th class="text-center">Aju</th>
                                 <th class="text-center">Pendaftaran</th>
                                 <th class="text-center">IN</th>
