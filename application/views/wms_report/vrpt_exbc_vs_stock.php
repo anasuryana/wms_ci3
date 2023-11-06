@@ -23,6 +23,10 @@
                 </div>
             </div>
             <div class="col-md-6 mb-1">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" >Date</span>
+                    <input type="text" class="form-control" id="xstock_txt_date" readonly>
+                </div>
             </div>
         </div>
         <div class="row" id="xstock_stack1">
@@ -77,6 +81,12 @@
     </div>
 </div>
 <script>
+    $("#xstock_txt_date").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true
+    });
+    $("#xstock_txt_date").datepicker('update', new Date());
+
     function xstock_resume_btnexcel(){
         cmpr_selectElementContents(document.getElementById('xstock_tbl'))
         document.execCommand("copy");
@@ -109,7 +119,7 @@
             $.ajax({
                 type: "GET",
                 url: "<?=base_url('ITHHistory/compareStockVSExbc')?>",
-                data: { item_code : xstock_txt_search.value, outputType:'spreadsheet' },
+                data: { item_code : xstock_txt_search.value, outputType:'spreadsheet', date : xstock_txt_date.value },
                 success: function (response) {
                     let waktuSekarang = moment().format('YYYY MMM DD, h_mm')
                     const blob = new Blob([response], { type: "application/vnd.ms-excel" })
@@ -141,7 +151,7 @@
             mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center">Please wait</td></tr>`
             $.ajax({
                 url: "<?=base_url('ITHHistory/compareStockVSExbc')?>",
-                data: {item_code : xstock_txt_search.value, outputType:'json'},
+                data: {item_code : xstock_txt_search.value, outputType:'json' , date : xstock_txt_date.value},
                 dataType: "json",
                 success: function (response) {
                     xstock_txt_search.readOnly = false

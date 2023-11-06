@@ -329,12 +329,13 @@ class ITHHistory extends CI_Controller
     {
         header('Content-Type: application/json');
         $item_code = $this->input->get('item_code');
+        $date = $this->input->get('date');
         $outputType = strtolower($this->input->get('outputType'));
         $location = [];
         # variable rsMega & rs dipisah , karena ketika saya eksekusi dalam satu query (UNION ALL) maka efeknya
         # memakan waktu lama (mungkin karena beda server atau bagaimana)
 
-        $rsMega = $this->XITRN_mod->selectEXBCReconsiliator($item_code);
+        $rsMega = $this->XITRN_mod->selectEXBCReconsiliator($item_code, $date);
         $rsFix = [];
         foreach ($rsMega as $r) {
             if (!in_array($r['ITRN_LOCCD'], $location)) {
@@ -342,14 +343,14 @@ class ITHHistory extends CI_Controller
             }
         }
 
-        $rs = $this->ZRPSTOCK_mod->selectStockItemVSBC($item_code);
+        $rs = $this->ZRPSTOCK_mod->selectStockItemVSBC($item_code, $date);
         foreach ($rs as $r) {
             if (!in_array($r['ITRN_LOCCD'], $location)) {
                 $location[] = $r['ITRN_LOCCD'];
             }
         }
 
-        $rsEquipment = $this->ITH_mod->selectPSIEquipment(['ITH_ITMCD' => $item_code]);
+        $rsEquipment = $this->ITH_mod->selectPSIEquipment(['ITH_ITMCD' => $item_code], $date);
         foreach ($rsEquipment as $r) {
             if (!in_array($r['ITH_WH'], $location)) {
                 $location[] = $r['ITH_WH'];
@@ -476,14 +477,14 @@ class ITHHistory extends CI_Controller
             $sheet->getStyle('A:A')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 
             # inisialisasi conditional formatting
-            $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional ();
+            $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
             $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
             $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_GREATERTHAN);
             $conditional->addCondition(0);
             $conditional->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
             $conditional->getStyle()->getFill()->getEndColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_YELLOW);
 
-            $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional ();
+            $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
             $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
             $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_LESSTHAN);
             $conditional2->addCondition(0);

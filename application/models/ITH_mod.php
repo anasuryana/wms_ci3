@@ -1747,15 +1747,16 @@ class ITH_mod extends CI_Model
         return $query->result_array();
     }
 
-    public function selectPSIEquipment($pLike)
+    public function selectPSIEquipment($pLike, $date)
     {
         $this->db->select("ITH_WH
         ,RTRIM(ITH_ITMCD) ITH_ITMCD
         ,RTRIM(MITM_SPTNO) MITM_SPTNO
         ,RTRIM(MITM_ITMD1) MITM_ITMD1
         ,SUM(ITH_QTY) EQUIPQT");
-        $this->db->from($this->TABLENAME);
+        $this->db->from('v_ith_tblc');
         $this->db->join("MITM_TBL", "ITH_ITMCD = MITM_ITMCD", "LEFT");
+        $this->db->where('ITH_DATEC <=', $date);
         $this->db->where_in("ITH_WH", ['ENGEQUIP'
             , 'ENGLINEEQUIP'
             , 'MFG1EQUIP'
