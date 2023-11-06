@@ -1788,6 +1788,7 @@ class ITH extends CI_Controller
         $reff = $this->input->post('reff');
         $isudt = $this->input->post('isudt');
         $docCode = $this->input->post('docCode');
+        $docBG = $this->input->post('docBG');
         $rs = [];
         $myar = [];
         if ($docCode == 'TRF') {
@@ -1802,17 +1803,59 @@ class ITH extends CI_Controller
                 'ITH_LUPDT' => $isudt . ' 08:08:08',
                 'ITH_USRID' => $this->session->userdata('nama'),
             ];
-            $rs[] = [
-                'ITH_ITMCD' => $item,
-                'ITH_DATE' => $isudt,
-                'ITH_FORM' => $qty * -1 > 0 ? 'TRFIN-RM' : 'TRFOUT-RM',
-                'ITH_DOC' => $doc,
-                'ITH_WH' => $reff,
-                'ITH_QTY' => $qty * -1,
-                'ITH_REMARK' => $loccd,
-                'ITH_LUPDT' => $isudt . ' 08:08:08',
-                'ITH_USRID' => $this->session->userdata('nama'),
-            ];
+
+            if (strtoupper(substr($doc, 0, 3)) === 'SP-') {
+                switch ($docBG) {
+                    case 'PSI1PPZIEP':
+                        $cwh_plant = 'PLANT1';
+                        break;
+                    case 'PSI2PPZADI':
+                        $cwh_plant = 'PLANT2';
+                        break;
+                    case 'PSI2PPZINS':
+                        $cwh_plant = 'PLANT_NA';
+                        break;
+                    case 'PSI2PPZOMC':
+                        $cwh_plant = 'PLANT_NA';
+                        break;
+                    case 'PSI2PPZOMI':
+                        $cwh_plant = 'PLANT2';
+                        break;
+                    case 'PSI2PPZSSI':
+                        $cwh_plant = 'PLANT_NA';
+                        break;
+                    case 'PSI2PPZSTY':
+                        $cwh_plant = 'PLANT2';
+                        break;
+                    case 'PSI2PPZTDI':
+                        $cwh_plant = 'PLANT2';
+                        break;
+                }
+
+                $rs[] = [
+                    'ITH_ITMCD' => $item,
+                    'ITH_DATE' => $isudt,
+                    'ITH_FORM' => $qty * -1 > 0 ? 'TRFIN-RM' : 'TRFOUT-RM',
+                    'ITH_DOC' => $doc,
+                    'ITH_WH' => $cwh_plant,
+                    'ITH_QTY' => $qty * -1,
+                    'ITH_REMARK' => $loccd,
+                    'ITH_LUPDT' => $isudt . ' 08:08:08',
+                    'ITH_USRID' => $this->session->userdata('nama'),
+                ];
+            } else {
+                $rs[] = [
+                    'ITH_ITMCD' => $item,
+                    'ITH_DATE' => $isudt,
+                    'ITH_FORM' => $qty * -1 > 0 ? 'TRFIN-RM' : 'TRFOUT-RM',
+                    'ITH_DOC' => $doc,
+                    'ITH_WH' => $reff,
+                    'ITH_QTY' => $qty * -1,
+                    'ITH_REMARK' => $loccd,
+                    'ITH_LUPDT' => $isudt . ' 08:08:08',
+                    'ITH_USRID' => $this->session->userdata('nama'),
+                ];
+            }
             $myar[] = ['cd' => 1, 'msg' => 'OK, please refresh to see the changes'];
             $this->ITH_mod->insertb($rs);
         } else {
@@ -1837,38 +1880,46 @@ class ITH extends CI_Controller
     {
         header('Content-Type: application/json');
         $fg_wh = ['AFWH3', 'AFWH3RT', 'NFWH4', 'NFWH4RT', 'QAFG', 'AWIP1', 'AFWH9SC', 'NFWH9SC'];
+
         $date = $this->input->get('date');
         $item = $this->input->get('item');
         $location = $this->input->get('location');
+
         if (in_array($location, $fg_wh)) {
             $rsParent = $this->XFTRN_mod->select_where(
-                ['CONVERT(DATE,FTRN_ISUDT) ITRN_ISUDT', 'RTRIM(FTRN_DOCCD) ITRN_DOCCD', 'RTRIM(FTRN_DOCNO) ITRN_DOCNO', "IOQT QTY", 'RTRIM(FTRN_REFNO1) ITRN_REFNO1', 'RTRIM(FTRN_DOCCD) ITRN_DOCCD'],
+                ['CONVERT(DATE,FTRN_ISUDT) ITRN_ISUDT', 'RTRIM(FTRN_DOCCD) ITRN_DOCCD', 'RTRIM(FTRN_DOCNO) ITRN_DOCNO', "IOQT QTY", 'RTRIM(FTRN_REFNO1) ITRN_REFNO1', 'RTRIM(FTRN_DOCCD) ITRN_DOCCD', 'RTRIM(FTRN_BSGRP) ITRN_BSGRP'],
                 ['FTRN_ISUDT' => $date, 'FTRN_ITMCD' => $item, 'FTRN_LOCCD' => $location]
             );
         } else {
             $rsParent = $this->XITRN_mod->select_where(
-                ['CONVERT(DATE,ITRN_ISUDT) ITRN_ISUDT', 'RTRIM(ITRN_DOCCD) ITRN_DOCCD', 'RTRIM(ITRN_DOCNO) ITRN_DOCNO', "IOQT QTY", 'RTRIM(ITRN_REFNO1) ITRN_REFNO1', 'RTRIM(ITRN_DOCCD) ITRN_DOCCD'],
+                ['CONVERT(DATE,ITRN_ISUDT) ITRN_ISUDT', 'RTRIM(ITRN_DOCCD) ITRN_DOCCD', 'RTRIM(ITRN_DOCNO) ITRN_DOCNO', "IOQT QTY", 'RTRIM(ITRN_REFNO1) ITRN_REFNO1', 'RTRIM(ITRN_DOCCD) ITRN_DOCCD', 'RTRIM(ITRN_BSGRP) ITRN_BSGRP'],
                 ['ITRN_ISUDT' => $date, 'ITRN_ITMCD' => $item, 'ITRN_LOCCD' => $location]
             );
         }
-        if ($location === 'NFWH4RT') {
-            $rsChild = $this->ITH_mod->select_view_where_and_locationIn(
-                ['ITH_DATEC' => $date, 'ITH_ITMCD' => $item],
-                [$location, 'ARSHPRTN', 'AFQART']
-            );
-        } elseif ($location === 'AFWH3RT') {
-            $rsChild = $this->ITH_mod->select_view_where_and_locationIn(
-                ['ITH_DATEC' => $date, 'ITH_ITMCD' => $item],
-                [$location, 'ARSHPRTN2', 'AFQART2']
-            );
-        } elseif ($location === 'AFWH3') {
-            $rsChild = $this->ITH_mod->select_view_where_and_locationIn(
-                ['ITH_DATEC' => $date, 'ITH_ITMCD' => $item],
-                [$location, 'ARSHP']
-            );
-        } else {
-            $rsChild = $this->ITH_mod->select_view_where(['ITH_DATEC' => $date, 'ITH_ITMCD' => $item, 'ITH_WH' => $location]);
+
+        switch ($location) {
+            case 'NFWH4RT':
+                $rsChild = $this->ITH_mod->select_view_where_and_locationIn(
+                    ['ITH_DATEC' => $date, 'ITH_ITMCD' => $item],
+                    [$location, 'ARSHPRTN', 'AFQART']
+                );
+                break;
+            case 'AFWH3RT':
+                $rsChild = $this->ITH_mod->select_view_where_and_locationIn(
+                    ['ITH_DATEC' => $date, 'ITH_ITMCD' => $item],
+                    [$location, 'ARSHPRTN2', 'AFQART2']
+                );
+                break;
+            case 'AFWH3':
+                $rsChild = $this->ITH_mod->select_view_where_and_locationIn(
+                    ['ITH_DATEC' => $date, 'ITH_ITMCD' => $item],
+                    [$location, 'ARSHP']
+                );
+                break;
+            default:
+                $rsChild = $this->ITH_mod->select_view_where(['ITH_DATEC' => $date, 'ITH_ITMCD' => $item, 'ITH_WH' => $location]);
         }
+
         die(json_encode(['parent' => $rsParent, 'child' => $rsChild]));
     }
 
@@ -3680,7 +3731,7 @@ class ITH extends CI_Controller
                 $doc,
                 $thedate,
                 $r['TO_LUPDT'],
-                substr($r['ITH_LUPDT'],0,19),
+                substr($r['ITH_LUPDT'], 0, 19),
                 $r['ITH_ITMCD']
             );
         }
@@ -3759,13 +3810,13 @@ class ITH extends CI_Controller
                 $r['TO_LUPDT'] = $date . " " . $r['TIME'];
                 $thedate = $date;
             }
-            if($this->ITH_mod->update_return_kitting_date(
+            if ($this->ITH_mod->update_return_kitting_date(
                 $doc,
                 $thedate,
                 $r['TO_LUPDT'],
                 $r['ITH_LUPDT'],
                 $r['ITH_ITMCD']
-            )){
+            )) {
                 $affectedRows += 1;
                 $lastLineLog = $this->CSMLOG_mod->select_lastLine($doc, '') + 1;
                 $this->CSMLOG_mod->insert([
