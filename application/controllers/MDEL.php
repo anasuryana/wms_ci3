@@ -26,13 +26,16 @@ class MDEL extends CI_Controller {
         $addr = $this->input->post('addr');
         $tax = $this->input->post('tax');
         $tpbno = $this->input->post('tpbno');
+        $tpbDate = $this->input->post('tpbDate');
         $txcode = $this->input->post('txcode');
         $myar = [];
         if($this->DELV_mod->updatebyVAR_DELCD(['MDEL_ZNAMA' => $cusNM
                         , 'MDEL_ADDRCUSTOMS' => $addr
                         , 'MDEL_ZTAX' => $tax
                         , 'MDEL_ZSKEP' => $tpbno
-                        ,'MDEL_TXCD' => $txcode]
+                        ,'MDEL_TXCD' => $txcode
+                        , 'MDEL_ZSKEP_DATE' => $tpbDate
+                        ]
                         ,['MDEL_DELCD' => $dlvCD]) 
                         ) {
                             $myar[] = ['cd' => 1, 'msg' => 'Updated successfully'];
