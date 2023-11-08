@@ -5744,34 +5744,74 @@ class SER extends CI_Controller
         $sheet->setCellValueByColumnAndRow(9, 3, 'Amount');
         $sheet->setCellValueByColumnAndRow(10, 3, 'Bom Revision');
         $sheet->setCellValueByColumnAndRow(11, 3, 'Jenis Dokumen Pabean Pemasukan');
+        $sheet->setCellValueByColumnAndRow(12, 3, 'Nomor Aju Pemasukan');
+        $sheet->setCellValueByColumnAndRow(13, 3, 'Nomor Pendaftaran Pemasukan');
+        $sheet->setCellValueByColumnAndRow(14, 3, 'Nomor HSCODE Pemasukan');
+        $sheet->setCellValueByColumnAndRow(15, 3, 'BM');
+        $sheet->setCellValueByColumnAndRow(16, 3, 'PPN');
+        $sheet->setCellValueByColumnAndRow(17, 3, 'PPH');
+
         $i = 4;
+
+        $tempStr = '';
+        $DisplayPer = '';
         foreach ($rs['data'] as $r) {
+            if ($tempStr != $r['DLV_ZNOMOR_AJU'] . $r['SER_ITMID'] . $r['SERD2_ITMCD']) {
+                $tempStr = $r['DLV_ZNOMOR_AJU'] . $r['SER_ITMID'] . $r['SERD2_ITMCD'];
+                $DisplayPer = $r['PER'];
+            } else {
+                $DisplayPer = '';
+            }
             $sheet->setCellValueByColumnAndRow(1, $i, $r['DLV_ZNOMOR_AJU']);
             $sheet->setCellValueByColumnAndRow(2, $i, $r['SER_ITMID']);
             $sheet->setCellValueByColumnAndRow(3, $i, $r['DLVQT']);
             $sheet->setCellValueByColumnAndRow(4, $i, $r['SERD2_ITMCD']);
             $sheet->setCellValueByColumnAndRow(5, $i, $r['PARTDESCRIPTION']);
-            $sheet->setCellValueByColumnAndRow(6, $i, $r['PER']);
+            $sheet->setCellValueByColumnAndRow(6, $i, $DisplayPer);
             $sheet->setCellValueByColumnAndRow(7, $i, $r['RMQT']);
             $sheet->setCellValueByColumnAndRow(8, $i, $r['PART_PRICE']);
             $sheet->setCellValueByColumnAndRow(9, $i, "=G" . $i . "*H" . $i);
             $sheet->setCellValueByColumnAndRow(10, $i, $r['PPSN1_BOMRV']);
             $sheet->setCellValueByColumnAndRow(11, $i, $r['BCTYPE']);
+            $sheet->setCellValueByColumnAndRow(12, $i, $r['RPSTOCK_NOAJU']);
+            $sheet->setCellValueByColumnAndRow(13, $i, $r['RPSTOCK_BCNUM']);
+            $sheet->setCellValueByColumnAndRow(14, $i, $r['RCV_HSCD']);
+            $sheet->setCellValueByColumnAndRow(15, $i, $r['BM']);
+            $sheet->setCellValueByColumnAndRow(16, $i, $r['PPN']);
+            $sheet->setCellValueByColumnAndRow(17, $i, $r['PPH']);
             $i++;
         }
+
         $i2 = $i;
+
+        $tempStr = '';
+        $DisplayPer = '';
+
         foreach ($rs['data_'] as $r) {
+            if ($tempStr != $r['DLV_ZNOMOR_AJU'] . $r['SER_ITMID'] . $r['SERD2_ITMCD']) {
+                $tempStr = $r['DLV_ZNOMOR_AJU'] . $r['SER_ITMID'] . $r['SERD2_ITMCD'];
+                $DisplayPer = $r['PER'];
+            } else {
+                $DisplayPer = '';
+            }
+
             $sheet->setCellValueByColumnAndRow(1, $i, $r['DLV_ZNOMOR_AJU']);
             $sheet->setCellValueByColumnAndRow(2, $i, $r['SER_ITMID']);
             $sheet->setCellValueByColumnAndRow(3, $i, $r['DLVQT']);
             $sheet->setCellValueByColumnAndRow(4, $i, $r['SERD2_ITMCD']);
             $sheet->setCellValueByColumnAndRow(5, $i, $r['PARTDESCRIPTION']);
-            $sheet->setCellValueByColumnAndRow(6, $i, $r['PER']);
+            $sheet->setCellValueByColumnAndRow(6, $i, $DisplayPer);
             $sheet->setCellValueByColumnAndRow(7, $i, $r['RMQT']);
             $sheet->setCellValueByColumnAndRow(8, $i, $r['PART_PRICE']);
             $sheet->setCellValueByColumnAndRow(9, $i, "=G" . $i . "*H" . $i);
             $sheet->setCellValueByColumnAndRow(10, $i, $r['PPSN1_BOMRV']);
             $sheet->setCellValueByColumnAndRow(11, $i, $r['BCTYPE']);
+            $sheet->setCellValueByColumnAndRow(12, $i, $r['RPSTOCK_NOAJU']);
+            $sheet->setCellValueByColumnAndRow(13, $i, $r['RPSTOCK_BCNUM']);
+            $sheet->setCellValueByColumnAndRow(14, $i, $r['RCV_HSCD']);
+            $sheet->setCellValueByColumnAndRow(15, $i, $r['BM']);
+            $sheet->setCellValueByColumnAndRow(16, $i, $r['PPN']);
+            $sheet->setCellValueByColumnAndRow(17, $i, $r['PPH']);
             $i++;
         }
         if (count($rs['data_'])) {
@@ -5841,6 +5881,8 @@ class SER extends CI_Controller
         if (!empty($arrayDeliveryOrderNumber)) {
             $arrayBC = $this->ZRPSTOCK_mod->selectColumnsWhereRemarkIn($arrayDeliveryOrderNumber);
         }
+
+        $NewRS = [];
         if (count($rs)) {
             foreach ($rs as &$r) {
                 $r['PART_PRICE'] = null;
@@ -5851,7 +5893,9 @@ class SER extends CI_Controller
                     if ($r['MITMGRP_ITMCD']) {
                         if ($r['DLV_ID'] === $b['RPSTOCK_REMARK'] && $r['MITMGRP_ITMCD'] === $b['RPSTOCK_ITMNUM'] && $b['BCQT'] > 0) {
                             $need = $r['RMQT'] - $r['PLOTQT'];
+                            $_qty = $need;
                             if ($need > $b['BCQT']) {
+                                $_qty = $b['BCQT'];
                                 $r['PLOTQT'] += $b['BCQT'];
                                 $b['BCQT'] = 0;
                             } else {
@@ -5862,6 +5906,27 @@ class SER extends CI_Controller
                             $r['BCTYPE'] = $b['RPSTOCK_BCTYPE'];
 
                             $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
+
+                            $NewRS[] = [
+                                'DLV_ZNOMOR_AJU' => $r['DLV_ZNOMOR_AJU'],
+                                'SER_ITMID' => $r['SER_ITMID'],
+                                'DLVQT' => $r['DLVQT'],
+                                'SERD2_ITMCD' => $r['SERD2_ITMCD'],
+                                'PARTDESCRIPTION' => $r['PARTDESCRIPTION'],
+                                'PER' => $r['PER'],
+                                'RMQT' => $_qty,
+                                'PART_PRICE' => $r['PART_PRICE'],
+                                'PPSN1_BOMRV' => $r['PPSN1_BOMRV'],
+                                'BCTYPE' => $r['BCTYPE'],
+                                'MITMGRP_ITMCD' => $r['MITMGRP_ITMCD'],
+                                'RPSTOCK_NOAJU' => $b['RPSTOCK_NOAJU'],
+                                'RPSTOCK_BCNUM' => $b['RPSTOCK_BCNUM'],
+                                'RCV_HSCD' => $b['RCV_HSCD'],
+                                'BM' => $b['BM'],
+                                'PPN' => $b['PPN'],
+                                'PPH' => $b['PPH'],
+                            ];
+
                             if ($r['RMQT'] == $r['PLOTQT']) {
                                 break;
                             }
@@ -5869,8 +5934,9 @@ class SER extends CI_Controller
                     } else {
                         if ($r['DLV_ID'] === $b['RPSTOCK_REMARK'] && $r['SERD2_ITMCD'] === $b['RPSTOCK_ITMNUM'] && $b['BCQT'] > 0) {
                             $need = $r['RMQT'] - $r['PLOTQT'];
-
+                            $_qty = $need;
                             if ($need > $b['BCQT']) {
+                                $_qty = $b['BCQT'];
                                 $r['PLOTQT'] += $b['BCQT'];
                                 $b['BCQT'] = 0;
                             } else {
@@ -5881,6 +5947,27 @@ class SER extends CI_Controller
                             $r['BCTYPE'] = $b['RPSTOCK_BCTYPE'];
 
                             $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
+
+                            $NewRS[] = [
+                                'DLV_ZNOMOR_AJU' => $r['DLV_ZNOMOR_AJU'],
+                                'SER_ITMID' => $r['SER_ITMID'],
+                                'DLVQT' => $r['DLVQT'],
+                                'SERD2_ITMCD' => $r['SERD2_ITMCD'],
+                                'PARTDESCRIPTION' => $r['PARTDESCRIPTION'],
+                                'PER' => $r['PER'],
+                                'RMQT' => $_qty,
+                                'PART_PRICE' => $r['PART_PRICE'],
+                                'PPSN1_BOMRV' => $r['PPSN1_BOMRV'],
+                                'BCTYPE' => $r['BCTYPE'],
+                                'MITMGRP_ITMCD' => $r['MITMGRP_ITMCD'],
+                                'RPSTOCK_NOAJU' => $b['RPSTOCK_NOAJU'],
+                                'RPSTOCK_BCNUM' => $b['RPSTOCK_BCNUM'],
+                                'RCV_HSCD' => $b['RCV_HSCD'],
+                                'BM' => $b['BM'],
+                                'PPN' => $b['PPN'],
+                                'PPH' => $b['PPH'],
+                            ];
+
                             if ($r['RMQT'] == $r['PLOTQT']) {
                                 break;
                             }
@@ -5890,16 +5977,20 @@ class SER extends CI_Controller
                 unset($b);
             }
             unset($r);
+
             $sort = [];
-            foreach ($rs as $k => $v) {
+            foreach ($NewRS as $k => $v) {
                 $sort['DLV_ZNOMOR_AJU'][$k] = $v['DLV_ZNOMOR_AJU'];
                 $sort['SER_ITMID'][$k] = $v['SER_ITMID'];
             }
-            array_multisort($sort['DLV_ZNOMOR_AJU'], SORT_ASC, $sort['SER_ITMID'], SORT_ASC, $rs);
+            array_multisort($sort['DLV_ZNOMOR_AJU'], SORT_ASC, $sort['SER_ITMID'], SORT_ASC, $NewRS);
+
             $rsCeisa = $this->TPB_HEADER_imod->select_uji_konversi([
                 'A.NOMOR_AJU', 'B.KODE_BARANG FG', 'B.JUMLAH_SATUAN FGQTY', 'C.*',
             ], $arAJUUnique);
         }
+
+        $NewRSNull = [];
 
         # Plot Combined RS
         foreach ($rsnull as &$r) {
@@ -5911,17 +6002,41 @@ class SER extends CI_Controller
                 if ($r['MITMGRP_ITMCD']) {
                     if ($r['DLV_ID'] === $b['RPSTOCK_REMARK'] && $r['MITMGRP_ITMCD'] === $b['RPSTOCK_ITMNUM'] && $b['BCQT'] > 0) {
                         $need = $r['RMQT'] - $r['PLOTQT'];
+                        $_qty = $need;
+
                         if ($need > $b['BCQT']) {
+                            $_qty = $b['BCQT'];
                             $r['PLOTQT'] += $b['BCQT'];
                             $b['BCQT'] = 0;
                         } else {
                             $r['PLOTQT'] += $need;
                             $b['BCQT'] -= $need;
                         }
-                        
+
                         $r['BCTYPE'] = $b['RPSTOCK_BCTYPE'];
 
                         $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
+
+                        $NewRSNull[] = [
+                            'DLV_ZNOMOR_AJU' => $r['DLV_ZNOMOR_AJU'],
+                            'SER_ITMID' => $r['SER_ITMID'],
+                            'DLVQT' => $r['DLVQT'],
+                            'SERD2_ITMCD' => $r['SERD2_ITMCD'],
+                            'PARTDESCRIPTION' => $r['PARTDESCRIPTION'],
+                            'PER' => $r['PER'],
+                            'RMQT' => $_qty,
+                            'PART_PRICE' => $r['PART_PRICE'],
+                            'PPSN1_BOMRV' => $r['PPSN1_BOMRV'],
+                            'BCTYPE' => $r['BCTYPE'],
+                            'MITMGRP_ITMCD' => $r['MITMGRP_ITMCD'],
+                            'RPSTOCK_NOAJU' => $b['RPSTOCK_NOAJU'],
+                            'RPSTOCK_BCNUM' => $b['RPSTOCK_BCNUM'],
+                            'RCV_HSCD' => $b['RCV_HSCD'],
+                            'BM' => $b['BM'],
+                            'PPN' => $b['PPN'],
+                            'PPH' => $b['PPH'],
+                        ];
+
                         if ($r['RMQT'] == $r['PLOTQT']) {
                             break;
                         }
@@ -5929,17 +6044,41 @@ class SER extends CI_Controller
                 } else {
                     if ($r['DLV_ID'] === $b['RPSTOCK_REMARK'] && $r['SERD2_ITMCD'] === $b['RPSTOCK_ITMNUM'] && $b['BCQT'] > 0) {
                         $need = $r['RMQT'] - $r['PLOTQT'];
+                        $_qty = $need;
+
                         if ($need > $b['BCQT']) {
+                            $_qty = $b['BCQT'];
                             $r['PLOTQT'] += $b['BCQT'];
                             $b['BCQT'] = 0;
                         } else {
                             $r['PLOTQT'] += $need;
                             $b['BCQT'] -= $need;
                         }
-                        
+
                         $r['BCTYPE'] = $b['RPSTOCK_BCTYPE'];
 
                         $r['PART_PRICE'] = (float) $b['RCV_PRPRC'];
+
+                        $NewRSNull[] = [
+                            'DLV_ZNOMOR_AJU' => $r['DLV_ZNOMOR_AJU'],
+                            'SER_ITMID' => $r['SER_ITMID'],
+                            'DLVQT' => $r['DLVQT'],
+                            'SERD2_ITMCD' => $r['SERD2_ITMCD'],
+                            'PARTDESCRIPTION' => $r['PARTDESCRIPTION'],
+                            'PER' => $r['PER'],
+                            'RMQT' => $_qty,
+                            'PART_PRICE' => $r['PART_PRICE'],
+                            'PPSN1_BOMRV' => $r['PPSN1_BOMRV'],
+                            'BCTYPE' => $r['BCTYPE'],
+                            'MITMGRP_ITMCD' => $r['MITMGRP_ITMCD'],
+                            'RPSTOCK_NOAJU' => $b['RPSTOCK_NOAJU'],
+                            'RPSTOCK_BCNUM' => $b['RPSTOCK_BCNUM'],
+                            'RCV_HSCD' => $b['RCV_HSCD'],
+                            'BM' => $b['BM'],
+                            'PPN' => $b['PPN'],
+                            'PPH' => $b['PPH'],
+                        ];
+
                         if ($r['RMQT'] == $r['PLOTQT']) {
                             break;
                         }
@@ -5949,7 +6088,7 @@ class SER extends CI_Controller
             unset($b);
         }
         unset($r);
-        return ['data' => $rs, 'data_' => $rsnull, 'data_ceisa' => $rsCeisa];
+        return ['data' => $NewRS, 'data_' => $NewRSNull, 'data_ceisa' => $rsCeisa];
     }
 
     public function search_rm_in_fg()
