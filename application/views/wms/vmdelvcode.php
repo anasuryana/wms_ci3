@@ -18,18 +18,10 @@
 <div style="padding: 10px">
     <div class="container-fluid">
         <div class="row" id="mst_dlvcode_stack0">
-            <div class="col-md-6 mb-1">
-                <div class="btn-group btn-group-sm">
-                    <button class="btn btn-primary" type="button" id="mst_dlvcode_btn_save" onclick="mst_dlvcode_btn_save_e_click()"><i class="fas fa-save"></i></button>
-                </div>
-            </div>
-            <div class="col-md-6 mb-1 text-end">
+            <div class="col-md-12 mb-1 text-end">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" type="button" id="mst_dlvcode_btn_plus" onclick="mst_dlvcode_btn_plus_e_click()" title="add new"><i class="fas fa-plus"></i></button>
                 </div>
-            </div>
-            <div class="col-md-6 mb-1">
-                <span id="mst_dlvcode_lblinfo" class="badge bg-info"></span>
             </div>
         </div>
         <div class="row">
@@ -159,7 +151,7 @@
         autoclose:true
     });
     mst_dlvcode_initData()
-    
+
     function mst_dlvcode_plus_btn_confirm_edit_on_click(p) {
         const dlvCD = mst_dlvcode_plus_txt_dlvcode_edit.value
         const txcode = mst_dlvcode_plus_txt_custcode_edit.value
