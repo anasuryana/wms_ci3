@@ -2751,6 +2751,21 @@ echo $toprint;
             rppn = $tds.eq(18).text();
             rpph = $tds.eq(19).text();
             if (ritem != '') {
+                if(!isNaN(rbm)) {
+                    $tds.eq(17).focus()
+                    alertify.warning('BM is invalid') 
+                    return   
+                }
+                if(!isNaN(rppn)) {
+                    $tds.eq(18).focus()
+                    alertify.warning('PPN is invalid') 
+                    return   
+                }
+                if(!isNaN(rpph)) {
+                    $tds.eq(19).focus()
+                    alertify.warning('PPH is invalid') 
+                    return   
+                }
                 ar_nourut.push(rnourut);
                 ar_pono.push(rpo.trim());
 
@@ -3626,7 +3641,7 @@ echo $toprint;
             rhscode = $tds.eq(16).text();
             rbm = $tds.eq(17).text();
             rppn = $tds.eq(18).text();
-            rpph = $tds.eq(19).text();
+            rpph = $tds.eq(19).text();            
             if (ritem != '') {
                 ar_nourut.push(rnourut);
                 ar_pono.push(rpo.trim());
