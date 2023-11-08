@@ -2710,15 +2710,15 @@ echo $toprint;
         var m_amt = numeral($("#rcvcustoms_amount").val()).value()
         let mkppbc = $("#rcvcustoms_kppbc").val()
         let zstsrcv = document.getElementById('rcvcustoms_zsts').value
-        var ar_nourut = [];
-        var ar_pono = [];
-        var ar_dodt = [];
-        var ar_supcd = [];
-        var ar_curr = [];
-        var ar_item = [];
-        var ar_qty = [];
-        var ar_price = [];
-        var ar_amt = [];
+        let ar_nourut = [];
+        let ar_pono = [];
+        let ar_dodt = [];
+        let ar_supcd = [];
+        let ar_curr = [];
+        let ar_item = [];
+        let ar_qty = [];
+        let ar_price = [];
+        let ar_amt = [];
         let ar_wh = [];
         let ar_grlno = [];
         let ar_hscode = [];
@@ -2751,21 +2751,6 @@ echo $toprint;
             rppn = $tds.eq(18).text();
             rpph = $tds.eq(19).text();
             if (ritem != '') {
-                if(!isNaN(rbm)) {
-                    $tds.eq(17).focus()
-                    alertify.warning('BM is invalid') 
-                    return   
-                }
-                if(!isNaN(rppn)) {
-                    $tds.eq(18).focus()
-                    alertify.warning('PPN is invalid') 
-                    return   
-                }
-                if(!isNaN(rpph)) {
-                    $tds.eq(19).focus()
-                    alertify.warning('PPH is invalid') 
-                    return   
-                }
                 ar_nourut.push(rnourut);
                 ar_pono.push(rpo.trim());
 
@@ -2783,6 +2768,8 @@ echo $toprint;
                 ar_pph.push(rpph);
             }
         });
+
+
         $.ajax({
             type: "post",
             url: "<?=base_url('RCV/updateBCDoc')?>",
@@ -2882,7 +2869,67 @@ echo $toprint;
             return
         }
 
+        let ar_nourut = [];
+        let ar_pono = [];
+        let ar_dodt = [];
+        let ar_supcd = [];
+        let ar_curr = [];
+        let ar_item = [];
+        let ar_qty = [];
+        let ar_price = [];
+        let ar_amt = [];
+        let ar_wh = [];
+        let ar_grlno = [];
+        let ar_hscode = [];
+        let ar_bm = [];
+        let ar_ppn = [];
+        let ar_pph = [];
+
+        let isValidationOk = true
+
         if (mnopen.trim().length == 6) {
+            let tables = $("#rcvcustoms_tbl tbody");
+            tables.find('tr').each(function(i) {
+                let $tds = $(this).find('td'),
+                    rnourut = $tds.eq(1).text(),
+                    rpo = $tds.eq(3).text(),
+                    rsup = $tds.eq(5).text(),
+                    rcurr = $tds.eq(7).text(),
+                    ritem = $tds.eq(8).text(),
+                    rqty = $tds.eq(10).text(),
+                    rprc = $tds.eq(12).text(),
+                    ramt = $tds.eq(13).text(),
+                    rwh = $tds.eq(14).text();
+                rgrlno = $tds.eq(15).text();
+                rhscode = $tds.eq(16).text();
+                rbm = $tds.eq(17).text().trim();
+                rppn = $tds.eq(18).text().trim();
+                rpph = $tds.eq(19).text().trim();
+                if (ritem != '') {
+                    if(isNaN(rbm)) {
+                        isValidationOk = false
+                        $tds.eq(17).focus()
+                        alertify.warning('BM is invalid')
+                        return
+                    }
+                    if(isNaN(rppn)) {
+                        isValidationOk = false
+                        $tds.eq(18).focus()
+                        alertify.warning('PPN is invalid')
+                        return
+                    }
+                    if(isNaN(rpph)) {
+                        isValidationOk = false
+                        $tds.eq(19).focus()
+                        alertify.warning('PPH is invalid')
+                        return
+                    }
+                }
+            });
+
+            if(!isValidationOk){
+                return
+            }
             let mymodal = new bootstrap.Modal(document.getElementById("RCVCUSTOMS_PROGRESS"), {
                 backdrop: 'static',
                 keyboard: false
@@ -3641,7 +3688,7 @@ echo $toprint;
             rhscode = $tds.eq(16).text();
             rbm = $tds.eq(17).text();
             rppn = $tds.eq(18).text();
-            rpph = $tds.eq(19).text();            
+            rpph = $tds.eq(19).text();
             if (ritem != '') {
                 ar_nourut.push(rnourut);
                 ar_pono.push(rpo.trim());
