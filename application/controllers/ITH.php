@@ -800,10 +800,6 @@ class ITH extends CI_Controller
                 $sheet->setCellValueByColumnAndRow(3, $no, $k['QTY']);
                 $no++;
             }
-            if (count($aser) > 0) {
-                $Calc_lib = new RMCalculator();
-                $Calc_lib->calculate_later($aser, $aqty, $ajob);
-            }
         } else {
             $sheet->setCellValueByColumnAndRow(1, $no, '??');
             $sheet->setCellValueByColumnAndRow(2, $no, '??');
