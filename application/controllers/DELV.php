@@ -198,6 +198,63 @@ class DELV extends CI_Controller
         die($rs);
     }
 
+    public function manually_calculate_raw_material_resume()
+    {
+        header('Content-Type: application/json');
+        $Data = $this->ITH_mod->selectUnFixedFGCalculation('23-');
+        $SerialIDs = $SerialQties = $SerialJobs = [];
+
+        $maxRows = 150;
+        $i = 1;
+        foreach ($Data as $r) {
+            if ($i === $maxRows) {
+                break;
+            }
+            $SerialIDs[] = $r['SER_ID'];
+            $SerialQties[] = $r['SER_QTY'];
+            $SerialJobs[] = $r['SER_DOC'];
+            $i++;
+        }
+
+        $Calc_lib = new RMCalculator();
+        $rs = $Calc_lib->calculate_raw_material_resume($SerialIDs, $SerialQties, $SerialJobs);
+        $rsData = json_decode($rs, true);
+        
+
+        $ArraySeriaIDsTobeResetted = [];
+        foreach ($rsData as &$r) {
+            foreach ($r as &$n) {
+                if (isset($n['msg'])) {
+                    if (str_contains($n['msg'], 'just') || str_contains($n['msg'], 'fail')) {
+                        $n['followup'] = 'coba reset';
+                        $ArraySeriaIDsTobeResetted[] = $n['reffno'];
+                    }
+                }
+
+            }
+            unset($n);
+        }
+        unset($r);
+
+        $WOTobeResetted = [];
+
+        if ($ArraySeriaIDsTobeResetted) {
+            $WOTobeResetted = $this->SER_mod->selectWOByIDIn($ArraySeriaIDsTobeResetted);
+            $ArrayWOTobeResetted = [];
+            foreach ($WOTobeResetted as $r) {
+                $ArrayWOTobeResetted[] = $r['SER_DOC'];
+            }
+
+            # Hapus Kalkulasi per WO
+            $this->SERD_mod->deleteByWOIn($ArrayWOTobeResetted);
+
+            # Hapus Kalkulasi per ID
+            $this->SERD_mod->delete2ByIDIn($ArraySeriaIDsTobeResetted);
+        }
+
+        die(json_encode(['data' => $rsData, 'WOTobeResetted' => $WOTobeResetted]));
+    }
+
     public function calculate_per_uniq()
     {
         $pser = $this->input->post('inunique');
