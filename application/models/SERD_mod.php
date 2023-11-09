@@ -26,6 +26,18 @@ class SERD_mod extends CI_Model {
         return $this->db->affected_rows();
     }
 
+    public function delete2ByIDIn($IDs){
+        $this->db->where_in('SERD2_SER', $IDs);
+        $this->db->delete($this->TABLENAME2);
+        return $this->db->affected_rows();
+    }
+
+    public function deleteByWOIn($WOs){
+        $this->db->where_in('SERD_JOB', $WOs);
+        $this->db->delete($this->TABLENAME);
+        return $this->db->affected_rows();
+    }
+
     public function deletebyID_label_undelivered($pSER) {
         $qry = "DELETE SERD2_TBL where SERD2_SER = ?
         and SERD2_SER not in (

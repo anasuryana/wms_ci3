@@ -1085,7 +1085,7 @@ class ITH_mod extends CI_Model
     public function select_output_qc_byjob($dtfrom, $dtto, $pjob, $pbg)
     {
         $qry = "SELECT ITH_ITMCD,MITM_ITMD1, sum(ITH_QTY) ITH_QTY,SER_LOTNO, SER_DOC,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,SER_BSGRP PDPP_BSGRP
-        ,ISNULL(SER_RMRK,'') SER_RMRK 
+        ,ISNULL(SER_RMRK,'') SER_RMRK
         FROM ITH_TBL inner join SER_TBL
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
         INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
@@ -2890,6 +2890,69 @@ class ITH_mod extends CI_Model
             ->where('ITH_FORM', $form)
             ->order_by('ITH_LUPDT DESC');
         $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function selectUnFixedFGCalculation($WO)
+    {
+        $qry = "SELECT
+                    *
+                FROM
+                    (
+                    SELECT
+                        SER_ID,
+                        SER_DOC,
+                        SER_QTY,
+                        SER_ITMID,
+                        SUM(PER) TTLPER
+                    FROM
+                        (
+                        SELECT
+                            SER_ID,
+                            SER_DOC,
+                            SER_QTY,
+                            SER_ITMID,
+                            SERD2_ITMCD,
+                            SUM(SERD2_QTY) RMQT,
+                            SUM(SERD2_QTY) / SER_QTY PER
+                        FROM
+                            (
+                            select
+                                ITH_SER,
+                                ITH_WH,
+                                SUM(ITH_QTY) SQT
+                            from
+                                ITH_TBL
+                            WHERE
+                                ITH_WH IN ('QAFG', 'ARSHP', 'AFWH3','ARSHP')
+                            GROUP BY
+                                ITH_SER,
+                                ITH_WH
+                            HAVING
+                                SUM(ITH_QTY) > 0
+                            ) V1
+                            left join SER_TBL ON ITH_SER = SER_ID
+                            LEFT JOIN SERD2_TBL ON SER_ID = SERD2_SER
+                        GROUP BY
+                            SER_ID,
+                            SER_DOC,
+                            SER_QTY,
+                            SER_ITMID,
+                            SERD2_ITMCD
+                        ) V2
+                    GROUP BY
+                        SER_ID,
+                        SER_DOC,
+                        SER_ITMID,
+                        SER_QTY
+                    ) V3
+                    LEFT JOIN WOH_TBL ON SER_DOC = WOH_CD
+                WHERE
+                    ISNULL(TTLPER, 0) != ISNULL(WOH_TTLUSE, 0)
+                AND SER_DOC LIKE ?
+                ORDER BY
+                SER_DOC";
+        $query = $this->db->query($qry, [$WO . '%']);
         return $query->result_array();
     }
 }

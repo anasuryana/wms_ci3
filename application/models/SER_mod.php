@@ -65,6 +65,15 @@ class SER_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectWOByIDIn($IDs){
+        $this->db->select('SER_DOC');
+        $this->db->from($this->TABLENAME);
+        $this->db->where_in('SER_ID',$IDs);
+        $this->db->group_by('SER_DOC');
+        $query = $this->db->get();
+        return $query->result_array();
+    }    
+
     public function selectDOCbyVARg($pwhere)
     {
         $this->db->select('SER_DOC');
