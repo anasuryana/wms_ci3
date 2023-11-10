@@ -538,9 +538,17 @@ class RMCalculator
                             $process2 = true;
                             while ($process2) {
                                 if (($n['PIS3_REQQTSUM'] > $n["SUPQTY"])) {
+                                    $requiredQty = $n['PIS3_REQQTSUM']-$n["SUPQTY"];
                                     if ($x['SPLSCN_QTY'] > 0) {
-                                        $n["SUPQTY"] += 1;
-                                        $x['SPLSCN_QTY']--;
+                                        $_qty = 0;
+                                        if($requiredQty >= $x['SPLSCN_QTY']) {
+                                            $_qty = $x['SPLSCN_QTY'];                                            
+                                            $x['SPLSCN_QTY'] = 0;
+                                        } else {
+                                            $_qty = $requiredQty;
+                                            $x['SPLSCN_QTY'] -= $_qty;
+                                        }
+                                        $n["SUPQTY"] += $_qty;
                                         $qtper = $n['MYPER'][0] == "." ? "0" . $n['MYPER'] : $n['MYPER'];
                                         $islotfound = false;
                                         foreach ($rspsn_req_d as &$u) {
@@ -554,7 +562,7 @@ class RMCalculator
                                                 && ($u['SERD_QTPER'] == $qtper)
                                                 && ($u['SERD_REMARK'] == 'xfmain')
                                             ) {
-                                                $u["SERD_QTY"] += 1;
+                                                $u["SERD_QTY"] += $_qty;
                                                 $islotfound = true;
                                                 break;
                                             }
@@ -563,7 +571,24 @@ class RMCalculator
 
                                         if (!$islotfound) {
                                             $rspsn_req_d[] = [
-                                                "SERD_JOB" => $n["PIS3_WONO"], "SERD_QTPER" => $qtper, "SERD_ITMCD" => $x['SPLSCN_ITMCD'], "SERD_QTY" => 1, "SERD_LOTNO" => $x['SPLSCN_LOTNO'], "SERD_PSNNO" => $x['SPLSCN_DOC'], "SERD_LINENO" => $n['PIS3_LINENO'], "SERD_CAT" => '', "SERD_FR" => $n['PIS3_FR'], "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), "SERD_MSCANTM" => $x['SCNTIME'], "SERD_MC" => $n['PIS3_MC'], "SERD_MCZ" => $n['PIS3_MCZ'], "SERD_PROCD" => $n['PIS3_PROCD'], "SERD_MSFLG" => $x['PPSN2_MSFLG'], "SERD_MPART" => $n['PIS3_MPART'], "SERD_USRID" => $cuserid, "SERD_LUPDT" => $crnt_dt,
+                                                "SERD_JOB" => $n["PIS3_WONO"], 
+                                                "SERD_QTPER" => $qtper, 
+                                                "SERD_ITMCD" => $x['SPLSCN_ITMCD'], 
+                                                "SERD_QTY" => (int)$_qty, 
+                                                "SERD_LOTNO" => $x['SPLSCN_LOTNO'], 
+                                                "SERD_PSNNO" => $x['SPLSCN_DOC'], 
+                                                "SERD_LINENO" => $n['PIS3_LINENO'], 
+                                                "SERD_CAT" => '', 
+                                                "SERD_FR" => $n['PIS3_FR'], 
+                                                "SERD_QTYREQ" => intval($n['PIS3_REQQTSUM']), 
+                                                "SERD_MSCANTM" => $x['SCNTIME'], 
+                                                "SERD_MC" => $n['PIS3_MC'], 
+                                                "SERD_MCZ" => $n['PIS3_MCZ'], 
+                                                "SERD_PROCD" => $n['PIS3_PROCD'], 
+                                                "SERD_MSFLG" => $x['PPSN2_MSFLG'], 
+                                                "SERD_MPART" => $n['PIS3_MPART'],
+                                                "SERD_USRID" => $cuserid, 
+                                                "SERD_LUPDT" => $crnt_dt,
                                                 "SERD_REMARK" => "xfmain",
                                             ];
                                         }
