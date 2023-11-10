@@ -61,7 +61,7 @@
             </div>
             <div class="col-md-6 mb-1">
                 <div class="btn-group btn-group-sm">
-                    <button class="btn btn-primary" type="button" id="routgoing_wh_btn_gen" onclick="routgoing_wh_btn_gen_e_click()">Search</button>
+                    <button class="btn btn-primary" type="button" id="routgoing_wh_btn_gen" onclick="routgoing_wh_btn_gen_e_click(this)">Search</button>
                     <button class="btn btn-success" title="export to spreadsheet file" type="button" id="routgoing_wh_btn_spreadsheet" onclick="routgoing_wh_btn_spreadsheet_e_click(this)"><span class="fas fa-file-excel"></span> </button>
                 </div> 
             </div>
@@ -120,25 +120,32 @@
     });
     $("#routgoing_wh_txt_dt").datepicker('update', new Date());
     $("#routgoing_wh_txt_dt2").datepicker('update', new Date());
-    function routgoing_wh_btn_gen_e_click(){
+
+    function routgoing_wh_btn_gen_e_click(sender){
         let searchby = document.getElementById('routgoing_wh_seachby').value;
         let dtfrom = document.getElementById('routgoing_wh_txt_dt').value;
         let dtto = document.getElementById('routgoing_wh_txt_dt2').value;
         let reporttype = $('input[name="routgoing_wh_typereport"]:checked').val();
         let assyno = document.getElementById('routgoing_wh_txt_assy').value.trim();
         let bsgroup = document.getElementById('routgoing_wh_bisgrup').value;
+        
         if(bsgroup=='-'){
             alertify.message('Please select business group');
             document.getElementById('routgoing_wh_bisgrup').focus()
             return;
         }
-        document.getElementById('routgoing_wh_lblinfo').innerHTML = 'Please wait... <i class="fas fa-spinner fa-spin"></i>';
+
+        sender.disabled = true
+        sender.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'
         $.ajax({
             type: "get",
             url: "<?=base_url('SI/get_outgoing')?>",
             data: {indate: dtfrom,indate2: dtto, inreport: reporttype, inassy: assyno, insearchby : searchby, inbsgrp: bsgroup},
             dataType: "json",
             success: function (response) {
+                sender.disabled = false
+                sender.innerHTML = 'Search'
+
                 let ttlrows = response.data.length;
                 let mydes = document.getElementById("routgoing_wh_divku");
                 let myfrag = document.createDocumentFragment();
@@ -202,6 +209,8 @@
                 document.getElementById('routgoing_wh_txt_total').value = numeral(ttlqty).format('0,0');
             }, error : function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
+                sender.disabled = false
+                sender.innerHTML = 'Search'
             }
         });
     }
