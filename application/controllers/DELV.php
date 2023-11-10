@@ -3687,7 +3687,7 @@ class DELV extends CI_Controller
             $pdf->SetXY(48, 63);
             $pdf->MultiCell(76.04, 4, trim($hinv_customer) . " \n" . $hinv_address, 0);
             if ($pBarcode === '1') {
-                $clebar = $pdf->GetStringWidth($pid) + 13;
+                $clebar = $pdf->GetStringWidth($pid) + 23;
                 $pdf->Code128(155, 40, $pid, $clebar, 7);
             }
             $pdf->SetXY(155, 63);
