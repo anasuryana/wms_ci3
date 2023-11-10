@@ -1,3 +1,16 @@
+<style type="text/css">
+    thead tr.first th,
+    thead tr.first td {
+        position: sticky;
+        top: 0;
+    }
+
+    thead tr.second th,
+    thead tr.second td {
+        position: sticky;
+        top: 26px;
+    }
+</style>
 <div style="padding: 10px">
     <div class="container-fluid">
         <div class="row" id="checksbb_stack1">
@@ -43,7 +56,7 @@
                 <div class="table-responsive" id="checksbb_divku">
                     <table id="checksbb_tbl" class="table table-striped table-bordered table-sm table-hover" style="font-size:85%">
                         <thead class="table-light">
-                            <tr>
+                            <tr class="first">
                                 <th style="cursor:pointer" class="align-middle" onclick="checksbb_e_filterjob()">Job Number <i class="fas fa-filter float-end text-secondary"></i></th>
                                 <th style="cursor:pointer" class="align-middle" onclick="checksbb_e_filteritem()">Item Code <i class="fas fa-filter float-end text-secondary"></i></th>
                                 <th class="align-middle">Item Name</th>
@@ -56,6 +69,12 @@
                         </thead>
                         <tbody>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-end"><strong>Total</strong></td>
+                                <td class="text-end"><strong id="checksbbTotalQty"></strong></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -568,35 +587,7 @@
                     (for customs purpose and also as an evidence)
                 </div>
             </div>
-            <!-- <div class="row">
-                <div class="col-md-12 mb-1 p-1">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text" >Job</span>
-                        <input type="text" class="form-control" id="checksbb_jobno" onkeypress="checksbb_jobno_eKP(event)" maxlength="50">
-                        <button class="btn btn-primary btn-sm" id="checksbb_btn_prepare_resim" onclick="checksbb_resimulate_wo_sync(this)"><i class="fas fa-sync"></i></button>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="table-responsive" id="checksbb_tbl2_div">
-                        <table id="checksbb_tbl2" class="table table-striped table-bordered table-sm table-hover" style="font-size:85%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="cursor:pointer" class="align-middle">Job Number</th>
-                                    <th style="cursor:pointer" class="align-middle">Item Code</th>
-                                    <th class="align-middle">Item Name</th>
-                                    <th class="align-middle text-center">ID</th>
-                                    <th class="align-middle text-end">Qty</th>
-                                    <th class="align-middle text-center"><input type="checkbox" class="form-check-input" id="checksbb_ckall" ></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>  -->
+            
         </div>
         <div class="modal-footer">
             <div class="container-fluid">
@@ -613,7 +604,7 @@
                         </div>
                     </div>
                     <div class="col-md-6 mb-1">
-                        <!-- <button type="button" class="btn btn-primary btn-sm" onclick="checksbb_e_resimulate(this)">Resimulate</button> -->
+                        
                     </div>
                 </div>
             </div>
@@ -783,7 +774,9 @@
                 document.getElementById('checksbb_lblinfo').innerText= ttlrows+" row(s) found";
                 let joblist = [];
                 let itemcdlist = [];
+                let totalQty = 0
                 for(let i=0; i<ttlrows; i++){
+                    totalQty += response.data[i].SER_QTY*1
                     if(!joblist.includes(response.data[i].SER_DOC)){
                         joblist.push(response.data[i].SER_DOC);
                     }
@@ -795,14 +788,11 @@
                     newcell.ondblclick = function(){
 
                     };
-                    newText = document.createTextNode(response.data[i].SER_DOC);
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SER_DOC
                     newcell = newrow.insertCell(1);
-                    newText = document.createTextNode(response.data[i].SER_ITMID);
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SER_ITMID
                     newcell = newrow.insertCell(2);
-                    newText = document.createTextNode(response.data[i].MITM_ITMD1);
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].MITM_ITMD1
                     newcell = newrow.insertCell(3)
                     newcell.style.cssText = "text-align:center";
                     newcell.innerHTML = response.data[i].ITH_SER
@@ -810,9 +800,8 @@
                         alertify.message('weellll')
                     }
                     newcell = newrow.insertCell(4);
-                    newText = document.createTextNode(numeral(response.data[i].SER_QTY).format(','));
                     newcell.style.cssText = "text-align:right";
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = numeral(response.data[i].SER_QTY).format(',')
                     newcell = newrow.insertCell(5);
                     if(Number(response.data[i].CALPER)==0){
                         newText = document.createTextNode('Not calculated yet');
@@ -844,6 +833,7 @@
                         newcell.appendChild(newText);
                     }
                 }
+                checksbbTotalQty.innerText = totalQty
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
                 let tohtml = '<option value="-">-</option>';
@@ -1833,6 +1823,7 @@
         document.getElementById('checksbb_lblinfo').innerText="Please wait";
         const filterby = document.getElementById('checksbb_cmb_filter').value;
         const filterval = document.getElementById('checksbb_txt_search').value;
+        checksbbTotalQty.innerText = 0
         $.ajax({
             type: "get",
             url: "<?=base_url('SER/get_check_susuan_bb')?>",
@@ -1847,13 +1838,21 @@
                 let cln = mtabel.cloneNode(true);
                 myfrag.appendChild(cln);
                 let tabell = myfrag.getElementById("checksbb_tbl");
+                let totalQtyContainer = myfrag.getElementById("checksbbTotalQty");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let newrow, newcell, newText;
+
                 tableku2.innerHTML='';
                 document.getElementById('checksbb_lblinfo').innerText= ttlrows+" row(s) found";
+
                 let itemcdlist = new Set()
                 let newjob = new Set()
+                let totalQty = 0
+
+                totalQtyContainer.classList.add('strong')
+
                 for(let i=0; i<ttlrows; i++){
+                    totalQty += response.data[i].SER_QTY*1
                     newjob.add(response.data[i].SER_DOC)
                     itemcdlist.add(response.data[i].SER_ITMID)
                     newrow = tableku2.insertRow(-1);
@@ -1948,7 +1947,7 @@
                         }
                     }
                 }
-
+                totalQtyContainer.innerText = totalQty
                 mydes.innerHTML=''
                 mydes.appendChild(myfrag)
                 let tohtml = '<option value="-">-</option>'
