@@ -2914,17 +2914,18 @@ class ITH_mod extends CI_Model
                             SER_ITMID,
                             SERD2_ITMCD,
                             SUM(SERD2_QTY) RMQT,
-                            SUM(SERD2_QTY) / SER_QTY PER
+                            SUM(SERD2_QTY) / MAXQT PER
                         FROM
                             (
                             select
                                 ITH_SER,
                                 ITH_WH,
-                                SUM(ITH_QTY) SQT
+                                SUM(ITH_QTY) SQT,
+                                MAX(ITH_QTY) MAXQT
                             from
                                 ITH_TBL
                             WHERE
-                                ITH_WH IN ('QAFG', 'ARSHP', 'AFWH3','ARSHP')
+                                ITH_WH IN ('QAFG', 'ARSHP', 'AFWH3','ARSHP', 'AWIP1')
                             GROUP BY
                                 ITH_SER,
                                 ITH_WH
@@ -2938,7 +2939,8 @@ class ITH_mod extends CI_Model
                             SER_DOC,
                             SER_QTY,
                             SER_ITMID,
-                            SERD2_ITMCD
+                            SERD2_ITMCD,
+                            MAXQT
                         ) V2
                     GROUP BY
                         SER_ID,
