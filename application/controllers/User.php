@@ -314,6 +314,9 @@ class User extends CI_Controller
             case 'min_length':
                 $newvalue = ['PWPOL_LENGTH' => $value];
                 break;
+            case 'complexity':
+                $newvalue = ['PWPOL_ISCOMPLEX' => $value];
+                break;
         }
         $result = $this->PWPOL_mod->updatebyId($newvalue, ['PWPOL_LINE' => 'A']);
         $respon = $result ? ['cd' => '1', 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'Failed'];
