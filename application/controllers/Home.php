@@ -9,6 +9,7 @@ class Home extends CI_Controller
         $this->load->helper('url_helper');
         $this->load->library('session');
         $this->load->model('MSTLOCG_mod');
+        $this->load->model('PWPOL_mod');
         if ($this->session->userdata('status') != "login") {
             redirect(base_url(""));
         }
@@ -32,6 +33,12 @@ class Home extends CI_Controller
             $StrWHFG .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . '</option>';
         }
         $data['lwhfg'] = $StrWHFG;
+
+        $rsPWPolicy = $this->PWPOL_mod->select();
+        foreach($rsPWPolicy as $r){
+            $data['PASSWORD_MININUM_LENGTH'] = $r['PWPOL_LENGTH'];
+        }
+
         $this->load->view('templet/header', $data);
         $this->load->view('vhome', $data);
         $this->load->view('templet/footer', $data);
