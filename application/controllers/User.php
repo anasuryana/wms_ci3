@@ -248,9 +248,10 @@ class User extends CI_Controller
         $userid = base64_decode($this->input->post('userid'));
         $confirmed_pw = $this->input->post('npw');
         $confirmed_pw_decrypt = hash('sha256', $confirmed_pw);
-        $rschanges_history = $this->CHGPW_mod->select_unpassed($userid);
         $respon = [];
+        
         foreach ($rs as $r) {
+            $rschanges_history = $this->CHGPW_mod->select_unpassed($r['PWPOL_HISTORY'], $userid);
             # validate length
             if (strlen($confirmed_pw) < $r['PWPOL_LENGTH'] && $r['PWPOL_LENGTH'] > 0) {
                 $respon = ['cd' => 0, 'msg' => 'at least ' . $r['PWPOL_LENGTH'] . ' characters required'];

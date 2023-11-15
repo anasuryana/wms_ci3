@@ -123,6 +123,9 @@ function btnLogin_eClick(e){
 		success: function(response) {
 			e.target.disabled = false
 			if (!response.tokennya) {
+				if(response.redirect_url){
+					location.href = response.redirect_url
+				}
             	feedBackContainer.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
                 ${response.message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

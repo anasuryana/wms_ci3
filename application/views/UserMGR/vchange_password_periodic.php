@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Change Password</title>
     <link rel="stylesheet" type="text/css" href="<?=base_url("assets/bootstrap/css/bootstrap.min.css")?>">
+    <link rel="stylesheet" type="text/css" href="<?=base_url("assets/fontaw/css/all.css") ?>">
     <script type="text/javascript" src="<?php echo base_url("assets/jquery/jquery.min.js"); ?>"></script>
   </head>
   <body>
@@ -60,8 +61,8 @@
                             if(response.status.cd===1)
                             {
                                 info_container.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                                                                <strong>${response.status.msg}</strong>
-                                                                <p>we will redirect you to Login page</p>
+                                                                <strong> <i class="fa-solid fa-spinner fa-spin-pulse fa-spin-reverse"></i> ${response.status.msg}</strong>
+                                                                <p>we will redirect you to Login page </p>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                                             </div>`
                                 setTimeout(()=> {

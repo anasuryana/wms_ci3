@@ -95,7 +95,7 @@ class Pages extends CI_Controller
                 'MSTEMP_PW' => hash('sha256', $password),
                 'MSTEMP_ACTSTS' => true,
                 'MSTEMP_STS' => true,
-            ];            
+            ];
 
             $dlogses = $this->Usr_mod->cek_login($where);
             $dloghis = $this->Usrlog_mod->selectLastOne();
@@ -122,22 +122,28 @@ class Pages extends CI_Controller
 
             if (strlen($fname) > 0) {
                 $rsPWPolicy = $this->PWPOL_mod->select();
+                $shouldChangePassword = false;
                 foreach ($rsPWPolicy as $r) {
                     if ($day_after_change_pw > $r['PWPOL_MAXAGE']) {
-                        redirect(base_url("change_password?uid=" . base64_encode($username)));
+                        $shouldChangePassword = true;                        
                     }
                 }
                 $this->Usrlog_mod->insert($data_log);
-                $data_session = [
-                    'nama' => $username,
-                    'status' => "login",
-                    'sfname' => $fname,
-                    'gid' => $this->m_grupid,
-                ];
-                $this->session->set_userdata($data_session);
-                $respon = ['message' => 'OK' , 'tokennya' => base64_encode($username)];
+
+                if (!$shouldChangePassword) {
+                    $data_session = [
+                        'nama' => $username,
+                        'status' => "login",
+                        'sfname' => $fname,
+                        'gid' => $this->m_grupid,
+                    ];
+                    $this->session->set_userdata($data_session);
+                    $respon = ['message' => 'OK', 'tokennya' => base64_encode($username)];
+                } else {
+                    $respon = ['message' => 'Need to change password', 'redirect_url' => base_url("change_password?uid=" . base64_encode($username))];
+                }
             } else {
-                $respon = ['message' => 'sorry please try again, check user id and password '];
+                $respon = ['message' => 'sorry please try again, check user id and password'];
             }
         }
         die(json_encode($respon));
@@ -145,7 +151,7 @@ class Pages extends CI_Controller
 
     public function loginPerApp()
     {
-        $allowedList = ['http://localhost:3000', 'http://localhost/scan-doc/', 'http://192.168.0.29:8081', 'http://localhost'];
+        $allowedList = ['http://localhost:3000', 'http://localhost/scan-doc/', 'http://192.168.0.29:8080', 'http://localhost'];
         if (in_array($_SERVER['HTTP_ORIGIN'], $allowedList)) {
             header("Access-Control-Allow-Origin: " . $_SERVER['HTTP_ORIGIN']);
         }
