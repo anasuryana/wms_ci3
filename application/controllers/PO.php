@@ -80,7 +80,7 @@ class PO extends CI_Controller
         foreach ($rs as $r) {
             $requsted_by = $r['PO_RQSTBY'];
             $shipment = $r['PO_SHPDLV'];
-            $currency = $r['MSUP_SUPCR'];
+            $currency = trim($r['MSUP_SUPCR']);
             $payment_term = $r['PO_PAYTERM'];
             $supplier = $r['MSUP_SUPNM'];
             $supplier_address = RTRIM($r['MSUP_ADDR1']." ".$r['MSUP_ADDR2']);
@@ -1023,7 +1023,7 @@ class PO extends CI_Controller
                 $pdf->SetXY(106, $YStart);
                 $pdf->Cell(15, 5, $itemum, 0, 0, 'C');
                 $pdf->Cell(25, 5, number_format($r['PO_QTY']), 0, 0, 'R');
-                $pdf->Cell(27.5, 5, number_format($r['PO_PRICE'], 2), 0, 0, 'R');
+                $pdf->Cell(27.5, 5, number_format($r['PO_PRICE'], $currency === 'RPH' ? 2 : 5), 0, 0, 'R');
                 $pdf->Cell(27.5, 5, number_format($amount, 2), 0, 0, 'R');
                 $total_amount += $finalamount;
                 if ($YExtra2 > 0) {
