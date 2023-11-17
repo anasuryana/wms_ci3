@@ -18,7 +18,7 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">Item Code</label>
-                    <input type="text" class="form-control" id="xstock_txt_search" onclick="this.select()">
+                    <input type="text" class="form-control" id="xstock_txt_search" onkeypress="xstock_txt_search_eKeyPress(event)" onclick="this.select()">
                     <button class="btn btn-outline-primary" id="xstock_btn_search" onclick="xstock_btn_doc_eClick(this)"><i class="fas fa-search"></i></button>
                 </div>
             </div>
@@ -253,6 +253,12 @@
                     xstock_txt_search.readOnly = false
                 }
             });
+        }
+    }
+
+    function xstock_txt_search_eKeyPress(e) {
+        if(e.key === 'Enter') {
+            xstock_btn_doc_eClick(xstock_btn_search)
         }
     }
 </script>
