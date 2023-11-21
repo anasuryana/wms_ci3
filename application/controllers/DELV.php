@@ -219,7 +219,6 @@ class DELV extends CI_Controller
         $Calc_lib = new RMCalculator();
         $rs = $Calc_lib->calculate_raw_material_resume($SerialIDs, $SerialQties, $SerialJobs);
         $rsData = json_decode($rs, true);
-        
 
         $ArraySeriaIDsTobeResetted = [];
         foreach ($rsData as &$r) {
@@ -1630,13 +1629,13 @@ class DELV extends CI_Controller
             $lastno = $this->DELV_mod->select_lastnodo_patterned_V3($mmonth, $myear, $monthroma) + 1;
             $ctxid = $delcd_cust . $display_year . $monthroma . substr('0000' . $lastno, -4);
             $ItemMaster = $this->MSTITM_mod->select_forcustoms($aItemNum);
-            
-            for ($i = 0; $i < $itemCount; $i++) {                
+
+            for ($i = 0; $i < $itemCount; $i++) {
                 $_itemDescription = null;
                 $_itemSPTNO = null;
 
                 foreach ($ItemMaster as $m) {
-                    if($aItemNum[$i] == $m['MITM_ITMCD']) {
+                    if ($aItemNum[$i] == $m['MITM_ITMCD']) {
                         $_itemDescription = $m['MITM_ITMD1'];
                         $_itemSPTNO = $m['MITM_SPTNO'];
                         break;
@@ -3705,7 +3704,7 @@ class DELV extends CI_Controller
                 $clebar = $pdf->GetStringWidth($pid) + 25;
                 $pdf->Code128(155, 40, $pid, $clebar, 7);
                 $pdf->SetXY(155, 47);
-                $pdf->Cell($clebar, 4, "*".$pid."*", 0, 0, 'C');
+                $pdf->Cell($clebar, 4, "*" . $pid . "*", 0, 0, 'C');
             }
             $pdf->SetXY(155, 63);
             $pdf->Cell(31.17, 4, $pid, 0, 0, 'L');
@@ -3821,7 +3820,7 @@ class DELV extends CI_Controller
                                 $clebar = $pdf->GetStringWidth($pid) + 25;
                                 $pdf->Code128(155, 40, $pid, $clebar, 7);
                                 $pdf->SetXY(155, 47);
-                                $pdf->Cell($clebar, 4, "*".$pid."*", 0, 0, 'C');
+                                $pdf->Cell($clebar, 4, "*" . $pid . "*", 0, 0, 'C');
                             }
                             $pdf->SetXY(155, 60);
                             $pdf->Cell(31.17, 4, $pid, 0, 0, 'L');
@@ -12810,6 +12809,8 @@ class DELV extends CI_Controller
         $rs_do = $this->DELV_mod->select_for_do_rm_rtn_v1($txid);
         $rs_xbc = $this->RCV_mod->select_for_rmrtn_bytxid($txid);
         $delv_description = '';
+        $uniqueBCDate = [];
+
         foreach ($rs_do as $r) {
             $delv_description = $r['DLV_DSCRPTN'];
             $r['PLOTQT'] = 0;
@@ -12832,8 +12833,26 @@ class DELV extends CI_Controller
                         $r['PLOTQT'] += $reqbal;
                         $x['RCV_QTY'] -= $reqbal;
                     }
+
+                    if (!in_array($x['RCV_BCDATE'], $uniqueBCDate)) {
+                        $uniqueBCDate[] = $x['RCV_BCDATE'];
+                    }
+
                     $rs[] = [
-                        'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVRMDOC_NOPEN'], 'TANGGAL_DAFTAR_DOK_ASAL' => $x['RCV_BCDATE'], 'NOMOR_AJU_DOK_ASAL' => strlen($r['DLVRMDOC_AJU']) == 6 ? substr('000000000000000000000000', 0, 26) : $r['DLVRMDOC_AJU'], 'SERI_BARANG_DOK_ASAL' => empty($x['RCV_ZNOURUT']) ? 0 : $x['RCV_ZNOURUT'], 'DONO' => $r['DLVRMDOC_DO'], 'KODE_BARANG' => $r['DLVRMDOC_ITMID'], 'URAIAN' => rtrim($r['MITM_ITMD1']), 'JUMLAH_SATUAN' => $useqt, 'INCDOCQTY' => $x['DOCQTY'], 'PRICE' => $x['RCV_PRPRC'], 'BCTYPE' => $x['RCV_BCTYPE'], 'HSCD' => $x['RCV_HSCD'], 'INVOICE' => $x['RCV_INVNO'],
+                        'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVRMDOC_NOPEN'],
+                        'TANGGAL_DAFTAR_DOK_ASAL' => $x['RCV_BCDATE'],
+                        'NOMOR_AJU_DOK_ASAL' => strlen($r['DLVRMDOC_AJU']) == 6 ? substr('000000000000000000000000', 0, 26) : $r['DLVRMDOC_AJU'],
+                        'SERI_BARANG_DOK_ASAL' => empty($x['RCV_ZNOURUT']) ? 0 : $x['RCV_ZNOURUT'],
+                        'DONO' => $r['DLVRMDOC_DO'],
+                        'KODE_BARANG' => $r['DLVRMDOC_ITMID'],
+                        'URAIAN' => rtrim($r['MITM_ITMD1']),
+                        'TYPE' => rtrim($r['MITM_SPTNO']),
+                        'JUMLAH_SATUAN' => $useqt,
+                        'INCDOCQTY' => $x['DOCQTY'],
+                        'PRICE' => $x['RCV_PRPRC'],
+                        'BCTYPE' => $x['RCV_BCTYPE'],
+                        'HSCD' => $x['RCV_HSCD'],
+                        'INVOICE' => $x['RCV_INVNO'],
                     ];
                     if ($r['DLVRMDOC_ITMQT'] == $r['PLOTQT']) {
                         break;
@@ -12843,53 +12862,80 @@ class DELV extends CI_Controller
             unset($x);
         }
         unset($r);
+
+        $rates = $this->MEXRATE_mod->selectfor_posting_in($uniqueBCDate, 'USD');
+
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('RESUME');
         $sheet->setCellValueByColumnAndRow(1, 1, 'DAFTAR BARANG YANG AKAN ' . $delv_description);
-        $sheet->mergeCells('A1:K1');
+        $sheet->mergeCells('A1:W1');
         $sheet->getStyle('A1')->getFont()->setSize(18);
         $sheet->getStyle('A1')->getFont()->setBold(true);
         $sheet->setCellValueByColumnAndRow(3, 2, $txid);
-        $sheet->setCellValueByColumnAndRow(1, 3, 'NO URUT');
+        $sheet->setCellValueByColumnAndRow(1, 3, 'NO');
         $sheet->setCellValueByColumnAndRow(2, 3, 'HS CODE');
-        $sheet->setCellValueByColumnAndRow(3, 3, 'URAIAN Barang Material / Bahan Baku');
-        $sheet->setCellValueByColumnAndRow(4, 3, 'Kode Barang');
-        $sheet->setCellValueByColumnAndRow(5, 3, 'Qty');
-        $sheet->setCellValueByColumnAndRow(6, 3, 'Unit Price');
-        $sheet->setCellValueByColumnAndRow(7, 3, 'Amount');
-        $sheet->setCellValueByColumnAndRow(8, 3, 'AJU');
-        $sheet->setCellValueByColumnAndRow(9, 3, 'NO Urut dokumen');
-        $sheet->setCellValueByColumnAndRow(10, 3, 'Qty Dokumen');
-        $sheet->setCellValueByColumnAndRow(11, 3, 'Jenis BC');
-        $sheet->setCellValueByColumnAndRow(12, 3, 'EX.NOPEN');
-        $sheet->setCellValueByColumnAndRow(13, 3, 'TGL EX.BC');
-        $sheet->setCellValueByColumnAndRow(14, 3, 'NO SURAT JALAN');
-        $sheet->setCellValueByColumnAndRow(15, 3, 'INVOICE');
+        $sheet->setCellValueByColumnAndRow(3, 3, 'PART CODE');
+        $sheet->setCellValueByColumnAndRow(4, 3, 'PART NAME');
+        $sheet->setCellValueByColumnAndRow(5, 3, 'TYPE');
+        $sheet->setCellValueByColumnAndRow(6, 3, 'QTY RETURN');
+        $sheet->setCellValueByColumnAndRow(7, 3, 'QTY INCOMING');
+        $sheet->setCellValueByColumnAndRow(8, 3, 'Unit Price');
+        $sheet->setCellValueByColumnAndRow(9, 3, 'Amount');
+        $sheet->setCellValueByColumnAndRow(10, 3, 'KURS');
+        $sheet->setCellValueByColumnAndRow(11, 3, 'AMOUNT(IDR)');
+        $sheet->setCellValueByColumnAndRow(12, 3, 'AJU');
+        $sheet->setCellValueByColumnAndRow(13, 3, 'NO Urut dokumen');
+        $sheet->setCellValueByColumnAndRow(14, 3, 'Jenis BC');
+        $sheet->setCellValueByColumnAndRow(15, 3, 'EX.NOPEN');
+        $sheet->setCellValueByColumnAndRow(16, 3, 'TGL EX.BC');
+        $sheet->setCellValueByColumnAndRow(17, 3, 'NO SURAT JALAN');
+        $sheet->setCellValueByColumnAndRow(18, 3, 'INVOICE');
+        $sheet->setCellValueByColumnAndRow(19, 3, 'Tanggal Pemasukan BC 1.6');
+        $sheet->setCellValueByColumnAndRow(20, 3, 'Plan Tanggal Pengeluaran');
+        $sheet->setCellValueByColumnAndRow(21, 3, 'Lama Waktu Timbun (hari)');
+        $sheet->setCellValueByColumnAndRow(22, 3, 'Lama Waktu Timbun (bulan)');
+        $sheet->setCellValueByColumnAndRow(23, 3, 'Lama Waktu Timbun (tahun)');
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('G:G')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         $nourut = 1;
         $i = 4;
+
         foreach ($rs as $r) {
+            $_rate = null;
+            foreach ($rates as $n) {
+                if ($r['TANGGAL_DAFTAR_DOK_ASAL'] === $n->MEXRATE_DT) {
+                    $_rate = $n->MEXRATE_VAL;
+                    break;
+                }
+            }
+
             $sheet->setCellValueByColumnAndRow(1, $i, $nourut);
             $sheet->setCellValueByColumnAndRow(2, $i, $r['HSCD']);
-            $sheet->setCellValueByColumnAndRow(3, $i, $r['URAIAN']);
-            $sheet->setCellValueByColumnAndRow(4, $i, $r['KODE_BARANG']);
-            $sheet->setCellValueByColumnAndRow(5, $i, $r['JUMLAH_SATUAN']);
-            $sheet->setCellValueByColumnAndRow(6, $i, $r['PRICE']);
-            $sheet->setCellValueByColumnAndRow(7, $i, $r['PRICE'] * $r['JUMLAH_SATUAN']);
-            $sheet->setCellValueByColumnAndRow(8, $i, $r['NOMOR_AJU_DOK_ASAL']);
-            $sheet->setCellValueByColumnAndRow(9, $i, $r['SERI_BARANG_DOK_ASAL']);
-            $sheet->setCellValueByColumnAndRow(10, $i, $r['INCDOCQTY']);
-            $sheet->setCellValueByColumnAndRow(11, $i, $r['BCTYPE']);
-            $sheet->setCellValueByColumnAndRow(12, $i, $r['NOMOR_DAFTAR_DOK_ASAL']);
-            $sheet->setCellValueByColumnAndRow(13, $i, $r['TANGGAL_DAFTAR_DOK_ASAL']);
-            $sheet->setCellValueByColumnAndRow(14, $i, $r['DONO']);
-            $sheet->setCellValueByColumnAndRow(15, $i, $r['INVOICE']);
+            $sheet->setCellValueByColumnAndRow(3, $i, $r['KODE_BARANG']);
+            $sheet->setCellValueByColumnAndRow(4, $i, $r['URAIAN']);
+            $sheet->setCellValueByColumnAndRow(5, $i, $r['TYPE']);
+            $sheet->setCellValueByColumnAndRow(6, $i, $r['JUMLAH_SATUAN']);
+            $sheet->setCellValueByColumnAndRow(7, $i, $r['INCDOCQTY']);
+            $sheet->setCellValueByColumnAndRow(8, $i, $r['PRICE']);
+            $sheet->setCellValueByColumnAndRow(9, $i, $r['PRICE'] * $r['JUMLAH_SATUAN']);
+            $sheet->setCellValueByColumnAndRow(10, $i, $_rate);
+            $sheet->setCellValueByColumnAndRow(11, $i, "=J" . $i . "*I" . $i);
+            $sheet->setCellValueByColumnAndRow(12, $i, $r['NOMOR_AJU_DOK_ASAL']);
+            $sheet->setCellValueByColumnAndRow(13, $i, $r['SERI_BARANG_DOK_ASAL']);
+            $sheet->setCellValueByColumnAndRow(14, $i, $r['BCTYPE']);
+            $sheet->setCellValueByColumnAndRow(15, $i, $r['NOMOR_DAFTAR_DOK_ASAL']);
+            $sheet->setCellValueByColumnAndRow(16, $i, $r['TANGGAL_DAFTAR_DOK_ASAL']);
+            $sheet->setCellValueByColumnAndRow(17, $i, $r['DONO']);
+            $sheet->setCellValueByColumnAndRow(18, $i, $r['INVOICE']);
+            $sheet->setCellValueByColumnAndRow(21, $i, "=T" . $i . "-S" . $i);
+            $sheet->setCellValueByColumnAndRow(22, $i, "=U" . $i . "/30");
+            $sheet->setCellValueByColumnAndRow(23, $i, "=V" . $i . "/12");
             $nourut++;
             $i++;
         }
-        $sheet->getStyle('A3:O' . ($i - 1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        $sheet->getStyle('A3:W' . ($i - 1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         $i++;
         $sheet->setCellValueByColumnAndRow(8, $i, 'Approved By');
         $sheet->setCellValueByColumnAndRow(9, $i, 'Checked By');
@@ -12898,7 +12944,7 @@ class DELV extends CI_Controller
         $sheet->setCellValueByColumnAndRow(8, $i, 'Indra Andesa');
         $sheet->setCellValueByColumnAndRow(9, $i, 'Sri Wahyu');
         $sheet->setCellValueByColumnAndRow(10, $i, 'Gusti Ayu');
-        foreach (range('A', 'O') as $r) {
+        foreach (range('A', 'W') as $r) {
             $sheet->getColumnDimension($r)->setAutoSize(true);
         }
         $dodis = $txid;
