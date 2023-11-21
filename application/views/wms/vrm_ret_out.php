@@ -2256,6 +2256,7 @@ echo $tohtml;
                                         DO: response.data[i].RPSTOCK_DOC,
                                         TGLPEN: response.data[i].RCV_BCDATE,
                                         ITEMCD: response.data[i].ITMNUM,
+                                        ITEMSPTNO: response.data[i].MITM_SPTNO,
                                         QTY: itemcd_a[1] > stk ? stk : itemcd_a[1],
                                         PRICE: response.data[i].PRICE,
                                         BCTYPE: response.data[i].RCV_BCTYPE
@@ -2559,6 +2560,8 @@ echo $tohtml;
         newcell.classList.add('text-center')
         newcell.innerHTML = `<span class="fas fa-trash text-danger"></span>`
         newcell = newrow.insertCell(10)
+        newcell.contentEditable = true
+        newcell.innerHTML = pdata.ITEMSPTNO
     }
 
     function retrm_out_scr_addrow(pdata) {
