@@ -1023,7 +1023,7 @@ class PO extends CI_Controller
                 $pdf->SetXY(106, $YStart);
                 $pdf->Cell(15, 5, $itemum, 0, 0, 'C');
                 $pdf->Cell(25, 5, number_format($r['PO_QTY']), 0, 0, 'R');
-                $pdf->Cell(27.5, 5, number_format($r['PO_PRICE'], $currency === 'RPH' ? 2 : 5), 0, 0, 'R');
+                $pdf->Cell(27.5, 5, number_format($r['PO_PRICE'], 2), 0, 0, 'R');
                 $pdf->Cell(27.5, 5, number_format($amount, 2), 0, 0, 'R');
                 $total_amount += $finalamount;
                 if ($YExtra2 > 0) {
