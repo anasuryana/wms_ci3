@@ -226,7 +226,11 @@
                         newcell.innerHTML = wh
                         newcell = newrow.insertCell(4);
                         if (response.data[i].ITH_FORM) {
-                            if (response.data[i].ITH_FORM.includes('ADJ')) {
+                            if (response.data[i].ITH_FORM.includes('ADJ') || 
+                            response.data[i].ITH_FORM.includes('TRFIN-RM') ||
+                            response.data[i].ITH_FORM.includes('TRFOUT-RM') ||
+                            response.data[i].ITH_FORM.includes('INCRTN-NO-PSN') 
+                            ) {
                                 newcell.style.cssText = 'cursor:pointer'
                                 newcell.onclick = () => {
                                     rhistory_fun_get_detail_tx({
