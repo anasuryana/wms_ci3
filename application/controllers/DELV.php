@@ -1629,7 +1629,20 @@ class DELV extends CI_Controller
             }
             $lastno = $this->DELV_mod->select_lastnodo_patterned_V3($mmonth, $myear, $monthroma) + 1;
             $ctxid = $delcd_cust . $display_year . $monthroma . substr('0000' . $lastno, -4);
-            for ($i = 0; $i < $itemCount; $i++) {
+            $ItemMaster = $this->MSTITM_mod->select_forcustoms($aItemNum);
+            
+            for ($i = 0; $i < $itemCount; $i++) {                
+                $_itemDescription = null;
+                $_itemSPTNO = null;
+
+                foreach ($ItemMaster as $m) {
+                    if($aItemNum[$i] == $m['MITM_ITMCD']) {
+                        $_itemDescription = $m['MITM_ITMD1'];
+                        $_itemSPTNO = $m['MITM_SPTNO'];
+                        break;
+                    }
+                }
+
                 $qty = $aItemQty[$i];
                 $qty = str_replace(',', '', $qty);
                 $saveRows[] = [
@@ -1652,6 +1665,8 @@ class DELV extends CI_Controller
                     'DLV_CRTD' => $this->session->userdata('nama'),
                     'DLV_CRTDTM' => $currentDate,
                     'DLV_ITMCD' => $aItemNum[$i],
+                    'DLV_ITMD1' => $_itemDescription,
+                    'DLV_ITMSPTNO' => $_itemSPTNO,
                     'DLV_DSCRPTN' => $indescription,
                     'DLV_LINE' => $i,
                     'DLV_SER' => '',
@@ -3687,8 +3702,10 @@ class DELV extends CI_Controller
             $pdf->SetXY(48, 63);
             $pdf->MultiCell(76.04, 4, trim($hinv_customer) . " \n" . $hinv_address, 0);
             if ($pBarcode === '1') {
-                $clebar = $pdf->GetStringWidth($pid) + 23;
+                $clebar = $pdf->GetStringWidth($pid) + 25;
                 $pdf->Code128(155, 40, $pid, $clebar, 7);
+                $pdf->SetXY(155, 47);
+                $pdf->Cell($clebar, 4, "*".$pid."*", 0, 0, 'C');
             }
             $pdf->SetXY(155, 63);
             $pdf->Cell(31.17, 4, $pid, 0, 0, 'L');
@@ -3800,6 +3817,12 @@ class DELV extends CI_Controller
                             $pdf->AddPage();
                             $pdf->SetXY(51, 60);
                             $pdf->MultiCell(76.04, 4, trim($hinv_customer) . " \n" . $hinv_address, 0);
+                            if ($pBarcode === '1') {
+                                $clebar = $pdf->GetStringWidth($pid) + 25;
+                                $pdf->Code128(155, 40, $pid, $clebar, 7);
+                                $pdf->SetXY(155, 47);
+                                $pdf->Cell($clebar, 4, "*".$pid."*", 0, 0, 'C');
+                            }
                             $pdf->SetXY(155, 60);
                             $pdf->Cell(31.17, 4, $pid, 0, 0, 'L');
                             $pdf->SetXY(155, 60 + 5 + 5);

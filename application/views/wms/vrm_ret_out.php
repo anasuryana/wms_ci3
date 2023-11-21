@@ -255,8 +255,8 @@ echo $todis;
                                                     <th>Item Id</th>
                                                     <th class="text-end">Qty</th>
                                                     <th>Remark</th>
-                                                    <th class="bg-info">Item Description</th>
-                                                    <th class="bg-info">Item Name</th>
+                                                    <th class="bg-info" title="Customs Requirement">Item Description</th>
+                                                    <th class="bg-info" title="Customs Requirement">Item Type</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
