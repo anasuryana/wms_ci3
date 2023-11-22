@@ -2147,47 +2147,57 @@ echo $tohtml;
 
     function retrm_out_inc_btncopyFromResume_eCK() {
         let mtbl = document.getElementById('retrm_out_donprc_tbl')
-        let tableku2 = mtbl.getElementsByTagName("tbody")[0]
+        let tableku2 = mtbl.getElementsByTagName("tbody")[0]        
         let mtbltr = tableku2.getElementsByTagName('tr')
         let ttlrows = mtbltr.length
+        
+        const tbodyResume =  retrm_out_inc_tbl.getElementsByTagName("tbody")[0]
+        const ttlRowsResume = tbodyResume.getElementsByTagName('tr').length
+
         let aitem = []
         let aqty = []
         let tabeldestination = document.getElementById("retrm_out_inc_tbl_packing")
         let tabeldestination_tbody = tabeldestination.getElementsByTagName("tbody")[0]
         let newrow, newcell, newText
-        for (let i = 0; i < ttlrows; i++) {
-            let titem = tableku2.rows[i].cells[5].innerText
-            let tqty = tableku2.rows[i].cells[6].innerText
-            newrow = tabeldestination_tbody.insertRow(-1)
-            newcell = newrow.insertCell(0)
-            newcell.classList.add('d-none')
-            newcell = newrow.insertCell(1)
-            newcell.classList.add('d-none')
-            newcell.innerText = '0'
-            newcell = newrow.insertCell(2)
-            newcell.classList.add('d-none')
-            newcell.innerText = '0'
-            newcell = newrow.insertCell(3)
-            newcell.classList.add('d-none')
-            newcell.innerText = '0'
-            newcell = newrow.insertCell(4)
-            newcell.innerHTML = titem
-            newcell = newrow.insertCell(5)
-            newcell.classList.add('text-end')
-            newcell.contentEditable = true
-            newcell.innerHTML = tqty
-            newcell = newrow.insertCell(6)
-            newcell.contentEditable = true
-            newcell.innerHTML = ''
-            newcell = newrow.insertCell(7)
-            newcell.contentEditable = true
-            newcell.innerHTML = ''
-            newcell = newrow.insertCell(8)
-            newcell.contentEditable = true
-            newcell.innerHTML = ''
-            newcell = newrow.insertCell(9)
-            newcell.contentEditable = true
-            newcell.innerHTML = tableku2.rows[i].cells[10].innerText
+
+        for (let r = 0; r < ttlrows; r++) {
+            const _itemResume = tbodyResume.rows[r].cells[1].innerText.trim()
+            for (let i = 0; i < ttlrows; i++) {
+                let titem = tableku2.rows[i].cells[5].innerText
+                let tqty = tableku2.rows[i].cells[6].innerText
+                if(_itemResume === titem) {
+                    newrow = tabeldestination_tbody.insertRow(-1)
+                    newcell = newrow.insertCell(0)
+                    newcell.classList.add('d-none')
+                    newcell = newrow.insertCell(1)
+                    newcell.classList.add('d-none')
+                    newcell.innerText = '0'
+                    newcell = newrow.insertCell(2)
+                    newcell.classList.add('d-none')
+                    newcell.innerText = '0'
+                    newcell = newrow.insertCell(3)
+                    newcell.classList.add('d-none')
+                    newcell.innerText = '0'
+                    newcell = newrow.insertCell(4)
+                    newcell.innerHTML = titem
+                    newcell = newrow.insertCell(5)
+                    newcell.classList.add('text-end')
+                    newcell.contentEditable = true
+                    newcell.innerHTML = tqty
+                    newcell = newrow.insertCell(6)
+                    newcell.contentEditable = true
+                    newcell.innerHTML = ''
+                    newcell = newrow.insertCell(7)
+                    newcell.contentEditable = true
+                    newcell.innerHTML = ''
+                    newcell = newrow.insertCell(8)
+                    newcell.contentEditable = true
+                    newcell.innerHTML = ''
+                    newcell = newrow.insertCell(9)
+                    newcell.contentEditable = true
+                    newcell.innerHTML = tableku2.rows[i].cells[10].innerText
+                }
+            }
         }
     }
 
