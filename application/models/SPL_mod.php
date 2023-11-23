@@ -90,6 +90,19 @@ class SPL_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectPPSN1ColumnsWhereLikePeriod($columns, $where, $like, $periods = [])
+    {
+        $this->db->select($columns);
+        $this->db->from('XPPSN1');
+        $this->db->where($where);
+        $this->db->like($like);
+        $this->db->where('PPSN1_ISUDT >=', $periods[0]);
+        $this->db->where('PPSN1_ISUDT <=', $periods[1]);
+        $this->db->distinct();
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function xspl_mega_pis($pdocno, $pline, $pmcz)
     {
         $qry = "exec xsp_megatowms_pis ?,?,?";

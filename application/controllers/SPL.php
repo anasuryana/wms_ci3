@@ -34,6 +34,7 @@ class SPL extends CI_Controller
         $this->load->model('SCNDOCITM_mod');
         $this->load->model('XMBOM_mod');
         $this->load->model('XWO_mod');
+        date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
     {
@@ -70,7 +71,6 @@ class SPL extends CI_Controller
 
     public function confirm_psn_item_at_plant()
     {
-        date_default_timezone_set('Asia/Jakarta');
         $currentDateTime = date('Y-m-d H:i:s');
         header("Access-Control-Allow-Origin: *");
         header('Content-Type: application/json');
@@ -117,7 +117,6 @@ class SPL extends CI_Controller
     public function confirm_psn_at_plant()
     {
         header("Access-Control-Allow-Origin: *");
-        date_default_timezone_set('Asia/Jakarta');
         $current_time = date('Y-m-d H:i:s');
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
@@ -208,16 +207,32 @@ class SPL extends CI_Controller
         $data = [];
         $PPSN1 = [];
 
+        $minDate = $maxDate = NULL;
+
         if (strlen($search) <= 3) {
             $status = ['cd' => '0', 'msg' => 'Please more specific'];
         } else {
             switch ($searchBy) {
                 case '1':
-                    $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
-                        ['RTRIM(PPSN1_WONO) WO'],
-                        ['PPSN1_BSGRP' => $business],
-                        ['PPSN1_WONO' => $search]
-                    );
+                    # is user input year keyword ?
+                    $keywords = explode('-', $search);
+                    if(strlen($keywords[0]) === 2) {
+                        $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
+                            ['RTRIM(PPSN1_WONO) WO'],
+                            ['PPSN1_BSGRP' => $business],
+                            ['PPSN1_WONO' => $search]
+                        );
+                    } else {
+                        $minDate = date('Y-m-d', strtotime("-6 months"));
+                        $maxDate = date('Y-m-d', strtotime("6 months"));
+
+                        $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLikePeriod(
+                            ['RTRIM(PPSN1_WONO) WO'],
+                            ['PPSN1_BSGRP' => $business],
+                            ['PPSN1_WONO' => $search],
+                            [$minDate, $maxDate]
+                        );
+                    }                    
                     break;
                 case '2':
                     $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
@@ -256,7 +271,7 @@ class SPL extends CI_Controller
             $status = $data ? ['cd' => '1', 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'data is not found'];
         }
 
-        die(json_encode(['data' => $data, 'status' => $status]));
+        die(json_encode(['data' => $data, 'status' => $status, '$minDate' => $minDate, '$maxDate' => $maxDate]));
     }
 
     public function get_bg_not_in_psn()
@@ -436,7 +451,7 @@ class SPL extends CI_Controller
     public function requestpart()
     {
         header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+
         $docno = $this->input->post('docno');
         $dept = $this->input->post('dept');
         $category = $this->input->post('category');
@@ -740,36 +755,6 @@ class SPL extends CI_Controller
         die('{"data": ' . json_encode($rspsn) . ', "datajob": ' . json_encode($rsjob) . '}');
     }
 
-    public function cancel_kitting_test()
-    {
-        header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
-        $currrtime = date('Y-m-d H:i:s');
-
-        die(json_encode(['time' => $currrtime]));
-        $cidscan = $this->input->get('inidscan');
-        $myar = [];
-        $rs = $this->SPLSCN_mod->selectby_filter(['SPLSCN_ID' => $cidscan]);
-        $_psn = $_itemcd = $_timescan = '';
-        foreach ($rs as $r) {
-            $_psn = $r['SPLSCN_DOC'];
-            $_itemcd = $r['SPLSCN_ITMCD'];
-            $_timescan = $r['SPLSCN_LUPDT'];
-        }
-        $rsBOOK = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_SPLDOC' => $_psn, 'SPLBOOK_ITMCD' => $_itemcd]);
-        $shouldReBook = false;
-        $isLoopPassed = false;
-        foreach ($rsBOOK as $r) {
-            $isLoopPassed = true;
-            if ($_timescan > $r['SPLBOOK_LUPDTD']) {
-                $shouldReBook = true;
-            }
-        }
-        die(json_encode([
-            'rsSCN' => $rs, 'rsBOOK' => $rsBOOK, 'shouldReBook' => $shouldReBook, 'isLoopPassed' => $isLoopPassed,
-        ]));
-    }
-
     public function select_scanned_per_document()
     {
         header('Content-Type: application/json');
@@ -783,7 +768,7 @@ class SPL extends CI_Controller
         # Purpose : cancel kitting per id scan
         # Expected transaction : raw material location [+], plant location [-]
         $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+
         $crn_date = date('Y-m-d');
         $cidscan = $this->input->post('inidscan');
         $myar = [];
@@ -936,7 +921,7 @@ class SPL extends CI_Controller
     public function cancel_kitting()
     {
         $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+
         $crn_date = date('Y-m-d');
         $cidscan = $this->input->get('inidscan');
         $myar = [];
@@ -1059,7 +1044,6 @@ class SPL extends CI_Controller
 
     public function sync_mega()
     {
-        date_default_timezone_set('Asia/Jakarta');
         header('Content-Type: application/json');
         $myar = [];
         $mystatus = [];
@@ -1474,7 +1458,6 @@ class SPL extends CI_Controller
 
     public function scn_set()
     {
-        date_default_timezone_set('Asia/Jakarta');
         $currdate = date('Ymd');
         $currrtime = date('Y-m-d H:i:s');
 
@@ -1567,7 +1550,7 @@ class SPL extends CI_Controller
         if (!$this->session->userdata('status')) {
             exit('could not save, because session is expired');
         }
-        date_default_timezone_set('Asia/Jakarta');
+
         $currdate = date('Y-m-d');
         $cpsn = trim($this->input->post('inpsn'));
         $ccat = trim($this->input->post('incat'));
@@ -3673,7 +3656,7 @@ class SPL extends CI_Controller
         if (!isset($_COOKIE["CKPSI_DPSN"]) && !isset($_COOKIE["CKPSI_DCAT"]) && !isset($_COOKIE["CKPSI_DLNE"]) && !isset($_COOKIE["CKPSI_DFDR"])) {
             exit('no data to be found');
         }
-        date_default_timezone_set('Asia/Jakarta');
+
         $currdate = date('d/m/Y');
         $currrtime = date('H:i:s');
         $cpsn = $_COOKIE["CKPSI_DPSN"];
@@ -5756,7 +5739,7 @@ class SPL extends CI_Controller
     public function remove_partreq()
     {
         $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+
         $currrtime = date('Y-m-d H:i:s');
         $docno = $this->input->post('docno');
         $line = $this->input->post('line');
@@ -5811,7 +5794,7 @@ class SPL extends CI_Controller
     {
         header('Content-Type: application/json');
         $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+
         $currrtime = date('Y-m-d H:i:s');
         $userid = $this->session->userdata('nama');
         $doc = $this->input->post('doc');
@@ -5851,7 +5834,7 @@ class SPL extends CI_Controller
     public function savereference()
     {
         header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+
         $currrtime = date('Y-m-d H:i:s');
         $psnnum = $this->input->post('psnnum');
         $confirmdate = $this->input->post('confirmdate');
