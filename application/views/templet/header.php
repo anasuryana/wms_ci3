@@ -48,6 +48,7 @@
 	<script src="<?=base_url("assets/jspreadsheet/index.js")?>"></script>	
 	<script src="<?=base_url("assets/jsuites/jsuites.js")?>"></script>	
 	<script src='<?=base_url("assets/js/tesseract.min.js")?>'></script>
+	<script src='<?=base_url("assets/js/inputmask.min.js")?>'></script>
 	
 </head>
 <body class="easyui-layout">	
