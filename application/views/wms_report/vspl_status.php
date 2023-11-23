@@ -34,7 +34,6 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-text">Business Group</span>
                     <select class="form-select" id="stakit_bisgrup">
-                        <option value="">All</option>
                         <?php
 $todis = '';
 foreach ($lgroup as $r) {
@@ -46,8 +45,12 @@ echo $todis;
                 </div>
             </div>
             <div class="col-md-5 mb-1 text-center">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text">Job</span>
+                <div class="input-group input-group-sm">                    
+                    <select class="form-select" id="stakit_search_by" onchange="stakit_txt_job.focus()">
+                        <option value="1">WO</option>
+                        <option value="2">PSN</option>
+                        <option value="3">Simulation</option>
+                    </select>
                     <input type="text" class="form-control" id="stakit_txt_job" onkeypress="stakit_txt_job_ekeypress(event)" required>
                 </div>
             </div>
@@ -191,6 +194,7 @@ echo $todis;
             data: {
                 jobno: jobno,
                 business: stakit_bisgrup.value,
+                searchBy: stakit_search_by.value,
             },
             dataType: "json",
             success: function(response) {

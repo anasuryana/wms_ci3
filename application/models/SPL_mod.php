@@ -79,6 +79,17 @@ class SPL_mod extends CI_Model
         return $resq->result_array();
     }
 
+    public function selectPPSN1ColumnsWhereLike($columns, $where, $like)
+    {
+        $this->db->select($columns);
+        $this->db->from('XPPSN1');
+        $this->db->where($where);
+        $this->db->like($like);
+        $this->db->distinct();
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function xspl_mega_pis($pdocno, $pline, $pmcz)
     {
         $qry = "exec xsp_megatowms_pis ?,?,?";
@@ -126,8 +137,8 @@ class SPL_mod extends CI_Model
     {
         $qry = "select CONVERT(bigint,(PDPP_WORQT-coalesce(LBLTTL,0))) OSTQTY,PDPP_BSGRP,PDPP_CUSCD,PDPP_WORQT,PDPP_GRNQT,PDPP_COMFG,CONVERT(bigint,(PDPP_WORQT-PDPP_GRNQT)) OSTQTYMG,PDPP_ISUDT,RTRIM(PDPP_WONO) PDPP_WONO from
         XWO a LEFT JOIN  ( select SER_DOC,SUM(SER_QTYLOT) LBLTTL from SER_TBL x WHERE SER_ITMID LIKE ? and SER_DOC = ? AND SER_ID=ISNULL(SER_REFNO,SER_ID)
-        GROUP BY SER_DOC ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_MDLCD LIKE ? and PDPP_WONO = ? 
-        AND PDPP_BSGRP = 'PSI1PPZIEP' 
+        GROUP BY SER_DOC ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_MDLCD LIKE ? and PDPP_WONO = ?
+        AND PDPP_BSGRP = 'PSI1PPZIEP'
         ORDER BY PDPP_WONO DESC";
         $query = $this->db->query($qry, ["%" . $pitem . "%", $pwo, "%" . $pitem . "%", $pwo]);
         return $query->result_array();
@@ -430,10 +441,10 @@ class SPL_mod extends CI_Model
                 ,UPPER(RTRIM(PIS3_PROCD)) PIS3_PROCD
                 ,RTRIM(PIS3_MC) PIS3_MC
                 ,RTRIM(PIS3_MCZ) PIS3_MCZ
-                ,CASE 
+                ,CASE
                     WHEN SIMQT != LQT
                         THEN (SUM(PIS3_REQQT) / SIMQT * LQT)
-                    ELSE 
+                    ELSE
                     SUM(PIS3_REQQT)
                     END
                 PIS3_REQQTSUM

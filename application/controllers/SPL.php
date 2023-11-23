@@ -202,12 +202,61 @@ class SPL extends CI_Controller
     public function get_kitting_status_byjob()
     {
         header('Content-Type: application/json');
-        $jobno = $this->input->get('jobno');
+        $search = $this->input->get('jobno');
         $business = $this->input->get('business');
-        $rs = $this->SPLSCN_mod->select_kittingstatus_byjob($jobno, $business);
-        $status = $rs ? ['cd' => '1', 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'Job is not found'];
+        $searchBy = $this->input->get('searchBy');
+        $data = [];
+        $PPSN1 = [];
 
-        die(json_encode(['data' => $rs, 'status' => $status]));
+        if (strlen($search) <= 3) {
+            $status = ['cd' => '0', 'msg' => 'Please more specific'];
+        } else {
+            switch ($searchBy) {
+                case '1':
+                    $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
+                        ['RTRIM(PPSN1_WONO) WO'],
+                        ['PPSN1_BSGRP' => $business],
+                        ['PPSN1_WONO' => $search]
+                    );
+                    break;
+                case '2':
+                    $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
+                        ['RTRIM(PPSN1_WONO) WO'],
+                        ['PPSN1_BSGRP' => $business],
+                        ['PPSN1_PSNNO' => $search]
+                    );
+                    break;
+                case '3':
+                    $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
+                        ['RTRIM(PPSN1_WONO) WO'],
+                        ['PPSN1_BSGRP' => $business],
+                        ['PPSN1_DOCNO' => $search]
+                    );
+                    break;
+            }
+
+            foreach ($PPSN1 as $r) {
+                $rs = $this->SPLSCN_mod->select_kittingstatus_byjob($r['WO'], $business);
+                foreach ($rs as $n) {
+                    $_isFound = false;
+
+                    foreach ($data as $d) {
+                        if ($n['SPL_DOC'] === $d['SPL_DOC']) {
+                            $_isFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!$_isFound) {
+                        $data[] = $n;
+                    }
+                }
+            }
+
+            $status = $data ? ['cd' => '1', 'msg' => 'OK'] : ['cd' => '0', 'msg' => 'data is not found'];
+        }
+
+        die(json_encode(['data' => $data, 'status' => $status]));
     }
 
     public function get_bg_not_in_psn()
