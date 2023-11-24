@@ -1007,6 +1007,18 @@
         let asection = []
         let asubject = []
 
+        if(txt_reqby.value.trim().length <= 3) {
+            txt_reqby.focus()
+            alertify.warning('Requestor is required')
+            return
+        }
+
+        if(txt_shp.value.trim().length <= 3) {
+            txt_shp.focus()
+            alertify.warning('Shipment is required')
+            return
+        }
+
         if(mpuror_cmb_customs.value === '-')
         {
             alertify.message('Please select')
