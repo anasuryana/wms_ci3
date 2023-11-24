@@ -1013,7 +1013,7 @@
             return
         }
 
-        if(txt_shp.value.trim().length <= 3) {
+        if(txt_shp.value.trim().length <= 2) {
             txt_shp.focus()
             alertify.warning('Shipment is required')
             return
