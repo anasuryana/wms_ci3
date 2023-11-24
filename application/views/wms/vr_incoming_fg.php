@@ -14,7 +14,7 @@
 
     thead tr.second th, thead tr.second td {
         position: sticky;
-        top: 26px;
+        top: 24px;
     }    
 </style>
 <div style="padding: 5px">
@@ -57,7 +57,7 @@
         <div class="row">
             <div class="col-md-12 mb-3">
                 <div class="table-responsive" id="rincfg_divku">
-                    <table id="rincfg_tbl" class="table table-striped table-bordered table-sm table-hover" style="font-size:75%">
+                    <table id="rincfg_tbl" class="table table-bordered table-sm table-hover" style="font-size:75%">
                         <thead class="table-light">
                             <tr class="first">                                
                                 <th rowspan="2" class="align-middle">Business Group</th>
@@ -191,7 +191,7 @@
                 let newrow, newcell, newText;
                 let qtyprd , qtyqc, qtywh, qtylot,qtygrn,qtygrnaks, qtyng ,bomrv;            
                 tableku2.innerHTML='';                             
-                for (let i = 0; i<ttlrows; i++){
+                for (let i = 0; i<ttlrows; i++) {
                     qtylot = response.data[i].PDPP_WORQT ? numeral(response.data[i].PDPP_WORQT).format('0,0') : 0;
                     qtygrn = response.data[i].PDPP_GRNQT ? numeral(response.data[i].PDPP_GRNQT).format('0,0') : 0;
                     if(response.data[i].QTY_PRD){
@@ -219,7 +219,11 @@
                     qtygrnaks = numeral(qtygrnaks).value()+response.data[i].NG*1+response.data[i].QTY_SCR*1
                     qtygrnaks = numeral(qtygrnaks).format(',')
                     bomrv = response.data[i].PDPP_BOMRV.substr(0,1) === '.' ? '0'+response.data[i].PDPP_BOMRV : response.data[i].PDPP_BOMRV
+
                     newrow = tableku2.insertRow(-1);
+                    if(response.data[i].PDPP_COMFG === '1') {
+                        newrow.classList.add('table-danger')
+                    }
                     newcell = newrow.insertCell(0);
                     newcell.innerHTML = response.data[i].PDPP_BSGRP                    
                     newcell = newrow.insertCell(1);
