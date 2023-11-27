@@ -207,39 +207,64 @@ class SPL extends CI_Controller
         $data = [];
         $PPSN1 = [];
 
-        $minDate = $maxDate = NULL;
+        $minDate = $maxDate = null;
 
         if (strlen($search) <= 3) {
             $status = ['cd' => '0', 'msg' => 'Please more specific'];
         } else {
+            $minDate = date('Y-m-d', strtotime("-6 months"));
+            $maxDate = date('Y-m-d', strtotime("6 months"));
+
             switch ($searchBy) {
                 case '1':
                     # is user input year keyword ?
                     $keywords = explode('-', $search);
-                    if(strlen($keywords[0]) === 2) {
+                    if (strlen($keywords[0]) === 2) {
                         $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
                             ['RTRIM(PPSN1_WONO) WO'],
                             ['PPSN1_BSGRP' => $business],
                             ['PPSN1_WONO' => $search]
                         );
                     } else {
-                        $minDate = date('Y-m-d', strtotime("-6 months"));
-                        $maxDate = date('Y-m-d', strtotime("6 months"));
-
                         $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLikePeriod(
                             ['RTRIM(PPSN1_WONO) WO'],
                             ['PPSN1_BSGRP' => $business],
                             ['PPSN1_WONO' => $search],
                             [$minDate, $maxDate]
                         );
-                    }                    
+                    }
                     break;
                 case '2':
-                    $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
-                        ['RTRIM(PPSN1_WONO) WO'],
-                        ['PPSN1_BSGRP' => $business],
-                        ['PPSN1_PSNNO' => $search]
-                    );
+                    # is user input year keyword ?
+                    $keywords = explode('-', $search);
+                    $totalSplittedKeyword = count($keywords);
+                    $isYearInput = false;
+                    
+                    if ($totalSplittedKeyword > 1) {
+                        $_i = 1;
+                        foreach ($keywords as $n) {
+                            if (strlen($n) === 4 && $_i != $totalSplittedKeyword) {
+                                $isYearInput = true;
+                            }
+                            $_i++;
+                        }
+                    }
+
+                    if ($isYearInput) {
+                        $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
+                            ['RTRIM(PPSN1_WONO) WO'],
+                            ['PPSN1_BSGRP' => $business],
+                            ['PPSN1_PSNNO' => $search]
+                        );
+                    } else {
+                        $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLikePeriod(
+                            ['RTRIM(PPSN1_WONO) WO'],
+                            ['PPSN1_BSGRP' => $business],
+                            ['PPSN1_PSNNO' => $search],
+                            [$minDate, $maxDate]
+                        );
+                    }
+
                     break;
                 case '3':
                     $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
