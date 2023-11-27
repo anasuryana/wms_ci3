@@ -239,7 +239,7 @@ class SPL extends CI_Controller
                     $keywords = explode('-', $search);
                     $totalSplittedKeyword = count($keywords);
                     $isYearInput = false;
-                    
+
                     if ($totalSplittedKeyword > 1) {
                         $_i = 1;
                         foreach ($keywords as $n) {
@@ -267,11 +267,32 @@ class SPL extends CI_Controller
 
                     break;
                 case '3':
-                    $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
-                        ['RTRIM(PPSN1_WONO) WO'],
-                        ['PPSN1_BSGRP' => $business],
-                        ['PPSN1_DOCNO' => $search]
-                    );
+                    # is user input year keyword ?
+                    $keywords = explode('-', $search);
+                    $totalSplittedKeyword = count($keywords);
+                    $isYearInput = false;
+                    if ($totalSplittedKeyword > 1) {
+                        if (strlen($keywords[0]) === 4) {
+                            $isYearInput = true;
+                        } elseif ($totalSplittedKeyword === 4 && strlen($keywords[0]) > 0 && is_numeric($keywords[$totalSplittedKeyword - 1])) {
+                            $isYearInput = true;
+                        }
+                    }
+
+                    if ($isYearInput) {
+                        $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLike(
+                            ['RTRIM(PPSN1_WONO) WO'],
+                            ['PPSN1_BSGRP' => $business],
+                            ['PPSN1_DOCNO' => $search]
+                        );
+                    } else {
+                        $PPSN1 = $this->SPL_mod->selectPPSN1ColumnsWhereLikePeriod(
+                            ['RTRIM(PPSN1_WONO) WO'],
+                            ['PPSN1_BSGRP' => $business],
+                            ['PPSN1_DOCNO' => $search],
+                            [$minDate, $maxDate]
+                        );
+                    }
                     break;
             }
 
