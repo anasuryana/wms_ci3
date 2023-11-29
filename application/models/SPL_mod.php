@@ -977,14 +977,14 @@ class SPL_mod extends CI_Model
         $query = $this->db->query($qry, ['%' . $pdok . '%']);
         return $query->result_array();
     }
-    public function select_partreq_h_bypart($pPart)
+    public function select_partreq_h_bypart($pPart, $period1, $period2)
     {
         $qry = "select TOP 200 SPL_DOC,max(SPL_LUPDT) DT, MAX(MSTEMP_FNM) FNM,max(SPL_REFDOCCAT) CTG , MAX(SPL_RMRK) SPL_RMRK
         , MAX(SPL_USRGRP) SPL_USRGRP, MAX(SPL_LINE) SPL_LINE, ISNULL(MAX(SPL_FMDL),'') SPL_FMDL from SPL_TBL
         INNER JOIN MSTEMP_TBL ON SPL_USRID=MSTEMP_ID
-        where SPL_DOC LIKE 'PR-%' AND SPL_ITMCD LIKE ?
+        where SPL_DOC LIKE 'PR-%' AND SPL_ITMCD LIKE ? and SPL_LUPDT between ? and ?
         group by SPL_DOC";
-        $query = $this->db->query($qry, ['%' . $pPart . '%']);
+        $query = $this->db->query($qry, ['%' . $pPart . '%', $period1, $period2]);
         return $query->result_array();
     }
     public function select_partreq_d_bydoc($pdok)

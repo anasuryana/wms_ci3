@@ -463,13 +463,15 @@ class SPL extends CI_Controller
         header('Content-Type: application/json');
         $doc = $this->input->get('indoc');
         $doctype = $this->input->get('indoctype');
+        $period1 = $this->input->get('period1');
+        $period2 = $this->input->get('period2');
         $rs = [];
         switch ($doctype) {
             case 'D1':
                 $rs = $this->SPL_mod->select_partreq_h_bydoc($doc);
                 break;
             case 'D2':
-                $rs = $this->SPL_mod->select_partreq_h_bypart($doc);
+                $rs = $this->SPL_mod->select_partreq_h_bypart($doc, $period1, $period2);
                 break;
         }
         $rsret = [];

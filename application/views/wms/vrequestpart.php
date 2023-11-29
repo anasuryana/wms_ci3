@@ -4,7 +4,7 @@
             <div class="col-md-12 mb-1">
                 <div class="input-group input-group-sm">
                     <label class="input-group-text">Part Request Number</label>
-                    <input type="text" class="form-control" id="pareq_txtPRN" readonly>
+                    <input type="text" class="form-control" id="pareq_txtPRN" readonly disabled>
                     <button class="btn btn-primary" onclick="pareq_btnshow_saved()"><i class="fas fa-search"></i></button>
                 </div>
             </div>
@@ -100,11 +100,21 @@
 
         <!-- Modal body -->
         <div class="modal-body">
+            <div class="row mb-1 d-none" id="pareqPeriodContainer">
+                <div class="col-md-6">
+                    <label for="pareqPeriod1" class="form-label">From</label>
+                    <input type="text" class="form-control form-control-sm" id="pareqPeriod1" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label for="pareqPeriod2" class="form-label">To</label>
+                    <input type="text" class="form-control form-control-sm" id="pareqPeriod2" readonly>
+                </div>
+            </div>
             <div class="row">
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">
                         <span class="input-group-text" >Search</span>
-                        <select id="pareq_srchby" class="form-select" onchange="document.getElementById('pareq_txtsearch').focus()">
+                        <select id="pareq_srchby" class="form-select" onchange="pareq_srchbyOnChange(this)">
                             <option value="D1">Document No.</option>
                             <option value="D2">Part Code</option>
                         </select>
@@ -192,6 +202,17 @@
 <script>
     var pareq_tbllength = 0;
     var pareq_tblrowindexsel = '';
+
+    $("#pareqPeriod1").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+    $("#pareqPeriod2").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+    $("#pareqPeriod1").datepicker('update', new Date());
+    $("#pareqPeriod2").datepicker('update', new Date());
 
     $('#pareq_tbl tbody').on( 'click', 'tr', function () {
         pareq_tblrowindexsel = $(this).index();
@@ -289,14 +310,14 @@
         });
     }
     function pareq_txtsearch_e_keypress(e){
-        if(e.which==13){
+        if(e.key=== 'Enter') {
             let searchval = document.getElementById('pareq_txtsearch').value;
             let searchby = document.getElementById('pareq_srchby').value;
             document.getElementById('lblinfo_pareq_tbl_saved').innerText ="Please wait...";
             $.ajax({
                 type: "get",
                 url: "<?=base_url('SPL/searchdok_partreq')?>",
-                data: {indoc: searchval, indoctype: searchby},
+                data: {indoc: searchval, indoctype: searchby, period1 : pareqPeriod1.value , period2 : pareqPeriod2.value},
                 dataType: "json",
                 success: function (response) {
                     let ttlrows = response.data.length;
@@ -564,5 +585,14 @@
             }
         }
         pareq_tbllength = table.find('tr').length;
+    }
+
+    function pareq_srchbyOnChange(p) {
+        if(p.value === 'D1') {
+            pareqPeriodContainer.classList.add('d-none')
+        } else {
+            pareqPeriodContainer.classList.remove('d-none')
+        }
+        pareq_txtsearch.focus()
     }
 </script>
