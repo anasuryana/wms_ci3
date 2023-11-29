@@ -278,8 +278,6 @@ class RETPRD extends CI_Controller
                     }
                 }
                 if (!$allow2) {
-                    // $myar[] = ['cd' => '02', 'msg' => 'could not add because the label is already returned'];
-                    // // die('{"status":'.json_encode($myar).'}');
                     die('could not add because the label is already returned');
                 }
             }
@@ -439,7 +437,7 @@ class RETPRD extends CI_Controller
 
                 $lotasHome = $clot[0];
                 if ($cqaf > $cqbf[0] && $clot[0] != $clot[1]) {
-                    $lotasHome = substr($clot[0], 0, 10);
+                    $lotasHome = substr($clot[0], 0, 23);
                     $lotasHome .= '#C';
                 }
                 #PREPARE NEW ROW ID
@@ -841,71 +839,6 @@ class RETPRD extends CI_Controller
         $cwhere = ['RETSCN_SPLDOC' => $cpsn, 'RETSCN_ITMCD' => $citem];
         $rs = $this->SPLRET_mod->selectfor_analyze($cwhere);
         echo '{"data":' . json_encode($rs) . '}';
-    }
-
-    function printlabel()
-    {
-        $pserial = '';
-        if (isset($_COOKIE["CKPSI_IDRET"])) {
-            $pserial = $_COOKIE["CKPSI_IDRET"];
-        } else {
-            exit('no data');
-        }
-        $currrtime = date('d/m/Y H:i:s');
-        $host = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-        $a_ser = str_replace(".", "','", $pserial);
-        $a_ser = "'" . $a_ser . "'";
-        $rs = $this->SPLRET_mod->selectbyid_in($a_ser);
-
-        $pdf = new PDF_Code39e128('L', 'mm', [70, 50]);
-        $pdf->SetAutoPageBreak(true, 1);
-        $pdf->SetMargins(0, 0);
-        foreach ($rs as $r) {
-            $this->tesprint(
-                trim($r->RETSCN_ITMCD),
-                trim($r->RETSCN_LOT),
-                number_format($r->RETSCN_QTYAFT),
-                trim($r->MITM_SPTNO),
-                $r->RETSCN_USRID,
-                $r->MSTEMP_FNM,
-                trim($r->MMADE_NM),
-                $r->RETSCN_ROHS
-            );
-            $v3n1 = '(3N1) ' . trim($r->RETSCN_ITMCD);
-            $c3n1 = '3N1' . trim($r->RETSCN_ITMCD);
-            $v3n2 = '(3N2) ' . number_format($r->RETSCN_QTYAFT) . " " . trim($r->RETSCN_LOT);
-            $c3n2 = '3N2 ' . number_format($r->RETSCN_QTYAFT, 0, "", "") . " " . trim($r->RETSCN_LOT);
-            $v1p = '(1P) ' . trim($r->MITM_SPTNO);
-            $c1p = '1P' . trim($r->MITM_SPTNO);
-
-            $pdf->AddPage();
-            $pdf->SetY(0);
-            $pdf->SetX(0);
-            $pdf->SetFont('Courier', '', 7);
-            $pdf->Text(2, 3.5, 'ITEM CODE : ' . $r->RETSCN_ITMCD . '   ' . $host);
-            $pdf->Text(2, 6.5, 'QTY : ' . number_format($r->RETSCN_QTYAFT));
-            $pdf->Text(2, 9.5, $v3n1);
-            $clebar = $pdf->GetStringWidth(trim($c3n1)) + 17;
-            $pdf->Code128(2, 10.5, $c3n1, $clebar, 5);
-
-
-            $pdf->Text(2, 18, $v3n2);
-            $clebar = $pdf->GetStringWidth(trim($c3n2)) + 10;
-            $pdf->Code128(2, 18.5, $c3n2, $clebar, 5);
-
-            $pdf->Text(2, 26, $v1p);
-            $clebar = $pdf->GetStringWidth(trim($c1p)) + 10;
-            $pdf->Code128(2, 26.5, trim($c1p), $clebar, 5);
-
-            $pdf->Text(2, 34, 'PART NO : ' . trim($r->MITM_SPTNO));
-            if ($r->RETSCN_ROHS == '1') {
-                $pdf->Text(2, 36, 'RoHS Compliant');
-            }
-            $pdf->Text(40, 36, 'C/O : Made in ' . trim($r->MMADE_NM));
-            $pdf->Text(2, 38, $r->RETSCN_USRID . " : " . $r->MSTEMP_FNM);
-            $pdf->Text(40, 38, $currrtime);
-        }
-        $pdf->Output('I', 'LBL-RET-PRD ' . date("d-M-Y") . '.pdf');
     }
 
     public function export_to_csv()
