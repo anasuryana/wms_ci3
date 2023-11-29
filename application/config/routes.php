@@ -54,7 +54,6 @@ $route['printlabel_do'] = 'RCV/printlabel';
 $route['printlabel_fg'] = 'SER/printfglabel';
 $route['printlabel_fgstatus'] = 'SER/printfgstatuslabel';
 $route['printlabel_fgrtnstatus'] = 'SER/print_return_control_label';
-$route['printlabel_rm'] = 'SER/printrmlabel';
 $route['print_serahterima_rcqc'] = 'SER/print_st_rcqc';
 $route['printlabel_si'] = 'SI/printlabel';
 $route['printlabel_sioth'] = 'SI/printlabeloth';

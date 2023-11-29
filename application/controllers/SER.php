@@ -274,7 +274,6 @@ class SER extends CI_Controller
 
         for ($i = 0; $i < $ttlx_data; $i++) {
             #check is the reff no is already registered
-            // if($this->SER_mod->check_Primary(['SER_ID' => $cx_reffno[$i]])==0 ){
             $this->SERRC_mod->update_where(
                 [
                     'SERRC_NASSYCD' => $cx_itemcd[$i], 'SERRC_SERX' => $cx_reffno[$i], 'SERRC_SERXRAWTXT' => $cx_rawtxt[$i], 'SERRC_SERXQTY' => $cx_qty[$i],
@@ -283,7 +282,6 @@ class SER extends CI_Controller
                     'SERRC_SER' => $cx_id[$i], 'SERRC_DOCST' => $dok,
                 ]
             );
-            // }
         }
 
         $myar[] = ['cd' => 1, 'msg' => "Saved", "reff" => $dok];
@@ -556,7 +554,6 @@ class SER extends CI_Controller
             } else {
                 $originWH = 'AFWH3RT';
             }
-            // die('sini2');
             break;
         }
 
@@ -1247,7 +1244,7 @@ class SER extends CI_Controller
             $hgt_p = $pdf->GetPageHeight();
             $wid_p = $pdf->GetPageWidth();
             $pdf->SetAutoPageBreak(true, 10);
-            //$pdf->SetMargins(0,0);
+
             $cY = 0;
             $cX = 0;
             foreach ($rs as $r) {
@@ -1476,7 +1473,7 @@ class SER extends CI_Controller
             $pdf->Text($th_x + 37.5, $th_y + 28, $cprodt[2]);
             $pdf->Text($th_x + 43.5, $th_y + 28, $cprodt[1]);
             $pdf->Text($th_x + 49.5, $th_y + 28, $cprodt[0]);
-            // $clebar = $pdf->GetStringWidth($cwo)+25;
+
             $pdf->Text($th_x + 35, $th_y + 33, ":");
             $pdf->Code39($th_x + 37, $th_y + 30, $cwo);
             $pdf->SetFont('Tahoma', 'B', 10);
@@ -1580,7 +1577,7 @@ class SER extends CI_Controller
                 $image_omr = str_replace(" ", "___", $image_omr);
                 $image_omr = str_replace("|", "lll", $image_omr);
                 $pdf->SetFont('Tahoma', '', 5);
-                //$pdf->TextWithDirection($th_x + 2,$th_y + 54.5,'QR Omron','D');
+
                 $pdf->Text($th_x + 4, $th_y + 66.5, 'QR OMRON');
                 $pdf->Text($th_x + 86, $th_y + 66.5, 'QR SMT');
                 $pdf->Image(base_url("assets/imgs/" . $image_omr . ".png"), $th_x + 4, $th_y + 54.5);
@@ -1640,7 +1637,7 @@ class SER extends CI_Controller
                 $hgt_p = $pdf->GetPageHeight();
                 $wid_p = $pdf->GetPageWidth();
                 $pdf->SetAutoPageBreak(true, 10);
-                //$pdf->SetMargins(0,0);
+
                 $cY = 0;
                 $cX = 0;
                 foreach ($rs as $r) {
@@ -1700,7 +1697,7 @@ class SER extends CI_Controller
                     $cmitmid = trim($r->SER_ITMID);
                     $cserqty = $r->SER_QTY;
                     $ccustnm = trim($r->MCUS_CUSNM);
-                    // $cuscd     = trim($r->PDPP_CUSCD);
+
                     $cprodt = explode('-', $r->SER_PRDDT);
                     $cum = trim($r->MITM_STKUOM);
                     $crank = trim($r->MBOM_GRADE);
@@ -1755,7 +1752,7 @@ class SER extends CI_Controller
                     $pdf->Text(32, 35, $cwo);
                     $pdf->Text(32, 38, $r->SER_PRDLINE . "/" . $r->SER_PRDSHFT);
                     $clebar = $pdf->GetStringWidth($r->SER_QTY) + 10;
-                    // $pdf->Code39(32,39,number_format($r->SER_QTY));
+
                     $pdf->Text(32, 47, number_format($r->SER_QTY) . " $cum ( " . $r->SER_SHEET . " sheets)");
 
                     $pdf->Line(1, 57, 103, 57);
@@ -1764,7 +1761,7 @@ class SER extends CI_Controller
                     $pdf->Text(3, 64, 'REMARK');
                     $pdf->Text(30, 60, ':');
                     $pdf->Text(30, 64, ':');
-                    // $pdf->Text(3,74,'REMARK');
+
                     $image_name = 'LB' . $cmitmid . '|' . $cwo . '|' . number_format($cserqty);
                     $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" ");
                     $op = shell_exec($cmd);
@@ -1977,182 +1974,6 @@ class SER extends CI_Controller
             }
             $pdf->Output('I', 'FG LABEL ' . date("d-M-Y") . '.pdf');
         }
-    }
-
-    public function printrmlabel()
-    {
-        $currrtime = date('d/m/Y H:i:s');
-        global $wid, $hgt, $padX, $padY, $noseri, $cmitmid, $cmitmsptno, $host, $cfristname, $c3n1, $v3n1, $cserqty, $currrtime, $c3n2, $v3n2, $c1p, $v1p, $cuserid, $crohs, $cmade;
-        function fnLeftrm($pdf, $cleft, $pword)
-        {
-            global $wid, $hgt, $padX, $padY;
-            if ($cleft > 0) {
-                return $cleft + ($wid / 2 - ($pdf->GetStringWidth($pword) / 2));
-            } else {
-                return $wid / 2 - ($pdf->GetStringWidth($pword) / 2);
-            }
-        }
-        function printTagrm($pdf, $myleft, $mytop)
-        {
-            global $wid, $hgt, $padX, $padY, $noseri, $cmitmid, $cmitmsptno, $host, $cfristname, $c3n1, $v3n1, $cserqty, $currrtime, $c3n2, $v3n2, $c1p, $v1p, $cuserid, $crohs, $cmade;
-            $th_x = $padX + $myleft;
-            $th_y = $padY + $mytop;
-            $yads = 5;
-            $xfSQ = 7;
-            $gapcontent = 1;
-            $gapcontent2 = 2;
-            $pdf->Rect($th_x + 6, $th_y + 6, $wid, $hgt);
-            $pdf->SetFont('Courier', '', 7);
-
-            $pdf->Text($th_x + $xfSQ, $th_y + 3.5 + $yads, 'ITEM CODE : ' . trim($cmitmid) . '   ' . $host);
-            $pdf->Text($th_x + $xfSQ, $th_y + 6.5 + $yads, 'QTY : ' . $cserqty);
-            $pdf->Text($th_x + $xfSQ, $th_y + 9.5 + $yads, $v3n1);
-            $clebar = $pdf->GetStringWidth(trim($c3n1)) + 10;
-            $pdf->Code128($th_x + $xfSQ + 1, $th_y + 10.5 + $yads, $c3n1, $clebar, 5);
-
-            $pdf->Text($th_x + $xfSQ, $th_y + 17 + $yads + $gapcontent, $v3n2);
-            $clebar = $pdf->GetStringWidth(trim($c3n2)) + 10;
-            $pdf->Code128($th_x + $xfSQ + 1, $th_y + 18 + $yads + $gapcontent, $c3n2, $clebar, 5);
-
-            $pdf->Text($th_x + $xfSQ, $th_y + 24.5 + $yads + $gapcontent2, $v1p);
-            $clebar = $pdf->GetStringWidth(trim($c1p)) + 10;
-            $pdf->Code128($th_x + $xfSQ + 1, $th_y + 26 + $yads + $gapcontent2, $c1p, $clebar, 5);
-
-            $pdf->Text($th_x + $xfSQ + 1, $th_y + 34 + $yads + $gapcontent2, 'PART NO : ' . $cmitmsptno);
-            if ($crohs == '1') {
-                $pdf->Text($th_x + $xfSQ + 1, $th_y + 44, 'RoHS Compliant');
-            }
-            $pdf->Text($th_x + $xfSQ + 40, $th_y + 44, 'C/O : Made in ' . trim($cmade));
-            $pdf->Text($th_x + $xfSQ + 1, $th_y + 42 + $yads, $cuserid . " : " . $cfristname);
-            $pdf->Text($th_x + 40 + $xfSQ, $th_y + 38 + $yads, $currrtime);
-            $image_name = $noseri;
-            $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" ");
-            $op = shell_exec($cmd);
-            $image_name = str_replace("/", "xxx", $image_name);
-            $image_name = str_replace(" ", "___", $image_name);
-            $pdf->Image(base_url("assets/imgs/" . $image_name . ".png"), $th_x + 60 + $xfSQ, $th_y + 5 + $yads);
-        }
-        $pserial = '';
-        if (isset($_COOKIE["PRINTLABEL_RM"])) {
-            $pserial = $_COOKIE["PRINTLABEL_RM"];
-        } else {
-            exit('no data');
-        }
-        $wid = 68;
-        $hgt = 48;
-        $pprsize = $_COOKIE["PRINTLABEL_RM_SIZE"];
-        $lbltype = $_COOKIE["PRINTLABEL_RM_LBLTYPE"];
-
-        $host = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-        $pser = str_replace(str_split('"[]'), '', $pserial);
-        $pser = explode(",", $pser);
-
-        $rs = $this->SER_mod->selectBCFieldRM_in($pser);
-        //echo json_encode($rs);
-        $pdf = new PDF_Code39e128('L', 'mm', array(70, 50));
-        if ($lbltype == '1') {
-            $pdf = new PDF_Code39e128('L', 'mm', $pprsize);
-            $pdf->AddPage();
-            $hgt_p = $pdf->GetPageHeight();
-            $wid_p = $pdf->GetPageWidth();
-            $pdf->SetAutoPageBreak(true, 10);
-            $cY = 0;
-            $cX = 0;
-            $thegap = 8;
-            foreach ($rs as $r) {
-
-                $v3n1 = '(3N1) ' . trim($r->SER_ITMID);
-                $c3n1 = '3N1' . trim($r->SER_ITMID);
-                $v3n2 = '(3N2) ' . number_format($r->SER_QTY) . " " . trim($r->SER_LOTNO);
-                $c3n2 = '3N2 ' . number_format($r->SER_QTY, 0, "", "") . " " . trim($r->SER_LOTNO);
-                $v1p = '(1P) ' . trim($r->MITM_SPTNO);
-                $c1p = '1P' . trim($r->MITM_SPTNO);
-                $noseri = $r->SER_ID;
-                $cserqty = number_format($r->SER_QTY);
-                $cmitmid = $r->SER_ITMID;
-                $cmitmsptno = trim($r->MITM_SPTNO);
-                $cfristname = $r->MSTEMP_FNM;
-                $cuserid = $r->SER_USRID;
-                $crohs = $r->SER_ROHS;
-                $cmade = $r->MMADE_NM;
-                if (($hgt_p - ($cY + $thegap)) < $hgt) {
-                    $pdf->AddPage();
-                    $cY = 0;
-                    $cX = 0;
-                    printTagrm($pdf, $cX, $cY);
-                    $cX += $wid + $thegap;
-                } else {
-                    if (($wid_p - $cX) > ($wid + 4)) { // jika (lebar printer-posisi X)> lebar label
-                        printTagrm($pdf, $cX, $cY);
-                        $cX += $wid + $thegap;
-                    } else {
-                        $cY += $hgt + $thegap;
-                        if (($hgt_p - ($cY + $thegap)) < $hgt) {
-                            $pdf->AddPage();
-                            $cX = 0;
-                            $cY = 0;
-                            printTagrm($pdf, $cX, $cY);
-                        } else {
-                            $cX = 0;
-                            printTagrm($pdf, $cX, $cY);
-                        }
-                        $cX += $wid + $thegap;
-                    }
-                }
-            }
-        } else {
-            $pdf->SetAutoPageBreak(true, 1);
-            $pdf->SetMargins(0, 0);
-            foreach ($rs as $r) {
-                $image_name = $r->SER_ID;
-                $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" ");
-                $op = shell_exec($cmd);
-                $image_name = str_replace("/", "xxx", $image_name);
-                $image_name = str_replace(" ", "___", $image_name);
-
-                $v3n1 = '(3N1) ' . trim($r->SER_ITMID);
-                $c3n1 = '3N1' . trim($r->SER_ITMID);
-                $v3n2 = '(3N2) ' . number_format($r->SER_QTY) . " " . trim($r->SER_LOTNO);
-                $c3n2 = '3N2 ' . number_format($r->SER_QTY, 0, "", "") . " " . trim($r->SER_LOTNO);
-                $v1p = '(1P) ' . trim($r->MITM_SPTNO);
-                $c1p = '1P' . trim($r->MITM_SPTNO);
-
-                $pdf->AddPage();
-                $pdf->SetY(0);
-                $pdf->SetX(0);
-                $pdf->SetFont('Courier', '', 7);
-                $clebar = $pdf->GetStringWidth($c3n1) + 10;
-                $pdf->Text(2, 3.5, 'ITEM CODE : ' . $r->SER_ITMID . '   ' . $host);
-                $pdf->Text(2, 6.5, 'QTY : ' . number_format($r->SER_QTY));
-                $pdf->Text(2, 9.5, $v3n1);
-                // if(strpos($c3n1,"_")){
-                $pdf->Code128(2, 10.5, $c3n1, $clebar, 5);
-                // } else {
-                //     $pdf->Code39(2, 10.5,$c3n1);
-                // }
-
-                $clebar = $pdf->GetStringWidth($c3n2) + 10;
-                $pdf->Text(2, 18, $v3n2);
-                // if(strpos($c3n1,"_")){
-                $pdf->Code128(2, 19, $c3n2, $clebar, 5);
-                // } else {
-                //     $pdf->Code39(2, 19,$c3n2);
-                // }
-                $clebar = $pdf->GetStringWidth($c1p) + 10;
-                $pdf->Text(2, 26, $v1p);
-                $pdf->Code128(2, 27, $c1p, $clebar, 4);
-                $pdf->Text(2, 33, 'PART NO : ' . trim($r->MITM_SPTNO));
-                if ($r->SER_ROHS == '1') {
-                    $pdf->Text(2, 36, 'RoHS Compliant');
-                }
-                $pdf->Text(40, 36, 'C/O : Made in ' . trim($r->MMADE_NM));
-                $pdf->Text(2, 38, $r->SER_USRID . " : " . $r->MSTEMP_FNM);
-                $pdf->Text(40, 38, $currrtime);
-
-                $pdf->Image(base_url("assets/imgs/" . $image_name . ".png"), 60, 3);
-            }
-        }
-        $pdf->Output('I', 'LBL-IN-DO ' . date("d-M-Y") . '.pdf');
     }
 
     public function gettodaylist_infg()
@@ -2532,7 +2353,7 @@ class SER extends CI_Controller
         $cold_reff = $this->input->get('inid');
         $rsold_reff = $this->SER_mod->select_exact_byVAR(['SER_ID' => $cold_reff]);
         foreach ($rsold_reff as $r) {
-            // if($r['PDPP_BSGRP']!='PSI1PPZIEP'){
+
             if ($r['DOCTYPE'] == '1') {
                 $datar = array("cd" => "0", "msg" => "Please split the label on Plant 2 Menu");
                 array_push($myar, $datar);
@@ -2648,243 +2469,6 @@ class SER extends CI_Controller
         } else { /// HANDLE NON REGULAR
             $myar[] = ["cd" => "0", "msg" => "the process is under construction ._."];
             exit('{"status":' . json_encode($myar) . '}');
-        }
-    }
-
-    public function test_prc_splitplant1()
-    {
-        header('Content-Type: application/json');
-        $this->checkSession();
-        $currrtime = date('Y-m-d H:i:s');
-        $currdate = date('Y-m-d');
-        $myar = array();
-        $coldreff = $this->input->post('inoldreff');
-        $colditem = $this->input->post('inolditem');
-        $coldqty = $this->input->post('inoldqty');
-        $coldqty = intval(str_replace(',', '', $coldqty));
-        $coldjob = $this->input->post('inoldjob');
-
-        $ca_reff = $this->input->post('ina_reff');
-        $ca_itmcd = $this->input->post('ina_itmcd');
-        $ca_lot = $this->input->post('ina_lot');
-        $ca_qty = $this->input->post('ina_qty');
-        $ca_ok = $this->input->post('ina_isok');
-        $ca_remark = $this->input->post('ina_remark');
-        $ca_rawtxt = $this->input->post('ina_rawtxt');
-        $ca_count = count($ca_reff);
-
-        $CUSERID = $this->session->userdata('nama');
-
-        if ($this->SER_mod->check_Primary(['SER_ID' => $coldreff]) == 0) {
-            $myar[] = ["cd" => '0', "msg" => "Old Label not found {$coldreff} or may be already splitted"];
-            exit('{"status":' . json_encode($myar) . '}');
-        }
-
-        if ($this->SER_mod->check_Primary(['SER_ID' => $coldreff, 'SER_QTY >0' => null]) == 0) {
-            $myar[] = ["cd" => '0', "msg" => "qty old label = 0"];
-            exit('{"status":' . json_encode($myar) . '}');
-        }
-
-        //get last warehouse , location ....
-        if ($this->SISCN_mod->check_Primary(['SISCN_SER' => $coldreff]) > 0) {
-            $myar[] = ["cd" => '0', "msg" => "could not split delivered item label"];
-            exit('{"status":' . json_encode($myar) . '}');
-        } else {
-            $rsactive = $this->ITH_mod->select_active_ser($coldreff);
-            $rsser = $this->SER_mod->selectbyVAR(['SER_ID' => $coldreff]);
-            $bsgrp = '';
-            foreach ($rsser as $r) {
-                $bsgrp = $r['SER_BSGRP'];
-                break;
-            }
-            $rsactive_wh = $rsactive_loc = $rsactive_time = $rsactive_form = $rsactive_date = '';
-            foreach ($rsactive as $r) {
-                $rsactive_wh = trim($r['ITH_WH']);
-                $rsactive_loc = trim($r['ITH_LOC']);
-                $rsactive_date = trim($r['ITH_DATE']);
-                $rsactive_time = trim($r['ITH_LUPDT']);
-                $rsactive_form = trim($r['ITH_FORM']);
-            }
-            if ($rsactive_wh == 'QAFG') {
-                $myar[] = ["cd" => '0', "msg" => "could not split using this menu, ask MR. H or Mr. Z"]; //07 OKT 2020
-                exit('{"status":' . json_encode($myar) . '}');
-            }
-            // if($this->SER_mod->updatebyId(["SER_QTY" => 0, "SER_LUPDT" => $currrtime, "SER_USRID" => $CUSERID, "SER_CAT" => NULL ], $coldreff) >0){
-            //     $this->SERD_mod->deletebyID_label(['SERD2_SER' => $coldreff]);
-            $ser_insert_ok = 0;
-            $test_newreff = [];
-            for ($i = 0; $i < $ca_count; $i++) {
-                $preparedStatement = [
-                    "SER_ID" => $ca_reff[$i],
-                    "SER_DOC" => $coldjob,
-                    "SER_ITMID" => strtoupper($ca_itmcd[$i]),
-                    "SER_QTY" => $ca_qty[$i],
-                    "SER_LOTNO" => $ca_lot[$i],
-                    "SER_REFNO" => $coldreff,
-                    "SER_RAWTXT" => $ca_rawtxt[$i],
-                    "SER_GORNG" => $ca_ok[$i],
-                    "SER_LUPDT" => $currrtime,
-                    "SER_BSGRP" => ($rsactive_wh == 'AFWH3') ? null : $bsgrp,
-                    "SER_USRID" => $this->session->userdata('nama'),
-                ];
-                if ($ca_ok[$i] === '0') {
-                    $preparedStatement['SER_CAT'] = '2';
-                    $preparedStatement['SER_RMRK'] = $ca_remark[$i];
-                }
-                $test_newreff[] = $preparedStatement;
-                // $ser_insert_ok += $this->SER_mod->insert($preparedStatement);
-            }
-            // if($ser_insert_ok==$ca_count){
-            if (empty($rsactive)) {
-                $myar[] = ["cd" => "1", "msg" => "ok ok"];
-                exit('{"status":' . json_encode($myar) . '}');
-            }
-            if ($rsactive_form == "INC-QA-FG" && $rsactive_wh == "ARQA1") {
-                echo 'lokasi arqa1';
-            } elseif ($rsactive_wh == "ARPRD1") {
-                echo 'lokasi arprd1';
-            } elseif ($rsactive_wh == "AFWH3") {
-                #insert minus transaction
-                #need to separate row [split,split-convert]
-                $_tmp = [
-                    "ITH_ITMCD" => $colditem,
-                    "ITH_DATE" => $currdate,
-                    "ITH_FORM" => 'SPLIT-FG-LBL',
-                    "ITH_DOC" => $coldjob,
-                    "ITH_QTY" => -$coldqty,
-                    "ITH_SER" => $coldreff,
-                    "ITH_WH" => $rsactive_wh,
-                    "ITH_LOC" => $rsactive_loc,
-                    "ITH_LUPDT" => $currrtime,
-                    "ITH_REMARK" => "WIL-SPLIT",
-                    "ITH_USRID" => $CUSERID,
-                ];
-                $ret_min = 0; # $this->ITH_mod->insert($_tmp);
-                #enhance out
-                $uniqueAssy = array_values(array_unique($ca_itmcd));
-                $test_out_tx = [];
-                foreach ($uniqueAssy as $u) {
-                    for ($i = 0; $i < $ca_count; $i++) {
-                        if (strtoupper($u) === strtoupper($ca_itmcd[$i])) {
-                            $isfound = false;
-                            foreach ($test_out_tx as &$s) {
-                                if ($s['ITH_ITMCD'] === strtoupper($u)) {
-                                    $s['ITH_QTY'] -= $ca_qty[$i];
-                                    $isfound = true;
-                                    break;
-                                }
-                            }
-                            unset($s);
-
-                            if (!$isfound) {
-                                $test_out_tx[] = [
-                                    "ITH_ITMCD" => strtoupper($u),
-                                    "ITH_DATE" => $currdate,
-                                    "ITH_FORM" => strtoupper($u) === strtoupper($colditem) ? 'SPLIT-FG-LBL' : 'SPLIT-CNV-FG-OUT',
-                                    "ITH_DOC" => $coldjob,
-                                    "ITH_QTY" => -$ca_qty[$i],
-                                    "ITH_SER" => $coldreff,
-                                    "ITH_WH" => $rsactive_wh,
-                                    "ITH_LOC" => $rsactive_loc,
-                                    "ITH_LUPDT" => $currrtime,
-                                    "ITH_REMARK" => "WIL-SPLIT",
-                                    "ITH_USRID" => $CUSERID,
-                                ];
-                            }
-                        }
-                    }
-                }
-                #end
-                if ($ret_min > 0) {
-                    $ith_insert_ok = 0;
-                    for ($i = 0; $i < $ca_count; $i++) {
-                        if ((strpos(strtoupper($colditem), 'KD') !== false ||
-                            strpos(strtoupper($colditem), 'ASP') !== false
-                        ) && (!strpos(strtoupper($ca_itmcd[$i]), 'KD') !== false &&
-                            !strpos(strtoupper($ca_itmcd[$i]), 'ASP') !== false
-                        )
-                        ) {
-                            //echo "TRANSFER TO PRD";
-                            // $ith_insert_ok += $this->ITH_mod->insert(
-                            //     [
-                            //         "ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
-                            //         "ITH_DATE" => $currdate,
-                            //         "ITH_FORM" => 'SPLIT-FG-LBL',
-                            //         "ITH_DOC" => $coldjob,
-                            //         "ITH_QTY" => $ca_qty[$i],
-                            //         "ITH_SER" => $ca_reff[$i],
-                            //         "ITH_WH" => 'ARPRD1',
-                            //         "ITH_LOC" => 'TEMP',
-                            //         "ITH_LUPDT" => $currrtime,
-                            //         "ITH_REMARK" => "AFT-SPLIT",
-                            //         "ITH_USRID" => $CUSERID
-                            //     ]
-                            // );
-                        } else {
-                            if ((!strpos(strtoupper($colditem), 'KD') !== false &&
-                                !strpos(strtoupper($colditem), 'ASP') !== false
-                            ) && (strpos(strtoupper($ca_itmcd[$i]), 'KD') !== false ||
-                                strpos(strtoupper($ca_itmcd[$i]), 'ASP') !== false
-                            )
-                            ) {
-                                // $ith_insert_ok += $this->ITH_mod->insert(
-                                //     [
-                                //         "ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
-                                //         "ITH_DATE" => $currdate,
-                                //         "ITH_FORM" => 'SPLIT-FG-LBL',
-                                //         "ITH_DOC" => $coldjob,
-                                //         "ITH_QTY" => $ca_qty[$i],
-                                //         "ITH_SER" => $ca_reff[$i],
-                                //         "ITH_WH" => 'ARPRD1',
-                                //         "ITH_LOC" => 'TEMP',
-                                //         "ITH_LUPDT" => $currrtime,
-                                //         "ITH_REMARK" => "AFT-SPLIT",
-                                //         "ITH_USRID" => $CUSERID
-                                //     ]
-                                // );
-                            } else {
-                                //TO SAME WAREHOUSE
-                                // $ith_insert_ok += $this->ITH_mod->insert(
-                                //     [
-                                //         "ITH_ITMCD" => strtoupper($ca_itmcd[$i]),
-                                //         "ITH_DATE" => $currdate,
-                                //         "ITH_FORM" => 'SPLIT-FG-LBL',
-                                //         "ITH_DOC" => $coldjob,
-                                //         "ITH_QTY" => $ca_qty[$i],
-                                //         "ITH_SER" => $ca_reff[$i],
-                                //         "ITH_WH" => $rsactive_wh,
-                                //         "ITH_LOC" => $rsactive_loc,
-                                //         "ITH_LUPDT" => $currrtime,
-                                //         "ITH_REMARK" => "AFT-SPLIT",
-                                //         "ITH_USRID" => $CUSERID
-                                //     ]
-                                // );
-                            }
-                        }
-                    }
-                    if ($ith_insert_ok == $ca_count) {
-                        $myar[] = ["cd" => "1", "msg" => "ok .."];
-                        exit('{"status":' . json_encode($myar) . '}');
-                    } else {
-                        $myar[] = ["cd" => "0", "msg" => "Not All label add to transaction FG, please contact Admin"];
-                        exit('{"status":' . json_encode($myar) . '}');
-                    }
-                } else {
-                    $myar[] = ["cd" => "0", "msg" => "Could not minus transaction FG, please contact Admin"];
-                    die(json_encode(['status' => $myar, '$test_newreff' => $test_newreff, '$test_out_tx' => $test_out_tx]));
-                }
-            } else {
-                $myar[] = ["cd" => "0", "msg" => "Could not process to transaction, please contact Admin"];
-                die(json_encode(['status' => $myar, '$test_newreff' => $test_newreff]));
-            }
-            // } else {
-            //     $myar[] = ["cd" => "0", "msg" => "Not All label registered, please contact Admin"];
-            //     die(json_encode(['status' => $myar, '$test_newreff' => $test_newreff]));
-            // }
-            // } else {
-            //     $myar[] = ["cd" => "0", "msg" => "Could not update old reff data "];
-            //     exit('{"status":'.json_encode($myar).'}');
-            // }
         }
     }
 
