@@ -1700,7 +1700,16 @@ class DELV extends CI_Controller
             $saveRows = [];
             for ($i = 0; $i < $aRMDOCCount; $i++) {
                 $saveRows[] = [
-                    'DLVRMDOC_TXID' => $ctxid, 'DLVRMDOC_ITMID' => $armdoc_itmID[$i], 'DLVRMDOC_ITMQT' => str_replace(',', '', $armdoc_itmQT[$i]), 'DLVRMDOC_DO' => $armdoc_itmDO[$i], 'DLVRMDOC_AJU' => $armdoc_itmNOAJU[$i], 'DLVRMDOC_NOPEN' => $armdoc_itmNOPEN[$i], 'DLVRMDOC_PRPRC' => $armdoc_itmPRC[$i], 'DLVRMDOC_ZPRPRC' => $armdoc_itmPRC[$i], 'DLVRMDOC_LINE' => $i,
+                    'DLVRMDOC_TXID' => $ctxid, 
+                    'DLVRMDOC_ITMID' => $armdoc_itmID[$i], 
+                    'DLVRMDOC_ITMQT' => str_replace(',', '', $armdoc_itmQT[$i]), 
+                    'DLVRMDOC_DO' => $armdoc_itmDO[$i], 
+                    'DLVRMDOC_AJU' => $armdoc_itmNOAJU[$i], 
+                    'DLVRMDOC_NOPEN' => $armdoc_itmNOPEN[$i], 
+                    'DLVRMDOC_PRPRC' => $armdoc_itmPRC[$i], 
+                    'DLVRMDOC_ZPRPRC' => $armdoc_itmPRC[$i], 
+                    'DLVRMDOC_TYPE' => $armdoc_TYPE[$i], 
+                    'DLVRMDOC_LINE' => $i,
                 ];
             }
             if (count($saveRows)) {
