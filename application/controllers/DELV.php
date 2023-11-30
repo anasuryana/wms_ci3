@@ -7880,7 +7880,7 @@ class DELV extends CI_Controller
     public function _posting25($DOC)
     {
         $currentDate = date('Y-m-d H:i:s');
-        $csj = $this->input->get('insj');
+        $csj = $DOC;
         $now = DateTime::createFromFormat('U.u', microtime(true))->setTimezone(new DateTimeZone(date('T')));
         $startTM = $now->format('Y-m-d H:i:s:v');
         $rsUnfinished = $this->POSTING_mod->select_unfinished($csj);
@@ -16019,10 +16019,10 @@ class DELV extends CI_Controller
             ['NOMOR_AJU' => $NomorAju]
         );
         $data = [];
-        // if (!empty($TPBData)) {
-        //     $message = 'Already exist in TPB';
-        if (empty($TPBData)) {
-            $message = 'Please posting to TPB first';
+        if (!empty($TPBData)) {
+            $message = 'Already exist in TPB';
+        // if (empty($TPBData)) {
+        //     $message = 'Please posting to TPB first';
         } else {
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
             $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
@@ -16040,17 +16040,17 @@ class DELV extends CI_Controller
             $RSHeaderPosted = $this->DELV_mod->selectPostedDocument(['DLV_ID'], ['DLV_ID' => $doc]);
             # jalankan fungsi request exbc
             if (empty($RSHeaderPosted)) {
-                die(json_encode(['message' => 'data null']));
-                // $result = $this->_posting25($doc);
+                
+                $result = $this->_posting25($doc);
 
-                // # validasi apakah request berjalan dengan mulus
-                // if ($result['status']['cd'] != 1) {
-                //     $respon = [
-                //         'message' => $result['status']['msg'],
-                //     ];
-                //     $this->output->set_status_header(400);
-                //     die(json_encode($respon));
-                // }
+                # validasi apakah request berjalan dengan mulus
+                if ($result['status']['cd'] != 1) {
+                    $respon = [
+                        'message' => $result['status']['msg'],
+                    ];
+                    $this->output->set_status_header(400);
+                    die(json_encode($respon));
+                }
             }
             # akhir jalankan
 
