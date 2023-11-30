@@ -192,9 +192,12 @@
         </div>
     </div>
 </div>
+<script type="text/javascript" src="<?=base_url("assets/js/smt.js")?>"></script>
 <script>
     var uidnya = '<?php echo $sapaDiaID; ?>';
     var home_selected_id = ''
+    var PWPOL = {}
+
     function dlgExit(){
         if(confirm("Are You sure want to exit ?")){
             window.open("<?=base_url("pages/logout")?>","_self");
@@ -466,40 +469,8 @@
         })
     }
 
-    function smtPWValidator(pvalue) {
-        const minimumLengthPassword = parseInt("<?=$PASSWORD_MININUM_LENGTH?>") 
-        let numberList = [...Array(10).keys()]
-        let specialCharList = ['~','!','@','#','$','%','^','&','*','(',')','_','+',':','"','<','>','?','{','}','|']
-        if(pvalue.trim().length<minimumLengthPassword) {
-            return {cd: '0', msg : `At least ${minimumLengthPassword} characters`}
-        }
-
-        let isFound = false
-        for(let i=0; i<numberList.length; i++) {
-            if(pvalue.includes(numberList[i])) {
-                isFound = true
-                break
-            }
-        }
-        if(!isFound) {
-            return {cd: '0', msg : 'At least 1 numerical character'}
-        }
-        
-        isFound = false
-        for(let i=0; i<specialCharList.length; i++) {
-            if(pvalue.includes(specialCharList[i])) {
-                isFound = true
-                break
-            }
-        }
-        if(!isFound) {
-            return {cd: '0', msg : 'At least 1 special character'}
-        }
-        return  {cd: '1', msg : 'OK'}
-    }
-
     function txtnewpw_eKeyUp(e){
-        let statusPW = smtPWValidator(e.target.value)
+        let statusPW = smtPWValidator(e.target.value, PWPOL)
         if(statusPW.cd==='1') {
             newpwweb_div.innerHTML = `<span class="badge bg-success">${statusPW.msg}</span>`
         } else {
@@ -513,12 +484,11 @@
             const txtNewPW = document.getElementById('txtnewpw')
             const txtConfirmPW = document.getElementById('txtconfirmpw')
             if(txtNewPW.value === txtConfirmPW.value){
-                const statusPW = smtPWValidator(txtNewPW.value)
+                const statusPW = smtPWValidator(txtNewPW.value, PWPOL)
                 if(statusPW.cd === '1') {
                     newpwweb_div.innerHTML = `<span class="badge bg-success">${statusPW.msg}</span>`
                 } else {
                     newpwweb_div.innerHTML = `<span class="badge bg-warning">${statusPW.msg}</span>`
-                    statusPW.focus()
                     return
                 }
                 if(confirm("Are you sure ?")){
@@ -578,17 +548,26 @@
     function getOldPW(){
         let pw = $('#txtoldpw').val()
         let hasil =  $.ajax({
-            type: "get",
-            url: "<?=base_url('user/getpw_sts')?>",
-            dataType: "text",
-            data: {inUID : uidnya,inPw: pw },
-            async: false,
-            success:function(response) {
-            },
-            error:function(xhr,ajaxOptions, throwError) {
-            alert(throwError);
-            }
-            })
+                        type: "get",
+                        url: "<?=base_url('user/getpw_sts')?>",
+                        dataType: "text",
+                        data: {inUID : uidnya,inPw: pw },
+                        async: false,
+                        success:function(response) {
+                        },
+                        error:function(xhr,ajaxOptions, throwError) {
+                            alert(throwError);
+                        }
+                    })
         return hasil.responseText;
     }
+
+    $.ajax({
+        type: "GET",
+        url: "<?=base_url('User/password_policy')?>",
+        dataType: "json",
+        success: function (response) {
+            PWPOL = {PWPOL_LENGTH: response.data[0].PWPOL_LENGTH, PWPOL_ISCOMPLEX: response.data[0].PWPOL_ISCOMPLEX}
+        }
+    });
 </script>

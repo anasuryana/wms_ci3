@@ -113,6 +113,7 @@
     </div>
 </div>
 <script>
+    
     $("#USER_MODUSR").on('shown.bs.modal', function() {
         usr_txtsearch.focus()
     });
@@ -194,7 +195,7 @@
     }
 
     function txtuserpw_reg_eKeyUp(e) {
-        let statusPW = smtPWValidator(e.target.value)
+        let statusPW = smtPWValidator(e.target.value, PWPOL)
         if (statusPW.cd === '1') {
             txtuserpw_div.innerHTML = `<span class="badge bg-success">${statusPW.msg}</span>`
         } else {
@@ -243,7 +244,7 @@
         }
 
         //validate WEBApp password
-        let statusPW = smtPWValidator(qpw1)
+        let statusPW = smtPWValidator(qpw1, PWPOL)
         if (statusPW.cd === '1') {
             txtuserpw_div.innerHTML = `<span class="badge bg-success">${statusPW.msg}</span>`
         } else {
