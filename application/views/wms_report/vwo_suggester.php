@@ -136,6 +136,7 @@
     }
     function wosuggester_btn_new_eC() {
         wosuggester_sso_part.setData([[],[],[],[],[]])
+        wosuggester_sso_simcheck.setData([[]])
     }
     var mpurordata = [
        [''],

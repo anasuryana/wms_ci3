@@ -60,9 +60,13 @@ class WO extends CI_Controller
                         $r['Status'] = 'FOUND BUT DIFFERENT LINE';
                     }
                 }
-            }            
+            }
+            if(!$r['Status']) {
+                $r['Status'] = 'NOT FOUND';
+            }
         }
         unset($r);
+        
 
         die(json_encode(['data' => $Requirements, '$WOs' => $WOs]));
     }
