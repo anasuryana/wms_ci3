@@ -1007,7 +1007,7 @@
         let asection = []
         let asubject = []
 
-        if(txt_reqby.value.trim().length <= 3) {
+        if(txt_reqby.value.trim().length <= 1) {
             txt_reqby.focus()
             alertify.warning('Requestor is required')
             return
