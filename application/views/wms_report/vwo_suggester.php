@@ -14,14 +14,31 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="wosuggester_home-tab" data-bs-toggle="tab" data-bs-target="#wosuggester_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true">Input</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="wosuggester_checksim-tab" data-bs-toggle="tab" data-bs-target="#wosuggester_tab_checksim" type="button" role="tab" aria-controls="home" aria-selected="true">Simulation Checker</button>
+                </li>
             </ul>
                 <div class="tab-content" id="wosuggester_myTabContent">
                     <div class="tab-pane fade show active" id="wosuggester_tabRM" role="tabpanel" aria-labelledby="home-tab">
-                        <div class="container-fluid">
+                        <div class="container-fluid">                            
                             <div class="row">
                                 <div class="col-md-12 mb-1 table-responsive">
                                     <div id="vcritical_partcd"></div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="wosuggester_tab_checksim" role="tabpanel">
+                        <div class="row mt-1 mb-1">
+                            <div class="col-md-12">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" id="wosuggester_btn_check" title="Checker" onclick="wosuggester_btn_checker_eC(this)">Check</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-1 table-responsive">
+                                <div id="wosuggester_sim_container"></div>
                             </div>
                         </div>
                     </div>
@@ -148,4 +165,79 @@
 
         ],
     });
+    var wosuggester_sso_simcheck = jspreadsheet(wosuggester_sim_container, {
+        data: [,],
+        columns: [
+            {
+                type: 'text',
+                title:'Work Order',
+                width:250,
+                align: 'left'
+            },
+            {
+                type: 'text',
+                title:'Line',
+                width:150,
+                align: 'left'
+            },
+
+        ],
+    });
+
+    function wosuggester_btn_checker_eC(p) {
+        let datanya_RM = wosuggester_sso_simcheck.getData()
+        let dataList = datanya_RM.filter((data) => data[0].length > 1)
+        let ReffList = []
+        let LineList = []        
+
+        dataList.forEach((arrayItem) => {
+            let _wo = arrayItem[0].trim()
+            if( !ReffList.includes(_wo) ) {
+                ReffList.push(_wo)
+                LineList.push(arrayItem[1].trim())
+            }
+        })
+
+        p.disabled = true
+        p.innerHTML = 'Please wait'
+        // console.log(wosuggester_sso_simcheck)
+        console.log(datanya_RM)
+        console.log(datanya_RM.length)
+        $.ajax({
+            type: "POST",
+            url: "<?=base_url('WO/checkSimulation')?>",
+            data: {ReffList: ReffList, LineList : LineList},
+            dataType: "json",
+            success: function (response) {
+                p.innerHTML = 'Check'
+                p.disabled = false
+                for(let i=0; i<datanya_RM.length; i++) {
+                    let woInput = wosuggester_sso_simcheck.getCell( 'A'+(i+1) ).innerText
+                    response.data.forEach((arrayItem) => {
+                        if(arrayItem['WO'] === woInput) {
+                            switch(arrayItem['Status']) {
+                                case 'OK':
+                                    wosuggester_sso_simcheck.setStyle('A'+(i+1), 'background-color', '#91ffb4')
+                                    wosuggester_sso_simcheck.setStyle('B'+(i+1), 'background-color', '#91ffb4')
+                                    break;
+                                case 'FOUND BUT DIFFERENT LINE':
+                                    wosuggester_sso_simcheck.setStyle('A'+(i+1), 'background-color', '#ffd700')
+                                    wosuggester_sso_simcheck.setStyle('B'+(i+1), 'background-color', '#ffd700')
+                                    break;
+                                case 'NOT FOUND':
+                                    wosuggester_sso_simcheck.setStyle('A'+(i+1), 'background-color', '#b22222')
+                                    wosuggester_sso_simcheck.setStyle('B'+(i+1), 'background-color', '#b22222')
+                                    break;
+                            }                        
+                        }
+                    })                    
+                }
+            },
+            error: function(xhr, xopt, xthrow) {
+                p.innerHTML = 'Check'
+                alertify.error(xthrow)
+                p.disabled = false
+            }
+        });
+    }
 </script>

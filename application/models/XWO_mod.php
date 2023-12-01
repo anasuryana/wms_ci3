@@ -90,6 +90,14 @@ class XWO_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectWOSIM($strWOList) {
+        $qry = "SELECT XWO.*,RTRIM(PIS1_WONO) PIS1_WONO, RTRIM(PIS1_LINENO) PIS1_LINENO 
+        FROM XWO LEFT JOIN XPIS1 ON PDPP_WONO=PIS1_WONO AND PDPP_BSGRP=PIS1_BSGRP
+        WHERE PDPP_WONO IN ($strWOList)";
+        $query = $this->db->query($qry);
+        return $query->result_array();
+    }
+
     public function selectProcess($passyCode)
     {
         $qry = "SELECT MBLA_MDLCD

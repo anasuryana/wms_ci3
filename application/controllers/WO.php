@@ -26,6 +26,47 @@ class WO extends CI_Controller
         $this->load->view('wms_report/vwo_suggester');
     }
 
+    public function checkSimulation() {
+        $ReffList = $this->input->post('ReffList');
+        $LineList = $this->input->post('LineList');
+        $TotalData = is_array($ReffList) ? count($ReffList) : 0;
+
+        $NOT_FOUND = 0;
+        $FOUND_BUT_NOT_SAME_LINE = 1;
+        $OK = 3;
+
+        $Requirements = [];
+        for($i=0; $i<$TotalData; $i++) {
+            $Requirements[] = [
+                'WO' => $ReffList[$i], 
+                'InputLine' => $LineList[$i], 
+                'PlannedLine' => NULL, 
+                'Status' => NULL, 
+            ];
+        }
+
+        $strWOList = is_array($ReffList) ? "'" . implode("','", $ReffList) . "'" : "''";
+        $WOs = $this->XWO_mod->selectWOSIM($strWOList);
+        
+        foreach($Requirements as &$r) {
+            foreach($WOs as $w) {
+                if($w['PDPP_WONO'] === $r['WO'] && $r['Status'] !== 'OK') {
+                    if($w['PIS1_LINENO'] === $r['InputLine']) {
+                        $r['Status'] = 'OK';
+                        $r['PlannedLine'] = $w['PIS1_LINENO'];
+                        break;
+                    } else {
+                        $r['PlannedLine'] = $w['PIS1_LINENO'];
+                        $r['Status'] = 'FOUND BUT DIFFERENT LINE';
+                    }
+                }
+            }            
+        }
+        unset($r);
+
+        die(json_encode(['data' => $Requirements, '$WOs' => $WOs]));
+    }
+
     public function suggestProcess()
     {
         $woReff = $this->input->post('woReff');
