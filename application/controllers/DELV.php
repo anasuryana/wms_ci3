@@ -3326,6 +3326,7 @@ class DELV extends CI_Controller
             $pdf->SetMargins(0, 0);
             $rsinv = [];
             if ($rswhSI === 'AFWH3RT' || $rswhSI === 'AFWH3') {
+                
                 $rsinv = $this->setPriceRS(base64_encode($pid));
                 $rsresume = [];
                 $rsmultiprice = [];
@@ -3354,6 +3355,7 @@ class DELV extends CI_Controller
                     }
                 }
                 unset($k);
+                
                 foreach ($rsresume as $k) {
                     if ($k['RCOUNT'] > 1) {
                         $rsmultiprice[] = $k;
@@ -3388,7 +3390,7 @@ class DELV extends CI_Controller
                     ];
                 }
             }
-
+            
             $pdf->SetFont('Arial', '', 8);
             $pdf->Text(144, 67, 'Nopen : ' . $hinv_nopen);
             $pdf->Text(162, 78 + 5, $hinv_inv);
@@ -9203,6 +9205,7 @@ class DELV extends CI_Controller
             }
         }
         unset($k);
+
         foreach ($rs as &$k) {
             foreach ($rscurrentPrice_plot as &$s) {
                 $bal = $k['SISOQTY'] - $k['SISOQTY_X'];
@@ -9229,8 +9232,20 @@ class DELV extends CI_Controller
                     unset($b);
                     if (!$isfound) {
                         $rsPriceItemSer[] = [
-                            'DLV_ID' => $doc, 'SISOQTY' => $qtyuse, 'SSO2_SLPRC' => $s['SSO2_SLPRC'], 'SSO2_MDLCD' => $s['ITMID']#
-                            , 'CIF' => $qtyuse * $s['SSO2_SLPRC'], 'NWG' => $k['NWG'], 'MITM_HSCD' => $k['MITM_HSCD'], 'MITM_STKUOM' => $k['MITM_STKUOM'], 'SISOQTY_X' => 0, 'MITM_ITMD1' => $k['MITM_ITMD1'], 'CPO' => $s['SISO_CPONO'], 'SISO_SOLINE' => $s['SISO_SOLINE'], 'SI_BSGRP' => $k['SI_BSGRP'], 'SI_CUSCD' => $k['SI_CUSCD'],
+                            'DLV_ID' => $doc, 
+                            'SISOQTY' => $qtyuse, 
+                            'SSO2_SLPRC' => $s['SSO2_SLPRC'], 
+                            'SSO2_MDLCD' => $s['ITMID'],
+                            'CIF' => $qtyuse * $s['SSO2_SLPRC'], 
+                            'NWG' => $k['NWG'], 
+                            'MITM_HSCD' => $k['MITM_HSCD'], 
+                            'MITM_STKUOM' => $k['MITM_STKUOM'], 
+                            'SISOQTY_X' => 0, 
+                            'MITM_ITMD1' => $k['MITM_ITMD1'], 
+                            'CPO' => $s['SISO_CPONO'], 
+                            'SISO_SOLINE' => $s['SISO_SOLINE'], 
+                            'SI_BSGRP' => $k['SI_BSGRP'], 
+                            'SI_CUSCD' => $k['SI_CUSCD'],
                         ];
                     }
                     if ($k['SISOQTY'] === $k['SISOQTY_X']) {
