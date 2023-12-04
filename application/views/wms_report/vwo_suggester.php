@@ -201,9 +201,7 @@
 
         p.disabled = true
         p.innerHTML = 'Please wait'
-        // console.log(wosuggester_sso_simcheck)
-        console.log(datanya_RM)
-        console.log(datanya_RM.length)
+        
         $.ajax({
             type: "POST",
             url: "<?=base_url('WO/checkSimulation')?>",
@@ -213,9 +211,9 @@
                 p.innerHTML = 'Check'
                 p.disabled = false
                 for(let i=0; i<datanya_RM.length; i++) {
-                    let woInput = wosuggester_sso_simcheck.getCell( 'A'+(i+1) ).innerText
+                    let woInput = wosuggester_sso_simcheck.getCell( 'A'+(i+1) ).innerText.toUpperCase()
                     response.data.forEach((arrayItem) => {
-                        if(arrayItem['WO'] === woInput) {
+                        if(arrayItem['WO'].toUpperCase() === woInput) {
                             switch(arrayItem['Status']) {
                                 case 'OK':
                                     wosuggester_sso_simcheck.setStyle('A'+(i+1), 'background-color', '#91ffb4')

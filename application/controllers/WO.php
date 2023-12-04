@@ -38,8 +38,8 @@ class WO extends CI_Controller
         $Requirements = [];
         for($i=0; $i<$TotalData; $i++) {
             $Requirements[] = [
-                'WO' => $ReffList[$i], 
-                'InputLine' => $LineList[$i], 
+                'WO' => strtoupper($ReffList[$i]), 
+                'InputLine' => strtoupper($LineList[$i]), 
                 'PlannedLine' => NULL, 
                 'Status' => NULL, 
             ];
