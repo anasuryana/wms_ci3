@@ -29,16 +29,19 @@ class MDEL extends CI_Controller {
         $tpbDate = $this->input->post('tpbDate');
         $txcode = $this->input->post('txcode');
         $myar = [];
-        if($this->DELV_mod->updatebyVAR_DELCD(['MDEL_ZNAMA' => $cusNM
-                        , 'MDEL_ADDRCUSTOMS' => $addr
-                        , 'MDEL_ZTAX' => $tax
-                        , 'MDEL_ZSKEP' => $tpbno
-                        ,'MDEL_TXCD' => $txcode
-                        , 'MDEL_ZSKEP_DATE' => $tpbDate
-                        ]
-                        ,['MDEL_DELCD' => $dlvCD]) 
-                        ) {
-                            $myar[] = ['cd' => 1, 'msg' => 'Updated successfully'];
+        if($this->DELV_mod->updatebyVAR_DELCD([
+            'MDEL_ZNAMA' => $cusNM
+            ,'MDEL_DELNM' => $cusNM
+            ,'MDEL_ADDRCUSTOMS' => $addr
+            ,'MDEL_ZTAX' => $tax
+            ,'MDEL_ZSKEP' => $tpbno
+            ,'MDEL_TXCD' => $txcode
+            ,'MDEL_ZSKEP_DATE' => $tpbDate
+            ]
+            ,['MDEL_DELCD' => $dlvCD]) 
+            ) 
+        {
+            $myar[] = ['cd' => 1, 'msg' => 'Updated successfully'];
         } else {
             $myar[] = ['cd' => 0, 'msg' => 'Could not be updated'];
         }
@@ -60,6 +63,7 @@ class MDEL extends CI_Controller {
                 "MDEL_DELCD" => $delcode,
                 "MDEL_TXCD" => $lastnum,
                 "MDEL_ZNAMA" => $delname,
+                "MDEL_DELNM" => $delname,
                 "MDEL_ADDRCUSTOMS" => $deladdr,
             ];
             $this->DELV_mod->insert_address($data);
