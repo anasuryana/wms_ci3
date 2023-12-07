@@ -531,4 +531,254 @@ class DELVHistory extends CI_Controller
         $rs = $this->ITH_mod->select_deliv_part_to3rdparty($pdate1, $pdate2, $sbgroup);
         die(json_encode(['data' => $rs]));
     }
+
+    public function reportDisposeRM()
+    {
+        ini_set('max_execution_time', '-1');
+        $rsRM = $this->DisposeDraft_mod->selectDraft('P-DEC22-JAN23');
+        $ScrapDocs = ['22/11/28/0003',
+        '22/11/29/0004',
+        '22/12/01/0001',
+        '22/12/05/0001',
+        '22/12/07/0001',
+        '22/12/07/0004',
+        '22/12/12/0006',
+        '22/12/15/0003',
+        '22/12/15/0004',
+        '22/12/16/0003',
+        '22/12/17/0001',
+        '22/12/19/0003',
+        '22/12/20/0007',
+        '22/12/21/0002',
+        '22/12/27/0002',
+        '22/12/27/0005',
+        '22/12/27/0007',
+        '22/12/27/0009',
+        '22/12/29/0001',
+        '22/12/29/0002',
+        '22/12/29/0003',
+        '23/01/02/0001',
+        '23/01/02/0002',
+        '23/01/04/0002',
+        '23/01/09/0002',
+        '23/01/10/0001',
+        '23/01/10/0003',
+        '23/01/10/0004',
+        '23/01/12/0001',
+        '23/01/12/0002',
+        '23/01/12/0003',
+        '23/01/16/0003',
+        '23/01/17/0001',
+        '23/01/17/0002',
+        '23/01/18/0002',
+        '23/01/19/0001',
+        '23/01/19/0002',
+        '23/01/20/0001',
+        '23/01/23/0001',
+        '23/01/25/0005',
+        '23/01/26/0007',
+        '23/01/30/0001',
+        '23/02/01/0001',
+        '23/02/02/0002',
+        '23/02/06/0001',
+        '23/02/08/0002',
+        '23/02/08/0003',
+        '23/02/08/0004',
+        '23/02/09/0001',
+        '23/02/09/0002',
+        '23/02/09/0004',
+        '23/02/09/0005',
+        '23/02/10/0001',
+        '23/02/10/0002',
+        '23/02/13/0003',
+        '23/02/14/0004',
+        '23/02/14/0006',
+        '23/02/15/0001',
+        '23/02/15/0003',
+        '23/02/17/0004',
+        '23/02/20/0004',
+        '23/02/21/0001',
+        '23/02/22/0006',
+        '23/02/23/0003',
+        '23/02/23/0004',
+        '23/02/23/0005',
+        '23/02/27/0011',
+        '23/03/01/0003',
+        '23/03/01/0004',
+        '23/03/01/0005',
+        '23/03/06/0003',
+        '23/03/06/0002',
+        '23/03/06/0004',
+        '23/03/07/0004',
+        '23/03/13/0001',
+        '23/03/13/0002',
+        '23/03/13/0003',
+        '23/03/14/0002',
+        '23/03/15/0003',
+        '23/03/15/0004',
+        '23/03/17/0001',
+        '23/03/20/0002',
+        '23/03/21/0003',
+        '23/03/24/0001',
+        '23/03/24/0003',
+        '23/03/24/0013',
+        '23/03/27/0014',
+        '23/03/27/0015',
+        '23/03/27/0016',
+        '23/03/28/0002',
+        '23/03/28/0003',
+        '23/03/28/0004',
+        '23/03/30/0004',
+        '23/03/30/0006',
+        '23/03/30/0007',
+        '23/03/30/0008',
+        '23/03/31/0008',
+        '23/04/03/0009',
+        '23/04/03/0010',
+        '23/04/04/0003',
+        '23/04/04/0004',
+        '23/04/05/0001',
+        '23/04/10/0001',
+        '23/04/13/0001',
+        '23/04/17/0001',
+        '23/04/18/0001',
+        '23/04/18/0002',
+        '23/04/27/0006',
+        '23/04/27/0007',
+        '23/04/28/0008',
+        '23/04/28/0009',
+        '23/05/02/0008',
+        '23/05/02/0009',
+        '23/05/02/0010',
+        '23/05/03/0009',
+        '23/05/04/0014',
+        '23/05/04/0016',
+        '23/05/05/0011',
+        '23/05/05/0015',
+        '23/05/05/0018',
+        '23/05/05/0024',
+        '23/05/08/0001',
+        '23/05/09/0003',
+        '23/05/12/0002',
+        '23/05/17/0002',
+        '23/05/17/0003',
+        '23/05/17/0004',
+        '23/05/19/0002',
+        '23/05/22/0001',
+        '23/05/22/0002',
+        '23/05/22/0003',
+        '23/05/22/0004',
+        '23/05/26/0001',
+        '23/05/26/0003',
+        '23/05/29/0002',
+        '23/05/30/0001',
+        '23/05/31/0001',
+        '23/06/05/0001',
+        '23/06/06/0002',
+        '23/06/12/0001',
+        '23/06/12/0002',
+        '23/06/12/0003',
+        '23/06/12/0004',
+        '23/06/13/0001',
+        '23/06/14/0005',
+        '23/06/19/0001',
+        '23/06/19/0002',
+        '23/06/19/0003',
+        '23/06/23/0001',
+        '23/06/23/0002',
+        '23/06/23/0003',
+        '23/06/23/0004',
+        'P-DEC22-JAN23'
+        ];
+        
+        $rsEXBC = $this->ZRPSTOCK_mod->select_group_columns_where_remark_in(
+            [
+                "UPPER(rtrim(RPSTOCK_ITMNUM)) ITMNUM", "SUM(ABS(RPSTOCK_QTY)) BCQTY", "SUM(ABS(RPSTOCK_QTY)) BCBAKQTY", "RPSTOCK_DOC", "RPSTOCK_NOAJU", "RPSTOCK_BCNUM", "RPSTOCK_BCDATE", "RPSTOCK_BCTYPE",
+                "RCV_BM", "RCV_PPN", "RCV_PPH", "URUT", "RPSTOCK_REMARK",
+            ],
+            $ScrapDocs
+        );
+
+        $rsfix = [];
+        foreach ($rsRM as &$r) {
+            $r['QTYPLOT'] = 0;
+            foreach ($rsEXBC as &$k) {
+                $reqPlot = $r['QTY'] - $r['QTYPLOT'];
+                if ($r['PART_CODE'] === $k['ITMNUM'] && $reqPlot > 0 && $k['BCQTY'] > 0) {
+                    $theqty = $reqPlot;
+                    if ($reqPlot > $k['BCQTY']) {
+                        $r['QTYPLOT'] += $k['BCQTY'];
+                        $theqty = $k['BCQTY'];
+                        $k['BCQTY'] = 0;
+                    } else {
+                        $k['BCQTY'] -= $reqPlot;
+                        $r['QTYPLOT'] += $reqPlot;
+                    }
+
+                    $_isFound = false;
+                    foreach($rsfix as &$s) {
+                        if($s['ITEM_CODE'] === $r['PART_CODE']
+                        && $s['AJU'] === $k['RPSTOCK_NOAJU']
+                        && $s['BCNO'] === $k['RPSTOCK_BCNUM']
+                        && $s['URUT'] === $k['URUT']
+                        ) {
+                            $s['BCQT'] += $theqty;
+                            $_isFound = true;
+                            break;
+                        }
+                    }
+                    unset($s);
+
+                    if(!$_isFound) {
+                        $rsfix[] = [                        
+                            'ITEM_DESCRIPTION' => $r['RMDESC'],
+                            'ITEM_CODE' => $r['PART_CODE'],                        
+                            'UNITMEASUREMENT' => $r['RMUOM'],
+                            'BCQT' => $theqty,
+                            'BCTYPE' => $k['RPSTOCK_BCTYPE'],
+                            'BCNO' => $k['RPSTOCK_BCNUM'],
+                            'BCDATE' => $k['RPSTOCK_BCDATE'],
+                            'URUT' => $k['URUT'],
+                            'AJU' => $k['RPSTOCK_NOAJU'],
+                            'BM' => $k['RCV_BM'],
+                            'PPN' => $k['RCV_PPN'],
+                            'PPH' => $k['RCV_PPH'],
+                        ];
+                    }
+
+                    if ($r['QTY'] == $r['QTYPLOT']) {
+                        break;
+                    }
+                }
+            }
+            unset($k);
+        }
+        unset($r);      
+        
+        
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('RESUME');
+        $sheet->fromArray(array_keys($rsfix[0]), null, 'A1');
+        $sheet->fromArray($rsfix, null, 'A2');
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('TRACE_REQ');
+        $sheet->fromArray(array_keys($rsRM[0]), null, 'A1');
+        $sheet->fromArray($rsRM, null, 'A2');
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('TRACE_EXBC');
+        $sheet->fromArray(array_keys($rsEXBC[0]), null, 'A1');
+        $sheet->fromArray($rsEXBC, null, 'A2');
+
+        $stringjudul = "DISD2310_RM";
+        $writer = new Xlsx($spreadsheet);
+        $filename = $stringjudul; //save our workbook as this file name
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
 }
