@@ -3381,6 +3381,9 @@ echo $tohtml;
         }
 
         if (ttlcek > 0) {
+            if( txfg_ar_item_cd[0].toUpperCase().includes('ASP') ) {
+                txfg_consignee.value = 'IEI-ASP'
+            }
             if (txfg_isedit_mode) {
                 ttlcek += txfg_ttlcek;
             }
