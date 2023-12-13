@@ -65,6 +65,7 @@ class MDEL extends CI_Controller {
                 "MDEL_ZNAMA" => $delname,
                 "MDEL_DELNM" => $delname,
                 "MDEL_ADDRCUSTOMS" => $deladdr,
+                "MDEL_3RDP_AS" => 1
             ];
             $this->DELV_mod->insert_address($data);
             $myar[] = ['cd' => '1', 'msg' => 'Saved'];
