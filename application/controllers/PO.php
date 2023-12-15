@@ -845,6 +845,7 @@ class PO extends CI_Controller
             $YStart = (104 - $_y);
             $YExtra = 0;
             $total_amount_test = 0;
+            
             foreach ($rs as $r) {
                 if ($pdf->GetY() + $YExtra >= 164) {
                     $pdf->AddPage();
@@ -1023,7 +1024,7 @@ class PO extends CI_Controller
                 $pdf->SetXY(106, $YStart);
                 $pdf->Cell(15, 5, $itemum, 0, 0, 'C');
                 $pdf->Cell(25, 5, number_format($r['PO_QTY']), 0, 0, 'R');
-                $pdf->Cell(27.5, 5, number_format($r['PO_PRICE'], 2), 0, 0, 'R');
+                $pdf->Cell(27.5, 5,in_array($pser, ['23122132']) ? number_format($r['PO_PRICE'], 6) : number_format($r['PO_PRICE'], 2), 0, 0, 'R');
                 $pdf->Cell(27.5, 5, number_format($amount, 2), 0, 0, 'R');
                 $total_amount += $finalamount;
                 if ($YExtra2 > 0) {
