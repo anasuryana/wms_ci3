@@ -544,34 +544,7 @@
                 } else {
                     let isfound = false;
                     const rowdellength = response.data_delete.length
-                    if (response.data_relable.length > 0) {
-                        isfound = true;
-                        let tabell = document.getElementById("vtraceuniq_tbl_relable");
-                        let tableku2 = tabell.getElementsByTagName("tbody")[0];
-                        let ttlrows = tableku2.getElementsByTagName('tr').length;
-                        newrow = tableku2.insertRow(-1);
-                        newcell = newrow.insertCell(0)
-                        newcell.classList.add('font-monospace')
-                        newcell.innerHTML = response.data_relable[0].SER_OLDID;
-                        newcell = newrow.insertCell(1)
-                        newcell.classList.add('font-monospace', 'bg-success', 'text-light')
-                        newcell.innerHTML = response.data_relable[0].SER_NEWID
-                        newcell = newrow.insertCell(2)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = response.data_relable[0].SER_QTY
-                        newcell = newrow.insertCell(3)
-                        newcell.innerHTML = response.data_relable[0].PIC
-                        newcell = newrow.insertCell(4)
-                        newcell.innerHTML = response.data_relable[0].LOGSER_DT
-                        newcell = newrow.insertCell(5)
-                        newcell.style.cssText = 'text-align:center;cursor:pointer;';
-                        newcell.classList.add('bg-primary', 'text-white')
-                        newcell.innerHTML = "<i class='fas fa-history'></i>";
-                        newcell.title = "get transaction history";
-                        newcell.onclick = () => {
-                            vtraceuniq_e_showhistory(response.data_relable[0].SER_NEWID)
-                        }
-                    }
+                    
                     if (rowdellength > 0) {
                         isfound = true
                         let mydes = document.getElementById("vtraceuniq_divku_del");
@@ -618,7 +591,35 @@
                     if (!isfound) {
                         alertify.message(response.status[0].msg);
                     }
+                }
 
+                if (response.data_relable.length > 0) {
+                    isfound = true;
+                    let tabell = document.getElementById("vtraceuniq_tbl_relable");
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    let ttlrows = tableku2.getElementsByTagName('tr').length;
+                    newrow = tableku2.insertRow(-1);
+                    newcell = newrow.insertCell(0)
+                    newcell.classList.add('font-monospace')
+                    newcell.innerHTML = response.data_relable[0].SER_OLDID;
+                    newcell = newrow.insertCell(1)
+                    newcell.classList.add('font-monospace', 'bg-success', 'text-light')
+                    newcell.innerHTML = response.data_relable[0].SER_NEWID
+                    newcell = newrow.insertCell(2)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = response.data_relable[0].SER_QTY
+                    newcell = newrow.insertCell(3)
+                    newcell.innerHTML = response.data_relable[0].PIC
+                    newcell = newrow.insertCell(4)
+                    newcell.innerHTML = response.data_relable[0].LOGSER_DT
+                    newcell = newrow.insertCell(5)
+                    newcell.style.cssText = 'text-align:center;cursor:pointer;';
+                    newcell.classList.add('bg-primary', 'text-white')
+                    newcell.innerHTML = "<i class='fas fa-history'></i>";
+                    newcell.title = "get transaction history";
+                    newcell.onclick = () => {
+                        vtraceuniq_e_showhistory(response.data_relable[0].SER_NEWID)
+                    }
                 }
             },
             error: function(xhr, xopt, xthrow) {

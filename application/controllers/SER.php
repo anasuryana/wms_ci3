@@ -4631,29 +4631,31 @@ class SER extends CI_Controller
         $rsSI = $this->SISCN_mod->select_trace(['SISCN_SER' => $cid]);
         if (!empty($rs)) {
             $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
+            $rsrelabel = $this->LOGSER_mod->selectRelabelHistoryFromNewLabel($cid);            
         } else {
             $rsrelabel = $this->LOGSER_mod->select_new_label($cid);
-            $rsrelabel_fix = [];
-            if (count($rsrelabel)) {
-                foreach ($rsrelabel as $r) {
-                    $ar = explode("|", $r['LOGSER_KEYS']);
-                    if (count($ar) > 1) {
-                        $serid_new = substr($ar[5], 2, strlen($ar[5]));
-                        $serqty = substr($ar[3], 2, strlen($ar[3]));
-                        $rsrelabel_fix[] = [
-                            'SER_OLDID' => $cid, 'SER_NEWID' => $serid_new, 'SER_QTY' => $serqty, 'PIC' => $r['PIC'], 'LOGSER_DT' => $r['LOGSER_DT'],
-                        ];
-                    } else {
-                        $serid_new = $r['LOGSER_KEYS'];
-                        $serqty = 0;
-                        $rsrelabel_fix[] = [
-                            'SER_OLDID' => $cid, 'SER_NEWID' => $serid_new, 'SER_QTY' => $serqty, 'PIC' => $r['PIC'], 'LOGSER_DT' => $r['LOGSER_DT'],
-                        ];
-                    }
-                }
-            }
             $myar[] = ['cd' => 0, 'msg' => 'not found'];
         }
+
+        if (count($rsrelabel)) {
+            foreach ($rsrelabel as $r) {
+                $ar = explode("|", $r['LOGSER_KEYS']);
+                if (count($ar) > 1) {
+                    $serid_new = substr($ar[5], 2, strlen($ar[5]));
+                    $serqty = substr($ar[3], 2, strlen($ar[3]));
+                    $rsrelabel_fix[] = [
+                        'SER_OLDID' => $cid, 'SER_NEWID' => $serid_new, 'SER_QTY' => $serqty, 'PIC' => $r['PIC'], 'LOGSER_DT' => $r['LOGSER_DT'],
+                    ];
+                } else {
+                    $serid_new = $r['LOGSER_KEYS'];
+                    $serqty = 0;
+                    $rsrelabel_fix[] = [
+                        'SER_OLDID' => $cid, 'SER_NEWID' => $serid_new, 'SER_QTY' => $serqty, 'PIC' => $r['PIC'], 'LOGSER_DT' => $r['LOGSER_DT'],
+                    ];
+                }
+            }
+        }
+
         die(json_encode([
             'status' => $myar,
             'data' => $rs,
