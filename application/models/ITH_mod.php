@@ -2242,13 +2242,14 @@ class ITH_mod extends CI_Model
         return $query->result_array();
     }
 
-    public function selectForReturningwithIn_items($pDoc, $pDate, $pItems, $pDates)
+    public function selectForReturningwithIn_items($pDoc, $pDate, $pItems, $pDates, $pRemarks)
     {
         $this->db->from('v_ith_tblc');
         $this->db->like("ITH_DOC", $pDoc, 'after')
             ->where_in("ITH_FORM", ['INC-RET'])
             ->where("ITH_DATEC !=", $pDate)
             ->where_in("ITH_ITMCD", $pItems)
+            ->where_in("ITH_REMARK", $pRemarks)
             ->where_in("ITH_LUPDT", $pDates);
         $this->db->order_by("ITH_LUPDT");
         $query = $this->db->get();
@@ -2284,13 +2285,14 @@ class ITH_mod extends CI_Model
         $this->db->query($qry, [$newDate, $newDateTime, $PSN . '%', $oldDateTime, $itemcd]);
         return $this->db->affected_rows();
     }
-    public function update_return_kitting_date($PSN, $newDate, $newDateTime, $oldDateTime, $itemcd)
+    public function update_return_kitting_date($PSN, $newDate, $newDateTime, $oldDateTime, $itemcd, $remark)
     {
         $qry = "UPDATE ITH_TBL SET ITH_DATE=?,ITH_LUPDT=? where ITH_DOC LIKE ?
         AND ITH_FORM IN ('INC-RET','OUT-RET')
         AND ITH_LUPDT=?
-        AND ITH_ITMCD=?";
-        $this->db->query($qry, [$newDate, $newDateTime, $PSN . '%', $oldDateTime, $itemcd]);
+        AND ITH_ITMCD=?
+        AND ITH_REMARK=?";
+        $this->db->query($qry, [$newDate, $newDateTime, $PSN . '%', $oldDateTime, $itemcd, $remark]);
         return $this->db->affected_rows();
     }
 

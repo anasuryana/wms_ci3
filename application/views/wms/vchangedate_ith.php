@@ -131,6 +131,7 @@
                                                 <tr class="first">
                                                     <th rowspan="2" class="align-middle">Item Code</th>
                                                     <th rowspan="2" class="text-end align-middle">Qty</th>
+                                                    <th rowspan="2" class="text-center align-middle">Remark</th>
                                                     <th colspan="2" class="text-center">Date time</th>
                                                     <th rowspan="2" class="text-center"></th>
                                                 </tr>
@@ -158,6 +159,9 @@
         -document.getElementById('chgDateIth_stack0').offsetHeight
         -document.getElementById('chgDateIth_stack1').offsetHeight
         -90);
+    $("#chgDateIth_tbl_rtn_div").css('height', $(window).height()
+        
+        -150);
     $("#chgDateIth_reqdate").datepicker({
         format: 'yyyy-mm-dd',
         autoclose:true
@@ -268,16 +272,19 @@
                         newrow = tableku2.insertRow(-1)
                         newcell = newrow.insertCell(0)
                         newcell.innerHTML = arrayItem['ITH_ITMCD']
-                        newcell = newrow.insertCell(1)
+                        newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-end')
                         newcell.innerHTML = arrayItem['ITH_QTY']
-                        newcell = newrow.insertCell(2)
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = arrayItem['ITH_REMARK']
+                        newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-center')
                         newcell.innerHTML = arrayItem['ITH_LUPDT']
-                        newcell = newrow.insertCell(3)
+                        newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-center')
                         newcell.innerHTML = arrayItem['TO_LUPDT']
-                        newcell = newrow.insertCell(4)
+                        newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-center')
                         newcell.innerHTML = `<input class="form-check-input" type="checkbox">`
                     })
@@ -330,12 +337,14 @@
         const ttlrows = chgDateIth_tbl_rtn.getElementsByTagName('tbody')[0].rows.length
         let aItems = []
         let aDates = []
+        let aRemarks = []
         for(let i=0;i<ttlrows;i++)
         {
-            if(chgDateIth_tbl_rtn.getElementsByTagName('tbody')[0].rows[i].cells[4].getElementsByTagName('input')[0].checked)
+            if(chgDateIth_tbl_rtn.getElementsByTagName('tbody')[0].rows[i].cells[5].getElementsByTagName('input')[0].checked)
             {
                 aItems.push(chgDateIth_tbl_rtn.getElementsByTagName('tbody')[0].rows[i].cells[0].innerText)
-                aDates.push(chgDateIth_tbl_rtn.getElementsByTagName('tbody')[0].rows[i].cells[2].innerText)
+                aRemarks.push(chgDateIth_tbl_rtn.getElementsByTagName('tbody')[0].rows[i].cells[2].innerText)
+                aDates.push(chgDateIth_tbl_rtn.getElementsByTagName('tbody')[0].rows[i].cells[3].innerText)
             }
         }
         if(aItems.length === 0)
@@ -348,7 +357,7 @@
             $.ajax({
                 type: "POST",
                 url: "<?=base_url('ITH/change_returned_psn_date')?>",
-                data: {doc: chgDateIth_rtn_doc.value, date: chgDateIth_rtn_reqdate.value, items: aItems, dates : aDates },
+                data: {doc: chgDateIth_rtn_doc.value, date: chgDateIth_rtn_reqdate.value, items: aItems, dates : aDates, remarks : aRemarks },
                 dataType: "json",
                 success: function (response) {
                     chgDateIth_btn_rtn_save.disable = false

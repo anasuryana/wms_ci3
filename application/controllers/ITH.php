@@ -3792,7 +3792,8 @@ class ITH extends CI_Controller
         $date = $this->input->post('date');
         $items = $this->input->post('items');
         $dates = $this->input->post('dates');
-        $rs = $this->ITH_mod->selectForReturningwithIn_items($doc, $date, $items, $dates);
+        $remarks = $this->input->post('remarks');
+        $rs = $this->ITH_mod->selectForReturningwithIn_items($doc, $date, $items, $dates , $remarks);
         $tmpTime = strtotime($date . ' +1 days');
         $date0 = date('Y-m-d', $tmpTime);
         $thedate = $date;
@@ -3811,7 +3812,8 @@ class ITH extends CI_Controller
                 $thedate,
                 $r['TO_LUPDT'],
                 $r['ITH_LUPDT'],
-                $r['ITH_ITMCD']
+                $r['ITH_ITMCD'],
+                $r['ITH_REMARK'],
             )) {
                 $affectedRows += 1;
                 $lastLineLog = $this->CSMLOG_mod->select_lastLine($doc, '') + 1;
@@ -3828,6 +3830,7 @@ class ITH extends CI_Controller
             }
         }
         unset($r);
+        
         die(json_encode([
             'status' => ['cd' => '1', 'msg' => $affectedRows . ' row(s) updated'], 'data' => $rs,
         ]));
