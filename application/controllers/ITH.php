@@ -3732,8 +3732,11 @@ class ITH extends CI_Controller
             );
         }
         unset($r);
+
+        $message = $affectedRows > 0 && fmod($affectedRows,2) == 0 ? 'Changed successfully' : 'Changed, but please contact Admin';
+
         die(json_encode([
-            'status' => ['cd' => '1', 'msg' => $affectedRows . ' row(s) updated'], 'data' => $rs,
+            'status' => ['cd' => '1', 'msg' => $message, 'affectedRows' => $affectedRows], 'data' => $rs,
         ]));
     }
     public function change_cancelling_date()

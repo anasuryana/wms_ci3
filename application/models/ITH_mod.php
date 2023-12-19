@@ -2171,7 +2171,7 @@ class ITH_mod extends CI_Model
     {
         $this->db->from('v_ith_tblc');
         $this->db->like("ITH_DOC", $pDoc, 'after')
-            ->like("ITH_DOC", 'SP-')
+            ->where_in("SUBSTRING(ITH_DOC,1,3)", ['SP-','PR-'])
             ->where_not_in("ITH_FORM", ['INC-RET', 'OUT-RET'])
             ->where("ITH_DATEC !=", $pDate);
         $this->db->order_by("ITH_LUPDT");
@@ -2218,7 +2218,7 @@ class ITH_mod extends CI_Model
     {
         $this->db->from('v_ith_tblc');
         $this->db->like("ITH_DOC", $pDoc, 'after')
-            ->like("ITH_DOC", 'SP-')
+            ->where_in("SUBSTRING(ITH_DOC,1,3)", ['SP-','PR-'])
             ->where_not_in("ITH_FORM", ['INC-RET', 'OUT-RET'])
             ->where("ITH_DATEC !=", $pDate)
             ->where_in("ITH_ITMCD", $pItems)
