@@ -289,7 +289,7 @@ class RETPRD extends CI_Controller
             $datas = [
                 'RETSCN_ID' =>  $newid, 'RETSCN_SPLDOC' => $cpsn, 'RETSCN_CAT' => $ccat, 'RETSCN_LINE' => $clne, 'RETSCN_FEDR' => $fr, 'RETSCN_ORDERNO' => $orderno,
                 'RETSCN_ITMCD' => $citm, 'RETSCN_LOT' => trim($clot), 'RETSCN_QTYBEF' => $cqbf, 'RETSCN_QTYAFT' => $cqaf, 'RETSCN_CNTRYID' => $ccry,
-                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_USRID' => $cuser
+                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_USRID' => $cuser , 'created_at' => $currrtime
             ];
             $toret = $this->SPLRET_mod->insert($datas);
             if ($toret > 0) {
@@ -397,7 +397,7 @@ class RETPRD extends CI_Controller
             $datas = [
                 'RETSCN_ID' =>  $newid, 'RETSCN_SPLDOC' => $cpsn, 'RETSCN_CAT' => $ccat, 'RETSCN_LINE' => $clne, 'RETSCN_FEDR' => $fr, 'RETSCN_ORDERNO' => $orderno,
                 'RETSCN_ITMCD' => $citm, 'RETSCN_LOT' => trim($clot), 'RETSCN_QTYBEF' => $cqbf, 'RETSCN_QTYAFT' => $cqaf, 'RETSCN_CNTRYID' => $ccry,
-                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_USRID' => $cuser
+                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_USRID' => $cuser, 'created_at' => $currrtime
             ];
             $toret = $this->SPLRET_mod->insert($datas);
             if ($toret > 0) {
@@ -475,7 +475,7 @@ class RETPRD extends CI_Controller
                             $datas = [
                                 'RETSCN_ID' =>  $newid, 'RETSCN_SPLDOC' => $cpsn, 'RETSCN_CAT' => $ccat, 'RETSCN_LINE' => $clne, 'RETSCN_FEDR' => $rsbefore['SPLSCN_FEDR'], 'RETSCN_ORDERNO' => $rsbefore['SPLSCN_ORDERNO'],
                                 'RETSCN_ITMCD' => $citm[0], 'RETSCN_LOT' => $lotasHome, 'RETSCN_QTYBEF' => $cqbf[0], 'RETSCN_QTYAFT' => $cqaf, 'RETSCN_CNTRYID' => $ccry,
-                                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_USRID' => $cuser
+                                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_USRID' => $cuser, 'created_at' => $currrtime
                             ];
                             $toret = $this->SPLRET_mod->insert($datas);
                             if ($toret > 0) {
@@ -541,7 +541,7 @@ class RETPRD extends CI_Controller
             $datas = [
                 'RETSCN_ID' =>  $newid, 'RETSCN_SPLDOC' => $cpsn, 'RETSCN_CAT' => $ccat, 'RETSCN_LINE' => $clne, 'RETSCN_FEDR' => $fr, 'RETSCN_ORDERNO' => $orderno,
                 'RETSCN_ITMCD' => $citm, 'RETSCN_LOT' => $clot, 'RETSCN_QTYBEF' => $cqbf, 'RETSCN_QTYAFT' => $cqaf, 'RETSCN_CNTRYID' => $ccry,
-                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_RMRK' => 'ANYWAY', 'RETSCN_USRID' => $this->session->userdata('nama')
+                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_RMRK' => 'ANYWAY', 'RETSCN_USRID' => $this->session->userdata('nama'), 'created_at' => $currrtime
             ];
             $toret = $this->SPLRET_mod->insert($datas);
             if ($toret > 0) {
@@ -597,7 +597,7 @@ class RETPRD extends CI_Controller
             $datas = [
                 'RETSCN_ID' =>  $newid, 'RETSCN_SPLDOC' => $cpsn, 'RETSCN_CAT' => $ccat, 'RETSCN_LINE' => $clne, 'RETSCN_FEDR' => $fr, 'RETSCN_ORDERNO' => $orderno,
                 'RETSCN_ITMCD' => $citm, 'RETSCN_LOT' => $clot, 'RETSCN_QTYBEF' => $cqbf, 'RETSCN_QTYAFT' => $cqaf, 'RETSCN_CNTRYID' => $ccry,
-                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_RMRK' => 'ANYWAY', 'RETSCN_USRID' => $cuser
+                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_RMRK' => 'ANYWAY', 'RETSCN_USRID' => $cuser, 'created_at' => $currrtime
             ];
             $toret = $this->SPLRET_mod->insert($datas);
             if ($toret > 0) {
@@ -686,7 +686,7 @@ class RETPRD extends CI_Controller
             $datas = [
                 'RETSCN_ID' =>  $newid, 'RETSCN_SPLDOC' => $cpsn, 'RETSCN_CAT' => $ccat, 'RETSCN_LINE' => $clne, 'RETSCN_FEDR' => $fr, 'RETSCN_ORDERNO' => $orderno,
                 'RETSCN_ITMCD' => $citm, 'RETSCN_LOT' => $clot, 'RETSCN_QTYBEF' => $cqbf, 'RETSCN_QTYAFT' => $cqaf, 'RETSCN_CNTRYID' => $ccry,
-                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_USRID' => $this->session->userdata('nama')
+                'RETSCN_ROHS' => $crhs, 'RETSCN_LUPDT' => $currrtime, 'RETSCN_USRID' => $this->session->userdata('nama'), 'created_at' => $currrtime
             ];
             $toret = $this->SPLRET_mod->insert($datas);
             if ($toret > 0) {
