@@ -17,10 +17,13 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="wosuggester_checksim-tab" data-bs-toggle="tab" data-bs-target="#wosuggester_tab_checksim" type="button" role="tab" aria-controls="home" aria-selected="true">Simulation Checker</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="wosuggester_check_line-tab" data-bs-toggle="tab" data-bs-target="#wosuggester_tab_check_line" type="button" role="tab" aria-controls="home" aria-selected="true">Check Production Line</button>
+                </li>
             </ul>
                 <div class="tab-content" id="wosuggester_myTabContent">
                     <div class="tab-pane fade show active" id="wosuggester_tabRM" role="tabpanel" aria-labelledby="home-tab">
-                        <div class="container-fluid">                            
+                        <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-12 mb-1 table-responsive">
                                     <div id="vcritical_partcd"></div>
@@ -39,6 +42,34 @@
                         <div class="row">
                             <div class="col-md-12 mb-1 table-responsive">
                                 <div id="wosuggester_sim_container"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="wosuggester_tab_check_line" role="tabpanel">
+                        <div class="row mt-1 mb-1">
+                            <div class="col-md-6">
+                                <label for="wosuggester_sim_code" class="form-label">Simulation Code</label>
+                                <div class="input-group input-group-sm mb-1">
+                                    <input type="text" id="wosuggester_sim_code" class="form-control" placeholder="2023.." maxlength="25" >
+                                    <button class="btn btn-primary" type="button" onclick="wosuggesterBtnCheckSIMLineOnClick(this)"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-1">
+                                <div class="table-responsive" id="wosuggester_lineTableContainer">
+                                    <table id="wosuggester_lineTable" class="table table-sm table-hover table-bordered caption-top">
+                                        <caption>List of line</caption>
+                                        <thead class="table-light text-center">
+                                            <tr>
+                                                <th>Process</th>
+                                                <th>Line</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -189,7 +220,7 @@
         let datanya_RM = wosuggester_sso_simcheck.getData()
         let dataList = datanya_RM.filter((data) => data[0].length > 1)
         let ReffList = []
-        let LineList = []        
+        let LineList = []
 
         dataList.forEach((arrayItem) => {
             let _wo = arrayItem[0].trim()
@@ -201,7 +232,7 @@
 
         p.disabled = true
         p.innerHTML = 'Please wait'
-        
+
         $.ajax({
             type: "POST",
             url: "<?=base_url('WO/checkSimulation')?>",
@@ -227,9 +258,9 @@
                                     wosuggester_sso_simcheck.setStyle('A'+(i+1), 'background-color', '#b22222')
                                     wosuggester_sso_simcheck.setStyle('B'+(i+1), 'background-color', '#b22222')
                                     break;
-                            }                        
+                            }
                         }
-                    })                    
+                    })
                 }
             },
             error: function(xhr, xopt, xthrow) {
@@ -238,5 +269,48 @@
                 p.disabled = false
             }
         });
+    }
+
+    function wosuggesterBtnCheckSIMLineOnClick(pthis) {
+        if(wosuggester_sim_code.value.trim().length > 8) {
+            pthis.disabled = true
+            $.ajax({
+                type: "GET",
+                url: `http://192.168.0.29:8080/ems-glue/api/simulation/document/${wosuggester_sim_code.value}`,
+                dataType: "json",
+                success: function (response) {
+                    pthis.disabled = false
+                    let myContainer = document.getElementById("wosuggester_lineTableContainer");
+                    let myfrag = document.createDocumentFragment();
+                    let cln = wosuggester_lineTable.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    let myTable = myfrag.getElementById("wosuggester_lineTable");
+                    let myTableBody = myTable.getElementsByTagName("tbody")[0];
+                    myTableBody.innerHTML = ''
+                    response.data.forEach((arrayItem) => {
+                        newrow = myTableBody.insertRow(-1)
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = arrayItem['PIS1_PROCD']                                        
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = arrayItem['PIS1_LINENO']                        
+                    })
+                    myContainer.innerHTML = ''
+                    myContainer.appendChild(myfrag)
+                    
+                    if(response.data.length===0) {
+                        alertify.message('not found')
+                    }
+                },
+                error: function(xhr, xopt, xthrow) {
+                    alertify.warning(xthrow);
+                    pthis.disabled = false
+                }
+            });
+        } else {
+            alertify.warning('Simulation Code is required')
+            wosuggester_sim_code.focus()
+        }
     }
 </script>
