@@ -142,4 +142,8 @@ class RCVHistory extends CI_Controller
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }
+
+    function form_ics_receiving() {
+        $this->load->view('wms_report/ics_receiving');
+    }
 }
