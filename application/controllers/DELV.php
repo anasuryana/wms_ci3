@@ -11107,9 +11107,11 @@ class DELV extends CI_Controller
         $rsallitem_qtyplot = [];
         $responseResume = [];
 
-        $rsallitem_cd[] = $this->input->post('itemcode');
-        $rsallitem_qty[] = $this->input->post('qty');
-        $rsallitem_qtyplot[] = 0;
+        $rsallitem_cd = $this->input->post('itemcode');
+        $rsallitem_qty = $this->input->post('qty');
+        foreach($rsallitem_cd as $r) {
+            $rsallitem_qtyplot[] = 0;
+        }
 
         $ccustdate = $this->input->post('date');
         $count_rsallitem = count($rsallitem_cd);
