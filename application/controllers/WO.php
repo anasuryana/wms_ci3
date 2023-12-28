@@ -28,7 +28,9 @@ class WO extends CI_Controller
 
     public function checkSimulation() {
         $ReffList = $this->input->post('ReffList');
-        $LineList = $this->input->post('LineList');
+        $JobList = $this->input->post('JobList');
+        $AssyCodeList = $this->input->post('AssyCodeList');
+        $InputLine = strtoupper($this->input->post('Line'));
         $TotalData = is_array($ReffList) ? count($ReffList) : 0;
 
         $NOT_FOUND = 0;
@@ -38,8 +40,9 @@ class WO extends CI_Controller
         $Requirements = [];
         for($i=0; $i<$TotalData; $i++) {
             $Requirements[] = [
-                'WO' => strtoupper($ReffList[$i]), 
-                'InputLine' => strtoupper($LineList[$i]), 
+                'WO' => strtoupper($ReffList[$i]),
+                'Job' => strtoupper($JobList[$i]),
+                'AssyCode' => strtoupper($AssyCodeList[$i]),
                 'PlannedLine' => NULL, 
                 'Status' => NULL, 
             ];
@@ -51,7 +54,7 @@ class WO extends CI_Controller
         foreach($Requirements as &$r) {
             foreach($WOs as $w) {
                 if($w['PDPP_WONO'] === $r['WO'] && $r['Status'] !== 'OK') {
-                    if($w['PIS1_LINENO'] === $r['InputLine']) {
+                    if(str_contains($w['PIS1_LINENO'], $InputLine)) {
                         $r['Status'] = 'OK';
                         $r['PlannedLine'] = $w['PIS1_LINENO'];
                         break;

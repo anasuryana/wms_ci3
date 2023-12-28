@@ -33,10 +33,15 @@
                     </div>
                     <div class="tab-pane fade" id="wosuggester_tab_checksim" role="tabpanel">
                         <div class="row mt-1 mb-1">
-                            <div class="col-md-12">
-                                <div class="btn-group btn-group-sm">
+                            <div class="col-md-6">
+                                <div class="input-group input-group-sm mb-1">
+                                    <label class="input-group-text">Line</label>
+                                    <input type="text" class="form-control" id="wosuggester_line_input" maxlength="15">                                    
                                     <button class="btn btn-outline-primary" id="wosuggester_btn_check" title="Checker" onclick="wosuggester_btn_checker_eC(this)">Check</button>
                                 </div>
+                            </div>  
+                            <div class="col-md-6">
+
                             </div>
                         </div>
                         <div class="row">
@@ -50,7 +55,7 @@
                             <div class="col-md-6">
                                 <label for="wosuggester_sim_code" class="form-label">Simulation Code</label>
                                 <div class="input-group input-group-sm mb-1">
-                                    <input type="text" id="wosuggester_sim_code" class="form-control" placeholder="2023.." maxlength="25" >
+                                    <input type="text" id="wosuggester_sim_code" class="form-control" placeholder="2023.." maxlength="25" onclick="this.select()">
                                     <button class="btn btn-primary" type="button" onclick="wosuggesterBtnCheckSIMLineOnClick(this)"><i class="fas fa-search"></i></button>
                                 </div>
                             </div>
@@ -202,14 +207,52 @@
         columns: [
             {
                 type: 'text',
-                title:'Work Order',
-                width:250,
+                title:'Model',
+                width:100,
                 align: 'left'
             },
             {
                 type: 'text',
-                title:'Line',
-                width:150,
+                title:'Job',
+                width:70,
+                align: 'left'
+            },
+            {
+                type: 'numeric',
+                title:'LOT',
+                mask: '#,##.00',
+                width:100,
+                align: 'right'
+            },
+            {
+                type: 'numeric',
+                title:'Production QTY',
+                mask: '#,##.00',
+                width:100,
+                align: 'right'
+            },
+            {
+                type: 'text',
+                title:'Type',
+                width:130,
+                align: 'left'
+            },
+            {
+                type: 'text',
+                title:'Spec',
+                width:90,
+                align: 'left'
+            },
+            {
+                type: 'text',
+                title:'Assy Code',
+                width:100,
+                align: 'left'
+            },
+            {
+                type: 'text',
+                title:'ASP/KD',
+                width:80,
                 align: 'left'
             },
 
@@ -217,16 +260,25 @@
     });
 
     function wosuggester_btn_checker_eC(p) {
+        const currentYearTwoDigit = new Date().getFullYear().toString().substr(-2)
+        console.log({currentYearTwoDigit : currentYearTwoDigit})
+        if(wosuggester_line_input.value.trim().length===0) {
+            wosuggester_line_input.focus()
+            alertify.message('Line is required');
+            return
+        }
         let datanya_RM = wosuggester_sso_simcheck.getData()
-        let dataList = datanya_RM.filter((data) => data[0].length > 1)
+        let dataList = datanya_RM.filter((data) => data[1].length > 1)
         let ReffList = []
-        let LineList = []
+        let JobList = []
+        let AssyCodeList = []
 
         dataList.forEach((arrayItem) => {
-            let _wo = arrayItem[0].trim()
+            let _wo = currentYearTwoDigit + '-' + arrayItem[1].trim() + '-' + arrayItem[6].trim() + arrayItem[7].trim()
             if( !ReffList.includes(_wo) ) {
                 ReffList.push(_wo)
-                LineList.push(arrayItem[1].trim())
+                JobList.push(arrayItem[1].trim())
+                AssyCodeList.push(arrayItem[6].trim() + arrayItem[7].trim())
             }
         })
 
@@ -236,27 +288,49 @@
         $.ajax({
             type: "POST",
             url: "<?=base_url('WO/checkSimulation')?>",
-            data: {ReffList: ReffList, LineList : LineList},
+            data: {ReffList: ReffList, Line : wosuggester_line_input.value, JobList : JobList, AssyCodeList : AssyCodeList},
             dataType: "json",
             success: function (response) {
                 p.innerHTML = 'Check'
                 p.disabled = false
                 for(let i=0; i<datanya_RM.length; i++) {
-                    let woInput = wosuggester_sso_simcheck.getCell( 'A'+(i+1) ).innerText.toUpperCase()
+                    let jobInput = wosuggester_sso_simcheck.getCell( 'B'+(i+1) ).innerText.toUpperCase()
+                    let assyCodeInput = wosuggester_sso_simcheck.getCell( 'G'+(i+1) ).innerText.toUpperCase()
                     response.data.forEach((arrayItem) => {
-                        if(arrayItem['WO'].toUpperCase() === woInput) {
+                        if(arrayItem['Job'].toUpperCase() === jobInput && arrayItem['AssyCode'].toUpperCase() === assyCodeInput) {
                             switch(arrayItem['Status']) {
                                 case 'OK':
+                                    wosuggester_sso_simcheck.setComments('A'+(i+1), '')
                                     wosuggester_sso_simcheck.setStyle('A'+(i+1), 'background-color', '#91ffb4')
                                     wosuggester_sso_simcheck.setStyle('B'+(i+1), 'background-color', '#91ffb4')
+                                    wosuggester_sso_simcheck.setStyle('C'+(i+1), 'background-color', '#91ffb4')
+                                    wosuggester_sso_simcheck.setStyle('D'+(i+1), 'background-color', '#91ffb4')
+                                    wosuggester_sso_simcheck.setStyle('E'+(i+1), 'background-color', '#91ffb4')
+                                    wosuggester_sso_simcheck.setStyle('F'+(i+1), 'background-color', '#91ffb4')
+                                    wosuggester_sso_simcheck.setStyle('G'+(i+1), 'background-color', '#91ffb4')
+                                    wosuggester_sso_simcheck.setStyle('H'+(i+1), 'background-color', '#91ffb4')
                                     break;
                                 case 'FOUND BUT DIFFERENT LINE':
+                                    wosuggester_sso_simcheck.setComments('A'+(i+1), 'FOUND BUT DIFFERENT LINE, Registered Line is ' + arrayItem['PlannedLine'])
                                     wosuggester_sso_simcheck.setStyle('A'+(i+1), 'background-color', '#ffd700')
                                     wosuggester_sso_simcheck.setStyle('B'+(i+1), 'background-color', '#ffd700')
+                                    wosuggester_sso_simcheck.setStyle('C'+(i+1), 'background-color', '#ffd700')
+                                    wosuggester_sso_simcheck.setStyle('D'+(i+1), 'background-color', '#ffd700')
+                                    wosuggester_sso_simcheck.setStyle('E'+(i+1), 'background-color', '#ffd700')
+                                    wosuggester_sso_simcheck.setStyle('F'+(i+1), 'background-color', '#ffd700')
+                                    wosuggester_sso_simcheck.setStyle('G'+(i+1), 'background-color', '#ffd700')
+                                    wosuggester_sso_simcheck.setStyle('H'+(i+1), 'background-color', '#ffd700')
                                     break;
                                 case 'NOT FOUND':
+                                    wosuggester_sso_simcheck.setComments('A'+(i+1), 'NOT FOUND')
                                     wosuggester_sso_simcheck.setStyle('A'+(i+1), 'background-color', '#b22222')
                                     wosuggester_sso_simcheck.setStyle('B'+(i+1), 'background-color', '#b22222')
+                                    wosuggester_sso_simcheck.setStyle('C'+(i+1), 'background-color', '#b22222')
+                                    wosuggester_sso_simcheck.setStyle('D'+(i+1), 'background-color', '#b22222')
+                                    wosuggester_sso_simcheck.setStyle('E'+(i+1), 'background-color', '#b22222')
+                                    wosuggester_sso_simcheck.setStyle('F'+(i+1), 'background-color', '#b22222')
+                                    wosuggester_sso_simcheck.setStyle('G'+(i+1), 'background-color', '#b22222')
+                                    wosuggester_sso_simcheck.setStyle('H'+(i+1), 'background-color', '#b22222')
                                     break;
                             }
                         }
