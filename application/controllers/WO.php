@@ -26,7 +26,8 @@ class WO extends CI_Controller
         $this->load->view('wms_report/vwo_suggester');
     }
 
-    public function checkSimulation() {
+    public function checkSimulation()
+    {
         $ReffList = $this->input->post('ReffList');
         $JobList = $this->input->post('JobList');
         $AssyCodeList = $this->input->post('AssyCodeList');
@@ -38,38 +39,38 @@ class WO extends CI_Controller
         $OK = 3;
 
         $Requirements = [];
-        for($i=0; $i<$TotalData; $i++) {
+        for ($i = 0; $i < $TotalData; $i++) {
             $Requirements[] = [
                 'WO' => strtoupper($ReffList[$i]),
                 'Job' => strtoupper($JobList[$i]),
                 'AssyCode' => strtoupper($AssyCodeList[$i]),
-                'PlannedLine' => NULL, 
-                'Status' => NULL, 
+                'PlannedLine' => null,
+                'Status' => null,
+                'SimCode' => null,
             ];
         }
 
         $strWOList = is_array($ReffList) ? "'" . implode("','", $ReffList) . "'" : "''";
         $WOs = $this->XWO_mod->selectWOSIM($strWOList);
-        
-        foreach($Requirements as &$r) {
-            foreach($WOs as $w) {
-                if($w['PDPP_WONO'] === $r['WO'] && $r['Status'] !== 'OK') {
-                    if(str_contains($w['PIS1_LINENO'], $InputLine)) {
+
+        foreach ($Requirements as &$r) {
+            foreach ($WOs as $w) {
+                if ($w['PDPP_WONO'] === $r['WO'] && $r['Status'] !== 'OK') {
+                    $r['PlannedLine'] .= $w['PIS1_LINENO'] . ',';
+                    $r['SimCode'] = $w['PIS1_DOCNO'];
+                    if (str_contains($w['PIS1_LINENO'], $InputLine)) {
                         $r['Status'] = 'OK';
-                        $r['PlannedLine'] = $w['PIS1_LINENO'];
                         break;
                     } else {
-                        $r['PlannedLine'] = $w['PIS1_LINENO'];
                         $r['Status'] = 'FOUND BUT DIFFERENT LINE';
                     }
                 }
             }
-            if(!$r['Status']) {
+            if (!$r['Status']) {
                 $r['Status'] = 'NOT FOUND';
             }
         }
         unset($r);
-        
 
         die(json_encode(['data' => $Requirements, '$WOs' => $WOs]));
     }
@@ -234,7 +235,7 @@ class WO extends CI_Controller
                     }
                 }
                 # cari alternatif line
-                if(!empty($_modelCode) && !empty($_modelProcess) && !empty($_modelVersion)){
+                if (!empty($_modelCode) && !empty($_modelProcess) && !empty($_modelVersion)) {
                     $RSAlternativeLine = $this->XWO_mod->selectLineWhereInModelProcessAndVersion($_modelCode, $_modelProcess, $_modelVersion);
                 } else {
                     $RSAlternativeLine = [];

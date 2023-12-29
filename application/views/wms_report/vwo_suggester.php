@@ -1,13 +1,6 @@
 <div style="padding: 5px" >
 	<div class="container-fluid">
-        <div class="row">
-            <div class="col-md-2 mb-1">
-                <div class="btn-group btn-group-sm">
-                    <button class="btn btn-outline-primary" id="wosuggester_btn_new" title="New" onclick="wosuggester_btn_new_eC()"><i class="fas fa-file"></i></button>
-                    <button class="btn btn-outline-success" id="wosuggester_btn_save" title="Save as Sepreadsheet" onclick="wosuggester_btn_save_eC(this)"><i class="fas fa-file-excel"></i></button>
-                </div>
-            </div>
-        </div>
+        
         <div class="row">
             <div class="col-md-12 mb-1">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -23,7 +16,15 @@
             </ul>
                 <div class="tab-content" id="wosuggester_myTabContent">
                     <div class="tab-pane fade show active" id="wosuggester_tabRM" role="tabpanel" aria-labelledby="home-tab">
-                        <div class="container-fluid">
+                        <div class="container-fluid p-1">
+                            <div class="row">
+                                <div class="col-md-2 mb-1">
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" id="wosuggester_btn_new" title="New" onclick="wosuggester_btn_new_eC()"><i class="fas fa-file"></i></button>
+                                        <button class="btn btn-outline-success" id="wosuggester_btn_save" title="Save as Sepreadsheet" onclick="wosuggester_btn_save_eC(this)"><i class="fas fa-file-excel"></i></button>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-12 mb-1 table-responsive">
                                     <div id="vcritical_partcd"></div>
@@ -34,14 +35,16 @@
                     <div class="tab-pane fade" id="wosuggester_tab_checksim" role="tabpanel">
                         <div class="row mt-1 mb-1">
                             <div class="col-md-6">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" id="wosuggester_btn_new" title="New" onclick="wosuggester_btn_new2_eC()"><i class="fas fa-file"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
                                 <div class="input-group input-group-sm mb-1">
                                     <label class="input-group-text">Line</label>
                                     <input type="text" class="form-control" id="wosuggester_line_input" maxlength="15">                                    
                                     <button class="btn btn-outline-primary" id="wosuggester_btn_check" title="Checker" onclick="wosuggester_btn_checker_eC(this)">Check</button>
                                 </div>
-                            </div>  
-                            <div class="col-md-6">
-
                             </div>
                         </div>
                         <div class="row">
@@ -170,10 +173,17 @@
             alertify.message('could not continue')
         }
     }
+
     function wosuggester_btn_new_eC() {
         wosuggester_sso_part.setData([[],[],[],[],[]])
-        wosuggester_sso_simcheck.setData([[]])
     }
+
+    function wosuggester_btn_new2_eC() {
+        wosuggester_sso_simcheck.setData([[]])
+        wosuggester_line_input.value = ''
+        wosuggester_line_input.focus()
+    }
+    
     var mpurordata = [
        [''],
     ];
@@ -252,8 +262,15 @@
             {
                 type: 'text',
                 title:'ASP/KD',
-                width:80,
+                width:60,
                 align: 'left'
+            },
+            {
+                type: 'text',
+                title:'Simulation',
+                width:130,
+                align: 'left',
+                readOnly : true
             },
 
         ],
@@ -309,6 +326,7 @@
                                     wosuggester_sso_simcheck.setStyle('F'+(i+1), 'background-color', '#91ffb4')
                                     wosuggester_sso_simcheck.setStyle('G'+(i+1), 'background-color', '#91ffb4')
                                     wosuggester_sso_simcheck.setStyle('H'+(i+1), 'background-color', '#91ffb4')
+                                    wosuggester_sso_simcheck.setValue('I'+(i+1), arrayItem['SimCode'], true)
                                     break;
                                 case 'FOUND BUT DIFFERENT LINE':
                                     wosuggester_sso_simcheck.setComments('A'+(i+1), 'FOUND BUT DIFFERENT LINE, Registered Line is ' + arrayItem['PlannedLine'])
@@ -320,6 +338,7 @@
                                     wosuggester_sso_simcheck.setStyle('F'+(i+1), 'background-color', '#ffd700')
                                     wosuggester_sso_simcheck.setStyle('G'+(i+1), 'background-color', '#ffd700')
                                     wosuggester_sso_simcheck.setStyle('H'+(i+1), 'background-color', '#ffd700')
+                                    wosuggester_sso_simcheck.setValue('I'+(i+1), arrayItem['SimCode'], true)
                                     break;
                                 case 'NOT FOUND':
                                     wosuggester_sso_simcheck.setComments('A'+(i+1), 'NOT FOUND')
