@@ -350,6 +350,15 @@
                                     wosuggester_sso_simcheck.setStyle('F'+(i+1), 'background-color', '#b22222')
                                     wosuggester_sso_simcheck.setStyle('G'+(i+1), 'background-color', '#b22222')
                                     wosuggester_sso_simcheck.setStyle('H'+(i+1), 'background-color', '#b22222')
+
+                                    wosuggester_sso_simcheck.setStyle('A'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('B'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('C'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('D'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('E'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('F'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('G'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('H'+(i+1), 'color', '#ffffff')
                                     break;
                             }
                         }
