@@ -34,9 +34,9 @@ class WO extends CI_Controller
         $InputLine = strtoupper($this->input->post('Line'));
         $TotalData = is_array($ReffList) ? count($ReffList) : 0;
 
-        $NOT_FOUND = 0;
-        $FOUND_BUT_NOT_SAME_LINE = 1;
-        $OK = 3;
+        // $NOT_FOUND = 0;
+        // $FOUND_BUT_NOT_SAME_LINE = 1;
+        // $OK = 3;
 
         $Requirements = [];
         for ($i = 0; $i < $TotalData; $i++) {

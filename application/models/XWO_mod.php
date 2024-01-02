@@ -91,9 +91,10 @@ class XWO_mod extends CI_Model
     }
 
     public function selectWOSIM($strWOList) {
-        $qry = "SELECT UPPER(PDPP_WONO) PDPP_WONO, UPPER(PIS1_LINENO) PIS1_LINENO,RTRIM(PIS1_WONO) PIS1_WONO, RTRIM(PIS1_LINENO) PIS1_LINENO, RTRIM(PIS1_DOCNO) PIS1_DOCNO
+        $qry = "SELECT UPPER(substring(PDPP_WONO,4,100)) PDPP_WONO, UPPER(PIS1_LINENO) PIS1_LINENO,RTRIM(PIS1_WONO) PIS1_WONO, RTRIM(PIS1_LINENO) PIS1_LINENO, RTRIM(PIS1_DOCNO) PIS1_DOCNO
         FROM XWO LEFT JOIN XPIS1 ON PDPP_WONO=PIS1_WONO AND PDPP_BSGRP=PIS1_BSGRP
-        WHERE PDPP_WONO IN ($strWOList)";
+        WHERE substring(PDPP_WONO,4,100) IN ($strWOList) AND
+        PDPP_ISUDT>=DATEADD(MONTH,-6,GETDATE()) ";
         $query = $this->db->query($qry);
         return $query->result_array();
     }

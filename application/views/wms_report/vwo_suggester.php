@@ -277,8 +277,6 @@
     });
 
     function wosuggester_btn_checker_eC(p) {
-        const currentYearTwoDigit = new Date().getFullYear().toString().substr(-2)
-        console.log({currentYearTwoDigit : currentYearTwoDigit})
         if(wosuggester_line_input.value.trim().length===0) {
             wosuggester_line_input.focus()
             alertify.message('Line is required');
@@ -291,11 +289,13 @@
         let AssyCodeList = []
 
         dataList.forEach((arrayItem) => {
-            let _wo = currentYearTwoDigit + '-' + arrayItem[1].trim() + '-' + arrayItem[6].trim() + arrayItem[7].trim()
+            let aspKD = arrayItem[7].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            let _wo = arrayItem[1].trim() + '-' + arrayItem[6].trim() + aspKD
             if( !ReffList.includes(_wo) ) {
                 ReffList.push(_wo)
                 JobList.push(arrayItem[1].trim())
-                AssyCodeList.push(arrayItem[6].trim() + arrayItem[7].trim())
+                console.log(arrayItem[7].trim().substring())
+                AssyCodeList.push(arrayItem[6].trim() + aspKD)
             }
         })
 
@@ -312,7 +312,8 @@
                 p.disabled = false
                 for(let i=0; i<datanya_RM.length; i++) {
                     let jobInput = wosuggester_sso_simcheck.getCell( 'B'+(i+1) ).innerText.toUpperCase()
-                    let assyCodeInput = wosuggester_sso_simcheck.getCell( 'G'+(i+1) ).innerText.toUpperCase()
+                    let aspKD = wosuggester_sso_simcheck.getCell( 'H'+(i+1) ).innerText.trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "").toUpperCase()
+                    let assyCodeInput = wosuggester_sso_simcheck.getCell( 'G'+(i+1) ).innerText.toUpperCase() + aspKD
                     response.data.forEach((arrayItem) => {
                         if(arrayItem['Job'].toUpperCase() === jobInput && arrayItem['AssyCode'].toUpperCase() === assyCodeInput) {
                             switch(arrayItem['Status']) {
@@ -327,6 +328,15 @@
                                     wosuggester_sso_simcheck.setStyle('G'+(i+1), 'background-color', '#91ffb4')
                                     wosuggester_sso_simcheck.setStyle('H'+(i+1), 'background-color', '#91ffb4')
                                     wosuggester_sso_simcheck.setValue('I'+(i+1), arrayItem['SimCode'], true)
+
+                                    wosuggester_sso_simcheck.setStyle('A'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('B'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('C'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('D'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('E'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('F'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('G'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('H'+(i+1), 'color', '#000000')
                                     break;
                                 case 'FOUND BUT DIFFERENT LINE':
                                     wosuggester_sso_simcheck.setComments('A'+(i+1), 'FOUND BUT DIFFERENT LINE, Registered Line is ' + arrayItem['PlannedLine'])
@@ -339,6 +349,15 @@
                                     wosuggester_sso_simcheck.setStyle('G'+(i+1), 'background-color', '#ffd700')
                                     wosuggester_sso_simcheck.setStyle('H'+(i+1), 'background-color', '#ffd700')
                                     wosuggester_sso_simcheck.setValue('I'+(i+1), arrayItem['SimCode'], true)
+
+                                    wosuggester_sso_simcheck.setStyle('A'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('B'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('C'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('D'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('E'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('F'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('G'+(i+1), 'color', '#000000')
+                                    wosuggester_sso_simcheck.setStyle('H'+(i+1), 'color', '#000000')
                                     break;
                                 case 'NOT FOUND':
                                     wosuggester_sso_simcheck.setComments('A'+(i+1), 'NOT FOUND')
@@ -360,6 +379,8 @@
                                     wosuggester_sso_simcheck.setStyle('G'+(i+1), 'color', '#ffffff')
                                     wosuggester_sso_simcheck.setStyle('H'+(i+1), 'color', '#ffffff')
                                     break;
+                                default:
+                                    console.log('ke sini')
                             }
                         }
                     })
