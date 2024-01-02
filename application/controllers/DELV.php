@@ -8593,7 +8593,7 @@ class DELV extends CI_Controller
                 ["NOMOR_RESPON"],
                 ['NOMOR_AJU' => $nomorajufull, 'NOMOR_RESPON !=' => '']
             );
-            if (count($result_data) > 0) {
+            if (count($result_data) > 0 && $result_data[0]['TANGGAL_DAFTAR']) {
                 $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
             } else {
                 $myar[] = ['cd' => 0, 'msg' => 'NOMOR AJU is not found in ceisa local data', 'aju' => $nomorajufull];
@@ -8604,6 +8604,7 @@ class DELV extends CI_Controller
                 $myar = [];
                 $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
                 $responApiObj = json_decode($responApi->body);
+
                 if ($responApiObj->dataOri->message === 'sucess') {
                     $_tanggalDaftar = $responApiObj->dataOri->data[0]->tanggalDaftar;
                     $_tanggalDaftarFormatted = null;
@@ -8622,7 +8623,6 @@ class DELV extends CI_Controller
                             'NOMOR_RESPON' => $responApiObj->dataOri->data[0]->nomorRespon,
                         ],
                     ];
-
                 }
             }
         }
