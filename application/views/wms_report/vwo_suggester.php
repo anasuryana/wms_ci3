@@ -379,6 +379,26 @@
                                     wosuggester_sso_simcheck.setStyle('G'+(i+1), 'color', '#ffffff')
                                     wosuggester_sso_simcheck.setStyle('H'+(i+1), 'color', '#ffffff')
                                     break;
+                                case 'NOT SIMULATED':
+                                    wosuggester_sso_simcheck.setComments('A'+(i+1), 'NOT SIMULATED')
+                                    wosuggester_sso_simcheck.setStyle('A'+(i+1), 'background-color', '#c14e4e')
+                                    wosuggester_sso_simcheck.setStyle('B'+(i+1), 'background-color', '#c14e4e')
+                                    wosuggester_sso_simcheck.setStyle('C'+(i+1), 'background-color', '#c14e4e')
+                                    wosuggester_sso_simcheck.setStyle('D'+(i+1), 'background-color', '#c14e4e')
+                                    wosuggester_sso_simcheck.setStyle('E'+(i+1), 'background-color', '#c14e4e')
+                                    wosuggester_sso_simcheck.setStyle('F'+(i+1), 'background-color', '#c14e4e')
+                                    wosuggester_sso_simcheck.setStyle('G'+(i+1), 'background-color', '#c14e4e')
+                                    wosuggester_sso_simcheck.setStyle('H'+(i+1), 'background-color', '#c14e4e')
+
+                                    wosuggester_sso_simcheck.setStyle('A'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('B'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('C'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('D'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('E'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('F'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('G'+(i+1), 'color', '#ffffff')
+                                    wosuggester_sso_simcheck.setStyle('H'+(i+1), 'color', '#ffffff')
+                                    break;
                                 default:
                                     console.log('ke sini')
                             }

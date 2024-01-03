@@ -62,7 +62,7 @@ class WO extends CI_Controller
                         $r['Status'] = 'OK';
                         break;
                     } else {
-                        $r['Status'] = 'FOUND BUT DIFFERENT LINE';
+                        $r['Status'] = $w['PIS1_WONO'] ? 'FOUND BUT DIFFERENT LINE' : 'NOT SIMULATED';
                     }
                 }
             }
