@@ -72,6 +72,7 @@
                                 <th>Currency</th>
                                 <th>Price</th>
                                 <th>Amount</th>
+                                <th>Nomor Pendaftaran</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -167,6 +168,9 @@
                     newcell = newrow.insertCell(14)
                     newcell.classList.add('text-end')
                     newcell.innerHTML = numeral(response.data[i].amount).format(',')
+                    newcell = newrow.insertCell(15)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = response.data[i].nopen
                 }
                 mydes.innerHTML = '';
                 mydes.appendChild(myfrag);
