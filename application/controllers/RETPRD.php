@@ -1575,4 +1575,26 @@ class RETPRD extends CI_Controller
         }
         die(json_encode(['status' => $myar, 'data' => $rs]));
     }
+
+    public function tracelot()
+    {
+        $cpsn = $this->input->get('inpsn');
+        $citmcd = $this->input->get('initmcd');
+        $citmlot = $this->input->get('initmlot');
+        $date1 = $this->input->get('date1');
+        $date2 = $this->input->get('date2');
+        $myar = [];
+
+        $where = ['RETSCN_SPLDOC' => $cpsn, 'RETSCN_ITMCD' => $citmcd, 'RETSCN_LOT' => $citmlot];
+        $rs = $date1 && $date2 ? $this->SPLRET_mod->selectby_filter_like_with_period($where, $date1, $date2)
+            : $this->SPLRET_mod->selectby_filter_like($where);
+        
+        $myar[] = count($rs) > 0 ? ['cd' => 1, 'msg' => 'go ahead'] : ['cd' => 0, 'msg' => 'not found'];        
+        die(json_encode(['status' => $myar, 'data' => $rs]));
+    }
+
+    public function form_trace()
+    {
+        $this->load->view('wms_report/vtracelot_return');
+    }
 }
