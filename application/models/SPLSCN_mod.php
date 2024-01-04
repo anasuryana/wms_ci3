@@ -52,6 +52,18 @@ class SPLSCN_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+
+    public function selectby_filter_like_with_period($pwhere, $dateFrom, $dateTo){	
+        $this->db->limit(2500);
+        $this->db->from("V_SPLSCN_TBLC");
+        $this->db->like($pwhere);
+        $this->db->where('SPLSCN_DATE >=', $dateFrom);
+        $this->db->where('SPLSCN_DATE <=', $dateTo);
+        $this->db->order_by('SPLSCN_LUPDT DESC,SPLSCN_DOC ASC, SPLSCN_CAT ASC, SPLSCN_LINE ASC, SPLSCN_FEDR ASC, SPLSCN_ORDERNO ASC , SPLSCN_ITMCD ASC');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
     public function select_ready_book($plike){	        
         $this->db->from("wms_v_ready_to_book_spl_base");        
         $this->db->like($plike);
