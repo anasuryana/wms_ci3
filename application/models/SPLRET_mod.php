@@ -240,5 +240,25 @@ class SPLRET_mod extends CI_Model {
         $query =  $this->db->query($qry , [$pdate1, $pdate2,$pdate1, $pdate2]);
         return $query->result_array();
     }
+
+    public function selectby_filter_like($pwhere){	
+        $this->db->limit(2500);
+        $this->db->from($this->TABLENAME);        
+        $this->db->like($pwhere);
+        $this->db->order_by('RETSCN_LUPDT DESC,RETSCN_SPLDOC ASC, RETSCN_CAT ASC, RETSCN_LINE ASC, RETSCN_FEDR ASC, RETSCN_ORDERNO ASC , RETSCN_ITMCD ASC');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
+    public function selectby_filter_like_with_period($pwhere, $dateFrom, $dateTo){	
+        $this->db->limit(2500);
+        $this->db->from("V_RETSCN_TBLC");
+        $this->db->like($pwhere);
+        $this->db->where('RETSCN_DATE >=', $dateFrom);
+        $this->db->where('RETSCN_DATE <=', $dateTo);
+        $this->db->order_by('RETSCN_LUPDT DESC,RETSCN_SPLDOC ASC, RETSCN_CAT ASC, RETSCN_LINE ASC, RETSCN_FEDR ASC, RETSCN_ORDERNO ASC , RETSCN_ITMCD ASC');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
         
 }
