@@ -5623,8 +5623,14 @@ class SPL extends CI_Controller
         $cpsn = $this->input->get('inpsn');
         $citmcd = $this->input->get('initmcd');
         $citmlot = $this->input->get('initmlot');
+        $date1 = $this->input->get('date1');
+        $date2 = $this->input->get('date2');
         $myar = [];
-        $rs = $this->SPLSCN_mod->selectby_filter_like(['SPLSCN_DOC' => $cpsn, 'SPLSCN_ITMCD' => $citmcd, 'SPLSCN_LOTNO' => $citmlot]);
+
+        $where = ['SPLSCN_DOC' => $cpsn, 'SPLSCN_ITMCD' => $citmcd, 'SPLSCN_LOTNO' => $citmlot];
+        $rs = $date1 && $date2 ? $this->SPLSCN_mod->selectby_filter_like_with_period($where, $date1, $date2)
+            : $this->SPLSCN_mod->selectby_filter_like($where);
+
         $rsreff = $this->SPLREFF_mod->selectby_filter_like(['SPLREFF_DOC' => $cpsn, 'SPLREFF_ACT_PART' => $citmcd, 'SPLREFF_ACT_LOTNUM' => $citmlot]);
         $rsmix = array_merge($rs, $rsreff);
         if (count($rsmix) > 0) {
@@ -5633,22 +5639,6 @@ class SPL extends CI_Controller
             $myar[] = ['cd' => 0, 'msg' => 'not found'];
         }
         exit('{"status" : ' . json_encode($myar) . ', "data": ' . json_encode($rsmix) . '}');
-    }
-
-    public function tracelot_trial()
-    {
-        header('Content-Type: application/json');
-        $cpsn = $this->input->get('inpsn');
-        $citmcd = $this->input->get('initmcd');
-        $citmlot = $this->input->get('initmlot');
-        $myar = [];
-        $rs = $this->SPLSCN_mod->selectby_filter_like_wjob(['SPLSCN_DOC' => $cpsn, 'SPLSCN_ITMCD' => $citmcd, 'SPLSCN_LOTNO' => $citmlot]);
-        if (count($rs) > 0) {
-            $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
-        } else {
-            $myar[] = ['cd' => 0, 'msg' => 'not found'];
-        }
-        exit('{"status" : ' . json_encode($myar) . ', "data": ' . json_encode($rs) . '}');
     }
 
     public function tracelot_head()
