@@ -3298,6 +3298,7 @@ class DELV extends CI_Controller
         $ar_price = [];
         $customer_hasPO = '';
         $ATTN = '';
+        $DLV_DESCRIPTION = '';
         foreach ($rs as $r) {
             $hinv_date = $r['DLV_INVDT'];
             $hinv_date = date_create($hinv_date);
@@ -3315,6 +3316,7 @@ class DELV extends CI_Controller
             $customer_hasPO = $r['MCUS_CUSNM'];
             $ATTN = $r['ATTN'];
             $h_tujuanPengiriman = $r['DLV_PURPOSE'];
+            $DLV_DESCRIPTION = $r['DLV_DSCRPTN'];
             break;
         }
         //end of data base
@@ -3467,6 +3469,7 @@ class DELV extends CI_Controller
                 $gtotalamount += ($r['SISOQTY'] * $r['SSO2_SLPRC']);
                 $ttlqty_ += $r['SISOQTY'];
             }
+
             $pdf->SetXY(115, 240 + 13);
             $pdf->Cell(20.55, 4, number_format($ttlqty_, 2), 0, 0, 'R');
             $pdf->SetXY(155, 240 + 13);
@@ -3872,6 +3875,9 @@ class DELV extends CI_Controller
                         $pdf->SetXY(90, $curY + 11);
                         $pdf->Cell(43.43, 4, 'OFFLINE', 1, 0, 'C');
                     }
+                    $pdf->SetXY(95, 200);
+                    $pdf->Cell(20.55, 4, $DLV_DESCRIPTION, 0, 0);
+
                     $pdf->SetXY(90, 220);
                     $pdf->Cell(43.43, 4, number_format($ttldoqty) . " " . $n['MITM_STKUOM'], 0, 0, 'R');
                     $pdf->SetFont('Arial', '', 11);
