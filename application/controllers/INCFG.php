@@ -321,8 +321,8 @@ class INCFG extends CI_Controller
                                 }
                                 #END REPEAT PREV
                                 if ($ostqty <= 0) {
-                                    $myar[] = ["cd" => "0", "msg" => "The JOB is closed /", "data" => $rsostku0];
-                                    exit(json_encode($myar));
+                                    $myar[] = ["cd" => "0", "msg" => "The JOB is closed /", "data" => $rsostku0, '$rsostqty' => $rsostqty];
+                                    die(json_encode($myar));
                                 }
                             }
                         }
