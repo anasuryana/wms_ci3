@@ -208,7 +208,8 @@ class SCR_mod extends CI_Model {
 
     public function select_scrapreport_balance(){
         $this->db->group_by("DOC_NO");
-        $this->db->from('VRPSCRAP_HIST');
+        $this->db->from('ZRPSCRAP_HIST');
+        $this->db->where('IS_DONE', 1);
         $this->db->select("DOC_NO,SUM(QTY) SCRQTY");
 		$query = $this->db->get();
 		return $query->result_array();
