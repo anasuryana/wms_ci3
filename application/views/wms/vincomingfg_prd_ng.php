@@ -94,7 +94,7 @@ echo $todis;
             <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <span class="input-group-text">ID</span>
-                    <input type="text" class="form-control" id="rcvfgprd_abn_txt_code" ondblclick="rcvfgprd_abn_txt_code_edck(this)" maxlength="100" readonly placeholder="code here..." required style="text-align:center">
+                    <input type="text" class="form-control" id="rcvfgprd_abn_txt_code" ondblclick="rcvfgprd_abn_txt_code_edck(this)" maxlength="200" readonly placeholder="code here..." required style="text-align:center">
                     <span class="input-group-text"><i class="fas fa-barcode" id="lbltes_simul"></i></span>
                 </div>
             </div>
