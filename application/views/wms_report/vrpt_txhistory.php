@@ -233,7 +233,8 @@
                             response.data[i].ITH_FORM.includes('OUT-WH-RM') || 
                             response.data[i].ITH_FORM.includes('INC-RET') || 
                             response.data[i].ITH_FORM.includes('OUT-RET') || 
-                            response.data[i].ITH_FORM.includes('REV-RET')
+                            response.data[i].ITH_FORM.includes('REV-RET') ||
+                            response.data[i].ITH_FORM.includes('CANCELING')
                             ) {
                                 newcell.style.cssText = 'cursor:pointer'
                                 newcell.onclick = () => {
