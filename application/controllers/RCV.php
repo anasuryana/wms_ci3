@@ -951,6 +951,12 @@ class RCV extends CI_Controller
         $cstsrcv = $this->input->post('instsrcv');
         $invoice = $this->input->post('invoice');
 
+        if(empty($crcvdate)) {
+            die(json_encode([
+                ['cd' => '0','msg' => 'Receive date should not be empty']
+            ]));
+        }
+
         $rsPGRN = $this->XPGRN_mod->selec_where_group(['RTRIM(PGRN_USRID) PGRN_USRID'], 'PGRN_USRID', ['PGRN_SUPNO' => $cdo]);
         $MEGAUser = '';
         foreach ($rsPGRN as $r) {
@@ -1143,9 +1149,9 @@ class RCV extends CI_Controller
             'CSMLOG_CREATED_AT' => $currrtime,
             'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
         ]);
-        if ($cbcdate > '2021-10-01') {
+        if ($crcvdate > '2021-10-01') {
             $this->toITH([
-                'DOC' => $cdo, 'WH' => $cwh[0], 'DATE' => $cbcdate, 'LUPDT' => $cbcdate . ' 07:01:00', 'USRID' => $this->session->userdata('nama'),
+                'DOC' => $cdo, 'WH' => $cwh[0], 'DATE' => $crcvdate, 'LUPDT' => $crcvdate . ' 07:01:00', 'USRID' => $this->session->userdata('nama'),
             ]);
         }
 
