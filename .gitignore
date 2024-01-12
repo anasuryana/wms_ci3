@@ -1,7 +1,5 @@
 .DS_Store
 
-application/config/database.php
-
 application/cache/*
 !application/cache/index.html
 
@@ -11,6 +9,8 @@ application/logs/*
 !application/*/.htaccess
 
 composer.lock
+.env
+.htaccess
 
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
