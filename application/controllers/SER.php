@@ -1208,7 +1208,7 @@ class SER extends CI_Controller
 
             $noserencode = "Z1" . trim($cmitmid) . "&" . trim($crank) . "|Z7" . trim($cprdline) . "&" . $cprdshift . "|Z2" . $cwo . "|Z3" . number_format($cserqty, 0, '', '') . "|Z4" . trim($cmitmd1) . "|Z5" . $noseri . "|Z6";
             $image_name = $noserencode;
-            $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" 1 ");
+            $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" 1 ");
             $op = shell_exec($cmd);
             $image_name = str_replace("/", "xxx", $image_name);
             $image_name = str_replace(" ", "___", $image_name);
@@ -1571,7 +1571,7 @@ class SER extends CI_Controller
                 $pdf->Text($th_x + 35 + 15, $th_y + 66, ': ' . $OMR_UNIQUE);
                 $OMRQR .= $OMR_PIM . $OMR_QTY . $OMR_DT . $OMR_CVT . $OMR_MC . $OMR_DIES . $OMR_SHIFT . $OMR_UNIQUE . $OMR_LOT;
                 $image_omr = $OMRQR;
-                $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_omr\" 1 ");
+                $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_omr\" 1 ");
                 $op = shell_exec($cmd);
                 $image_omr = str_replace("/", "xxx", $image_omr);
                 $image_omr = str_replace(" ", "___", $image_omr);
@@ -1586,7 +1586,7 @@ class SER extends CI_Controller
 
             $noserencode = "Z1" . trim($cmitmid) . "&" . trim($crank) . "|Z7" . trim($cprdline) . "&" . $cprdshift . "|Z2" . $cwo . "|Z3" . number_format($cserqty, 0, '', '') . "|Z4" . trim($cmitmd1) . "|Z5" . $noseri . "|Z6";
             $image_name = $noserencode; //$noseri; //'LB'.$cmitmid.'|'.$cwo.'|'.number_format($cserqty);
-            $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" 1 ");
+            $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" 1 ");
             $op = shell_exec($cmd);
             $image_name = str_replace("/", "xxx", $image_name);
             $image_name = str_replace(" ", "___", $image_name);
@@ -1763,7 +1763,7 @@ class SER extends CI_Controller
                     $pdf->Text(30, 64, ':');
 
                     $image_name = 'LB' . $cmitmid . '|' . $cwo . '|' . number_format($cserqty);
-                    $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" ");
+                    $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" ");
                     $op = shell_exec($cmd);
                     $image_name = str_replace("/", "xxx", $image_name);
                     $image_name = str_replace(" ", "___", $image_name);
@@ -1891,7 +1891,7 @@ class SER extends CI_Controller
 
             $noserencode = "Z1" . trim($cmitmid) . "&" . trim($crank) . "|Z7" . trim($cprdline) . "&" . $cprdshift . "|Z2" . $cwo . "|Z3" . number_format($cserqty, 0, '', '') . "|Z4" . trim($cmitmd1) . "|Z5" . $noseri . "|Z6";
             $image_name = $noserencode;
-            $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" 2 ");
+            $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" 2 ");
             $op = shell_exec($cmd);
             $image_name = str_replace("/", "xxx", $image_name);
             $image_name = str_replace(" ", "___", $image_name);
