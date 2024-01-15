@@ -72,7 +72,8 @@
                                 <th>Currency</th>
                                 <th>Price</th>
                                 <th>Amount</th>
-                                <th>Nomor Pendaftaran</th>
+                                <th>(custom_no)</th>
+                                <th>(nopen)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -170,6 +171,9 @@
                     newcell.innerHTML = numeral(response.data[i].amount).format(',')
                     newcell = newrow.insertCell(15)
                     newcell.classList.add('text-center')
+                    newcell.innerHTML = response.data[i].custom_no
+                    newcell = newrow.insertCell(16)
+                    newcell.classList.add('text-center')
                     newcell.innerHTML = response.data[i].nopen
                 }
                 mydes.innerHTML = '';
@@ -182,47 +186,4 @@
         })
     }
 
-    function rrcvlist_ics_btn_xls_eClick(p) {
-        const infoDiv = document.getElementById('rrcvlist_ics_lblinfo')
-        infoDiv.innerHTML = 'Please wait . . .'
-        p.classList.add('disabled')
-        const searchby = document.getElementById('rrcvlist_ics_seachby').value
-        const search = document.getElementById('rrcvlist_ics_txt_search').value
-        const date0 = document.getElementById('rrcvlist_ics_txt_dt').value
-        const date1 = document.getElementById('rrcvlist_ics_txt_dt2').value
-        $.ajax({
-            url: "<?=base_url('RCVHistory/receivingAsXLS')?>",
-            data: {
-                searchby: searchby,
-                search: search,
-                date0: date0,
-                date1: date1
-            },
-            success: function(response) {
-                const blob = new Blob([response], {
-                    type: "application/vnd.ms-excel"
-                })
-                const fileName = `Receiving List Report ${date0} - ${date1}.xlsx`
-                saveAs(blob, fileName)
-                p.classList.remove('disabled')
-                alertify.success('Done')
-                infoDiv.innerHTML = ''
-            },
-            xhr: function() {
-                const xhr = new XMLHttpRequest()
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 2) {
-                        if (xhr.status == 200) {
-                            xhr.responseType = "blob";
-                        } else {
-                            p.classList.remove('disabled')
-                            infoDiv.innerHTML = ''
-                            xhr.responseType = "text";
-                        }
-                    }
-                }
-                return xhr
-            },
-        })
-    }
 </script>
