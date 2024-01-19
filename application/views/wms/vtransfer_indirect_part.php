@@ -417,6 +417,7 @@
                             alertify.success(response.message)
                             document.getElementById('div-alert').innerHTML = ''
                             trf_indirect_rm_txt_doc.value = response.new_document
+                            trf_indirect_rm_hidden_id.value = response.new_document_id
 
                             let datanya = []
                             response.data.forEach((arrayItem) => {
@@ -455,6 +456,7 @@
                             issue_date : trf_indirect_rm_txt_date.value,
                             location_from : trf_indirect_rm_fr_loc.value,
                             location_to : trf_indirect_rm_to_loc.value,
+                            userid : uidnya
                         }
                         pthis.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
                         pthis.disabled = true
@@ -540,13 +542,17 @@
     }
 
     function trf_indirect_rm_btn_xls_head_e_click(pthis) {
-        pthis.classList.add('disabled')
-        pthis.innerHTML = 'Please wait'
         if(trf_indirect_rm_hidden_id.value.length === 0) {
+            alertify.message('nothing to be exported')
             return
         }
+        pthis.classList.add('disabled')
+        pthis.innerHTML = 'Please wait'
         $.ajax({
             type: "GET",
+            data: {
+                userid : uidnya
+            },
             url: "<?=$_ENV['APP_INTERNAL_API']?>" + `transfer-indirect-rm/export/${trf_indirect_rm_hidden_id.value}`,
             success: function(response) {
                 const blob = new Blob([response], {

@@ -95,7 +95,9 @@ class TRF extends CI_Controller
         $rs = $this->MSTLOCG_mod->selectall_where_CODE_in([
             'AIWH1',
             'PLANT1',
-            'PLANT2',         
+            'PLANT2',
+            'ARWH1',
+            'ARWH2',
         ]);
         foreach ($rs as $r) {
             $todiswh .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . ' (' . $r['MSTLOCG_ID'] . ')</option>';
