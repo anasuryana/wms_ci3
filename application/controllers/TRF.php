@@ -89,6 +89,21 @@ class TRF extends CI_Controller
         $this->load->view('wms/vtrf_set');
     }
 
+    public function form_indirect_part()
+    {
+        $todiswh = '';
+        $rs = $this->MSTLOCG_mod->selectall_where_CODE_in([
+            'AIWH1',
+            'PLANT1',
+            'PLANT2',         
+        ]);
+        foreach ($rs as $r) {
+            $todiswh .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . ' (' . $r['MSTLOCG_ID'] . ')</option>';
+        }
+        $data['lwh'] = $todiswh;
+        $this->load->view('wms/vtransfer_indirect_part', $data);
+    }
+
     public function saveDraft()
     {
         # Format Nomor Dokumen
