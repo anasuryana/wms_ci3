@@ -616,6 +616,7 @@
             },
             url: "<?=$_ENV['APP_INTERNAL_API']?>" + `transfer-indirect-rm/export/${trf_indirect_rm_hidden_id.value}`,
             success: function(response) {
+                trf_indirect_rm_btn_save.disabled = true
                 const blob = new Blob([response], {
                     type: "application/vnd.ms-excel"
                 })
@@ -656,4 +657,8 @@
             }
         });
     }
+
+    $("#trf_indirect_rm_ModDocumentList").on('hidden.bs.modal', function() {
+        $("#trf_indirect_rm_tblDocumentList tbody").empty();
+    });
 </script>
