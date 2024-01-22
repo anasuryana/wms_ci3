@@ -208,7 +208,7 @@
                         newcell.style.cssText = 'cursor:pointer'
                         newcell.onclick = () => {
                             $("#trf_indirect_rm_ModDocumentList").modal('hide')
-                            trf_indirect_rm_details({doc: arrayItem['id']})
+                            trf_indirect_rm_details({doc: arrayItem['id'], readOnly : arrayItem['submitted_at'] ? true : false})
                             trf_indirect_rm_txt_doc.value = arrayItem['doc_code']
                             $("#trf_indirect_rm_txt_date").datepicker('update', arrayItem['issue_date'])
 
@@ -269,6 +269,7 @@
                 ])
             }
         }
+        trf_indirect_rm_btn_save.disabled = false
     }
 
     $("#trf_indirect_rm_txt_date").datepicker({
@@ -281,6 +282,9 @@
        [''],
     ];
     var trf_indirect_rm_sso_part = jspreadsheet(trf_indirect_rm_table_container, {
+        contextMenu: function(o, x, y, e, items, section) {
+            items = [];
+        },
         data: emptyData,
         columns: [
             {
@@ -451,18 +455,71 @@
                         }
                     });
                 } else {
+                    let dataBefore = JSON.parse(localStorage.getItem('transfer_ind_part'))
+                    let dataAfter = trf_indirect_rm_sso_part.getData()
+
+                    const isSameIDRP = (a, b) => a[3] === b[3] && a[8] === b[8];
+
+                    const onlyInA = onlyInLeft(dataBefore, dataAfter, isSameIDRP);
+                    const onlyInB = onlyInLeft(dataAfter, dataBefore, isSameIDRP);
+
+                    const result = [...onlyInA, ...onlyInB]
+
+                    let model = [];
+                    let assyCode = [];
+                    let partCode = [];
+                    let partName = [];
+                    let usage = [];
+                    let requiredQty = [];
+                    let supplyQty = [];
+                    let job = [];
+                    let rows_id = [];
+
+                    result.forEach((arrayItem) => {
+                        let _rows_id = arrayItem[0]
+                        let _model = arrayItem[1].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                        let _assyCode = arrayItem[2].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                        let _partCode = arrayItem[3].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                        let _partName = arrayItem[4].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                        let _usage = arrayItem[5].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                        let _requiredQty = arrayItem[6].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                        let _job = arrayItem[7].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                        let _supplyQty = arrayItem[8].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+
+                        model.push(_model)
+                        assyCode.push(_assyCode)
+                        partCode.push(_partCode)
+                        partName.push(_partName)
+                        usage.push(_usage)
+                        requiredQty.push(_requiredQty)
+                        job.push(_job)
+                        supplyQty.push(_supplyQty)
+                        rows_id.push(_rows_id)
+                    })
+                    
+                    const data = {
+                        issue_date : trf_indirect_rm_txt_date.value,
+                        location_from : trf_indirect_rm_fr_loc.value,
+                        location_to : trf_indirect_rm_to_loc.value,
+                        userid : uidnya,
+                        rows_id : rows_id,
+                        model : model,
+                        assy_code : assyCode,
+                        part_code : partCode,
+                        part_name : partName,
+                        usage_qty : usage,
+                        req_qty : requiredQty,
+                        job : job,
+                        sup_qty : supplyQty,
+                    }
+                    
                     if(confirm('Are you sure want to update ?')) {
-                        const data = {
-                            issue_date : trf_indirect_rm_txt_date.value,
-                            location_from : trf_indirect_rm_fr_loc.value,
-                            location_to : trf_indirect_rm_to_loc.value,
-                            userid : uidnya
-                        }
+                        
                         pthis.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
                         pthis.disabled = true
                         $.ajax({
                             type: "PUT",
-                            url: "<?=$_ENV['APP_INTERNAL_API']?>"+`transfer-indirect-rm/form/${trf_indirect_rm_hidden_id}`,
+                            url: "<?=$_ENV['APP_INTERNAL_API']?>"+`transfer-indirect-rm/form/${trf_indirect_rm_hidden_id.value}`,
                             data: data,
                             dataType: "JSON",
                             success: function (response) {
@@ -524,6 +581,10 @@
                     ])
                 })
                 trf_indirect_rm_sso_part.setData(datanya)
+                localStorage.setItem('transfer_ind_part', JSON.stringify(trf_indirect_rm_sso_part.getData()))
+
+                trf_indirect_rm_btn_save.disabled = data.readOnly
+
             }, error: function(xhr, xopt, xthrow) {
                 const respon = Object.keys(xhr.responseJSON)
                 let msg = ''
