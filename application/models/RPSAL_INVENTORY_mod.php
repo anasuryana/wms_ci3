@@ -29,7 +29,7 @@ class RPSAL_INVENTORY_mod extends CI_Model {
 
     public function select_compare_where($pwhere)
 	{
-        $this->DBUse->select("INV_ITMNUM,SUM(INV_QTY) INV_QTY,SUM(INV_PHY_QTY) INV_PHY_QTY");
+        $this->DBUse->select("INV_ITMNUM,ISNULL(SUM(INV_QTY),0) INV_QTY,SUM(INV_PHY_QTY) INV_PHY_QTY");
         $this->DBUse->from($this->TABLENAME);
         $this->DBUse->where($pwhere);
         $this->DBUse->group_by("INV_ITMNUM");

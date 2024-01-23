@@ -29,3 +29,10 @@ function smtPWValidator(pvalue, data = {PWPOL_LENGTH: 0, PWPOL_ISCOMPLEX: 0}) {
     }
     return  {cd: '1', msg : 'OK'}
 }
+
+const onlyInLeft = (left, right, compareFunction) =>
+                            left.filter(leftValue =>
+                                !right.some(rightValue =>
+                                    compareFunction(leftValue, rightValue)
+                                )
+                            );
