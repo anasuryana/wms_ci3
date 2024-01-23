@@ -2693,7 +2693,20 @@ class ITH extends CI_Controller
             $myar = ["cd" => "0", "msg" => "Session is expired please reload page"];
             die(json_encode(['status' => $myar]));
         }
-        $whException = ['AFWH3', 'AWIP1', 'PSIEQUIP'];
+        $whException = ['AFWH3', 'AWIP1', 'PSIEQUIP',
+            'ENGEQUIP',
+            'ENGLINEEQUIP',
+            'FCTEQUIP',
+            'ICTEQUIP',
+            'MFG1EQUIP',
+            'MFG2EQUIP',
+            'PPICEQUIP',
+            'PRCSCREQUIP',
+            'PSIEQUIP',
+            'QAEQUIP',
+            'QASCREQUIP',
+            'SCREQUIP',
+        ];
         $date = $this->input->post('date');
         $location = $this->input->post('location');
         $adjtype = $this->input->post('adjtype');
@@ -2793,6 +2806,39 @@ class ITH extends CI_Controller
             case 'PSIEQUIP':
                 $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
                 break;
+            case 'ENGEQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
+                break;
+            case 'ENGLINEEQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
+                break;
+            case 'FCTEQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
+                break;
+            case 'ICTEQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
+                break;
+            case 'MFG1EQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
+                break;
+            case 'MFG2EQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
+                break;
+            case 'PPICEQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
+                break;
+            case 'PRCSCREQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
+                break;
+            case 'QAEQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
+                break;
+            case 'QASCREQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
+                break;
+            case 'SCREQUIP':
+                $rs = $this->ITH_mod->select_compare_inventory_machine($cwh_wms, $date);
+                break;
             default:
                 $rs = $this->ITH_mod->select_compare_inventory($cwh_wms, $date);
         }
@@ -2804,7 +2850,7 @@ class ITH extends CI_Controller
         foreach ($rs as $r) {
             $isfound = false;
             foreach ($rssaved as $s) {
-                if (strtoupper($r['ITH_ITMCD']) == strtoupper($s['INV_ITMNUM'])) {
+                if (strtoupper($r['ITH_ITMCD']) === strtoupper($s['INV_ITMNUM'])) {
                     if ($upltype === 'P') {
                         if ($r['STOCKQTY'] * 1 != $s['INV_PHY_QTY'] * 1) {
                             $WHERE['INV_ITMNUM'] = $s['INV_ITMNUM'];
@@ -3733,7 +3779,7 @@ class ITH extends CI_Controller
         }
         unset($r);
 
-        $message = $affectedRows > 0 && fmod($affectedRows,2) == 0 ? 'Changed successfully' : 'Changed, but please contact Admin';
+        $message = $affectedRows > 0 && fmod($affectedRows, 2) == 0 ? 'Changed successfully' : 'Changed, but please contact Admin';
 
         die(json_encode([
             'status' => ['cd' => '1', 'msg' => $message, 'affectedRows' => $affectedRows], 'data' => $rs,
@@ -3796,7 +3842,7 @@ class ITH extends CI_Controller
         $items = $this->input->post('items');
         $dates = $this->input->post('dates');
         $remarks = $this->input->post('remarks');
-        $rs = $this->ITH_mod->selectForReturningwithIn_items($doc, $date, $items, $dates , $remarks);
+        $rs = $this->ITH_mod->selectForReturningwithIn_items($doc, $date, $items, $dates, $remarks);
         $tmpTime = strtotime($date . ' +1 days');
         $date0 = date('Y-m-d', $tmpTime);
         $thedate = $date;
@@ -3833,7 +3879,7 @@ class ITH extends CI_Controller
             }
         }
         unset($r);
-        
+
         die(json_encode([
             'status' => ['cd' => '1', 'msg' => $affectedRows . ' row(s) updated'], 'data' => $rs,
         ]));
