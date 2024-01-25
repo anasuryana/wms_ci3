@@ -501,9 +501,10 @@
                 $.when.apply($, functionList).then(function() {
                     // stop process if stock is not enough
                     for(let i=0; i<datanya_RM.length; i++) {
+                        const _partName = trf_indirect_rm_sso_part.getCell('E'+(i+1)).innerText.toUpperCase()
                         const _supplyQty = numeral(trf_indirect_rm_sso_part.getCell('I'+(i+1)).innerText).value()
                         const _stockQty = numeral(trf_indirect_rm_sso_part.getCell('J'+(i+1)).innerText).value()
-                        if(_supplyQty > _stockQty) {
+                        if(_supplyQty > _stockQty && !_partName.includes('AIRCAP')) {
                             alertify.message(`Stock is not enough, supply=${_supplyQty}, stock=${_stockQty}`)
                             pthis.innerHTML = `<i class="fas fa-save"></i>`
                             pthis.disabled = false
@@ -583,7 +584,7 @@
                         let dataBefore = JSON.parse(localStorage.getItem('transfer_ind_part'))
                         let dataAfter = trf_indirect_rm_sso_part.getData()
 
-                        const isSameIDRP = (a, b) => a[3] === b[3] && a[8] === b[8];
+                        const isSameIDRP = (a, b) => a[3] === b[3] && a[8] === b[8]; // dapatkan baris data yang diedit Kalau ada pengeditan di kolom 3 dan 8 maka
 
                         const onlyInA = onlyInLeft(dataBefore, dataAfter, isSameIDRP);
                         const onlyInB = onlyInLeft(dataAfter, dataBefore, isSameIDRP);
@@ -785,53 +786,109 @@
         }
         pthis.classList.add('disabled')
         pthis.innerHTML = 'Please wait'
-        $.ajax({
-            type: "GET",
-            data: {
-                userid : uidnya
-            },
-            url: "<?=$_ENV['APP_INTERNAL_API']?>" + `transfer-indirect-rm/export/${trf_indirect_rm_hidden_id.value}`,
-            success: function(response) {
-                trf_indirect_rm_btn_save.disabled = true
-                const blob = new Blob([response], {
-                    type: "application/vnd.ms-excel"
-                })
-                const fileName = `Transfer ${trf_indirect_rm_txt_date.value}.xlsx`
-                saveAs(blob, fileName)
-                pthis.innerHTML = `<span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet`
-                pthis.classList.remove('disabled')
-                alertify.success('Done')
-            },
-            xhr: function() {
-                const xhr = new XMLHttpRequest()
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 2) {
-                        if (xhr.status == 200) {
-                            xhr.responseType = "blob";
-                        } else {
-                            pthis.innerHTML = `<span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet`
-                            pthis.classList.remove('disabled')
-                            xhr.responseType = "text";
+
+        let datanya_RM = trf_indirect_rm_sso_part.getData()
+        let dataList = datanya_RM.filter((data) => data[2].length > 1)
+
+        let partCode = []
+        let functionList = []
+        dataList.forEach((arrayItem) => {
+            let _partCode = arrayItem[3].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            partCode.push(_partCode)
+        })
+        functionList.push($.ajax({
+                type: "post",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>"+"report/stock",
+                data: {part_code : partCode, warehouse : trf_indirect_rm_fr_loc.value},
+                dataType: "json",
+                success: function (response) {
+                    pthis.innerHTML = `<span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet`
+                    pthis.classList.remove('disabled')
+                    response.data.forEach((arrayItem) => {
+                        for(let i=0; i<datanya_RM.length; i++) {
+                            const _partCode = trf_indirect_rm_sso_part.getCell('D'+(i+1)).innerText.trim().toUpperCase()
+                            if(arrayItem['ITEMCODE'] === _partCode) {
+                                trf_indirect_rm_sso_part.setValue('J'+(i+1), arrayItem['STOCK'], true)
+                            }
+                        }
+                    });
+                }, error: function(xhr, xopt, xthrow) {
+                    pthis.innerHTML = `<span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet`
+                    pthis.classList.remove('disabled')
+
+                    const respon = Object.keys(xhr.responseJSON)
+                    let msg = ''
+                    for (const item of respon) {
+                        msg += `<p>${xhr.responseJSON[item]}</p>`
+                    }
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        ${msg}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    alertify.warning(xthrow);
+                }
+            }))
+        $.when.apply($, functionList).then(function() {
+            // stop process if stock is not enough
+            for(let i=0; i<datanya_RM.length; i++) {
+                const _partName = trf_indirect_rm_sso_part.getCell('E'+(i+1)).innerText.toUpperCase()
+                const _supplyQty = numeral(trf_indirect_rm_sso_part.getCell('I'+(i+1)).innerText).value()
+                const _stockQty = numeral(trf_indirect_rm_sso_part.getCell('J'+(i+1)).innerText).value()
+                if(_supplyQty > _stockQty && !_partName.includes('AIRCAP')) {
+                    alertify.message(`Stock is not enough, supply=${_supplyQty}, stock=${_stockQty}`)
+                    pthis.innerHTML = `<span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet`
+                    pthis.classList.remove('disabled')
+                    return
+                }
+            }
+            $.ajax({
+                type: "GET",
+                data: {
+                    userid : uidnya
+                },
+                url: "<?=$_ENV['APP_INTERNAL_API']?>" + `transfer-indirect-rm/export/${trf_indirect_rm_hidden_id.value}`,
+                success: function(response) {
+                    trf_indirect_rm_btn_save.disabled = true
+                    const blob = new Blob([response], {
+                        type: "application/vnd.ms-excel"
+                    })
+                    const fileName = `Transfer ${trf_indirect_rm_txt_date.value}.xlsx`
+                    saveAs(blob, fileName)
+                    pthis.innerHTML = `<span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet`
+                    pthis.classList.remove('disabled')
+                    alertify.success('Done')
+                },
+                xhr: function() {
+                    const xhr = new XMLHttpRequest()
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 2) {
+                            if (xhr.status == 200) {
+                                xhr.responseType = "blob";
+                            } else {
+                                pthis.innerHTML = `<span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet`
+                                pthis.classList.remove('disabled')
+                                xhr.responseType = "text";
+                            }
                         }
                     }
+                    return xhr
+                },
+                error: function(xhr, xopt, xthrow) {
+                    pthis.innerHTML = `<span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet`
+                    pthis.classList.remove('disabled')
+                    const respon = Object.keys(xhr.responseJSON)
+                    const div_alert = document.getElementById('div-alert')
+                    let msg = ''
+                    for (const item of respon) {
+                        msg += `<p>${xhr.responseJSON[item]}</p>`
+                    }
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        ${msg}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
                 }
-                return xhr
-            },
-            error: function(xhr, xopt, xthrow) {
-                pthis.innerHTML = `<span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet`
-                pthis.classList.remove('disabled')
-                const respon = Object.keys(xhr.responseJSON)
-                const div_alert = document.getElementById('div-alert')
-                let msg = ''
-                for (const item of respon) {
-                    msg += `<p>${xhr.responseJSON[item]}</p>`
-                }
-                div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    ${msg}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>`
-            }
-        });
+            });
+        })
     }
 
     $("#trf_indirect_rm_ModDocumentList").on('hidden.bs.modal', function() {
