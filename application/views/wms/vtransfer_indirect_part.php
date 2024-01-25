@@ -74,13 +74,8 @@
             </div>
         </div>
         <div class="row" id="trf_indirect_rm_stack4">
-            <div class="col-md-12 mb-1 table-responsive">
+            <div class="col-md-12 mb-1 table-responsive" id="tr_indirect_rm_container">
                 <div id="trf_indirect_rm_table_container"></div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 mb-1">
-
             </div>
         </div>
     </div>
@@ -179,7 +174,12 @@
 </div>
 <input type="hidden" id="trf_indirect_rm_hidden_id">
 <script>
-
+    var deletedDBRows = []
+    $("#tr_indirect_rm_container").css('height', $(window).height()
+        -document.getElementById('trf_indirect_rm_stack1').offsetHeight
+        -document.getElementById('trf_indirect_rm_stack2').offsetHeight
+        -document.getElementById('trf_indirect_rm_stack3').offsetHeight
+        -100);
     function trf_indirect_rm_search_document_eKP(e) {
         e.readOnly = true
         if(e.key === 'Enter') {
@@ -244,7 +244,6 @@
         }
     }
 
-
     trf_indirect_rm_ModDocumentList.addEventListener('shown.bs.modal', () => {
         trf_indirect_rm_search_document.focus()
     })
@@ -270,6 +269,8 @@
             }
         }
         trf_indirect_rm_btn_save.disabled = false
+
+        deletedDBRows = []
     }
 
     $("#trf_indirect_rm_txt_date").datepicker({
@@ -344,13 +345,89 @@
                 title:'Supply Qty',
                 width:80,
                 align: 'right'
+            },{
+                type: 'numeric',
+                mask: '#,##0',
+                title:'Stock',
+                width:80,
+                align: 'right',
+                readOnly : true
             },
-
         ],
+        onpaste: function(oWorkSheet, aData) { // (Object , Array)
+            if(aData[0].length>3) {
+                let datanya_RM = trf_indirect_rm_sso_part.getData()
+                let dataList = datanya_RM.filter((data) => data[2].length > 1)
+                let partCode = [];
+                dataList.forEach((arrayItem) => {
+                    let _partCode = arrayItem[3].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                    partCode.push(_partCode)
+                })
+                if(partCode.length >0) {
+                    const data = {
+                        part_code : partCode,
+                        warehouse : trf_indirect_rm_fr_loc.value
+                    }
+                    trf_indirect_getStock(data)
+                }
+            }
+        },
+        onbeforedeleterow : function(oWorkSheet, nRows) { // Object, Number[]
+            const idDBRow = trf_indirect_rm_sso_part.getCell('A'+(nRows+1)).innerText
+            const modelDBRow = trf_indirect_rm_sso_part.getCell('B'+(nRows+1)).innerText
+            const assyDBRow = trf_indirect_rm_sso_part.getCell('C'+(nRows+1)).innerText
+            const partCodeDBRow = trf_indirect_rm_sso_part.getCell('D'+(nRows+1)).innerText
+            const partNameDBRow = trf_indirect_rm_sso_part.getCell('E'+(nRows+1)).innerText
+            const usageDBRow = trf_indirect_rm_sso_part.getCell('F'+(nRows+1)).innerText
+            const reqQtyDBRow = trf_indirect_rm_sso_part.getCell('G'+(nRows+1)).innerText
+            const jobDBRow = trf_indirect_rm_sso_part.getCell('H'+(nRows+1)).innerText
+            const supQtyDBRow = trf_indirect_rm_sso_part.getCell('I'+(nRows+1)).innerText
+            if(idDBRow) {
+                deletedDBRows.push(idDBRow)
+            }
+        }
     });
+
+    function trf_indirect_getStock(data) {
+        let datanya_RM = trf_indirect_rm_sso_part.getData()
+        trf_indirect_rm_btn_save.disabled = true
+        $.ajax({
+            type: "post",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>"+"report/stock",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                trf_indirect_rm_btn_save.disabled = false
+                response.data.forEach((arrayItem) => {
+                    for(let i=0; i<datanya_RM.length; i++) {
+                        const _partCode = trf_indirect_rm_sso_part.getCell('D'+(i+1)).innerText.trim().toUpperCase()
+                        if(arrayItem['ITEMCODE'] === _partCode) {
+                            trf_indirect_rm_sso_part.setValue('J'+(i+1), arrayItem['STOCK'], true)
+                        }
+                    }
+                });
+            }, error: function(xhr, xopt, xthrow) {
+                trf_indirect_rm_btn_save.disabled = false
+
+                const respon = Object.keys(xhr.responseJSON)
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${msg}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                alertify.warning(xthrow);
+            }
+        })
+    }
 
     function trf_indirect_rm_btn_save_eC(pthis) {
         if(trf_indirect_rm_fr_loc.value!=trf_indirect_rm_to_loc.value) {
+            pthis.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
+            pthis.disabled = true
+
             let datanya_RM = trf_indirect_rm_sso_part.getData()
             let dataList = datanya_RM.filter((data) => data[2].length > 1)
 
@@ -372,6 +449,7 @@
                 let _requiredQty = arrayItem[6].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
                 let _job = arrayItem[7].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
                 let _supplyQty = arrayItem[8].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                let _megaQty = arrayItem[9].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
 
                 model.push(_model)
                 assyCode.push(_assyCode)
@@ -386,61 +464,29 @@
             const div_alert = document.getElementById('div-alert')
 
             if(partCode.length > 0) {
-                if(trf_indirect_rm_txt_doc.value.length === 0) {
-
-                    const data = {
-                        issue_date : trf_indirect_rm_txt_date.value,
-                        location_from : trf_indirect_rm_fr_loc.value,
-                        location_to : trf_indirect_rm_to_loc.value,
-                        userid : uidnya,
-                        model : model,
-                        assy_code : assyCode,
-                        part_code : partCode,
-                        part_name : partName,
-                        usage_qty : usage,
-                        req_qty : requiredQty,
-                        job : job,
-                        sup_qty : supplyQty,
-                    }
-
-                    if(!confirm('Are you sure want to save ?')) {
-                        return
-                    }
-
-                    pthis.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
-                    pthis.disabled = true
-                    $.ajax({
-                        type: "POST",
-                        url: "<?=$_ENV['APP_INTERNAL_API']?>"+"transfer-indirect-rm/form",
-                        data: data,
+                // get stock before save
+                let functionList = []
+                functionList.push($.ajax({
+                        type: "post",
+                        url: "<?=$_ENV['APP_INTERNAL_API']?>"+"report/stock",
+                        data: {part_code : partCode, warehouse : trf_indirect_rm_fr_loc.value},
                         dataType: "json",
                         success: function (response) {
-                            pthis.innerHTML = `<i class="fas fa-save"></i>`
-                            pthis.disabled = false
-
-                            alertify.success(response.message)
-                            document.getElementById('div-alert').innerHTML = ''
-                            trf_indirect_rm_txt_doc.value = response.new_document
-                            trf_indirect_rm_hidden_id.value = response.new_document_id
-
-                            let datanya = []
+                            trf_indirect_rm_btn_save.innerHTML = `<i class="fas fa-save"></i>`
+                            trf_indirect_rm_btn_save.disabled = false
                             response.data.forEach((arrayItem) => {
-                                datanya.push([
-                                    arrayItem['id'],
-                                    arrayItem['model'],
-                                    arrayItem['assy_code'],
-                                    arrayItem['part_code'],
-                                    arrayItem['part_name'],
-                                    arrayItem['usage_qty'],
-                                    arrayItem['req_qty'],
-                                    arrayItem['job'],
-                                    arrayItem['sup_qty'],
-                                ])
-                            })
-                            trf_indirect_rm_sso_part.setData(datanya)
+                                for(let i=0; i<datanya_RM.length; i++) {
+                                    const _partCode = trf_indirect_rm_sso_part.getCell('D'+(i+1)).innerText.trim().toUpperCase()
+                                    if(arrayItem['ITEMCODE'] === _partCode) {
+                                        trf_indirect_rm_sso_part.setValue('J'+(i+1), arrayItem['STOCK'], true)
+                                    }
+                                }
+                            });
                         }, error: function(xhr, xopt, xthrow) {
-                            const respon = Object.keys(xhr.responseJSON)
+                            trf_indirect_rm_btn_save.innerHTML = `<i class="fas fa-save"></i>`
+                            trf_indirect_rm_btn_save.disabled = false
 
+                            const respon = Object.keys(xhr.responseJSON)
                             let msg = ''
                             for (const item of respon) {
                                 msg += `<p>${xhr.responseJSON[item]}</p>`
@@ -449,86 +495,74 @@
                                 ${msg}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>`
-                            pthis.innerHTML = `<i class="fas fa-save"></i>`
                             alertify.warning(xthrow);
-                            pthis.disabled = false
                         }
-                    });
-                } else {
-                    let dataBefore = JSON.parse(localStorage.getItem('transfer_ind_part'))
-                    let dataAfter = trf_indirect_rm_sso_part.getData()
-
-                    const isSameIDRP = (a, b) => a[3] === b[3] && a[8] === b[8];
-
-                    const onlyInA = onlyInLeft(dataBefore, dataAfter, isSameIDRP);
-                    const onlyInB = onlyInLeft(dataAfter, dataBefore, isSameIDRP);
-
-                    const result = [...onlyInA, ...onlyInB]
-
-                    let model = [];
-                    let assyCode = [];
-                    let partCode = [];
-                    let partName = [];
-                    let usage = [];
-                    let requiredQty = [];
-                    let supplyQty = [];
-                    let job = [];
-                    let rows_id = [];
-
-                    result.forEach((arrayItem) => {
-                        let _rows_id = arrayItem[0]
-                        let _model = arrayItem[1].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
-                        let _assyCode = arrayItem[2].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
-                        let _partCode = arrayItem[3].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
-                        let _partName = arrayItem[4].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
-                        let _usage = arrayItem[5].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
-                        let _requiredQty = arrayItem[6].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
-                        let _job = arrayItem[7].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
-                        let _supplyQty = arrayItem[8].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
-
-                        model.push(_model)
-                        assyCode.push(_assyCode)
-                        partCode.push(_partCode)
-                        partName.push(_partName)
-                        usage.push(_usage)
-                        requiredQty.push(_requiredQty)
-                        job.push(_job)
-                        supplyQty.push(_supplyQty)
-                        rows_id.push(_rows_id)
-                    })
-                    
-                    const data = {
-                        issue_date : trf_indirect_rm_txt_date.value,
-                        location_from : trf_indirect_rm_fr_loc.value,
-                        location_to : trf_indirect_rm_to_loc.value,
-                        userid : uidnya,
-                        rows_id : rows_id,
-                        model : model,
-                        assy_code : assyCode,
-                        part_code : partCode,
-                        part_name : partName,
-                        usage_qty : usage,
-                        req_qty : requiredQty,
-                        job : job,
-                        sup_qty : supplyQty,
+                    }))
+                $.when.apply($, functionList).then(function() {
+                    // stop process if stock is not enough
+                    for(let i=0; i<datanya_RM.length; i++) {
+                        const _supplyQty = numeral(trf_indirect_rm_sso_part.getCell('I'+(i+1)).innerText).value()
+                        const _stockQty = numeral(trf_indirect_rm_sso_part.getCell('J'+(i+1)).innerText).value()
+                        if(_supplyQty > _stockQty) {
+                            alertify.message(`Stock is not enough, supply=${_supplyQty}, stock=${_stockQty}`)
+                            pthis.innerHTML = `<i class="fas fa-save"></i>`
+                            pthis.disabled = false
+                            return
+                        }
                     }
-                    
-                    if(confirm('Are you sure want to update ?')) {
-                        
-                        pthis.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
-                        pthis.disabled = true
+
+                    if(trf_indirect_rm_txt_doc.value.length === 0) {
+                        const data = {
+                            issue_date : trf_indirect_rm_txt_date.value,
+                            location_from : trf_indirect_rm_fr_loc.value,
+                            location_to : trf_indirect_rm_to_loc.value,
+                            userid : uidnya,
+                            model : model,
+                            assy_code : assyCode,
+                            part_code : partCode,
+                            part_name : partName,
+                            usage_qty : usage,
+                            req_qty : requiredQty,
+                            job : job,
+                            sup_qty : supplyQty,
+                        }
+
+                        if(!confirm('Are you sure want to save ?')) {
+                            pthis.innerHTML = `<i class="fas fa-save"></i>`
+                            pthis.disabled = false
+                            return
+                        }
+
                         $.ajax({
-                            type: "PUT",
-                            url: "<?=$_ENV['APP_INTERNAL_API']?>"+`transfer-indirect-rm/form/${trf_indirect_rm_hidden_id.value}`,
+                            type: "POST",
+                            url: "<?=$_ENV['APP_INTERNAL_API']?>"+"transfer-indirect-rm/form",
                             data: data,
-                            dataType: "JSON",
+                            dataType: "json",
                             success: function (response) {
                                 pthis.innerHTML = `<i class="fas fa-save"></i>`
                                 pthis.disabled = false
+
                                 alertify.success(response.message)
+                                document.getElementById('div-alert').innerHTML = ''
+                                trf_indirect_rm_txt_doc.value = response.new_document
+                                trf_indirect_rm_hidden_id.value = response.new_document_id
+
+                                let datanya = []
+                                response.data.forEach((arrayItem) => {
+                                    datanya.push([
+                                        arrayItem['id'],
+                                        arrayItem['model'],
+                                        arrayItem['assy_code'],
+                                        arrayItem['part_code'],
+                                        arrayItem['part_name'],
+                                        arrayItem['usage_qty'],
+                                        arrayItem['req_qty'],
+                                        arrayItem['job'],
+                                        arrayItem['sup_qty'],
+                                    ])
+                                })
+                                trf_indirect_rm_sso_part.setData(datanya)
                             }, error: function(xhr, xopt, xthrow) {
-                                pthis.innerHTML = `<i class="fas fa-save"></i>`
-                                pthis.disabled = false
                                 const respon = Object.keys(xhr.responseJSON)
 
                                 let msg = ''
@@ -544,9 +578,151 @@
                                 pthis.disabled = false
                             }
                         });
+                    } else {
+
+                        let dataBefore = JSON.parse(localStorage.getItem('transfer_ind_part'))
+                        let dataAfter = trf_indirect_rm_sso_part.getData()
+
+                        const isSameIDRP = (a, b) => a[3] === b[3] && a[8] === b[8];
+
+                        const onlyInA = onlyInLeft(dataBefore, dataAfter, isSameIDRP);
+                        const onlyInB = onlyInLeft(dataAfter, dataBefore, isSameIDRP);
+
+                        const result = [...onlyInA, ...onlyInB]
+
+                        let model = [];
+                        let assyCode = [];
+                        let partCode = [];
+                        let partName = [];
+                        let usage = [];
+                        let requiredQty = [];
+                        let supplyQty = [];
+                        let job = [];
+                        let rows_id = [];
+
+                        result.forEach((arrayItem) => {
+                            let _rows_id = arrayItem[0]
+                            let _model = arrayItem[1].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                            let _assyCode = arrayItem[2].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                            let _partCode = arrayItem[3].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                            let _partName = arrayItem[4].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                            let _usage = arrayItem[5].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                            let _requiredQty = arrayItem[6].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                            let _job = arrayItem[7].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+                            let _supplyQty = arrayItem[8].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+
+                            model.push(_model)
+                            assyCode.push(_assyCode)
+                            partCode.push(_partCode)
+                            partName.push(_partName)
+                            usage.push(_usage)
+                            requiredQty.push(_requiredQty)
+                            job.push(_job)
+                            supplyQty.push(_supplyQty)
+                            rows_id.push(_rows_id)
+                        })
+
+                        const data = {
+                            issue_date : trf_indirect_rm_txt_date.value,
+                            location_from : trf_indirect_rm_fr_loc.value,
+                            location_to : trf_indirect_rm_to_loc.value,
+                            userid : uidnya,
+                            rows_id : rows_id,
+                            model : model,
+                            assy_code : assyCode,
+                            part_code : partCode,
+                            part_name : partName,
+                            usage_qty : usage,
+                            req_qty : requiredQty,
+                            job : job,
+                            sup_qty : supplyQty,
+                        }
+
+                        if(confirm('Are you sure want to update ?')) {
+
+                            pthis.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
+                            pthis.disabled = true
+                            let functionPut = []
+                            functionPut.push($.ajax({
+                                    type: "PUT",
+                                    url: "<?=$_ENV['APP_INTERNAL_API']?>"+`transfer-indirect-rm/form/${trf_indirect_rm_hidden_id.value}`,
+                                    data: data,
+                                    dataType: "JSON",
+                                    success: function (response) {
+                                        let datanya = []
+                                        response.data.forEach((arrayItem) => {
+                                            datanya.push([
+                                                arrayItem['id'],
+                                                arrayItem['model'],
+                                                arrayItem['assy_code'],
+                                                arrayItem['part_code'],
+                                                arrayItem['part_name'],
+                                                arrayItem['usage_qty'],
+                                                arrayItem['req_qty'],
+                                                arrayItem['job'],
+                                                arrayItem['sup_qty'],
+                                            ])
+                                        })
+                                        trf_indirect_rm_sso_part.setData(datanya)
+                                    }, error: function(xhr, xopt, xthrow) {
+                                        pthis.innerHTML = `<i class="fas fa-save"></i>`
+                                        pthis.disabled = false
+                                        const respon = Object.keys(xhr.responseJSON)
+
+                                        let msg = ''
+                                        for (const item of respon) {
+                                            msg += `<p>${xhr.responseJSON[item]}</p>`
+                                        }
+                                        div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            ${msg}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+                                        alertify.warning(xthrow);
+                                    }
+                                }))
+                            $.when.apply($, functionPut).then(function() {
+                                if(deletedDBRows.length>0) {
+                                    $.ajax({
+                                        type: "DELETE",
+                                        url: "<?=$_ENV['APP_INTERNAL_API']?>"+`transfer-indirect-rm/form/${trf_indirect_rm_hidden_id.value}`,
+                                        data: {rows_id : deletedDBRows, userid: uidnya},
+                                        dataType: "json",
+                                        success: function (response) {
+                                            pthis.innerHTML = `<i class="fas fa-save"></i>`
+                                            pthis.disabled = false
+                                            alertify.message('Updated successfully...')
+                                        }, error: function(xhr, xopt, xthrow) {
+                                            pthis.innerHTML = `<i class="fas fa-save"></i>`
+                                            pthis.disabled = false
+                                            const respon = Object.keys(xhr.responseJSON)
+
+                                            let msg = ''
+                                            for (const item of respon) {
+                                                msg += `<p>${xhr.responseJSON[item]}</p>`
+                                            }
+                                            div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                                ${msg}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                </div>`
+                                            alertify.warning(xthrow);
+
+                                        }
+                                    });
+                                } else {
+                                    pthis.innerHTML = `<i class="fas fa-save"></i>`
+                                    pthis.disabled = false
+                                    alertify.message('Updated successfully..')
+                                }
+                            })
+                        } else {
+                            pthis.innerHTML = `<i class="fas fa-save"></i>`
+                            pthis.disabled = false
+                        }
                     }
-                }
+                })
             } else {
+                pthis.innerHTML = `<i class="fas fa-save"></i>`
+                pthis.disabled = false
                 alertify.warning('nothing to be saved')
             }
         } else {
