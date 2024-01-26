@@ -61,7 +61,7 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">From Location</label>
-                    <select id="trf_indirect_rm_fr_loc" class="form-select" onchange="document.getElementById('trf_indirect_rm_to_loc').focus()">
+                    <select id="trf_indirect_rm_fr_loc" class="form-select" onchange="trf_indirect_rm_fr_loc_on_change(event)">
                     <?=$lwh?>
                     </select>
                 </div>
@@ -241,6 +241,16 @@
                     e.readOnly = false
                 }
             });
+        }
+    }
+
+    function trf_indirect_rm_fr_loc_on_change(e) {
+        if(e.target.value==='AIWH1') {
+            trf_indirect_rm_to_loc.value = '-'
+            trf_indirect_rm_to_loc.disabled = true
+        } else {
+            trf_indirect_rm_to_loc.focus()
+            trf_indirect_rm_to_loc.disabled = false
         }
     }
 
