@@ -151,14 +151,14 @@ class Inventory extends CI_Controller
             ->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
             ->addCondition('MOD(ROW(),2)=0');
         $myConditi->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('FFFF0000');
+            ->getStartColor()->setARGB('FFFFFF');
 
         $myConditi2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional;
         $myConditi2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_EXPRESSION)
             ->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
-            ->addCondition('MOD(ROW(),2)=0');
+            ->addCondition('MOD(ROW(),2)=1');
         $myConditi2->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getEndColor()->setARGB('f0f0f0');
+            ->getEndColor()->setARGB('F0F0F0');
         $aconditions[] = $myConditi;
         $aconditions[] = $myConditi2;
         $sheet->getStyle($rang)->setConditionalStyles($aconditions);
