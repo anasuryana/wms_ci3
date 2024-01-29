@@ -1,7 +1,6 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-// use PHPJasper\PHPJasper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -22,36 +21,6 @@ class ITHHistory extends CI_Controller
     public function index()
     {
         echo "sorry";
-        // =================
-        // $input = 'D:/apache24/htdocs/wms/vendor/geekcom/phpjasper/examples/hello_world.jasper';
-        // $output = 'D:/apache24/htdocs/wms/vendor/geekcom/phpjasper/examples';
-        // $options = [
-        //     'format' => ['pdf', 'rtf']
-        // ];
-        // $jasper = new PHPJasper;
-
-        // $jasper->process(
-        //     $input,
-        //     $output,
-        //     $options
-        // )->execute();
-        // =================
-
-        // =================
-        // $input = FCPATH. '/vendor/geekcom/phpjasper/examples/hello_world.jrxml';
-
-        // $jasper = new PHPJasper;
-        // $jasper->compile($input)->execute();
-        // =================
-
-        // $input = FCPATH . '/vendor/geekcom/phpjasper/examples/hello_world_params.jrxml';
-
-        // $jasper = new PHPJasper;
-        // $output = $jasper->listParameters($input)->execute();
-
-        // foreach ($output as $parameter_description) {
-        //     print $parameter_description . '<pre>';
-        // }
     }
 
     public function getLocations()
