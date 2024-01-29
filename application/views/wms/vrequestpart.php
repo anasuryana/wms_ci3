@@ -138,7 +138,7 @@
                                     <th>Category</th>
                                     <th>Reff. Document No.</th>
                                     <th>PIC</th>
-                                    <th>Remark</th>
+                                    <th>Reason</th>
                                     <th class="d-none">USRGRP</th>
                                     <th>Line</th>
                                     <th>Model</th>
@@ -361,7 +361,7 @@
                             newText = document.createTextNode(response.data[i].FNM);
                             newcell.appendChild(newText);
                             newcell = newrow.insertCell(5);
-                            newcell.innerHTML = response.data[i].SPL_RMRK
+                            newcell.innerHTML = response.data[i].RQSRMRK_DESC
                             newcell = newrow.insertCell(6);
                             newcell.classList.add('d-none')
                             newcell.innerHTML = response.data[i].SPL_USRGRP
