@@ -14,7 +14,6 @@
 		"php": ">=5.3.7",
 		"phpoffice/phpspreadsheet": "^1.10",
 		"spatie/async": "^1.5",
-		"geekcom/phpjasper": "^3.1",
 		"rmccue/requests": "^2.0",
 		"vlucas/phpdotenv": "^5.6"
 	},
