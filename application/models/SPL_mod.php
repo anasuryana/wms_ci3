@@ -969,11 +969,22 @@ class SPL_mod extends CI_Model
 
     public function select_partreq_h_bydoc($pdok)
     {
-        $qry = "select TOP 200 SPL_DOC,max(SPL_LUPDT) DT, MAX(MSTEMP_FNM) FNM,max(SPL_REFDOCCAT) CTG , MAX(SPL_RMRK) SPL_RMRK
-        , MAX(SPL_USRGRP) SPL_USRGRP, MAX(SPL_LINE) SPL_LINE, ISNULL(MAX(SPL_FMDL),'') SPL_FMDL from SPL_TBL
-        INNER JOIN MSTEMP_TBL ON SPL_USRID=MSTEMP_ID
-        where SPL_DOC LIKE 'PR-%' AND SPL_DOC LIKE ?
-        group by SPL_DOC";
+        $qry = "SELECT V1.*,RQSRMRK_DESC FROM
+                (SELECT TOP 200 SPL_DOC
+                    ,max(SPL_LUPDT) DT
+                    ,MAX(MSTEMP_FNM) FNM
+                    ,max(SPL_REFDOCCAT) CTG
+                    ,MAX(SPL_RMRK) SPL_RMRK
+                    ,MAX(SPL_USRGRP) SPL_USRGRP
+                    ,MAX(SPL_LINE) SPL_LINE
+                    ,ISNULL(MAX(SPL_FMDL), '') SPL_FMDL
+                FROM SPL_TBL
+                INNER JOIN MSTEMP_TBL ON SPL_USRID = MSTEMP_ID
+                WHERE SPL_DOC LIKE 'PR-%'
+                    AND SPL_DOC LIKE ?
+                GROUP BY SPL_DOC ) V1
+                LEFT JOIN RQSRMRK_TBL ON SPL_RMRK=RQSRMRK_CD
+                ";
         $query = $this->db->query($qry, ['%' . $pdok . '%']);
         return $query->result_array();
     }
