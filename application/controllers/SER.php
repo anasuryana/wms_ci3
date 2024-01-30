@@ -4631,7 +4631,7 @@ class SER extends CI_Controller
         $rsSI = $this->SISCN_mod->select_trace(['SISCN_SER' => $cid]);
         if (!empty($rs)) {
             $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
-            $rsrelabel = $this->LOGSER_mod->selectRelabelHistoryFromNewLabel($cid);            
+            $rsrelabel = $this->LOGSER_mod->selectRelabelHistoryFromNewLabel($cid);
         } else {
             $rsrelabel = $this->LOGSER_mod->select_new_label($cid);
             $myar[] = ['cd' => 0, 'msg' => 'not found'];
@@ -4643,9 +4643,16 @@ class SER extends CI_Controller
                 if (count($ar) > 1) {
                     $serid_new = substr($ar[5], 2, strlen($ar[5]));
                     $serqty = substr($ar[3], 2, strlen($ar[3]));
-                    $rsrelabel_fix[] = [
-                        'SER_OLDID' => $cid, 'SER_NEWID' => $serid_new, 'SER_QTY' => $serqty, 'PIC' => $r['PIC'], 'LOGSER_DT' => $r['LOGSER_DT'],
-                    ];
+
+                    if (!empty($rs)) {
+                        $rsrelabel_fix[] = [
+                            'SER_OLDID' => $r['LOGSER_KEYS_RPLC'], 'SER_NEWID' => $serid_new, 'SER_QTY' => $serqty, 'PIC' => $r['PIC'], 'LOGSER_DT' => $r['LOGSER_DT'],
+                        ];
+                    } else {
+                        $rsrelabel_fix[] = [
+                            'SER_OLDID' => $cid, 'SER_NEWID' => $serid_new, 'SER_QTY' => $serqty, 'PIC' => $r['PIC'], 'LOGSER_DT' => $r['LOGSER_DT'],
+                        ];
+                    }
                 } else {
                     $serid_new = $r['LOGSER_KEYS'];
                     $serqty = 0;
