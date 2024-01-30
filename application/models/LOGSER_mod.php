@@ -31,10 +31,11 @@ class LOGSER_mod extends CI_Model {
     }
 
     public function selectRelabelHistoryFromNewLabel($reffno){
-        $this->db->select("LOGSER_KEYS,LOGSER_DT,LOGSER_USRID, CONCAT(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC");
+        $this->db->select("LOGSER_KEYS,LOGSER_DT,LOGSER_USRID, CONCAT(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC, LOGSER_KEYS_RPLC");
 		$this->db->from($this->TABLENAME." a");
 		$this->db->join("MSTEMP_TBL", "LOGSER_USRID=MSTEMP_ID","LEFT");
-        $this->db->like("LOGSER_KEYS", $reffno);        
+        $this->db->like("LOGSER_KEYS", $reffno);
+        $this->db->where("LOGSER_KEYS_RPLC is not null", NULL, true);
 		$query = $this->db->get();
 		return $query->result_array();
     }
