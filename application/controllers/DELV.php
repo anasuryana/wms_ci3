@@ -6218,7 +6218,7 @@ class DELV extends CI_Controller
         $this->DELV_mod->updatebyVAR(['DLV_POST' => $this->session->userdata('nama'), 'DLV_POSTTM' => $currentDate], ['DLV_ID' => $csj]);
         $this->setPrice(base64_encode($csj));
         //delivery checking
-        if ($consignee != 'IEI') {
+        if ($consignee != 'IEI' || $aspBOX > 0) {
             $this->sendto_delivery_checking($csj);
         }
 
@@ -15022,7 +15022,7 @@ class DELV extends CI_Controller
         $isFrom3rdPartyOK = false;
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 1500]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 1500]);
             // $responApi = Requests::request('http://localhost/custom/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             if(isset($responApiObj->message)) {
@@ -15725,10 +15725,10 @@ class DELV extends CI_Controller
             ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
             ['NOMOR_AJU' => $NomorAju]
         );
-        if (empty($TPBData)) {
-            $message = 'Please posting to TPB first';
-            // if (!empty($TPBData)) {
-            //     $message = 'Already exist in TPB';
+        // if (empty($TPBData)) {
+        //     $message = 'Please posting to TPB first';
+        if (!empty($TPBData)) {
+            $message = 'Already exist in TPB';
         } else {
             $netweight_represent = 0;
             $JumlahKemasan = 0;
