@@ -15458,6 +15458,7 @@ class DELV extends CI_Controller
             $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
             if (count($rscurr) == 0) {
                 $myar[] = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
+                $this->output->set_status_header(409);
                 die('{"status":' . json_encode($myar) . '}');
             } else {
                 foreach ($rscurr as $r) {
