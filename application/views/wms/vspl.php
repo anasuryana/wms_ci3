@@ -156,6 +156,13 @@
             </div>
 
             <div class="row">
+                <div class="col-md-12 mb-1">
+                    <label for="pareqPeriod1" class="form-label">Cancel Date</label>
+                    <input type="text" class="form-control form-control-sm" id="spl_dateCancel" readonly>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col">
                     <div class="table-responsive" id="spl_divkudet">
                         <table id="spl_tbldetissu" class="table table-hover table-sm table-bordered">
@@ -510,6 +517,12 @@
         onclick:function() {
             spl_contextMenu.close(false);
         }
+    })
+
+    $("#spl_dateCancel").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        clearBtn: true
     })
 
     function psn_btn_fix_eCK(p){
@@ -1229,6 +1242,10 @@
                         alertify.warning("Sorry, we could not process, this function is only for specific user group");
                         return;
                     }
+                    if(spl_dateCancel.value.trim().length === 0) {
+                        alertify.warning("date is required");
+                        return
+                    }
                     let tcell0 = prow.getElementsByTagName("td")[0];
                     let tcell4 = prow.getElementsByTagName("td")[4];
                     if(tcell4.innerText.charAt(0)!='n'){
@@ -1237,7 +1254,7 @@
                             $.ajax({
                                 type: "get",
                                 url: "<?=base_url('SPL/cancel_kitting')?>",
-                                data: {inidscan: tcell0.innerText },
+                                data: {inidscan: tcell0.innerText, date: spl_dateCancel.value },
                                 dataType: "json",
                                 success: function (response) {
                                     if(response.status[0].cd!='0'){
