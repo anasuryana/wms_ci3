@@ -103,11 +103,11 @@
             <div class="row mb-1 d-none" id="pareqPeriodContainer">
                 <div class="col-md-6">
                     <label for="pareqPeriod1" class="form-label">From</label>
-                    <input type="text" class="form-control form-control-sm" id="pareqPeriod1" readonly>
+                    <input type="text" class="form-control form-control-sm" id="pareqPeriod1" readonly onchange="pareqPeriod1OnChange()">
                 </div>
                 <div class="col-md-6">
                     <label for="pareqPeriod2" class="form-label">To</label>
-                    <input type="text" class="form-control form-control-sm" id="pareqPeriod2" readonly>
+                    <input type="text" class="form-control form-control-sm" id="pareqPeriod2" readonly onchange="pareqPeriod2OnChange()">
                 </div>
             </div>
             <div class="row">
@@ -132,7 +132,7 @@
                     <div class="table-responsive" id="pareq_div_saved">
                         <table id="pareq_tbl_saved" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer;font-size:75%">
                             <thead class="table-light">
-                                <tr>
+                                <tr class="text-center">
                                     <th>Document No.</th>
                                     <th>Date</th>
                                     <th>Category</th>
@@ -142,6 +142,7 @@
                                     <th class="d-none">USRGRP</th>
                                     <th>Line</th>
                                     <th>Model</th>
+                                    <th>Req. Qty</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -206,13 +207,23 @@
     $("#pareqPeriod1").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true
-    });
+    })
+
     $("#pareqPeriod2").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true
-    });
+    })
+
     $("#pareqPeriod1").datepicker('update', new Date());
     $("#pareqPeriod2").datepicker('update', new Date());
+
+    function pareqPeriod1OnChange() {
+        pareq_txtsearch.focus()
+    }
+
+    function pareqPeriod2OnChange() {
+        pareq_txtsearch.focus()
+    }
 
     $('#pareq_tbl tbody').on( 'click', 'tr', function () {
         pareq_tblrowindexsel = $(this).index();
@@ -369,6 +380,9 @@
                             newcell.innerHTML = response.data[i].SPL_LINE
                             newcell = newrow.insertCell(8)
                             newcell.innerHTML = response.data[i].SPL_FMDL
+                            newcell = newrow.insertCell(9)
+                            newcell.classList.add('text-end')
+                            newcell.innerHTML = numeral(response.data[i].REQQT).format(',')
                         }
                         mydes.innerHTML='';
                         mydes.appendChild(myfrag);
