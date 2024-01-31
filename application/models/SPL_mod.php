@@ -978,6 +978,7 @@ class SPL_mod extends CI_Model
                     ,MAX(SPL_USRGRP) SPL_USRGRP
                     ,MAX(SPL_LINE) SPL_LINE
                     ,ISNULL(MAX(SPL_FMDL), '') SPL_FMDL
+                    ,SUM(SPL_QTYREQ) REQQT
                 FROM SPL_TBL
                 INNER JOIN MSTEMP_TBL ON SPL_USRID = MSTEMP_ID
                 WHERE SPL_DOC LIKE 'PR-%'
@@ -999,6 +1000,7 @@ class SPL_mod extends CI_Model
                             ,MAX(SPL_USRGRP) SPL_USRGRP
                             ,MAX(SPL_LINE) SPL_LINE
                             ,ISNULL(MAX(SPL_FMDL), '') SPL_FMDL
+                            ,SUM(SPL_QTYREQ) REQQT
                         FROM SPL_TBL
                         INNER JOIN MSTEMP_TBL ON SPL_USRID = MSTEMP_ID
                         WHERE SPL_DOC LIKE 'PR-%'

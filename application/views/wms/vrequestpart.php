@@ -132,7 +132,7 @@
                     <div class="table-responsive" id="pareq_div_saved">
                         <table id="pareq_tbl_saved" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer;font-size:75%">
                             <thead class="table-light">
-                                <tr>
+                                <tr class="text-center">
                                     <th>Document No.</th>
                                     <th>Date</th>
                                     <th>Category</th>
@@ -142,6 +142,7 @@
                                     <th class="d-none">USRGRP</th>
                                     <th>Line</th>
                                     <th>Model</th>
+                                    <th>Req. Qty</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -369,6 +370,9 @@
                             newcell.innerHTML = response.data[i].SPL_LINE
                             newcell = newrow.insertCell(8)
                             newcell.innerHTML = response.data[i].SPL_FMDL
+                            newcell = newrow.insertCell(9)
+                            newcell.classList.add('text-end')
+                            newcell.innerHTML = numeral(response.data[i].REQQT).format(',')
                         }
                         mydes.innerHTML='';
                         mydes.appendChild(myfrag);
