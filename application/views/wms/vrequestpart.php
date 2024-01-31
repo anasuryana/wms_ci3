@@ -103,11 +103,11 @@
             <div class="row mb-1 d-none" id="pareqPeriodContainer">
                 <div class="col-md-6">
                     <label for="pareqPeriod1" class="form-label">From</label>
-                    <input type="text" class="form-control form-control-sm" id="pareqPeriod1" readonly>
+                    <input type="text" class="form-control form-control-sm" id="pareqPeriod1" readonly onchange="pareqPeriod1OnChange()">
                 </div>
                 <div class="col-md-6">
                     <label for="pareqPeriod2" class="form-label">To</label>
-                    <input type="text" class="form-control form-control-sm" id="pareqPeriod2" readonly>
+                    <input type="text" class="form-control form-control-sm" id="pareqPeriod2" readonly onchange="pareqPeriod2OnChange()">
                 </div>
             </div>
             <div class="row">
@@ -207,13 +207,23 @@
     $("#pareqPeriod1").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true
-    });
+    })
+
     $("#pareqPeriod2").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true
-    });
+    })
+
     $("#pareqPeriod1").datepicker('update', new Date());
     $("#pareqPeriod2").datepicker('update', new Date());
+
+    function pareqPeriod1OnChange() {
+        pareq_txtsearch.focus()
+    }
+
+    function pareqPeriod2OnChange() {
+        pareq_txtsearch.focus()
+    }
 
     $('#pareq_tbl tbody').on( 'click', 'tr', function () {
         pareq_tblrowindexsel = $(this).index();
