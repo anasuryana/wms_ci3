@@ -817,7 +817,7 @@ class SPL extends CI_Controller
         # Expected transaction : raw material location [+], plant location [-]
         $this->checkSession();
 
-        $crn_date = date('Y-m-d');
+        $crn_date = date('Y-m-d H:i:s');
         $cidscan = $this->input->post('inidscan');
         $myar = [];
         $rs = $this->SPLSCN_mod->selectby_ID_whereIn($cidscan);
@@ -970,7 +970,7 @@ class SPL extends CI_Controller
     {
         $this->checkSession();
 
-        $crn_date = date('Y-m-d');
+        $crn_date = $this->input->get('date'). " ".date(' H:i:s');
         $cidscan = $this->input->get('inidscan');
         $myar = [];
         $rs = $this->SPLSCN_mod->selectby_filter(['SPLSCN_ID' => $cidscan]);
@@ -980,14 +980,7 @@ class SPL extends CI_Controller
             $_itemcd = $r['SPLSCN_ITMCD'];
             $_timescan = $r['SPLSCN_LUPDT'];
         }
-        $rsBOOK = $this->SPLBOOK_mod->select_book_where(['SPLBOOK_SPLDOC' => $cpsn, 'SPLBOOK_ITMCD' => $_itemcd]);
-        $shouldReBook = false;
-        foreach ($rsBOOK as $r) {
-            if ($_timescan > $r['SPLBOOK_LUPDTD']) {
-                $shouldReBook = true;
-                $thebookID = $r['SPLBOOK_DOC'];
-            }
-        }
+        
         $cwh_out = '';
         $rsbg = $this->SPL_mod->select_bg_partreq([$cpsn]);
         foreach ($rsbg as $r) {
@@ -1048,16 +1041,6 @@ class SPL extends CI_Controller
                     'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => $theqty, 'ITH_USRID' => $this->session->userdata('nama'),
                 ]);
                 if ($retith == 2) {
-                    if ($shouldReBook) {
-                        $datab = [
-                            'ITH_ITMCD' => $r['SPLSCN_ITMCD'], 'ITH_WH' => $cwh_inc,
-                            'ITH_DOC' => $thebookID, 'ITH_DATE' => $crn_date,
-                            'ITH_FORM' => 'BOOK-SPL-3', 'ITH_QTY' => -$r['SPLSCN_QTY'],
-                            'ITH_REMARK' => $r['SPLSCN_LOTNO'],
-                            'ITH_USRID' => $this->session->userdata('nama'),
-                        ];
-                        $this->ITH_mod->insert_spl($datab);
-                    }
                     //delete scannning history
                     if ($this->SPLSCN_mod->deleteby_filter(['SPLSCN_ID' => $cidscan]) > 0) {
                         $myar[] = ['cd' => 1, 'msg' => 'canceled successfully'];

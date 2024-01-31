@@ -185,10 +185,10 @@ class ITH_mod extends CI_Model
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LUPDT,ITH_USRID)
-        VALUES(?,?,'CANCELING-RM-PSN-OUT',?,?,?,getdate(),?)";
+        VALUES(?,?,'CANCELING-RM-PSN-OUT',?,?,?,?,?)";
         $this->db->query($qry, array(
             $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_DOC'], $data['ITH_QTY'], $data['ITH_WH'],
-            $data['ITH_USRID'],
+            $data['ITH_DATE'], $data['ITH_USRID'],
         ));
         return $this->db->affected_rows();
     }
@@ -197,12 +197,11 @@ class ITH_mod extends CI_Model
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
         ITH_WH,ITH_LUPDT,ITH_USRID)
-        VALUES(?,?,'CANCELING-RM-PSN-IN',?,?,
-        ?,getdate(),?)";
-        $this->db->query($qry, array(
-            $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_DOC'], $data['ITH_QTY'],
-            $data['ITH_WH'], $data['ITH_USRID'],
-        ));
+        VALUES(?,?,'CANCELING-RM-PSN-IN',?,?,?,?,?)";
+        $this->db->query($qry, [
+            $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_DOC'], $data['ITH_QTY'], $data['ITH_WH'], 
+            $data['ITH_DATE'], $data['ITH_USRID'],
+        ]);
         return $this->db->affected_rows();
     }
 
