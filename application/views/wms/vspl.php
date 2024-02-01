@@ -1247,6 +1247,7 @@
                         return
                     }
                     let tcell0 = prow.getElementsByTagName("td")[0];
+                    let tcell3 = prow.getElementsByTagName("td")[3];
                     let tcell4 = prow.getElementsByTagName("td")[4];
                     if(tcell4.innerText.charAt(0)!='n'){
                         let konf = confirm("Are you sure want to cancel kitting ["+ tcell0.innerText + "] ?");
@@ -1254,7 +1255,7 @@
                             $.ajax({
                                 type: "get",
                                 url: "<?=base_url('SPL/cancel_kitting')?>",
-                                data: {inidscan: tcell0.innerText, date: spl_dateCancel.value },
+                                data: {inidscan: tcell0.innerText, date: spl_dateCancel.value, time : tcell3.innerText  },
                                 dataType: "json",
                                 success: function (response) {
                                     if(response.status[0].cd!='0'){

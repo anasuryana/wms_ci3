@@ -969,10 +969,17 @@ class SPL extends CI_Controller
     public function cancel_kitting()
     {
         $this->checkSession();
+        $kittingDateTime = new DateTime($this->input->get('time'));
+        $interval = new DateInterval('PT1S');
+        $kittingDateTime->add($interval);
 
-        $crn_date = $this->input->get('date'). " ".date(' H:i:s');
+        $initFixedTime = $kittingDateTime->format('H:i:s');
+        $fixedTime = $initFixedTime < '07:00:00' ? '23:23:23' : $initFixedTime;
+
+        $crn_date = $this->input->get('date'). " ".$fixedTime;
         $cidscan = $this->input->get('inidscan');
         $myar = [];
+
         $rs = $this->SPLSCN_mod->selectby_filter(['SPLSCN_ID' => $cidscan]);
         $cpsn = $_itemcd = $_timescan = $thebookID = '';
         foreach ($rs as $r) {
