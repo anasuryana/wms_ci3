@@ -219,6 +219,9 @@
                         newcell = newrow.insertCell(0);
                         newcell.innerHTML = response.data[i].ITH_DATEKU
                         newcell = newrow.insertCell(1)
+                        if(response.data[i].MITM_ACTIVE==='R') {
+                            newcell.classList.add('text-danger')
+                        }
                         newcell.innerHTML = response.data[i].ITH_ITMCD
                         newcell = newrow.insertCell(2)
                         newcell.innerHTML = response.data[i].MITM_ITMD1

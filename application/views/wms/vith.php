@@ -38,7 +38,7 @@
                         <li><a class="dropdown-item" href="#" id="ith_btn_xls" onclick="ith_btn_xls_e_click()"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> XLS Detail</a></li>
                     </ul>
                 </div>
-            </div>            
+            </div>
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text" >Business Group</span>
@@ -134,13 +134,14 @@
     </div>
 </div>
 <script>
-    
+
     ith_colorize(ith_cmb_wh)
     var ith_a_BG = [];
     var ith_a_BG_NM = [];
-    function ith_btn_gen_eCK(p){        
+    function ith_btn_gen_eCK(p){
         ith_getstock();
     }
+
     function ith_selectBG_eC(e){
         if(e.target.tagName.toLowerCase()==='td'){
             if(e.target.cellIndex==1){
@@ -199,7 +200,7 @@
             sbg = sbg.substr(0,sbg.length-1);
         }
         Cookies.set('CKPSI_BG', sbg, {expires:365});
-        Cookies.set('CKPSI_DATE', mdate, {expires:365});        
+        Cookies.set('CKPSI_DATE', mdate, {expires:365});
         window.open("<?=base_url('ex_stock_detail')?>",'_blank');
     }
 
@@ -246,48 +247,51 @@ function ith_getstock(){
             tableku2.innerHTML='';
             for (let i = 0; i<ttlrows; i++){
 				myitmttl+=numeral(response.data[i].STOCKQTY).value();
+
                 newrow = tableku2.insertRow(-1);
                 newcell = newrow.insertCell(0);
-                newText = document.createTextNode((i+1));
-                newcell.appendChild(newText);
+                newcell.innerHTML = (i+1)
+
                 newcell = newrow.insertCell(1);
-                newText = document.createTextNode(response.data[i].ITH_ITMCD);
-                newcell.appendChild(newText);
+                if(response.data[i].MITM_ACTIVE === 'R') {
+                    newcell.classList.add('text-danger')
+                }
+                newcell.innerHTML = response.data[i].ITH_ITMCD
+
                 newcell = newrow.insertCell(2)
                 newcell.classList.add('font-monospace')
                 newcell.innerHTML = response.data[i].MITM_SPTNO
+
                 newcell = newrow.insertCell(3);
-                newText = document.createTextNode(response.data[i].MITM_ITMD1);
-                newcell.appendChild(newText);
+                newcell.innerHTML = response.data[i].MITM_ITMD1
+
                 newcell = newrow.insertCell(4);
                 newcell.title = "OPENING";
-                newText = document.createTextNode(numeral(response.data[i].BEFQTY).format('0,0'));
                 newcell.style.cssText='text-align: right';
-                newcell.appendChild(newText);
+                newcell.innerHTML = numeral(response.data[i].BEFQTY).format('0,0')
+
                 newcell = newrow.insertCell(5);
                 newcell.title = "Today: IN";
-                newText = document.createTextNode(numeral(response.data[i].INQTY).format('0,0'));
                 newcell.style.cssText='text-align: right';
-                newcell.appendChild(newText);
+                newcell.innerHTML = numeral(response.data[i].INQTY).format('0,0')
+
                 newcell = newrow.insertCell(6);
                 newcell.title = "PREPARE";
-                newText = document.createTextNode(numeral(response.data[i].PRPQTY).format('0,0'));
                 newcell.style.cssText='text-align: right';
-                newcell.appendChild(newText);
+                newcell.innerHTML = numeral(response.data[i].PRPQTY).format('0,0')
+
                 newcell = newrow.insertCell(7);
                 newcell.title = "Today: OUT";
-                newText = document.createTextNode(numeral(response.data[i].OUTQTY).format('0,0'));
                 newcell.style.cssText='text-align: right';
-                newcell.appendChild(newText);
+                newcell.innerHTML = numeral(response.data[i].OUTQTY).format('0,0')
 
                 newcell = newrow.insertCell(8);
                 newcell.title = "END";
-                newText = document.createTextNode(numeral(response.data[i].STOCKQTY).format('0,0'));
                 newcell.style.cssText='text-align: right';
-                newcell.appendChild(newText);
+                newcell.innerHTML = numeral(response.data[i].STOCKQTY).format('0,0')
+
                 newcell = newrow.insertCell(9);
-                newText = document.createTextNode(response.data[i].MITM_STKUOM);
-                newcell.appendChild(newText);
+                newcell.innerHTML = response.data[i].MITM_STKUOM
             }
             mydes.innerHTML='';
             mydes.appendChild(myfrag);
