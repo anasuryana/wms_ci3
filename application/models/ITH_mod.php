@@ -486,6 +486,7 @@ class ITH_mod extends CI_Model
                             WHEN ITH_DATEC < ?
                                 THEN ITH_QTY
                             END) BEFQTY
+                    ,ISNULL(MITM_ACTIVE,'') MITM_ACTIVE
                 FROM v_ith_tblc a
                 LEFT JOIN MITM_TBL b ON a.ITH_ITMCD = b.MITM_ITMCD
                 LEFT JOIN v_mitm_bsgroup ON ITH_ITMCD = PDPP_MDLCD
@@ -503,6 +504,7 @@ class ITH_mod extends CI_Model
                     ,MITM_STKUOM
                     ,MITM_ITMD1
                     ,MITM_NCAT
+                    ,MITM_ACTIVE
                 ) VSTOCK
             LEFT JOIN (
                 SELECT ITH_ITMCD
@@ -748,11 +750,11 @@ class ITH_mod extends CI_Model
         $s_inc_wh = "'" . implode("','", $inc_wh) . "'";
         $s_out_wh = "'" . implode("','", $out_wh) . "'";
         $qry = "SELECT VSTOCK.ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,RTRIM(MITM_SPTNO) MITM_SPTNO,BEFQTY,INQTY, PRPQTY,abs(OUTQTY) OUTQTY,
-         ISNULL(STOCKQTY,0) STOCKQTY, MITM_STKUOM,UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT,LUPDT FROM
-            (select ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,MITM_STKUOM,MITM_NCAT,MAX(ITH_LUPDT) LUPDT FROM v_ith_tblc a INNER JOIN MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD
+         ISNULL(STOCKQTY,0) STOCKQTY, MITM_STKUOM,UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT,LUPDT,MITM_ACTIVE FROM
+            (select ITH_ITMCD,MITM_ITMD1,MITM_SPTNO,SUM(ITH_QTY) STOCKQTY,MITM_STKUOM,MITM_NCAT,MAX(ITH_LUPDT) LUPDT,ISNULL(MITM_ACTIVE,'') MITM_ACTIVE  FROM v_ith_tblc a INNER JOIN MITM_TBL b on a.ITH_ITMCD=b.MITM_ITMCD
             WHERE ITH_WH in ($s_main_wh) AND ITH_ITMCD LIKE '%$item%'
             AND ITH_FORM NOT IN ('SASTART','SA') and ITH_DATEC<= '$pdate'
-            GROUP BY ITH_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1,MITM_NCAT) VSTOCK
+            GROUP BY ITH_ITMCD,MITM_SPTNO,MITM_STKUOM,MITM_ITMD1,MITM_NCAT,MITM_ACTIVE) VSTOCK
         LEFT JOIN
         (SELECT ITH_ITMCD,SUM(ITH_QTY) BEFQTY FROM v_ith_tblc a
                 WHERE ITH_WH in ($s_main_wh) AND ITH_ITMCD LIKE '%$item%'
@@ -1457,7 +1459,9 @@ class ITH_mod extends CI_Model
 
     public function select_txhistory_bef($pwh, $passy, $pdt1)
     {
-        $qry = "SELECT UPPER(V2.ITH_ITMCD) ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,ISNULL(BALQTY,0) BALQTY,RTRIM(MITM_STKUOM) UOM FROM
+        $qry = "SELECT UPPER(V2.ITH_ITMCD) ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,ISNULL(BALQTY,0) BALQTY,RTRIM(MITM_STKUOM) UOM 
+        ,ISNULL(MITM_ACTIVE,'') MITM_ACTIVE
+        FROM
         (SELECT ITH_ITMCD,SUM(ITH_QTY) BALQTY
                 FROM v_ith_tblc
                 WHERE ITH_WH=? and ITH_ITMCD like ? and ITH_DATEC < ?
@@ -1476,7 +1480,7 @@ class ITH_mod extends CI_Model
     public function selectTXHistoryBeforeByItemDescription($pwh, $passy, $pdt1)
     {
         $qry = "SELECT UPPER(ITH_ITMCD) ITH_ITMCD,RTRIM(MITM_ITMD1) MITM_ITMD1,ISNULL(BALQTY,0) BALQTY,RTRIM(MITM_STKUOM) UOM FROM
-        (SELECT ITH_ITMCD,SUM(ITH_QTY) BALQTY,MITM_ITMD1,MITM_STKUOM
+        (SELECT ITH_ITMCD,SUM(ITH_QTY) BALQTY,MITM_ITMD1,MITM_STKUOM,ISNULL(MITM_ACTIVE,'') MITM_ACTIVE
                 FROM v_ith_tblc
                 LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
                 WHERE ITH_WH=? and MITM_ITMD1 like ? and ITH_DATEC < ?
@@ -1587,10 +1591,10 @@ class ITH_mod extends CI_Model
                 ISNULL(SUM(CASE WHEN ITH_QTY>0 THEN ITH_QTY END),0) INCQTY ,
                 ISNULL(SUM(CASE WHEN ITH_QTY<0 THEN ITH_QTY END),0) OUTQTY ,
                 0 ITH_BAL,MAX(ITH_LUPDT) ITH_LUPDT,MIN(ITH_REMARK) ITH_REMARK ,
-                ITH_DATEC
+                ITH_DATEC,ISNULL(MITM_ACTIVE,'') MITM_ACTIVE
             FROM v_ith_tblc LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
             WHERE ITH_WH=? and ITH_ITMCD like ? AND  ITH_DATEC between ? and ?
-                GROUP BY ITH_ITMCD, rtrim(MITM_ITMD1),ITH_DATEC,ITH_FORM,ITH_DOC,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm')
+                GROUP BY ITH_ITMCD, rtrim(MITM_ITMD1),ITH_DATEC,ITH_FORM,ITH_DOC,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm'),MITM_ACTIVE
                 ORDER BY ITH_ITMCD,ITH_DATEC ,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm'), 6 DESC";
         $query = $this->db->query($qry, [$pwh, "%$passy%", $pdt1, $pdt2]);
         return $query->result_array();
@@ -1615,6 +1619,7 @@ class ITH_mod extends CI_Model
                     ,MAX(ITH_LUPDT) ITH_LUPDT
                     ,MIN(ITH_REMARK) ITH_REMARK
                     ,ITH_DATEC
+                    ,ISNULL(MITM_ACTIVE,'') MITM_ACTIVE
                 FROM v_ith_tblc
                 LEFT JOIN MITM_TBL ON ITH_ITMCD = MITM_ITMCD
                 WHERE ITH_WH = ?
@@ -1627,6 +1632,7 @@ class ITH_mod extends CI_Model
                     ,ITH_FORM
                     ,ITH_DOC
                     ,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm')
+                    ,MITM_ACTIVE
                 ORDER BY ITH_ITMCD
                     ,ITH_DATEC
                     ,FORMAT(ITH_LUPDT, 'yyyy-MM-dd HH:mm')
