@@ -434,6 +434,7 @@ class MSTITM extends CI_Controller
             if ($this->session->userdata('gid') === 'ROOT' || $this->session->userdata('gid') === 'ADMIN' || $ctype == '6') {
                 $datau['MITM_ITMD1'] = $cnm1;
                 $datau['MITM_STKUOM'] = $mstkuom;
+                $datau['MITM_SPTNO'] = $cspt;
                 $datau['MITM_ITMCD'] = $cid;
             }
             $toret = $this->MSTITM_mod->updatebyId($datau, $cid_old);
