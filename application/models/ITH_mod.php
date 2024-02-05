@@ -26,6 +26,15 @@ class ITH_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectGroupByDocumentAndWarehouse($where) {
+        $this->db->from($this->TABLENAME);
+        $this->db->select('ITH_DOC,ITH_ITMCD,ITH_WH, sum(ITH_QTY) TTLQT');
+        $this->db->where($where);
+        $this->db->group_by('ITH_DOC,ITH_ITMCD,ITH_WH');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function selectbin_history($plike)
     {
         $this->db->from($this->TABLENAME_BIN . " A");
