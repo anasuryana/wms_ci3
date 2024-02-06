@@ -744,22 +744,27 @@ class MSTITM extends CI_Controller
         header('Content-Type: application/json');
         $searchBy = $this->input->get('searchBy');
         $search = $this->input->get('search');
+        $ITH_WH = $this->input->get('ITH_WH');
         $rs = [];
         switch ($searchBy) {
             case 'in':
-                $rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMD1' => $search]);
+                $rs = $this->MSTITM_mod->select_columns_like_with_stock(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM", "ISNULL(STOCKQT,0) STOCKQT"],
+                    ['MITM_ITMD1' => $search],
+                    $ITH_WH);
                 break;
             case 'ic':
-                $rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMCD' => $search]);
+                $rs = $this->MSTITM_mod->select_columns_like_with_stock(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM", "ISNULL(STOCKQT,0) STOCKQT"],
+                    ['MITM_ITMCD' => $search],
+                    $ITH_WH);
                 break;
             case 'po':
-                $rs = $this->RCV_mod->selectItemLike(['RCV_PO' => $search]);
+                $rs = $this->RCV_mod->selectItemLikeWithStock(['RCV_PO' => $search], $ITH_WH);
                 break;
             case 'do':
-                $rs = $this->RCV_mod->selectItemLike(['RCV_DONO' => $search]);
+                $rs = $this->RCV_mod->selectItemLikeWithStock(['RCV_DONO' => $search], $ITH_WH);
                 break;
             default:
-                $rs = $this->MSTITM_mod->select_columns_like(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMCDCUS' => $search]);
+                $rs = $this->MSTITM_mod->select_columns_like_with_stock(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM"], ['MITM_ITMCDCUS' => $search]);
         }
         die(json_encode(['data' => $rs]));
     }

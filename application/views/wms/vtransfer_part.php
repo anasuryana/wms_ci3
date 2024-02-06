@@ -126,6 +126,7 @@
                                     <tr>
                                         <th>Item Code</th>
                                         <th>Description</th>
+                                        <th>Stock</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -200,8 +201,9 @@
                         <div class="input-group input-group-sm mb-1">
                             <span class="input-group-text">Search</span>
                             <select id="trfnonref_search_document_by" class="form-select" onchange="trfnonref_search_document.focus()">
-                                <option value="ic">Item Code</option>
-                                <option value="in">Description</option>
+                                <option value="0">Item Code</option>
+                                <option value="1">Description</option>
+                                <option value="2">Transer Document</option>
                             </select>
                             <input type="text" class="form-control" id="trfnonref_search_document" onkeypress="trfnonref_search_document_eKP(event)" maxlength="40" required placeholder="Press 'Enter' to search">
                         </div>
@@ -278,10 +280,10 @@
 <script>
     var trfnonref_pub_index = ''
 
-    function trfnonref_search_document_eKP(e){
-        if(e.key === 'Enter'){
+    function trfnonref_search_document_eKP(e) {
+        if(e.key === 'Enter') {
             e.target.readOnly = true
-            trfnonref_tblDocumentList.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="5" class="text-center">Please wait...</td></tr>'
+            trfnonref_tblDocumentList.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="6" class="text-center">Please wait...</td></tr>'
             $.ajax({
                 url: "<?=base_url('TRFHistory/search')?>",
                 data: {search : e.target.value, searchBy : trfnonref_search_document_by.value},
@@ -331,7 +333,7 @@
                 }, error: function(xhr, xopt, xthrow) {
                     alertify.error(xthrow);
                     e.target.readOnly = false
-                    trfnonref_tblDocumentList.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="5" class="text-center">please try again...</td></tr>'
+                    trfnonref_tblDocumentList.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="6" class="text-center">please try again...</td></tr>'
                 }
             });
         }
@@ -629,10 +631,10 @@
         {
             e.target.readOnly = true
             let mtabel = document.getElementById("trfnonref_tblItemList");
-            mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="2" class="text-center">Please wait...</td></tr>`
+            mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="3" class="text-center">Please wait...</td></tr>`
             $.ajax({
                 url: "<?=base_url('MSTITM/search_internal_item')?>",
-                data: {searchBy : trfnonref_searchby.value, search : trfnonref_search.value},
+                data: {searchBy : trfnonref_searchby.value, search : trfnonref_search.value, ITH_WH : trfnonref_fr_loc.value},
                 dataType: "json",
                 success: function (response) {
                     e.target.readOnly = false
@@ -644,10 +646,12 @@
                     let tableku2 = tabell.getElementsByTagName("tbody")[0];
                     tableku2.innerHTML = '';
                     response.data.forEach((arrayItem) => {
+                        const stock = numeral(arrayItem['STOCKQT']).format('0,0.00')
                         newrow = tableku2.insertRow(-1)
                         newcell = newrow.insertCell(0)
                         newcell.onclick = () => {
                             trfnonref_tbl.getElementsByTagName('tbody')[0].rows[trfnonref_pub_index-1].cells[1].innerHTML = arrayItem['MITM_ITMCD']
+                            trfnonref_tbl.getElementsByTagName('tbody')[0].rows[trfnonref_pub_index-1].cells[2].title = `Stock ${stock}`
                             $("#trfnonref_ModItemList").modal('hide')
                         }
                         newcell.classList.add('bg-info')
@@ -655,13 +659,16 @@
                         newcell.innerHTML = arrayItem['MITM_ITMCD']
                         newcell = newrow.insertCell(1)
                         newcell.innerHTML = arrayItem['MITM_ITMD1']
+                        newcell = newrow.insertCell(2)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = stock
                     })
                     mydes.innerHTML = ''
                     mydes.appendChild(myfrag)
                 }, error: function(xhr, xopt, xthrow) {
                     alertify.error(xthrow);
                     e.target.readOnly = false
-                    mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="2" class="text-center">${xthrow}, try again or contact administrator</td></tr>`
+                    mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="3" class="text-center">${xthrow}, try again or contact administrator</td></tr>`
                 }
             })
         }

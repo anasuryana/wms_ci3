@@ -19,18 +19,11 @@ class TRFHistory extends CI_Controller
     public function search()
     {
         header('Content-Type: application/json');
+        $columnMap = ['MITM_ITMCD', 'MITM_ITMD1', 'TRFH_DOC'];
         $search = $this->input->get('search');
         $searchBy = $this->input->get('searchBy');
         $RS = [];
-        $Like = [];
-        switch ($searchBy) {
-            case 'ic':
-                $Like = ['MITM_ITMCD' => $search];
-                break;
-            case 'in':
-                $Like = ['MITM_ITMD1' => $search];
-                break;
-        }
+        $Like = [$columnMap[$searchBy] => $search];
         $RS = $this->TRF_mod->selectHeaderLike($Like);
         die(json_encode(['data' => $RS]));
     }
