@@ -1730,22 +1730,11 @@ class PO extends CI_Controller
     public function DOPO()
     {
         header('Content-Type: application/json');
+        $columnMap = ['RCV_ITMCD', 'MSUP_SUPNM', 'MITM_ITMD1', 'RCV_PO'];
         # DO number & PO Number
         $searchBy = $this->input->get('searchBy');
         $search = $this->input->get('search');
-        $likeColumn = '';
-        switch ($searchBy) {
-            case 'ic':
-                $likeColumn = 'RCV_ITMCD';
-                break;
-            case 'sup':
-                $likeColumn = 'MSUP_SUPNM';
-                break;
-            case 'in':
-                $likeColumn = 'MITM_ITMD1';
-                break;
-        }
-        $rs = $this->RCV_mod->selectColumnGroup(['RCV_DONO', 'RCV_PO', 'MSUP_SUPNM'], [$likeColumn => $search], ['RCV_DONO', 'RCV_PO', 'MSUP_SUPNM']);
+        $rs = $this->RCV_mod->selectColumnGroup(['RCV_DONO', 'RCV_PO', 'MSUP_SUPNM'], [$columnMap[$searchBy] => $search], ['RCV_DONO', 'RCV_PO', 'MSUP_SUPNM']);
         die(json_encode(['data' => $rs]));
     }
     public function DOPODetail()
