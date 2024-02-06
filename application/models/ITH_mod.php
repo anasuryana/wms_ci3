@@ -1493,7 +1493,7 @@ class ITH_mod extends CI_Model
                 FROM v_ith_tblc
                 LEFT JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
                 WHERE ITH_WH=? and MITM_ITMD1 like ? and ITH_DATEC < ?
-                GROUP BY ITH_ITMCD,MITM_ITMD1,MITM_STKUOM) V1
+                GROUP BY ITH_ITMCD,MITM_ITMD1,MITM_STKUOM,MITM_ACTIVE) V1
         ORDER BY ITH_ITMCD";
         $query = $this->db->query($qry, [$pwh, "%$passy%", $pdt1]);
         return $query->result_array();
