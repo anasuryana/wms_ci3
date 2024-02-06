@@ -447,6 +447,16 @@ class MSTITM_mod extends CI_Model
         return $query->result();
     }
 
+    public function select_columns_like_with_stock($columns, $like, $location)
+    {
+        $this->db->select($columns);
+        $this->db->join("(SELECT ITH_ITMCD,SUM(ITH_QTY) STOCKQT FROM ITH_TBL WHERE ITH_WH='".$location."' GROUP BY ITH_ITMCD) V1", "MITM_ITMCD=ITH_ITMCD", "left");
+        $this->db->like($like);
+        $this->db->order_by('MITM_ITMCD');
+        $query = $this->db->get($this->TABLENAME);
+        return $query->result();
+    }
+
     public function select_category()
     {
         $this->db->select("UPPER(ISNULL(MITM_NCAT,'')) MITM_NCAT");

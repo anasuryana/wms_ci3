@@ -1293,4 +1293,16 @@ class RCV_mod extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
+
+    public function selectItemLikeWithStock($like, $location)
+    {
+        $this->db->select("RTRIM(MITM_ITMCD) MITM_ITMCD, RTRIM(MITM_ITMD1) MITM_ITMD1, ISNULL(STOCKQT,0) STOCKQT");
+        $this->db->from($this->TABLENAME);
+        $this->db->join("MITM_TBL", "RCV_ITMCD=MITM_ITMCD", "LEFT");
+        $this->db->join("(SELECT ITH_ITMCD,SUM(ITH_QTY) STOCKQT FROM ITH_TBL WHERE ITH_WH='".$location."' GROUP BY ITH_ITMCD) V1", "MITM_ITMCD=ITH_ITMCD", "left");
+        $this->db->like($like);
+        $this->db->group_by("MITM_ITMCD,MITM_ITMD1");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 }
