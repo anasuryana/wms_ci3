@@ -198,12 +198,12 @@
                         <label class="input-group-text">KPPBC</label>
                         <select id="rcvcustoms_kppbc" class="form-select">
                             <?php
-$toprint = '';
-foreach ($officelist as $r) {
-    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
-}
-echo $toprint;
-?>
+                                $toprint = '';
+                                foreach ($officelist as $r) {
+                                    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
+                                }
+                                echo $toprint;
+                            ?>
                         </select>
                         <label class="input-group-text">...</label>
                     </div>
@@ -219,7 +219,7 @@ echo $toprint;
                 <div class="col-md-3 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Total Qty</label>
-                        <input type="text" class="form-control" id="rcvcustoms_qty" readonly>
+                        <input type="text" class="form-control" id="rcvcustoms_qty" readonly disabled>
                     </div>
                 </div>
                 <div class="col-md-2 mb-1">
@@ -247,13 +247,13 @@ echo $toprint;
                 <div class="col-md-3 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Invoice</label>
-                        <input type="text" class="form-control" id="rcvcustoms_invoice" readonly>
+                        <input type="text" class="form-control" id="rcvcustoms_invoice" readonly disabled>
                     </div>
                 </div>
                 <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Contract</label>
-                        <input type="text" class="form-control" id="rcvcustoms_contractnum" readonly>
+                        <input type="text" class="form-control" id="rcvcustoms_contractnum" readonly disabled>
                         <button class="btn btn-primary" id="rcvcustoms_btn_find_contract" data-bs-toggle="modal" data-bs-target="#RCVCUSTOMS_CONA"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
@@ -268,6 +268,7 @@ echo $toprint;
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#" onclick="rcvcustoms_btnmkemasan_eCK(this)"><i class="fa-solid fa-box"></i> Kemasan</a></li>
                                 <li><a id="rcvcustoms_btn_posting_direct" class="dropdown-item" href="#" onclick="rcvcustoms_btn_posting_eCK(this)"><i class="fas fa-clone"></i> Posting</a></li>
+                                <!-- <li><a id="rcvcustoms_btnAmendModal" class="dropdown-item" href="#" onclick="rcvcustoms_btnAmendModalonClick(this)"><i class="fas fa-file-pen"></i> Changes Submission</a></li> -->
                             </ul>
                         </div>
                     </div>
@@ -277,6 +278,7 @@ echo $toprint;
                 </div>
                 <div class="col-md-4 mb-1 text-end">
                     <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-info" id="rcvcustoms_info" ><i class="fas fa-circle-info"></i></button>
                         <button class="btn btn-success" id="rcvcustoms_sync" title="Synchronize" onclick="rcvcustoms_sync_eCK()"><i class="fas fa-sync"></i></button>
                     </div>
                 </div>
@@ -395,12 +397,12 @@ echo $toprint;
                         <label class="input-group-text">KPPBC</label>
                         <select id="rcvcustoms_kppbc_1" class="form-select">
                             <?php
-$toprint = '';
-foreach ($officelist as $r) {
-    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
-}
-echo $toprint;
-?>
+                                $toprint = '';
+                                foreach ($officelist as $r) {
+                                    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
+                                }
+                                echo $toprint;
+                            ?>
                         </select>
                         <label class="input-group-text">...</label>
                     </div>
@@ -480,7 +482,7 @@ echo $toprint;
                 <div class="col-md-6 mb-1">
                     <div class="btn-group btn-group-sm">
                         <button class="btn btn-outline-primary" id="rcvcustoms_new_1" onclick="rcvcustoms_new_1_eCK()" title="New"><i class="fas fa-file"></i></button>
-                        <button class="btn btn-outline-primary" id="rcvcustoms_save_1" onclick="rcvcustoms_save_1_eCK()" title="Save"><i class="fas fa-save"></i></button>
+                        <button class="btn btn-outline-primary" id="rcvcustoms_save_1" onclick="rcvcustoms_save_1_eCK(this)" title="Save"><i class="fas fa-save"></i></button>
                         <div class="btn-group btn-group-sm" role="group">
                             <button id="rcvcustoms_btnTPB" title="TPB Operations" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">TPB</button>
                             <ul class="dropdown-menu">
@@ -519,6 +521,7 @@ echo $toprint;
                                     <th class="text-end" title="Bea Masuk">BM</th> <!-- 12 -->
                                     <th class="text-end">PPN</th> <!-- 13 -->
                                     <th class="text-end">PPH</th> <!-- 14 -->
+                                    <th class="text-center">to Location</th> <!-- 15 -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -597,12 +600,12 @@ echo $toprint;
                         <label class="input-group-text">KPPBC</label>
                         <select id="rcvcustoms_fg_kppbc" class="form-select">
                             <?php
-$toprint = '';
-foreach ($officelist as $r) {
-    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
-}
-echo $toprint;
-?>
+                                $toprint = '';
+                                foreach ($officelist as $r) {
+                                    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
+                                }
+                                echo $toprint;
+                            ?>
                         </select>
                         <label class="input-group-text">...</label>
                     </div>
@@ -766,12 +769,12 @@ echo $toprint;
                         <label class="input-group-text">KPPBC</label>
                         <select id="rcvcustoms_kppbc_2" class="form-select">
                             <?php
-$toprint = '';
-foreach ($officelist as $r) {
-    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
-}
-echo $toprint;
-?>
+                                $toprint = '';
+                                foreach ($officelist as $r) {
+                                    $toprint .= '<option value="' . $r['KODE_KANTOR'] . '">' . $r['URAIAN_KANTOR'] . '</option>';
+                                }
+                                echo $toprint;
+                            ?>
                         </select>
                         <label class="input-group-text">...</label>
                     </div>
@@ -970,27 +973,123 @@ echo $toprint;
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col" id="rcvcustoms_divku_search">
-                        <table id="rcvcustoms_tbldono" class="table table-hover table-sm table-bordered" style="width:100%;cursor:pointer;font-size:75%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>DO No</th>
-                                    <th>Date</th>
-                                    <th>Supplier</th>
-                                    <th class="text-end">Status</th>
-                                    <th class="text-center">HSCODE</th>
-                                    <th class="text-end">BM</th>
-                                    <th class="text-end">PPN</th>
-                                    <th class="text-end">PPH</th>
-                                    <th>Business</th>
-                                    <th>Invoice</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
+                    <div class="col-md-12" id="rcvcustoms_divku_search">
+                        <div class="table-responsive">
+                            <table id="rcvcustoms_tbldono" class="table table-hover table-sm table-bordered" style="width:100%;cursor:pointer;font-size:75%">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>DO No</th>
+                                        <th>Date</th>
+                                        <th>Supplier</th>
+                                        <th class="text-end">Status</th>
+                                        <th class="text-center">HSCODE</th>
+                                        <th class="text-end">BM</th>
+                                        <th class="text-end">PPN</th>
+                                        <th class="text-end">PPH</th>
+                                        <th>Business</th>
+                                        <th>Invoice</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="RCVCUSTOMS_ModalAmend">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Changes Submission</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-input-tab" data-bs-toggle="tab" data-bs-target="#nav-input" type="button" role="tab">Submission</button>
+                        <button class="nav-link" id="nav-history-tab" data-bs-toggle="tab" data-bs-target="#nav-history" type="button" role="tab">History</button>
+                    </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-input" role="tabpanel" aria-labelledby="nav-input-tab" tabindex="0">
+                        <div class="container-fluid mt-2 border-start border-bottom rounded-start">
+                            <div class="row">
+                                <div class="col-md-6 mb-1">
+                                    <label class="form-label">Delivery Order Code <span class="badge bg-secondary">OLD</span></label>
+                                    <div class="input-group input-group-sm mb-1">
+                                        <input type="text" class="form-control" id="rcvcustoms_ModalTxtDO" readonly disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-1">
+                                    <label class="form-label">Delivery Order Code <span class="badge bg-info">New</span></label>
+                                    <div class="input-group input-group-sm mb-1">
+                                        <input type="text" class="form-control" id="rcvcustoms_ModalTxtDONew" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-1">
+                                    <label class="form-label">Nomor Pendaftaran <span class="badge bg-secondary">OLD</span></label>
+                                    <div class="input-group input-group-sm mb-1">
+                                        <input type="text" class="form-control" id="rcvcustoms_ModalTxtNopen" readonly disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-1">
+                                    <label class="form-label">Nomor Pendaftaran <span class="badge bg-info">New</span></label>
+                                    <div class="input-group input-group-sm mb-1">
+                                        <input type="text" class="form-control" id="rcvcustoms_ModalTxtNopenNew" onclick="this.select()">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-1">
+                                    <label class="form-label">Tanggal Pendaftaran <span class="badge bg-secondary">OLD</span></label>
+                                    <div class="input-group input-group-sm mb-1">
+                                        <input type="text" class="form-control" id="rcvcustoms_ModalTxtTglpen" readonly disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-1">
+                                    <label class="form-label">Tanggal Pendaftaran <span class="badge bg-info">New</span></label>
+                                    <div class="input-group input-group-sm mb-1">
+                                        <input type="text" class="form-control" id="rcvcustoms_ModalTxtTglpenNew">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-history" role="tabpanel" aria-labelledby="nav-history-tab" tabindex="1">
+                        <div class="container-fluid mt-2 border-start border-bottom rounded-start">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="table-responsive" id="coaReportTabelContainer">
+                                        <table id="coaReportTabel" class="table table-sm table-striped table-bordered table-hover">
+                                            <thead class="table-light align-middle">
+                                                <tr class="text-center">
+                                                    <th >Date</th>
+                                                    <th >Document</th>
+                                                    <th >User</th>
+                                                    <th >Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm">Submit</button>
             </div>
         </div>
     </div>
@@ -1681,6 +1780,35 @@ echo $toprint;
         </div>
     </div>
 </div>
+<div class="modal fade" id="RCVCUSTOMS_LOCATION">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Location</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text">Warehouse</span>
+                            <select class="form-select" id="rcvcustoms_modal_cmb_locTo">
+                                <option value="-">-</option>
+                                <?=$machineLocation?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="rcvcustoms_btn_set_location" onclick="rcvcustoms_btn_set_locationOnClick()" title="OK">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div id='rcvcustoms_contextmenu'></div>
 <script>
     var rcvcustoms_suppliercode = ''
@@ -1719,7 +1847,7 @@ echo $toprint;
         })
     }
 
-    function rcvcustoms_save_1_eCK() {
+    function rcvcustoms_save_1_eCK(pthis) {
         const mdo = document.getElementById('rcvcustoms_docnoorigin_1').value.trim()
         const mbctype = $("#rcvcustoms_typedoc_1").val()
         const zstsrcv = document.getElementById('rcvcustoms_zsts_1').value
@@ -1763,12 +1891,14 @@ echo $toprint;
         let d_pkg_idrow = []
         let d_pkg_jml = []
         let d_pkg_kd = []
+        let d_location = []
 
         let mytable = document.getElementById('rcvcustoms_tbl_1').getElementsByTagName('tbody')[0]
         let mtrlength = mytable.getElementsByTagName('tr').length
         for (let i = 0; i < mtrlength; i++) {
             const itmcode = mytable.rows[i].cells[3].innerText.trim().replace(/\n+/g, '')
             const price = mytable.rows[i].cells[7].innerText.replace(/\n+/g, '')
+            const location = mytable.rows[i].cells[15].innerText.replace(/\n+/g, '')
             if (price == '-') {
                 alertify.warning('Price is not valid')
                 return
@@ -1786,8 +1916,14 @@ echo $toprint;
                 d_bm.push(mytable.rows[i].cells[12].innerText.replace(/\n+/g, ''))
                 d_ppn.push(mytable.rows[i].cells[13].innerText.replace(/\n+/g, ''))
                 d_pph.push(mytable.rows[i].cells[14].innerText.replace(/\n+/g, ''))
+                if(location.length <= 1 ) {
+                    alertify.warning('Location is required')
+                    return
+                }
+                d_location.push(location)
             }
         }
+
         if (d_itemcode.length == 0) {
             alertify.message('there is no item')
             return
@@ -1800,6 +1936,7 @@ echo $toprint;
             d_pkg_kd.push(mytable.rows[i].cells[2].innerText)
         }
         if (confirm("Are you sure ?")) {
+            pthis.disabled = true
             $.ajax({
                 type: "POST",
                 url: "<?=base_url('RCV/saveManually')?>",
@@ -1839,10 +1976,12 @@ echo $toprint;
                     d_prGW: d_prGW,
                     d_pkg_idrow: d_pkg_idrow,
                     d_pkg_jml: d_pkg_jml,
-                    d_pkg_kd: d_pkg_kd
+                    d_pkg_kd: d_pkg_kd,
+                    d_location: d_location
                 },
                 dataType: "JSON",
                 success: function(response) {
+                    pthis.disabled = false
                     if (response.status[0].cd == 1) {
                         alertify.success(response.status[0].msg)
                         rcvuctoms_getdetail1({
@@ -1855,6 +1994,7 @@ echo $toprint;
                     }
                 },
                 error: function(xhr, xopt, xthrow) {
+                    pthis.disabled = false
                     alertify.error(xthrow)
                 }
             });
@@ -2400,6 +2540,15 @@ echo $toprint;
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = '-'
+
+        newcell = newrow.insertCell(15)
+        newcell.style.cssText = "cursor:pointer"
+        newcell.classList.add('text-center', 'table-info')
+        newcell.title = 'to Location'
+        newcell.onclick = (event) => {
+            rcvcustoms_modal_cmb_locTo.value = event.target.innerText
+            $("#RCVCUSTOMS_LOCATION").modal('show')
+        }
     }
 
     function rcvcustoms_plus_1_eC() {
@@ -2945,11 +3094,16 @@ echo $toprint;
     $('#rcvcustoms_supfilter').change(function() {
         document.getElementById('rcvcustoms_txt_search').focus();
     });
+
     $("#rcvcustoms_datefilter").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true
     })
 
+    $("#rcvcustoms_ModalTxtTglpenNew").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    })
 
     function rcvcustoms_btn_filterdate_e_click() {
         document.getElementById('rcvcustoms_datefilter').value = "";
@@ -3337,6 +3491,16 @@ echo $toprint;
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PPH
+
+                    newcell = newrow.insertCell(15)
+                    newcell.style.cssText = "cursor:pointer"
+                    newcell.classList.add('text-center', 'table-info')
+                    newcell.title = 'to Location'
+                    newcell.onclick = (event) => {
+                        rcvcustoms_modal_cmb_locTo.value = event.target.innerText
+                        $("#RCVCUSTOMS_LOCATION").modal('show')
+                    }
+                    newcell.innerHTML = response.data[i].RCV_WH
                     ttlamount += (response.data[i].RCV_PRPRC * response.data[i].RCV_QTY)
                 }
                 mydes.innerHTML = ''
@@ -4544,6 +4708,16 @@ echo $toprint;
                 newcell.classList.add('text-end')
                 newcell.contentEditable = true
                 newcell.innerHTML = '-'
+
+                newcell = newrow.insertCell(15)
+                newcell.style.cssText = "cursor:pointer"
+                newcell.classList.add('text-center', 'table-info')
+                newcell.title = 'to Location'
+                newcell.innerText = 'PSIEQUIP'
+                newcell.onclick = (event) => {
+                    rcvcustoms_modal_cmb_locTo.value = event.target.innerText
+                    $("#RCVCUSTOMS_LOCATION").modal('show')
+                }
             }
         }
         document.getElementById('rcvcustoms_po_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
@@ -4989,5 +5163,28 @@ echo $toprint;
                 }
             })
         }
+    }
+
+    function rcvcustoms_btnAmendModalonClick() {
+        if(rcvcustoms_docnoorigin.value.trim().length === 0) {
+            alertify.warning('Please select DO Number')
+            return
+        }
+        rcvcustoms_ModalTxtDO.value = rcvcustoms_docnoorigin.value
+        rcvcustoms_ModalTxtDONew.value = rcvcustoms_docnoorigin.value
+
+        rcvcustoms_ModalTxtNopen.value = rcvcustoms_regno.value
+        rcvcustoms_ModalTxtNopenNew.value = rcvcustoms_regno.value
+
+        rcvcustoms_ModalTxtTglpen.value = rcvcustoms_dd.value
+        $("#rcvcustoms_ModalTxtTglpenNew").datepicker('update', rcvcustoms_dd.value)
+
+
+        $("#RCVCUSTOMS_ModalAmend").modal('show')
+    }
+
+    function rcvcustoms_btn_set_locationOnClick() {
+        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[15].innerHTML = rcvcustoms_modal_cmb_locTo.value
+        $("#RCVCUSTOMS_LOCATION").modal('hide')
     }
 </script>

@@ -51,6 +51,7 @@ class RCV extends CI_Controller
         $this->load->model('refceisa/TPB_BARANG_imod');
         $this->load->model('refceisa/TPB_KEMASAN_imod');
         $this->load->model('refceisa/TPB_RESPON_imod');
+        date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
     {
@@ -141,6 +142,14 @@ class RCV extends CI_Controller
             $rslocfrom_str .= "<option value='" . $r['MSTLOCG_ID'] . "'>" . $r['MSTLOCG_NM'] . " (" . $r['MSTLOCG_ID'] . ")</option>";
         }
         $data['llocto'] = $rslocfrom_str;
+
+        $locations = $this->MSTLOCG_mod->selectall_where_CODE_in(['ENGEQUIP', 'ICTEQUIP', 'MFG1EQUIP', 'MFG2EQUIP', 'PSIEQUIP', 'PPICEQUIP', 'FCTEQUIP']);
+        $locations_machines_str = '';
+        foreach ($locations as $r) {
+            $locations_machines_str .= "<option value='" . $r['MSTLOCG_ID'] . "'>" . $r['MSTLOCG_NM'] . " (" . $r['MSTLOCG_ID'] . ")</option>";
+        }
+        $data['machineLocation'] = $locations_machines_str;
+
         $this->load->view('wms/vrcv_customs', $data);
     }
 
@@ -289,7 +298,6 @@ class RCV extends CI_Controller
 
     public function set()
     {
-        date_default_timezone_set('Asia/Jakarta');
         $currrtime = date('Y-m-d H:i:s');
         ////////////DETAIL/////////////
         $cpo = $this->input->post('inpo');
@@ -339,8 +347,6 @@ class RCV extends CI_Controller
 
     public function setscn()
     {
-        date_default_timezone_set('Asia/Jakarta');
-
         $currdate = date('Y-m-d');
         $cdo = $this->input->post('indo');
         $cwh = $this->input->post('inwh');
@@ -456,7 +462,7 @@ class RCV extends CI_Controller
             exit(json_encode(['status' => $myar]));
         }
         header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+
         $h_do = $this->input->post('h_do');
         $h_bctype = $this->input->post('h_bctype');
         $h_bcstatus = $this->input->post('h_bcstatus');
@@ -488,6 +494,7 @@ class RCV extends CI_Controller
         $d_bm = $this->input->post('d_bm');
         $d_ppn = $this->input->post('d_ppn');
         $d_pph = $this->input->post('d_pph');
+        $d_location = $this->input->post('d_location');
         $d_prNW = $this->input->post('d_prNW');
         $d_prGW = $this->input->post('d_prGW');
         $d_pkg_idrow = $this->input->post('d_pkg_idrow');
@@ -499,10 +506,17 @@ class RCV extends CI_Controller
         $ttlupdated = 0;
         $ttlinserted = 0;
         $datas = [];
+        $dataFocus = [];
         $lastLineLog = $this->CSMLOG_mod->select_lastLine($h_do, $h_aju) + 1;
         if ($this->RCV_mod->check_Primary(['RCV_DONO' => $h_do])) {
             $lastLine = $this->RCV_mod->select_lastLinePerDO($h_do) + 1;
             for ($i = 0; $i < $dataCount; $i++) {
+                $dataFocus[] = [
+                    'RCV_ITMCD' => trim($d_itemcode[$i]),
+                    'RCV_WH' => $d_location[$i],
+                    'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
+                    'RCV_QTY' => $d_qty[$i],
+                ];
                 $dataw = ['RCV_DONO' => $h_do, 'RCV_ITMCD' => $d_itemcode[$i], 'RCV_GRLNO' => $d_grlno[$i]];
                 if ($d_grlno[$i] !== '') {
                     $datau = [
@@ -536,6 +550,7 @@ class RCV extends CI_Controller
                         'RCV_INVNO' => $h_minvNo,
                         'RCV_TAXINVOICE' => $h_tax_invoice,
                         'RCV_BSGRP' => $h_bisgrup,
+                        'RCV_WH' => $d_location[$i],
                         'RCV_LUPDT' => date('Y-m-d H:i:s'),
                         'RCV_USRID' => $this->session->userdata('nama'),
                     ];
@@ -557,7 +572,7 @@ class RCV extends CI_Controller
                         'RCV_AMT' => $d_price[$i] * $d_qty[$i],
                         'RCV_TTLAMT' => ($h_amount == '' ? null : $h_amount),
                         'RCV_TPB' => $h_type_tpb,
-                        'RCV_WH' => 'PSIEQUIP',
+                        'RCV_WH' => $d_location[$i],
                         'RCV_SUPCD' => $h_supcd,
                         'RCV_SHIPPERCD' => $h_shippercd,
                         'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
@@ -590,6 +605,13 @@ class RCV extends CI_Controller
             }
         } else {
             for ($i = 0; $i < $dataCount; $i++) {
+                $dataFocus[] = [
+                    'RCV_ITMCD' => trim($d_itemcode[$i]),
+                    'RCV_WH' => $d_location[$i],
+                    'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
+                    'RCV_QTY' => $d_qty[$i],
+                ];
+
                 $datas[] = [
                     'RCV_PO' => $d_pono[$i],
                     'RCV_INVNO' => $h_minvNo,
@@ -606,7 +628,7 @@ class RCV extends CI_Controller
                     'RCV_AMT' => $d_price[$i] * $d_qty[$i],
                     'RCV_TTLAMT' => ($h_amount == '' ? null : $h_amount),
                     'RCV_TPB' => $h_type_tpb,
-                    'RCV_WH' => 'PSIEQUIP',
+                    'RCV_WH' => $d_location[$i],
                     'RCV_SUPCD' => $h_supcd,
                     'RCV_SHIPPERCD' => $h_shippercd,
                     'RCV_RCVDATE' => $h_date_rcv == '' ? null : $h_date_rcv,
@@ -681,12 +703,47 @@ class RCV extends CI_Controller
         ]);
 
         if ($h_date_bc > '2019-01-01') {
-            $this->toITH([
-                'DOC' => $h_do, 'WH' => 'PSIEQUIP', 'DATE' => $h_date_bc, 'LUPDT' => $h_date_bc . ' 07:01:00', 'USRID' => $this->session->userdata('nama'),
-            ]);
+            $iths = $this->ITH_mod->selectGroupByDocumentAndWarehouse(['ITH_DOC' => $h_do]);
+            $ITHInserts = [];
+            foreach ($dataFocus as $r) {
+                $isFound = false;
+                foreach ($iths as $i) {
+                    if ($r['RCV_ITMCD'] === $i['ITH_ITMCD']) { // Jika ada di ITH
+                        $isFound = true;
+
+                        if ($r['RCV_WH'] != $i['ITH_WH']) { // Jika ada di ITH beda lokasi
+                            log_message('error', 'SINI NIH '.json_encode($iths));
+                            $isFound = false;
+                            $this->ITH_mod->updatebyId([
+                                'ITH_DOC' => $h_do,
+                                'ITH_ITMCD' => $r['RCV_ITMCD'],
+                                'ITH_WH' => $i['ITH_WH']], ['ITH_QTY' => 0]
+                            );
+                        }
+
+                    }
+                }
+
+                if (!$isFound) { // Jika tidak ada di ITH
+                    $ITHInserts[] = [
+                        'ITH_ITMCD' => $r['RCV_ITMCD'],
+                        'ITH_DATE' => $r['RCV_RCVDATE'],
+                        'ITH_FORM' => 'INC-DO',
+                        'ITH_DOC' => $h_do,
+                        'ITH_QTY' => 1 * $r['RCV_QTY'],
+                        'ITH_WH' => $r['RCV_WH'],
+                        'ITH_LUPDT' => $r['RCV_RCVDATE'] . ' 07:01:01',
+                        'ITH_USRID' => $this->session->userdata('nama'),
+                    ];
+                }
+            }
+
+            if (!empty($ITHInserts)) {
+                $this->ITH_mod->insertb($ITHInserts);
+            }
         }
 
-        $api_result = $h_nopen != '' ? Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode($h_do), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]) : [];
+        $api_result = $h_nopen != '' ? Requests::request($_ENV['APP_INTERNAL2_API'] . 'stock/incomingPabean/' . base64_encode($h_do), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]) : [];
         if (count($datas) == 0) {
             $myar[] = ['cd' => 1, 'msg' => 'Updated successfully'];
         }
@@ -702,7 +759,7 @@ class RCV extends CI_Controller
         foreach ($rs as $r) {
             $api_result = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode($r['RCV_DONO']), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         }
-        die(json_encode(['message' => 'done '. '(' . date('Y-m-d H:i:s') . ')', 'API' => $api_result]));
+        die(json_encode(['message' => 'done ' . '(' . date('Y-m-d H:i:s') . ')', 'API' => $api_result]));
     }
 
     public function dump_to_rcv()
@@ -731,7 +788,7 @@ class RCV extends CI_Controller
             exit(json_encode(['status' => $myar]));
         }
         header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+
         $h_do = $this->input->post('h_do');
         $h_bctype = $this->input->post('h_bctype');
         $h_bcstatus = $this->input->post('h_bcstatus');
@@ -919,7 +976,7 @@ class RCV extends CI_Controller
     public function updateBCDoc()
     {
         $this->checkSession();
-        date_default_timezone_set('Asia/Jakarta');
+
         $currrtime = date('Y-m-d H:i:s');
         $cdo = $this->input->post('indo');
         $cconaNum = $this->input->post('inconaNum');
@@ -951,9 +1008,9 @@ class RCV extends CI_Controller
         $cstsrcv = $this->input->post('instsrcv');
         $invoice = $this->input->post('invoice');
 
-        if(empty($crcvdate)) {
+        if (empty($crcvdate)) {
             die(json_encode([
-                ['cd' => '0','msg' => 'Receive date should not be empty']
+                ['cd' => '0', 'msg' => 'Receive date should not be empty'],
             ]));
         }
 
@@ -1159,7 +1216,7 @@ class RCV extends CI_Controller
         $myar = [];
         $myar[] = [
             "cd" => "1", "msg" => $myctr_saved . " saved, " . $myctr_edited . " edited", "extra" => trim($cwh[0]),
-            "apiRespon" => $apiRespon
+            "apiRespon" => $apiRespon,
         ];
         echo json_encode($myar);
     }
@@ -1671,7 +1728,7 @@ class RCV extends CI_Controller
     public function set_rtn_fg()
     {
         header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+
         $current_datetime = date('Y-m-d H:i:s');
         $cdoc = $this->input->post('indoc');
         $cdocinternal = $this->input->post('indocinternal');
@@ -1827,7 +1884,6 @@ class RCV extends CI_Controller
 
     public function scn_set()
     {
-        date_default_timezone_set('Asia/Jakarta');
         $currdate = date('Ymd');
         $currrtime = date('Y-m-d H:i:s');
 
@@ -1881,7 +1937,7 @@ class RCV extends CI_Controller
     public function rcv_to_rcvscn()
     {
         ini_set('max_execution_time', '-1');
-        date_default_timezone_set('Asia/Jakarta');
+
         $currdate = date('Ymd');
         $currrtime = date('Y-m-d H:i:s');
         // $do_number = $this->input->get('indo');
@@ -2053,7 +2109,11 @@ class RCV extends CI_Controller
         $supcd = $this->input->get('supcd');
         $nomorAju = $this->input->get('nomorAju');
         $columns = [
-            'RTRIM(RCV_GRLNO) RCV_GRLNO', 'RTRIM(RCV_ZNOURUT) RCV_ZNOURUT', 'RTRIM(RCV_PO) RCV_PO', 'RTRIM(RCV_ITMCD) RCV_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'RTRIM(RCV_QTY) RCV_QTY', 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RTRIM(RCV_PRPRC) RCV_PRPRC', 'RTRIM(RCV_HSCD) RCV_HSCD', 'RCV_BM RCV_BM', 'RCV_PPN RCV_PPN', 'RCV_PPH RCV_PPH', 'RCV_PRNW', 'RCV_PRGW', 'RCV_ASSETNUM',
+            'RTRIM(RCV_GRLNO) RCV_GRLNO', 'RTRIM(RCV_ZNOURUT) RCV_ZNOURUT', 'RTRIM(RCV_PO) RCV_PO', 'RTRIM(RCV_ITMCD) RCV_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'RTRIM(RCV_QTY) RCV_QTY', 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RTRIM(RCV_PRPRC) RCV_PRPRC', 'RTRIM(RCV_HSCD) RCV_HSCD',
+            'RCV_BM RCV_BM', 'RCV_PPN RCV_PPN',
+            'RCV_PPH RCV_PPH', 'RCV_PRNW',
+            'RCV_PRGW', 'RCV_ASSETNUM',
+            'RCV_WH',
         ];
         $rs = $this->RCV_mod->select_where($columns, ['RCV_DONO' => $do, 'RCV_SUPCD' => $supcd]);
         $rsPKG = $this->RCVPKG_mod->select_where(
@@ -2303,7 +2363,7 @@ class RCV extends CI_Controller
     {
         $this->checkSession();
         header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+
         $currrtime = date('Y-m-d H:i:s');
         $cdo = $this->input->post('indo');
         $cdon = $cdo . "-RNK";
@@ -2655,7 +2715,6 @@ class RCV extends CI_Controller
 
     public function dr_pab_inc_as_excel()
     {
-        date_default_timezone_set('Asia/Jakarta');
         $currdate = date('d-m-Y');
         $cdoctype = isset($_COOKIE["RP_PAB_DOCTYPE"]) ? $_COOKIE["RP_PAB_DOCTYPE"] : '';
         $ctpbtype = isset($_COOKIE["RP_PAB_TPBTYPE"]) ? $_COOKIE["RP_PAB_TPBTYPE"] : '';
@@ -2894,7 +2953,7 @@ class RCV extends CI_Controller
                 }
             }
         }
-        
+
         array_push($myar, $anar);
         $lastLineLog = $this->CSMLOG_mod->select_lastLine($cdo, '') + 1;
         $msg = 'upload HSCODE,BM,PPN,PPH';
@@ -2915,7 +2974,7 @@ class RCV extends CI_Controller
     {
         ini_set('max_execution_time', '-1');
         header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+
         $currrtime = date('Y-m-d H:i:s');
         $rs = $this->RCV_mod->MGSelectDODetail_formigration();
         $rsDO = $this->RCV_mod->DOList_formigration();
@@ -3546,7 +3605,7 @@ class RCV extends CI_Controller
     public function set_nonitem()
     {
         header('Content-Type: application/json');
-        date_default_timezone_set('Asia/Jakarta');
+
         $donum = $this->input->post('donum');
         $rcvdate = $this->input->post('rcvdate');
         $arowid = $this->input->post('arowid');
@@ -3637,7 +3696,6 @@ class RCV extends CI_Controller
 
     public function posting40()
     {
-        date_default_timezone_set('Asia/Jakarta');
         header('Content-Type: application/json');
         $createdat = date('Y-m-d');
         $donumber = $this->input->post('donum');
