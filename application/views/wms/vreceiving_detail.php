@@ -82,9 +82,10 @@
                         <div class="input-group input-group-sm mb-1">
                             <span class="input-group-text">Search</span>
                             <select id="rcvdet_searchby" class="form-select" onchange="document.getElementById('rcvdet_search').focus()">
-                                <option value="ic">Item Code</option>
-                                <option value="sup">Supplier</option>
-                                <option value="in">Item Name</option>
+                                <option value="0">Item Code</option>
+                                <option value="1">Supplier</option>
+                                <option value="2">Item Name</option>
+                                <option value="3">PO Number</option>
                             </select>
                             <input type="text" class="form-control" id="rcvdet_search" onkeypress="rcvdet_search_eKP(event)" maxlength="40" required placeholder="Press 'Enter' to search">
                         </div>
@@ -247,6 +248,7 @@
         rcvdet_global_var = ''
         let mtabel = document.getElementById("rcvdet_tbl_1");
         mtabel.getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="4" class="text-center">Please wait...</td></tr>`
+        rcvdet_pub_ss.setData([])
         $.ajax({
             url: "<?=base_url('PO/DOPODetail')?>",
             data: {do: param.do, po : param.po},
