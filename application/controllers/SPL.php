@@ -5584,6 +5584,14 @@ class SPL extends CI_Controller
                         break;
                     }
                 }
+
+                for ($j = 0; $j < $mc_count; $j++) {
+                    if ((trim($r['SPL_ORDERNO']) == $dr_machine[$j]) && (trim($r['SPL_ITMCD']) == $dr_item[$j]) && $dr_used[$j] == false) {
+                        $retval += $dr_qty[$j];
+                        $dr_used[$j] = true;
+                        break;
+                    }
+                }
                 $pdf->SetXY(270.94, $cury);
                 $pdf->MultiCell(17.29, 12, number_format($retval), '1', 'R');
                 $cury += 12;
