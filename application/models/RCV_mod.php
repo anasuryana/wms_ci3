@@ -1301,7 +1301,7 @@ class RCV_mod extends CI_Model
         $this->db->join("MITM_TBL", "RCV_ITMCD=MITM_ITMCD", "LEFT");
         $this->db->join("(SELECT ITH_ITMCD,SUM(ITH_QTY) STOCKQT FROM ITH_TBL WHERE ITH_WH='".$location."' GROUP BY ITH_ITMCD) V1", "MITM_ITMCD=ITH_ITMCD", "left");
         $this->db->like($like);
-        $this->db->group_by("MITM_ITMCD,MITM_ITMD1");
+        $this->db->group_by("MITM_ITMCD,MITM_ITMD1,STOCKQT");
         $query = $this->db->get();
         return $query->result_array();
     }
