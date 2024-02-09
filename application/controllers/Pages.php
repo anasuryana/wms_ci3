@@ -115,7 +115,7 @@ class Pages extends CI_Controller
                 'USRLOG_ID' => $idlog,
                 'USRLOG_USR' => $username,
                 'USRLOG_GRP' => $this->m_grupid,
-                'USRLOG_TYP' => 'LGIN',
+                'USRLOG_TYP' => $dlogses ? 'LGIN' : 'LGFLR',
                 'USRLOG_TM' => $currrtime,
                 'USRLOG_IP' => $_SERVER['REMOTE_ADDR'],
             ];
@@ -143,6 +143,7 @@ class Pages extends CI_Controller
                     $respon = ['message' => 'Need to change password', 'redirect_url' => base_url("change_password?uid=" . base64_encode($username))];
                 }
             } else {
+                $this->Usrlog_mod->insert($data_log);
                 $respon = ['message' => 'sorry please try again, check user id and password'];
             }
         }
