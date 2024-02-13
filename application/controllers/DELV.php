@@ -14670,7 +14670,7 @@ class DELV extends CI_Controller
         } else {
 
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             if ($responApiObj->dataOri->message === 'sucess') {
                 $respon = [
@@ -15022,7 +15022,7 @@ class DELV extends CI_Controller
         $isFrom3rdPartyOK = false;
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
-            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 1500]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/27', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 1500]);
             // $responApi = Requests::request('http://localhost/custom/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             if(isset($responApiObj->message)) {
@@ -16446,7 +16446,7 @@ class DELV extends CI_Controller
 
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-25, step0#, DO:' . $doc);
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/25', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/25', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             // $responApi = Requests::request('http://localhost/custom/api/ciesafour/sendPosting/25', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
