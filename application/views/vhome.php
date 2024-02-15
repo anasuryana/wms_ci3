@@ -165,14 +165,14 @@
                     </div>
                     <hr class="bg-info border-2 border-top border-secondary">
                     <div class="row">
-                        <div class="col" >
+                        <div class="col-md-6 d-inline-block" style="height: 35%; overflow-y: scroll;">
                             <ol class="list-group list-group-numbered" id="home_div_document_list">
                             </ol>
                         </div>
-                        <div class="col">
+                        <div class="col-md-6 h-100 d-inline-block">
                             <div class="table-responsive" id="home_div_of_tbl_doc">
                                 <table id="home_tbl_doc" class="table table-hover table-sm table-bordered caption-top">
-                                    <caption>Detail <span class="fas fa-arrow-turn-down"></span></caption>
+                                    <caption><span id="home_span_document_time"></span>, detail <span class="fas fa-arrow-turn-down"></span></caption>
                                     <thead class="table-light">
                                         <tr>
                                             <th class="align-middle">Item Code</th>
@@ -319,8 +319,10 @@
                 let cln = home_tbl_doc.cloneNode(true);
                 myfrag.appendChild(cln);
                 let tabell = myfrag.getElementById("home_tbl_doc");
+                let spann = myfrag.getElementById("home_span_document_time");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let myCB = myfrag.getElementById('home_ck_all')
+                spann.innerText = 'Issued ' + moment(response.created_at).startOf('hour').fromNow()
                 myCB.onclick = () => {
                     if(confirm("Are you sure want to conform all items?")){
                         let ttlrows = tableku2.rows.length

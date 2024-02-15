@@ -27,6 +27,14 @@ class TRF_mod extends CI_Model
         return $this->db->affected_rows();
     }
 
+    public function selectHeaderWhere($where)
+    {
+        $this->db->from($this->TABLENAME);
+        $this->db->where($where);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function selectDetailWhere($where)
     {
         $this->db->from($this->TABLENAME_D);
