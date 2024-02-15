@@ -70,15 +70,21 @@ class MSTLOC extends CI_Controller
         header('Content-Type: application/json');
         $rs = $this->MSTLOCG_mod->selectall_where_CODE_in(['ENGEQUIP',
             'ENGLINEEQUIP',
+            'ENGSCREQUIP',
             'MFG1EQUIP',
+            'MFG1SCREQUIP',
             'MFG2EQUIP',
+            'MFG2SCREQUIP',
             'PPICEQUIP',
+            'PPICSCREQUIP',
             'PRCSCREQUIP',
             'PSIEQUIP',
             'QAEQUIP',
             'QASCREQUIP',
             'ICTEQUIP',
+            'ICTSCREQUIP',
             'FCTEQUIP',
+            'FCTSCREQUIP',
         ]);
         die(json_encode(['data' => $rs]));
     }
