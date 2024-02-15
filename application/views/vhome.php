@@ -378,8 +378,10 @@
                 let cln = home_tbl_doc.cloneNode(true);
                 myfrag.appendChild(cln);
                 let tabell = myfrag.getElementById("home_tbl_doc");
+                let spann = myfrag.getElementById("home_span_document_time");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0];
                 let myCB = myfrag.getElementById('home_ck_all')
+                spann.innerText = 'Issued ' + moment(response.created_at).startOf('hour').fromNow()
                 myCB.onclick = () => {
                     if(confirm("Are you sure want to conform all items?")){
                         let ttlrows = tableku2.rows.length
