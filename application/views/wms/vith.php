@@ -134,8 +134,8 @@
     </div>
 </div>
 <script>
-
-    ith_colorize(ith_cmb_wh)
+    ith_colorize(ith_cmb_wh, {KeywordID: 'EQUIP',  backColor: '#0072B5', foreColor : 'white'})
+    ith_colorize(ith_cmb_wh, {KeywordID: 'SCR',  backColor: '#FF0000', foreColor : 'white'})
     var ith_a_BG = [];
     var ith_a_BG_NM = [];
     function ith_btn_gen_eCK(p){

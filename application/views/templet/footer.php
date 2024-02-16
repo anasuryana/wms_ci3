@@ -128,8 +128,8 @@
             })
 
             // $('#tt').tabs('add', {
-            //     title: 'Dashboard',
-            //     href: '<?=base_url('Home/form_dashboard')?>',
+            //     title: 'PSI Calendars',
+            //     href: '<?=base_url()?>' + 'Home/form_calendar',
             //     closable: false
             // });
         }
@@ -152,8 +152,6 @@
             closable: true
         });
     }
-
-
 
     function showinfoofus() {
         let mymodal = new bootstrap.Modal(document.getElementById("FOOTER_MODWH"), {
@@ -283,11 +281,11 @@
             range.select()
         }
     }
-    function ith_colorize(pcontainer){
+    function ith_colorize(pcontainer, data){
         let ithwh = pcontainer.getElementsByTagName('option')
         Array.from(ithwh).forEach(function(elem) {
-            if(elem.value.includes('EQUIP')){
-                elem.style.cssText = 'background-color:#0072B5;color:white'
+            if(elem.value.toUpperCase().includes(data.KeywordID)) {
+                elem.style.cssText = `background-color:${data.backColor};color:${data.foreColor}`
             }
         })
     }

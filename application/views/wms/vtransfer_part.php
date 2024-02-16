@@ -279,7 +279,10 @@
 </div>
 <script>
     var trfnonref_pub_index = ''
-
+    ith_colorize(trfnonref_to_loc, {KeywordID: 'EQUIP',  backColor: '#0072B5', foreColor : 'white'})
+    ith_colorize(trfnonref_to_loc, {KeywordID: 'SCR',  backColor: '#FF0000', foreColor : 'white'})
+    ith_colorize(trfnonref_fr_loc, {KeywordID: 'EQUIP',  backColor: '#0072B5', foreColor : 'white'})
+    ith_colorize(trfnonref_fr_loc, {KeywordID: 'SCR',  backColor: '#FF0000', foreColor : 'white'})
     function trfnonref_search_document_eKP(e) {
         if(e.key === 'Enter') {
             e.target.readOnly = true

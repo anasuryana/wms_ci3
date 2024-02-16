@@ -132,7 +132,8 @@
     </div>
 </div>
 <script>
-    ith_colorize(rhistory_cmb_wh)
+    ith_colorize(rhistory_cmb_wh, {KeywordID: 'EQUIP',  backColor: '#0072B5', foreColor : 'white'})
+    ith_colorize(rhistory_cmb_wh, {KeywordID: 'SCR',  backColor: '#FF0000', foreColor : 'white'})
     $("#rhistory_divku").css('height', $(window).height() -
         document.getElementById('rhistory_stack1').offsetHeight -
         document.getElementById('rhistory_stack2').offsetHeight -

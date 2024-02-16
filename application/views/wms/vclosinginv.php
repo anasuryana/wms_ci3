@@ -70,7 +70,8 @@ echo $dwh;
     </div>
 </div>
 <script>
-    ith_colorize(clsinv_wh)
+    ith_colorize(clsinv_wh, {KeywordID: 'EQUIP',  backColor: '#0072B5', foreColor : 'white'})
+    ith_colorize(clsinv_wh, {KeywordID: 'SCR',  backColor: '#FF0000', foreColor : 'white'})
     function clsinv_btn_save_eC() {
         const whcode = document.getElementById('clsinv_wh')
         const mdate = document.getElementById('clsinv_date')
