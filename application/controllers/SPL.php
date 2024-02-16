@@ -976,7 +976,7 @@ class SPL extends CI_Controller
         $initFixedTime = $kittingDateTime->format('H:i:s');
         $fixedTime = $initFixedTime < '07:00:00' ? '23:23:23' : $initFixedTime;
 
-        $crn_date = $this->input->get('date'). " ".$fixedTime;
+        $crn_date = $this->input->get('date') . " " . $fixedTime;
         $cidscan = $this->input->get('inidscan');
         $myar = [];
 
@@ -987,7 +987,7 @@ class SPL extends CI_Controller
             $_itemcd = $r['SPLSCN_ITMCD'];
             $_timescan = $r['SPLSCN_LUPDT'];
         }
-        
+
         $cwh_out = '';
         $rsbg = $this->SPL_mod->select_bg_partreq([$cpsn]);
         foreach ($rsbg as $r) {
@@ -5579,19 +5579,11 @@ class SPL extends CI_Controller
 
                 for ($j = 0; $j < $mc_count; $j++) {
                     if ((trim($r['SPL_ORDERNO']) == $dr_machine[$j]) && (trim($r['SPL_ITMCD']) == $dr_item[$j]) && $dr_used[$j] == false) {
-                        $retval = $dr_qty[$j];
+                        $retval += $dr_qty[$j];
                         $dr_used[$j] = true;
-                        break;
                     }
                 }
 
-                for ($j = 0; $j < $mc_count; $j++) {
-                    if ((trim($r['SPL_ORDERNO']) == $dr_machine[$j]) && (trim($r['SPL_ITMCD']) == $dr_item[$j]) && $dr_used[$j] == false) {
-                        $retval += $dr_qty[$j];
-                        $dr_used[$j] = true;
-                        break;
-                    }
-                }
                 $pdf->SetXY(270.94, $cury);
                 $pdf->MultiCell(17.29, 12, number_format($retval), '1', 'R');
                 $cury += 12;
@@ -5627,7 +5619,7 @@ class SPL extends CI_Controller
 
         $where = ['SPLSCN_DOC' => $cpsn, 'SPLSCN_ITMCD' => $citmcd, 'SPLSCN_LOTNO' => $citmlot];
         $rs = $date1 && $date2 ? $this->SPLSCN_mod->selectby_filter_like_with_period($where, $date1, $date2)
-            : $this->SPLSCN_mod->selectby_filter_like($where);
+        : $this->SPLSCN_mod->selectby_filter_like($where);
 
         $rsreff = $this->SPLREFF_mod->selectby_filter_like(['SPLREFF_DOC' => $cpsn, 'SPLREFF_ACT_PART' => $citmcd, 'SPLREFF_ACT_LOTNUM' => $citmlot]);
         $rsmix = array_merge($rs, $rsreff);
