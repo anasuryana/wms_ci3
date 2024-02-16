@@ -60,16 +60,36 @@ class TRF extends CI_Controller
             'MFG1EQUIP',
             'MFG2EQUIP',
             'PPICEQUIP',
-            'PRCSCREQUIP',
             'PSIEQUIP',
             'QAEQUIP',
             'FCTEQUIP',
             'ICTEQUIP',
         ]);
+        $rsFromWH = $this->TRFSET_mod->selectColumnWhere(['MSTLOCG_ID', 'MSTLOCG_NM'], ['TRFSET_APPROVER' => $this->session->userdata('nama')]);
+        $_listOfLocationTobeMerged = [];
+
+        foreach($rsFromWH as $r) {
+            $isFound = false;
+            foreach($rs as $f) {
+                if($r['MSTLOCG_ID'] === $f['MSTLOCG_ID']) {
+                    $isFound = true;
+                    break;
+                }
+            }
+
+            if(!$isFound) {
+                $_listOfLocationTobeMerged[] = ['MSTLOCG_ID' => $r['MSTLOCG_ID'], 'MSTLOCG_NM' => $r['MSTLOCG_NM']];
+            }
+        }
+
+        if(!empty($_listOfLocationTobeMerged)) {
+            $rs = array_merge($rs, $_listOfLocationTobeMerged);
+        }
+
         foreach ($rs as $r) {
             $todiswh .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . ' (' . $r['MSTLOCG_ID'] . ')</option>';
         }
-        $rsFromWH = $this->TRFSET_mod->selectColumnWhere(['MSTLOCG_ID', 'MSTLOCG_NM'], ['TRFSET_APPROVER' => $this->session->userdata('nama')]);
+
         foreach ($rsFromWH as $r) {
             $FromWH .= '<option value="' . $r['MSTLOCG_ID'] . '">' . $r['MSTLOCG_NM'] . ' (' . $r['MSTLOCG_ID'] . ')</option>';
         }
