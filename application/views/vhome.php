@@ -10,6 +10,13 @@
         from {background: #fc033d;}
         to {background: #11faea;}
     }
+
+    ol li.active:hover span {
+        color: black;
+    }
+    ol li.active:hover div.fw-bold {
+        color: black;
+    }
  </style>
  <div  data-options="region:'center',title:''" style="background: #D3CCE3;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #E9E4F0, #D3CCE3);  /* Chrome 10-25, Safari 5.1-6 */
@@ -289,7 +296,7 @@
                     let _EleDivBold = document.createElement('div')
                     _EleDivBold.classList.add('fw-bold')
                     _EleDivBold.innerText = arrayItem['TRFH_DOC']
-                    let _EleDivNonBold = document.createElement('span')
+                    let _EleDivNonBold = document.createElement('span')               
                     _EleDivNonBold.innerText = `from ${arrayItem['MSTLOCG_NMFROM']} to ${arrayItem['MSTLOCG_NM']}`
                     _EleDiv.append(_EleDivBold)
                     _EleDiv.append(_EleDivNonBold)
