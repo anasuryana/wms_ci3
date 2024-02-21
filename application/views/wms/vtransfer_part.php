@@ -64,11 +64,21 @@
             </div>
         </div>
         <div class="row" id="trfnonref_stack4">
-            <div class="col-md-12 mb-1">
+            <div class="col-md-6 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" id="trfnonref_btn_plus" onclick="trfnonref_btn_plus_eC()"><i class="fas fa-plus"></i></button>
-                    <button class="btn btn-outline-primary" id="trfnonref_btn_plus_by_po" data-bs-toggle="modal" data-bs-target="#trfnonref_ModPOList">Add from PO</button>
                     <button class="btn btn-warning" id="trfnonref_btn_minus" onclick="trfnonref_btn_minus_eC()"><i class="fas fa-minus"></i></button>
+                </div>
+            </div>
+            <div class="col-md-6 mb-1 text-end">
+                <div class="btn-group btn-group-sm">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">Add from ...</button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" id="trfnonref_btn_plus_by_po" href="#" data-bs-toggle="modal" data-bs-target="#trfnonref_ModPOList">from PO</a></li>
+                            <li><a class="dropdown-item" id="trfnonref_btn_plus_by_batch" href="#" data-bs-toggle="modal" data-bs-target="#trfnonref_ModBatch">from Clipboard</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -277,12 +287,74 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="trfnonref_ModBatch">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Clipboard Input</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12" id="trfnonref_div_alert">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <div id="trfnonref_ss"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" id="trfnonref_btn_saveBatch" onclick="trfnonref_btn_saveBatch_eCK(this)">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     var trfnonref_pub_index = ''
+
     ith_colorize(trfnonref_to_loc, {KeywordID: 'EQUIP',  backColor: '#0072B5', foreColor : 'white'})
     ith_colorize(trfnonref_to_loc, {KeywordID: 'SCR',  backColor: '#FF0000', foreColor : 'white'})
     ith_colorize(trfnonref_fr_loc, {KeywordID: 'EQUIP',  backColor: '#0072B5', foreColor : 'white'})
     ith_colorize(trfnonref_fr_loc, {KeywordID: 'SCR',  backColor: '#FF0000', foreColor : 'white'})
+
+    var trfnonref_sso = jspreadsheet(trfnonref_ss, {
+        data: [,],
+        columns: [
+            {
+                type: 'text',
+                title:'Item Code',
+                width:120,
+                align: 'left'
+            },
+            {
+                type: 'numeric',
+                title:'Qty',
+                mask: '#,##.00',
+                width:100,
+                align: 'right'
+            },
+            {
+                type: 'text',
+                title:'Remark',
+                width:130,
+                align: 'left',
+                readOnly : true
+            },
+
+        ],
+    });
+
     function trfnonref_search_document_eKP(e) {
         if(e.key === 'Enter') {
             e.target.readOnly = true
@@ -342,7 +414,7 @@
         }
     }
 
-    function trfnonref_getSavedData(param){
+    function trfnonref_getSavedData(param) {
         $.ajax({
             url: "<?=base_url('TRFHistory/getDetail')?>",
             data: {doc : param.doc},
@@ -365,7 +437,7 @@
         });
     }
 
-    function trfnonref_btn_new_eC(){
+    function trfnonref_btn_new_eC() {
         trfnonref_txt_doc.value = ''
         $("#trfnonref_txt_date").datepicker('update', new Date())
         trfnonref_tbl.getElementsByTagName('tbody')[0].innerHTML = ''
@@ -374,6 +446,7 @@
         trfnonref_btn_save.disabled = false
         trfnonref_property_created_by.value = ''
         trfnonref_property_created_at.value = ''
+        trfnonref_sso.setData([[]])
     }
 
     $("#trfnonref_txt_date").datepicker({
@@ -774,5 +847,163 @@
         mydes.appendChild(myfrag)
 
         $("#trfnonref_ModPOList").modal('hide')
+    }
+
+    function trfnonref_btn_saveBatch_eCK(pthis) {
+        let dataSS = trfnonref_sso.getData()
+        let dataList = dataSS.filter((data) => data[0].length > 1)
+        let listOfUniqueItem = []
+        let listOfDuplicatedItem = []
+
+        // validate unique item
+        dataList.forEach((arrayItem) => {
+            let _item = arrayItem[0].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            if(!listOfUniqueItem.includes(_item)) {
+                listOfUniqueItem.push(_item)
+            } else {
+                listOfDuplicatedItem.push(_item)
+            }
+        })
+
+        if(listOfUniqueItem.length != dataList.length) {
+            $('.modal-body').scrollTop(0);
+            trfnonref_div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            Duplicate item found : ${listOfDuplicatedItem[0]}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+            return
+        } else {
+            trfnonref_div_alert.innerHTML = ''
+        }
+
+        // validate stock
+        const data = {
+            part_code : listOfUniqueItem,
+            warehouse : trfnonref_fr_loc.value
+        }
+        pthis.disabled = true
+        pthis.innerHTML = 'Please wait'
+        $.ajax({
+            type: "POST",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>"+"report/stock-wms",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                pthis.innerHTML = 'OK'
+                pthis.disabled = false
+
+                // write remark wheter stock is enough or not
+                let isStockEnough = true
+                response.data.forEach((arrayItem) => {
+                    for(let i=0; i<dataSS.length; i++) {
+                        const _partCode = trfnonref_sso.getCell('A'+(i+1)).innerText.trim().toUpperCase()
+                        const _ReqQty = trfnonref_sso.getCell('B'+(i+1)).innerText.trim().toUpperCase()
+                        if(arrayItem['ITEMCODE'] === _partCode) {
+                            let message = ''
+                            if(numeral(_ReqQty).value()>arrayItem['STOCK']) {
+                                isStockEnough = false
+                                message = `Stock only ${numeral(arrayItem['STOCK']).format(',')}`
+                            } else {
+                                message = ''
+                            }
+                            trfnonref_sso.setValue('C'+(i+1), message, true)
+                            break
+                        }
+                    }
+                })
+
+                if(!isStockEnough) {
+                    trfnonref_div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    Please check some items stock is not enough
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                    return
+                }
+
+                // check stock availability
+                for(let i=0; i<dataSS.length; i++) {
+                    let isFound = false
+                    const _partCode = trfnonref_sso.getCell('A'+(i+1)).innerText.trim().toUpperCase()
+                    const _ReqQty = trfnonref_sso.getCell('B'+(i+1)).innerText.trim().toUpperCase()
+                    for(let y=0;y<response.data.length; y++) {
+                        if(response.data[y].ITEMCODE === _partCode) {
+                            isFound = true
+                            break
+                        }
+                    }
+                    if(!isFound) {
+                        trfnonref_sso.setValue('C'+(i+1), 'Stock not found', true)
+                    }
+                }
+
+                let isAbleToContinue = true
+                for(let i=0; i<dataSS.length; i++) {
+                    const _partCode = trfnonref_sso.getCell('A'+(i+1)).innerText.trim().toUpperCase()
+                    const _ReqQty = trfnonref_sso.getCell('B'+(i+1)).innerText.trim().toUpperCase()
+                    if(numeral(_ReqQty).value() == 0 || !numeral(_ReqQty).value()) {
+                        isAbleToContinue = false; break;
+                    }
+                }
+                if(!isAbleToContinue) {
+                    trfnonref_div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    Please remove row with blank Qty
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                    return
+                } else {
+                    let mydes = document.getElementById("trfnonref_tblcontainer");
+                    let myfrag = document.createDocumentFragment();
+                    let cln = trfnonref_tbl.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    let tabell = myfrag.getElementById("trfnonref_tbl");
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    tableku2.innerHTML = '';
+                    for(let i=0; i<dataSS.length; i++) {
+                        const _partCode = trfnonref_sso.getCell('A'+(i+1)).innerText.trim().toUpperCase()
+                        const _ReqQty = trfnonref_sso.getCell('B'+(i+1)).innerText.trim().toUpperCase()
+                        newrow = tableku2.insertRow(-1)
+                        newrow.onclick = function(event) {
+                            trfnonref_pub_index = event.target.parentNode.rowIndex
+                        }
+                        newcell = newrow.insertCell(0)
+                        newcell.classList.add('d-none')
+
+                        newcell = newrow.insertCell(1)
+                        newcell.innerHTML = _partCode
+                        newcell.style.cssText = 'cursor: pointer'
+                        newcell.classList.add('bg-info')
+                        newcell.onclick = (event) => {
+                            $("#trfnonref_ModItemList").modal('show')
+                        }
+                        newcell = newrow.insertCell(2)
+                        newcell.innerHTML = numeral(_ReqQty).value()
+                        newcell.contentEditable = true
+                        newcell.classList.add('text-end')
+
+                        newcell = newrow.insertCell(3)
+                        newcell.innerHTML = '-'
+                        newcell.contentEditable = true
+                        newcell.classList.add('text-center')
+                    }
+                    mydes.innerHTML = ''
+                    mydes.appendChild(myfrag)
+                }
+                $("#trfnonref_ModBatch").modal('hide')
+                $('.modal-body').scrollTop(0);
+            }, error: function(xhr, xopt, xthrow) {
+                pthis.disabled = false
+
+                const respon = Object.keys(xhr.responseJSON)
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                trfnonref_div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${msg}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                alertify.warning(xthrow);
+            }
+        });
     }
 </script>
