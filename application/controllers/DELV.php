@@ -15037,7 +15037,7 @@ class DELV extends CI_Controller
         
         if(!$isFrom3rdPartyOK) {
             $this->output->set_status_header(500);           
-            $respon[] = substr($message,48,700);
+            $respon[] = $message == 'Already exist in TPB' ? 'Already exist in TPB' : substr($message,48,700);
         } else {
             $respon = [
                 'message' => $message,
