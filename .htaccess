@@ -9,6 +9,7 @@ Require ip 192.168.2.0/24
 Require ip 192.168.4.0/23
 Require ip 192.168.3.0/24
 Require ip 192.168.0.0/24
+Require ip 192.168.100.0/24
 Require ip 192.168.16.32/29
 php_value max_input_vars 300000
 
