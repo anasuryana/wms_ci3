@@ -15023,7 +15023,6 @@ class DELV extends CI_Controller
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
             $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/27', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 1500]);
-            // $responApi = Requests::request('http://localhost/custom/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             if(isset($responApiObj->message)) {
                 $isFrom3rdPartyOK = true;
@@ -15071,7 +15070,7 @@ class DELV extends CI_Controller
             $message = 'Already exist in TPB';
         } else {
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             if ($responApiObj->dataOri->message === 'sucess') {
                 $respon = [
@@ -15360,7 +15359,7 @@ class DELV extends CI_Controller
         }
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 300, 'connect_timeout' => 300]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 300, 'connect_timeout' => 300]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
@@ -15442,7 +15441,7 @@ class DELV extends CI_Controller
             }
 
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             if ($responApiObj->dataOri->message === 'sucess') {
                 $respon = [
@@ -15696,8 +15695,7 @@ class DELV extends CI_Controller
         $responApi = null;
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
-            // $responApi = Requests::request('http://localhost/custom/api/ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);            
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
@@ -15779,7 +15777,7 @@ class DELV extends CI_Controller
             }
 
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             if ($responApiObj->dataOri->message === 'sucess') {
                 $respon = [
@@ -16031,8 +16029,7 @@ class DELV extends CI_Controller
         $responApi = null;
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-41, step0#, DO:' . $doc);
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/41', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
-            // $responApi = Requests::request('http://localhost/custom/api/ciesafour/sendPosting/41', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/41', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);            
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-41, step0#, DO:' . $doc);
@@ -16072,7 +16069,7 @@ class DELV extends CI_Controller
         //     $message = 'Please posting to TPB first';
         } else {
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             if ($responApiObj->dataOri->message === 'sucess') {
                 $respon = [
@@ -16446,8 +16443,7 @@ class DELV extends CI_Controller
 
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-25, step0#, DO:' . $doc);
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/sendPosting/25', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
-            // $responApi = Requests::request('http://localhost/custom/api/ciesafour/sendPosting/25', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/25', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);           
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-25, step0#, DO:' . $doc);
