@@ -455,4 +455,31 @@ class TRF extends CI_Controller
         $rs = $this->TRF_mod->selectOpenForID($this->session->userdata('nama'));
         die(json_encode(['data' => $rs, 'status' => $myar]));
     }
+
+    public function conformReject()
+    {
+        header('Content-Type: application/json');
+        $this->checkSession();
+        $doc = $this->input->post('doc');
+        $item = $this->input->post('item');
+        $rs = $this->TRF_mod->selectOpenForIDWhereItem($this->session->userdata('nama'), $item, $doc);
+        $AffectedRows = 0;
+        foreach ($rs as $r) {
+            $AffectedRows = $this->TRF_mod->rejectbyId(['TRFD_DOC' => $doc
+                , 'TRFD_ITEMCD' => $r['TRFD_ITEMCD']]
+                , [
+                    'TRFD_DELETED_BY' => $this->session->userdata('nama')
+                    , 'TRFD_DELETED_DT' => date('Y-m-d H:i:s')
+                    , 'TRFD_REFFERENCE_DOCNO' => 'REJECT-TRF'
+                 ]
+            );
+        }
+        if ($AffectedRows) {
+            $myar[] = ['cd' => 1, 'msg' => 'OK'];
+        } else {
+            $myar[] = ['cd' => 0, 'msg' => 'could not be processed'];
+        }
+        $rs = $this->TRF_mod->selectOpenForID($this->session->userdata('nama'));
+        die(json_encode(['data' => $rs, 'status' => $myar]));
+    }
 }

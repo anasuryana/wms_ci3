@@ -172,9 +172,11 @@
                     </div>
                     <hr class="bg-info border-2 border-top border-secondary">
                     <div class="row">
-                        <div class="col-md-6 d-inline-block" style="height: 35%; overflow-y: scroll;">
-                            <ol class="list-group list-group-numbered" id="home_div_document_list">
-                            </ol>
+                        <div class="col-md-6 d-inline-block">
+                            <div style="height: 50vh; overflow-y: auto;">
+                                <ol class="list-group list-group-numbered" id="home_div_document_list">
+                                </ol>
+                            </div>
                         </div>
                         <div class="col-md-6 h-100 d-inline-block">
                             <div class="table-responsive" id="home_div_of_tbl_doc">
@@ -185,7 +187,8 @@
                                             <th class="align-middle">Item Code</th>
                                             <th class="align-middle">Item Name</th>
                                             <th class="text-end align-middle">Qty</th>
-                                            <th class="text-center"><input id="home_ck_all" class="form-check-input" type="checkbox"></th>
+                                            <th class="text-center">Accept <br><input id="home_ck_all" class="form-check-input" type="checkbox"></th>
+                                            <th class="text-center">Reject</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -222,7 +225,7 @@
 
     function home_h1_to_approve_qty_eClick(){
         home_div_document_list.innerHTML = ''
-        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">-</td></tr>'
+        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="5" class="text-center">-</td></tr>'
         $.ajax({
             type: "GET",
             url: "<?=base_url('TRFHistory/openDocuments')?>",
@@ -268,7 +271,7 @@
     }
     function home_h1_to_follow_qty_eClick(){
         home_div_document_list.innerHTML = ''
-        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">-</td></tr>'
+        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="5" class="text-center">-</td></tr>'
         $.ajax({
             type: "GET",
             url: "<?=base_url('TRFHistory/openDocuments')?>",
@@ -314,7 +317,7 @@
     }
 
     function home_get_document_detail(pdata){
-        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">Please wait</td></tr>'
+        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="5" class="text-center">Please wait</td></tr>'
         $.ajax({
             type: "GET",
             url: "<?=base_url('TRFHistory/getDetailUnconform')?>",
@@ -363,17 +366,34 @@
                         }
                     }
                     newcell.append(_EleInput)
+                    
+                    newcell = newrow.insertCell(4)
+                    newcell.classList.add('text-center')
+                    _EleInput = document.createElement('input')
+                    _EleInput.type = 'checkbox'
+                    _EleInput.classList.add('form-check-input')
+                    _EleInput.onclick = (event) => {
+                        if(event.target.checked) {
+                            if(!confirm("Are you sure want to reject ?")) {
+                                event.target.checked = false
+                                return
+                            }
+                            home_conformReject({doc: arrayItem['TRFD_DOC'], item: arrayItem['TRFD_ITEMCD']})
+                        }
+                    }
+                    newcell.append(_EleInput)
+
                 })
                 mydes.innerHTML = ''
                 mydes.appendChild(myfrag)
             }, error:function(xhr,ajaxOptions, throwError) {
                 alertify.error('Please try again');
-                home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">Please try again</td></tr>'
+                home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="5" class="text-center">Please try again</td></tr>'
             }
         });
     }
     function home_get_document_detail_tofollow(pdata){
-        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">Please wait</td></tr>'
+        home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="5" class="text-center">Please wait</td></tr>'
         $.ajax({
             type: "GET",
             url: "<?=base_url('TRFHistory/getDetailUnconform')?>",
@@ -419,12 +439,13 @@
                     _EleInput.disabled = true
                     _EleInput.classList.add('form-check-input')
                     newcell.append(_EleInput)
+                    newcell = newrow.insertCell(4)
                 })
                 mydes.innerHTML = ''
                 mydes.appendChild(myfrag)
             }, error:function(xhr,ajaxOptions, throwError) {
                 alertify.error('Please try again');
-                home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4" class="text-center">Please try again</td></tr>'
+                home_tbl_doc.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="5" class="text-center">Please try again</td></tr>'
             }
         });
     }
@@ -437,6 +458,26 @@
             dataType: "json",
             success: function (response) {
                 if(response.data.length===0){
+                    home_h1_to_approve_qty_eClick()
+                } else {
+                    home_get_document_detail({doc: pdata.doc})
+                }
+                alertify.message(response.status[0].msg)
+            }, error:function(xhr,ajaxOptions, throwError) {
+                alertify.error('Please try again');
+            }
+        });
+    }
+
+    function home_conformReject(pdata) {
+        $.ajax({
+            type: "POST",
+            url: "<?=base_url('TRF/conformReject')?>",
+            data: {doc: pdata.doc, item: pdata.item},
+            dataType: "json",
+            success: function (response) {
+                let x = home_div_document_list.getElementsByTagName('li').length
+                if(response.data.length!=x) {
                     home_h1_to_approve_qty_eClick()
                 } else {
                     home_get_document_detail({doc: pdata.doc})

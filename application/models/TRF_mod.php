@@ -75,6 +75,13 @@ class TRF_mod extends CI_Model
         return $this->db->affected_rows();
     }
 
+    public function rejectbyId($pwhere, $pval)
+    {
+        $this->db->where($pwhere)->where("TRFD_DELETED_DT is null", null, false);
+        $this->db->update($this->TABLENAME_D, $pval);
+        return $this->db->affected_rows();
+    }
+
     public function updateHeaderWhere($pwhere, $pval)
     {
         $this->db->where($pwhere);
