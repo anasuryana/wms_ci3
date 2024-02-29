@@ -505,7 +505,7 @@
         }
         for(let i=0; i<ttlrows; i++){
             partcode = tableku2.rows[i].cells[1].innerText.trim();
-            qty = tableku2.rows[i].cells[2].innerText.trim();
+            qty = tableku2.rows[i].cells[2].innerText.trim().replace(/,/g, '');
             mmodel = tableku2.rows[i].cells[5].innerText.trim()
             if(partcode.length==0){
                 alertify.warning("Part Code could not be empty");
