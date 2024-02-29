@@ -97,11 +97,9 @@
     function si_conf_btn_sync_e_click(){
         document.getElementById('si_conf_btn_sync').disabled=true;
         si_conf_DTABLE_psn =  $('#si_conf_tbl').DataTable({
-            select: true,
-            fixedHeader: true,
+            responsive: true,
+            select: true,            
             destroy: true,
-            scrollX: true,
-            scrollY: true,
             ajax: {
                 url : '<?=base_url("DELV/getunconfirmed")?>',
                 dataSrc: function(json){
@@ -124,9 +122,9 @@
                     }
                 }
             ],
-            columnDefs: [
+            columnDefs: [               
                 {
-                    targets: 4,
+                    targets: [0,2,4],
                     className: 'text-center'
                 }
             ]

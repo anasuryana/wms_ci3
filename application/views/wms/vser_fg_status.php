@@ -407,10 +407,8 @@
         let mdoc = $("#sersts_txt_jobno_tobfind").val();
         let mitem = $("#sersts_txt_item_tobfind").val();
         tableSERLAST =  $('#sersts_tbllastjobno').DataTable({
-            fixedHeader: true,
+            responsive: true,
             destroy: true,
-            scrollX: true,
-            scrollY: true,
             ajax: {
                 url : '<?=base_url("SER/getdoclike_lblstatus")?>',
                 type: 'get',
@@ -438,30 +436,33 @@
             ], 
             columnDefs: [
                 {
+                    targets: 0,
+                    className: 'text-center'
+                },
+                {
+                    targets: 1,
+                    className: 'text-start'
+                },
+                {
                     targets: 3,
                     className: 'text-end'
-                }                
+                }
             ],
-            footerCallback : function (row, data, start, end, display) {
-                var api = this.api(), data;
-                // Remove the formatting to get integer data for summation
-                var intVal = function ( i ) {
-                    return typeof i === 'string' ?
-                        i.replace(/[\$,]/g, '')*1 :
-                        typeof i === 'number' ?
-                            i : 0;
-                };
-    
-                // Total over all pages
-                total = api
+            initComplete : function (settings, json) {
+                let apik = this.api();
+                let intVal = function ( i ) {
+                                return typeof i === 'string' ?
+                                    i.replace(/[\$,]/g, '')*1 :
+                                    typeof i === 'number' ?
+                                        i : 0;
+                            };
+                total = apik
                     .column( 3 )
                     .data()
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0 );
-                $( api.column( 3 ).footer() ).html(
-                    'Total: ' + total
-                );
+                apik.column(3).footer().innerHTML = 'Total: ' + numeral(total).format(',')
             },
             fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {                
                 if(aData.ITH_WH=='AFWH9SC'){

@@ -12,25 +12,25 @@
         </div>
         <div class="row">
             <div class="col-md-7 mb-1">
-                <div class="input-group input-group-sm mb-2">                    
-                    <span class="input-group-text" >Group</span>                    
+                <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text" >Group</span>
                     <select class="form-select" id="cmbGroup" required>
-                    <?php foreach ($lusergroup as $r) { 
-                        if( $r['MSTGRP_ID']=='ADMIN' && $this->session->userdata('gid')=='ADMIN') {?>
+                    <?php foreach ($lusergroup as $r) {
+    if ($r['MSTGRP_ID'] == 'ADMIN' && $this->session->userdata('gid') == 'ADMIN') {?>
                         <option value="<?php echo $r['MSTGRP_ID']; ?>"> <?php echo $r['MSTGRP_NM']; ?> </option>
                     <?php } else {?>
                         <option value="<?php echo $r['MSTGRP_ID']; ?>"> <?php echo $r['MSTGRP_NM']; ?> </option>
-                        <?php }          }?>
+                        <?php }}?>
                     </select>
                 </div>
             </div>
-            <div class="col-md-5 mb-1">              
+            <div class="col-md-5 mb-1">
                 <div class="input-group input-group-sm mb-2">
                     <label class="input-group-text">Status</label>
                     <div class="input-group-text">
                         <input class="form-check-input" type="checkbox" id="user_cmb_active">
-                    </div>                    
-                </div>                
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -44,7 +44,8 @@
         </div>
         <div class="row">
             <div class="col-md-12 mb-1">
-                <table id="tblUserInfo" class="table table-sm table-striped table-bordered" style="width:100%;height:100%;cursor:pointer">
+                <!-- <table id="tblUserInfo" class="table table-sm table-striped table-bordered display" style="width:100%;height:100%;cursor:pointer"> -->
+                <table id="tblUserInfo" class="table table-striped table-sm table-bordered" style="width:100%;">
                     <thead>
                         <tr>
                             <th>Userid</th>
@@ -57,7 +58,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
                     </tbody>
                 </table>
             </div>
@@ -68,13 +69,13 @@
 <div class="modal fade" id="MDHRIS_EMPL_RESET">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
-      
+
         <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title">Reset Password</h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="col-md-12 order-md-1">
@@ -86,7 +87,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 mb-1" id="vuser_newpw_div">
-                        
+
                     </div>
                 </div>
                 <div class="row">
@@ -97,62 +98,62 @@
                         </div>
                     </div>
                     <div class="col-md-3 mb-1">
-                        
+
                     </div>
                 </div>
-            </div>         
+            </div>
         </div>
-        
+
         <!-- Modal footer -->
         <div class="modal-footer text-center">
         <button class="btn btn-secondary" id="btnresetpasswordnew"><i class="fas fa-check"></i></button>
         </div>
-        
+
       </div>
     </div>
 </div>
 <div class="modal fade" id="MDHRIS_EMPL_RESET_HT">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
-      
+
         <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title">Reset Handy Terminal Password</h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="col-md-12 order-md-1">
                 <div class="row">
                     <div class="col-md-12 mb-1">
-                        <div class="input-group mb-1">                            
-                            <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>                            
+                        <div class="input-group mb-1">
+                            <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>
                             <input type="password" class="form-control" id="vuser_txtnewpassword_ht" placeholder="Enter new Password here" maxlength="8">
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 mb-1">
-                        <div class="input-group mb-1">                            
-                            <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>                            
+                        <div class="input-group mb-1">
+                            <span class="input-group-text" ><i class="fas fa-lock text-warning"></i></span>
                             <input type="password" class="form-control" id="vuser_txtnewpassword_c_ht" placeholder="Confirm new Password here" maxlength="8">
                         </div>
                     </div>
                 </div>
             </div>
-        </div>                
+        </div>
         <div class="modal-footer text-center">
             <button class="btn btn-secondary" id="btnresetpasswordnew_ht"><i class="fas fa-check"></i></button>
-        </div>        
+        </div>
       </div>
     </div>
 </div>
 <script>
-	var isEditMode_um=1;
+
 	var sourceArr = [];
-    var cuserid = '';    
-    var tableusr = $('#tblUserInfo').DataTable();
+    var cuserid = '';
+    var tableusr = '';
     initdataUSRList()
 
     function vuser_txtnewpassword_eKeyUp(e){
@@ -163,7 +164,7 @@
             vuser_newpw_div.innerHTML = `<span class="badge bg-warning">${statusPW.msg}</span>`
         }
     }
-    
+
     $("#btnResetUser").click(function(){
         if(cuserid!==''){
             $("#MDHRIS_EMPL_RESET").modal('show');
@@ -211,7 +212,7 @@
                 })
             }
         }
-    })   
+    })
     $("#btnresetpasswordnew_ht").click(function(){
         let newpw = $("#vuser_txtnewpassword_ht").val();
         let newpw_c = $("#vuser_txtnewpassword_c_ht").val();
@@ -242,10 +243,11 @@
                 })
             }
         }
-    })   
-    
+    })
+
     function initdataUSRList(){
         tableusr = $('#tblUserInfo').DataTable({
+            responsive: true,
             select: true,
             destroy: true,
             scrollX: true,
@@ -256,8 +258,8 @@
                 { "data": 'MSTEMP_LNM'},
                 { "data": 'MSTEMP_REGTM'},
                 { "data": 'MSTEMP_GRP'},
-                { "data": 'MSTGRP_NM'},                
-                { "data": 'MSTEMP_STS'},                
+                { "data": 'MSTGRP_NM'},
+                { "data": 'MSTEMP_STS'},
             ],
             columnDefs : [
                 {
@@ -267,39 +269,33 @@
                 {
                     "targets": [6],
                     "visible": false
+                },
+                {
+                    className : 'text-start', targets: [0]
                 }
             ],
-            fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {                
+            fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                 if(aData.MSTEMP_STS==0){
                     $('td', nRow).css('background-color', '#FF330B');
-                }                
+                }
             }
-        });
-        tableusr.on( 'search.dt', function () {
-            document.getElementById('txtUSR_nmf_e').value="";
-            document.getElementById('txtUSR_nml_e').value="";
+        }).on('select', function (e, dt, type, indexes) {
+            if (type === 'row') {
+                const data = tableusr.rows(indexes).data()
+                cuserid = data[0]["MSTEMP_ID"];
+                txtUSR_nmf_e.value = data[0]["MSTEMP_FNM"]
+                txtUSR_nml_e.value = data[0]["MSTEMP_LNM"]
+                user_cmb_active.checked = data[0]["MSTEMP_STS"]===1 ? true  : false
+            }
+        }).on('deselect', function (e, dt, type, indexes) {
+
+        }).on('search.dt', function () {
+            txtUSR_nmf_e.value = "";
+            txtUSR_nml_e.value = "";
             cuserid = "";
-        } );
+        });
     }
-    
-    $('#tblUserInfo tbody').on( 'click', 'tr', function () { 
-		if ( $(this).hasClass('table-active') ) {			
-			$(this).removeClass('table-active');
-        } else {                    			
-			$('#tblUserInfo tbody tr.table-active').removeClass('table-active');
-			$(this).addClass('table-active');
-        }                
-		isEditMode_um=1;
-		
-        const pos = tableusr.row(this).index();
-        const row = tableusr.row(pos).data();
-        cuserid = row["MSTEMP_ID"];
-        $("#cmbGroup").val(row["MSTEMP_GRP"]);
-        $("#txtUSR_nmf_e").val(row["MSTEMP_FNM"]);
-        $("#txtUSR_nml_e").val(row["MSTEMP_LNM"]);
-        user_cmb_active.checked = row["MSTEMP_STS"]===1 ? true  : false        
-    });
-	
+
 	$('#btnEditUser').click( function() {
 		let nmf = txtUSR_nmf_e.value;
 		let nml = txtUSR_nml_e.value;
@@ -321,14 +317,15 @@
                     cuserid = "";
                     txtUSR_nmf_e.value = ''
                     txtUSR_nml_e.value = ''
-                    initdataUSRList();   
+                    //tblUserInfo.getElementsByTagName('colgroup')[0].remove()
+                    initdataUSRList();
                     swal.fire({
                         title : 'Good',
                         html : response.status.msg,
                         icon :'success',
                         timer : 1000
                     });
-                    
+
                 },
                 error:function(xhr,ajaxOptions, throwError) {
                     btnEditUser.disabled = false
@@ -336,6 +333,6 @@
                 }
             });
         }
-	});	
+	});
 
 </script>
