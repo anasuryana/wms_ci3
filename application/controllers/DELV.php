@@ -8605,7 +8605,7 @@ class DELV extends CI_Controller
                 $myar[] = ['cd' => 0, 'msg' => 'NOMOR AJU is not found in ceisa local data', 'aju' => $nomorajufull];
             }
 
-            $responApi = Requests::request('http://192.168.0.29:8080/api_inventory/public/api/ciesafour/getDetailAju/' . $nomorajufull, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $nomorajufull, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
             if (strpos($myar[0]['msg'], 'NOMOR AJU') !== false) {
                 $myar = [];
                 $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
