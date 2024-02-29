@@ -1,7 +1,12 @@
+<style type="text/css">
+table.dataTable.fixedHeader-floating {
+    z-index: 10;
+}
+</style>
 <div style="padding:5px" >
     <div class="container-xxl">
         <div class="row">
-            <div class="col-sm-4 mb-1 pr-1 pl-1">                                          
+            <div class="col-sm-4 mb-1 pr-1 pl-1">
                 <div class="card shadow-sm">
                     <div class="card-header">
                         <h4 class="my-0 font-weight-normal">Item</h4>
@@ -10,103 +15,103 @@
                         <div class="col-md-12 order-md-0 pl-1 pr-1">
                             <div class="row">
                                 <div class="col-md-12 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Job Number</span>                                        
-                                        <input type="text" class="form-control" id="ser_txt_jobno" required readonly>                                        
-                                        <button class="btn btn-primary" type="button" id="ser_btn_smod_job"><i class="fas fa-search"></i></button>                                        
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Job Number</span>
+                                        <input type="text" class="form-control" id="ser_txt_jobno" required readonly>
+                                        <button class="btn btn-primary" type="button" id="ser_btn_smod_job"><i class="fas fa-search"></i></button>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Code</span>                                        					
-                                        <input type="text" class="form-control" id="ser_txt_itmcd" required readonly >                                                                               
-                                    </div>
-                                </div>						
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Name</span>                                        
-                                        <input type="text" class="form-control" id="ser_txt_itmnm" required readonly>								
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Code</span>
+                                        <input type="text" class="form-control" id="ser_txt_itmcd" required readonly >
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Label Color</span>                                        
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Name</span>
+                                        <input type="text" class="form-control" id="ser_txt_itmnm" required readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Label Color</span>
                                         <input type="text" class="form-control" id="ser_txt_lblcolor" required readonly>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Rank</span>                                        
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Rank</span>
                                         <input type="text" class="form-control" id="ser_txt_lblrank" required readonly>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Job Qty</span>                                        
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Job Qty</span>
                                         <input type="text" class="form-control" id="ser_txt_jobqty" required readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">SPQ</span>                                        
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">SPQ</span>
                                         <input type="text" class="form-control" id="ser_txt_spq" required readonly>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">                                
+                            <div class="row">
                                 <div class="col-md-12 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Qty / sheet</span>                                        
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Qty / sheet</span>
                                         <input type="text" class="form-control" id="ser_txt_shtqty" required readonly>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Qty</span>                                        
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Qty</span>
                                         <input type="text" class="form-control" id="ser_txt_qty" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Sheets</span>                                        
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Sheets</span>
                                         <input type="text" class="form-control" id="ser_txt_sheets" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Production Date</span>                                        
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Production Date</span>
                                         <input type="text" class="form-control" id="ser_txt_proddt" required readonly>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-1">
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Line / Shift</span>                                        
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Line / Shift</span>
                                         <!-- <input type="text" class="form-control" id="ser_txt_prodline" required>   -->
                                         <select class="form-select" id="ser_txt_prodline" required>
-                                        </select>                                                                              
-                                        <span class="input-group-text">/</span>                                        
+                                        </select>
+                                        <span class="input-group-text">/</span>
                                         <select class="form-select" id="ser_txt_prodshift" required>
                                             <option value="M0">M0</option>
                                             <option value="M1">M1</option>
                                             <option value="M2">M2</option>
                                             <option value="N1">N1</option>
-                                            <option value="N2">N2</option>                                            
+                                            <option value="N2">N2</option>
                                         </select>
                                     </div>
                                 </div>
@@ -121,31 +126,31 @@
                         </div>
                     </div>
                 </div>
-            </div>	
+            </div>
             <div class="col-sm-8 pr-1 pl-1">
-                <div class="card mb-9 shadow-sm">			
+                <div class="card mb-9 shadow-sm">
                     <div class="card-header">
                         <h4 class="my-0 font-weight-normal">ID per Job Number Info</h4>
                     </div>
                     <div class="card-body p-1">
                         <div class="col-md-12 order-md-0 pl-1 pr-1">
                             <div class="row">
-                                <div class="col-md-12 mb-1">                               
-                                    <div class="input-group input-group-sm">                                        
-                                        <span class="input-group-text">Job Number</span>                                        						
+                                <div class="col-md-12 mb-1">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Job Number</span>
                                         <input type="text" class="form-control" id="ser_txt_jobno_tobfind" required readonly >
-                                        <input type="hidden" id="ser_txt_item_tobfind">                                        
+                                        <input type="hidden" id="ser_txt_item_tobfind">
                                         <button class="btn btn-outline-primary" type="button" id="ser_btn_findser"><i class="fas fa-search"></i></button>
                                         <button class="btn btn-outline-primary" type="button" id="ser_btn_print"><i class="fas fa-print" title="Print selected ID"></i></button>
-                                        <button class="btn btn-outline-danger" type="button" id="ser_btn_delete"><i class="fas fa-trash" title="Delete selected ID"></i></button>                                        
-                                    </div>                                                                                
+                                        <button class="btn btn-outline-danger" type="button" id="ser_btn_delete"><i class="fas fa-trash" title="Delete selected ID"></i></button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-0">
                                     <table id="ser_tbllastjobno" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer">
                                         <thead class="table-light">
-                                            <tr>	
+                                            <tr>
                                                 <th class="text-center"><input class="form-check-input" type="checkbox" id="ser_ckall" title="Select all"></th>
                                                 <th>ID</th>
                                                 <th>Item Code</th>
@@ -155,44 +160,43 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            
+
                                         </tbody>
                                         <tfoot>
                                             <tr>
                                                 <th colspan="4" style="text-align:right">Total:</th>
                                                 <th colspan="2" style="text-align:right"></th>
-                                                
                                             </tr>
                                         </tfoot>
-                                    </table>                                    
+                                    </table>
                                 </div>
-                            </div>                            
-                        </div>					
-                    </div>			
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>	
+        </div>
     </div>
 </div>
 <div class="modal fade" id="SER_MODJOB">
     <div class="modal-dialog">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Look up Data Table</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
                 <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="ser_txtsearchjob" maxlength="15" required placeholder="...">                        
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Search</span>
+                        <input type="text" class="form-control" id="ser_txtsearchjob" maxlength="15" required placeholder="...">
                     </div>
                 </div>
-            </div>            
+            </div>
             <div class="row">
                 <div class="col text-right">
                     <span class="badge bg-info" id="ser_lblinfo_tblser"></span>
@@ -205,8 +209,8 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Item Code</th>
-                                    <th>Job No</th>                                    
-                                    <th>Color</th>                                    
+                                    <th>Job No</th>
+                                    <th>Color</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -215,19 +219,19 @@
                     </div>
                 </div>
             </div>
-        </div>             
+        </div>
       </div>
     </div>
 </div>
 <div class="modal fade" id="SER_MODPRINT">
     <div class="modal-dialog">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Label Type</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
@@ -240,18 +244,18 @@
                         <div class="custom-control custom-radio custom-control-inline">
                             <input type="radio" class="custom-control-input" id="ser_rd_ppr" name="ser_rd_lbltype" value="1" checked>
                             <label class="custom-control-label" for="ser_rd_ppr">Paper</label>
-                        </div>                        
+                        </div>
                     </form>
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-1">
                     <div id="ser_dv">
-                        <div class="input-group input-group-sm mb-1">                            
-                            <span class="input-group-text" >Size</span>                            
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text" >Size</span>
                             <select class="form-select" id="ser_sel_ppr">
 								<option value="A4">A4</option>
-                                <option value="A3">A3</option>                                
+                                <option value="A3">A3</option>
                                 <option value="A5">A5</option>
                                 <option value="Letter">Letter</option>
                                 <option value="Legal">Legal</option>
@@ -259,35 +263,35 @@
                         </div>
                     </div>
                 </div>
-            </div>     
+            </div>
             <div class="row">
                 <div class="col mb-1 text-center">
                     <button class="btn btn-primary btn-sm" id="ser_btn_prcprint">Print</button>
                 </div>
-            </div>       
-        </div>             
+            </div>
+        </div>
       </div>
     </div>
 </div>
 <div class="modal fade" id="SER_MODSELJOB">
     <div class="modal-dialog modal-xl">
-      <div class="modal-content">      
+      <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
             <h4 class="modal-title">Job List</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
                 <div class="col">
-                    <div class="input-group input-group-sm mb-1">                        
-                        <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="ser_txtseljob" maxlength="15" required placeholder="...">                        
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Search</span>
+                        <input type="text" class="form-control" id="ser_txtseljob" maxlength="15" required placeholder="...">
                     </div>
                 </div>
-            </div>            
+            </div>
             <div class="row">
                 <div class="col text-right mb-1">
                     <span class="badge bg-info" id="ser_lblinfo_tbljob"></span>
@@ -318,12 +322,12 @@
                             </thead>
                             <tbody>
                             </tbody>
-                            
+
                         </table>
                     </div>
                 </div>
             </div>
-        </div>             
+        </div>
       </div>
     </div>
 </div>
@@ -333,7 +337,7 @@
     $("#ser_txt_proddt").datepicker({
         format: 'yyyy-mm-dd',
         autoclose:true
-    });          
+    });
     $("#ser_btn_delete").click(function (e) {
         ser_serprint = [];
         $.each(tableSERLAST.rows().nodes(), function(key, value){
@@ -368,9 +372,9 @@
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
             }
-        });        
+        });
     });
-    $("#ser_btn_prc").click(function (e) { 
+    $("#ser_btn_prc").click(function (e) {
         e.preventDefault();
         let mitem = $("#ser_txt_itmcd").val();
         let mjob = $("#ser_txt_jobno").val();
@@ -386,7 +390,7 @@
             return;
         }
         if (mitem.trim()=='') {
-            alertify.warning('Please select Item first !');$("#ser_txt_itmcd").focus();            
+            alertify.warning('Please select Item first !');$("#ser_txt_itmcd").focus();
             return;
         }
         if(mqty.trim()==''){
@@ -417,10 +421,10 @@
                     alertify.message(response[0].msg);
                 } else {
                     alertify.message(response[0].msg);
-                    document.getElementById('ser_txt_jobno_tobfind').value=response[0].doc;                    
+                    document.getElementById('ser_txt_jobno_tobfind').value=response[0].doc;
                     document.getElementById('ser_txt_item_tobfind').value=response[0].itemcd;
                     initLASTSERList();
-                }                
+                }
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
             }
@@ -433,12 +437,10 @@
     function initLASTSERList(){
         var mdoc = $("#ser_txt_jobno_tobfind").val();
         var mitem = $("#ser_txt_item_tobfind").val();
-        tableSERLAST =  $('#ser_tbllastjobno').DataTable({            
-            fixedHeader: true,
+        tableSERLAST =  $('#ser_tbllastjobno').DataTable({
+            responsive: true,
             destroy: true,
-            scrollX: true,
-            scrollY: true,            
-           
+            ordering: true,
             ajax: {
                 url : '<?=base_url("SER/getdoclike")?>',
                 type: 'get',
@@ -454,45 +456,48 @@
                 { "data": 'SER_ITMID'},
                 { "data": 'SER_QTY', render: $.fn.dataTable.render.number(',', '.', 0,'')},
                 { "data": 'SER_LUPDT'},
-                { "data": 'SER_USRID'}    
-            ], 
+                { "data": 'SER_USRID'}
+            ],
             columnDefs: [
                 {
+                    targets: 1,
+                    className: 'text-start'
+                },
+                {
                     targets: 3,
-                    className: 'text-right'
-                }                
+                    className: 'text-end'
+                },
+                {
+                    targets: 0,
+                    className: 'text-center'
+                },
             ],
-            footerCallback : function (row, data, start, end, display) {
-                var api = this.api(), data;
-                // Remove the formatting to get integer data for summation
-                var intVal = function ( i ) {
-                    return typeof i === 'string' ?
-                        i.replace(/[\$,]/g, '')*1 :
-                        typeof i === 'number' ?
-                            i : 0;
-                };
-    
-                // Total over all pages
-                total = api
+            initComplete: function (settings, json) {
+                let apik = this.api();
+                let intVal = function ( i ) {
+                                return typeof i === 'string' ?
+                                    i.replace(/[\$,]/g, '')*1 :
+                                    typeof i === 'number' ?
+                                        i : 0;
+                            };
+                total = apik
                     .column( 3 )
                     .data()
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0 );
-                $( api.column( 3 ).footer() ).html(
-                    'Total: ' + total
-                );
-            }
-        });             
+                apik.column(3).footer().innerHTML = 'Total: ' + numeral(total).format(',')
+            },
+        });
     }
-    $("#ser_btn_findser").click(function (e) { 
+    $("#ser_btn_findser").click(function (e) {
         e.preventDefault();
         $("#SER_MODJOB").modal('show');
     });
     $("#SER_MODJOB").on('shown.bs.modal', function(){
         $("#ser_txtsearchjob").focus();
     });
-    $("#ser_txtsearchjob").keypress(function (e) { 
+    $("#ser_txtsearchjob").keypress(function (e) {
         if(e.which==13){
             let mval = $(this).val();
             $.ajax({
@@ -526,7 +531,7 @@
         $("#SER_MODJOB").modal('hide');
         initLASTSERList();
     });
-    
+
 
     $("#ser_btn_print").click(function(){
         ser_serprint = [];
@@ -552,30 +557,30 @@
         });
     });
 
-    $("#ser_btn_prcprint").click(function (e) { 
+    $("#ser_btn_prcprint").click(function (e) {
         e.preventDefault();
-        let mrd_type = $("input[name='ser_rd_lbltype']:checked").val();  
-        let msize = $("#ser_sel_ppr").val();      
+        let mrd_type = $("input[name='ser_rd_lbltype']:checked").val();
+        let msize = $("#ser_sel_ppr").val();
         Cookies.set('PRINTLABEL_FG', ser_serprint, {expires:365});
         Cookies.set('PRINTLABEL_FG_LBLTYPE', mrd_type, {expires:365});
         Cookies.set('PRINTLABEL_FG_SIZE', msize, {expires:365});
         window.open("<?=base_url('printlabel_fg')?>",'_blank');
     });
-    
-    $("#ser_rd_def").click(function (e) {         
+
+    $("#ser_rd_def").click(function (e) {
         $("#ser_dv").hide();
     });
-    $("#ser_rd_ppr").click(function (e) {        
+    $("#ser_rd_ppr").click(function (e) {
         $("#ser_dv").show();
     });
-    $("#ser_btn_smod_job").click(function (e) { 
+    $("#ser_btn_smod_job").click(function (e) {
         e.preventDefault();
         $("#SER_MODSELJOB").modal('show');
     });
     $("#SER_MODSELJOB").on('shown.bs.modal', function(){
         $("#ser_txtseljob").focus();
     });
-    $("#ser_txtseljob").keypress(function (e) { 
+    $("#ser_txtseljob").keypress(function (e) {
         if(e.which==13){
             let mval =$(this).val();
             $("#ser_lblinfo_tbljob").text('Please wait ...');
@@ -585,7 +590,7 @@
                 data: {inwo: mval},
                 dataType: "json",
                 success: function (response) {
-                    let ttlrows = response.length;                                      
+                    let ttlrows = response.length;
                     let mydes = document.getElementById("ser_divku");
                     var myfrag = document.createDocumentFragment();
                     var mtabel = document.getElementById("ser_seljob_tbl");
@@ -597,7 +602,7 @@
                     tanblebod.innerHTML='';
                     for (let i = 0; i<ttlrows; i++){
                         unlbl = Number(response[i].PDPP_WORQT)-Number(response[i].LBLTTL);
-                        newrow = tanblebod.insertRow(-1);                       
+                        newrow = tanblebod.insertRow(-1);
                         newcell = newrow.insertCell(0);
                         newText = document.createTextNode(response[i].PDPP_WONO.trim());
                         newcell.appendChild(newText);
@@ -614,15 +619,15 @@
                         newcell = newrow.insertCell(4);
                         newText = document.createTextNode(numeral(response[i].LBLTTL).format(','));
                         newcell.appendChild(newText);
-                        newcell.style.cssText = 'text-align: right';                     
+                        newcell.style.cssText = 'text-align: right';
                         newcell = newrow.insertCell(5);
                         newText = document.createTextNode(numeral(unlbl).format(','));
                         newcell.appendChild(newText);
-                        newcell.style.cssText = 'text-align: right';                     
+                        newcell.style.cssText = 'text-align: right';
                         newcell = newrow.insertCell(6);
                         newText = document.createTextNode(response[i].PDPP_BSGRP);
                         newcell.appendChild(newText);
-                        newcell.style.cssText = 'text-align: center';                     
+                        newcell.style.cssText = 'text-align: center';
                         newcell = newrow.insertCell(7);
                         newText = document.createTextNode(response[i].PDPP_CUSCD);
                         newcell.appendChild(newText);
@@ -630,18 +635,18 @@
                         newcell = newrow.insertCell(8);
                         newText = document.createTextNode(response[i].MITM_LBLCLR);
                         newcell.appendChild(newText);
-                        newcell.style.cssText = 'display: none';                     
+                        newcell.style.cssText = 'display: none';
                         newcell = newrow.insertCell(9);
                         newText = document.createTextNode(response[i].MITM_SHTQTY);
                         newcell.appendChild(newText);
-                        newcell.style.cssText = 'display: none';                     
+                        newcell.style.cssText = 'display: none';
                         newcell = newrow.insertCell(10);
                         newText = document.createTextNode(response[i].MITM_SPQ);
-                        newcell.style.cssText = 'display: none';                     
+                        newcell.style.cssText = 'display: none';
                         newcell.appendChild(newText);
                         newcell = newrow.insertCell(11)
                         newcell.innerHTML = response[i].MBOM_GRADE
-                    }                                        
+                    }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
                     $("#ser_lblinfo_tbljob").text(ttlrows + ' row(s) found');
@@ -675,11 +680,11 @@
                                 document.getElementById('ser_txt_sheets').readOnly=true;
                                 document.getElementById('ser_txt_qty').readOnly=false;
                             }
-                            
+
                             $('#ser_seljob_tbl tbody').html('');
                             $("#ser_txt_item_tobfind").val(mitem); $("#ser_txt_jobno_tobfind").val(mjob);
                             $("#SER_MODSELJOB").modal('hide');
-                            
+
                             initLASTSERList();
                         } else {
                             alertify.message('all labels are already created');
@@ -696,7 +701,7 @@
         document.getElementById('ser_txt_prodline').innerHTML='';
         $.ajax({
             type: "get",
-            url: "<?=base_url('SPL/getline_mfg')?>",           
+            url: "<?=base_url('SPL/getline_mfg')?>",
             dataType: "json",
             success: function (response) {
                 let ttlrows = response.data.length;
@@ -713,7 +718,7 @@
             }
         });
     }
-    $("#ser_txt_qty").keyup(function (e) { 
+    $("#ser_txt_qty").keyup(function (e) {
         let mval = numeral($(this).val()).format(',');
         $(this).val(mval);
     });
