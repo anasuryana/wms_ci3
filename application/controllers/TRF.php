@@ -244,7 +244,7 @@ class TRF extends CI_Controller
                             'TRFD_CREATED_BY' => $this->session->userdata('nama'),
                             'TRFD_CREATED_DT' => $CurrentDateTime,
                         ];
-                        if (strtoupper(trim($LineItemCode[$i])) === 'N2GAS') {
+                        if (strtoupper(trim($LineItemCode[$i])) === 'N2GAS' || str_contains($toLoc, 'SCR') ) {
                             $RSAutoConform[] = [
                                 'ITH_ITMCD' => $LineItemCode[$i],
                                 'ITH_DATE' => $docDate,
@@ -278,17 +278,19 @@ class TRF extends CI_Controller
                         if (!empty($RSAutoConform)) {
                             $this->ITH_mod->insertb($RSAutoConform);
 
-                            # cari transaksi sebelumnya untuk dikeluarkan
-                            $RSLastTransaction = $this->ITH_mod->selectLastTransactionBeforeDate($docDate, 'N2GAS', 'INC-DO');
-                            foreach ($RSLastTransaction as &$r) {
-                                $r['ITH_FORM'] = 'OUT-USE';
-                                $r['ITH_DATE'] = $docDate;
-                                $r['ITH_QTY'] = $r['ITH_QTY'] * -1;
-                                $r['ITH_WH'] = $toLoc;
-                                $r['ITH_LUPDT'] = $docDate . date(' H:i:s');
+                            if(strtoupper(trim($LineItemCode[0])) === 'N2GAS') {
+                                # cari transaksi sebelumnya untuk dikeluarkan
+                                $RSLastTransaction = $this->ITH_mod->selectLastTransactionBeforeDate($docDate, 'N2GAS', 'INC-DO');
+                                foreach ($RSLastTransaction as &$r) {
+                                    $r['ITH_FORM'] = 'OUT-USE';
+                                    $r['ITH_DATE'] = $docDate;
+                                    $r['ITH_QTY'] = $r['ITH_QTY'] * -1;
+                                    $r['ITH_WH'] = $toLoc;
+                                    $r['ITH_LUPDT'] = $docDate . date(' H:i:s');
+                                }
+                                unset($r);
+                                $this->ITH_mod->insertb($RSLastTransaction);
                             }
-                            unset($r);
-                            $this->ITH_mod->insertb($RSLastTransaction);
                         }
 
                         $response[] = ['cd' => '1', 'msg' => 'OK', 'reff' => $NewDocument];
