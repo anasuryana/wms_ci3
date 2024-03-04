@@ -894,23 +894,31 @@
 
                 // write remark wheter stock is enough or not
                 let isStockEnough = true
-                response.data.forEach((arrayItem) => {
-                    for(let i=0; i<dataSS.length; i++) {
-                        const _partCode = trfnonref_sso.getCell('A'+(i+1)).innerText.trim().toUpperCase()
-                        const _ReqQty = trfnonref_sso.getCell('B'+(i+1)).innerText.trim().toUpperCase()
-                        if(arrayItem['ITEMCODE'] === _partCode) {
-                            let message = ''
-                            if(numeral(_ReqQty).value()>arrayItem['STOCK']) {
-                                isStockEnough = false
-                                message = `Stock only ${numeral(arrayItem['STOCK']).format(',')}`
-                            } else {
-                                message = ''
+                if(response.data.length === 0) {
+                    trfnonref_div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    Stock is not found, please make sure you've select a right <b>From Location</b>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                    return
+                } else {
+                    response.data.forEach((arrayItem) => {
+                        for(let i=0; i<dataSS.length; i++) {
+                            const _partCode = trfnonref_sso.getCell('A'+(i+1)).innerText.trim().toUpperCase()
+                            const _ReqQty = trfnonref_sso.getCell('B'+(i+1)).innerText.trim().toUpperCase()
+                            if(arrayItem['ITEMCODE'] === _partCode) {
+                                let message = ''
+                                if(numeral(_ReqQty).value()>arrayItem['STOCK']) {
+                                    isStockEnough = false
+                                    message = `Stock only ${numeral(arrayItem['STOCK']).format(',')}`
+                                } else {
+                                    message = ''
+                                }
+                                trfnonref_sso.setValue('C'+(i+1), message, true)
+                                break
                             }
-                            trfnonref_sso.setValue('C'+(i+1), message, true)
-                            break
                         }
-                    }
-                })
+                    })
+                }
 
                 if(!isStockEnough) {
                     trfnonref_div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -932,7 +940,7 @@
                         }
                     }
                     if(!isFound) {
-                        trfnonref_sso.setValue('C'+(i+1), 'Stock not found', true)
+                        trfnonref_sso.setValue('C'+(i+1), 'Stock is not found', true)
                     }
                 }
 
@@ -940,6 +948,7 @@
                 for(let i=0; i<dataSS.length; i++) {
                     const _partCode = trfnonref_sso.getCell('A'+(i+1)).innerText.trim().toUpperCase()
                     const _ReqQty = trfnonref_sso.getCell('B'+(i+1)).innerText.trim().toUpperCase()
+                    const _Remark = trfnonref_sso.getCell('C'+(i+1)).innerText.trim().toUpperCase()
                     if(numeral(_ReqQty).value() == 0 || !numeral(_ReqQty).value()) {
                         isAbleToContinue = false; break;
                     }

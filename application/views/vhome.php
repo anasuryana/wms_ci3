@@ -457,7 +457,8 @@
             data: {doc: pdata.doc, item: pdata.item},
             dataType: "json",
             success: function (response) {
-                if(response.data.length===0){
+                let x = home_div_document_list.getElementsByTagName('li').length
+                if(response.data.length!=x) {
                     home_h1_to_approve_qty_eClick()
                 } else {
                     home_get_document_detail({doc: pdata.doc})

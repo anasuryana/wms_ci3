@@ -70,7 +70,7 @@ class TRF_mod extends CI_Model
 
     public function updatebyId($pwhere, $pval)
     {
-        $this->db->where($pwhere);
+        $this->db->where($pwhere)->where('TRFD_RECEIVE_DT IS NULL', null, false);
         $this->db->update($this->TABLENAME_D, $pval);
         return $this->db->affected_rows();
     }
