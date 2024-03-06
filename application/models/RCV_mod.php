@@ -56,7 +56,7 @@ class RCV_mod extends CI_Model
     public function updatebyId_new($pdata, $pdo, $pitem, $pqty)
     {
         $qry = "update top (1) RCV_TBL SET RCV_HSCD=?, RCV_BM=?, RCV_PPN=?,RCV_PPH=?, RCV_ZNOURUT=?
-        WHERE RCV_DONO=? AND RCV_ITMCD=? AND RCV_QTY=? and ISNULL(RCV_ZNOURUT,'') =''";
+        WHERE RCV_DONO=? AND RCV_ITMCD=? AND RCV_QTY=?";
         $this->db->query($qry, [$pdata['RCV_HSCD'], $pdata['RCV_BM'], $pdata['RCV_PPN'], $pdata['RCV_PPH'], $pdata['RCV_ZNOURUT'], $pdo, $pitem, $pqty]);
         return $this->db->affected_rows();
     }
@@ -64,7 +64,7 @@ class RCV_mod extends CI_Model
     public function updatebyId_new_no_qty($pdata, $pdo, $pitem)
     {
         $qry = "update top (1) RCV_TBL SET RCV_HSCD=?, RCV_BM=?, RCV_PPN=?,RCV_PPH=?, RCV_ZNOURUT=?
-        WHERE RCV_DONO=? AND RCV_ITMCD=? AND ISNULL(RCV_ZNOURUT,'') =''";
+        WHERE RCV_DONO=? AND RCV_ITMCD=?";
         $this->db->query($qry, [$pdata['RCV_HSCD'], $pdata['RCV_BM'], $pdata['RCV_PPN'], $pdata['RCV_PPH'], $pdata['RCV_ZNOURUT'], $pdo, $pitem]);
         return $this->db->affected_rows();
     }
