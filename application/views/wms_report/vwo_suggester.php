@@ -1,6 +1,6 @@
 <div style="padding: 5px" >
 	<div class="container-fluid">
-        
+
         <div class="row">
             <div class="col-md-12 mb-1">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -12,6 +12,9 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="wosuggester_check_line-tab" data-bs-toggle="tab" data-bs-target="#wosuggester_tab_check_line" type="button" role="tab" aria-controls="home" aria-selected="true">Check Production Line</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="wosuggester_checker-tab" data-bs-toggle="tab" data-bs-target="#wosuggester_tab_checker" type="button" role="tab" aria-controls="home" aria-selected="true">WOSIM vs PSN</button>
                 </li>
             </ul>
                 <div class="tab-content" id="wosuggester_myTabContent">
@@ -42,7 +45,7 @@
                             <div class="col-md-6">
                                 <div class="input-group input-group-sm mb-1">
                                     <label class="input-group-text">Line</label>
-                                    <input type="text" class="form-control" id="wosuggester_line_input" maxlength="15">                                    
+                                    <input type="text" class="form-control" id="wosuggester_line_input" maxlength="15">
                                     <button class="btn btn-outline-primary" id="wosuggester_btn_check" title="Checker" onclick="wosuggester_btn_checker_eC(this)">Check</button>
                                 </div>
                             </div>
@@ -72,6 +75,34 @@
                                             <tr>
                                                 <th>Process</th>
                                                 <th>Line</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="wosuggester_tab_checker" role="tabpanel">
+                        <div class="container-fluid">
+                            <div class="row mt-1">
+                                <div class="col-md-6 mb-1">
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" id="wosuggester_btn_checker_psn" title="New" onclick="wosuggester_btn_checker_psn_eC(this)">Check</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table id="wosuggester_checker_dt" class="table table-sm table-striped table-bordered table-hover compact" style="width:100%">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="text-center">Job</th>
+                                                <th class="text-center">Lot</th>
+                                                <th class="text-center">Assy Code</th>
+                                                <th class="text-center">Simulation</th>
+                                                <th class="text-center">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -183,7 +214,7 @@
         wosuggester_line_input.value = ''
         wosuggester_line_input.focus()
     }
-    
+
     var mpurordata = [
        [''],
     ];
@@ -434,14 +465,13 @@
                         newrow = myTableBody.insertRow(-1)
                         newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-center')
-                        newcell.innerHTML = arrayItem['PIS1_PROCD']                                        
+                        newcell.innerHTML = arrayItem['PIS1_PROCD']
                         newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-center')
-                        newcell.innerHTML = arrayItem['PIS1_LINENO']                        
+                        newcell.innerHTML = arrayItem['PIS1_LINENO']
                     })
                     myContainer.innerHTML = ''
                     myContainer.appendChild(myfrag)
-                    
                     if(response.data.length===0) {
                         alertify.message('not found')
                     }
@@ -455,5 +485,40 @@
             alertify.warning('Simulation Code is required')
             wosuggester_sim_code.focus()
         }
+    }
+
+    var wosuggester_checker_dto = ''
+
+    function wosuggester_btn_checker_psn_eC(p) {
+        p.disabled = true
+        wosuggester_checker_dto = $('#wosuggester_checker_dt').DataTable({
+            responsive: true,
+            select: true,
+            destroy: true,
+            ajax: {
+                url : "<?=$_ENV['APP_INTERNAL_API']?>simulation/checker",
+                error: function(xhr, xopt, xthrow) {
+                    alertify.warning(xthrow);
+                    p.disabled = false
+                }
+            },
+            columns: [
+                { "data": 'WONO'},
+                { "data": 'SIMQT', render : function(data, type, row) {
+                        return numeral(data).format(',');
+                    },
+                },
+                { "data": 'MDLCD'},
+                { "data": 'DOCNO'},
+                { "data": 'WONO' ,
+                    render : function(data, type, row) {
+                        return data ? 'PSN is not generated' : 'Pemutihan';
+                    },
+                },
+            ],
+            order: [[0, 'desc']]
+        }).on('draw', function() {
+            p.disabled = false
+        })
     }
 </script>
