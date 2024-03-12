@@ -4,20 +4,20 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.0.1/fc-5.0.0/fh-4.0.0/kt-2.12.0/r-3.0.0/rr-1.5.0/sc-2.4.0/sl-2.0.0
+ *   https://datatables.net/download/#bs5/dt-2.0.2/fc-5.0.0/fh-4.0.1/kt-2.12.0/r-3.0.0/rr-1.5.0/sc-2.4.1/sl-2.0.0
  *
  * Included libraries:
- *   DataTables 2.0.1, FixedColumns 5.0.0, FixedHeader 4.0.0, KeyTable 2.12.0, Responsive 3.0.0, RowReorder 1.5.0, Scroller 2.4.0, Select 2.0.0
+ *   DataTables 2.0.2, FixedColumns 5.0.0, FixedHeader 4.0.1, KeyTable 2.12.0, Responsive 3.0.0, RowReorder 1.5.0, Scroller 2.4.1, Select 2.0.0
  */
 
-/*! DataTables 2.0.1
+/*! DataTables 2.0.2
  * © SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     2.0.1
+ * @version     2.0.2
  * @author      SpryMedia Ltd
  * @contact     www.datatables.net
  * @copyright   SpryMedia Ltd.
@@ -329,7 +329,7 @@
 						_fnCamelToHungarian( defaults.oLanguage, json );
 						$.extend( true, oLanguage, json, oSettings.oInit.oLanguage );
 			
-						_fnCallbackFire( oSettings, null, 'i18n', [oSettings]);
+						_fnCallbackFire( oSettings, null, 'i18n', [oSettings], true);
 						_fnInitialise( oSettings );
 					},
 					error: function () {
@@ -563,7 +563,7 @@
 		 *
 		 *  @type string
 		 */
-		build:"bs5/dt-2.0.1/fc-5.0.0/fh-4.0.0/kt-2.12.0/r-3.0.0/rr-1.5.0/sc-2.4.0/sl-2.0.0",
+		build:"bs5/dt-2.0.2/fc-5.0.0/fh-4.0.1/kt-2.12.0/r-3.0.0/rr-1.5.0/sc-2.4.1/sl-2.0.0",
 	
 	
 		/**
@@ -2367,7 +2367,7 @@
 	 */
 	function _columnAutoClass(container, colIdx, className) {
 		container.forEach(function (row) {
-			if (row[colIdx].unique) {
+			if (row[colIdx] && row[colIdx].unique) {
 				_addClass(row[colIdx].cell, className);
 			}
 		});
@@ -2454,17 +2454,19 @@
 							else {
 								// Cell selector
 								headerLayout.forEach(function (row) {
-									var cell = $(row[k].cell);
+									if (row[k]) {
+										var cell = $(row[k].cell);
 	
-									// Legacy support. Note that it means that we don't support
-									// an element name selector only, since they are treated as
-									// class names for 1.x compat.
-									if (target.match(/^[a-z][\w-]*$/i)) {
-										target = '.' + target;
-									}
+										// Legacy support. Note that it means that we don't support
+										// an element name selector only, since they are treated as
+										// class names for 1.x compat.
+										if (target.match(/^[a-z][\w-]*$/i)) {
+											target = '.' + target;
+										}
 	
-									if (cell.is( target )) {
-										fn( k, def );
+										if (cell.is( target )) {
+											fn( k, def );
+										}
 									}
 								});
 							}
@@ -3278,11 +3280,15 @@
 						colspan++;
 					}
 	
+					var titleSpan = $('span.dt-column-title', cell);
+	
 					structure[row][column] = {
 						cell: cell,
 						colspan: colspan,
 						rowspan: rowspan,
-						title: $('span.dt-column-title', cell).html()
+						title: titleSpan.length
+							? titleSpan.html()
+							: $(cell).html()
 					};
 				}
 			}
@@ -4067,7 +4073,12 @@
 			oSettings.jqXHR = ajax.call( instance, data, callback, oSettings );
 		}
 		else if (ajax.url === '') {
-			callback({});
+			// No url, so don't load any data. Just apply an empty data array
+			// to the object for the callback.
+			var empty = {};
+	
+			DataTable.util.set(ajax.dataSrc)(empty, []);
+			callback(empty);
 		}
 		else {
 			// Object to extend the base settings
@@ -5069,12 +5080,12 @@
 		// the content of the cell so that the width applied to the header and body
 		// both match, but we want to hide it completely.
 		$('th, td', headerCopy).each(function () {
-			$(this).children().wrapAll('<div class="dt-scroll-sizing">');
+			$(this.childNodes).wrapAll('<div class="dt-scroll-sizing">');
 		});
 	
 		if ( footer ) {
 			$('th, td', footerCopy).each(function () {
-				$(this).children().wrapAll('<div class="dt-scroll-sizing">');
+				$(this.childNodes).wrapAll('<div class="dt-scroll-sizing">');
 			});
 		}
 	
@@ -5429,34 +5440,41 @@
 	
 	function _fnSortAttachListener(settings, node, selector, column, callback) {
 		_fnBindAction( node, selector, function (e) {
+			var run = false;
 			var columns = column === undefined
 				? _fnColumnsFromHeader( e.target )
 				: [column];
 	
 			if ( columns.length ) {
-				_fnProcessingDisplay( settings, true );
+				for ( var i=0, ien=columns.length ; i<ien ; i++ ) {
+					var ret = _fnSortAdd( settings, columns[i], i, e.shiftKey );
 	
-				// Allow the processing display to show
-				setTimeout( function () {
-					for ( var i=0, ien=columns.length ; i<ien ; i++ ) {
-						_fnSortAdd( settings, columns[i], i, e.shiftKey );
+					if (ret !== false) {
+						run = true;
+					}					
 	
-						// If the first entry is no sort, then subsequent
-						// sort columns are ignored
-						if (settings.aaSorting.length === 1 && settings.aaSorting[0][1] === '') {
-							break;
+					// If the first entry is no sort, then subsequent
+					// sort columns are ignored
+					if (settings.aaSorting.length === 1 && settings.aaSorting[0][1] === '') {
+						break;
+					}
+				}
+	
+				if (run) {
+					_fnProcessingDisplay( settings, true );
+	
+					// Allow the processing display to show
+					setTimeout( function () {
+						_fnSort( settings );
+						_fnSortDisplay( settings );
+						_fnReDraw( settings, false, false );
+						_fnProcessingDisplay( settings, false );
+	
+						if (callback) {
+							callback();
 						}
-					}
-	
-					_fnSort( settings );
-					_fnSortDisplay( settings );
-					_fnReDraw( settings, false, false );
-					_fnProcessingDisplay( settings, false );
-	
-					if (callback) {
-						callback();
-					}
-				}, 0);
+					}, 0);
+				}
 			}
 		} );
 	}
@@ -5760,7 +5778,7 @@
 		};
 	
 		if ( ! col.bSortable ) {
-			return;
+			return false;
 		}
 	
 		// Convert to 2D array if needed
@@ -8085,7 +8103,7 @@
 				for ( var i=0, ien=data.length ; i<ien ; i++ ) {
 					row = data[i];
 	
-					if ( row._details ) {
+					if ( row && row._details ) {
 						row._details.each(function () {
 							var el = $(this).children('td');
 	
@@ -8104,7 +8122,7 @@
 				}
 	
 				for ( var i=0, ien=data.length ; i<ien ; i++ ) {
-					if ( data[i]._details ) {
+					if ( data[i] && data[i]._details ) {
 						__details_remove( api, i );
 					}
 				}
@@ -8126,9 +8144,9 @@
 	
 		if ( data === undefined ) {
 			// get
-			return ctx.length && this.length ?
-				ctx[0].aoData[ this[0] ]._details :
-				undefined;
+			return ctx.length && this.length && ctx[0].aoData[ this[0] ]
+				? ctx[0].aoData[ this[0] ]._details
+				: undefined;
 		}
 		else if ( data === true ) {
 			// show
@@ -9552,7 +9570,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.0.1";
+	DataTable.version = "2.0.2";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -11692,7 +11710,7 @@
 		 *
 		 *  @type string
 		 */
-		build:"bs5/dt-2.0.1/fc-5.0.0/fh-4.0.0/kt-2.12.0/r-3.0.0/rr-1.5.0/sc-2.4.0/sl-2.0.0",
+		build:"bs5/dt-2.0.2/fc-5.0.0/fh-4.0.1/kt-2.12.0/r-3.0.0/rr-1.5.0/sc-2.4.1/sl-2.0.0",
 	
 	
 		/**
@@ -12688,7 +12706,7 @@
 		};
 	
 		// prop is optional
-		if (! val) {
+		if (val === undefined) {
 			val = prop;
 			prop = null;
 		}
@@ -13347,7 +13365,7 @@
 		if (
 			buttonEls.length && // any buttons
 			opts.numbers > 1 && // prevent infinite
-			$(host).outerHeight() >= ($(buttonEls[0]).outerHeight() * 2) - 10
+			$(host).height() >= ($(buttonEls[0]).outerHeight() * 2) - 10
 		) {
 			_pagingDraw(settings, host, $.extend({}, opts, { numbers: opts.numbers - 2 }));
 		}
@@ -14311,7 +14329,7 @@ return DataTable;
 }));
 
 
-/*! FixedHeader 4.0.0
+/*! FixedHeader 4.0.1
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -14366,7 +14384,7 @@ var DataTable = $.fn.dataTable;
  * @summary     FixedHeader
  * @description Fix a table's header or footer, so it is always visible while
  *              scrolling
- * @version     4.0.0
+ * @version     4.0.1
  * @author      SpryMedia Ltd
  * @contact     datatables.net
  *
@@ -14582,6 +14600,8 @@ $.extend(FixedHeader.prototype, {
 
 		this._positions();
 		this._scroll(force !== undefined ? force : true);
+		this._widths(this.dom.header);
+		this._widths(this.dom.footer);
 	},
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -14769,25 +14789,7 @@ $.extend(FixedHeader.prototype, {
 			itemDom.host.prepend(itemDom.placeholder);
 			itemDom.floating.append(itemElement);
 
-			// Copy the `colgroup` element to define the number of columns - needed
-			// for complex header cases where a column might not have a unique
-			// header 
-			var cols = itemDom.placeholder
-				.parent()
-				.find('colgroup')
-				.clone()
-				.appendTo(itemDom.floating)
-				.find('col');
-
-			// However, the widths defined in the colgroup from the DataTable might
-			// not exactly reflect the actual widths of the columns (content can
-			// force it to stretch). So we need to copy the actual widths into the
-			// colgroup / col's used for the floating header.
-			var widths = this.s.dt.columns({visible:true}).widths();
-
-			for (var i=0 ; i<widths.length ; i++) {
-				cols.eq(i).css('width', widths[i]);
-			}
+			this._widths(itemDom);
 		}
 	},
 
@@ -15336,6 +15338,46 @@ $.extend(FixedHeader.prototype, {
 			return true;
 		}
 		return false;
+	},
+
+	/**
+	 * Realign columns by using the colgroup tag and
+	 * checking column widths
+	 */
+	_widths: function (itemDom) {
+		if (! itemDom || ! itemDom.placeholder) {
+			return;
+		}
+
+		// Match the table overall width
+		var tableNode = $(this.s.dt.table().node());
+		var scrollBody = $(tableNode.parent());
+
+		itemDom.floatingParent.css('width', scrollBody[0].offsetWidth);
+		itemDom.floating.css('width', tableNode[0].offsetWidth);
+
+		// Strip out the old colgroup
+		$('colgroup', itemDom.floating).remove();
+
+		// Copy the `colgroup` element to define the number of columns - needed
+		// for complex header cases where a column might not have a unique
+		// header
+		var cols = itemDom.placeholder
+			.parent()
+			.find('colgroup')
+			.clone()
+			.appendTo(itemDom.floating)
+			.find('col');
+
+		// However, the widths defined in the colgroup from the DataTable might
+		// not exactly reflect the actual widths of the columns (content can
+		// force it to stretch). So we need to copy the actual widths into the
+		// colgroup / col's used for the floating header.
+		var widths = this.s.dt.columns(':visible').widths();
+
+		for (var i=0 ; i<widths.length ; i++) {
+			cols.eq(i).css('width', widths[i]);
+		}
 	}
 });
 
@@ -15344,7 +15386,7 @@ $.extend(FixedHeader.prototype, {
  * @type {String}
  * @static
  */
-FixedHeader.version = '4.0.0';
+FixedHeader.version = '4.0.1';
 
 /**
  * Defaults
@@ -19854,7 +19896,7 @@ return DataTable;
 }));
 
 
-/*! Scroller 2.4.0
+/*! Scroller 2.4.1
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -19908,7 +19950,7 @@ var DataTable = $.fn.dataTable;
 /**
  * @summary     Scroller
  * @description Virtual rendering for DataTables
- * @version     2.4.0
+ * @version     2.4.1
  * @copyright   SpryMedia Ltd.
  *
  * This source file is free software, available under the following license:
@@ -20164,7 +20206,7 @@ $.extend(Scroller.prototype, {
 		heights.labelHeight = label;
 
 		if (redraw === undefined || redraw) {
-			this.s.dt.oInstance.fnDraw(false);
+			this.s.dtApi.draw(false);
 		}
 	},
 
@@ -21140,7 +21182,7 @@ Scroller.oDefaults = Scroller.defaults;
  *  @name      Scroller.version
  *  @static
  */
-Scroller.version = '2.4.0';
+Scroller.version = '2.4.1';
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Initialisation
