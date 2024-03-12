@@ -1,11 +1,11 @@
-/*! DataTables 2.0.1
+/*! DataTables 2.0.2
  * © SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     2.0.1
+ * @version     2.0.2
  * @author      SpryMedia Ltd
  * @contact     www.datatables.net
  * @copyright   SpryMedia Ltd.
@@ -317,7 +317,7 @@
 						_fnCamelToHungarian( defaults.oLanguage, json );
 						$.extend( true, oLanguage, json, oSettings.oInit.oLanguage );
 			
-						_fnCallbackFire( oSettings, null, 'i18n', [oSettings]);
+						_fnCallbackFire( oSettings, null, 'i18n', [oSettings], true);
 						_fnInitialise( oSettings );
 					},
 					error: function () {
@@ -2355,7 +2355,7 @@
 	 */
 	function _columnAutoClass(container, colIdx, className) {
 		container.forEach(function (row) {
-			if (row[colIdx].unique) {
+			if (row[colIdx] && row[colIdx].unique) {
 				_addClass(row[colIdx].cell, className);
 			}
 		});
@@ -2442,17 +2442,19 @@
 							else {
 								// Cell selector
 								headerLayout.forEach(function (row) {
-									var cell = $(row[k].cell);
+									if (row[k]) {
+										var cell = $(row[k].cell);
 	
-									// Legacy support. Note that it means that we don't support
-									// an element name selector only, since they are treated as
-									// class names for 1.x compat.
-									if (target.match(/^[a-z][\w-]*$/i)) {
-										target = '.' + target;
-									}
+										// Legacy support. Note that it means that we don't support
+										// an element name selector only, since they are treated as
+										// class names for 1.x compat.
+										if (target.match(/^[a-z][\w-]*$/i)) {
+											target = '.' + target;
+										}
 	
-									if (cell.is( target )) {
-										fn( k, def );
+										if (cell.is( target )) {
+											fn( k, def );
+										}
 									}
 								});
 							}
@@ -3266,11 +3268,15 @@
 						colspan++;
 					}
 	
+					var titleSpan = $('span.dt-column-title', cell);
+	
 					structure[row][column] = {
 						cell: cell,
 						colspan: colspan,
 						rowspan: rowspan,
-						title: $('span.dt-column-title', cell).html()
+						title: titleSpan.length
+							? titleSpan.html()
+							: $(cell).html()
 					};
 				}
 			}
@@ -4055,7 +4061,12 @@
 			oSettings.jqXHR = ajax.call( instance, data, callback, oSettings );
 		}
 		else if (ajax.url === '') {
-			callback({});
+			// No url, so don't load any data. Just apply an empty data array
+			// to the object for the callback.
+			var empty = {};
+	
+			DataTable.util.set(ajax.dataSrc)(empty, []);
+			callback(empty);
 		}
 		else {
 			// Object to extend the base settings
@@ -5057,12 +5068,12 @@
 		// the content of the cell so that the width applied to the header and body
 		// both match, but we want to hide it completely.
 		$('th, td', headerCopy).each(function () {
-			$(this).children().wrapAll('<div class="dt-scroll-sizing">');
+			$(this.childNodes).wrapAll('<div class="dt-scroll-sizing">');
 		});
 	
 		if ( footer ) {
 			$('th, td', footerCopy).each(function () {
-				$(this).children().wrapAll('<div class="dt-scroll-sizing">');
+				$(this.childNodes).wrapAll('<div class="dt-scroll-sizing">');
 			});
 		}
 	
@@ -5417,34 +5428,41 @@
 	
 	function _fnSortAttachListener(settings, node, selector, column, callback) {
 		_fnBindAction( node, selector, function (e) {
+			var run = false;
 			var columns = column === undefined
 				? _fnColumnsFromHeader( e.target )
 				: [column];
 	
 			if ( columns.length ) {
-				_fnProcessingDisplay( settings, true );
+				for ( var i=0, ien=columns.length ; i<ien ; i++ ) {
+					var ret = _fnSortAdd( settings, columns[i], i, e.shiftKey );
 	
-				// Allow the processing display to show
-				setTimeout( function () {
-					for ( var i=0, ien=columns.length ; i<ien ; i++ ) {
-						_fnSortAdd( settings, columns[i], i, e.shiftKey );
+					if (ret !== false) {
+						run = true;
+					}					
 	
-						// If the first entry is no sort, then subsequent
-						// sort columns are ignored
-						if (settings.aaSorting.length === 1 && settings.aaSorting[0][1] === '') {
-							break;
+					// If the first entry is no sort, then subsequent
+					// sort columns are ignored
+					if (settings.aaSorting.length === 1 && settings.aaSorting[0][1] === '') {
+						break;
+					}
+				}
+	
+				if (run) {
+					_fnProcessingDisplay( settings, true );
+	
+					// Allow the processing display to show
+					setTimeout( function () {
+						_fnSort( settings );
+						_fnSortDisplay( settings );
+						_fnReDraw( settings, false, false );
+						_fnProcessingDisplay( settings, false );
+	
+						if (callback) {
+							callback();
 						}
-					}
-	
-					_fnSort( settings );
-					_fnSortDisplay( settings );
-					_fnReDraw( settings, false, false );
-					_fnProcessingDisplay( settings, false );
-	
-					if (callback) {
-						callback();
-					}
-				}, 0);
+					}, 0);
+				}
 			}
 		} );
 	}
@@ -5748,7 +5766,7 @@
 		};
 	
 		if ( ! col.bSortable ) {
-			return;
+			return false;
 		}
 	
 		// Convert to 2D array if needed
@@ -8073,7 +8091,7 @@
 				for ( var i=0, ien=data.length ; i<ien ; i++ ) {
 					row = data[i];
 	
-					if ( row._details ) {
+					if ( row && row._details ) {
 						row._details.each(function () {
 							var el = $(this).children('td');
 	
@@ -8092,7 +8110,7 @@
 				}
 	
 				for ( var i=0, ien=data.length ; i<ien ; i++ ) {
-					if ( data[i]._details ) {
+					if ( data[i] && data[i]._details ) {
 						__details_remove( api, i );
 					}
 				}
@@ -8114,9 +8132,9 @@
 	
 		if ( data === undefined ) {
 			// get
-			return ctx.length && this.length ?
-				ctx[0].aoData[ this[0] ]._details :
-				undefined;
+			return ctx.length && this.length && ctx[0].aoData[ this[0] ]
+				? ctx[0].aoData[ this[0] ]._details
+				: undefined;
 		}
 		else if ( data === true ) {
 			// show
@@ -9540,7 +9558,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.0.1";
+	DataTable.version = "2.0.2";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -12676,7 +12694,7 @@
 		};
 	
 		// prop is optional
-		if (! val) {
+		if (val === undefined) {
 			val = prop;
 			prop = null;
 		}
@@ -13335,7 +13353,7 @@
 		if (
 			buttonEls.length && // any buttons
 			opts.numbers > 1 && // prevent infinite
-			$(host).outerHeight() >= ($(buttonEls[0]).outerHeight() * 2) - 10
+			$(host).height() >= ($(buttonEls[0]).outerHeight() * 2) - 10
 		) {
 			_pagingDraw(settings, host, $.extend({}, opts, { numbers: opts.numbers - 2 }));
 		}
