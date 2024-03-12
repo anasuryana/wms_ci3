@@ -74,6 +74,7 @@
                                 <th>Amount</th>
                                 <th>(custom_no)</th>
                                 <th>(nopen)</th>
+                                <th>(custom_doc)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -110,7 +111,7 @@
         const date1 = document.getElementById('rrcvlist_ics_txt_dt2').value
         $.ajax({
             type: "GET",
-            url: "http://192.168.0.29:8080/ems-glue/api/ics/receive",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>"+"ics/receive",
             data: {
                 searchBy: searchby,
                 searchValue: search,
@@ -175,6 +176,9 @@
                     newcell = newrow.insertCell(16)
                     newcell.classList.add('text-center')
                     newcell.innerHTML = response.data[i].nopen
+                    newcell = newrow.insertCell(17)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = response.data[i].custom_doc
                 }
                 mydes.innerHTML = '';
                 mydes.appendChild(myfrag);
