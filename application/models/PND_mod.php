@@ -254,4 +254,11 @@ class PND_mod extends CI_Model
         $this->db->delete("PNDSER_TBL");
         return $this->db->affected_rows();
     }
+
+    public function delete_rm_by_filter($pwhere)
+    {
+        $this->db->where($pwhere);
+        $this->db->delete("PND_TBL");
+        return $this->db->affected_rows();
+    }
 }

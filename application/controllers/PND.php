@@ -420,7 +420,7 @@ class PND extends CI_Controller
         if ($this->PNDSCN_mod->check_Primary(['PNDSCN_DOC' => $doc, 'PNDSCN_ITMCD' => $itemcd, 'PNDSCN_LOTNO' => $itemlot])) {
             $myar = ['cd' => '0', 'msg' => 'Already scanned, please try delete scanning data first'];
         } else {
-            $this->PND_mod->deleteby_filter(['PND_DOC' => $doc, 'PND_ITMCD' => $itemcd, 'PND_ITMLOT' => $itemlot]);
+            $this->PND_mod->delete_rm_by_filter(['PND_DOC' => $doc, 'PND_ITMCD' => $itemcd, 'PND_ITMLOT' => $itemlot]);
             $myar = ['cd' => '1', 'msg' => 'OK'];
         }
         die(json_encode(['status' => $myar]));

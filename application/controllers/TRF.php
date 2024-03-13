@@ -13,6 +13,7 @@ class TRF extends CI_Controller
         $this->load->model('SERD_mod');
         $this->load->model('TRF_mod');
         $this->load->model('TRFSET_mod');
+        $this->load->model('XSTKTRND1_mod');
         date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
@@ -102,6 +103,11 @@ class TRF extends CI_Controller
     public function form_FG()
     {
         $this->load->view('wms/vtransfer_FG');
+    }
+
+    public function form_sync()
+    {
+        $this->load->view('wms/vsync_transfer');
     }
 
     public function form_setting()
