@@ -286,6 +286,7 @@
                 txtUSR_nmf_e.value = data[0]["MSTEMP_FNM"]
                 txtUSR_nml_e.value = data[0]["MSTEMP_LNM"]
                 user_cmb_active.checked = data[0]["MSTEMP_STS"]===1 ? true  : false
+                cmbGroup.value = data[0]["MSTEMP_GRP"]
             }
         }).on('deselect', function (e, dt, type, indexes) {
 
