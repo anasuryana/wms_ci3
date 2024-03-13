@@ -143,6 +143,8 @@
             return
         }
 
+        p.disabled = true
+        const div_alert = document.getElementById('div-alert')
         $.ajax({
             type: "POST",
             url: `<?=$_ENV['APP_INTERNAL_API']?>x-transfer/document`,
@@ -150,12 +152,13 @@
             dataType: "JSON",
             success: function (response) {
                 alertify.success(response.message)
+                p.disabled = false
+                div_alert.innerHTML = ``
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
                 p.disabled = false   
                 
-                const respon = Object.keys(xhr.responseJSON)
-                const div_alert = document.getElementById('div-alert')
+                const respon = Object.keys(xhr.responseJSON)                
                 let msg = ''
                 for (const item of respon) {
                     msg += `<p>${xhr.responseJSON[item]}</p>`
