@@ -9391,7 +9391,7 @@ class DELV extends CI_Controller
                     }
                 }
                 if (!$isfound) {
-                    if ($k['SISO_SOLINE'] == 'X' || $k['SSO2_BSGRP'] == 'PSI1PPZIEP') {
+                    if ($k['SISO_SOLINE'] == 'X' || ($k['SSO2_BSGRP'] == 'PSI1PPZIEP' && $k['SSO2_CUSCD']!='IEP001U') ) {
                         $k['PLOTQTY'] = $k['SCNQT'];
                     }
                 }
