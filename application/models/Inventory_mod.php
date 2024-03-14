@@ -208,6 +208,14 @@ class Inventory_mod extends CI_Model {
         $this->db->query($qry);
         return $this->db->affected_rows();
     }
+
+    public function delete_all_fg_ipapper()
+    {    
+        $qry = "TRUNCATE TABLE inventory_pappers";
+        $this->db->query($qry);
+        return $this->db->affected_rows();
+    }
+
     public function insert_fg_for_backup($period)
     {    
         $qry = "INSERT INTO INVENTORY_TBL SELECT cAssyNo,cLotNo,cQty,cModel,cJobNo,cRmk,Refno,cLoc,cDate,cPic,mstloc_grp,? FROM $this->TABLENAME";
