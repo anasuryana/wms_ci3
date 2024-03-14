@@ -44,6 +44,7 @@
                     <table id="sync_trf_tbl" class="table table-sm table-striped table-bordered table-hover">
                         <thead class="table-light">
                             <tr class="first text-center">
+                                <th>No.</th>
                                 <th>Item Code</th>
                                 <th>Item Name</th>
                                 <th>Description</th>
@@ -94,9 +95,12 @@
                     sync_trf_txt_issuedate.value = response.data[0].ISUDT
                     sync_trf_cmb_wh0.value = response.data[0].LOCCDFR
                     sync_trf_cmb_wh1.value = response.data[0].LOCCDTO
-
+                    let nomor = 1
                     response.data.forEach((arrayItem) => {
                         newrow = tableku2.insertRow(-1)
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-center')
+                        newcell.innerText = nomor++
                         newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-center')
                         newcell.innerText = arrayItem['ITMCD']
