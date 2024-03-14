@@ -245,6 +245,7 @@ class Inventory extends CI_Controller
         if ($cpin == 'MTHSMTMTH') {
             $this->Inventory_mod->insert_fg_for_backup($currrtime);
             $this->Inventory_mod->delete_all_fg();
+            $this->Inventory_mod->delete_all_fg_ipapper();
             $myar[] = ['cd' => 1, 'msg' => 'OK, please refresh'];
         } else {
             $myar[] = ['cd' => 0, 'msg' => 'PIN is not valid'];
