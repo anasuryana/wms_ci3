@@ -189,14 +189,18 @@ class TRF extends CI_Controller
 
             $isStockEnough = true;
             foreach ($RSResume as $r) {
-                foreach ($RSStock as $s) {
-                    if ($r['ITEMCD'] === $s['ITH_ITMCD'] && $s['SQT'] < $r['ITEMQT']) {
-                        $isStockEnough = false;
-                        $response[] = ['cd' => '0', 'msg' => 'Stock is not enough for ' . $s['ITH_ITMCD']];
+                if($RSStock) {
+                    foreach ($RSStock as $s) {
+                        if ($r['ITEMCD'] === $s['ITH_ITMCD'] && $s['SQT'] < $r['ITEMQT']) {
+                            $isStockEnough = false;
+                            $response[] = ['cd' => '0', 'msg' => 'Stock is not enough for ' . $s['ITH_ITMCD']];
+                        }
                     }
-                }
-                if (!$isStockEnough) {
-                    break;
+                    if (!$isStockEnough) {
+                        break;
+                    }
+                } else {
+                    $response[] = ['cd' => '0', 'msg' => 'Stock is not enough for ' . $r['ITEMCD']];
                 }
             }
             if ($isStockEnough) {
