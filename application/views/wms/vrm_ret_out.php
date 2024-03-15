@@ -415,7 +415,7 @@ echo $todis;
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="retrm_out_it_limbah_barang" role="tabpanel" aria-labelledby="scr-tab">
+                    <div class="tab-pane fade" id="retrm_out_it_limbah_barang" role="tabpanel" aria-labelledby="limbah-tab">
                         <div class="container-fluid">
                             <div class="row mt-1">
                                 <div class="col-md-6 mb-1">
@@ -445,6 +445,22 @@ echo $todis;
                                             </tbody>
                                         </table>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="retrm_out_it_limbah_bahan_baku" role="tabpanel" aria-labelledby="limbah-bb-tab">
+                        <div class="container-fluid">
+                            <div class="row mt-1">
+                                <div class="col-md-12">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-primary" id="retrm_out_inc_btn_save_limbah_bb" onclick="retrm_out_inc_btn_save_limbah_bb_e_click(this)">Save Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="col-md-12 table-responsive">
+                                    <div id="retrm_out_ss_limbah_bb_container"></div>
                                 </div>
                             </div>
                         </div>
@@ -2147,10 +2163,10 @@ echo $tohtml;
 
     function retrm_out_inc_btncopyFromResume_eCK() {
         let mtbl = document.getElementById('retrm_out_donprc_tbl')
-        let tableku2 = mtbl.getElementsByTagName("tbody")[0]        
+        let tableku2 = mtbl.getElementsByTagName("tbody")[0]
         let mtbltr = tableku2.getElementsByTagName('tr')
         let ttlrows = mtbltr.length
-        
+
         const tbodyResume =  retrm_out_inc_tbl.getElementsByTagName("tbody")[0]
         const ttlRowsResume = tbodyResume.getElementsByTagName('tr').length
 
@@ -3644,6 +3660,7 @@ echo $tohtml;
         $("#retrm_out_MODSAVED").modal('hide')
         document.getElementById('retrm_out_div_infoAfterPost').innerHTML = ''
         retrm_out_f_getdetail(mrow.ctxid)
+        retrm_get_detail_limbah()
     }
     $("#retrm_out_MODSAVED").on('shown.bs.modal', function() {
         document.getElementById('retrm_out_txtxtsearch').focus()
@@ -5398,6 +5415,217 @@ echo $tohtml;
                 pThis.innerHTML = `Re-link IT Inventory`
                 pThis.disabled = false
                 alert(throwError);
+            }
+        });
+    }
+
+    var retrm_sso_limbah_bb = jspreadsheet(retrm_out_ss_limbah_bb_container, {
+        data: [,],
+        columns: [
+            {
+                type: 'text',
+                title:'id',
+                width:1,
+                align: 'left',
+                readOnly : true
+            },
+            {
+                type: 'text',
+                title:'Nama Barang',
+                width:100,
+                align: 'left'
+            },
+            {
+                type: 'text',
+                title:'Kode Barang',
+                width:100,
+                align: 'left'
+            },
+            {
+                type: 'numeric',
+                title:'Qty',
+                mask: '#,##.00',
+                width:100,
+                align: 'right'
+            },
+            {
+                type: 'text',
+                title:'Satuan',
+                width:130,
+                align: 'left'
+            },
+            {
+                type: 'numeric',
+                title:'Berat Bersih',
+                mask: '#,##.00',
+                width:100,
+                align: 'right'
+            },
+            {
+                type: 'text',
+                title:'BC Type',
+                width:100,
+                align: 'center'
+            },
+            {
+                type: 'text',
+                title:'Nomor Aju',
+                width:100,
+                align: 'left'
+            },
+            {
+                type: 'text',
+                title:'Nomor Pendaftaran',
+                width:130,
+                align: 'center',
+            },
+            {
+                type: 'text',
+                title:'Tanggal Pendaftaran',
+                width:130,
+                align: 'center',
+            },
+            {
+                type: 'numeric',
+                title:'Seri Barang Asal',
+                width:130,
+                align: 'center',
+            },
+            {
+                type: 'numeric',
+                title:'Remark',
+                width:130,
+                align: 'center',
+            },
+
+        ],
+    });
+
+    function retrm_out_inc_btn_save_limbah_bb_e_click(p) {
+        const documentNo = retrm_out_inc_txt_DO.value
+        if(documentNo.length === 0) {
+            retrm_out_inc_txt_DO.focus()
+            alertify.warning('Please save document first')
+            return
+        }
+
+        let datanya_RM = retrm_sso_limbah_bb.getData()
+        let dataList = datanya_RM.filter((data) => data[1].length > 1)
+        let NamaBarang = []
+        let KodeBarang = []
+        let Qty = []
+        let Satuan = []
+        let BeratBersih = []
+        let BCType = []
+        let NomorAju = []
+        let NomorPendaftaran = []
+        let TanggalPendaftaran = []
+        let SeriBarangAsal = []
+        let Remark = []
+
+        dataList.forEach((arrayItem) => {
+            let _NamaBarang = arrayItem[1].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            let _KodeBarang = arrayItem[2].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            Qty.push(arrayItem[3])
+            let _Satuan = arrayItem[4].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            BeratBersih.push(arrayItem[5])
+            let _BCType = arrayItem[6].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            let _NomorAju = arrayItem[7].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            let _NomorPendaftaran = arrayItem[8].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            let _TanggalPendaftaran = arrayItem[9].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            SeriBarangAsal.push(arrayItem[10])
+            let _Remark = arrayItem[11].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+
+            NamaBarang.push(_NamaBarang)
+            KodeBarang.push(_KodeBarang)
+            Satuan.push(_Satuan)
+            BCType.push(_BCType)
+            NomorAju.push(_NomorAju)
+            NomorPendaftaran.push(_NomorPendaftaran)
+            TanggalPendaftaran.push(_TanggalPendaftaran)
+            Remark.push(_Remark)
+        })
+
+        if(NamaBarang.length === 0) {
+            alertify.warning('there is no data to be saved')
+            return
+        }
+
+        const data = {
+            document : retrm_out_inc_txt_DO.value,
+            userId : uidnya,
+            NamaBarang: NamaBarang,
+            KodeBarang: KodeBarang,
+            Qty: Qty,
+            Satuan: Satuan,
+            BeratBersih: BeratBersih,
+            BCType: BCType,
+            NomorAju: NomorAju,
+            NomorPendaftaran: NomorPendaftaran,
+            TanggalPendaftaran: TanggalPendaftaran,
+            SeriBarangAsal: SeriBarangAsal,
+            Remark: Remark,
+        }
+
+        if(!confirm("Are you sure ?")) {
+            return
+        }
+        p.disabled = true
+        const div_alert = document.getElementById('retrm_out_div_infoAfterPost')
+        $.ajax({
+            type: "POST",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>delivery/limbah",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                p.disabled = false
+                retrm_get_detail_limbah()
+            }, error: function(xhr, ajaxOptions, throwError) {
+                p.disabled = false
+
+                const respon = Object.keys(xhr.responseJSON)
+
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${msg}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                alertify.warning(xthrow);
+            }
+        });
+    }
+
+    function retrm_get_detail_limbah() {
+        const documentNo = retrm_out_inc_txt_DO.value.trim()
+        $.ajax({
+            type: "GET",
+            url: `<?=$_ENV['APP_INTERNAL_API']?>delivery/limbah/${btoa(documentNo)}`,
+            dataType: "json",
+            success: function (response) {
+                let datanya = []
+                response.data.forEach((arrayItem) => {
+                    datanya.push([
+                        arrayItem['DLVSCR_BB_LINE'],
+                        arrayItem['DLVSCR_BB_ITMD1'],
+                        arrayItem['DLVSCR_BB_ITMID'],
+                        arrayItem['DLVSCR_BB_ITMQT'],
+                        arrayItem['DLVSCR_BB_ITMUOM'],
+                        arrayItem['DLVSCR_BB_ITMNW'],
+                        arrayItem['DLVSCR_BB_BCTYPE'],
+                        arrayItem['DLVSCR_BB_AJU'],
+                        arrayItem['DLVSCR_BB_NOPEN'],
+                        arrayItem['DLVSCR_BB_TGLPEN'],
+                        arrayItem['DLVSCR_BB_BCURUT'],
+                        arrayItem['DLVSCR_BB_REMARK'],
+                    ])
+                })
+                retrm_sso_limbah_bb.setData(datanya)
+            }, error: function(xhr, ajaxOptions, throwError) {
+                p.disabled = false
             }
         });
     }
