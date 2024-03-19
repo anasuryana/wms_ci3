@@ -1,3 +1,14 @@
+<style>
+    thead tr.first th, thead tr.first td {
+        position: sticky;
+        top: 0;
+    }
+
+    thead tr.second th, thead tr.second td {
+        position: sticky;
+        top: 26px;
+    }
+</style>
 <div style="padding: 10px">
     <div class="container-fluid">        
         <div class="row">
@@ -76,7 +87,7 @@
                 <div class="table-responsive" id="routgoing_wh_divku">
                     <table id="routgoing_wh_tbl" class="table table-striped table-bordered table-sm table-hover" style="font-size:75%">
                         <thead class="table-light">
-                            <tr>
+                            <tr class="first">
                                 <th  class="align-middle">Assy Code</th>
                                 <th  class="align-middle">Model</th>
                                 <th  class="align-middle">SI</th>
