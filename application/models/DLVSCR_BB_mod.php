@@ -1,6 +1,6 @@
 <?php
 
-class DLVSCR_mod extends CI_Model {
+class DLVSCR_BB_mod extends CI_Model {
 	private $TABLENAME = "DLVSCR_BB_TBL";
 	public function __construct()
     {

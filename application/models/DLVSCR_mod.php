@@ -37,8 +37,10 @@ class DLVSCR_mod extends CI_Model {
         return $this->db->affected_rows();
     }
 
-    function select_where($pwhere) {        
-        $this->db->from($this->TABLENAME);        
+    function select_where($columns, $pwhere) {
+        $this->db->select($columns);
+        $this->db->from($this->TABLENAME);
+        $this->db->join("MITM_TBL", "DLVSCR_ITMID=MITM_ITMCD", "LEFT");
         $this->db->where($pwhere);
 		$query = $this->db->get();
 		return $query->result_array();

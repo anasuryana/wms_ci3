@@ -459,7 +459,7 @@ echo $todis;
                                 </div>
                             </div>
                             <div class="row mt-1">
-                                <div class="col-md-12 table-responsive">
+                                <div class="col-md-12 table-responsive" id="retrm_out_limbah_bb_container">
                                     <div id="retrm_out_ss_limbah_bb_container"></div>
                                 </div>
                             </div>
@@ -1731,6 +1731,9 @@ echo $tohtml;
     </div>
 </div>
 <script>
+    $("#retrm_out_limbah_bb_container").css('height', $(window).height() -        
+        400);
+
     var retrm_out_inc_selected_table = ''
     var retrm_out_inc_selected_row = ''
     var retrm_out_inc_selected_col = ''
@@ -3513,6 +3516,7 @@ echo $tohtml;
             retrm_out_donprc_fifo.disabled = true
             retrm_out_donprc_tbl_add.disabled = true
             retrm_out_so_tbl_add.disabled = true
+            retrm_out_inc_btn_save_limbah_bb.disabled = true
         } else {
             retrm_out_btn_save.disabled = false
             retrm_out_inc_btnfindmodcust.disabled = false
@@ -3532,6 +3536,7 @@ echo $tohtml;
             retrm_out_donprc_fifo.disabled = false
             retrm_out_donprc_tbl_add.disabled = false
             retrm_out_so_tbl_add.disabled = false
+            retrm_out_inc_btn_save_limbah_bb.disabled = false
         }
 
         document.getElementById("retrm_out_inc_txt_DO").focus()
@@ -5470,7 +5475,7 @@ echo $tohtml;
             {
                 type: 'text',
                 title:'Nomor Aju',
-                width:100,
+                width:190,
                 align: 'left'
             },
             {
@@ -5494,6 +5499,30 @@ echo $tohtml;
             {
                 type: 'numeric',
                 title:'Remark',
+                width:130,
+                align: 'center',
+            },
+            {
+                type: 'text',
+                title:'HSCODE',
+                width:130,
+                align: 'center',
+            },
+            {
+                type: 'text',
+                title:'Kode Kantor',
+                width:130,
+                align: 'center',
+            },
+            {
+                type: 'text',
+                title:'Mata Uang',
+                width:130,
+                align: 'center',
+            },
+            {
+                type: 'numeric',
+                title:'Harga',
                 width:130,
                 align: 'center',
             },
@@ -5522,6 +5551,10 @@ echo $tohtml;
         let TanggalPendaftaran = []
         let SeriBarangAsal = []
         let Remark = []
+        let HSCode = []
+        let KodeKantor = []
+        let MataUang = []
+        let Harga = []
 
         dataList.forEach((arrayItem) => {
             let _NamaBarang = arrayItem[1].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
@@ -5535,6 +5568,10 @@ echo $tohtml;
             let _TanggalPendaftaran = arrayItem[9].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
             SeriBarangAsal.push(arrayItem[10])
             let _Remark = arrayItem[11].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            let _HSCode = arrayItem[12].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            let _KodeKantor = arrayItem[13].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            let _MataUang = arrayItem[14].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            let _Harga = arrayItem[15].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
 
             NamaBarang.push(_NamaBarang)
             KodeBarang.push(_KodeBarang)
@@ -5544,6 +5581,10 @@ echo $tohtml;
             NomorPendaftaran.push(_NomorPendaftaran)
             TanggalPendaftaran.push(_TanggalPendaftaran)
             Remark.push(_Remark)
+            HSCode.push(_HSCode)
+            KodeKantor.push(_KodeKantor)
+            MataUang.push(_MataUang)
+            Harga.push(_Harga)
         })
 
         if(NamaBarang.length === 0) {
@@ -5565,6 +5606,10 @@ echo $tohtml;
             TanggalPendaftaran: TanggalPendaftaran,
             SeriBarangAsal: SeriBarangAsal,
             Remark: Remark,
+            HSCODE: HSCode,
+            KodeKantor: KodeKantor,
+            MataUang: MataUang,
+            Harga: Harga,
         }
 
         if(!confirm("Are you sure ?")) {
@@ -5621,6 +5666,10 @@ echo $tohtml;
                         arrayItem['DLVSCR_BB_TGLPEN'],
                         arrayItem['DLVSCR_BB_BCURUT'],
                         arrayItem['DLVSCR_BB_REMARK'],
+                        arrayItem['DLVSCR_BB_HSCD'],
+                        arrayItem['DLVSCR_BB_KODE_KANTOR'],
+                        arrayItem['DLVSCR_BB_MATA_UANG'],
+                        arrayItem['DLVSCR_BB_ZPRPRC'],
                     ])
                 })
                 retrm_sso_limbah_bb.setData(datanya)
