@@ -61,7 +61,7 @@ class DELV extends CI_Controller
         $this->load->model('DisposeDraft_mod');
         $this->load->model('ZRPSCRAP_HIST_mod');
         $this->load->model('POSTING_mod');
-        $this->load->model(['CSMLOG_mod', 'DLVH_mod', 'RPSAL_BCSTOCK_mod', 'WMS_DLVCHK_mod']);
+        $this->load->model(['CSMLOG_mod', 'DLVH_mod', 'RPSAL_BCSTOCK_mod', 'WMS_DLVCHK_mod', 'DLVSCR_BB_mod']);
         $this->load->model('refceisa/TPB_HEADER_imod');
         $this->load->model('refceisa/TPB_KEMASAN_imod');
         $this->load->model('refceisa/TPB_DOKUMEN_imod');
@@ -1847,7 +1847,7 @@ class DELV extends CI_Controller
             $rsRMFromSO = $this->DLVRMSO_mod->select_where([
                 'DLVRMSO_TXID', 'DLVRMSO_ITMID', 'DLVRMSO_ITMQT', 'DLVRMSO_CPO', 'DLVRMSO_CPOLINE', 'DLVRMSO_PRPRC', 'DLVRMSO_LINE',
             ], ['DLVRMSO_TXID' => $cid]);
-            $rsscr = $this->DLVSCR_mod->select_where(['DLVSCR_TXID' => $cid]);
+            $rsscr = $this->DLVSCR_mod->select_where(['*'],['DLVSCR_TXID' => $cid]);
             die(json_encode([
                 'data' => $rs, 'data_rmdo' => $rsRMFromDO, 'data_pkg' => $rspkg, 'data_rmso' => $rsRMFromSO, 'data_scr' => $rsscr,
             ]));
@@ -15422,14 +15422,14 @@ class DELV extends CI_Controller
                 }
             }
 
-            if (empty($Packagings) || !empty($validationResult)) {
-                $respon = [
-                    'message' => 'please fill packaging form properly',
-                    $validationResult,
-                ];
-                $this->output->set_status_header(400);
-                die(json_encode($respon));
-            }
+            // if (empty($Packagings) || !empty($validationResult)) {
+            //     $respon = [
+            //         'message' => 'please fill packaging form properly',
+            //         $validationResult,
+            //     ];
+            //     $this->output->set_status_header(400);
+            //     die(json_encode($respon));
+            // }
 
             $NomorAju = null;
             $TujuanPengiriman = null;
@@ -15699,6 +15699,440 @@ class DELV extends CI_Controller
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
+        }
+        $respon = [
+            'message' => $message,
+            // 'data' => $data,
+            'Apirespon' => $responApi,
+        ];
+        die(json_encode($respon));
+    }
+
+    public function postingCEISA40BC25rm()
+    {
+        header('Content-Type: application/json');
+        $doc = $this->input->post('doc');
+        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 
+        'DLV_BCDATE', 
+        'RTRIM(ISNULL(MCUS_CURCD,MSUP_SUPCR)) MCUS_CURCD', 
+        'DLV_ZNOMOR_AJU', 
+        'DLV_PURPOSE', 
+        'DLV_ITMCD',
+        ], ['DLV_ID' => $doc]);
+        $data = [];
+        $message = null;
+        $isScrapItem = false;
+        $NDPBM = 0;
+       
+        $itemCodeBarang = '';
+        foreach ($RSHeader as $r) {
+            $ccustdate = $r['DLV_BCDATE'];
+            $czcurrency = $r['MCUS_CURCD'];
+            $NomorAju = $r['DLV_ZNOMOR_AJU'];
+            $TujuanPengiriman = $r['DLV_PURPOSE'];
+            $itemCodeBarang = $r['DLV_ITMCD'];
+            if(str_contains($r['DLV_ITMCD'], 'SCRAP')) {
+                $isScrapItem = true;
+            }
+        }
+        
+        $TPBData = $this->TPB_HEADER_imod->select_where(
+            ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
+            ['NOMOR_AJU' => $NomorAju]
+        );
+        if (!empty($TPBData)) {
+            $message = 'Already exist in TPB';
+            // if (empty($TPBData)) {
+            //     $message = 'Please posting to TPB first';
+        } else {
+            $netweight_represent = 0;
+            $JumlahKemasan = 0;
+            $Netto = 0;
+            $Brutto = 0;
+            $Packagings = $this->DELV_mod->select_pkg($doc);
+
+            $validationResult = [];
+
+            $index = 1;
+            foreach ($Packagings as $r) {
+                if ($r['DLV_PKG_NWG'] == 0) {
+                    $validationResult[] = 'Net weight [' . $index++ . '] should not be zero';
+                }
+                if ($r['DLV_PKG_GWG'] == 0) {
+                    $validationResult[] = 'Gross weight [' . $index++ . '] should not be zero';
+                }
+
+                if ($r['DLV_PKG_NWG'] > 0) {
+                    $netweight_represent = $r['DLV_PKG_NWG'];
+                    $Brutto += $r['DLV_PKG_GWG'];
+                    $Netto += $r['DLV_PKG_NWG'];
+                }
+
+                if ($r['DLV_PKG_MEASURE']) {
+                    $initialCodePKG = strpos(strtoupper($r['DLV_PKG_MEASURE']), 'PALLET') !== false ? 'PX' : 'BX';
+                    $JumlahKemasan++;
+                }
+            }
+
+            if (empty($Packagings) || !empty($validationResult)) {
+                $respon = [
+                    'message' => 'please fill packaging form properly',
+                    $validationResult,
+                ];
+                $this->output->set_status_header(400);
+                die(json_encode($respon));
+            }
+
+            # validasi apakah Nomor Aju sudah ada di CEISA4.0
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+            $responApiObj = json_decode($responApi->body);
+            if ($responApiObj->dataOri->message === 'sucess') {
+                $respon = [
+                    'message' => 'already in CEISA 4.0, please check',
+                    '$responApi' => $responApi,
+                ];
+                $this->output->set_status_header(409);
+                die(json_encode($respon));
+            }
+            # akhir validasi
+
+            # validasi exchange rate
+            
+            $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
+            if (count($rscurr) == 0) {
+                $myar[] = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
+                $this->output->set_status_header(409);
+                die('{"status":' . json_encode($myar) . '}');
+            } else {
+                foreach ($rscurr as $r) {
+                    if ($czcurrency === 'RPH') {
+                        $czharga_matauang = 1;
+                        $NDPBM = $r->MEXRATE_VAL;
+                    } else {
+                        $czharga_matauang = $r->MEXRATE_VAL;
+                    }
+                    break;
+                }
+            }
+            # akhir validasi
+
+            $tpb_bahan_baku = [];
+           
+            $IncDateList = [];
+            $IncCRList = []; #Currency
+            $IncDateCR_FLGList = []; #Currency
+            $tpb_barang = [];
+
+            if($isScrapItem) {
+                
+                $rs_xbc = $this->DLVSCR_BB_mod->select_where(['DLVSCR_BB_TXID' => $doc]);
+                $Barang = $this->DLVSCR_mod->select_where([
+                    'RTRIM(MITM_ITMCD) MITM_ITMCD',
+                    'RTRIM(MITM_ITMD1) MITM_ITMD1',
+                    'RTRIM(MITM_STKUOM) MITM_STKUOM',
+                    'DLVSCR_ITMQT',
+                    'DLVSCR_PRPRC',
+                    'MITM_BM',
+                    'RTRIM(MITM_HSCD) MITM_HSCD',
+                ],
+                    ['DLVSCR_TXID' => $doc]);
+                $noSeriBB = 1;
+
+                $SeriBarang = 1;
+                $_cifBarang = 0;
+                foreach($Barang as $r) {
+                    $_cifBarang = $r['DLVSCR_PRPRC'];
+                    $tpb_barang[] = [
+                        'KODE_BARANG' => $r['MITM_ITMCD'],
+                        'POS_TARIF' => $r['MITM_HSCD'],
+                        'URAIAN' => $r['MITM_ITMD1'],
+                        'TIPE' => '',
+                        'JUMLAH_SATUAN' => $r['DLVSCR_ITMQT'],
+                        'KODE_SATUAN' => $r['MITM_STKUOM'],
+                        'NETTO' => $SeriBarang == 1 ? $netweight_represent : 0,
+                        'CIF' => $_cifBarang,
+                        'HARGA_PENYERAHAN' => $_cifBarang,
+                        'SERI_BARANG' => $SeriBarang,
+                        'KODE_STATUS' => '02',
+                        'JUMLAH_BAHAN_BAKU' => count($tpb_bahan_baku),                        
+                        'SPESIFIKASI_LAIN' => null,
+                        'JUMLAH_KEMASAN' => 1,
+                        'RBM' => $r['MITM_BM'],
+                        'CURRENCY' => 'RPH',
+                        'BRUTO' => $r['DLVSCR_ITMQT']+1,
+                        'KODE_GUNA' => '0',
+                        'KODE_KEMASAN' => 'BX'
+                    ];
+                }
+                
+                foreach($rs_xbc as $r) {
+                    $tpb_bahan_baku[] = [
+                        'KODE_JENIS_DOK_ASAL' => $r['DLVSCR_BB_BCTYPE'],
+                        'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVSCR_BB_NOPEN'],
+                        'TANGGAL_DAFTAR_DOK_ASAL' => $r['DLVSCR_BB_TGLPEN'],
+                        'KODE_KANTOR' => '-',
+                        'NOMOR_AJU_DOK_ASAL' => $r['DLVSCR_BB_AJU'],
+                        'SERI_BARANG_DOK_ASAL' => $r['DLVSCR_BB_BCURUT'],
+                        'SPESIFIKASI_LAIN' => null,
+                        'CIF' => 0,
+                        'HARGA_PENYERAHAN' => 0,
+                        'KODE_BARANG' => $r['DLVSCR_BB_ITMID'] ?? '-',
+                        'KODE_STATUS' => "03",
+                        'POS_TARIF' => $r['DLVSCR_BB_HSCD'],
+                        'URAIAN' => $r['DLVSCR_BB_ITMD1'],
+                        'TIPE' => '-',
+                        'JUMLAH_SATUAN' => $r['DLVSCR_BB_ITMQT'],
+                        'SERI_BAHAN_BAKU' => $noSeriBB++,
+                        'JENIS_SATUAN' => ($r['DLVSCR_BB_ITMUOM'] == 'PCS') ? 'PCE' : $r['DLVSCR_BB_ITMUOM'],
+                        'KODE_ASAL_BAHAN_BAKU' => (in_array($r['DLVSCR_BB_BCTYPE'], ['27', '23'])) ? '0' : '1',
+                        'RBM' => 0,
+                        'CURRENCY' => $r['DLVSCR_BB_MATA_UANG'],
+                        'PPN' => 11, //bu gusti, terkait peraturan 1 april
+                        'RASSYCODE' => $itemCodeBarang,
+                        'RPRICEGROUP' => $_cifBarang,
+                        'NDPBM' => (float) $NDPBM
+                    ];
+
+                    $IncDateList[] = $r['DLVSCR_BB_TGLPEN'];
+                    $IncCRList[] = $r['DLVSCR_BB_MATA_UANG'];
+                }
+
+                
+
+            } else {
+                $rs_do = $this->DELV_mod->select_for_do_rm_rtn_v1($doc);
+                $rs_xbc = $this->RCV_mod->select_for_rmrtn_bytxid($doc);
+                foreach ($rs_do as $r) {
+                    $r['PLOTQT'] = 0;
+                    foreach ($rs_xbc as &$x) {
+                        if (
+                            $r['DLVRMDOC_ITMID'] == $x['RCV_ITMCD']
+                            && $r['DLVRMDOC_AJU'] == $x['RCV_RPNO']
+                            && $r['DLVRMDOC_DO'] == $x['RCV_DONO']
+                            && $x['RCV_QTY'] > 0
+                            && $r['PLOTQT'] != $r['DLVRMDOC_ITMQT']
+                        ) {
+                            $reqbal = $r['DLVRMDOC_ITMQT'] - $r['PLOTQT'];
+                            $useqt = 0;
+                            if ($reqbal > $x['RCV_QTY']) {
+                                $useqt = $x['RCV_QTY'];
+                                $r['PLOTQT'] += $x['RCV_QTY'];
+                                $x['RCV_QTY'] = 0;
+                            } else {
+                                $useqt = $reqbal;
+                                $r['PLOTQT'] += $reqbal;
+                                $x['RCV_QTY'] -= $reqbal;
+                            }
+                            $thecif = number_format($x['RCV_PRPRC'] * $useqt, 2, ".", "");
+                            $tpb_bahan_baku[] = [
+                                'KODE_JENIS_DOK_ASAL' => $x['RCV_BCTYPE'],
+                                'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVRMDOC_NOPEN'],
+                                'TANGGAL_DAFTAR_DOK_ASAL' => $x['RCV_BCDATE'],
+                                'KODE_KANTOR' => $x['RCV_KPPBC'],
+                                'NOMOR_AJU_DOK_ASAL' => strlen($r['DLVRMDOC_AJU']) == 6 ? substr('000000000000000000000000', 0, 26) : $r['DLVRMDOC_AJU'],
+                                'SERI_BARANG_DOK_ASAL' => empty($x['RCV_ZNOURUT']) ? 0 : $x['RCV_ZNOURUT'],
+                                'SPESIFIKASI_LAIN' => null,
+                                'CIF' => $thecif,
+                                'HARGA_PENYERAHAN' => 0,
+                                'KODE_BARANG' => $r['DLVRMDOC_ITMID'],
+                                'KODE_STATUS' => "03",
+                                'POS_TARIF' => $x['RCV_HSCD'],
+                                'URAIAN' => rtrim($r['DLV_ITMD1']),
+                                'TIPE' => empty($r['DLV_ITMSPTNO']) ? '-' : $r['DLV_ITMSPTNO'],
+                                'JUMLAH_SATUAN' => $useqt,
+                                'SERI_BAHAN_BAKU' => 1,
+                                'JENIS_SATUAN' => ($r['MITM_STKUOM'] == 'PCS') ? 'PCE' : $r['MITM_STKUOM'],
+                                'KODE_ASAL_BAHAN_BAKU' => ($x['RCV_BCTYPE'] == '27' || $x['RCV_BCTYPE'] == '23') ? '0' : '1',
+                                'RBM' => $x['RCV_BM'] * 1,
+                                'CURRENCY' => $x['MSUP_SUPCR'],
+                                'PPN' => 11, //bu gusti, terkait peraturan 1 april
+                                'RASSYCODE' => $r['DLVRMDOC_ITMID'],
+                                'RPRICEGROUP' => $thecif,
+                            ];
+                            $IncDateList[] = $x['RCV_BCDATE'];
+                            $IncCRList[] = $x['MSUP_SUPCR'];
+                            $IncDateCR_FLGList[] = 0;
+                            if ($r['DLVRMDOC_ITMQT'] == $r['PLOTQT']) {
+                                break;
+                            }
+                        }
+                    }
+                    unset($x);
+                }
+                unset($r);
+            }
+
+            
+            $no = 1;
+            $rscurr = $this->MEXRATE_mod->selectfor_posting_in($IncDateList, $IncCRList);
+            $listcount = count($IncDateCR_FLGList);
+            foreach ($rscurr as $r) {
+                for ($i = 0; $i < $listcount; $i++) {
+                    if ($r->MEXRATE_CURR == $IncCRList[$i] && $r->MEXRATE_DT == $IncDateList[$i]) {
+                        $IncDateCR_FLGList[$i] = 1;
+                    }
+                }
+            }
+
+            # validasi exchange rate for incoming date
+            for ($i = 0; $i < $listcount; $i++) {
+                if ($IncDateCR_FLGList[$i] == 0) {
+                    $dar = ["cd" => "0", "msg" => "Please fill exchange rate data for " . $IncCRList[$i] . " on " . $IncDateList[$i] . " !"];
+                    $myar[] = $dar;
+                    die('{"status":' . json_encode($myar) . '}');
+                }
+            }
+            # akhir validasi
+           
+            $SeriBarang = 1;
+
+            foreach ($tpb_bahan_baku as &$r) {
+                if ($TujuanPengiriman != '7') {
+                    foreach ($rscurr as $c) {
+                        if ($r['CURRENCY'] == $c->MEXRATE_CURR && $r['TANGGAL_DAFTAR_DOK_ASAL'] == $c->MEXRATE_DT) {
+                            if ($c->MEXRATE_CURR == 'RPH') {
+                                $czharga_matauang = 1;
+                            } else {
+                                $czharga_matauang = $c->MEXRATE_VAL;
+                            }
+                            break;
+                        }
+                    }
+                }
+                $r['HARGA_PENYERAHAN'] = $r['CIF'] * $czharga_matauang;
+                if(!$isScrapItem) {
+                    $tpb_barang[] = [
+                        'KODE_BARANG' => $r['KODE_BARANG'],
+                        'POS_TARIF' => $r['POS_TARIF'],
+                        'URAIAN' => $r['URAIAN'],
+                        'TIPE' => $r['TIPE'],
+                        'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN'],
+                        'KODE_SATUAN' => $r['JENIS_SATUAN'],
+                        'NETTO' => $SeriBarang == 1 ? $netweight_represent : 0,
+                        'CIF' => 1,
+                        'HARGA_PENYERAHAN' => $r['CIF'] * $czharga_matauang,
+                        'SERI_BARANG' => $SeriBarang,
+                        'KODE_STATUS' => '02',
+                        'JUMLAH_BAHAN_BAKU' => 1,
+                        'KODE_JENIS_DOK_ASAL' => $r['KODE_JENIS_DOK_ASAL'],
+                        'NOMOR_DAFTAR_DOK_ASAL' => $r['NOMOR_DAFTAR_DOK_ASAL'],
+                        'TANGGAL_DAFTAR_DOK_ASAL' => $r['TANGGAL_DAFTAR_DOK_ASAL'],
+                        'KODE_KANTOR' => $r['KODE_KANTOR'],
+                        'NOMOR_AJU_DOK_ASAL' => $r['NOMOR_AJU_DOK_ASAL'],
+                        'SERI_BARANG_DOK_ASAL' => $r['SERI_BARANG_DOK_ASAL'],
+                        'KODE_STATUS' => $r['KODE_STATUS'],
+                        'SERI_BAHAN_BAKU' => 1,
+                        'JENIS_SATUAN' => $r['JENIS_SATUAN'],
+                        'KODE_ASAL_BAHAN_BAKU' => $r['KODE_ASAL_BAHAN_BAKU'],
+                        'SPESIFIKASI_LAIN' => null,
+                        'JUMLAH_KEMASAN' => 1,
+                        'RBM' => $r['RBM'],
+                        'CURRENCY' => $r['CURRENCY']
+                    ];
+                }
+                $r['SERI_BARANG'] = $SeriBarang;
+                $SeriBarang++;
+            }
+            unset($r);
+
+            $cz_h_CIF_FG = 0;
+            $cz_h_HARGA_PENYERAHAN_FG = 0;
+            $cz_h_JUMLAH_BARANG = count($tpb_barang);
+            foreach ($tpb_barang as $r) {
+                $cz_h_CIF_FG += $r['CIF'];
+                $cz_h_HARGA_PENYERAHAN_FG += $r['HARGA_PENYERAHAN'];
+            }
+            
+
+            # Isi nilai BAKU TARIF
+            $tpb_bahan_baku_tarif = [];
+            foreach ($tpb_bahan_baku as &$r) {
+                $tpb_bahan_baku_tarif = [
+                    [
+                        'JENIS_TARIF' => 'BM',
+                        'KODE_TARIF' => 1,
+                        'NILAI_BAYAR' => 0,
+                        'NILAI_FASILITAS' => 0,
+                        'KODE_FASILITAS' => 3,
+                        'TARIF_FASILITAS' => 100,
+                        'TARIF' => $r['RBM'],
+                        'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'],
+                        'RITEMCD' => $r['KODE_BARANG'],
+                        'RITEMQT' => $r['JUMLAH_SATUAN'],
+                    ], [
+                        'JENIS_TARIF' => 'PPN',
+                        'KODE_TARIF' => 1,
+                        'NILAI_BAYAR' => 0,
+                        'NILAI_FASILITAS' => 0,
+                        'KODE_FASILITAS' => 3,
+                        'TARIF_FASILITAS' => 100,
+                        'TARIF' => $r['PPN'],
+                        'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'],
+                        'RITEMCD' => $r['KODE_BARANG'],
+                        'RITEMQT' => $r['JUMLAH_SATUAN'],
+                    ], [
+                        'JENIS_TARIF' => 'PPH',
+                        'KODE_TARIF' => 1,
+                        'NILAI_BAYAR' => 0,
+                        'NILAI_FASILITAS' => 0,
+                        'KODE_FASILITAS' => 3,
+                        'TARIF_FASILITAS' => 100,
+                        'TARIF' => 2.5,
+                        'SERI_BAHAN_BAKU' => $r['SERI_BAHAN_BAKU'],
+                        'RITEMCD' => $r['KODE_BARANG'],
+                        'RITEMQT' => $r['JUMLAH_SATUAN'],
+                    ],
+                ];
+                $r['tarif'] = $tpb_bahan_baku_tarif;
+            }
+            unset($r);
+            # akhir isi
+
+            $rsaktivasi = $this->AKTIVASIAPLIKASI_imod->selectAll();
+            $czizinpengusaha = '';
+            foreach ($rsaktivasi as $r) {
+                $czizinpengusaha = $r['NOMOR_SKEP'];
+            }
+
+            
+            foreach ($tpb_barang as &$n) {
+                $tpb_barang_tarif = [
+                    [
+                        'JENIS_TARIF' => 'BM', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => $n['RBM'], 'TARIF_FASILITAS' => 100,
+                    ],
+                    [
+                        'JENIS_TARIF' => 'PPN', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => 11, 'TARIF_FASILITAS' => 100,
+                    ],
+                    [
+                        'JENIS_TARIF' => 'PPH', 'KODE_FASILITAS' => 0, 'KODE_TARIF' => 1, 'NILAI_BAYAR' => 0, 'NILAI_FASILITAS' => 0, 'NILAI_SUDAH_DILUNASI' => 0, 'SERI_BARANG' => $n['SERI_BARANG'], 'TARIF' => 2.5, 'TARIF_FASILITAS' => 100,
+                    ],
+                ];
+                $n['tarif'] = $tpb_barang_tarif;
+            }
+            unset($n);
+
+            
+
+            $data = [
+                'txid' => $doc,
+                'cif' => $cz_h_CIF_FG,
+                'hargaPenyerahan' => $cz_h_HARGA_PENYERAHAN_FG,
+                'netto' => $Netto,
+                'jumlahKemasan' => $JumlahKemasan,
+                'ListBarangByPrice' => $tpb_barang,
+                'ListBahanBakuList' => $tpb_bahan_baku,
+                'nomorIjinEntitas' => $czizinpengusaha,
+            ];
+
+
+        }
+        $responApi = null;
+        if (!empty($data)) {
+            log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-25rm, step0#, DO:' . $doc);
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/25', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);            
+            $responApiObj = json_decode($responApi->body);
+            $message = $responApiObj->message;
+            log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-25rm, step0#, DO:' . $doc);
         }
         $respon = [
             'message' => $message,

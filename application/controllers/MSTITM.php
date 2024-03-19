@@ -192,7 +192,7 @@ class MSTITM extends CI_Controller
         $search = $this->input->get('insearch');
         $searchby = $this->input->get('insearchby');
         $rs = [];
-        $responApi = Requests::request('http://192.168.0.29:8080/ems-glue/api/item/searchFGExim?insearch=' . $search
+        $responApi = Requests::request($_ENV['APP_INTERNAL_API'] . 'item/searchFGExim?insearch=' . $search
             . '&insearchby=' . $searchby, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
         $rs = json_decode($responApi->body, true);
         die(json_encode($rs));
@@ -202,7 +202,7 @@ class MSTITM extends CI_Controller
         header('Content-Type: application/json');
         $search = $this->input->get('insearch');
         $searchby = $this->input->get('insearchby');
-        $responApi = Requests::request('http://192.168.0.29:8080/ems-glue/api/item/searchRMExim?insearch=' . $search
+        $responApi = Requests::request($_ENV['APP_INTERNAL_API'] . 'item/searchRMExim?insearch=' . $search
             . '&insearchby=' . $searchby, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
         $rs = json_decode($responApi->body, true);
         die(json_encode($rs));

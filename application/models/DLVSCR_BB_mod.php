@@ -1,7 +1,7 @@
 <?php
 
-class DLVSCR_mod extends CI_Model {
-	private $TABLENAME = "DLVSCR_TBL";
+class DLVSCR_BB_mod extends CI_Model {
+	private $TABLENAME = "DLVSCR_BB_TBL";
 	public function __construct()
     {
         $this->load->database();
@@ -37,17 +37,15 @@ class DLVSCR_mod extends CI_Model {
         return $this->db->affected_rows();
     }
 
-    function select_where($columns, $pwhere) {
-        $this->db->select($columns);
-        $this->db->from($this->TABLENAME);
-        $this->db->join("MITM_TBL", "DLVSCR_ITMID=MITM_ITMCD", "LEFT");
+    function select_where($pwhere) {        
+        $this->db->from($this->TABLENAME);        
         $this->db->where($pwhere);
 		$query = $this->db->get();
 		return $query->result_array();
     }
 
     public function select_lastline($pdoc){
-        $qry = "SELECT MAX(DLVSCR_LINE) lser FROM ".$this->TABLENAME." WHERE DLVSCR_TXID=?";
+        $qry = "SELECT MAX(DLVSCR_BB_LINE) lser FROM ".$this->TABLENAME." WHERE DLVSCR_BB_TXID=?";
         $query = $this->db->query($qry, [$pdoc]);
         if ($query->num_rows()>0){
             $ret = $query->row();
