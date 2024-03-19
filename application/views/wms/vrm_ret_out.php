@@ -5673,6 +5673,9 @@ echo $tohtml;
                     ])
                 })
                 retrm_sso_limbah_bb.setData(datanya)
+                if(datanya.length === 0) {
+                    retrm_sso_limbah_bb.setData([,])
+                }
             }, error: function(xhr, ajaxOptions, throwError) {
                 p.disabled = false
             }
