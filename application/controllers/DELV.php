@@ -15870,7 +15870,7 @@ class DELV extends CI_Controller
                         'KODE_JENIS_DOK_ASAL' => $r['DLVSCR_BB_BCTYPE'],
                         'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVSCR_BB_NOPEN'],
                         'TANGGAL_DAFTAR_DOK_ASAL' => $r['DLVSCR_BB_TGLPEN'],
-                        'KODE_KANTOR' => '-',
+                        'KODE_KANTOR' => $r['DLVSCR_BB_KODE_KANTOR'] ?? '-',
                         'NOMOR_AJU_DOK_ASAL' => $r['DLVSCR_BB_AJU'],
                         'SERI_BARANG_DOK_ASAL' => $r['DLVSCR_BB_BCURUT'],
                         'SPESIFIKASI_LAIN' => null,
