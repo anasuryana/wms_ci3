@@ -15885,7 +15885,7 @@ class DELV extends CI_Controller
                         'SERI_BAHAN_BAKU' => $noSeriBB++,
                         'JENIS_SATUAN' => ($r['DLVSCR_BB_ITMUOM'] == 'PCS') ? 'PCE' : $r['DLVSCR_BB_ITMUOM'],
                         'KODE_ASAL_BAHAN_BAKU' => (in_array($r['DLVSCR_BB_BCTYPE'], ['27', '23'])) ? '0' : '1',
-                        'RBM' => 0,
+                        'RBM' => $r['DLVSCR_BB_BM'] ?? 0,
                         'CURRENCY' => $r['DLVSCR_BB_MATA_UANG'],
                         'PPN' => 11, //bu gusti, terkait peraturan 1 april
                         'RASSYCODE' => $itemCodeBarang,

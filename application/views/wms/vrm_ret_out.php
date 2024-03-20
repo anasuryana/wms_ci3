@@ -5526,6 +5526,12 @@ echo $tohtml;
                 width:130,
                 align: 'center',
             },
+            {
+                type: 'numeric',
+                title:'BM',
+                width:130,
+                align: 'center',
+            },            
 
         ],
     });
@@ -5555,6 +5561,8 @@ echo $tohtml;
         let KodeKantor = []
         let MataUang = []
         let Harga = []
+        let BM = []
+       
 
         dataList.forEach((arrayItem) => {
             let _NamaBarang = arrayItem[1].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
@@ -5572,6 +5580,7 @@ echo $tohtml;
             let _KodeKantor = arrayItem[13].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
             let _MataUang = arrayItem[14].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
             let _Harga = arrayItem[15].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
+            let _BM = arrayItem[16].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
 
             NamaBarang.push(_NamaBarang)
             KodeBarang.push(_KodeBarang)
@@ -5585,6 +5594,7 @@ echo $tohtml;
             KodeKantor.push(_KodeKantor)
             MataUang.push(_MataUang)
             Harga.push(_Harga)
+            BM.push(_BM)
         })
 
         if(NamaBarang.length === 0) {
@@ -5610,6 +5620,7 @@ echo $tohtml;
             KodeKantor: KodeKantor,
             MataUang: MataUang,
             Harga: Harga,
+            BM: BM,
         }
 
         if(!confirm("Are you sure ?")) {
@@ -5626,6 +5637,7 @@ echo $tohtml;
             success: function (response) {
                 p.disabled = false
                 retrm_get_detail_limbah()
+                alertify.success(response.message)
             }, error: function(xhr, ajaxOptions, throwError) {
                 p.disabled = false
 
@@ -5670,6 +5682,9 @@ echo $tohtml;
                         arrayItem['DLVSCR_BB_KODE_KANTOR'],
                         arrayItem['DLVSCR_BB_MATA_UANG'],
                         arrayItem['DLVSCR_BB_ZPRPRC'],
+                        arrayItem['DLVSCR_BB_BM'],
+                        arrayItem['DLVSCR_BB_PPN'],
+                        arrayItem['DLVSCR_BB_PPH'],
                     ])
                 })
                 retrm_sso_limbah_bb.setData(datanya)
