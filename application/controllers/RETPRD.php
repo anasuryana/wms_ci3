@@ -1253,6 +1253,10 @@ class RETPRD extends CI_Controller
     {
         $this->load->view('wms_report/vrpt_rtnrm_pr_confirmation');
     }
+    public function form_xray()
+    {
+        $this->load->view('wms/vreturn_xray');
+    }
 
     public function getconfirmation()
     {
