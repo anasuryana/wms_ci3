@@ -894,8 +894,8 @@ class SI extends CI_Controller
                     $toret = $this->SI_mod->insert($datas);
                     $ADDAFF += $toret;
                 } else {
+                    $lastsisoline = $this->SISO_mod->select_lastsisoline($clineno[$i]);
                     for ($k = 0; $k < $ttlplot; $k++) {
-                        $lastsisoline = $this->SISO_mod->select_lastsisoline($clineno[$i]);
                         $lastsisoline++;
                         if ($cp_idx[$k] == strval($i) and $csiline[$k] == '') {
                             $datap = [

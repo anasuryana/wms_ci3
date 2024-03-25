@@ -732,7 +732,7 @@ foreach ($lcus as $r) {
                                         }
                                     }
                                 }
-                                // console.log('edit save mode before think fplot promise');
+                                
                                 shpfg_e_thinkplot(areq,asup);
                             }
                         } else {
@@ -817,8 +817,6 @@ foreach ($lcus as $r) {
                                         }
                                     }
                                 }
-                                // console.log('hasil req baru');
-                                // console.log(areq);
                                 shpfg_e_thinkplot(areq,asup);
                             }
                         } else {
@@ -1049,6 +1047,9 @@ foreach ($lcus as $r) {
         let mtransitdt, mstrloc;
         let akanban = [],apur_org = [], adescrip = [],aitem = [], amodel = [],afruser = [], areqdate =[], areqqty = [],armrk=[], aplant=[] , aeta=[];
         let astrloc =[], atransitdt = [] , alineno = [];
+        
+        let dataBefore = JSON.parse(localStorage.getItem('shipping_local'))
+        let dataAfter = []
 
         if(ttlrows>1){
             let gssformat = '';
@@ -1120,9 +1121,80 @@ foreach ($lcus as $r) {
                     armrk.push(mremark);
                     alineno.push(mlineno);
                 }
+
+                dataAfter.push([mitem, mreqqty, mlineno])
             }
+
             if(aitem.length>0){
-                if(document.getElementById('shpfg_isedit').value=='y'){
+                if(document.getElementById('shpfg_isedit').value=='y') {
+                    // mulai analisa perubahan data
+                    
+                    const isSameIDRP = (a, b) => a[0] === b[0] && a[1] === b[1]
+                    const onlyInA = onlyInLeft(dataBefore, dataAfter, isSameIDRP);
+                    const onlyInB = onlyInLeft(dataAfter, dataBefore, isSameIDRP);
+
+                    const result = [...onlyInA, ...onlyInB]
+
+                    if(result.length === 2) {
+                        let _akanban = []
+                        let _apur_org = []
+                        let _adescrip = []
+                        let _aitem = []
+                        let _amodel = []
+                        let _afruser = []
+                        let _areqdate = []
+                        let _areqqty = []
+                        let _armrk = []
+                        let _aplant = []
+                        let _aeta = []
+    
+                        let _astrloc =[]
+                        let _atransitdt = []
+                        let _alineno = []
+                        
+
+                        const totalRowsResult = onlyInB.length
+                        for(let i=0;i<ttlrows;i++) { 
+                            for(let j=0;j<totalRowsResult; j++) {
+                                if(alineno[i] == onlyInB[j][2]) {
+                                    _akanban.push(akanban[i]);
+                                    _apur_org.push(apur_org[i]);
+                                    _aitem.push(aitem[i]);
+                                    _adescrip.push(adescrip[i]);
+                                    _amodel.push(amodel[i]);
+                                    _afruser.push(afruser[i]);
+                                    _areqdate.push(areqdate[i]);
+                                    _areqqty.push(areqqty[i]);
+                                    _atransitdt.push(atransitdt[i]);
+                                    _aeta.push(aeta[i]);
+                                    _astrloc.push(astrloc[i]);
+                                    _aplant.push(aplant[i]);
+                                    _armrk.push(armrk[i]);
+                                    _alineno.push(alineno[i]);
+                                    break;
+                                }
+                            }
+                        }
+
+                        akanban = _akanban
+                        apur_org = _apur_org
+                        aitem = _aitem
+                        adescrip = _adescrip
+                        amodel = _amodel
+                        afruser = _afruser
+                        areqdate = _areqdate
+                        areqqty = _areqqty
+                        atransitdt = _atransitdt
+                        aeta = _aeta
+                        astrloc = _astrloc
+                        aplant = _aplant
+                        armrk = _armrk
+                        alineno = _alineno
+
+                    }
+
+                    // akhir analisa
+
                     let msi = document.getElementById('shpfg_txt_doc').value;
                     let konf = confirm('Are you sure want to save changes ?');
                     if(konf){
@@ -1543,7 +1615,7 @@ foreach ($lcus as $r) {
         } else {
             let tmpdom = document.createElement('html');
             tmpdom.innerHTML = datapas;
-            let myhead = tmpdom.getElementsByTagName('head')[0];   // console.log(myhead);
+            let myhead = tmpdom.getElementsByTagName('head')[0];
             let myscript = myhead.getElementsByTagName('script')[0];
             let mybody = tmpdom.getElementsByTagName('body')[0];
             let mytable = mybody.getElementsByTagName('table')[0];
@@ -1555,7 +1627,6 @@ foreach ($lcus as $r) {
 
             if(typeof(myscript) != 'undefined'){ //check if clipboard from IE
                 startin =3;
-                //console.log('ieee');
             }
             if((shpfg_tbllength-shpfg_tblrowindexsel)<(mytrlength-startin)){
                 let needRows = (mytrlength-startin) - (shpfg_tbllength-shpfg_tblrowindexsel);
@@ -1661,11 +1732,13 @@ foreach ($lcus as $r) {
                 let ttlrows = response.mdata.length;
                 let tohtml = '';
                 let meta;
-                for(let i=0;i<ttlrows;i++){
+                let shipping_local = []
+                for(let i=0;i<ttlrows;i++) {
+                    
                     meta = moment(response.mdata[i].SI_DOCREFFETA);
                     let detailqty = 0;
-                    for(let u=0;u<ttlrowsso;u++){
-                        if(response.sodata[u].SISO_HLINE==response.mdata[i].SI_LINENO){
+                    for(let u=0;u<ttlrowsso;u++) {
+                        if(response.sodata[u].SISO_HLINE==response.mdata[i].SI_LINENO) {
                             detailqty+=numeral(response.sodata[u].SISO_QTY).value();
                         }
                     }
@@ -1694,7 +1767,20 @@ foreach ($lcus as $r) {
                 document.getElementById('shpfg_lbltbl').innerText = ttlrows + ' row(s) found';
                 shpfg_tbllength = $('#shpfg_tbl tbody > tr').length;
                 shpfg_reinitsort();
+                
+                // setelah disusun ulang coba ambil dan taruh di local storage 
+                // untuk dijadikan bahan komparasi ketika edit
+                let mtbl = document.getElementById('shpfg_tbl');
+                let mtbltr = mtbl.getElementsByTagName('tr');
+                
+                for(let i=1;i<=ttlrows;i++) {
+                    let _itemCode = mtbl.rows[i].cells[3].innerText
+                    let _itemLine = mtbl.rows[i].cells[14].innerText
+                    let _itemQty = numeral(mtbl.rows[i].cells[8].innerText).value();
 
+                    shipping_local.push([_itemCode, _itemQty, _itemLine])
+                }
+                localStorage.setItem('shipping_local', JSON.stringify(shipping_local))
 
                 //get data saved so
 
