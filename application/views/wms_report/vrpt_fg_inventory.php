@@ -12,6 +12,12 @@
 <div style="padding: 10px">
     <div class="container-fluid">
         <div class="row">
+            <div class="col-md-12">
+                <div id="fg-inventory-div-alert">
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-6 mb-1 text-center">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-primary" type="button" id="fginventory_btn_gen"><i class="fas fa-sync"></i></button>
@@ -131,6 +137,7 @@
     </div>
 </div>
 <input type="hidden" id="fginventorySelectedID" value="">
+<div id="FGInventoryContextmenu"></div>
 <script>
     function fginventory_btn_export_on_click(){
         window.open("http://192.168.0.29:8080/ems-glue/api/export/inventory-fg", '_blank');
@@ -138,7 +145,7 @@
     $("#fginventory_divku").css('height', $(window).height()*72/100);
     $("#fginventory_btn_trash").click(function (e) {
         if(confirm("Are You sure ?")){
-            let pw = prompt("PIN");
+            const pw = prompt("PIN");
             $.ajax({
                 type: "get",
                 url: "<?=base_url('Inventory/clearFG')?>",
@@ -204,6 +211,12 @@
                     newcell = newrow.insertCell(5);
                     newcell.style.cssText= 'text-align:center';
                     newcell.innerHTML = response.data[i].REFNO
+                    newcell.addEventListener("contextmenu", function(e) {
+                        FGInventoryPublicVarIndex = e.target.parentNode.rowIndex
+                        FGInventoryPublicVar = e.target.innerText
+                        FGInventorycontextMenuObj.open(e);
+                        e.preventDefault();
+                    })
 
                     newcell = newrow.insertCell(6);
                     newcell.style.cssText= 'text-align:center';
@@ -262,6 +275,7 @@
                     myTableBody.innerHTML = ''
                     response.data.forEach((arrayItem) => {
                         newrow = myTableBody.insertRow(-1)
+
                         newrow.onclick = (event) => {
                             const selrow = fginventoryModalTable.rows[event.target.parentElement.rowIndex]
                             if (selrow.title === 'selected') {
@@ -342,4 +356,49 @@
             })
         }
     }
+
+    var FGInventoryPublicVar, FGInventoryPublicVarIndex
+
+    var FGInventorycontextMenuObj = jSuites.contextmenu(document.getElementById('FGInventoryContextmenu'), {
+        items:[
+            {
+                title:'Remove',
+                onclick:function(element, event) {
+                    if(confirm("Are you sure want to remove ?")) {
+                        const div_alert = document.getElementById('fg-inventory-div-alert')
+                        const pw = prompt("PIN");
+                        $.ajax({
+                            type: "DELETE",
+                            url: "<?=$_ENV['APP_INTERNAL_API']?>" + `inventory/keys/${FGInventoryPublicVar}`,
+                            data: {pin : pw },
+                            dataType: "JSON",
+                            success: function (response) {
+                                fginventory_tbl.deleteRow(FGInventoryPublicVarIndex)
+                                div_alert.innerHTML = ''
+                                alertify.success(response.message)
+                            }, error: function(xhr, xopt, xthrow) {
+                                const respon = Object.keys(xhr.responseJSON)
+                                let msg = ''
+                                for (const item of respon) {
+                                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                                }
+                                div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    ${msg}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>`
+                                alertify.warning(xthrow);
+                            }
+                        });
+                    }
+                },
+                tooltip: 'Remove a line',
+            },
+            {
+                type:'line'
+            },
+        ],
+        onclick:function() {
+            FGInventorycontextMenuObj.close(false);
+        }
+    });
 </script>
