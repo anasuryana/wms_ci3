@@ -802,6 +802,7 @@ class SI extends CI_Controller
         $ceta = $this->input->post('ineta');
         $csi = $this->input->post('insi');
         $clineno = $this->input->post('inlineno');
+        $alinenoindex = $this->input->post('alinenoindex');
 
         $cflineno = $this->input->post('inflineno');
         $cp_so = $this->input->post('inp_so');
@@ -897,7 +898,7 @@ class SI extends CI_Controller
                     $lastsisoline = $this->SISO_mod->select_lastsisoline($clineno[$i]);
                     for ($k = 0; $k < $ttlplot; $k++) {
                         $lastsisoline++;
-                        if ($cp_idx[$k] == strval($i) and $csiline[$k] == '') {
+                        if ($cp_idx[$k] == $alinenoindex[$i] and $csiline[$k] == '') {
                             $datap = [
                                 'SISO_HLINE' => $clineno[$i],
                                 'SISO_CPONO' => $cp_so[$k],
