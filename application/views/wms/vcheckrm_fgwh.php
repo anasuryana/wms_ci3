@@ -1392,7 +1392,12 @@
                     newcell = newrow.insertCell(8);
                     newcell.style.cssText = "text-align: right";
                     newcell.ondblclick = () =>  {
-                        checksbb_e_showRowsDetail({reffno: pid, itemCD: response.datacal[i].SERD2_ITMCD, mcz: response.datacal[i].SERD2_MCZ})
+                        checksbb_e_showRowsDetail({
+                            reffno: pid, 
+                            itemCD: response.datacal[i].SERD2_ITMCD, 
+                            mcz: response.datacal[i].SERD2_MCZ,
+                            job: pjob,
+                        })
                         $("#checksbb_MODEDITQTYCAL").modal('show')
                         document.getElementById('checksbb_newqty').value = ''
                         document.getElementById('checksbb_newqty').focus()
@@ -1726,6 +1731,7 @@
     function checksbb_e_showRowsDetail(pdata) {
         const lblinfo = document.getElementById('checksbb_caltbl_rm_edit_lblinfo')
         lblinfo.innerHTML = 'Please wait...'
+        checksbb_caltbl_rm_edit.getElementsByTagName("tbody")[0].innerHTML = ''
         $.ajax({
             type: "GET",
             url: "<?=base_url('SER/showCalculationPerItem')?>",
