@@ -1046,7 +1046,7 @@ foreach ($lcus as $r) {
         let mkanban,mpur_org, mdescription ,mitem, mmodel, mfruser, mreqdate,tmpreqdate, mreqqty, mremark, mplant, meta, mlineno, mstatus_so;
         let mtransitdt, mstrloc;
         let akanban = [],apur_org = [], adescrip = [],aitem = [], amodel = [],afruser = [], areqdate =[], areqqty = [],armrk=[], aplant=[] , aeta=[];
-        let astrloc =[], atransitdt = [] , alineno = [];
+        let astrloc =[], atransitdt = [] , alineno = [], alinenoindex = [];
         
         let dataBefore = JSON.parse(localStorage.getItem('shipping_local'))
         let dataAfter = []
@@ -1120,6 +1120,7 @@ foreach ($lcus as $r) {
                     aplant.push(mplant);
                     armrk.push(mremark);
                     alineno.push(mlineno);
+                    alinenoindex.push(getindexmaintable_bysiline(mlineno))
                 }
 
                 dataAfter.push([mitem, mreqqty, mlineno])
@@ -1151,6 +1152,7 @@ foreach ($lcus as $r) {
                         let _astrloc =[]
                         let _atransitdt = []
                         let _alineno = []
+                        let _alinenoindex = []
                         
 
                         const totalRowsResult = onlyInB.length
@@ -1171,6 +1173,7 @@ foreach ($lcus as $r) {
                                     _aplant.push(aplant[i]);
                                     _armrk.push(armrk[i]);
                                     _alineno.push(alineno[i]);
+                                    _alinenoindex.push(alinenoindex[i]);
                                     break;
                                 }
                             }
@@ -1190,6 +1193,7 @@ foreach ($lcus as $r) {
                         aplant = _aplant
                         armrk = _armrk
                         alineno = _alineno
+                        alinenoindex = _alinenoindex
 
                     }
 
@@ -1221,7 +1225,7 @@ foreach ($lcus as $r) {
                             url: "<?=base_url('SI/edit')?>",
                             data: {inbg: 'PSI1PPZIEP',incus: mcus, inkanban: akanban, inpurorg: apur_org, initem:aitem, indescr: adescrip, inmodel: amodel, infruser: afruser,
                             inreqdate: areqdate, inreqqty : areqqty, intransitdate: atransitdt, instrloc: astrloc ,inrmrk: armrk, inplant: aplant, ineta: aeta,
-                            insi: msi, inlineno: alineno, inwh: whcode
+                            insi: msi, inlineno: alineno,alinenoindex: alinenoindex, inwh: whcode
                             ,inp_so: pl_so, inp_soline: pl_soline, inp_soqty: pl_soqty, inflineno: pl_sisoline,
                             inp_siline: pl_siline, inp_idx: pl_index},
                             dataType: "json",
