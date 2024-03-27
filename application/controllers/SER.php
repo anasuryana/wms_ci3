@@ -5241,11 +5241,13 @@ class SER extends CI_Controller
         $reffno = $this->input->get('reffno');
         $itemCD = $this->input->get('itemCD');
         $mcz = $this->input->get('mcz');
+        $job = $this->input->get('job');
         $rs = $this->SERD_mod->selectbyVAR_with_cols(
             [
                 'SERD2_SER' => $reffno,
                 'SERD2_ITMCD' => $itemCD,
                 'SERD2_MCZ' => $mcz,
+                'SERD2_JOB' => $job,
             ],
             [
                 'SERD2_LINENO',
