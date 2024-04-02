@@ -305,6 +305,17 @@
             },
 
         ],
+        updateTable:function(instance, cell, col, row, val, label, cellName) {
+             // Number formating
+            if ([2, 3].includes(col)) {
+                // Get text
+                txt = cell.innerText;
+                // Format text
+                txt = numeral(txt).format('0,0');
+                // Update cell value
+                cell.innerHTML = txt;
+            }
+        }
     });
 
     function wosuggester_btn_checker_eC(p) {
