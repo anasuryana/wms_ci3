@@ -139,6 +139,42 @@
 
         <!-- Modal body -->
         <div class="modal-body">
+             <!-- offCanvas -->
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="sploffcanvasBottom" aria-labelledby="offcanvasBottomLabel">
+                <div class="offcanvas-header bg-warning shadow">
+                    <h5 class="offcanvas-title" id="offcanvasBottomLabel">Edit Qty</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body small">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12 text-center" id="spl-div-alert">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="spltxtcurrentQty" class="form-label">Before</label>
+                                <input type="text" class="form-control text-end" id="spltxtcurrentQty" disabled>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-12 mb-3">
+                                    <label for="spltxtnewtQty" class="form-label">After</label>
+                                    <input type="text" class="form-control" id="txtnewtQty">
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="spltxtLineID">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <button title="Save changes" type="button" class="btn btn-outline-primary" id="psn_btn_save_changes" onclick="psn_btn_save_changes_eclick(this)"><i class="fas fa-save"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col">
@@ -157,7 +193,7 @@
 
             <div class="row">
                 <div class="col-md-12 mb-1">
-                    <label for="pareqPeriod1" class="form-label">Cancel Date</label>
+                    <label for="pareqPeriod1" class="form-label">Transaction Date</label>
                     <input type="text" class="form-control form-control-sm" id="spl_dateCancel" readonly>
                 </div>
             </div>
@@ -1153,6 +1189,18 @@
             alertify.warning('should not be empty');
         }
     }
+    
+    Inputmask({
+        'alias': 'decimal',
+        'groupSeparator': ',',
+    }).mask(txtnewtQty);
+
+    var splbsOffcanvas = new bootstrap.Offcanvas('#sploffcanvasBottom')
+    sploffcanvasBottom.addEventListener('shown.bs.offcanvas', event => {
+        txtnewtQty.focus()
+        txtnewtQty.select()
+    })
+        
     function getdetailissue(pitem,purut){
         let mpsn = $("#psn_txt_psn").val();
         let mcat = $("#psn_txt_cat").val();
@@ -1187,22 +1235,29 @@
                     }
                     newrow = tableku2.insertRow(-1);
                     newcell = newrow.insertCell(0);
-                    newText = document.createTextNode(response.data[i].SPLSCN_ID);
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SPLSCN_ID
+
                     newcell = newrow.insertCell(1);
-                    newText = document.createTextNode(numeral(response.data[i].SPLSCN_QTY).format('0,0'));
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = numeral(response.data[i].SPLSCN_QTY).format('0,0')
                     newcell.style.cssText = 'text-align: right';
+                    newcell.onclick = function(p) {
+                        if(spl_dateCancel.value.length===0) {
+                            spl_dateCancel.focus()
+                            alertify.warning('Transaction date is required')
+                            return
+                        }
+                        splbsOffcanvas.show()
+                        spltxtcurrentQty.value = p.target.innerText
+                        spltxtLineID.value = p.target.parentNode.firstChild.innerText
+                    }
+
                     newcell = newrow.insertCell(2);
-                    newText = document.createTextNode(response.data[i].SPLSCN_LOTNO);
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = response.data[i].SPLSCN_LOTNO
                     newcell.style.cssText = 'text-align: center';
-                    newcell = newrow.insertCell(3);
-                    newText = document.createTextNode(response.data[i].SPLSCN_LUPDT);
-                    newcell.appendChild(newText);
+                    newcell = newrow.insertCell(3);                    
+                    newcell.innerHTML = response.data[i].SPLSCN_LUPDT
                     newcell = newrow.insertCell(4);
-                    newText = document.createTextNode(msts);
-                    newcell.appendChild(newText);
+                    newcell.innerHTML = msts
                     newcell = newrow.insertCell(5);
                     newText = document.createElement('i');
                     newText.classList.add("fas");
@@ -1613,4 +1668,56 @@
             spl_cid_txtpsn.focus()
         }
     })
+
+    function psn_btn_save_changes_eclick(p) {
+        const oldQty = numeral(spltxtcurrentQty.value).value()
+        const newQty = numeral(txtnewtQty.value).value()
+        if(newQty > oldQty) {
+            alertify.message('After-Qty should not be greater than Before-Qty')
+            return
+        }
+        if(newQty <= 0) {
+            alertify.warning('the value is invalid')
+            return
+        }
+        p.disabled = true
+        p.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
+        const div_alert = document.getElementById('spl-div-alert')
+        $.ajax({
+            type: "PUT",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>supply/revise",
+            data: {
+                document : psn_txt_psn.value,
+                userId : uidnya,
+                rowId : spltxtLineID.value,
+                itemId : spl_txtsel_Item.value,
+                qty : newQty,
+                transDate : spl_dateCancel.value
+            },
+            dataType: "json",
+            success: function (response) {
+                p.innerHTML = `<i class="fas fa-save"></i>`
+                p.disabled = false
+                div_alert.innerHTML = ''
+                alertify.success(response.message)                
+                splbsOffcanvas.hide()
+                psn_getdata();
+                getdetailissue(spl_txtsel_Item.value, spl_txtsel_urut.value);
+                txtnewtQty.value = 0
+            }, error: function(xhr, xopt, xthrow) {
+                p.innerHTML = `<i class="fas fa-save"></i>`
+                p.disabled = false
+                const respon = Object.keys(xhr.responseJSON)
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            
+            }
+        });
+    }
 </script>
