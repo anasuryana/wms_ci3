@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-
+use WpOrg\Requests\Requests;
 class RMCalculator
 {
     protected $CI;
@@ -3184,7 +3184,9 @@ class RMCalculator
                 }
             }
         }
-        return ($counterNew);
+        $responApi = Requests::request($_ENV['APP_INTERNAL_API'] .'item/xray', [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
+        // return ($counterNew);
+        return ['megaToWms' => $counterNew, 'wmsToXraySVR' => $responApi];
     }
 
     public function sync_new_itemGrade()
