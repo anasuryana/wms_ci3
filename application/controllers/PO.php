@@ -394,12 +394,10 @@ class PO extends CI_Controller
                     #end company
                     $pdf->SetFont('Times', 'B', 7);
                     $pdf->SetXY(160, 18 - $_y);
-                    $pdf->Cell(21, 4, 'FORM-FPI-04-01', 0, 0, 'L');
+                    $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
                     $pdf->SetXY(160, 22 - $_y);
-                    $pdf->Cell(21, 4, 'REV.02', 0, 0, 'R');
-                    $pdf->SetFont('Times', 'IB', 9);
-                    $pdf->SetXY(146, 30 - $_y);
-                    $pdf->Cell(35, 4, 'Copy : Accounting Dept.', 0, 0, 'R');
+                    $pdf->Cell(21, 4, 'REV.00', 0, 0, 'R');
+                   
                     $pdf->SetFont('Times', 'B', 9);
                     $pdf->SetXY(115, 45 - $_y);
                     $pdf->Cell(85, 7, '   P / O No. : ' . $pser, 1, 0, 'L');
@@ -573,12 +571,10 @@ class PO extends CI_Controller
             #end company
             $pdf->SetFont('Times', 'B', 7);
             $pdf->SetXY(160, 18 - $_y);
-            $pdf->Cell(21, 4, 'FORM-FPI-04-01', 0, 0, 'L');
+            $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
             $pdf->SetXY(160, 22 - $_y);
-            $pdf->Cell(21, 4, 'REV.02', 0, 0, 'R');
-            $pdf->SetFont('Times', 'IB', 9);
-            $pdf->SetXY(146, 30 - $_y);
-            $pdf->Cell(35, 4, 'Copy : Accounting Dept.', 0, 0, 'R');
+            $pdf->Cell(21, 4, 'REV.00', 0, 0, 'R');
+            
             $pdf->SetFont('Times', 'B', 9);
             $pdf->SetXY(115, 45 - $_y);
             $pdf->Cell(85, 7, '   P / O No. : ' . $pser, 1, 0, 'L');
@@ -869,12 +865,10 @@ class PO extends CI_Controller
                     #end company
                     $pdf->SetFont('Times', 'B', 7);
                     $pdf->SetXY(160, 18 - $_y);
-                    $pdf->Cell(21, 4, 'FORM-FPI-04-01', 0, 0, 'L');
+                    $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
                     $pdf->SetXY(160, 22 - $_y);
-                    $pdf->Cell(21, 4, 'REV.02', 0, 0, 'R');
-                    $pdf->SetFont('Times', 'IB', 9);
-                    $pdf->SetXY(146, 30 - $_y);
-                    $pdf->Cell(35, 4, 'Copy : Accounting Dept.', 0, 0, 'R');
+                    $pdf->Cell(21, 4, 'REV.00', 0, 0, 'R');
+                    
                     $pdf->SetFont('Times', 'B', 9);
                     $pdf->SetXY(115, 45 - $_y);
                     $pdf->Cell(85, 7, '   P / O No. : ' . $pser, 1, 0, 'L');
