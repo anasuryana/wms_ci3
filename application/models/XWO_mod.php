@@ -108,6 +108,7 @@ class XWO_mod extends CI_Model
                     ,MAX(MBLA_LINENO) XLINE
                     ,MBLA_ITMCD
                     ,RTRIM(MITM_ITMD1) MITM_ITMD1
+                    ,ETYPE.TYPE_FIX
                 FROM (
                     SELECT RTRIM(A.MBLA_MDLCD) MBLA_MDLCD
                         ,MBLA_BOMRV
@@ -136,11 +137,13 @@ class XWO_mod extends CI_Model
                         ,MBLA_LINENO
                     ) V1
                 LEFT JOIN MITM_TBL ON MBLA_MDLCD=MITM_ITMCD
+                LEFT JOIN ENG_ASSY_TYPE_FIX ETYPE ON MBLA_MDLCD=ETYPE.ASSYCD
                 GROUP BY MBLA_MDLCD
                     ,MBLA_BOMRV
                     ,MBLA_PROCD
                     ,MBLA_ITMCD
                     ,MITM_ITMD1
+                    ,ETYPE.TYPE_FIX
                 ORDER BY MBLA_BOMRV";
         $query = $this->db->query($qry);
         return $query->result_array();
