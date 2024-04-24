@@ -1,5 +1,6 @@
 <?php
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class WO extends CI_Controller
@@ -156,6 +157,7 @@ class WO extends CI_Controller
                                     'Group' => $r['MBLA_ITMCD'],
                                     'MEGALatestRev' => $_megabom,
                                     'Model' => $r['MITM_ITMD1'] . "_",
+                                    'ModelType' => $r['TYPE_FIX'],
                                 ];
 
                                 $dataFix[] = $toPush;
@@ -190,6 +192,7 @@ class WO extends CI_Controller
                                 'Group' => '???',
                                 'MEGALatestRev' => '??',
                                 'Model' => '???',
+                                'ModelType' => '???',
                             ];
                         }
                     }
@@ -215,6 +218,7 @@ class WO extends CI_Controller
                                     'Group' => $r['MBLA_ITMCD'],
                                     'MEGALatestRev' => $_woMegaRev[$i],
                                     'Model' => $r['MITM_ITMD1'],
+                                    'ModelType' => $r['TYPE_FIX'],
                                 ];
 
                                 $dataFix[] = $toPush;
@@ -287,6 +291,13 @@ class WO extends CI_Controller
                 $sheet->setCellValueByColumnAndRow(11, $y, $r['Group']);
                 $sheet->setCellValueByColumnAndRow(12, $y, $r['MEGALatestRev']);
                 $sheet->setCellValueByColumnAndRow(13, $y, $r['Model']);
+
+                $_JobType = substr($r['RefNo'], 4, 1);
+                if ($r['ModelType'] != $_JobType && $r['ProdLine']!='???') {
+                    $sheet->getStyle('A' . $y . ':M' . $y)->getFill()->setFillType(Fill::FILL_SOLID);
+                    $sheet->getStyle('A' . $y . ':M' . $y)->getFill()->getStartColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_DARKRED);
+                    $sheet->getComment('A' . $y)->getText()->createTextRun("Tipe Assycode " . $r['ModelType'] . ", sedangkan Job " . $_JobType);
+                }
                 $y++;
             }
             foreach (range('A', 'R') as $r) {
