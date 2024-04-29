@@ -293,7 +293,7 @@ class WO extends CI_Controller
                 $sheet->setCellValueByColumnAndRow(13, $y, $r['Model']);
 
                 $_JobType = substr($r['RefNo'], 4, 1);
-                if ($r['ModelType'] && $r['ModelType'] != $_JobType && $r['ProdLine']!='???') {
+                if ($r['ModelType'] && $r['ModelType'][0] != $_JobType && $r['ProdLine']!='???') {
                     $sheet->getStyle('A' . $y . ':M' . $y)->getFill()->setFillType(Fill::FILL_SOLID);
                     $sheet->getStyle('A' . $y . ':M' . $y)->getFill()->getStartColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_DARKRED);
                     $sheet->getComment('A' . $y)->getText()->createTextRun("Tipe Assycode " . $r['ModelType'] . ", sedangkan Job " . $_JobType);
