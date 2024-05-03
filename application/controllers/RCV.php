@@ -1007,6 +1007,7 @@ class RCV extends CI_Controller
         $cnourut = $this->input->post('innomorurut');
         $cstsrcv = $this->input->post('instsrcv');
         $invoice = $this->input->post('invoice');
+        $perNetWeight = $this->input->post('perNW');
 
         if (empty($crcvdate)) {
             die(json_encode([
@@ -1051,7 +1052,7 @@ class RCV extends CI_Controller
                         'RCV_TTLAMT' => ($cttlamt == '' ? null : $cttlamt),
                         'RCV_TPB' => $ctpb,
                         'RCV_WH' => $cwh[$i],
-                        'RCV_SUPCD' => $csup[$i],
+                        'RCV_SUPCD' => $csup,
                         'RCV_RCVDATE' => $crcvdate == '' ? null : $crcvdate,
                         'RCV_NW' => ($c_nw == '' ? null : $c_nw),
                         'RCV_GW' => ($c_gw == '' ? null : $c_gw),
@@ -1067,6 +1068,7 @@ class RCV extends CI_Controller
                         'RCV_USRID' => $this->session->userdata('nama'),
                         'RCV_CREATEDBY' => $MEGAUser,
                         'RCV_INVNO' => $invoice,
+                        'RCV_PRNW' => $perNetWeight[$i] == '' ? null : $perNetWeight[$i],
                     ];
                     $cret = $this->RCV_mod->updatebyVAR($datau, $dataw);
                     $myctr_edited += $cret;
@@ -1086,7 +1088,7 @@ class RCV extends CI_Controller
                         'RCV_TTLAMT' => ($cttlamt == '' ? null : $cttlamt),
                         'RCV_TPB' => $ctpb,
                         'RCV_WH' => $cwh[$i],
-                        'RCV_SUPCD' => $csup[$i],
+                        'RCV_SUPCD' => $csup,
                         'RCV_RCVDATE' => $crcvdate == '' ? null : $crcvdate,
                         'RCV_NW' => ($c_nw == '' ? null : $c_nw),
                         'RCV_GW' => ($c_gw == '' ? null : $c_gw),
@@ -1104,6 +1106,7 @@ class RCV extends CI_Controller
                         'RCV_USRID' => $this->session->userdata('nama'),
                         'RCV_CREATEDBY' => $MEGAUser,
                         'RCV_INVNO' => $invoice,
+                        'RCV_PRNW' => $perNetWeight[$i] == '' ? null : $perNetWeight[$i],
                     ];
                     $cret = $this->RCV_mod->insert($datas);
                     $myctr_saved += $cret;
@@ -1212,7 +1215,7 @@ class RCV extends CI_Controller
             ]);
         }
 
-        $apiRespon = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode($cdo), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
+        $apiRespon = Requests::request($_ENV['APP_INTERNAL2_API'] . 'stock/incomingPabean/' . base64_encode($cdo), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         $myar = [];
         $myar[] = [
             "cd" => "1", "msg" => $myctr_saved . " saved, " . $myctr_edited . " edited", "extra" => trim($cwh[0]),
