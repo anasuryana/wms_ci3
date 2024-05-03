@@ -234,6 +234,7 @@
                             response.data[i].ITH_FORM.includes('TRFIN-RM') ||
                             response.data[i].ITH_FORM.includes('TRFOUT-RM') ||
                             response.data[i].ITH_FORM.includes('INCRTN-NO-PSN') ||
+                            response.data[i].ITH_FORM.includes('OUTRTN-NO-PSN') ||
                             response.data[i].ITH_FORM.includes('OUT-WH-RM') || 
                             response.data[i].ITH_FORM.includes('INC-RET') || 
                             response.data[i].ITH_FORM.includes('OUT-RET') || 
