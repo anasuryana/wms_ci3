@@ -55,9 +55,13 @@ class RCV_mod extends CI_Model
 
     public function updatebyId_new($pdata, $pdo, $pitem, $pqty)
     {
-        $qry = "update top (1) RCV_TBL SET RCV_HSCD=?, RCV_BM=?, RCV_PPN=?,RCV_PPH=?, RCV_ZNOURUT=?
-        WHERE RCV_DONO=? AND RCV_ITMCD=? AND RCV_QTY=? and ISNULL(RCV_ZNOURUT,'') =''";
-        $this->db->query($qry, [$pdata['RCV_HSCD'], $pdata['RCV_BM'], $pdata['RCV_PPN'], $pdata['RCV_PPH'], $pdata['RCV_ZNOURUT'], $pdo, $pitem, $pqty]);
+        // $qry = "update top (1) RCV_TBL SET RCV_HSCD=?, RCV_BM=?, RCV_PPN=?,RCV_PPH=?, RCV_ZNOURUT=?
+        // WHERE RCV_DONO=? AND RCV_ITMCD=? AND RCV_QTY=? and ISNULL(RCV_ZNOURUT,'') =''";        
+        // $this->db->query($qry, [$pdata['RCV_HSCD'], $pdata['RCV_BM'], $pdata['RCV_PPN'], $pdata['RCV_PPH'], $pdata['RCV_ZNOURUT'], $pdo, $pitem, $pqty]);
+        $this->db->limit(1);
+        $this->db->where(['RCV_DONO' => $pdo, 'RCV_ITMCD' => $pitem , 'RCV_QTY' => $pqty]);
+        $this->db->where("ISNULL(RCV_ZNOURUT,'')", '');
+        $this->db->update($this->TABLENAME, $pdata);
         return $this->db->affected_rows();
     }
 
@@ -335,6 +339,7 @@ class RCV_mod extends CI_Model
                     ,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM
                     ,ISNULL(RCV_CONA,'') RCV_CONA
                     ,SUPNO
+                    , RTRIM(ISNULL(VSUP.CURCD,VSUP2.CURCD)) CURCD
                 FROM XVU_RTN
                 LEFT JOIN (
                     SELECT RCV_INVNO
@@ -352,10 +357,10 @@ class RCV_mod extends CI_Model
                 select RETFG_DOCNO,max(RETFG_SUPNO) SUPNO,max(RETFG_SUPCD) RETFG_SUPCD from RETFG_TBL group by RETFG_DOCNO
                 ) V3 ON STKTRND1_DOCNO=RETFG_DOCNO
                 LEFT JOIN (
-                    SELECT rtrim(MCUS_CUSCD) MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM FROM XMCUS GROUP BY MCUS_CUSCD
+                    SELECT rtrim(MCUS_CUSCD) MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM,MAX(MCUS_CURCD) CURCD FROM XMCUS GROUP BY MCUS_CUSCD
                 ) VSUP ON isnull(RETFG_SUPCD,'')=MSUP_SUPCD
                 LEFT JOIN (
-                    SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM FROM MSUP_TBL GROUP BY MSUP_SUPCD
+                    SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM,MAX(MSUP_SUPCR) CURCD FROM MSUP_TBL GROUP BY MSUP_SUPCD
                 ) VSUP2 ON isnull(RETFG_SUPCD,'')=SUPCD
                 WHERE STKTRND1_DOCNO LIKE ? ORDER BY ISUDT DESC";
         $query = $this->db->query($qry, ['%' . $pdo . '%']);
@@ -381,7 +386,9 @@ class RCV_mod extends CI_Model
     public function MGSelectDOSup_return_fg($pdo, $psup)
     {
         $qry = "SELECT V1.*,COALESCE(TTLITEMIN,0) TTLITEMIN,ISNULL(RCV_HSCD,'') RCV_HSCD
-        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO FROM
+        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO
+        , RTRIM(ISNULL(VSUP.CURCD,VSUP2.CURCD)) CURCD 
+        FROM
         (select STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,COUNT(*) TTLITEM,ISUDT from XVU_RTN where MBSG_BSGRP=?
         AND STKTRND1_DOCNO LIKE ?
         GROUP BY STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,ISUDT) V1
@@ -394,10 +401,10 @@ class RCV_mod extends CI_Model
 		 select RETFG_DOCNO,max(RETFG_SUPNO) SUPNO,max(RETFG_SUPCD) RETFG_SUPCD from RETFG_TBL group by RETFG_DOCNO
 		) V3 ON STKTRND1_DOCNO=RETFG_DOCNO
 		LEFT JOIN (
-            SELECT rtrim(MCUS_CUSCD) MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM FROM XMCUS GROUP BY MCUS_CUSCD
+            SELECT rtrim(MCUS_CUSCD) MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM,MAX(MCUS_CURCD) CURCD FROM XMCUS GROUP BY MCUS_CUSCD
         ) VSUP ON isnull(RETFG_SUPCD,'')=MSUP_SUPCD
         LEFT JOIN (
-            SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM FROM MSUP_TBL GROUP BY MSUP_SUPCD
+            SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM,MAX(MSUP_SUPCR) CURCD FROM MSUP_TBL GROUP BY MSUP_SUPCD
         ) VSUP2 ON isnull(RETFG_SUPCD,'')=SUPCD";
         $query = $this->db->query($qry, [$psup, '%' . $pdo . '%']);
         return $query->result_array();
@@ -462,25 +469,28 @@ class RCV_mod extends CI_Model
     public function MGSelectDO_date_return_fg($pdo, $pdate1, $pdate2)
     {
         $qry = "SELECT V1.*,COALESCE(TTLITEMIN,0) TTLITEMIN,ISNULL(RCV_HSCD,'') RCV_HSCD
-        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO FROM
+        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO 
+        , RTRIM(ISNULL(VSUP.CURCD,VSUP2.CURCD)) CURCD
+        FROM
         (select STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,COUNT(*) TTLITEM, ISUDT from XVU_RTN
+        WHERE STKTRND1_DOCNO LIKE ?
         GROUP BY STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,ISUDT) V1
         left join
                 (SELECT RCV_INVNO,COUNT(*) TTLITEMIN,MIN(RCV_HSCD) RCV_HSCD, MIN(RCV_BM) RCV_BM
                 , MIN(RCV_PPN) RCV_PPN, MIN(RCV_PPH) RCV_PPH,MAX(RCV_SUPCD) RCV_SUPCD,MAX(RCV_CONA) RCV_CONA FROM RCV_TBL b
                 GROUP BY RCV_INVNO) v2 ON v1.STKTRND1_DOCNO=v2.RCV_INVNO
         left join (
-		 select RETFG_DOCNO,max(RETFG_SUPNO) SUPNO,max(RETFG_SUPCD) RETFG_SUPCD from RETFG_TBL group by RETFG_DOCNO
+		    select RETFG_DOCNO,max(RETFG_SUPNO) SUPNO,max(RETFG_SUPCD) RETFG_SUPCD from RETFG_TBL group by RETFG_DOCNO
 		) V3 ON STKTRND1_DOCNO=RETFG_DOCNO
 		LEFT JOIN (
-            SELECT rtrim(MCUS_CUSCD) MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM FROM XMCUS GROUP BY MCUS_CUSCD
+            SELECT rtrim(MCUS_CUSCD) MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM,MAX(MCUS_CURCD) CURCD FROM XMCUS GROUP BY MCUS_CUSCD
         ) VSUP ON isnull(RETFG_SUPCD,'')=MSUP_SUPCD
         LEFT JOIN (
-            SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM FROM MSUP_TBL GROUP BY MSUP_SUPCD
+            SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM,MAX(MSUP_SUPCR) CURCD FROM MSUP_TBL GROUP BY MSUP_SUPCD
         ) VSUP2 ON isnull(RETFG_SUPCD,'')=SUPCD
         where STKTRND1_DOCNO LIKE ? and (CONVERT(DATE, ISUDT) BETWEEN ? AND ?)
         ORDER BY ISUDT DESC";
-        $query = $this->db->query($qry, ['%' . $pdo . '%', $pdate1, $pdate2]);
+        $query = $this->db->query($qry, ['%' . $pdo . '%','%' . $pdo . '%', $pdate1, $pdate2]);
         return $query->result_array();
     }
 
@@ -503,8 +513,10 @@ class RCV_mod extends CI_Model
     public function MGSelectDO_dateSup_return_fg($pdo, $pdate1, $pdate2, $psup)
     {
         $qry = "SELECT V1.*,COALESCE(TTLITEMIN,0) TTLITEMIN,ISNULL(RCV_HSCD,'') RCV_HSCD
-        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO FROM
-        (select STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,COUNT(*) TTLITEM,ISUDT from XVU_RTN where MBSG_BSGRP=? AND STKTRND1_DOCNO LIKE ?
+        , ISNULL(RCV_BM,0) RCV_BM,ISNULL(RCV_PPN,0) RCV_PPN, ISNULL(RCV_PPH,0) RCV_PPH,RETFG_SUPCD,isnull(MSUP_SUPNM,SUPNM) MSUP_SUPNM,ISNULL(RCV_CONA,'') RCV_CONA,SUPNO 
+        , RTRIM(ISNULL(VSUP.CURCD,VSUP2.CURCD)) CURCD
+        FROM
+        (select STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,COUNT(*) TTLITEM,ISUDT from XVU_RTN where STKTRND1_DOCNO LIKE ?
         GROUP BY STKTRND1_DOCNO,MBSG_DESC,MBSG_BSGRP,ISUDT) V1
         LEFT join (
 			SELECT RCV_INVNO,COUNT(*) TTLITEMIN,MIN(RCV_HSCD) RCV_HSCD, MIN(RCV_BM) RCV_BM
@@ -514,13 +526,13 @@ class RCV_mod extends CI_Model
 			select RETFG_DOCNO,max(RETFG_SUPNO) SUPNO,max(RETFG_SUPCD) RETFG_SUPCD from RETFG_TBL group by RETFG_DOCNO
 		) V3 ON STKTRND1_DOCNO=RETFG_DOCNO
 		LEFT JOIN (
-            SELECT MCUS_CUSCD MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM FROM XMCUS GROUP BY MCUS_CUSCD
+            SELECT MCUS_CUSCD MSUP_SUPCD,MAX(MCUS_CUSNM) MSUP_SUPNM,MAX(MCUS_CURCD) CURCD FROM XMCUS GROUP BY MCUS_CUSCD
         ) VSUP ON isnull(RETFG_SUPCD,'')=MSUP_SUPCD
         LEFT JOIN (
-            SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM FROM MSUP_TBL GROUP BY MSUP_SUPCD
+            SELECT MSUP_SUPCD SUPCD,MAX(MSUP_SUPNM) SUPNM,MAX(MSUP_SUPCR) CURCD FROM MSUP_TBL GROUP BY MSUP_SUPCD
         ) VSUP2 ON isnull(RETFG_SUPCD,'')=SUPCD
         where (CONVERT(DATE, ISUDT) BETWEEN ? AND ?)";
-        $query = $this->db->query($qry, [$psup, '%' . $pdo . '%', $pdate1, $pdate2]);
+        $query = $this->db->query($qry, [ '%' . $pdo . '%', $pdate1, $pdate2]);
         return $query->result_array();
     }
 

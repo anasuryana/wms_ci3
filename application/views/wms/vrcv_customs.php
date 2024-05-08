@@ -134,7 +134,7 @@
                 <div class="col-md-5 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">DO Number</label>
-                        <input type="text" class="form-control" id="rcvcustoms_docnoorigin" ondblclick="rcvcustoms_docnoorigin_eDC()" readonly>
+                        <input type="text" class="form-control" id="rcvcustoms_docnoorigin" ondblclick="rcvcustoms_docnoorigin_eDC()" readonly disabled>
                         <button class="btn btn-primary" id="rcvcustoms_btnmod"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
@@ -664,6 +664,20 @@
                     </div>
                 </div>
             </div>
+            <div class="row" id="rcvcustoms_fg_stack6">
+                <div class="col-md-9 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Customer Name</span>
+                        <input type="text" class="form-control" id="rcvcustoms_fg_customer_name" readonly disabled>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Currency</span>
+                        <input type="text" class="form-control" id="rcvcustoms_fg_customer_currency" readonly disabled>
+                    </div>
+                </div>
+            </div>
             <div class="row" id="rcvcustoms_fg_stack4">
                 <div class="col-md-6 mb-3">
                     <div class="btn-group btn-group-sm">
@@ -680,27 +694,23 @@
                     <div class="table-responsive" id="rcvcustoms_fg_divku">
                         <table id="rcvcustoms_fg_tbl" class="table table-sm table-striped table-hover table-bordered" style="width:100%;cursor:pointer;font-size:75%">
                             <thead class="table-light">
-                                <tr>
+                                <tr class="text-center">
                                     <th>Status</th> <!-- 0 -->
                                     <th>NoUrut</th> <!-- 1 -->
-                                    <th>NoPen</th> <!-- 2 -->
-                                    <th>PO No</th> <!-- 3 -->
-                                    <th>Date</th> <!-- 4 -->
-                                    <th class="d-none">CustomerID</th> <!-- 5 -->
-                                    <th>Customer</th> <!-- 6 -->
-                                    <th>Currency</th> <!-- 7 -->
-                                    <th>Item Code</th> <!-- 8 -->
-                                    <th>Item Name</th> <!-- 9 -->
-                                    <th>QTY</th> <!-- 10 -->
-                                    <th>UM</th> <!-- 11 -->
-                                    <th>Price</th> <!-- 12 -->
-                                    <th>Amount</th> <!-- 13 -->
-                                    <th class="d-none">WH</th> <!-- 14 -->
-                                    <th class="d-none">GRLNO</th> <!-- 15 -->
-                                    <th>HS Code</th> <!-- 16 -->
-                                    <th title="Bea Masuk">BM</th> <!-- 17 -->
-                                    <th>PPN</th> <!-- 18 -->
-                                    <th>PPH</th> <!-- 19 -->
+                                    <th class="d-none">PO No</th> <!-- 2 -->
+                                    <th>Item Code</th> <!-- 3 -->
+                                    <th>Item Name</th> <!-- 4 -->
+                                    <th>QTY</th> <!-- 5 -->
+                                    <th>UM</th> <!-- 6 -->
+                                    <th>Price</th> <!-- 7 -->
+                                    <th>Amount</th> <!-- 8 -->
+                                    <th>Net Weight per UM</th> <!-- 9 -->
+                                    <th class="d-none">WH</th> <!-- 10 -->
+                                    <th class="d-none">GRLNO</th> <!-- 11 -->
+                                    <th>HS Code</th> <!-- 12 -->
+                                    <th title="Bea Masuk">BM</th> <!-- 13 -->
+                                    <th>PPN</th> <!-- 14 -->
+                                    <th>PPH</th> <!-- 15 -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -1565,7 +1575,6 @@
                                     <th class="text-end">PPH</th>
                                     <th class="d-none">BISGRUP</th>
                                     <th>Customer</th>
-                                    <th class="d-none">CustomerID</th>
                                     <th>DO</th>
                                 </tr>
                             </thead>
@@ -1826,7 +1835,7 @@
     var rcvcustoms_selected_row = 0;
     var rcvcustoms_selected_col = 1;
     var rcvcustoms_selected_table = ''
-    var rcvcustoms_url_dev = '<?=str_replace('wms', 'wms_dev', base_url())?>'
+    
     var rcvcustoms_currentmonth = (new Date().getMonth() + 1).toString() < 10 ? '0' + (new Date().getMonth() + 1).toString() : (new Date().getMonth() + 1).toString()
     document.getElementById('rcvcustoms_monthfilter').value = rcvcustoms_currentmonth
     document.getElementById('rcvcustoms_monthfilter_1').value = rcvcustoms_currentmonth
@@ -1837,7 +1846,7 @@
         btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
         $.ajax({
             type: "GET",
-            url: `${rcvcustoms_url_dev}sync_data_of_receivingitem`,
+            url: `<?=$_ENV['APP_INTERNAL_API']?>receive/synchronize`,
             dataType: "JSON",
             success: function(response) {
                 let ttlrows = response.dataDO.length
@@ -2749,18 +2758,7 @@
         $("#RCVCUSTOMS_IMPORTDATA").modal('show');
     });
     $("#rcvcustoms_btn_download").click(function(e) {
-        $.ajax({
-            type: "get",
-            url: "<?=base_url('RCV/getlinkitemtemplate')?>",
-            dataType: "text",
-            success: function(response) {
-                window.open(response, '_blank');
-                alertify.message("<i>Start downloading...</i>");
-            },
-            error: function(xhr, ajaxOptions, throwError) {
-                alert(throwError);
-            }
-        });
+        window.open(`<?=$_ENV['APP_INTERNAL_API']?>receive/download-template`, '_blank');       
     });
     $("#rcvcustoms_btn_startimport").click(function(e) {
         if (document.getElementById('rcvcustoms_xlf_new').files.length == 0) {
@@ -2826,6 +2824,7 @@
             let mpph = excelRows[i].PPH;
             let mnomor_urut = excelRows[i].NOMOR_URUT;
             let mbm = excelRows[i].BM;
+            let NET_WEIGHT_PER_ITEM = excelRows[i].NET_WEIGHT_PER_ITEM;
 
             $.ajax({
                 type: "post",
@@ -2839,7 +2838,8 @@
                     innourut: mnomor_urut,
                     inbm: mbm,
                     inrowid: i,
-                    inqty: mqty
+                    inqty: mqty,
+                    NET_WEIGHT_PER_ITEM : NET_WEIGHT_PER_ITEM
                 },
                 dataType: "json",
                 success: function(response) {
@@ -3385,7 +3385,7 @@
                         "<td>" + response[i].PGRN_POUOM + "</td>" +
                         "<td class='text-end'>" + strpirce + "</td>" +
                         "<td class='text-end'>" + stramt + "</td>" +
-                        "<td class='text-end' contenteditable='true'></td>" +
+                        "<td class='text-end receive-detail-nw' contenteditable='true'>"+ response[i].RCV_PRNW +"</td>" +
                         "<td class='d-none'>" + response[i].PGRN_LOCCD + "</td>" +
                         "<td class='d-none'>" + response[i].PGRN_GRLNO + "</td>" +
                         "<td contenteditable='true'>" + response[i].HSCD + "</td>" +
@@ -3397,6 +3397,10 @@
                 $("#rcvcustoms_tbl tbody").html(tohtml);
                 document.getElementById('rcvcustoms_amount').value = numeral(ttlAmount).format('0,0.00')
                 document.getElementById('rcvcustoms_qty').value = numeral(ttlQty).format('0,0')
+                Inputmask({
+                    'alias': 'decimal',
+                    'groupSeparator': ',',
+                }).mask(document.getElementsByClassName("receive-detail-nw"));
             },
             error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow);
@@ -3845,6 +3849,7 @@
                 rnourut = $tds.eq(1).text(),
                 rpo = $tds.eq(3).text(),
                 ritem = $tds.eq(8).text(),
+                _perNW = $tds.eq(9).text(),
                 rqty = $tds.eq(10).text(),
                 rprc = $tds.eq(12).text(),
                 ramt = $tds.eq(13).text(),
@@ -3854,7 +3859,6 @@
             rbm = $tds.eq(17).text();
             rppn = $tds.eq(18).text();
             rpph = $tds.eq(19).text();
-            _perNW = ''
             if (ritem != '') {
                 ar_nourut.push(rnourut);
                 ar_pono.push(rpo.trim());
@@ -4042,6 +4046,9 @@
                             document.getElementById('rcvcustoms_fg_contractnum').value = response[i].RCV_CONA
                             document.getElementById('rcvcustoms_fg_invoice').value = response[i].STKTRND1_DOCNO
 
+                            rcvcustoms_fg_customer_name.value = response[i].MSUP_SUPNM
+                            rcvcustoms_fg_customer_currency.value = ''
+
                         }
                         newcell = newrow.insertCell(1)
                         newcell.innerHTML = response[i].ISUDT
@@ -4063,9 +4070,6 @@
                         newcell = newrow.insertCell(9)
                         newcell.innerHTML = response[i].MSUP_SUPNM
                         newcell = newrow.insertCell(10)
-                        newcell.classList.add('d-none')
-                        newcell.innerHTML = response[i].RCV_SUPCD
-                        newcell = newrow.insertCell(11)
                         newcell.innerHTML = response[i].SUPNO
                     }
                     mydes.innerHTML = ''
@@ -4232,18 +4236,14 @@
                     tohtml += "<tr style='cursor:pointer'>" +
                         "<td>" + response[i].SYNC_STS + "</td>" +
                         "<td contenteditable='true'>" + response[i].NOURUT + "</td>" +
-                        "<td>" + response[i].PROFNO + "</td>" +
-                        "<td></td>" +
-                        "<td>" + response[i].ISUDT + "</td>" +
-                        "<td class='d-none'>" + response[i].MCUS_CUSCD + "</td>" +
-                        "<td>" + response[i].MCUS_CUSNM + "</td>" +
-                        "<td>" + response[i].MCUS_CURCD + "</td>" +
+                        "<td class='d-none'></td>" +
                         "<td>" + response[i].STKTRND2_ITMCD + "</td>" +
                         "<td>" + response[i].MITM_ITMD1 + "</td>" +
                         "<td class='text-end'>" + numeral(response[i].RETQT).format(',') + "</td>" +
                         "<td>" + response[i].MITM_STKUOM + "</td>" +
                         "<td class='text-end'>" + strpirce + "</td>" +
                         "<td class='text-end'>" + stramt + "</td>" +
+                        "<td class='receive-detail-nw' contenteditable='true'>" + response[i].RCV_PRNW + "</td>" +
                         "<td class='d-none'>" + response[i].STKTRND1_LOCCDFR + "</td>" +
                         "<td class='d-none'>" + response[i].THELINE + "</td>" +
                         "<td contenteditable='true'>" + response[i].HSCD + "</td>" +
@@ -4254,6 +4254,11 @@
                 }
                 $("#rcvcustoms_fg_tbl tbody").html(tohtml)
                 document.getElementById('rcvcustoms_fg_amount').value = numeral(ttlAmount).format('0,0.00')
+
+                Inputmask({
+                    'alias': 'decimal',
+                    'groupSeparator': ',',
+                }).mask(document.getElementsByClassName("receive-detail-nw"));
             },
             error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow);
