@@ -3847,18 +3847,18 @@
         tables.find('tr').each(function(i) {
             let $tds = $(this).find('td'),
                 rnourut = $tds.eq(1).text(),
-                rpo = $tds.eq(3).text(),
-                ritem = $tds.eq(8).text(),
+                rpo = $tds.eq(2).text(),
+                ritem = $tds.eq(3).text(),
                 _perNW = $tds.eq(9).text(),
-                rqty = $tds.eq(10).text(),
-                rprc = $tds.eq(12).text(),
-                ramt = $tds.eq(13).text(),
-                rwh = $tds.eq(14).text();
-            rgrlno = $tds.eq(15).text();
-            rhscode = $tds.eq(16).text();
-            rbm = $tds.eq(17).text();
-            rppn = $tds.eq(18).text();
-            rpph = $tds.eq(19).text();
+                rqty = $tds.eq(5).text(),
+                rprc = $tds.eq(7).text(),
+                ramt = $tds.eq(8).text(),
+                rwh = $tds.eq(10).text();
+            rgrlno = $tds.eq(11).text();
+            rhscode = $tds.eq(12).text();
+            rbm = $tds.eq(13).text();
+            rppn = $tds.eq(14).text();
+            rpph = $tds.eq(15).text();
             if (ritem != '') {
                 ar_nourut.push(rnourut);
                 ar_pono.push(rpo.trim());
