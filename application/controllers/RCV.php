@@ -2882,7 +2882,7 @@ class RCV extends CI_Controller
                 'RCV_PPN' => $cppn, 
                 'RCV_PPH' => $cpph, 
                 'RCV_ZNOURUT' => $cnomor_urut,
-                'RCV_PRNW' => $NET_WEIGHT_PER_ITEM,
+                'RCV_PRNW' => $NET_WEIGHT_PER_ITEM/$cqty ,
             ];
             $toret = $this->RCV_mod->updatebyId_new($datau, $cdo, $citemcode, $cqty);
             if ($toret > 0) {
