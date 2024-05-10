@@ -134,7 +134,7 @@
                 <div class="col-md-5 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">DO Number</label>
-                        <input type="text" class="form-control" id="rcvcustoms_docnoorigin" ondblclick="rcvcustoms_docnoorigin_eDC()" readonly>
+                        <input type="text" class="form-control" id="rcvcustoms_docnoorigin" ondblclick="rcvcustoms_docnoorigin_eDC()" readonly disabled>
                         <button class="btn btn-primary" id="rcvcustoms_btnmod"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
@@ -258,6 +258,20 @@
                     </div>
                 </div>
             </div>
+            <div class="row" id="rcvcustoms_stack7">
+                <div class="col-md-9 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Supplier Name</span>
+                        <input type="text" class="form-control" id="rcvcustoms_supplier_name" readonly disabled>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Currency</span>
+                        <input type="text" class="form-control" id="rcvcustoms_supplier_currency" readonly disabled>
+                    </div>
+                </div>
+            </div>
             <div class="row" id="rcvcustoms_stack6">
                 <div class="col-md-4 mb-1">
                     <div class="btn-group btn-group-sm">
@@ -288,27 +302,23 @@
                     <div class="table-responsive" id="rcvcustoms_divku">
                         <table id="rcvcustoms_tbl" class="table table-sm table-striped table-hover table-bordered" style="width:100%;cursor:pointer;font-size:75%">
                             <thead class="table-light">
-                                <tr>
+                                <tr class="text-center">
                                     <th>Status</th> <!-- 0 -->
                                     <th>NoUrut</th> <!-- 1 -->
-                                    <th>NoPen</th> <!-- 2 -->
-                                    <th>PO No</th> <!-- 3 -->
-                                    <th>Date</th> <!-- 4 -->
-                                    <th class="d-none">SupplierID</th> <!-- 5 -->
-                                    <th>Supplier</th> <!-- 6 -->
-                                    <th>Currency</th> <!-- 7 -->
-                                    <th>Item Code</th> <!-- 8 -->
-                                    <th>Item Name</th> <!-- 9 -->
-                                    <th>QTY</th> <!-- 10 -->
-                                    <th>UM</th> <!-- 11 -->
-                                    <th>Price</th> <!-- 12 -->
-                                    <th>Amount</th> <!-- 13 -->
-                                    <th class="d-none">WH</th> <!-- 14 -->
-                                    <th class="d-none">GRLNO</th> <!-- 15 -->
-                                    <th>HS Code</th> <!-- 16 -->
-                                    <th title="Bea Masuk">BM</th> <!-- 17 -->
-                                    <th>PPN</th> <!-- 18 -->
-                                    <th>PPH</th> <!-- 19 -->
+                                    <th class="d-none">PO No</th> <!-- 2 -->                                    
+                                    <th>Item Code</th> <!-- 3 -->
+                                    <th>Item Name</th> <!-- 4 -->
+                                    <th>QTY</th> <!-- 5 -->
+                                    <th>UM</th> <!-- 6 -->
+                                    <th>Price</th> <!-- 7 -->
+                                    <th>Amount</th> <!-- 8 -->
+                                    <th>Net Weight per UM</th> <!-- 9 -->
+                                    <th class="d-none">WH</th> <!-- 10 -->
+                                    <th class="d-none">GRLNO</th> <!-- 11 -->
+                                    <th>HS Code</th> <!-- 12 -->
+                                    <th title="Bea Masuk">BM</th> <!-- 13 -->
+                                    <th>PPN</th> <!-- 14 -->
+                                    <th>PPH</th> <!-- 15 -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -654,6 +664,20 @@
                     </div>
                 </div>
             </div>
+            <div class="row" id="rcvcustoms_fg_stack6">
+                <div class="col-md-9 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Customer Name</span>
+                        <input type="text" class="form-control" id="rcvcustoms_fg_customer_name" readonly disabled>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Currency</span>
+                        <input type="text" class="form-control" id="rcvcustoms_fg_customer_currency" readonly disabled>
+                    </div>
+                </div>
+            </div>
             <div class="row" id="rcvcustoms_fg_stack4">
                 <div class="col-md-6 mb-3">
                     <div class="btn-group btn-group-sm">
@@ -670,27 +694,23 @@
                     <div class="table-responsive" id="rcvcustoms_fg_divku">
                         <table id="rcvcustoms_fg_tbl" class="table table-sm table-striped table-hover table-bordered" style="width:100%;cursor:pointer;font-size:75%">
                             <thead class="table-light">
-                                <tr>
+                                <tr class="text-center">
                                     <th>Status</th> <!-- 0 -->
                                     <th>NoUrut</th> <!-- 1 -->
-                                    <th>NoPen</th> <!-- 2 -->
-                                    <th>PO No</th> <!-- 3 -->
-                                    <th>Date</th> <!-- 4 -->
-                                    <th class="d-none">CustomerID</th> <!-- 5 -->
-                                    <th>Customer</th> <!-- 6 -->
-                                    <th>Currency</th> <!-- 7 -->
-                                    <th>Item Code</th> <!-- 8 -->
-                                    <th>Item Name</th> <!-- 9 -->
-                                    <th>QTY</th> <!-- 10 -->
-                                    <th>UM</th> <!-- 11 -->
-                                    <th>Price</th> <!-- 12 -->
-                                    <th>Amount</th> <!-- 13 -->
-                                    <th class="d-none">WH</th> <!-- 14 -->
-                                    <th class="d-none">GRLNO</th> <!-- 15 -->
-                                    <th>HS Code</th> <!-- 16 -->
-                                    <th title="Bea Masuk">BM</th> <!-- 17 -->
-                                    <th>PPN</th> <!-- 18 -->
-                                    <th>PPH</th> <!-- 19 -->
+                                    <th class="d-none">PO No</th> <!-- 2 -->
+                                    <th>Item Code</th> <!-- 3 -->
+                                    <th>Item Name</th> <!-- 4 -->
+                                    <th>QTY</th> <!-- 5 -->
+                                    <th>UM</th> <!-- 6 -->
+                                    <th>Price</th> <!-- 7 -->
+                                    <th>Amount</th> <!-- 8 -->
+                                    <th>Net Weight per UM</th> <!-- 9 -->
+                                    <th class="d-none">WH</th> <!-- 10 -->
+                                    <th class="d-none">GRLNO</th> <!-- 11 -->
+                                    <th>HS Code</th> <!-- 12 -->
+                                    <th title="Bea Masuk">BM</th> <!-- 13 -->
+                                    <th>PPN</th> <!-- 14 -->
+                                    <th>PPH</th> <!-- 15 -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -1555,7 +1575,6 @@
                                     <th class="text-end">PPH</th>
                                     <th class="d-none">BISGRUP</th>
                                     <th>Customer</th>
-                                    <th class="d-none">CustomerID</th>
                                     <th>DO</th>
                                 </tr>
                             </thead>
@@ -1816,7 +1835,7 @@
     var rcvcustoms_selected_row = 0;
     var rcvcustoms_selected_col = 1;
     var rcvcustoms_selected_table = ''
-    var rcvcustoms_url_dev = '<?=str_replace('wms', 'wms_dev', base_url())?>'
+    
     var rcvcustoms_currentmonth = (new Date().getMonth() + 1).toString() < 10 ? '0' + (new Date().getMonth() + 1).toString() : (new Date().getMonth() + 1).toString()
     document.getElementById('rcvcustoms_monthfilter').value = rcvcustoms_currentmonth
     document.getElementById('rcvcustoms_monthfilter_1').value = rcvcustoms_currentmonth
@@ -1827,7 +1846,7 @@
         btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
         $.ajax({
             type: "GET",
-            url: `${rcvcustoms_url_dev}sync_data_of_receivingitem`,
+            url: `<?=$_ENV['APP_INTERNAL_API']?>receive/synchronize`,
             dataType: "JSON",
             success: function(response) {
                 let ttlrows = response.dataDO.length
@@ -2692,6 +2711,7 @@
         document.getElementById('rcvcustoms_stack4').offsetHeight -
         document.getElementById('rcvcustoms_stack5').offsetHeight -
         document.getElementById('rcvcustoms_stack6').offsetHeight -
+        document.getElementById('rcvcustoms_stack7').offsetHeight -
         100);
 
     var rcvcustoms_selcol = '0';
@@ -2738,18 +2758,7 @@
         $("#RCVCUSTOMS_IMPORTDATA").modal('show');
     });
     $("#rcvcustoms_btn_download").click(function(e) {
-        $.ajax({
-            type: "get",
-            url: "<?=base_url('RCV/getlinkitemtemplate')?>",
-            dataType: "text",
-            success: function(response) {
-                window.open(response, '_blank');
-                alertify.message("<i>Start downloading...</i>");
-            },
-            error: function(xhr, ajaxOptions, throwError) {
-                alert(throwError);
-            }
-        });
+        window.open(`<?=$_ENV['APP_INTERNAL_API']?>receive/download-template`, '_blank');       
     });
     $("#rcvcustoms_btn_startimport").click(function(e) {
         if (document.getElementById('rcvcustoms_xlf_new').files.length == 0) {
@@ -2815,6 +2824,7 @@
             let mpph = excelRows[i].PPH;
             let mnomor_urut = excelRows[i].NOMOR_URUT;
             let mbm = excelRows[i].BM;
+            let NET_WEIGHT_PER_ITEM = excelRows[i].NET_WEIGHT_PER_ITEM;
 
             $.ajax({
                 type: "post",
@@ -2828,7 +2838,8 @@
                     innourut: mnomor_urut,
                     inbm: mbm,
                     inrowid: i,
-                    inqty: mqty
+                    inqty: mqty,
+                    NET_WEIGHT_PER_ITEM : NET_WEIGHT_PER_ITEM
                 },
                 dataType: "json",
                 success: function(response) {
@@ -2852,18 +2863,15 @@
         const mdo = $("#rcvcustoms_docnoorigin").val()
         const mconaNum = document.getElementById('rcvcustoms_contractnum').value
         const mbisgrup = document.getElementById('rcvcustoms_businessgroup').value
-        var mnoaju = $("#rcvcustoms_noaju").val()
-        var mregno = $("#rcvcustoms_regno").val()
-        var m_nw = numeral($("#rcvcustoms_NW").val()).value()
-        var m_gw = numeral($("#rcvcustoms_GW").val()).value()
-        var m_amt = numeral($("#rcvcustoms_amount").val()).value()
+        const mnoaju = $("#rcvcustoms_noaju").val()
+        const mregno = $("#rcvcustoms_regno").val()
+        const m_nw = numeral($("#rcvcustoms_NW").val()).value()
+        const m_gw = numeral($("#rcvcustoms_GW").val()).value()
+        const m_amt = numeral($("#rcvcustoms_amount").val()).value()
         let mkppbc = $("#rcvcustoms_kppbc").val()
         let zstsrcv = document.getElementById('rcvcustoms_zsts').value
         let ar_nourut = [];
         let ar_pono = [];
-        let ar_dodt = [];
-        let ar_supcd = [];
-        let ar_curr = [];
         let ar_item = [];
         let ar_qty = [];
         let ar_price = [];
@@ -2874,6 +2882,7 @@
         let ar_bm = [];
         let ar_ppn = [];
         let ar_pph = [];
+        let perNW = [];
         if(mkppbc.value == '')
         {
             $("#RCVCUSTOMS_PROGRESS").modal('hide');
@@ -2886,25 +2895,22 @@
         tables.find('tr').each(function(i) {
             let $tds = $(this).find('td'),
                 rnourut = $tds.eq(1).text(),
-                rpo = $tds.eq(3).text(),
-                rsup = $tds.eq(5).text(),
-                rcurr = $tds.eq(7).text(),
-                ritem = $tds.eq(8).text(),
-                rqty = $tds.eq(10).text(),
-                rprc = $tds.eq(12).text(),
-                ramt = $tds.eq(13).text(),
-                rwh = $tds.eq(14).text();
-            rgrlno = $tds.eq(15).text();
-            rhscode = $tds.eq(16).text();
-            rbm = $tds.eq(17).text();
-            rppn = $tds.eq(18).text();
-            rpph = $tds.eq(19).text();
+                rpo = $tds.eq(2).text(),
+                ritem = $tds.eq(3).text(),
+                rqty = $tds.eq(5).text(),
+                rprc = $tds.eq(7).text(),
+                ramt = $tds.eq(8).text(),
+                _perNW = $tds.eq(9).text();
+                rwh = $tds.eq(10).text();
+            rgrlno = $tds.eq(11).text();
+            rhscode = $tds.eq(12).text();
+            rbm = $tds.eq(13).text();
+            rppn = $tds.eq(14).text();
+            rpph = $tds.eq(15).text();
             if (ritem != '') {
                 ar_nourut.push(rnourut);
                 ar_pono.push(rpo.trim());
 
-                ar_supcd.push(rsup);
-                ar_curr.push(rcurr);
                 ar_item.push(ritem);
                 ar_qty.push(numeral(rqty).value());
                 ar_price.push(rprc);
@@ -2915,6 +2921,7 @@
                 ar_bm.push(rbm);
                 ar_ppn.push(rppn);
                 ar_pph.push(rpph);
+                perNW.push(_perNW);
             }
         });
 
@@ -2935,8 +2942,7 @@
                 inregno: mregno,
                 inNW: m_nw,
                 inGW: m_gw,
-                insupcd: ar_supcd,
-                incurr: ar_curr,
+                insupcd: rcvcustoms_suppliercode,
                 initm: ar_item,
                 inqty: ar_qty,
                 inprice: ar_price,
@@ -2950,7 +2956,8 @@
                 inppn: ar_ppn,
                 inpph: ar_pph,
                 innomorurut: ar_nourut,
-                inbisgrup: mbisgrup
+                inbisgrup: mbisgrup,
+                perNW: perNW,
             },
             dataType: "json",
             success: function(response) {
@@ -3016,23 +3023,7 @@
             alertify.warning('KPPBC is required')
             rcvcustoms_kppbc.focus()
             return
-        }
-
-        let ar_nourut = [];
-        let ar_pono = [];
-        let ar_dodt = [];
-        let ar_supcd = [];
-        let ar_curr = [];
-        let ar_item = [];
-        let ar_qty = [];
-        let ar_price = [];
-        let ar_amt = [];
-        let ar_wh = [];
-        let ar_grlno = [];
-        let ar_hscode = [];
-        let ar_bm = [];
-        let ar_ppn = [];
-        let ar_pph = [];
+        }        
 
         let isValidationOk = true
 
@@ -3178,24 +3169,59 @@
                 },
                 dataType: "json",
                 success: function(response) {
+                    let mydes = document.getElementById("rcvcustoms_divku_search");
+                    let myfrag = document.createDocumentFragment();
+                    let cln = rcvcustoms_tbldono.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    let tabell = myfrag.getElementById("rcvcustoms_tbldono");
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    tableku2.innerHTML = '';
                     let ttlrows = response.length;
                     let tohtml = '';
                     for (let i = 0; i < ttlrows; i++) {
-                        const addcls = response[i].PNGR_INVNO.trim().length > 1 ? 'class="table-success"' : ''
-                        tohtml += "<tr style='cursor:pointer'>" +
-                            `<td ${addcls}>` + response[i].PGRN_SUPNO + "</td>" +
-                            "<td>" + response[i].PGRN_RCVDT + "</td>" +
-                            "<td>" + response[i].MSUP_SUPNM + "</td>" +
-                            "<td class='text-end'>" + numeral(response[i].TTLITEMIN / response[i].TTLITEM * 100).format(',') + "% synchronized</td>" +
-                            "<td>" + response[i].RCV_HSCD + "</td>" +
-                            "<td>" + response[i].RCV_BM + "</td>" +
-                            "<td>" + response[i].RCV_PPN + "</td>" +
-                            "<td>" + response[i].RCV_PPH + "</td>" +
-                            "<td>" + response[i].PGRN_BSGRP + "</td>" +
-                            "<td>" + response[i].PNGR_INVNO + "</td>" +
-                            "</tr>";
+                        newrow = tableku2.insertRow(-1)
+                        newrow.onclick = function(event) {
+                            document.getElementById('rcvcustoms_businessgroup').value = response[i].PGRN_BSGRP
+                            document.getElementById('rcvcustoms_invoice').value = response[i].PNGR_INVNO
+                            $("#rcvcustoms_docnoorigin").val(response[i].PGRN_SUPNO);
+                            MGGetDODetail(response[i].PGRN_SUPNO);
+
+                            $("#RCVCUSTOMS_DTLMOD").modal('hide');
+                            WMSGetDODetail(response[i].PGRN_SUPNO);
+
+                            rcvcustoms_supplier_name.value = response[i].MSUP_SUPNM
+                            rcvcustoms_supplier_currency.value = response[i].MSUP_SUPCR
+                        }
+                        newcell = newrow.insertCell(0)
+                        if(response[i].PNGR_INVNO.trim().length > 1) {
+                            newcell.classList.add('table-success')
+                        }
+                        newcell.innerHTML = response[i].PGRN_SUPNO
+
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = response[i].PGRN_RCVDT
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = response[i].MSUP_SUPNM
+
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(response[i].TTLITEMIN / response[i].TTLITEM * 100).format(',') + "% synchronized"
+
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = response[i].RCV_HSCD
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = response[i].RCV_BM
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = response[i].RCV_PPN
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = response[i].RCV_PPH
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = response[i].PGRN_BSGRP
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = response[i].PNGR_INVNO
                     }
-                    $("#rcvcustoms_tbldono tbody").html(tohtml);
+                    mydes.innerHTML = ''
+                    mydes.appendChild(myfrag)
                     $("#lblinfo_rcvcustoms_tbldono").text("");
                 },
                 error: function(xhr, xopt, xthrow) {
@@ -3205,24 +3231,6 @@
         }
     });
     var rcvcustoms_rcv_status = '-'
-    $('#rcvcustoms_tbldono tbody').on('click', 'tr', function() {
-        if ($(this).hasClass('table-active')) {
-            $(this).removeClass('table-active');
-        } else {
-            $('#rcvcustoms_tbldono tbody tr.table-active').removeClass('table-active');
-            $(this).addClass('table-active');
-        }
-        const mitem = $(this).closest("tr").find('td:eq(0)').text();
-        const mbisgrup = $(this).closest("tr").find('td:eq(8)').text()
-        const minvoice = $(this).closest("tr").find('td:eq(9)').text()
-
-        document.getElementById('rcvcustoms_businessgroup').value = mbisgrup
-        document.getElementById('rcvcustoms_invoice').value = minvoice
-        $("#rcvcustoms_docnoorigin").val(mitem.trim());
-        MGGetDODetail(mitem.trim());
-        $("#RCVCUSTOMS_DTLMOD").modal('hide');
-        WMSGetDODetail(mitem.trim());
-    });
 
     function vrcv_e_getstsrcv(mid, pval) {
         $.ajax({
@@ -3352,6 +3360,7 @@
                 let ttlQty = 0
                 $("#rcvcustoms_lbltbl").text(ttlrows + " row(s) found");
                 for (let i = 0; i < ttlrows; i++) {
+                    rcvcustoms_suppliercode = response[i].PGRN_SUPCD
                     strprice = response[i].PGRN_PRPRC;
                     if (strprice.substring(0, 1) == '.') {
                         strpirce = '0' + response[i].PGRN_PRPRC;
@@ -3369,18 +3378,14 @@
                     tohtml += "<tr style='cursor:pointer'>" +
                         "<td>" + response[i].SYNC_STS + "</td>" +
                         "<td contenteditable='true'>" + response[i].NOURUT + "</td>" +
-                        "<td>" + response[i].PROFNO + "</td>" +
-                        "<td>" + response[i].PGRN_PONO + "</td>" +
-                        "<td>" + response[i].PGRN_RCVDT.substring(0, 10) + "</td>" +
-                        "<td class='d-none'>" + response[i].PGRN_SUPCD + "</td>" +
-                        "<td>" + response[i].MSUP_SUPNM + "</td>" +
-                        "<td>" + response[i].PGRN_SUPCR + "</td>" +
+                        "<td class='d-none'>" + response[i].PGRN_PONO + "</td>" +                        
                         "<td>" + response[i].PGRN_ITMCD + "</td>" +
                         "<td>" + response[i].MITM_ITMD1 + "</td>" +
                         "<td class='text-end'>" + numeral(response[i].PGRN_ROKQT).format(',') + "</td>" +
                         "<td>" + response[i].PGRN_POUOM + "</td>" +
                         "<td class='text-end'>" + strpirce + "</td>" +
                         "<td class='text-end'>" + stramt + "</td>" +
+                        "<td class='text-end receive-detail-nw' contenteditable='true'>"+ response[i].RCV_PRNW +"</td>" +
                         "<td class='d-none'>" + response[i].PGRN_LOCCD + "</td>" +
                         "<td class='d-none'>" + response[i].PGRN_GRLNO + "</td>" +
                         "<td contenteditable='true'>" + response[i].HSCD + "</td>" +
@@ -3392,6 +3397,10 @@
                 $("#rcvcustoms_tbl tbody").html(tohtml);
                 document.getElementById('rcvcustoms_amount').value = numeral(ttlAmount).format('0,0.00')
                 document.getElementById('rcvcustoms_qty').value = numeral(ttlQty).format('0,0')
+                Inputmask({
+                    'alias': 'decimal',
+                    'groupSeparator': ',',
+                }).mask(document.getElementsByClassName("receive-detail-nw"));
             },
             error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow);
@@ -3822,9 +3831,6 @@
         const invoice = document.getElementById('rcvcustoms_fg_invoice').value
         var ar_nourut = [];
         var ar_pono = [];
-        var ar_dodt = [];
-        var ar_supcd = [];
-        var ar_curr = [];
         var ar_item = [];
         var ar_qty = [];
         var ar_price = [];
@@ -3835,30 +3841,27 @@
         let ar_bm = [];
         let ar_ppn = [];
         let ar_pph = [];
+        let perNW = [];
 
         let tables = $("#rcvcustoms_fg_tbl tbody")
         tables.find('tr').each(function(i) {
             let $tds = $(this).find('td'),
                 rnourut = $tds.eq(1).text(),
-                rpo = $tds.eq(3).text(),
-                rsup = rcvcustoms_suppliercode,
-                rcurr = $tds.eq(7).text(),
-                ritem = $tds.eq(8).text(),
-                rqty = $tds.eq(10).text(),
-                rprc = $tds.eq(12).text(),
-                ramt = $tds.eq(13).text(),
-                rwh = $tds.eq(14).text();
-            rgrlno = $tds.eq(15).text();
-            rhscode = $tds.eq(16).text();
-            rbm = $tds.eq(17).text();
-            rppn = $tds.eq(18).text();
-            rpph = $tds.eq(19).text();
+                rpo = $tds.eq(2).text(),
+                ritem = $tds.eq(3).text(),
+                _perNW = $tds.eq(9).text(),
+                rqty = $tds.eq(5).text(),
+                rprc = $tds.eq(7).text(),
+                ramt = $tds.eq(8).text(),
+                rwh = $tds.eq(10).text();
+            rgrlno = $tds.eq(11).text();
+            rhscode = $tds.eq(12).text();
+            rbm = $tds.eq(13).text();
+            rppn = $tds.eq(14).text();
+            rpph = $tds.eq(15).text();
             if (ritem != '') {
                 ar_nourut.push(rnourut);
                 ar_pono.push(rpo.trim());
-
-                ar_supcd.push(rsup);
-                ar_curr.push(rcurr);
                 ar_item.push(ritem);
                 ar_qty.push(numeral(rqty).value());
                 ar_price.push(rprc);
@@ -3869,6 +3872,7 @@
                 ar_bm.push(rbm);
                 ar_ppn.push(rppn);
                 ar_pph.push(rpph);
+                perNW.push(_perNW);
             }
         });
         $.ajax({
@@ -3886,8 +3890,7 @@
                 inregno: mregno,
                 inNW: m_nw,
                 inGW: m_gw,
-                insupcd: ar_supcd,
-                incurr: ar_curr,
+                insupcd: rcvcustoms_suppliercode,
                 initm: ar_item,
                 inqty: ar_qty,
                 inprice: ar_price,
@@ -3902,7 +3905,8 @@
                 inpph: ar_pph,
                 innomorurut: ar_nourut,
                 inconaNum: cona,
-                invoice: invoice
+                invoice: invoice,
+                perNW: perNW,
             },
             dataType: "json",
             success: function(response) {
@@ -4042,6 +4046,9 @@
                             document.getElementById('rcvcustoms_fg_contractnum').value = response[i].RCV_CONA
                             document.getElementById('rcvcustoms_fg_invoice').value = response[i].STKTRND1_DOCNO
 
+                            rcvcustoms_fg_customer_name.value = response[i].MSUP_SUPNM
+                            rcvcustoms_fg_customer_currency.value = ''
+
                         }
                         newcell = newrow.insertCell(1)
                         newcell.innerHTML = response[i].ISUDT
@@ -4063,9 +4070,6 @@
                         newcell = newrow.insertCell(9)
                         newcell.innerHTML = response[i].MSUP_SUPNM
                         newcell = newrow.insertCell(10)
-                        newcell.classList.add('d-none')
-                        newcell.innerHTML = response[i].RCV_SUPCD
-                        newcell = newrow.insertCell(11)
                         newcell.innerHTML = response[i].SUPNO
                     }
                     mydes.innerHTML = ''
@@ -4232,18 +4236,14 @@
                     tohtml += "<tr style='cursor:pointer'>" +
                         "<td>" + response[i].SYNC_STS + "</td>" +
                         "<td contenteditable='true'>" + response[i].NOURUT + "</td>" +
-                        "<td>" + response[i].PROFNO + "</td>" +
-                        "<td></td>" +
-                        "<td>" + response[i].ISUDT + "</td>" +
-                        "<td class='d-none'>" + response[i].MCUS_CUSCD + "</td>" +
-                        "<td>" + response[i].MCUS_CUSNM + "</td>" +
-                        "<td>" + response[i].MCUS_CURCD + "</td>" +
+                        "<td class='d-none'></td>" +
                         "<td>" + response[i].STKTRND2_ITMCD + "</td>" +
                         "<td>" + response[i].MITM_ITMD1 + "</td>" +
                         "<td class='text-end'>" + numeral(response[i].RETQT).format(',') + "</td>" +
                         "<td>" + response[i].MITM_STKUOM + "</td>" +
                         "<td class='text-end'>" + strpirce + "</td>" +
                         "<td class='text-end'>" + stramt + "</td>" +
+                        "<td class='receive-detail-nw' contenteditable='true'>" + response[i].RCV_PRNW + "</td>" +
                         "<td class='d-none'>" + response[i].STKTRND1_LOCCDFR + "</td>" +
                         "<td class='d-none'>" + response[i].THELINE + "</td>" +
                         "<td contenteditable='true'>" + response[i].HSCD + "</td>" +
@@ -4254,6 +4254,11 @@
                 }
                 $("#rcvcustoms_fg_tbl tbody").html(tohtml)
                 document.getElementById('rcvcustoms_fg_amount').value = numeral(ttlAmount).format('0,0.00')
+
+                Inputmask({
+                    'alias': 'decimal',
+                    'groupSeparator': ',',
+                }).mask(document.getElementsByClassName("receive-detail-nw"));
             },
             error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow);

@@ -757,7 +757,7 @@ class RCV extends CI_Controller
         $rs = $this->RCV_mod->qry($qry);
         $api_result = '';
         foreach ($rs as $r) {
-            $api_result = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode($r['RCV_DONO']), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
+            $api_result = Requests::request($_ENV['APP_INTERNAL2_API'] . 'stock/incomingPabean/' . base64_encode($r['RCV_DONO']), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         }
         die(json_encode(['message' => 'done ' . '(' . date('Y-m-d H:i:s') . ')', 'API' => $api_result]));
     }
@@ -1007,6 +1007,7 @@ class RCV extends CI_Controller
         $cnourut = $this->input->post('innomorurut');
         $cstsrcv = $this->input->post('instsrcv');
         $invoice = $this->input->post('invoice');
+        $perNetWeight = $this->input->post('perNW');
 
         if (empty($crcvdate)) {
             die(json_encode([
@@ -1051,7 +1052,7 @@ class RCV extends CI_Controller
                         'RCV_TTLAMT' => ($cttlamt == '' ? null : $cttlamt),
                         'RCV_TPB' => $ctpb,
                         'RCV_WH' => $cwh[$i],
-                        'RCV_SUPCD' => $csup[$i],
+                        'RCV_SUPCD' => $csup,
                         'RCV_RCVDATE' => $crcvdate == '' ? null : $crcvdate,
                         'RCV_NW' => ($c_nw == '' ? null : $c_nw),
                         'RCV_GW' => ($c_gw == '' ? null : $c_gw),
@@ -1067,6 +1068,7 @@ class RCV extends CI_Controller
                         'RCV_USRID' => $this->session->userdata('nama'),
                         'RCV_CREATEDBY' => $MEGAUser,
                         'RCV_INVNO' => $invoice,
+                        'RCV_PRNW' => $perNetWeight[$i] == '' ? null : $perNetWeight[$i],
                     ];
                     $cret = $this->RCV_mod->updatebyVAR($datau, $dataw);
                     $myctr_edited += $cret;
@@ -1086,7 +1088,7 @@ class RCV extends CI_Controller
                         'RCV_TTLAMT' => ($cttlamt == '' ? null : $cttlamt),
                         'RCV_TPB' => $ctpb,
                         'RCV_WH' => $cwh[$i],
-                        'RCV_SUPCD' => $csup[$i],
+                        'RCV_SUPCD' => $csup,
                         'RCV_RCVDATE' => $crcvdate == '' ? null : $crcvdate,
                         'RCV_NW' => ($c_nw == '' ? null : $c_nw),
                         'RCV_GW' => ($c_gw == '' ? null : $c_gw),
@@ -1104,85 +1106,16 @@ class RCV extends CI_Controller
                         'RCV_USRID' => $this->session->userdata('nama'),
                         'RCV_CREATEDBY' => $MEGAUser,
                         'RCV_INVNO' => $invoice,
+                        'RCV_PRNW' => $perNetWeight[$i] == '' ? null : $perNetWeight[$i],
                     ];
                     $cret = $this->RCV_mod->insert($datas);
                     $myctr_saved += $cret;
                 }
             }
         } else {
-            $dataw = [
-                'RCV_PO' => $cpo,
-                'RCV_DONO' => $cdo,
-                'RCV_ITMCD' => $citem,
-                'RCV_GRLNO' => $cgrlno,
-            ];
-            if ($this->RCV_mod->check_Primary($dataw) > 0) {
-                $datau = [
-                    'RCV_RPNO' => $caju,
-                    'RCV_RPDATE' => $cbcdate,
-                    'RCV_BCTYPE' => $cbctype,
-                    'RCV_BCNO' => $cregno,
-                    'RCV_BCDATE' => $cbcdate,
-                    'RCV_QTY' => $cqty,
-                    'RCV_PRPRC' => $cprice,
-                    'RCV_AMT' => $camt,
-                    'RCV_TTLAMT' => ($cttlamt == '' ? null : $cttlamt),
-                    'RCV_TPB' => $ctpb,
-                    'RCV_WH' => $cwh,
-                    'RCV_SUPCD' => $csup,
-                    'RCV_RCVDATE' => $crcvdate == '' ? null : $crcvdate,
-                    'RCV_NW' => ($c_nw == '' ? null : $c_nw),
-                    'RCV_GW' => ($c_gw == '' ? null : $c_gw),
-                    'RCV_KPPBC' => $ckppbc,
-                    'RCV_GRLNO' => $cgrlno,
-                    'RCV_HSCD' => $chscd,
-                    'RCV_ZSTSRCV' => $cstsrcv,
-                    'RCV_BM' => $cbm,
-                    'RCV_PPN' => $cppn,
-                    'RCV_PPH' => $cpph,
-                    'RCV_ZNOURUT' => $cnourut,
-                    'RCV_USRID' => $this->session->userdata('nama'),
-                    'RCV_CREATEDBY' => $MEGAUser,
-                    'RCV_INVNO' => $invoice,
-                ];
-                $cret = $this->RCV_mod->updatebyVAR($datau, $dataw);
-                $myctr_edited += $cret;
-            } else {
-                $datas = [
-                    'RCV_PO' => $cpo,
-                    'RCV_DONO' => $cdo,
-                    'RCV_ITMCD' => $citem,
-                    'RCV_RPNO' => $caju,
-                    'RCV_RPDATE' => $cbcdate,
-                    'RCV_BCTYPE' => $cbctype,
-                    'RCV_BCNO' => $cregno,
-                    'RCV_BCDATE' => $cbcdate,
-                    'RCV_QTY' => $cqty,
-                    'RCV_PRPRC' => $cprice,
-                    'RCV_AMT' => $camt,
-                    'RCV_TTLAMT' => ($cttlamt == '' ? null : $cttlamt),
-                    'RCV_TPB' => $ctpb,
-                    'RCV_WH' => $cwh,
-                    'RCV_SUPCD' => $csup,
-                    'RCV_RCVDATE' => $crcvdate == '' ? null : $crcvdate,
-                    'RCV_NW' => ($c_nw == '' ? null : $c_nw),
-                    'RCV_GW' => ($c_gw == '' ? null : $c_gw),
-                    'RCV_KPPBC' => $ckppbc,
-                    'RCV_GRLNO' => $cgrlno,
-                    'RCV_HSCD' => $chscd,
-                    'RCV_ZSTSRCV' => $cstsrcv,
-                    'RCV_BM' => $cbm,
-                    'RCV_PPN' => $cppn,
-                    'RCV_PPH' => $cpph,
-                    'RCV_ZNOURUT' => $cnourut,
-                    'RCV_LUPDT' => $currrtime,
-                    'RCV_USRID' => $this->session->userdata('nama'),
-                    'RCV_CREATEDBY' => $MEGAUser,
-                    'RCV_INVNO' => $invoice,
-                ];
-                $cret = $this->RCV_mod->insert($datas);
-                $myctr_saved += $cret;
-            }
+            die(json_encode([
+                ['cd' => '0', 'msg' => 'Array Input is required'],
+            ]));
         }
         $msg = '';
 
@@ -1212,7 +1145,7 @@ class RCV extends CI_Controller
             ]);
         }
 
-        $apiRespon = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/incomingPabean/' . base64_encode($cdo), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
+        $apiRespon = Requests::request($_ENV['APP_INTERNAL2_API'] . 'stock/incomingPabean/' . base64_encode($cdo), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         $myar = [];
         $myar[] = [
             "cd" => "1", "msg" => $myctr_saved . " saved, " . $myctr_edited . " edited", "extra" => trim($cwh[0]),
@@ -2463,6 +2396,7 @@ class RCV extends CI_Controller
             $r['PPN'] = 0;
             $r['PPH'] = 0;
             $r['NOURUT'] = '';
+            $r['RCV_PRNW'] = 0;
             foreach ($rs2 as $r2) {
                 $r['PROFNO'] = $r2['RCV_BCNO'];
                 $r['HSCD'] = $r2['RCV_HSCD'];
@@ -2470,6 +2404,7 @@ class RCV extends CI_Controller
                 $r['PPN'] = $r2['RCV_PPN'] ? $r2['RCV_PPN'] : 0;
                 $r['PPH'] = $r2['RCV_PPH'] ? $r2['RCV_PPH'] : 0;
                 $r['NOURUT'] = $r2['RCV_ZNOURUT'] ? $r2['RCV_ZNOURUT'] : '';
+                $r['RCV_PRNW'] = $r2['RCV_PRNW'] ?? 0;
             }
         }
         unset($r);
@@ -2515,6 +2450,7 @@ class RCV extends CI_Controller
             $r['MCUS_CUSCD'] = $customer_cd;
             $r['MCUS_CUSNM'] = $customer_name;
             $r['MCUS_CURCD'] = $customer_currency;
+            $r['RCV_PRNW'] = 0;
             foreach ($rs2 as $r2) {
                 $r['PROFNO'] = $r2['RCV_BCNO'];
                 $r['HSCD'] = $r2['RCV_HSCD'];
@@ -2522,6 +2458,7 @@ class RCV extends CI_Controller
                 $r['PPN'] = $r2['RCV_PPN'] ? $r2['RCV_PPN'] : 0;
                 $r['PPH'] = $r2['RCV_PPH'] ? $r2['RCV_PPH'] : 0;
                 $r['NOURUT'] = $r2['RCV_ZNOURUT'] ? $r2['RCV_ZNOURUT'] : '';
+                $r['RCV_PRNW'] = $r2['RCV_PRNW'] ?? 0;
             }
         }
         unset($r);
@@ -2932,6 +2869,7 @@ class RCV extends CI_Controller
         $cnomor_urut = $this->input->post('innourut');
         $cqty = $this->input->post('inqty');
         $crowid = $this->input->post('inrowid');
+        $NET_WEIGHT_PER_ITEM = $this->input->post('NET_WEIGHT_PER_ITEM');
         $datac = ['RCV_DONO' => $cdo, 'RCV_ITMCD' => $citemcode];
         $myar = [];
 
@@ -2939,7 +2877,12 @@ class RCV extends CI_Controller
             $anar = ["indx" => $crowid, "status" => 'Not found'];
         } else {
             $datau = [
-                'RCV_HSCD' => $chscode, 'RCV_BM' => $cbm, 'RCV_PPN' => $cppn, 'RCV_PPH' => $cpph, 'RCV_ZNOURUT' => $cnomor_urut,
+                'RCV_HSCD' => $chscode, 
+                'RCV_BM' => $cbm, 
+                'RCV_PPN' => $cppn, 
+                'RCV_PPH' => $cpph, 
+                'RCV_ZNOURUT' => $cnomor_urut,
+                'RCV_PRNW' => $NET_WEIGHT_PER_ITEM/$cqty ,
             ];
             $toret = $this->RCV_mod->updatebyId_new($datau, $cdo, $citemcode, $cqty);
             if ($toret > 0) {
