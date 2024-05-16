@@ -15820,6 +15820,8 @@ class DELV extends CI_Controller
            
             $IncDateList = [];
             $IncCRList = []; #Currency
+            $IncDateListDistinct = [];
+            $IncCRListDistinct = []; 
             $IncDateCR_FLGList = []; #Currency
             $tpb_barang = [];
 
@@ -15895,10 +15897,17 @@ class DELV extends CI_Controller
 
                     $IncDateList[] = $r['DLVSCR_BB_TGLPEN'];
                     $IncCRList[] = $r['DLVSCR_BB_MATA_UANG'];
+                    
+                    if(!in_array($r['DLVSCR_BB_TGLPEN'], $IncDateListDistinct)) {
+                        $IncDateListDistinct[] = $r['DLVSCR_BB_TGLPEN'];
+                    }
+                    if(!in_array($r['DLVSCR_BB_MATA_UANG'], $IncCRListDistinct)) {
+                        $IncCRListDistinct[] = $r['DLVSCR_BB_MATA_UANG'];
+                    }
+
+
+
                 }
-
-                
-
             } else {
                 $rs_do = $this->DELV_mod->select_for_do_rm_rtn_v1($doc);
                 $rs_xbc = $this->RCV_mod->select_for_rmrtn_bytxid($doc);
@@ -15951,6 +15960,14 @@ class DELV extends CI_Controller
                             ];
                             $IncDateList[] = $x['RCV_BCDATE'];
                             $IncCRList[] = $x['MSUP_SUPCR'];
+
+                            if(!in_array($r['RCV_BCDATE'], $IncDateListDistinct)) {
+                                $IncDateListDistinct[] = $r['RCV_BCDATE'];
+                            }
+                            if(!in_array($r['MSUP_SUPCR'], $IncCRListDistinct)) {
+                                $IncCRListDistinct[] = $r['MSUP_SUPCR'];
+                            }
+
                             $IncDateCR_FLGList[] = 0;
                             if ($r['DLVRMDOC_ITMQT'] == $r['PLOTQT']) {
                                 break;
@@ -15964,7 +15981,7 @@ class DELV extends CI_Controller
 
             
             $no = 1;
-            $rscurr = $this->MEXRATE_mod->selectfor_posting_in($IncDateList, $IncCRList);
+            $rscurr = $this->MEXRATE_mod->selectfor_posting_in($IncDateListDistinct, $IncCRListDistinct);
             $listcount = count($IncDateCR_FLGList);
             foreach ($rscurr as $r) {
                 for ($i = 0; $i < $listcount; $i++) {
