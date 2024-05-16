@@ -16129,7 +16129,7 @@ class DELV extends CI_Controller
         $responApi = null;
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-25rm, step0#, DO:' . $doc);
-            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/25', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);            
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/25', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);            
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-25rm, step0#, DO:' . $doc);
