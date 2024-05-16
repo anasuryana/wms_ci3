@@ -26,6 +26,10 @@ class WO extends CI_Controller
     {
         $this->load->view('wms_report/vwo_suggester');
     }
+    public function form_entry()
+    {
+        $this->load->view('wms/vwo_output');
+    }
 
     public function checkSimulation()
     {
