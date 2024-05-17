@@ -2776,7 +2776,7 @@ class RMCalculator
                         } else {
                             $res2 = json_decode($this->get_usage_rm_perjob_peruniq($pser[$u], $pserqty[$u], $pjob[$u]));
                             $myar[] = $res2->status[0]->cd != 0 ? ['cd' => 1, 'msg' => 'recalculated ok.', 'reffno' => $pser[$u]] :
-                            ['cd' => 0, 'msg' => 'calculating is failed...', 'reffno' => $pser[$u]];
+                            ['cd' => 0, 'msg' => 'calculating is failed...', 'reffno' => $pser[$u], 'res' => $res2];
                         }
                     }
                     #CHECK IS SUB ASSY
@@ -3079,7 +3079,7 @@ class RMCalculator
                         && ($n['SERD_MCZ'] == $x['SERD_MCZ'])
                         && ($n['SERD_MPART'] == $x['SERD_MPART'])
                     ) {
-                        if (($n['SERREQQTY'] > $n["SUPSERQTY"])) {
+                        if (($n['SERREQQTY'] >= $n["SUPSERQTY"])) {
                             if ($x['SERD_QTY'] > 0) {
                                 $__balance = $n['SERREQQTY'] - $n["SUPSERQTY"];
                                 $__qty = 0;

@@ -15,6 +15,7 @@
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/bootstrap_dp/css/bootstrap-datepicker.min.css") ?>">
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/fontaw/css/all.css") ?>">
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/select2/css/select2.min.css") ?>">		
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/select2/css/select2-bootstrap-5-theme.min.css") ?>">		
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/DataTables/datatables.min.css") ?>">
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/alertify/css/alertify.min.css") ?>">
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/alertify/css/themes/semantic.min.css") ?>">	
