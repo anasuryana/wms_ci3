@@ -500,7 +500,7 @@ class SO extends CI_Controller {
                     'CSMLOG_DOCNO' => $txid,
                     'CSMLOG_SUPZAJU' => '',
                     'CSMLOG_SUPZNOPEN' => '',
-                    'CSMLOG_DESC' => 'change price, from '.$oldSOLine .' to '.$newSOLine,
+                    'CSMLOG_DESC' => 'change price, from '.$oldSOLine .' to '.$newSOLine . ' ('.$fline.')',
                     'CSMLOG_LINE' => $lastLineLog,
                     'CSMLOG_TYPE' => 'OUT',
                     'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),

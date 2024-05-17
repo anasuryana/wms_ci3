@@ -1136,7 +1136,16 @@ foreach ($lcus as $r) {
 
                     const result = [...onlyInA, ...onlyInB]
 
-                    if(result.length === 2) {
+                    const resultLength = result.length
+
+                    let uniqueItem = []
+                    for(let i =0 ; i< resultLength; i++) {
+                        if(!uniqueItem.includes(result[i][0])) {
+                            uniqueItem.push(result[i][0])
+                        }
+                    }
+
+                    if(result.length === 2 && uniqueItem.length<=1) {
                         let _akanban = []
                         let _apur_org = []
                         let _adescrip = []
