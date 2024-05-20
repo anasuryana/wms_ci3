@@ -471,6 +471,10 @@
         wopr_wo_input.value = '-'
         wopr_wo_size_input.value = ''
         wopr_process_input.value = '-'
+
+        wopr_tbl.getElementsByTagName("tbody")[0].innerHTML = ''
+        wopr_tbl.getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].innerHTML = `<th class="align-middle" rowspan="2">Process</th><th class="align-middle" rowspan="2">Total</th>`
+        wopr_tbl.getElementsByTagName('thead')[0].getElementsByTagName('tr')[1].innerHTML = ``
     }
 
     function wopr_load_at() {
