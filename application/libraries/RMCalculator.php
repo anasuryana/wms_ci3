@@ -3079,7 +3079,7 @@ class RMCalculator
                         && ($n['SERD_MCZ'] == $x['SERD_MCZ'])
                         && ($n['SERD_MPART'] == $x['SERD_MPART'])
                     ) {
-                        if (($n['SERREQQTY'] >= $n["SUPSERQTY"])) {
+                        if (($n['SERREQQTY'] > $n["SUPSERQTY"])) {
                             if ($x['SERD_QTY'] > 0) {
                                 $__balance = $n['SERREQQTY'] - $n["SUPSERQTY"];
                                 $__qty = 0;

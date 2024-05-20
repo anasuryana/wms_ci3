@@ -200,14 +200,14 @@
     }
 
     var wopr_data_morning = [
-        ['', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
         ['', 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
         ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
         ['OK', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['NG', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ]
     var wopr_data_night = [
-        ['', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
+        ['Hour', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
         ['', 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6, 7],
         ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
         ['OK', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -274,15 +274,23 @@
         updateTable: function(el, cell, x, y, source, value, id) {
             if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 2].includes(y)) {
                 cell.classList.add('readonly');
+                cell.style.cssText = "font-weight: bold; text-align:center"
             }
-            if(x===0 && y===3) {
+            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===3) {
                 cell.style.cssText = "background-color:#d1e7dd;font-weight: bold; text-align:center"
             }
-            if(x===0 && y===4) {
+            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===4) {
                 cell.style.cssText = "background-color:#f8d7da;font-weight: bold; text-align:center"
             }
         },
+        onchange : function(instance, cell, x, y, value) {
+            const cellName = jspreadsheet.getColumnNameFromId([x,y]);
+            console.log('New change on cell ' + cellName + ' to: ' + value + '');
+        },
         copyCompatibility:true,
+        mergeCells:{
+            A1:[1,2]
+        },
     });
 
     function wopr_btn_save_eC(pThis) {
@@ -452,7 +460,7 @@
     function wopr_btn_new_eC() {
         wopr_shift_input.value = 'M'
         wopr_sso.setData([
-            ['', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+            ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
             ['', 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
             ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
             ['OK', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -463,6 +471,10 @@
         wopr_wo_input.value = '-'
         wopr_wo_size_input.value = ''
         wopr_process_input.value = '-'
+
+        wopr_tbl.getElementsByTagName("tbody")[0].innerHTML = ''
+        wopr_tbl.getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].innerHTML = `<th class="align-middle" rowspan="2">Process</th><th class="align-middle" rowspan="2">Total</th>`
+        wopr_tbl.getElementsByTagName('thead')[0].getElementsByTagName('tr')[1].innerHTML = ``
     }
 
     function wopr_load_at() {
@@ -489,7 +501,7 @@
                     let inputSS = []
                     if(wopr_shift_input.value == 'N') {
                         inputSS = [
-                            ['', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
+                            ['Hour', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
                             ['', 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6, 7],
                             ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
                             ['OK', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -497,7 +509,7 @@
                         ]
                     } else {
                         inputSS = [
-                            ['', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+                            ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
                             ['', 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
                             ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
                             ['OK', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
