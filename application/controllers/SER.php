@@ -810,11 +810,12 @@ class SER extends CI_Controller
         $retfail = 0;
         if (is_array($cid)) {
             for ($i = 0; $i < count($cid); $i++) {
-                if ($this->ITH_mod->check_Primary(['ITH_SER' => $cid[$i]]) > 0) {
+                if ($this->ITH_mod->check_Primary(['ITH_SER' => $cid[$i], 'ITH_FORM' => 'OUT-PRD-FG']) > 0) {
                     $remark .= $cid[$i] . " is already scanned <br>";
                     $retfail += 1;
                 } else {
                     $toret += $this->SER_mod->deletebyID(['SER_ID' => $cid[$i]]);
+                    $toret += $this->ITH_mod->deletebyID(['ITH_SER' => $cid[$i]]);
                 }
             }
             if ($retfail == 0 && $toret > 0) {
@@ -1019,7 +1020,17 @@ class SER extends CI_Controller
             'SER_USRID' => $this->session->userdata('nama'),
         ];
         $toret = $this->SER_mod->insert($datas);
-
+        $this->ITH_mod->insert([
+            'ITH_ITMCD' => $citem, 
+            'ITH_DATE' => $cproddt, 
+            'ITH_FORM' => 'INC-PRD-FG', 
+            'ITH_DOC' => $cjob, 
+            'ITH_QTY' => $cqty, 
+            'ITH_WH' => 'ARPRD1', 
+            'ITH_SER' => $newid, 
+            'ITH_LUPDT' => $cproddt . ' ' . date('H:i:s'),
+            'ITH_USRID' => $this->session->userdata('nama'),
+        ]);
         $datar = $toret > 0 ? ["cd" => $toret, "msg" => "Saved successfully", "itemcd" => $citem, "doc" => $cjob] : ["cd" => $toret, "msg" => "Could not be saved"];
 
         $myar[] = $datar;

@@ -479,7 +479,7 @@ class SPL_mod extends CI_Model
                     ,SUM(ABS(ITH_QTY)) LQT
                 FROM ITH_TBL
                 LEFT JOIN SER_TBL ON ITH_SER=SER_ID
-                WHERE ITH_DOC = ? AND ITH_FORM IN ('OUT-PRD-FG','INC') AND ITH_WH IN ('ARPRD1')
+                WHERE ITH_DOC = ? AND ITH_FORM IN ('INC-PRD-FG','INC') AND ITH_WH IN ('ARPRD1')
                 AND SER_QTYLOT IS NOT NULL
                 GROUP BY ITH_DOC
                 ) VSER ON PDPP_WONO = SER_DOC
