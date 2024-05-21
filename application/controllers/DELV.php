@@ -16675,7 +16675,7 @@ class DELV extends CI_Controller
             foreach ($rsplotrm_per_fgprice as &$r) {
                 $r['PLOTRQTY'] = 0;
                 foreach ($rsbc as &$v) {
-                    if ($r['RITEMCDGR'] === $v->BC_ITEM || $r['RITEMCD'] === $v->BC_ITEM && $v->BC_QTY > 0) {
+                    if (($r['RITEMCDGR'] === $v->BC_ITEM || $r['RITEMCD'] === $v->BC_ITEM) && $v->BC_QTY > 0) {
                         $balreq = $r['RQTY'] - $r['PLOTRQTY'];
                         $theqty = 0;
 
