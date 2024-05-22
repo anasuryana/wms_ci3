@@ -6,89 +6,98 @@
             </div>
         </div>
         <div class="row">
+            <div class="col-md-2 mb-1">
+                <div class="btn-group">
+                    <button class="btn btn-outline-primary" id="wopr_btn_new" title="New" onclick="wopr_btn_new_eC()"><i class="fas fa-file"></i></button>
+                    <button class="btn btn-outline-primary" id="wopr_btn_save" onclick="wopr_btn_save_eC(this)"><i class="fas fa-save"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text">Line</label>
+                    <input type="text" style="text-transform:uppercase" class="form-control" id="wopr_line_input" onfocusout="wopr_line_input_efocusout()" maxlength="15">
+                </div>
+            </div>
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text">Production Date</label>
+                    <input type="text" class="form-control" id="wopr_date_input" onchange="wopr_date_input_eChange()" readonly>
+                </div>
+            </div>
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text">Shift</label>
+                    <select class="form-select" id="wopr_shift_input" onchange="wopr_shift_input_eChange(event)" required>
+                        <option value="M">Morning</option>
+                        <option value="N">Night</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text">Assy Code</label>
+                    <input type="text" class="form-control" id="wopr_assycode_input" onfocusout="wopr_assycode_input_efocusout()" maxlength="15">
+                </div>
+            </div>
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text" title="Work Order">WO</label>
+                    <select class="form-select" id="wopr_wo_input" onchange="wopr_wo_input_eChange(event)" required>
+                        <option value="-">-</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text">Lot Size</label>
+                    <input type="text" class="form-control" id="wopr_wo_size_input" readonly disabled>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text">Process</label>
+                    <select class="form-select" id="wopr_process_input" onchange="wopr_process_input_eChange()" required>
+                        <option value="-">-</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text">Input-QTY</label>
+                    <input type="text" class="form-control" id="wopr_inputqty_input">
+                </div>
+            </div>
+            <div class="col-md-4 mb-1 text-end">
+                <span id="wopr_lblinfo" class="badge bg-info">-</span>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-md-12 mb-1">
             <ul class="nav nav-tabs" id="wopr_myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="wosuggester_home-tab" data-bs-toggle="tab" data-bs-target="#wopr_input_tab" type="button" role="tab" aria-controls="home" aria-selected="true">Input</button>
+                    <button class="nav-link active" id="wopr_home-tab" data-bs-toggle="tab" data-bs-target="#wopr_input_tab" type="button" role="tab" aria-controls="home" aria-selected="true">Output</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="wopr_down_time-tab" data-bs-toggle="tab" data-bs-target="#wopr_input_downtime_tab" type="button" role="tab" aria-controls="home" aria-selected="true">Downtime</button>
                 </li>
             </ul>
-                <div class="tab-content" id="wopr_myTabContent">
+                <div class="tab-content border" id="wopr_myTabContent">
                     <div class="tab-pane fade show active" id="wopr_input_tab" role="tabpanel">
                         <div class="container-fluid p-1">
-                            <div class="row">
-                                <div class="col-md-2 mb-1">
-                                    <div class="btn-group">
-                                        <button class="btn btn-outline-primary" id="wopr_btn_new" title="New" onclick="wopr_btn_new_eC()"><i class="fas fa-file"></i></button>
-                                        <button class="btn btn-outline-primary" id="wopr_btn_save" onclick="wopr_btn_save_eC(this)"><i class="fas fa-save"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-4 mb-1">
-                                    <div class="input-group input-group-sm mb-1">
-                                        <label class="input-group-text">Line</label>
-                                        <input type="text" style="text-transform:uppercase" class="form-control" id="wopr_line_input" onfocusout="wopr_line_input_efocusout()" maxlength="15">
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-1">
-                                    <div class="input-group input-group-sm mb-1">
-                                        <label class="input-group-text">Production Date</label>
-                                        <input type="text" class="form-control" id="wopr_date_input" onchange="wopr_date_input_eChange()" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-1">
-                                    <div class="input-group input-group-sm mb-1">
-                                        <label class="input-group-text">Shift</label>
-                                        <select class="form-select" id="wopr_shift_input" onchange="wopr_shift_input_eChange(event)" required>
-                                            <option value="M">Morning</option>
-                                            <option value="N">Night</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4 mb-1">
-                                    <div class="input-group input-group-sm mb-1">
-                                        <label class="input-group-text">Assy Code</label>
-                                        <input type="text" class="form-control" id="wopr_assycode_input" onfocusout="wopr_assycode_input_efocusout()" maxlength="15">
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-1">
-                                    <div class="input-group input-group-sm mb-1">
-                                        <label class="input-group-text" title="Work Order">WO</label>
-                                        <select class="form-select" id="wopr_wo_input" onchange="wopr_wo_input_eChange(event)" required>
-                                            <option value="-">-</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-1">
-                                    <div class="input-group input-group-sm mb-1">
-                                        <label class="input-group-text">Lot Size</label>
-                                        <input type="text" class="form-control" id="wopr_wo_size_input" readonly disabled>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4 mb-1">
-                                    <div class="input-group input-group-sm mb-1">
-                                        <label class="input-group-text">Process</label>
-                                        <select class="form-select" id="wopr_process_input" onchange="wopr_process_input_eChange()" required>
-                                            <option value="-">-</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-8 mb-1 text-end">
-                                    <span id="wopr_lblinfo" class="badge bg-info">-</span>
-                                </div>
-                            </div>
-
                             <div class="row">
                                 <div class="col-md-12 mb-3 table-responsive">
                                     <div id="wopr_spreasheet"></div>
                                 </div>
                             </div>
-                            <div class="row border rounded">
+                            <div class="row">
                                 <div class="col-md-12 mb-1">
                                     <div class="table-responsive" id="wopr_tbl_div">
                                         <table id="wopr_tbl" class="table table-bordered table-sm caption-top border-primary text-center table-hover">
@@ -113,12 +122,19 @@
                             </div>
                         </div>
                     </div>
+                    <div class="tab-pane fade" id="wopr_input_downtime_tab" role="tabpanel">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script>
+    Inputmask({
+        'alias': 'decimal',
+        'groupSeparator': ',',
+    }).mask(document.getElementById("wopr_inputqty_input"));
+
     $("#wopr_date_input").datepicker({
         format: 'yyyy-mm-dd',
         autoclose:true
@@ -311,6 +327,7 @@
         const inputWO = wopr_wo_input.value.split('#')
         const woCode = inputWO[0]
         const woSize = numeral(inputWO[1]).value()
+        const inputPCB = numeral(wopr_inputqty_input.value).value()
 
         const inputProcess = wopr_process_input.value.split('#')
         const processCode = inputProcess[0]
@@ -319,6 +336,7 @@
         let inputSS = wopr_sso.getData()
 
         let outputQty = []
+        let totalOutputQty = 0
 
         for(let c=1; c<13; c++) {
             let _theDate = wopr_date_input.value
@@ -327,14 +345,21 @@
                 _theDate = oMoment.add(1, 'days').format('YYYY-MM-DD')
             }
 
-            const _valueOK = wopr_sso.getValueFromCoords(c, 3, true)
-            const _valueNG = wopr_sso.getValueFromCoords(c, 4, true)
+            const _valueOK = numeral(wopr_sso.getValueFromCoords(c, 3, true)).value()
+            const _valueNG = numeral(wopr_sso.getValueFromCoords(c, 4, true)).value()
 
             outputQty.push({
                 output_at : _theDate + ' ' + inputSS[0][c] + ':00:00',
-                outputOK : numeral(_valueOK).value() ,
-                outputNG : numeral(_valueNG).value() ,
+                outputOK : _valueOK ,
+                outputNG : _valueNG ,
             })
+
+            totalOutputQty += (_valueOK + _valueNG)
+        }
+
+        if(totalOutputQty > inputPCB) {
+            alertify.warning(`Please check total output (OK+NG) & Input-Qty`)
+            return
         }
 
         const dataInput = {
@@ -343,6 +368,7 @@
             item_bom_rev : inputWO[2],
             wo_code : woCode,
             wo_size : woSize,
+            input_qty : inputPCB,
             shift_code : wopr_shift_input.value,
             production_date : wopr_date_input.value,
             process_code : processCode,
@@ -531,6 +557,8 @@
                         }
                     }
                     wopr_sso.setData(inputSS)
+
+                    wopr_inputqty_input.value = response.inputPCB
                 }, error: function(xhr, xopt, xthrow) {
                     wopr_lblinfo.innerText = ''
                     alertify.error(xthrow)
