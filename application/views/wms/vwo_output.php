@@ -357,6 +357,11 @@
             totalOutputQty += (_valueOK + _valueNG)
         }
 
+        if(inputPCB > woSize) {
+            alertify.warning(`Please check Input-Qty & Lot Size`)
+            return
+        }
+
         if(totalOutputQty > inputPCB) {
             alertify.warning(`Please check total output (OK+NG) & Input-Qty`)
             return
