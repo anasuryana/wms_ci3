@@ -1397,6 +1397,7 @@
                             itemCD: response.datacal[i].SERD2_ITMCD, 
                             mcz: response.datacal[i].SERD2_MCZ,
                             job: pjob,
+                            process: response.datacal[i].SERD2_PROCD
                         })
                         $("#checksbb_MODEDITQTYCAL").modal('show')
                         document.getElementById('checksbb_newqty').value = ''
