@@ -931,47 +931,6 @@ class SER extends CI_Controller
         echo "sudah";
     }
 
-    public function dummylabel()
-    {
-        $rs = $this->SER_mod->select_dummy_ser();
-        $currrtime = date('Y-m-d H:i:s');
-        foreach ($rs as $r) {
-            $citem = $r['MIGSCR_ITMCD'];
-            $cjob = 'DOCINV202112';
-            $cqty = $r['MIGSCR_QTY'];
-            $csheet = '';
-            $cproddt = '2021-12-13';
-            $cline = '';
-            $cshift = 1;
-            $cmdl = 5;
-
-            $pYear = substr($cproddt, 2, 2);
-            $pMonth = substr($cproddt, 5, 2);
-            $pDay = substr($cproddt, -2);
-            $pMonthdis = $this->getMonthDis($pMonth);
-            $newid = $this->SER_mod->lastserialid($cmdl, $cproddt);
-            $newid++;
-            $newid = $cmdl . $pYear . $pMonthdis . $pDay . substr('000000000' . $newid, -10);
-            $datas = [
-                'SER_ID' => $newid,
-                'SER_REFNO' => $newid,
-                'SER_DOC' => $cjob,
-                'SER_DOCTYPE' => '1',
-                'SER_ITMID' => $citem,
-                'SER_QTY' => $cqty,
-                'SER_QTYLOT' => $cqty,
-                'SER_SHEET' => $csheet == '' ? 0 : $csheet,
-                'SER_PRDDT' => $cproddt,
-                'SER_PRDLINE' => $cline,
-                'SER_PRDSHFT' => $cshift,
-                'SER_LUPDT' => $currrtime,
-                'SER_USRID' => $this->session->userdata('nama'),
-            ];
-            $toret = $this->SER_mod->insert($datas);
-        }
-        echo "selesai";
-    }
-
     public function setfg()
     {
         $currrtime = date('Y-m-d H:i:s');

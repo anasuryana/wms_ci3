@@ -27,33 +27,7 @@
                 </div>
             </div>            
         </div>
-        <div class="row">
-            <div class="col-md-4 mb-1">
-                <div class="input-group input-group-sm mb-1">
-                    <label class="input-group-text">Assy Code</label>
-                    <input type="text" class="form-control" id="wopr_assycode_input" onfocusout="wopr_assycode_input_efocusout()" maxlength="15">
-                </div>
-            </div>
-            <div class="col-md-4 mb-1">
-                <div class="input-group input-group-sm mb-1">
-                    <label class="input-group-text" title="Work Order">WO</label>
-                    <select class="form-select" id="wopr_wo_input" onchange="wopr_wo_input_eChange(event)" required>
-                        <option value="-">-</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-4 mb-1">
-                <div class="input-group input-group-sm mb-1">
-                    <label class="input-group-text">Lot Size</label>
-                    <input type="text" class="form-control" id="wopr_wo_size_input" readonly disabled>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 mb-1 text-end">
-                <span id="wopr_lblinfo" class="badge bg-info">-</span>
-            </div>
-        </div>
+        
         <div class="row">
             <div class="col-md-12 mb-1">
             <ul class="nav nav-tabs" id="wopr_myTab" role="tablist">
@@ -68,9 +42,34 @@
                     <div class="tab-pane fade show active" id="wopr_input_tab" role="tabpanel">
                         <div class="container-fluid p-1">
                             <div class="row">
-                                <div class="col-md-12 mt-2 mb-1">
+                                <div class="col-md-6 mt-2 mb-1">
                                     <div class="btn-group">                                        
                                         <button class="btn btn-primary" id="wopr_btn_save" onclick="wopr_btn_save_eC(this)"><i class="fas fa-save"></i></button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-1 text-end">
+                                    <span id="wopr_lblinfo" class="badge bg-info">-</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text">Assy Code</label>
+                                        <input type="text" class="form-control" id="wopr_assycode_input" onfocusout="wopr_assycode_input_efocusout()" maxlength="15">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text" title="Work Order">WO</label>
+                                        <select class="form-select" id="wopr_wo_input" onchange="wopr_wo_input_eChange(event)" required>
+                                            <option value="-">-</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text">Lot Size</label>
+                                        <input type="text" class="form-control" id="wopr_wo_size_input" readonly disabled>
                                     </div>
                                 </div>
                             </div>
@@ -198,6 +197,7 @@
 
     function wopr_wo_input_eChange(e) {
         if(wopr_assycode_input.value.trim().length > 3) { // validasi inputan assy code
+            wopr_inputqty_input.value = 0
             let input = e.target.value.split('#')
             wopr_wo_size_input.value = input.length === 3 ? numeral(input[1]).format(',') : '-'
             wopr_process_input.innerHTML = `<option value="-">Please wait</option>`
@@ -536,16 +536,6 @@
             return
         }
 
-        const itemCode = wopr_assycode_input.value.trim()
-        if(itemCode.length<=3) {
-            itemCode.warning(`Please input valid Assy Code`)
-            wopr_assycode_input.focus()
-            return
-        }
-
-        const inputWO = wopr_wo_input.value.split('#')
-        const woCode = inputWO[0]
-
         let inputDowntimeSS = wopr_downtime_sso.getData()
 
         let downtimeMinute = []
@@ -565,8 +555,6 @@
 
         const dataInput = {
             line_code : lineCode,
-            item_code : itemCode,
-            wo_code : woCode,
             shift_code : wopr_shift_input.value,
             production_date : wopr_date_input.value,
             user_id: uidnya,
