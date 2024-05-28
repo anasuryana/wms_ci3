@@ -408,12 +408,6 @@ class SER_mod extends CI_Model
         $query = $this->db->query($qry, [$pdoc, $pitem]);
         return $query->result_array();
     }
-    public function select_dummy_ser()
-    {
-        $qry = "SELECT * FROM MIGSCR_TBL";
-        $query = $this->db->query($qry);
-        return $query->result_array();
-    }
 
     function select_fgrtn_oldassy_newassy($newReff)
     {

@@ -15182,7 +15182,18 @@ class DELV extends CI_Controller
                     unset($p);
                     if (!$isplot) {
                         $tpb_barang_temp[] = [
-                            'KODE_BARANG' => $r['SI_ITMCD'], 'POS_TARIF' => $r['RCV_HSCD'], 'URAIAN' => $r['MITM_ITMD1'], 'JUMLAH_SATUAN' => $r['INTQTY'], 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 'NETTO' => $r['NWG'] * 1, 'CIF' => round($CIF, 2), 'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN, 'SERI_BARANG' => $SERI_BARANG, 'KODE_STATUS' => '02', 'PERPRICE' => $r['RCV_PRPRC'],
+                            'KODE_BARANG' => $r['SI_ITMCD'], 
+                            'POS_TARIF' => $r['RCV_HSCD'], 
+                            'URAIAN' => $r['MITM_ITMD1'], 
+                            'JUMLAH_SATUAN' => $r['INTQTY'], 
+                            'JUMLAH_KEMASAN' => $r['BOX'], 
+                            'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 
+                            'NETTO' => $r['NWG'] * 1, 
+                            'CIF' => round($CIF, 2), 
+                            'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN, 
+                            'SERI_BARANG' => $SERI_BARANG, 
+                            'KODE_STATUS' => '02', 
+                            'PERPRICE' => $r['RCV_PRPRC'],
                         ];
                         $SERI_BARANG++;
                     }
@@ -15199,7 +15210,8 @@ class DELV extends CI_Controller
                         , 'CIF' => $r['CIF']
                         , 'HARGA_PENYERAHAN' => $r['HARGA_PENYERAHAN']
                         , 'SERI_BARANG' => $r['SERI_BARANG']
-                        , 'KODE_STATUS' => $r['KODE_STATUS'],
+                        , 'KODE_STATUS' => $r['KODE_STATUS']
+                        , 'JUMLAH_KEMASAN' => $r['JUMLAH_KEMASAN']
                     ];
                 }
                 $this->setPriceFGNonSales(base64_encode($doc));
