@@ -2119,6 +2119,7 @@ class SI extends CI_Controller
         $sheet->setCellValueByColumnAndRow(9, 2, 'Scanning Time');
         $sheet->setCellValueByColumnAndRow(10, 2, 'Plant');
         $sheet->setCellValueByColumnAndRow(11, 2, 'Business');
+        $sheet->setCellValueByColumnAndRow(12, 2, 'Remark');
         $sheet->freezePane('A3');
         $y = 3;
         foreach ($rs as $r) {
@@ -2133,9 +2134,10 @@ class SI extends CI_Controller
             $sheet->setCellValueByColumnAndRow(9, $y, $r['SISCN_LUPDT']);
             $sheet->setCellValueByColumnAndRow(10, $y, $r['SI_OTHRMRK']);
             $sheet->setCellValueByColumnAndRow(11, $y, $r['SI_BSGRP']);
+            $sheet->setCellValueByColumnAndRow(12, $y, $r['SER_RMRK']);
             $y++;
         }
-        foreach (range('A', 'K') as $v) {
+        foreach (range('A', 'L') as $v) {
             $sheet->getColumnDimension($v)->setAutoSize(true);
         }
         $stringjudul = 'Outgoing FG ' . $cbsgroup;
