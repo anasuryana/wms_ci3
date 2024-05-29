@@ -15198,6 +15198,7 @@ class DELV extends CI_Controller
                         $SERI_BARANG++;
                     }
                 }
+                
                 foreach ($tpb_barang_temp as $r) {
                     $cz_h_HARGA_PENYERAHAN_FG += $r['HARGA_PENYERAHAN'];
                     $tpb_barang[] = [
@@ -15207,7 +15208,7 @@ class DELV extends CI_Controller
                         , 'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN']
                         , 'KODE_SATUAN' => $r['KODE_SATUAN']
                         , 'NETTO' => $r['NETTO']
-                        , 'CIF' => $r['CIF']
+                        , 'CIF' => round($r['CIF'], 2)
                         , 'HARGA_PENYERAHAN' => $r['HARGA_PENYERAHAN']
                         , 'SERI_BARANG' => $r['SERI_BARANG']
                         , 'KODE_STATUS' => $r['KODE_STATUS']
@@ -15916,9 +15917,6 @@ class DELV extends CI_Controller
                     if(!in_array($r['DLVSCR_BB_MATA_UANG'], $IncCRListDistinct)) {
                         $IncCRListDistinct[] = $r['DLVSCR_BB_MATA_UANG'];
                     }
-
-
-
                 }
             } else {
                 $rs_do = $this->DELV_mod->select_for_do_rm_rtn_v1($doc);
@@ -16158,9 +16156,11 @@ class DELV extends CI_Controller
         $responApi = null;
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-25rm, step0#, DO:' . $doc);
+            
             $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/25', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);            
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
+            
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-25rm, step0#, DO:' . $doc);
         }
         $respon = [
@@ -16175,20 +16175,25 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(ISNULL(MCUS_CURCD,MSUP_SUPCR)) MCUS_CURCD', 'DLV_ZNOMOR_AJU', 'DLV_PURPOSE'], ['DLV_ID' => $doc]);
+        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(ISNULL(MCUS_CURCD,MSUP_SUPCR)) MCUS_CURCD', 'DLV_ZNOMOR_AJU', 'DLV_PURPOSE', 'DLV_ITMCD'], ['DLV_ID' => $doc]);
         $data = [];
         $message = null;
+        $isScrapItem = false;
+        $itemCodeBarang = '';
+        $NDPBM = 0;
         foreach ($RSHeader as $r) {
             $ccustdate = $r['DLV_BCDATE'];
             $czcurrency = $r['MCUS_CURCD'];
             $NomorAju = $r['DLV_ZNOMOR_AJU'];
+            $itemCodeBarang = $r['DLV_ITMCD'];
+            if(str_contains($r['DLV_ITMCD'], 'SCRAP')) {
+                $isScrapItem = true;
+            }
         }
         $TPBData = $this->TPB_HEADER_imod->select_where(
             ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
             ['NOMOR_AJU' => $NomorAju]
         );
-        // if (empty($TPBData)) {
-        //     $message = 'Please posting to TPB first';
         if (!empty($TPBData)) {
             $message = 'Already exist in TPB';
         } else {
@@ -16266,92 +16271,182 @@ class DELV extends CI_Controller
             # akhir validasi
 
             $tpb_bahan_baku = [];
-            $rs_do = $this->DELV_mod->select_for_do_rm_rtn_v1($doc);
-            $rs_xbc = $this->RCV_mod->select_for_rmrtn_bytxid($doc);
             $IncDateList = [];
             $IncCRList = []; #Currency
             $IncDateCR_FLGList = []; #Currency
             $resumeXBCDoc = [];
-            foreach ($rs_do as $r) {
-                $r['PLOTQT'] = 0;
-                foreach ($rs_xbc as &$x) {
-                    if (
-                        $r['DLVRMDOC_ITMID'] == $x['RCV_ITMCD']
-                        && $r['DLVRMDOC_AJU'] == $x['RCV_RPNO']
-                        && $r['DLVRMDOC_DO'] == $x['RCV_DONO']
-                        && $x['RCV_QTY'] > 0
-                        && $r['PLOTQT'] != $r['DLVRMDOC_ITMQT']
-                    ) {
-                        $reqbal = $r['DLVRMDOC_ITMQT'] - $r['PLOTQT'];
-                        $useqt = 0;
-                        if ($reqbal > $x['RCV_QTY']) {
-                            $useqt = $x['RCV_QTY'];
-                            $r['PLOTQT'] += $x['RCV_QTY'];
-                            $x['RCV_QTY'] = 0;
-                        } else {
-                            $useqt = $reqbal;
-                            $r['PLOTQT'] += $reqbal;
-                            $x['RCV_QTY'] -= $reqbal;
+            $IncDateListDistinct = [];
+            $IncCRListDistinct = [];
+
+            if($isScrapItem) {
+                
+                $rs_xbc = $this->DLVSCR_BB_mod->select_where(['DLVSCR_BB_TXID' => $doc]);
+                $Barang = $this->DLVSCR_mod->select_where([
+                    'RTRIM(MITM_ITMCD) MITM_ITMCD',
+                    'RTRIM(MITM_ITMD1) MITM_ITMD1',
+                    'RTRIM(MITM_STKUOM) MITM_STKUOM',
+                    'DLVSCR_ITMQT',
+                    'DLVSCR_PRPRC',
+                    'MITM_BM',
+                    'RTRIM(MITM_HSCD) MITM_HSCD',
+                ],
+                    ['DLVSCR_TXID' => $doc]);
+                $noSeriBB = 1;
+
+                $SeriBarang = 1;
+                $_cifBarang = 0;
+                foreach($Barang as $r) {
+                    $_cifBarang = $r['DLVSCR_PRPRC'];
+                    $tpb_barang[] = [
+                        'KODE_BARANG' => $r['MITM_ITMCD'],
+                        'POS_TARIF' => $r['MITM_HSCD'],
+                        'URAIAN' => $r['MITM_ITMD1'],
+                        'TIPE' => '',
+                        'JUMLAH_SATUAN' => $r['DLVSCR_ITMQT'],
+                        'KODE_SATUAN' => $r['MITM_STKUOM'],
+                        'NETTO' => $SeriBarang == 1 ? $netweight_represent : 0,
+                        'CIF' => $_cifBarang,
+                        'HARGA_PENYERAHAN' => $_cifBarang,
+                        'SERI_BARANG' => $SeriBarang,
+                        'KODE_STATUS' => '02',
+                        'JUMLAH_BAHAN_BAKU' => count($tpb_bahan_baku),                        
+                        'SPESIFIKASI_LAIN' => null,
+                        'JUMLAH_KEMASAN' => 1,
+                        'RBM' => $r['MITM_BM'],
+                        'CURRENCY' => 'RPH',
+                        'BRUTO' => $r['DLVSCR_ITMQT']+1,
+                        'KODE_GUNA' => '0',
+                        'KODE_KEMASAN' => 'BX'
+                    ];
+                }
+                
+                foreach($rs_xbc as $r) {
+                    $tpb_bahan_baku[] = [
+                        'KODE_JENIS_DOK_ASAL' => $r['DLVSCR_BB_BCTYPE'],
+                        'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVSCR_BB_NOPEN'],
+                        'TANGGAL_DAFTAR_DOK_ASAL' => $r['DLVSCR_BB_TGLPEN'],
+                        'KODE_KANTOR' => $r['DLVSCR_BB_KODE_KANTOR'] ?? '-',
+                        'NOMOR_AJU_DOK_ASAL' => $r['DLVSCR_BB_AJU'],
+                        'SERI_BARANG_DOK_ASAL' => $r['DLVSCR_BB_BCURUT'],
+                        'SPESIFIKASI_LAIN' => null,
+                        'CIF' => 0,
+                        'HARGA_PENYERAHAN' => 0,
+                        'KODE_BARANG' => $r['DLVSCR_BB_ITMID'] ?? '-',
+                        'KODE_STATUS' => "03",
+                        'POS_TARIF' => $r['DLVSCR_BB_HSCD'],
+                        'URAIAN' => $r['DLVSCR_BB_ITMD1'],
+                        'TIPE' => '-',
+                        'JUMLAH_SATUAN' => $r['DLVSCR_BB_ITMQT'],
+                        'SERI_BAHAN_BAKU' => $noSeriBB++,
+                        'JENIS_SATUAN' => ($r['DLVSCR_BB_ITMUOM'] == 'PCS') ? 'PCE' : $r['DLVSCR_BB_ITMUOM'],
+                        'KODE_ASAL_BAHAN_BAKU' => (in_array($r['DLVSCR_BB_BCTYPE'], ['27', '23'])) ? '0' : '1',
+                        'RBM' => $r['DLVSCR_BB_BM'] ?? 0,
+                        'CURRENCY' => $r['DLVSCR_BB_MATA_UANG'],
+                        'PPN' => 11, //bu gusti, terkait peraturan 1 april
+                        'RASSYCODE' => $itemCodeBarang,
+                        'RPRICEGROUP' => $_cifBarang,
+                        'NDPBM' => (float) $NDPBM
+                    ];
+
+                    $IncDateList[] = $r['DLVSCR_BB_TGLPEN'];
+                    $IncCRList[] = $r['DLVSCR_BB_MATA_UANG'];
+                    
+                    if(!in_array($r['DLVSCR_BB_TGLPEN'], $IncDateListDistinct)) {
+                        $IncDateListDistinct[] = $r['DLVSCR_BB_TGLPEN'];
+                    }
+                    if(!in_array($r['DLVSCR_BB_MATA_UANG'], $IncCRListDistinct)) {
+                        $IncCRListDistinct[] = $r['DLVSCR_BB_MATA_UANG'];
+                    }
+
+
+
+                }
+            } else {
+                $rs_do = $this->DELV_mod->select_for_do_rm_rtn_v1($doc);
+                $rs_xbc = $this->RCV_mod->select_for_rmrtn_bytxid($doc);
+                
+                
+                foreach ($rs_do as $r) {
+                    $r['PLOTQT'] = 0;
+                    foreach ($rs_xbc as &$x) {
+                        if (
+                            $r['DLVRMDOC_ITMID'] == $x['RCV_ITMCD']
+                            && $r['DLVRMDOC_AJU'] == $x['RCV_RPNO']
+                            && $r['DLVRMDOC_DO'] == $x['RCV_DONO']
+                            && $x['RCV_QTY'] > 0
+                            && $r['PLOTQT'] != $r['DLVRMDOC_ITMQT']
+                        ) {
+                            $reqbal = $r['DLVRMDOC_ITMQT'] - $r['PLOTQT'];
+                            $useqt = 0;
+                            if ($reqbal > $x['RCV_QTY']) {
+                                $useqt = $x['RCV_QTY'];
+                                $r['PLOTQT'] += $x['RCV_QTY'];
+                                $x['RCV_QTY'] = 0;
+                            } else {
+                                $useqt = $reqbal;
+                                $r['PLOTQT'] += $reqbal;
+                                $x['RCV_QTY'] -= $reqbal;
+                            }
+                            $thecif = number_format($x['RCV_PRPRC'] * $useqt, 2, ".", "");
+                            $tpb_bahan_baku[] = [
+                                'KODE_JENIS_DOK_ASAL' => $x['RCV_BCTYPE'],
+                                'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVRMDOC_NOPEN'],
+                                'TANGGAL_DAFTAR_DOK_ASAL' => $x['RCV_BCDATE'],
+                                'KODE_KANTOR' => $x['RCV_KPPBC'],
+                                'NOMOR_AJU_DOK_ASAL' => strlen($r['DLVRMDOC_AJU']) == 6 ? substr('000000000000000000000000', 0, 26) : $r['DLVRMDOC_AJU'],
+                                'SERI_BARANG_DOK_ASAL' => empty($x['RCV_ZNOURUT']) ? 0 : $x['RCV_ZNOURUT'],
+                                'SPESIFIKASI_LAIN' => null,
+                                'CIF' => $thecif,
+                                'HARGA_PENYERAHAN' => 0,
+                                'KODE_BARANG' => $r['DLVRMDOC_ITMID'],
+                                'KODE_STATUS' => "03",
+                                'POS_TARIF' => $x['RCV_HSCD'],
+                                'URAIAN' => rtrim($r['DLV_ITMD1']),
+                                'TIPE' => empty($r['DLV_ITMSPTNO']) ? '-' : $r['DLV_ITMSPTNO'],
+                                'JUMLAH_SATUAN' => $useqt,
+                                'SERI_BAHAN_BAKU' => 1,
+                                'JENIS_SATUAN' => ($r['MITM_STKUOM'] == 'PCS') ? 'PCE' : $r['MITM_STKUOM'],
+                                'KODE_ASAL_BAHAN_BAKU' => ($x['RCV_BCTYPE'] == '27' || $x['RCV_BCTYPE'] == '23') ? '0' : '1',
+                                'RBM' => $x['RCV_BM'] * 1,
+                                'CURRENCY' => $x['MSUP_SUPCR'],
+                                'PPN' => 11, //bu gusti, terkait peraturan 1 april
+                                'RASSYCODE' => $r['DLVRMDOC_ITMID'],
+                                'RPRICEGROUP' => $thecif,
+                            ];
+                            $IncDateList[] = $x['RCV_BCDATE'];
+                            $IncCRList[] = $x['MSUP_SUPCR'];
+                            $IncDateCR_FLGList[] = 0;
+                            if ($r['DLVRMDOC_ITMQT'] == $r['PLOTQT']) {
+                                break;
+                            }
                         }
-                        $thecif = number_format($x['RCV_PRPRC'] * $useqt, 2, ".", "");
-                        $tpb_bahan_baku[] = [
-                            'KODE_JENIS_DOK_ASAL' => $x['RCV_BCTYPE'],
-                            'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVRMDOC_NOPEN'],
-                            'TANGGAL_DAFTAR_DOK_ASAL' => $x['RCV_BCDATE'],
-                            'KODE_KANTOR' => $x['RCV_KPPBC'],
-                            'NOMOR_AJU_DOK_ASAL' => strlen($r['DLVRMDOC_AJU']) == 6 ? substr('000000000000000000000000', 0, 26) : $r['DLVRMDOC_AJU'],
-                            'SERI_BARANG_DOK_ASAL' => empty($x['RCV_ZNOURUT']) ? 0 : $x['RCV_ZNOURUT'],
-                            'SPESIFIKASI_LAIN' => null,
-                            'CIF' => $thecif,
-                            'HARGA_PENYERAHAN' => 0,
-                            'KODE_BARANG' => $r['DLVRMDOC_ITMID'],
-                            'KODE_STATUS' => "03",
-                            'POS_TARIF' => $x['RCV_HSCD'],
-                            'URAIAN' => rtrim($r['DLV_ITMD1']),
-                            'TIPE' => empty($r['DLV_ITMSPTNO']) ? '-' : $r['DLV_ITMSPTNO'],
-                            'JUMLAH_SATUAN' => $useqt,
-                            'SERI_BAHAN_BAKU' => 1,
-                            'JENIS_SATUAN' => ($r['MITM_STKUOM'] == 'PCS') ? 'PCE' : $r['MITM_STKUOM'],
-                            'KODE_ASAL_BAHAN_BAKU' => ($x['RCV_BCTYPE'] == '27' || $x['RCV_BCTYPE'] == '23') ? '0' : '1',
-                            'RBM' => $x['RCV_BM'] * 1,
-                            'CURRENCY' => $x['MSUP_SUPCR'],
-                            'PPN' => 11, //bu gusti, terkait peraturan 1 april
-                            'RASSYCODE' => $r['DLVRMDOC_ITMID'],
-                            'RPRICEGROUP' => $thecif,
-                        ];
-                        $IncDateList[] = $x['RCV_BCDATE'];
-                        $IncCRList[] = $x['MSUP_SUPCR'];
-                        $IncDateCR_FLGList[] = 0;
-                        if ($r['DLVRMDOC_ITMQT'] == $r['PLOTQT']) {
-                            break;
+                    }
+                    unset($x);
+                }
+                unset($r);
+    
+                $tpb_barang = [];
+                $no = 1;
+                $rscurr = $this->MEXRATE_mod->selectfor_posting_in($IncDateList, $IncCRList);
+                $listcount = count($IncDateCR_FLGList);
+                foreach ($rscurr as $r) {
+                    for ($i = 0; $i < $listcount; $i++) {
+                        if ($r->MEXRATE_CURR == $IncCRList[$i] && $r->MEXRATE_DT == $IncDateList[$i]) {
+                            $IncDateCR_FLGList[$i] = 1;
                         }
                     }
                 }
-                unset($x);
-            }
-            unset($r);
 
-            $tpb_barang = [];
-            $no = 1;
-            $rscurr = $this->MEXRATE_mod->selectfor_posting_in($IncDateList, $IncCRList);
-            $listcount = count($IncDateCR_FLGList);
-            foreach ($rscurr as $r) {
+                # validasi exchange rate for incoming date
                 for ($i = 0; $i < $listcount; $i++) {
-                    if ($r->MEXRATE_CURR == $IncCRList[$i] && $r->MEXRATE_DT == $IncDateList[$i]) {
-                        $IncDateCR_FLGList[$i] = 1;
+                    if ($IncDateCR_FLGList[$i] == 0) {
+                        $dar = ["cd" => "0", "msg" => "Please fill exchange rate data for " . $IncCRList[$i] . " on " . $IncDateList[$i] . " !"];
+                        $myar[] = $dar;
+                        die('{"status":' . json_encode($myar) . '}');
                     }
                 }
+                # akhir validasi
             }
-
-            # validasi exchange rate for incoming date
-            for ($i = 0; $i < $listcount; $i++) {
-                if ($IncDateCR_FLGList[$i] == 0) {
-                    $dar = ["cd" => "0", "msg" => "Please fill exchange rate data for " . $IncCRList[$i] . " on " . $IncDateList[$i] . " !"];
-                    $myar[] = $dar;
-                    die('{"status":' . json_encode($myar) . '}');
-                }
-            }
-            # akhir validasi
 
             $SeriBarang = 1;
 
@@ -16492,9 +16587,11 @@ class DELV extends CI_Controller
         $responApi = null;
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-41, step0#, DO:' . $doc);
-            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/41', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);            
+            
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/41', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);            
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
+            
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-41, step0#, DO:' . $doc);
         }
         $respon = [
