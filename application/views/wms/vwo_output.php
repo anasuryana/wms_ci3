@@ -335,7 +335,6 @@
         },
         onchange : function(instance, cell, x, y, value) {
             const cellName = jspreadsheet.getColumnNameFromId([x,y]);
-            console.log('New change on cell ' + cellName + ' to: ' + value + '');
         },
         copyCompatibility:true,
         columnSorting:false,
@@ -356,14 +355,14 @@
             },
             {
                 type: 'numeric',
-                title:'Maintenance',
+                title:'Working Hours',
                 mask: '#,##.00',
                 width:100,
                 align: 'right'
             },
             {
                 type: 'numeric',
-                title:'Working Hours',
+                title:'Maintenance',
                 mask: '#,##.00',
                 width:100,
                 align: 'right'
@@ -396,6 +395,20 @@
                 width:170,
                 align: 'right'
             },
+            {
+                type: 'numeric',
+                title:'Not Production',
+                mask: '#,##.00',
+                width:170,
+                align: 'right'
+            },
+            {
+                type: 'numeric',
+                title:'Not Production Plan',
+                mask: '#,##.00',
+                width:170,
+                align: 'right'
+            },
         ],
         allowInsertRow : false,
         allowInsertColumn : false,
@@ -404,8 +417,8 @@
         rowDrag:false,
         defaultColWidth : 150,
         data: [
-            ['M',0,0,0,0,0,0],
-            ['N',0,0,0,0,0,0],
+            ['M',0,0,0,0,0,0,0,0],
+            ['N',0,0,0,0,0,0,0,0],
         ],
         copyCompatibility:true,
         columnSorting:false,
@@ -453,8 +466,6 @@
         let inputDowntimeSS = wopr_downtime_sso.getData()
 
         let outputQty = []
-        let downtimeMinute = []
-        let productionTime = []
         let totalOutputQty = 0
 
         for(let c=1; c<13; c++) {
@@ -474,27 +485,6 @@
             })
 
             totalOutputQty += (_valueOK + _valueNG)
-        }
-
-        productionTime.push({
-            working_hours : numeral(wopr_sso.getValueFromCoords(1, 1, true)).value(),
-            shift_code : 'M'
-        })
-        productionTime.push({
-            working_hours : numeral(wopr_sso.getValueFromCoords(1, 2, true)).value(),
-            shift_code : 'N'
-        })
-        for(let c=2; c<7; c++) {
-            downtimeMinute.push({
-                downtime_code : (c-1),
-                req_minutes : numeral(wopr_sso.getValueFromCoords(c, 1, true)).value(),
-                shift_code : 'M'
-            })
-            downtimeMinute.push({
-                downtime_code : (c-1),
-                req_minutes : numeral(wopr_sso.getValueFromCoords(c, 2, true)).value(),
-                shift_code : 'N'
-            })
         }
 
         if(inputPCB > woSize) {
@@ -520,8 +510,6 @@
             process_seq : processSeq,
             output : outputQty,
             user_id: uidnya,
-            downtimeMinute : downtimeMinute,
-            productionTime : productionTime,
             cycle_time : numeral(wopr_input_ct.value).value(),
         }
 
@@ -570,15 +558,25 @@
         let inputDowntimeSS = wopr_downtime_sso.getData()
 
         let downtimeMinute = []
+        let productionTime = []
 
-        for(let c=1; c<6; c++) {
+        productionTime.push({
+            working_hours : numeral(wopr_downtime_sso.getValueFromCoords(1, 0, true)).value(),
+            shift_code : 'M'
+        })
+        productionTime.push({
+            working_hours : numeral(wopr_downtime_sso.getValueFromCoords(1, 1, true)).value(),
+            shift_code : 'N'
+        })
+
+        for(let c=2; c<9; c++) {
             downtimeMinute.push({
-                downtime_code : c,
+                downtime_code : (c-1),
                 req_minutes : numeral(wopr_downtime_sso.getValueFromCoords(c, 0, true)).value(),
                 shift_code : 'M'
             })
             downtimeMinute.push({
-                downtime_code : c,
+                downtime_code : (c-1),
                 req_minutes : numeral(wopr_downtime_sso.getValueFromCoords(c, 1, true)).value(),
                 shift_code : 'N'
             })
@@ -589,7 +587,8 @@
             shift_code : wopr_shift_input.value,
             production_date : wopr_date_input.value,
             user_id: uidnya,
-            downtimeMinute : downtimeMinute
+            downtimeMinute : downtimeMinute,
+            productionTime : productionTime
         }
 
         if(confirm(`Are you sure ?`)) {
@@ -712,11 +711,11 @@
                 success: function (response) {
 
                     let inputSS = [
-                        ['M',0,0,0,0,0,0],
-                        ['N',0,0,0,0,0,0],
+                        ['M',0,0,0,0,0,0,0,0],
+                        ['N',0,0,0,0,0,0,0,0],
                     ]
 
-                    for(let c=2; c<7; c++) {
+                    for(let c=2; c<9; c++) {
                         response.data.forEach((arrayItem) => {
                             if((c-1)==arrayItem['downtime_code']) {
                                 switch(arrayItem['shift_code']) {
@@ -738,6 +737,31 @@
         }
     }
 
+    function wopr_load_productionTime() {
+        if(wopr_line_input.value.trim().length>1) {
+            $.ajax({
+                type: "GET",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/production-time",
+                data: {
+                    production_date : wopr_date_input.value,
+                    line_code : wopr_line_input.value
+                },
+                dataType: "json",
+                success: function (response) {
+                    response.data.forEach((arrayItem) => {
+                        if(arrayItem['shift_code']=='M') {
+                            wopr_downtime_sso.setValue('B1', arrayItem['working_hours'])
+                        } else {
+                            wopr_downtime_sso.setValue('B2', arrayItem['working_hours'])
+                        }
+                    })
+                }, error: function(xhr, xopt, xthrow) {
+                    alertify.error(xthrow)
+                }
+            });
+        }
+    }
+
     function wopr_btn_new_eC() {
         wopr_shift_input.value = 'M'
         wopr_sso.setData([
@@ -748,8 +772,8 @@
             ['NG', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ])
         wopr_downtime_sso.setData([
-            ['M',0,0,0,0,0,0],
-            ['N',0,0,0,0,0,0],
+            ['M',0,0,0,0,0,0,0,0],
+            ['N',0,0,0,0,0,0,0,0],
         ])
         wopr_line_input.value = ''
         wopr_assycode_input.value = ''
@@ -844,6 +868,7 @@
         wopr_load_at()
         wopr_load_downTime()
         wopr_load_process_ct()
+        wopr_load_productionTime()
     }
 
     function wopr_process_input_eChange() {
@@ -854,6 +879,7 @@
     function wopr_date_input_eChange() {
         wopr_load_at()
         wopr_load_downTime()
+        wopr_load_productionTime()
     }
 
     function wopr_load_process_ct() {
