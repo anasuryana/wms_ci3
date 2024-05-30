@@ -15172,7 +15172,7 @@ class DELV extends CI_Controller
                     foreach ($tpb_barang_temp as &$p) {
                         if ($r['SI_ITMCD'] == $p['KODE_BARANG'] && $r['RCV_PRPRC'] == $p['PERPRICE']) {
                             $p['JUMLAH_SATUAN'] += $r['INTQTY'];
-                            $p['CIF'] = $p['JUMLAH_SATUAN'] * $p['PERPRICE'];
+                            $p['CIF'] = round($p['JUMLAH_SATUAN'] * $p['PERPRICE'],2);
                             $p['HARGA_PENYERAHAN'] = $p['CIF'] * $czharga_matauang;
                             $p['NETTO'] += $r['NWG'];
                             $isplot = true;
