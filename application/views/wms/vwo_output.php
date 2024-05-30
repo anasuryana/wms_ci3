@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-md-2 mb-1">
                 <div class="btn-group">
-                    <button class="btn btn-outline-primary" id="wopr_btn_new" title="New" onclick="wopr_btn_new_eC()"><i class="fas fa-file"></i></button>                    
+                    <button class="btn btn-outline-primary" id="wopr_btn_new" title="New" onclick="wopr_btn_new_eC()"><i class="fas fa-file"></i></button>
                 </div>
             </div>
         </div>
@@ -25,9 +25,8 @@
                     <label class="input-group-text">Production Date</label>
                     <input type="text" class="form-control" id="wopr_date_input" onchange="wopr_date_input_eChange()" readonly>
                 </div>
-            </div>            
+            </div>
         </div>
-        
         <div class="row">
             <div class="col-md-12 mb-1">
             <ul class="nav nav-tabs" id="wopr_myTab" role="tablist">
@@ -43,7 +42,7 @@
                         <div class="container-fluid p-1">
                             <div class="row">
                                 <div class="col-md-6 mt-2 mb-1">
-                                    <div class="btn-group">                                        
+                                    <div class="btn-group">
                                         <button class="btn btn-primary" id="wopr_btn_save" onclick="wopr_btn_save_eC(this)"><i class="fas fa-save"></i></button>
                                     </div>
                                 </div>
@@ -73,8 +72,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">                                
-                                <div class="col-md-4 mb-1">
+                            <div class="row">
+                                <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Shift</label>
                                         <select class="form-select" id="wopr_shift_input" onchange="wopr_shift_input_eChange(event)" required>
@@ -83,7 +82,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4 mb-1">
+                                <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Process</label>
                                         <select class="form-select" id="wopr_process_input" onchange="wopr_process_input_eChange()" required>
@@ -91,7 +90,13 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4 mb-1">
+                                <div class="col-md-3 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text" title="Cycle Time">CT</label>
+                                        <input type="text" class="form-control" id="wopr_input_ct" readonly disabled value="-">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Input-QTY</label>
                                         <input type="text" class="form-control" id="wopr_inputqty_input">
@@ -132,7 +137,7 @@
                         <div class="container-fluid p-1">
                             <div class="row">
                                 <div class="col-md-12 mt-2 mb-1">
-                                    <div class="btn-group">                                        
+                                    <div class="btn-group">
                                         <button class="btn btn-primary" id="wopr_btn_save_downtime" onclick="wopr_btn_save_downtime_eC(this)"><i class="fas fa-save"></i></button>
                                     </div>
                                 </div>
@@ -219,6 +224,7 @@
                 }
             });
         }
+        wopr_load_process_ct()
     }
 
     function wopr_shift_input_eChange(e) {
@@ -325,7 +331,7 @@
             if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===4) {
                 cell.style.cssText = "background-color:#f8d7da;font-weight: bold; text-align:center"
             }
-            
+
         },
         onchange : function(instance, cell, x, y, value) {
             const cellName = jspreadsheet.getColumnNameFromId([x,y]);
@@ -351,6 +357,13 @@
             {
                 type: 'numeric',
                 title:'Maintenance',
+                mask: '#,##.00',
+                width:100,
+                align: 'right'
+            },
+            {
+                type: 'numeric',
+                title:'Working Hours',
                 mask: '#,##.00',
                 width:100,
                 align: 'right'
@@ -391,8 +404,8 @@
         rowDrag:false,
         defaultColWidth : 150,
         data: [
-            ['M',0,0,0,0,0],
-            ['N',0,0,0,0,0],
+            ['M',0,0,0,0,0,0],
+            ['N',0,0,0,0,0,0],
         ],
         copyCompatibility:true,
         columnSorting:false,
@@ -424,8 +437,14 @@
         if(wopr_process_input.value==='-') {
             alertify.warning(`Please select a process`)
             wopr_process_input.focus()
-            return 
+            return
         }
+
+        if(['-','--'].includes(wopr_input_ct.value)) {
+            alertify.warning(`Cycle Time is required`)
+            return
+        }
+
         const inputProcess = wopr_process_input.value.split('#')
         const processCode = inputProcess[0]
         const processSeq = inputProcess[1]
@@ -435,6 +454,7 @@
 
         let outputQty = []
         let downtimeMinute = []
+        let productionTime = []
         let totalOutputQty = 0
 
         for(let c=1; c<13; c++) {
@@ -455,14 +475,23 @@
 
             totalOutputQty += (_valueOK + _valueNG)
         }
-        for(let c=1; c<6; c++) {
+
+        productionTime.push({
+            working_hours : numeral(wopr_sso.getValueFromCoords(1, 1, true)).value(),
+            shift_code : 'M'
+        })
+        productionTime.push({
+            working_hours : numeral(wopr_sso.getValueFromCoords(1, 2, true)).value(),
+            shift_code : 'N'
+        })
+        for(let c=2; c<7; c++) {
             downtimeMinute.push({
-                downtime_code : c,
+                downtime_code : (c-1),
                 req_minutes : numeral(wopr_sso.getValueFromCoords(c, 1, true)).value(),
                 shift_code : 'M'
             })
             downtimeMinute.push({
-                downtime_code : c,
+                downtime_code : (c-1),
                 req_minutes : numeral(wopr_sso.getValueFromCoords(c, 2, true)).value(),
                 shift_code : 'N'
             })
@@ -491,7 +520,9 @@
             process_seq : processSeq,
             output : outputQty,
             user_id: uidnya,
-            downtimeMinute : downtimeMinute
+            downtimeMinute : downtimeMinute,
+            productionTime : productionTime,
+            cycle_time : numeral(wopr_input_ct.value).value(),
         }
 
         if(confirm(`Are you sure ?`)) {
@@ -674,20 +705,20 @@
                 type: "GET",
                 url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/downtime",
                 data: {
-                    line_code: wopr_line_input.value, 
+                    line_code: wopr_line_input.value,
                     production_date : wopr_date_input.value
                 },
                 dataType: "json",
                 success: function (response) {
-                    
+
                     let inputSS = [
-                        ['M',0,0,0,0,0],
-                        ['N',0,0,0,0,0],
+                        ['M',0,0,0,0,0,0],
+                        ['N',0,0,0,0,0,0],
                     ]
-                    
-                    for(let c=1; c<6; c++) {
+
+                    for(let c=2; c<7; c++) {
                         response.data.forEach((arrayItem) => {
-                            if(c==arrayItem['downtime_code']) {
+                            if((c-1)==arrayItem['downtime_code']) {
                                 switch(arrayItem['shift_code']) {
                                     case 'M':
                                         inputSS[0][c] = arrayItem['req_minutes']
@@ -717,8 +748,8 @@
             ['NG', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ])
         wopr_downtime_sso.setData([
-            ['M',0,0,0,0,0],
-            ['N',0,0,0,0,0],
+            ['M',0,0,0,0,0,0],
+            ['N',0,0,0,0,0,0],
         ])
         wopr_line_input.value = ''
         wopr_assycode_input.value = ''
@@ -812,14 +843,46 @@
     function wopr_line_input_efocusout() {
         wopr_load_at()
         wopr_load_downTime()
+        wopr_load_process_ct()
     }
 
     function wopr_process_input_eChange() {
         wopr_load_at()
+        wopr_load_process_ct()
     }
 
     function wopr_date_input_eChange() {
         wopr_load_at()
         wopr_load_downTime()
+    }
+
+    function wopr_load_process_ct() {
+        if(wopr_line_input.value.trim().length > 1
+        && wopr_assycode_input.value.trim().length > 2
+        && wopr_process_input.value != '-'
+        ) {
+            const inputProcess = wopr_process_input.value.split('#')
+            const processCode = inputProcess[0]            
+            wopr_input_ct.value = 'Please wait'
+            $.ajax({
+                type: "GET",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>process-master/cycle-time",
+                data: {
+                    line_code : wopr_line_input.value,
+                    assy_code: wopr_assycode_input.value,
+                    process_code: processCode,
+                    production_date: wopr_date_input.value,
+                },
+                dataType: "json",
+                success: function (response) {
+                    wopr_input_ct.value = '-'
+                    if(response.data) {
+                        wopr_input_ct.value = response.data.cycle_time
+                    }
+                }, error: function(xhr, xopt, xthrow) {
+                    wopr_input_ct.value = '--'
+                }
+            });
+        }
     }
 </script>
