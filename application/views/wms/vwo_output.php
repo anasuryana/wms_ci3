@@ -51,7 +51,16 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4 mb-1">
+                                <div class="col-md-2 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text">Shift</label>
+                                        <select class="form-select" id="wopr_shift_input" onchange="wopr_shift_input_eChange(event)" required>
+                                            <option value="M">Morning</option>
+                                            <option value="N">Night</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Assy Code</label>
                                         <input type="text" class="form-control" id="wopr_assycode_input" onfocusout="wopr_assycode_input_efocusout()" maxlength="15">
@@ -65,7 +74,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4 mb-1">
+                                <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Lot Size</label>
                                         <input type="text" class="form-control" id="wopr_wo_size_input" readonly disabled>
@@ -73,15 +82,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-3 mb-1">
-                                    <div class="input-group input-group-sm mb-1">
-                                        <label class="input-group-text">Shift</label>
-                                        <select class="form-select" id="wopr_shift_input" onchange="wopr_shift_input_eChange(event)" required>
-                                            <option value="M">Morning</option>
-                                            <option value="N">Night</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                
                                 <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Process</label>
@@ -462,8 +463,7 @@
         const processCode = inputProcess[0]
         const processSeq = inputProcess[1]
 
-        let inputSS = wopr_sso.getData()
-        let inputDowntimeSS = wopr_downtime_sso.getData()
+        let inputSS = wopr_sso.getData()      
 
         let outputQty = []
         let totalOutputQty = 0

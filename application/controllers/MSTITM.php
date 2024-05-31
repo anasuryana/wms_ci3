@@ -899,6 +899,11 @@ class MSTITM extends CI_Controller
         $this->load->view('wms/vitem_reg', $data);
     }
 
+    public function form_process()
+    {       
+        $this->load->view('wms/vitem_process_master');
+    }
+
     public function updatencat()
     {
         header('Content-Type: application/json');
