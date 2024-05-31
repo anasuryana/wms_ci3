@@ -363,16 +363,36 @@
             },
             {
                 type: 'numeric',
-                title:'Maintenance',
+                title:'Working Time',
                 mask: '#,##.00',
                 width:100,
+                align: 'right',
+                readOnly : true
+            },
+            {
+                type: 'text',
+                title:'Efficiency Biasa',
+                width:100,           
+                readOnly : true
+            },
+            {
+                type: 'text',
+                title:'Efficiency Aktual',
+                width:100,
+                readOnly : true
+            },
+            {
+                type: 'numeric',
+                title:'Maintenance',
+                mask: '#,##.00',
+                width:90,
                 align: 'right'
             },
             {
                 type: 'numeric',
                 title:'M/C Trouble',
                 mask: '#,##.00',
-                width:100,
+                width:90,
                 align: 'right'
             },
             {
@@ -400,15 +420,23 @@
                 type: 'numeric',
                 title:'Not Production',
                 mask: '#,##.00',
-                width:170,
+                width:100,
                 align: 'right'
             },
             {
                 type: 'numeric',
                 title:'Not Production Plan',
                 mask: '#,##.00',
-                width:170,
+                width:130,
                 align: 'right'
+            },
+            {
+                type: 'numeric',
+                title:'Balance',
+                mask: '#,##.00',
+                width:60,
+                align: 'right',
+                readOnly : true
             },
         ],
         allowInsertRow : false,
@@ -418,13 +446,33 @@
         rowDrag:false,
         defaultColWidth : 150,
         data: [
-            ['M',0,0,0,0,0,0,0,0],
-            ['N',0,0,0,0,0,0,0,0],
+            ['M',0,0,'=ROUND(C1/B1*100,2)&"%"','=ROUND(C1/(B1-((F1+G1+H1+I1+J1+K1+L1)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C1+((F1+G1+H1+I1+J1+K1+L1)/60)'],
+            ['N',0,0,'=ROUND(C2/B2*100,2)&"%"','=ROUND(C2/(B2-((F2+G2+H2+I2+J2+K2+L2)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C2+((F2+G2+H2+I2+J2+K2+L2)/60)'],
         ],
         copyCompatibility:true,
         columnSorting:false,
         updateTable: function(el, cell, x, y, source, value, id) {
-
+            if([2,3,4].includes(x)) {
+                cell.style.cssText = "background-color:#f5fba3; text-align:center"
+            }
+            if([5].includes(x)) {
+                cell.style.cssText = "background-color:#f4b084; text-align:center"
+            }
+            if([6,7,8].includes(x)) {
+                cell.style.cssText = "background-color:#ffd966; text-align:center"
+            }
+            if([9,10,11].includes(x)) {
+                cell.style.cssText = "background-color:#66ffff; text-align:center"
+            }
+            if([12].includes(x)) {
+                cell.style.cssText = "font-weight: bold; text-align:center"
+            }
+            if([0].includes(x)) {
+                cell.style.cssText = "font-weight: bold; text-align:center"
+            }
+            if([1].includes(x)) {
+                cell.style.cssText = "background-color:#ccffcc; text-align:center"
+            }
         }
     });
 
@@ -569,14 +617,14 @@
             shift_code : 'N'
         })
 
-        for(let c=2; c<9; c++) {
+        for(let c=5; c<12; c++) {
             downtimeMinute.push({
-                downtime_code : (c-1),
+                downtime_code : (c-4),
                 req_minutes : numeral(wopr_downtime_sso.getValueFromCoords(c, 0, true)).value(),
                 shift_code : 'M'
             })
             downtimeMinute.push({
-                downtime_code : (c-1),
+                downtime_code : (c-4),
                 req_minutes : numeral(wopr_downtime_sso.getValueFromCoords(c, 1, true)).value(),
                 shift_code : 'N'
             })
@@ -711,13 +759,13 @@
                 success: function (response) {
 
                     let inputSS = [
-                        ['M',0,0,0,0,0,0,0,0],
-                        ['N',0,0,0,0,0,0,0,0],
+                        ['M',0,0,'=ROUND(C1/B1*100,2)&"%"','=ROUND(C1/(B1-((F1+G1+H1+I1+J1+K1+L1)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C1+((F1+G1+H1+I1+J1+K1+L1)/60)'],
+                        ['N',0,0,'=ROUND(C2/B2*100,2)&"%"','=ROUND(C2/(B2-((F2+G2+H2+I2+J2+K2+L2)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C2+((F2+G2+H2+I2+J2+K2+L2)/60)'],
                     ]
 
-                    for(let c=2; c<9; c++) {
+                    for(let c=5; c<12; c++) {
                         response.data.forEach((arrayItem) => {
-                            if((c-1)==arrayItem['downtime_code']) {
+                            if((c-4)==arrayItem['downtime_code']) {
                                 switch(arrayItem['shift_code']) {
                                     case 'M':
                                         inputSS[0][c] = arrayItem['req_minutes']
@@ -727,8 +775,18 @@
                                         break;
                                 }
                             }
-                        })
+                        })                        
                     }
+                    response.workingTime.forEach((arrayItem) => {
+                        switch(arrayItem['shift_code']) {
+                            case 'M':
+                                inputSS[0][2] = arrayItem['working_time_total']
+                                break;
+                            case 'N':
+                                inputSS[1][2] = arrayItem['working_time_total']
+                                break;
+                        }                        
+                    })
                     wopr_downtime_sso.setData(inputSS)
                 }, error: function(xhr, xopt, xthrow) {
                     alertify.error(xthrow)
@@ -772,8 +830,8 @@
             ['NG', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ])
         wopr_downtime_sso.setData([
-            ['M',0,0,0,0,0,0,0,0],
-            ['N',0,0,0,0,0,0,0,0],
+            ['M',0,0,'=ROUND(C1/B1*100,2)&"%"','=ROUND(C1/(B1-((F1+G1+H1+I1+J1+K1+L1)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C1+((F1+G1+H1+I1+J1+K1+L1)/60)'],
+            ['N',0,0,'=ROUND(C2/B2*100,2)&"%"','=ROUND(C2/(B2-((F2+G2+H2+I2+J2+K2+L2)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C2+((F2+G2+H2+I2+J2+K2+L2)/60)'],
         ])
         wopr_line_input.value = ''
         wopr_assycode_input.value = ''
