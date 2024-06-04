@@ -17,7 +17,9 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">Line</label>
-                    <input type="text" style="text-transform:uppercase" class="form-control" id="wopr_line_input" onfocusout="wopr_line_input_efocusout()" maxlength="15">
+                    <select class="form-select" id="wopr_line_input" onfocusout="wopr_line_input_efocusout()" required>
+                        <option value="-">-</option>
+                    </select>
                 </div>
             </div>
             <div class="col-md-6 mb-1">
@@ -82,7 +84,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                
+
                                 <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Process</label>
@@ -101,6 +103,7 @@
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Input-QTY</label>
                                         <input type="text" class="form-control" id="wopr_inputqty_input">
+                                        <button class="btn btn-outline-info" id="wopr_btn_info_input" title="History Input" onclick="wopr_btn_info_input_eC()"><i class="fas fa-timeline"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -160,6 +163,42 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="wopr_modal_input_history">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Inputs-Qty List : <strong><span id="wopr_modal_span_wo"></span></strong></h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive" id="wopr_modal_tbl_div">
+                        <table id="wopr_modal_tbl" class="table table-sm table-striped table-bordered table-hover text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Production Date</th>
+                                    <th>Shift</th>
+                                    <th>Line</th>
+                                    <th>Process</th>
+                                    <th>Input</th>
+                                    <th>Created at</th>
+                                    <th>Updated at</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
 <script>
     Inputmask({
         'alias': 'decimal',
@@ -216,7 +255,7 @@
                 success: function (response) {
                     let inputs = '<option value="-">-</option>'
                     response.data.forEach((arrayItem) => {
-                        inputs += `<option value="${arrayItem['MBO2_PROCD']}#${arrayItem['MBO2_SEQNO']}">${arrayItem['MBO2_PROCD']}</option>`
+                        inputs += `<option value="${arrayItem['MBO2_PROCD']}#${arrayItem['MBO2_SEQNO']}">${arrayItem['MBO2_PROCD']} (P${arrayItem['MBO2_SEQNO']})</option>`
                     })
                     wopr_process_input.innerHTML = inputs
                 }, error: function(xhr, xopt, xthrow) {
@@ -372,7 +411,7 @@
             {
                 type: 'text',
                 title:'Efficiency Biasa',
-                width:100,           
+                width:100,
                 readOnly : true
             },
             {
@@ -511,7 +550,7 @@
         const processCode = inputProcess[0]
         const processSeq = inputProcess[1]
 
-        let inputSS = wopr_sso.getData()      
+        let inputSS = wopr_sso.getData()
 
         let outputQty = []
         let totalOutputQty = 0
@@ -537,11 +576,6 @@
 
         if(inputPCB > woSize) {
             alertify.warning(`Please check Input-Qty & Lot Size`)
-            return
-        }
-
-        if(totalOutputQty > inputPCB) {
-            alertify.warning(`Please check total output (OK+NG) & Input-Qty`)
             return
         }
 
@@ -775,7 +809,7 @@
                                         break;
                                 }
                             }
-                        })                        
+                        })
                     }
                     response.workingTime.forEach((arrayItem) => {
                         switch(arrayItem['shift_code']) {
@@ -785,7 +819,7 @@
                             case 'N':
                                 inputSS[1][2] = arrayItem['working_time_total']
                                 break;
-                        }                        
+                        }
                     })
                     wopr_downtime_sso.setData(inputSS)
                 }, error: function(xhr, xopt, xthrow) {
@@ -946,7 +980,7 @@
         && wopr_process_input.value != '-'
         ) {
             const inputProcess = wopr_process_input.value.split('#')
-            const processCode = inputProcess[0]            
+            const processCode = inputProcess[0]
             wopr_input_ct.value = 'Please wait'
             $.ajax({
                 type: "GET",
@@ -969,4 +1003,64 @@
             });
         }
     }
+
+    function wopr_btn_info_input_eC() {
+        if(wopr_wo_input.value != '-') {
+            const inputWO = wopr_wo_input.value.split('#')
+            wopr_modal_span_wo.innerText = inputWO[0]
+            $.ajax({
+                type: "GET",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/input",
+                data: {wo_code : inputWO[0]},
+                dataType: "json",
+                success: function (response) {
+                    let myContainer = document.getElementById("wopr_modal_tbl_div");
+                    let myfrag = document.createDocumentFragment();
+                    let cln = wopr_modal_tbl.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    let myTable = myfrag.getElementById("wopr_modal_tbl");
+                    let myTableBody = myTable.getElementsByTagName("tbody")[0];
+                    myTableBody.innerHTML = ''
+                    response.data.forEach((arrayItem) => {
+                        newrow = myTableBody.insertRow(-1)
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['production_date']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['shift_code']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['line_code']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['process_code']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = numeral(arrayItem['input_qty']).format(',')
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['created_at']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['updated_at']
+                    })
+                    myContainer.innerHTML = ''
+                    myContainer.appendChild(myfrag)
+                }
+            });
+            $("#wopr_modal_input_history").modal('show')
+        }
+    }
+
+    function wopr_load_line_code() {
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>process-master/line-code",
+            dataType: "json",
+            success: function (response) {
+                wopr_line_input.innerHTML = `<option value="-">-</option>`
+                let inputs = '<option value="-">-</option>';
+                response.data.forEach((arrayItem) => {
+                    inputs += `<option value="${arrayItem['line_code']}">${arrayItem['line_code']}</option>`
+                })
+                wopr_line_input.innerHTML = inputs
+            }
+        });
+    }
+
+    wopr_load_line_code()
 </script>
