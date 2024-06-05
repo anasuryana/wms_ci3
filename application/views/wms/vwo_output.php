@@ -224,7 +224,7 @@
     });
 
     function wopr_assycode_input_efocusout() {
-        if( wopr_assycode_input.value.trim().length > 3) {
+        if( wopr_assycode_input.value.trim().length > 3 && wopr_wo_input.value === '-') {
             wopr_wo_input.innerHTML = `<option value="-">Please wait</option>`
             wopr_load_at()
             $.ajax({
