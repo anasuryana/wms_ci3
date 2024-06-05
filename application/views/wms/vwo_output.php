@@ -17,7 +17,7 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">Line</label>
-                    <select class="form-select" id="wopr_line_input" onfocusout="wopr_line_input_efocusout()" required>
+                    <select class="form-select" id="wopr_line_input" required onchange="wopr_line_input_efocusout()">
                         <option value="-">-</option>
                     </select>
                 </div>
