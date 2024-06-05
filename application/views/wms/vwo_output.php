@@ -224,7 +224,22 @@
     });
 
     function wopr_assycode_input_efocusout() {
-        if( wopr_assycode_input.value.trim().length > 3 && wopr_wo_input.value === '-') {
+        if( wopr_assycode_input.value.trim().length > 3) {
+            if(wopr_wo_input.value!='-') {
+                const inputWO = wopr_wo_input.value.split('#')
+                const woCodeArray = inputWO[0].split('-')
+                let isRefreshWORequired = false
+                if(woCodeArray.length===3) {
+                    if(wopr_assycode_input.value!=woCodeArray[2]) {
+                        alertify.warning('please check Assy Code & WO')
+                        isRefreshWORequired = true
+                    }
+                }
+                if(!isRefreshWORequired) {
+                    return
+                }
+            }
+
             wopr_wo_input.innerHTML = `<option value="-">Please wait</option>`
             wopr_load_at()
             $.ajax({
