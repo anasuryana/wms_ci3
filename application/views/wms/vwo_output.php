@@ -191,6 +191,13 @@
                             </thead>
                             <tbody>
                             </tbody>
+                            <tfoot>
+                                <tr class="table-info">
+                                    <td colspan="4"><strong>Total</strong></td>
+                                    <td><strong><span id="wopr_modal_span_total"></span></strong></td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -1005,13 +1012,18 @@
     }
 
     function wopr_btn_info_input_eC() {
-        if(wopr_wo_input.value != '-') {
+        if(wopr_wo_input.value != '-' && wopr_process_input.value != '-') {
+            wopr_modal_span_total.innerText = '0'
             const inputWO = wopr_wo_input.value.split('#')
             wopr_modal_span_wo.innerText = inputWO[0]
+
+            const inputProcess = wopr_process_input.value.split('#')                      
+
+            wopr_modal_tbl.getElementsByTagName("tbody")[0].innerHTML = `<tr><td colspan="7">Please wait</td></tr>`
             $.ajax({
                 type: "GET",
                 url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/input",
-                data: {wo_code : inputWO[0]},
+                data: {wo_code : inputWO[0], process_code : inputProcess[0]},
                 dataType: "json",
                 success: function (response) {
                     let myContainer = document.getElementById("wopr_modal_tbl_div");
@@ -1019,8 +1031,11 @@
                     let cln = wopr_modal_tbl.cloneNode(true);
                     myfrag.appendChild(cln);
                     let myTable = myfrag.getElementById("wopr_modal_tbl");
+                    let mySpan = myfrag.getElementById("wopr_modal_span_total");
                     let myTableBody = myTable.getElementsByTagName("tbody")[0];
                     myTableBody.innerHTML = ''
+                    
+                    let totalQty = 0
                     response.data.forEach((arrayItem) => {
                         newrow = myTableBody.insertRow(-1)
                         newcell = newrow.insertCell(-1)
@@ -1037,7 +1052,9 @@
                         newcell.innerText = arrayItem['created_at']
                         newcell = newrow.insertCell(-1)
                         newcell.innerText = arrayItem['updated_at']
+                        totalQty += numeral(arrayItem['input_qty']).value()
                     })
+                    mySpan.innerText = numeral(totalQty).format(',')
                     myContainer.innerHTML = ''
                     myContainer.appendChild(myfrag)
                 }
