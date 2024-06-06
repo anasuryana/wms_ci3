@@ -1,7 +1,7 @@
 <div style="padding: 10px">
 	<div class="container-fluid">
         <div class="row">
-            <div class="col-md-12 mb-1" id="div-alert">
+            <div class="col-md-12 mb-1" id="itm-process-div-alert">
 
             </div>
         </div>
@@ -206,7 +206,7 @@
         if(!confirm('Are you sure ?')) {
             return
         }
-        const div_alert = document.getElementById('div-alert')
+        const div_alert = document.getElementById('itm-process-div-alert')
         div_alert.innerHTML = ''
         pThis.disabled = true
         $.ajax({
