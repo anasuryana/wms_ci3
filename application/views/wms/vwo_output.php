@@ -774,8 +774,11 @@
                                     const _ok = numeral(response.output[r].ok_qty).value()
                                     const _ng = numeral(response.output[r].ng_qty).value()
                                     newcell = newrow.insertCell(-1)
+                                    newcell.title = response.output[r].max_production_date
                                     newcell.innerHTML = numeral(_ok).format(',')
+                                    
                                     newcell = newrow.insertCell(-1)
+                                    newcell.title = response.output[r].max_production_date
                                     newcell.innerHTML = numeral(_ng).format(',')
                                     _totalPerProcess += numeral((_ok + _ng )).format(',')
                                     _isFound = true
