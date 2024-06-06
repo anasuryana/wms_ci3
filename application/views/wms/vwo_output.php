@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-md-2 mb-1">
                 <div class="btn-group">
-                    <button class="btn btn-outline-primary" id="wopr_btn_new" title="New" onclick="wopr_btn_new_eC()"><i class="fas fa-file"></i></button>                    
+                    <button class="btn btn-outline-primary" id="wopr_btn_new" title="New" onclick="wopr_btn_new_eC()"><i class="fas fa-file"></i></button>
                 </div>
             </div>
         </div>
@@ -17,7 +17,9 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">Line</label>
-                    <input type="text" style="text-transform:uppercase" class="form-control" id="wopr_line_input" onfocusout="wopr_line_input_efocusout()" maxlength="15">
+                    <select class="form-select" id="wopr_line_input" required onchange="wopr_line_input_efocusout()">
+                        <option value="-">-</option>
+                    </select>
                 </div>
             </div>
             <div class="col-md-6 mb-1">
@@ -25,9 +27,8 @@
                     <label class="input-group-text">Production Date</label>
                     <input type="text" class="form-control" id="wopr_date_input" onchange="wopr_date_input_eChange()" readonly>
                 </div>
-            </div>            
+            </div>
         </div>
-        
         <div class="row">
             <div class="col-md-12 mb-1">
             <ul class="nav nav-tabs" id="wopr_myTab" role="tablist">
@@ -43,7 +44,7 @@
                         <div class="container-fluid p-1">
                             <div class="row">
                                 <div class="col-md-6 mt-2 mb-1">
-                                    <div class="btn-group">                                        
+                                    <div class="btn-group">
                                         <button class="btn btn-primary" id="wopr_btn_save" onclick="wopr_btn_save_eC(this)"><i class="fas fa-save"></i></button>
                                     </div>
                                 </div>
@@ -52,7 +53,16 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4 mb-1">
+                                <div class="col-md-2 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text">Shift</label>
+                                        <select class="form-select" id="wopr_shift_input" onchange="wopr_shift_input_eChange(event)" required>
+                                            <option value="M">Morning</option>
+                                            <option value="N">Night</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Assy Code</label>
                                         <input type="text" class="form-control" id="wopr_assycode_input" onfocusout="wopr_assycode_input_efocusout()" maxlength="15">
@@ -66,24 +76,16 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4 mb-1">
+                                <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Lot Size</label>
                                         <input type="text" class="form-control" id="wopr_wo_size_input" readonly disabled>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">                                
-                                <div class="col-md-4 mb-1">
-                                    <div class="input-group input-group-sm mb-1">
-                                        <label class="input-group-text">Shift</label>
-                                        <select class="form-select" id="wopr_shift_input" onchange="wopr_shift_input_eChange(event)" required>
-                                            <option value="M">Morning</option>
-                                            <option value="N">Night</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-1">
+                            <div class="row">
+
+                                <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Process</label>
                                         <select class="form-select" id="wopr_process_input" onchange="wopr_process_input_eChange()" required>
@@ -91,10 +93,17 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4 mb-1">
+                                <div class="col-md-3 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text" title="Cycle Time">CT</label>
+                                        <input type="text" class="form-control" id="wopr_input_ct" readonly disabled value="-">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Input-QTY</label>
                                         <input type="text" class="form-control" id="wopr_inputqty_input">
+                                        <button class="btn btn-outline-info" id="wopr_btn_info_input" title="History Input" onclick="wopr_btn_info_input_eC()"><i class="fas fa-timeline"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -132,7 +141,7 @@
                         <div class="container-fluid p-1">
                             <div class="row">
                                 <div class="col-md-12 mt-2 mb-1">
-                                    <div class="btn-group">                                        
+                                    <div class="btn-group">
                                         <button class="btn btn-primary" id="wopr_btn_save_downtime" onclick="wopr_btn_save_downtime_eC(this)"><i class="fas fa-save"></i></button>
                                     </div>
                                 </div>
@@ -154,6 +163,49 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="wopr_modal_input_history">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Inputs-Qty List : <strong><span id="wopr_modal_span_wo"></span></strong></h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive" id="wopr_modal_tbl_div">
+                        <table id="wopr_modal_tbl" class="table table-sm table-striped table-bordered table-hover text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Production Date</th>
+                                    <th>Shift</th>
+                                    <th>Line</th>
+                                    <th>Process</th>
+                                    <th>Input</th>
+                                    <th>Created at</th>
+                                    <th>Updated at</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-info">
+                                    <td colspan="4"><strong>Total</strong></td>
+                                    <td><strong><span id="wopr_modal_span_total"></span></strong></td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
 <script>
     Inputmask({
         'alias': 'decimal',
@@ -173,6 +225,21 @@
 
     function wopr_assycode_input_efocusout() {
         if( wopr_assycode_input.value.trim().length > 3) {
+            if(wopr_wo_input.value!='-') {
+                const inputWO = wopr_wo_input.value.split('#')
+                const woCodeArray = inputWO[0].split('-')
+                let isRefreshWORequired = false
+                if(woCodeArray.length===3) {
+                    if(wopr_assycode_input.value!=woCodeArray[2]) {
+                        alertify.warning('please check Assy Code & WO')
+                        isRefreshWORequired = true
+                    }
+                }
+                if(!isRefreshWORequired) {
+                    return
+                }
+            }
+
             wopr_wo_input.innerHTML = `<option value="-">Please wait</option>`
             wopr_load_at()
             $.ajax({
@@ -210,7 +277,7 @@
                 success: function (response) {
                     let inputs = '<option value="-">-</option>'
                     response.data.forEach((arrayItem) => {
-                        inputs += `<option value="${arrayItem['MBO2_PROCD']}#${arrayItem['MBO2_SEQNO']}">${arrayItem['MBO2_PROCD']}</option>`
+                        inputs += `<option value="${arrayItem['MBO2_PROCD']}#${arrayItem['MBO2_SEQNO']}">${arrayItem['MBO2_PROCD']} (P${arrayItem['MBO2_SEQNO']})</option>`
                     })
                     wopr_process_input.innerHTML = inputs
                 }, error: function(xhr, xopt, xthrow) {
@@ -219,6 +286,7 @@
                 }
             });
         }
+        wopr_load_process_ct()
     }
 
     function wopr_shift_input_eChange(e) {
@@ -325,11 +393,10 @@
             if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===4) {
                 cell.style.cssText = "background-color:#f8d7da;font-weight: bold; text-align:center"
             }
-            
+
         },
         onchange : function(instance, cell, x, y, value) {
             const cellName = jspreadsheet.getColumnNameFromId([x,y]);
-            console.log('New change on cell ' + cellName + ' to: ' + value + '');
         },
         copyCompatibility:true,
         columnSorting:false,
@@ -350,16 +417,43 @@
             },
             {
                 type: 'numeric',
-                title:'Maintenance',
+                title:'Working Hours',
                 mask: '#,##.00',
                 width:100,
                 align: 'right'
             },
             {
                 type: 'numeric',
-                title:'M/C Trouble',
+                title:'Working Time',
                 mask: '#,##.00',
                 width:100,
+                align: 'right',
+                readOnly : true
+            },
+            {
+                type: 'text',
+                title:'Efficiency Biasa',
+                width:100,
+                readOnly : true
+            },
+            {
+                type: 'text',
+                title:'Efficiency Aktual',
+                width:100,
+                readOnly : true
+            },
+            {
+                type: 'numeric',
+                title:'Maintenance',
+                mask: '#,##.00',
+                width:90,
+                align: 'right'
+            },
+            {
+                type: 'numeric',
+                title:'M/C Trouble',
+                mask: '#,##.00',
+                width:90,
                 align: 'right'
             },
             {
@@ -383,6 +477,28 @@
                 width:170,
                 align: 'right'
             },
+            {
+                type: 'numeric',
+                title:'Not Production',
+                mask: '#,##.00',
+                width:100,
+                align: 'right'
+            },
+            {
+                type: 'numeric',
+                title:'Not Production Plan',
+                mask: '#,##.00',
+                width:130,
+                align: 'right'
+            },
+            {
+                type: 'numeric',
+                title:'Balance',
+                mask: '#,##.00',
+                width:60,
+                align: 'right',
+                readOnly : true
+            },
         ],
         allowInsertRow : false,
         allowInsertColumn : false,
@@ -391,13 +507,33 @@
         rowDrag:false,
         defaultColWidth : 150,
         data: [
-            ['M',0,0,0,0,0],
-            ['N',0,0,0,0,0],
+            ['M',0,0,'=ROUND(C1/B1*100,2)&"%"','=ROUND(C1/(B1-((F1+G1+H1+I1+J1+K1)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C1+((F1+G1+H1+I1+J1+K1+L1)/60)'],
+            ['N',0,0,'=ROUND(C2/B2*100,2)&"%"','=ROUND(C2/(B2-((F2+G2+H2+I2+J2+K2)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C2+((F2+G2+H2+I2+J2+K2+L2)/60)'],
         ],
         copyCompatibility:true,
         columnSorting:false,
         updateTable: function(el, cell, x, y, source, value, id) {
-
+            if([2,3,4].includes(x)) {
+                cell.style.cssText = "background-color:#f5fba3; text-align:center"
+            }
+            if([5].includes(x)) {
+                cell.style.cssText = "background-color:#f4b084; text-align:center"
+            }
+            if([6,7,8].includes(x)) {
+                cell.style.cssText = "background-color:#ffd966; text-align:center"
+            }
+            if([9,10,11].includes(x)) {
+                cell.style.cssText = "background-color:#66ffff; text-align:center"
+            }
+            if([12].includes(x)) {
+                cell.style.cssText = "font-weight: bold; text-align:center"
+            }
+            if([0].includes(x)) {
+                cell.style.cssText = "font-weight: bold; text-align:center"
+            }
+            if([1].includes(x)) {
+                cell.style.cssText = "background-color:#ccffcc; text-align:center"
+            }
         }
     });
 
@@ -424,17 +560,21 @@
         if(wopr_process_input.value==='-') {
             alertify.warning(`Please select a process`)
             wopr_process_input.focus()
-            return 
+            return
         }
+
+        if(['-','--'].includes(wopr_input_ct.value)) {
+            alertify.warning(`Cycle Time is required`)
+            return
+        }
+
         const inputProcess = wopr_process_input.value.split('#')
         const processCode = inputProcess[0]
         const processSeq = inputProcess[1]
 
         let inputSS = wopr_sso.getData()
-        let inputDowntimeSS = wopr_downtime_sso.getData()
 
         let outputQty = []
-        let downtimeMinute = []
         let totalOutputQty = 0
 
         for(let c=1; c<13; c++) {
@@ -455,26 +595,9 @@
 
             totalOutputQty += (_valueOK + _valueNG)
         }
-        for(let c=1; c<6; c++) {
-            downtimeMinute.push({
-                downtime_code : c,
-                req_minutes : numeral(wopr_sso.getValueFromCoords(c, 1, true)).value(),
-                shift_code : 'M'
-            })
-            downtimeMinute.push({
-                downtime_code : c,
-                req_minutes : numeral(wopr_sso.getValueFromCoords(c, 2, true)).value(),
-                shift_code : 'N'
-            })
-        }
 
         if(inputPCB > woSize) {
             alertify.warning(`Please check Input-Qty & Lot Size`)
-            return
-        }
-
-        if(totalOutputQty > inputPCB) {
-            alertify.warning(`Please check total output (OK+NG) & Input-Qty`)
             return
         }
 
@@ -491,7 +614,7 @@
             process_seq : processSeq,
             output : outputQty,
             user_id: uidnya,
-            downtimeMinute : downtimeMinute
+            cycle_time : numeral(wopr_input_ct.value).value(),
         }
 
         if(confirm(`Are you sure ?`)) {
@@ -539,15 +662,25 @@
         let inputDowntimeSS = wopr_downtime_sso.getData()
 
         let downtimeMinute = []
+        let productionTime = []
 
-        for(let c=1; c<6; c++) {
+        productionTime.push({
+            working_hours : numeral(wopr_downtime_sso.getValueFromCoords(1, 0, true)).value(),
+            shift_code : 'M'
+        })
+        productionTime.push({
+            working_hours : numeral(wopr_downtime_sso.getValueFromCoords(1, 1, true)).value(),
+            shift_code : 'N'
+        })
+
+        for(let c=5; c<12; c++) {
             downtimeMinute.push({
-                downtime_code : c,
+                downtime_code : (c-4),
                 req_minutes : numeral(wopr_downtime_sso.getValueFromCoords(c, 0, true)).value(),
                 shift_code : 'M'
             })
             downtimeMinute.push({
-                downtime_code : c,
+                downtime_code : (c-4),
                 req_minutes : numeral(wopr_downtime_sso.getValueFromCoords(c, 1, true)).value(),
                 shift_code : 'N'
             })
@@ -558,7 +691,8 @@
             shift_code : wopr_shift_input.value,
             production_date : wopr_date_input.value,
             user_id: uidnya,
-            downtimeMinute : downtimeMinute
+            downtimeMinute : downtimeMinute,
+            productionTime : productionTime
         }
 
         if(confirm(`Are you sure ?`)) {
@@ -640,8 +774,11 @@
                                     const _ok = numeral(response.output[r].ok_qty).value()
                                     const _ng = numeral(response.output[r].ng_qty).value()
                                     newcell = newrow.insertCell(-1)
+                                    newcell.title = response.output[r].max_production_date
                                     newcell.innerHTML = numeral(_ok).format(',')
+                                    
                                     newcell = newrow.insertCell(-1)
+                                    newcell.title = response.output[r].max_production_date
                                     newcell.innerHTML = numeral(_ng).format(',')
                                     _totalPerProcess += numeral((_ok + _ng )).format(',')
                                     _isFound = true
@@ -674,20 +811,20 @@
                 type: "GET",
                 url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/downtime",
                 data: {
-                    line_code: wopr_line_input.value, 
+                    line_code: wopr_line_input.value,
                     production_date : wopr_date_input.value
                 },
                 dataType: "json",
                 success: function (response) {
-                    
+
                     let inputSS = [
-                        ['M',0,0,0,0,0],
-                        ['N',0,0,0,0,0],
+                        ['M',0,0,'=ROUND(C1/B1*100,2)&"%"','=ROUND(C1/(B1-((F1+G1+H1+I1+J1+K1)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C1+((F1+G1+H1+I1+J1+K1+L1)/60)'],
+                        ['N',0,0,'=ROUND(C2/B2*100,2)&"%"','=ROUND(C2/(B2-((F2+G2+H2+I2+J2+K2)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C2+((F2+G2+H2+I2+J2+K2+L2)/60)'],
                     ]
-                    
-                    for(let c=1; c<6; c++) {
+
+                    for(let c=5; c<12; c++) {
                         response.data.forEach((arrayItem) => {
-                            if(c==arrayItem['downtime_code']) {
+                            if((c-4)==arrayItem['downtime_code']) {
                                 switch(arrayItem['shift_code']) {
                                     case 'M':
                                         inputSS[0][c] = arrayItem['req_minutes']
@@ -699,7 +836,42 @@
                             }
                         })
                     }
+                    response.workingTime.forEach((arrayItem) => {
+                        switch(arrayItem['shift_code']) {
+                            case 'M':
+                                inputSS[0][2] = arrayItem['working_time_total']
+                                break;
+                            case 'N':
+                                inputSS[1][2] = arrayItem['working_time_total']
+                                break;
+                        }
+                    })
                     wopr_downtime_sso.setData(inputSS)
+                }, error: function(xhr, xopt, xthrow) {
+                    alertify.error(xthrow)
+                }
+            });
+        }
+    }
+
+    function wopr_load_productionTime() {
+        if(wopr_line_input.value.trim().length>1) {
+            $.ajax({
+                type: "GET",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/production-time",
+                data: {
+                    production_date : wopr_date_input.value,
+                    line_code : wopr_line_input.value
+                },
+                dataType: "json",
+                success: function (response) {
+                    response.data.forEach((arrayItem) => {
+                        if(arrayItem['shift_code']=='M') {
+                            wopr_downtime_sso.setValue('B1', arrayItem['working_hours'])
+                        } else {
+                            wopr_downtime_sso.setValue('B2', arrayItem['working_hours'])
+                        }
+                    })
                 }, error: function(xhr, xopt, xthrow) {
                     alertify.error(xthrow)
                 }
@@ -717,8 +889,8 @@
             ['NG', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ])
         wopr_downtime_sso.setData([
-            ['M',0,0,0,0,0],
-            ['N',0,0,0,0,0],
+            ['M',0,0,'=ROUND(C1/B1*100,2)&"%"','=ROUND(C1/(B1-((F1+G1+H1+I1+J1+K1)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C1+((F1+G1+H1+I1+J1+K1+L1)/60)'],
+            ['N',0,0,'=ROUND(C2/B2*100,2)&"%"','=ROUND(C2/(B2-((F2+G2+H2+I2+J2+K2)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C2+((F2+G2+H2+I2+J2+K2+L2)/60)'],
         ])
         wopr_line_input.value = ''
         wopr_assycode_input.value = ''
@@ -812,14 +984,118 @@
     function wopr_line_input_efocusout() {
         wopr_load_at()
         wopr_load_downTime()
+        wopr_load_process_ct()
+        wopr_load_productionTime()
     }
 
     function wopr_process_input_eChange() {
         wopr_load_at()
+        wopr_load_process_ct()
     }
 
     function wopr_date_input_eChange() {
         wopr_load_at()
         wopr_load_downTime()
+        wopr_load_productionTime()
     }
+
+    function wopr_load_process_ct() {
+        if(wopr_line_input.value.trim().length > 1
+        && wopr_assycode_input.value.trim().length > 2
+        && wopr_process_input.value != '-'
+        ) {
+            const inputProcess = wopr_process_input.value.split('#')
+            const processCode = inputProcess[0]
+            wopr_input_ct.value = 'Please wait'
+            $.ajax({
+                type: "GET",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>process-master/cycle-time",
+                data: {
+                    line_code : wopr_line_input.value,
+                    assy_code: wopr_assycode_input.value,
+                    process_code: processCode,
+                    production_date: wopr_date_input.value,
+                },
+                dataType: "json",
+                success: function (response) {
+                    wopr_input_ct.value = '-'
+                    if(response.data) {
+                        wopr_input_ct.value = response.data.cycle_time
+                    }
+                }, error: function(xhr, xopt, xthrow) {
+                    wopr_input_ct.value = '--'
+                }
+            });
+        }
+    }
+
+    function wopr_btn_info_input_eC() {
+        if(wopr_wo_input.value != '-' && wopr_process_input.value != '-') {
+            wopr_modal_span_total.innerText = '0'
+            const inputWO = wopr_wo_input.value.split('#')
+            wopr_modal_span_wo.innerText = inputWO[0]
+
+            const inputProcess = wopr_process_input.value.split('#')                      
+
+            wopr_modal_tbl.getElementsByTagName("tbody")[0].innerHTML = `<tr><td colspan="7">Please wait</td></tr>`
+            $.ajax({
+                type: "GET",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/input",
+                data: {wo_code : inputWO[0], process_code : inputProcess[0]},
+                dataType: "json",
+                success: function (response) {
+                    let myContainer = document.getElementById("wopr_modal_tbl_div");
+                    let myfrag = document.createDocumentFragment();
+                    let cln = wopr_modal_tbl.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    let myTable = myfrag.getElementById("wopr_modal_tbl");
+                    let mySpan = myfrag.getElementById("wopr_modal_span_total");
+                    let myTableBody = myTable.getElementsByTagName("tbody")[0];
+                    myTableBody.innerHTML = ''
+                    
+                    let totalQty = 0
+                    response.data.forEach((arrayItem) => {
+                        newrow = myTableBody.insertRow(-1)
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['production_date']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['shift_code']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['line_code']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['process_code']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = numeral(arrayItem['input_qty']).format(',')
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['created_at']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['updated_at']
+                        totalQty += numeral(arrayItem['input_qty']).value()
+                    })
+                    mySpan.innerText = numeral(totalQty).format(',')
+                    myContainer.innerHTML = ''
+                    myContainer.appendChild(myfrag)
+                }
+            });
+            $("#wopr_modal_input_history").modal('show')
+        }
+    }
+
+    function wopr_load_line_code() {
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>process-master/line-code",
+            dataType: "json",
+            success: function (response) {
+                wopr_line_input.innerHTML = `<option value="-">-</option>`
+                let inputs = '<option value="-">-</option>';
+                response.data.forEach((arrayItem) => {
+                    inputs += `<option value="${arrayItem['line_code']}">${arrayItem['line_code']}</option>`
+                })
+                wopr_line_input.innerHTML = inputs
+            }
+        });
+    }
+
+    wopr_load_line_code()
 </script>

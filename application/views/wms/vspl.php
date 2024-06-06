@@ -292,6 +292,10 @@
                             <label class="form-check-label" for="spl_rdKITALL">Picking All</label>
                         </li>
                         <li class="list-group-item">
+                            <input class="form-check-input" name="spl_doctype" type="radio" value="KITALL_UK" id="spl_rdKITALL_UK">
+                            <label class="form-check-label" for="spl_rdKITALL_UK">Picking All (Unique Key)</label>
+                        </li>
+                        <li class="list-group-item">
                             <input class="form-check-input" name="spl_doctype" type="radio" value="RES" id="spl_rdRES">
                             <label class="form-check-label" for="spl_rdRES">Result</label>
                         </li>
@@ -1432,6 +1436,8 @@
             window.open("<?=base_url('SPL/printkit')?>",'_blank');
         } else if(radioValue=='KITALL') {
             window.open("<?=base_url('SPL/printkit_all')?>",'_blank');
+        } else if(radioValue=='KITALL_UK') {
+            window.open(`<?=$_ENV['APP_INTERNAL_API']?>supply/supply-pdf?psn=${mpsn}`,'_blank');
         } else {
             if(mcat.trim()=='-'){
                 alertify.message('Please choose Category')
