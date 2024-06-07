@@ -4,10 +4,10 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.0.7/fc-5.0.0/fh-4.0.1/kt-2.12.0/r-3.0.2/rr-1.5.0/sc-2.4.2/sl-2.0.1
+ *   https://datatables.net/download/#bs5/dt-2.0.8/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.3
  *
  * Included libraries:
- *   DataTables 2.0.7, FixedColumns 5.0.0, FixedHeader 4.0.1, KeyTable 2.12.0, Responsive 3.0.2, RowReorder 1.5.0, Scroller 2.4.2, Select 2.0.1
+ *   DataTables 2.0.8, FixedColumns 5.0.1, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.2, RowReorder 1.5.0, Scroller 2.4.3, Select 2.0.3
  */
 
 @charset "UTF-8";
@@ -603,25 +603,28 @@ table.dataTable.table-bordered tr:last-child td {
   border-bottom-width: 0;
 }
 
-html[data-bs-theme=dark] table.dataTable thead tr > .dtfc-fixed-start,
-html[data-bs-theme=dark] table.dataTable thead tr > .dtfc-fixed-end,
-html[data-bs-theme=dark] table.dataTable tfoot tr > .dtfc-fixed-start,
-html[data-bs-theme=dark] table.dataTable tfoot tr > .dtfc-fixed-end {
+table.dataTable thead tr > .dtfc-fixed-start,
+table.dataTable thead tr > .dtfc-fixed-end,
+table.dataTable tfoot tr > .dtfc-fixed-start,
+table.dataTable tfoot tr > .dtfc-fixed-end {
+  background-color: var(--bs-table-bg);
+}
+table.dataTable tbody tr > .dtfc-fixed-start,
+table.dataTable tbody tr > .dtfc-fixed-end {
+  background-color: var(--bs-table-bg);
+}
+
+div.dtfc-top-blocker,
+div.dtfc-bottom-blocker {
   background-color: var(--bs-body-bg);
 }
-html[data-bs-theme=dark] table.dataTable tbody tr > .dtfc-fixed-start,
-html[data-bs-theme=dark] table.dataTable tbody tr > .dtfc-fixed-end {
-  background-color: var(--bs-body-bg);
+
+div.dt-scroll-body {
+  border-left-color: var(--bs-table-color) !important;
 }
-html[data-bs-theme=dark] div.dtfc-top-blocker,
-html[data-bs-theme=dark] div.dtfc-bottom-blocker {
-  background-color: var(--bs-body-bg);
-}
-html[data-bs-theme=dark] div.dt-scroll-body {
-  border-left-color: var(--bs-border-color) !important;
-}
-html[data-bs-theme=dark] div.dt-scroll-headInner table.table-bordered tr th:first-child,
-html[data-bs-theme=dark] div.dt-scroll-footInner table.table-bordered tr th:first-child {
+
+div.dt-scroll-headInner table.table-bordered tr th:first-child,
+div.dt-scroll-footInner table.table-bordered tr th:first-child {
   border-left-color: var(--bs-border-color) !important;
 }
 

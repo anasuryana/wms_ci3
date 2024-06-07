@@ -4,20 +4,20 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.0.7/fc-5.0.0/fh-4.0.1/kt-2.12.0/r-3.0.2/rr-1.5.0/sc-2.4.2/sl-2.0.1
+ *   https://datatables.net/download/#bs5/dt-2.0.8/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.3
  *
  * Included libraries:
- *   DataTables 2.0.7, FixedColumns 5.0.0, FixedHeader 4.0.1, KeyTable 2.12.0, Responsive 3.0.2, RowReorder 1.5.0, Scroller 2.4.2, Select 2.0.1
+ *   DataTables 2.0.8, FixedColumns 5.0.1, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.2, RowReorder 1.5.0, Scroller 2.4.3, Select 2.0.3
  */
 
-/*! DataTables 2.0.7
+/*! DataTables 2.0.8
  * © SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     2.0.7
+ * @version     2.0.8
  * @author      SpryMedia Ltd
  * @contact     www.datatables.net
  * @copyright   SpryMedia Ltd.
@@ -563,7 +563,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs5/dt-2.0.7/fc-5.0.0/fh-4.0.1/kt-2.12.0/r-3.0.2/rr-1.5.0/sc-2.4.2/sl-2.0.1",
+		builder: "bs5/dt-2.0.8/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.3",
 	
 	
 		/**
@@ -7572,6 +7572,16 @@
 			order  = opts.order,   // applied, current, index (original - compatibility with 1.9)
 			page   = opts.page;    // all, current
 	
+		if ( _fnDataSource( settings ) == 'ssp' ) {
+			// In server-side processing mode, most options are irrelevant since
+			// rows not shown don't exist and the index order is the applied order
+			// Removed is a special case - for consistency just return an empty
+			// array
+			return search === 'removed' ?
+				[] :
+				_range( 0, displayMaster.length );
+		}
+	
 		if ( page == 'current' ) {
 			// Current page implies that order=current and filter=applied, since it is
 			// fairly senseless otherwise, regardless of what order and search actually
@@ -8243,7 +8253,7 @@
 	_api_register( _child_obj+'.isShown()', function () {
 		var ctx = this.context;
 	
-		if ( ctx.length && this.length ) {
+		if ( ctx.length && this.length && ctx[0].aoData[ this[0] ] ) {
 			// _detailsShown as false or undefined will fall through to return false
 			return ctx[0].aoData[ this[0] ]._detailsShow || false;
 		}
@@ -8266,7 +8276,7 @@
 	// can be an array of these items, comma separated list, or an array of comma
 	// separated lists
 	
-	var __re_column_selector = /^([^:]+):(name|title|visIdx|visible)$/;
+	var __re_column_selector = /^([^:]+)?:(name|title|visIdx|visible)$/;
 	
 	
 	// r1 and r2 are redundant - but it means that the parameters match for the
@@ -8338,17 +8348,24 @@
 				switch( match[2] ) {
 					case 'visIdx':
 					case 'visible':
-						var idx = parseInt( match[1], 10 );
-						// Visible index given, convert to column index
-						if ( idx < 0 ) {
-							// Counting from the right
-							var visColumns = columns.map( function (col,i) {
-								return col.bVisible ? i : null;
-							} );
-							return [ visColumns[ visColumns.length + idx ] ];
+						if (match[1]) {
+							var idx = parseInt( match[1], 10 );
+							// Visible index given, convert to column index
+							if ( idx < 0 ) {
+								// Counting from the right
+								var visColumns = columns.map( function (col,i) {
+									return col.bVisible ? i : null;
+								} );
+								return [ visColumns[ visColumns.length + idx ] ];
+							}
+							// Counting from the left
+							return [ _fnVisibleToColumnIndex( settings, idx ) ];
 						}
-						// Counting from the left
-						return [ _fnVisibleToColumnIndex( settings, idx ) ];
+						
+						// `:visible` on its own
+						return columns.map( function (col, i) {
+							return col.bVisible ? i : null;
+						} );
 	
 					case 'name':
 						// match by name. `names` is column index complete and in order
@@ -9623,7 +9640,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.0.7";
+	DataTable.version = "2.0.8";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -13315,7 +13332,7 @@ return DataTable;
 }));
 
 
-/*! FixedColumns 5.0.0
+/*! FixedColumns 5.0.1
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -13509,9 +13526,13 @@ var DataTable = $.fn.dataTable;
                 barWidth = 0;
             }
             // Loop over the visible columns, setting their state
-            dt.columns(':visible').every(function (colIdx) {
+            dt.columns().every(function (colIdx) {
                 var visIdx = dt.column.index('toVisible', colIdx);
                 var offset;
+                // Skip the hidden columns
+                if (visIdx === null) {
+                    return;
+                }
                 if (visIdx < start) {
                     // Fix to the start
                     offset = that._sum(widths, visIdx);
@@ -13710,7 +13731,7 @@ var DataTable = $.fn.dataTable;
             }
             return widths.slice(0, index).reduce(function (accum, val) { return accum + val; }, 0);
         };
-        FixedColumns.version = '5.0.0';
+        FixedColumns.version = '5.0.1';
         FixedColumns.classes = {
             bottomBlocker: 'dtfc-bottom-blocker',
             fixedEnd: 'dtfc-fixed-end',
@@ -13737,7 +13758,7 @@ var DataTable = $.fn.dataTable;
         return FixedColumns;
     }());
 
-    /*! FixedColumns 5.0.0
+    /*! FixedColumns 5.0.1
      * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery($);
@@ -15012,7 +15033,7 @@ return DataTable;
 }));
 
 
-/*! KeyTable 2.12.0
+/*! KeyTable 2.12.1
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -15066,7 +15087,7 @@ var DataTable = $.fn.dataTable;
 /**
  * @summary     KeyTable
  * @description Spreadsheet like keyboard navigation for DataTables
- * @version     2.12.0
+ * @version     2.12.1
  * @file        dataTables.keyTable.js
  * @author      SpryMedia Ltd
  * @contact     datatables.net
@@ -16028,7 +16049,7 @@ $.extend(KeyTable.prototype, {
 	_keyAction: function (action) {
 		var editor = this.c.editor;
 
-		if (editor && editor.mode()) {
+		if (editor && editor.mode() && editor.display()) {
 			editor.submit(action);
 		}
 		else {
@@ -16341,7 +16362,7 @@ KeyTable.defaults = {
 	tabIndex: null
 };
 
-KeyTable.version = '2.12.0';
+KeyTable.version = '2.12.1';
 
 $.fn.dataTable.KeyTable = KeyTable;
 $.fn.DataTable.KeyTable = KeyTable;
@@ -19449,7 +19470,7 @@ return DataTable;
 }));
 
 
-/*! Scroller 2.4.2
+/*! Scroller 2.4.3
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -19503,7 +19524,7 @@ var DataTable = $.fn.dataTable;
 /**
  * @summary     Scroller
  * @description Virtual rendering for DataTables
- * @version     2.4.2
+ * @version     2.4.3
  * @copyright   SpryMedia Ltd.
  *
  * This source file is free software, available under the following license:
@@ -20509,6 +20530,10 @@ $.extend(Scroller.prototype, {
 		clearTimeout(this.s.stateTO);
 		this.s.stateTO = setTimeout(function () {
 			that.s.dtApi.state.save();
+
+			// We can also use this to ensure that the `info` element is correct
+			// since there can be a little scroll after the last scroll event!
+			that._info();
 		}, 250);
 
 		this.s.scrollType =
@@ -20735,7 +20760,7 @@ Scroller.oDefaults = Scroller.defaults;
  *  @name      Scroller.version
  *  @static
  */
-Scroller.version = '2.4.2';
+Scroller.version = '2.4.3';
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Initialisation
@@ -20846,7 +20871,7 @@ return DataTable;
 }));
 
 
-/*! Select for DataTables 2.0.1
+/*! Select for DataTables 2.0.3
  * © SpryMedia Ltd - datatables.net/license/mit
  */
 
@@ -20900,7 +20925,11 @@ var DataTable = $.fn.dataTable;
 // Version information for debugger
 DataTable.select = {};
 
-DataTable.select.version = '2.0.1';
+DataTable.select.classes = {
+	checkbox: 'dt-select-checkbox'
+};
+
+DataTable.select.version = '2.0.3';
 
 DataTable.select.init = function (dt) {
 	var ctx = dt.settings()[0];
@@ -21044,11 +21073,11 @@ DataTable.select.init = function (dt) {
 
 	// Insert a checkbox into the header if needed - might need to wait
 	// for init complete, or it might already be done
-	if (headerCheckbox) {
-		initCheckboxHeader(dt);
+	if (headerCheckbox || headerCheckbox === 'select-page' || headerCheckbox === 'select-all') {
+		initCheckboxHeader(dt, headerCheckbox);
 
 		dt.on('init', function () {
-			initCheckboxHeader(dt);
+			initCheckboxHeader(dt, headerCheckbox);
 		});
 	}
 };
@@ -21212,6 +21241,18 @@ function cellRange(dt, idx, last) {
 		// Deselect range
 		dt.cells(indexes).deselect();
 	}
+}
+
+/**
+ * Get the class
+ * @returns 
+ */
+function checkboxClass(selector) {
+	var name = DataTable.select.classes.checkbox;
+
+	return selector
+		? name.replace(/ /g, '.')
+		: name;
 }
 
 /**
@@ -21432,8 +21473,9 @@ function info(api, node) {
  * be selected, deselected or just to show the state.
  *
  * @param {*} dt API
+ * @param {*} headerCheckbox the header checkbox option
  */
-function initCheckboxHeader( dt ) {
+function initCheckboxHeader( dt, headerCheckbox ) {
 	// Find any checkbox column(s)
 	dt.columns('.dt-select').every(function () {
 		var header = this.header();
@@ -21442,14 +21484,18 @@ function initCheckboxHeader( dt ) {
 			// If no checkbox yet, insert one
 			var input = $('<input>')
 				.attr({
-					class: 'dt-select-checkbox',
+					class: checkboxClass(true),
 					type: 'checkbox',
 					'aria-label': dt.i18n('select.aria.headerCheckbox') || 'Select all rows'
 				})
 				.appendTo(header)
 				.on('change', function () {
 					if (this.checked) {
-						dt.rows({search: 'applied'}).select();
+						if (headerCheckbox == 'select-page') {
+							dt.rows({page: 'current'}).select()
+						} else {
+							dt.rows({search: 'applied'}).select();
+						}
 					}
 					else {
 						dt.rows({selected: true}).deselect();
@@ -21465,7 +21511,7 @@ function initCheckboxHeader( dt ) {
 				if (type === 'row' || ! type) {
 					var count = dt.rows({selected: true}).count();
 					var search = dt.rows({search: 'applied', selected: true}).count();
-					var available = dt.rows({search: 'applied'}).count();
+					var available = headerCheckbox == 'select-page' ? dt.rows({page: 'current'}).count() : dt.rows({search: 'applied'}).count();
 
 					if (search && search <= count && search === available) {
 						input
@@ -21517,7 +21563,7 @@ function init(ctx) {
 			if (d._select_selected) {
 				$(row)
 					.addClass(ctx._select.className)
-					.find('input.dt-select-checkbox').prop('checked', true);
+					.find('input.' + checkboxClass(true)).prop('checked', true);
 			}
 
 			// Cells and columns - if separated out, we would need to do two
@@ -21960,7 +22006,7 @@ apiRegisterPlural('rows().select()', 'row().select()', function (select) {
 
 				// Make sure the checkbox shows the right state
 				if (cells && cells[i]) {
-					$('input.dt-select-checkbox', cells[i]).prop('checked', true);
+					$('input.' + checkboxClass(true), cells[i]).prop('checked', true);
 				}
 
 				// Invalidate the sort data for this column, if not already done
@@ -22094,7 +22140,7 @@ apiRegisterPlural('rows().deselect()', 'row().deselect()', function () {
 
 				// Make sure the checkbox shows the right state
 				if (cells && cells[i]) {
-					$('input.dt-select-checkbox', dtData.anCells[i]).prop('checked', false);
+					$('input.' + checkboxClass(true), dtData.anCells[i]).prop('checked', false);
 				}
 
 				// Invalidate the sort data for this column, if not already done
@@ -22375,11 +22421,20 @@ DataTable.render.select = function (valueProp, nameProp) {
 			return $('<input>')
 				.attr({
 					'aria-label': ariaLabel,
-					class: 'dt-select-checkbox',
+					class: checkboxClass(),
 					name: nameFn ? nameFn(row) : null,
 					type: 'checkbox',
 					value: valueFn ? valueFn(row) : null,
 					checked: selected
+				})
+				.on('input', function (e) {
+					// Let Select 100% control the state of the checkbox
+					e.preventDefault();
+
+					// And make sure this checkbox matches it's row as it is possible
+					// to check out of sync if this was clicked on to deselect a range
+					// but remains selected itself
+					this.checked = $(this).closest('tr').hasClass('selected');
 				})[0];
 		}
 		else if (type === 'type') {
