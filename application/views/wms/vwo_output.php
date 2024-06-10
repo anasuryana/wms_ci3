@@ -110,7 +110,7 @@
                                     <div id="wopr_spreasheet2"></div>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row d-none">
                                 <div class="col-md-12 mb-1">
                                     <div class="table-responsive" id="wopr_tbl_div">
                                         <table id="wopr_tbl" class="table table-bordered table-sm caption-top border-primary text-center table-hover">
@@ -679,8 +679,8 @@
                 _theDate = oMoment.add(1, 'days').format('YYYY-MM-DD')
             }
 
-            const _valueOK = numeral(wopr_sso.getValueFromCoords(c, 3, true)).value()
-            const _valueNG = numeral(wopr_sso.getValueFromCoords(c, 4, true)).value()
+            const _valueOK = numeral(wopr_sso.getValueFromCoords(c, 2, true)).value()
+            const _valueNG = numeral(wopr_sso.getValueFromCoords(c, 3, true)).value()
 
             outputQty.push({
                 output_at : _theDate + ' ' + inputSS[0][c] + ':00:00',
@@ -691,8 +691,8 @@
             totalOutputQty += (_valueOK + _valueNG)
         }
 
-        if(inputPCB > woSize) {
-            alertify.warning(`Please check Input-Qty & Lot Size`)
+        if(totalOutputQty > woSize) {
+            alertify.warning(`Please check Output & Lot Size`)
             return
         }
 
@@ -702,7 +702,7 @@
             item_bom_rev : inputWO[2],
             wo_code : woCode,
             wo_size : woSize,
-            input_qty : 0,
+            input_qty : totalOutputQty,
             shift_code : wopr_shift_input.value,
             production_date : wopr_date_input.value,
             process_code : processCode,
@@ -1048,8 +1048,8 @@
                         for(let i=0; i<totalRows; i++) {
                             const _jam = response.data[i].running_at.substring(11,13)*1
                             if(_jam == inputSS[0][c]) {
-                                inputSS[3][c] =response.data[i].ok_qty
-                                inputSS[4][c] =response.data[i].ng_qty
+                                inputSS[2][c] =response.data[i].ok_qty
+                                inputSS[3][c] =response.data[i].ng_qty
                                 break;
                             }
                         }
