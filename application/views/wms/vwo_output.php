@@ -668,32 +668,63 @@
         const processSeq = inputProcess[1]
 
         let inputSS = wopr_sso.getData()
+        let inputSS2 = wopr_sso2.getData()
 
         let outputQty = []
         let totalOutputQty = 0
+        let totalInputQty = 0
 
-        for(let c=1; c<13; c++) {
-            let _theDate = wopr_date_input.value
-            if(wopr_shift_input.value === 'N' && c>5) {
-                let oMoment = moment(_theDate)
-                _theDate = oMoment.add(1, 'days').format('YYYY-MM-DD')
+        if(!processCode.includes('HW')) { 
+            for(let c=1; c<13; c++) {
+                let _theDate = wopr_date_input.value
+                if(wopr_shift_input.value === 'N' && c>5) {
+                    let oMoment = moment(_theDate)
+                    _theDate = oMoment.add(1, 'days').format('YYYY-MM-DD')
+                }
+    
+                const _valueOK = numeral(wopr_sso.getValueFromCoords(c, 2, true)).value()
+                const _valueNG = numeral(wopr_sso.getValueFromCoords(c, 3, true)).value()
+    
+                outputQty.push({
+                    output_at : _theDate + ' ' + inputSS[0][c] + ':00:00',
+                    outputOK : _valueOK ,
+                    outputNG : _valueNG ,
+                })
+    
+                totalOutputQty += (_valueOK + _valueNG)
             }
 
-            const _valueOK = numeral(wopr_sso.getValueFromCoords(c, 2, true)).value()
-            const _valueNG = numeral(wopr_sso.getValueFromCoords(c, 3, true)).value()
+            totalInputQty = totalOutputQty
+    
+            if(totalInputQty > woSize) {
+                alertify.warning(`Please check Output & Lot Size`)
+                return
+            }
+        } else {
+            for(let c=1; c<13; c++) {
+                let _theDate = wopr_date_input.value
+                if(wopr_shift_input.value === 'N' && c>5) {
+                    let oMoment = moment(_theDate)
+                    _theDate = oMoment.add(1, 'days').format('YYYY-MM-DD')
+                }
+    
+                const _valueOK = numeral(wopr_sso2.getValueFromCoords(c, 2, true)).value()
+                const _valueOUTPUT = numeral(wopr_sso2.getValueFromCoords(c, 3, true)).value()
+                const _valueNG = numeral(wopr_sso2.getValueFromCoords(c, 4, true)).value()
+    
+                outputQty.push({
+                    output_at : _theDate + ' ' + inputSS2[0][c] + ':00:00',
+                    outputOK : _valueOUTPUT ,
+                    outputNG : _valueNG ,
+                })
+    
+                totalInputQty += _valueOK
+            }
 
-            outputQty.push({
-                output_at : _theDate + ' ' + inputSS[0][c] + ':00:00',
-                outputOK : _valueOK ,
-                outputNG : _valueNG ,
-            })
-
-            totalOutputQty += (_valueOK + _valueNG)
-        }
-
-        if(totalOutputQty > woSize) {
-            alertify.warning(`Please check Output & Lot Size`)
-            return
+            if(totalInputQty > woSize) {
+                alertify.warning(`Please check INPUT & Lot Size`)
+                return
+            }
         }
 
         const dataInput = {
@@ -702,7 +733,7 @@
             item_bom_rev : inputWO[2],
             wo_code : woCode,
             wo_size : woSize,
-            input_qty : totalOutputQty,
+            input_qty : totalInputQty,
             shift_code : wopr_shift_input.value,
             production_date : wopr_date_input.value,
             process_code : processCode,
@@ -1022,6 +1053,7 @@
                 data: data,
                 dataType: "json",
                 success: function (response) {
+                    wopr_lblinfo.innerText = ''
                     let inputSS = []
                     if(wopr_shift_input.value == 'N') {
                         inputSS = [
@@ -1041,21 +1073,61 @@
                         ]
                     }
                     wopr_sso.setData(inputSS)
-                    wopr_lblinfo.innerText = ''
 
-                    const totalRows = response.data.length
-                    for(let c=1; c<13; c++) {
-                        for(let i=0; i<totalRows; i++) {
-                            const _jam = response.data[i].running_at.substring(11,13)*1
-                            if(_jam == inputSS[0][c]) {
-                                inputSS[2][c] =response.data[i].ok_qty
-                                inputSS[3][c] =response.data[i].ng_qty
-                                break;
+                    let inputSS2 = []
+                    if(wopr_shift_input.value == 'N') {
+                        inputSS2 = [
+                            ['Hour', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
+                            ['', 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6, 7],
+                            ['INPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['Total', '=B3+B5', '=C3+C5', '=D3+D5', '=E3+E5', '=F3+F5', '=G3+G5', '=H3+H5', '=I3+I5', '=J3+J5', '=K3+K5', '=L3+L5', '=M3+M5'],
+                        ]
+                    } else {
+                        inputSS2 = [
+                            ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+                            ['', 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+                            ['INPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['Total', '=B3+B5', '=C3+C5', '=D3+D5', '=E3+E5', '=F3+F5', '=G3+G5', '=H3+H5', '=I3+I5', '=J3+J5', '=K3+K5', '=L3+L5', '=M3+M5'],
+                        ]
+                    }
+                    wopr_sso2.setData(inputSS2)
+                    
+
+                    
+                    if(!inputProcessCode[0].includes('HW')) {
+                        const totalRows = response.data.length
+                        for(let c=1; c<13; c++) {
+                            for(let i=0; i<totalRows; i++) {
+                                const _jam = response.data[i].running_at.substring(11,13)*1
+                                if(_jam == inputSS[0][c]) {
+                                    inputSS[2][c] =response.data[i].ok_qty
+                                    inputSS[3][c] =response.data[i].ng_qty
+                                    break;
+                                }
                             }
                         }
+                        wopr_sso.setData(inputSS)
+
+                    } else {
+                        inputSS2[2][1] = response.inputPCB
+
+                        const totalRows = response.data.length
+                        for(let c=1; c<13; c++) {
+                            for(let i=0; i<totalRows; i++) {
+                                const _jam = response.data[i].running_at.substring(11,13)*1
+                                if(_jam == inputSS2[0][c]) {
+                                    inputSS2[3][c] = response.data[i].ok_qty
+                                    inputSS2[4][c] = response.data[i].ng_qty
+                                    break;
+                                }
+                            }
+                        }
+                        wopr_sso2.setData(inputSS2)
                     }
-                    wopr_sso.setData(inputSS)
-                    
                 }, error: function(xhr, xopt, xthrow) {
                     wopr_lblinfo.innerText = ''
                     alertify.error(xthrow)
