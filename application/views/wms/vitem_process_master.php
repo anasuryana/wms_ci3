@@ -36,7 +36,7 @@
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">
                         <span class="input-group-text" >Search By</span>
-                        <select id="itm_process_srchby" class="form-select">
+                        <select id="itm_process_srchby" class="form-select" onchange="itm_process_txtsearch.focus()">
                             <option value="model_code">Model Code</option>
                             <option value="assy_code">Assy Code</option>
                             <option value="model_type">Type</option>
@@ -235,4 +235,8 @@
             }
         });
     }
+
+    $("#ITM_PROCESS_MODITM").on('shown.bs.modal', function(){
+        itm_process_txtsearch.focus()
+    })
 </script>
