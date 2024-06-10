@@ -102,13 +102,14 @@ class TRF_mod extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
-    public function selectStockUnReceive($Item)
+    public function selectStockUnReceive($Item, $locationFrom)
     {
         $this->db->from($this->TABLENAME);
         $this->db->join($this->TABLENAME_D, "TRFH_DOC=TRFD_DOC", "left");
         $this->db->where("TRFD_DELETED_DT is null", null, false)
             ->where("TRFD_RECEIVE_DT is null", null, false)
-            ->where_in("TRFD_ITEMCD", $Item);
+            ->where_in("TRFD_ITEMCD", $Item)
+            ->where('TRFH_LOC_FR', $locationFrom);
         $this->db->group_by("TRFD_ITEMCD");
         $this->db->select("UPPER(TRFD_ITEMCD) TRFD_ITEMCD,SUM(TRFD_QTY) DQT,SUM(TRFD_QTY) BACKUP_DQT");
         $query = $this->db->get();

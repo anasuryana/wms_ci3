@@ -172,7 +172,7 @@ class TRF extends CI_Controller
 
             # periksa stok
             $RSStock = !empty($LineItemCode) ? $this->ITH_mod->selectStockWhereItemIn($LineItemCode, $frLoc) : [];
-            $RSStockUnreceive = $this->TRF_mod->selectStockUnReceive($LineItemCode);
+            $RSStockUnreceive = $this->TRF_mod->selectStockUnReceive($LineItemCode, $frLoc);
             if (!empty($RSStock)) {
                 # jadikan qty draft sebagai pengurang stock
                 foreach ($RSStockUnreceive as &$r) {
