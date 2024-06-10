@@ -99,17 +99,15 @@
                                         <input type="text" class="form-control" id="wopr_input_ct" readonly disabled value="-">
                                     </div>
                                 </div>
-                                <div class="col-md-3 mb-1">
-                                    <div class="input-group input-group-sm mb-1">
-                                        <label class="input-group-text">Input-QTY</label>
-                                        <input type="text" class="form-control" id="wopr_inputqty_input">
-                                        <button class="btn btn-outline-info" id="wopr_btn_info_input" title="History Input" onclick="wopr_btn_info_input_eC()"><i class="fas fa-timeline"></i></button>
-                                    </div>
-                                </div>
                             </div>
-                            <div class="row">
+                            <div class="row" id="wopr_ss_container1">
                                 <div class="col-md-12 mb-3 table-responsive">
                                     <div id="wopr_spreasheet"></div>
+                                </div>
+                            </div>
+                            <div class="row d-none" id="wopr_ss_container2">
+                                <div class="col-md-12 mb-3 table-responsive">
+                                    <div id="wopr_spreasheet2"></div>
                                 </div>
                             </div>
                             <div class="row">
@@ -207,10 +205,6 @@
     </div>
 </div>
 <script>
-    Inputmask({
-        'alias': 'decimal',
-        'groupSeparator': ',',
-    }).mask(document.getElementById("wopr_inputqty_input"));
 
     $("#wopr_date_input").datepicker({
         format: 'yyyy-mm-dd',
@@ -264,7 +258,7 @@
 
     function wopr_wo_input_eChange(e) {
         if(wopr_assycode_input.value.trim().length > 3) { // validasi inputan assy code
-            wopr_inputqty_input.value = 0
+            
             let input = e.target.value.split('#')
             wopr_wo_size_input.value = input.length === 3 ? numeral(input[1]).format(',') : '-'
             wopr_process_input.innerHTML = `<option value="-">Please wait</option>`
@@ -312,21 +306,41 @@
     var wopr_data_morning = [
         ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
         ['', 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
-        ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
-        ['OK', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ['NG', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
+    ]
+    var wopr_data_morning2 = [
+        ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        ['', 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        ['INPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['Total', '=B3+B4+B5', '=C3+C4+C5', '=D3+D4+D5', '=E3+E4+E5', '=F3+F4+F5', '=G3+G4+G5', '=H3+H4+H5', '=I3+I4+I5', '=J3+J4+J5', '=K3+K4+K5', '=L3+L4+L5', '=M3+M4+M5'],
+       
     ]
     var wopr_data_night = [
         ['Hour', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
         ['', 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6, 7],
-        ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
-        ['OK', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ['NG', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
+    ]
+    var wopr_data_night2 = [
+        ['Hour', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
+        ['', 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6, 7],
+        ['INPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ['Total', '=B3+B4+B5', '=C3+C4+C5', '=D3+D4+D5', '=E3+E4+E5', '=F3+F4+F5', '=G3+G4+G5', '=H3+H4+H5', '=I3+I4+I5', '=J3+J4+J5', '=K3+K4+K5', '=L3+L4+L5', '=M3+M4+M5'],
     ]
 
     var wopr_sso = jspreadsheet(wopr_spreasheet, {
         columns : [
-            {readOnly : true},
+            {
+                readOnly : true,
+                width:90,
+            },
             {
                 type: 'numeric',
                 mask: '#,##',
@@ -383,14 +397,96 @@
         rowDrag:false,
         data: wopr_data_morning.slice(),
         updateTable: function(el, cell, x, y, source, value, id) {
-            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 2].includes(y)) {
+            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 4].includes(y)) {
                 cell.classList.add('readonly');
                 cell.style.cssText = "font-weight: bold; text-align:center"
             }
-            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===3) {
+            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===2) {
                 cell.style.cssText = "background-color:#d1e7dd;font-weight: bold; text-align:center"
             }
-            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===4) {
+            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===3) {
+                cell.style.cssText = "background-color:#f8d7da;font-weight: bold; text-align:center"
+            }
+
+        },
+        onchange : function(instance, cell, x, y, value) {
+            const cellName = jspreadsheet.getColumnNameFromId([x,y]);
+        },
+        copyCompatibility:true,
+        columnSorting:false,
+        mergeCells:{
+            A1:[1,2]
+        },
+    });
+    var wopr_sso2 = jspreadsheet(wopr_spreasheet2, {
+        columns : [
+            {
+                readOnly : true,
+                width:90,},
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+            {
+                type: 'numeric',
+                mask: '#,##',
+            },
+        ],
+        allowInsertRow : false,
+        allowInsertColumn : false,
+        allowDeleteColumn : false,
+        allowDeleteRow : false,
+        rowDrag:false,
+        data: wopr_data_morning2.slice(),
+        updateTable: function(el, cell, x, y, source, value, id) {
+            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 5].includes(y)) {
+                cell.classList.add('readonly');
+                cell.style.cssText = "font-weight: bold; text-align:center"
+            }
+            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && [2,3].includes(y)) {
+                cell.style.cssText = "background-color:#d1e7dd;font-weight: bold; text-align:center"
+            }
+            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && [4].includes(y)) {
                 cell.style.cssText = "background-color:#f8d7da;font-weight: bold; text-align:center"
             }
 
@@ -554,8 +650,7 @@
 
         const inputWO = wopr_wo_input.value.split('#')
         const woCode = inputWO[0]
-        const woSize = numeral(inputWO[1]).value()
-        const inputPCB = numeral(wopr_inputqty_input.value).value()
+        const woSize = numeral(inputWO[1]).value()       
 
         if(wopr_process_input.value==='-') {
             alertify.warning(`Please select a process`)
@@ -607,7 +702,7 @@
             item_bom_rev : inputWO[2],
             wo_code : woCode,
             wo_size : woSize,
-            input_qty : inputPCB,
+            input_qty : 0,
             shift_code : wopr_shift_input.value,
             production_date : wopr_date_input.value,
             process_code : processCode,
@@ -919,6 +1014,8 @@
                 production_date: wopr_date_input.value,
             }
             wopr_lblinfo.innerText = 'Please wait'
+
+            
             $.ajax({
                 type: "GET",
                 url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/output",
@@ -930,17 +1027,17 @@
                         inputSS = [
                             ['Hour', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
                             ['', 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6, 7],
-                            ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
-                            ['OK', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            ['NG', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
                         ]
                     } else {
                         inputSS = [
                             ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
                             ['', 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
-                            ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
-                            ['OK', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            ['NG', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
                         ]
                     }
                     wopr_sso.setData(inputSS)
@@ -958,8 +1055,7 @@
                         }
                     }
                     wopr_sso.setData(inputSS)
-
-                    wopr_inputqty_input.value = response.inputPCB
+                    
                 }, error: function(xhr, xopt, xthrow) {
                     wopr_lblinfo.innerText = ''
                     alertify.error(xthrow)
@@ -989,6 +1085,16 @@
     }
 
     function wopr_process_input_eChange() {
+        if(wopr_process_input.value !='-') {
+            const inputProcessCode = wopr_process_input.value.split('#')
+            if(inputProcessCode[0].includes('HW')) {
+                wopr_ss_container1.classList.add('d-none')
+                wopr_ss_container2.classList.remove('d-none')
+            } else {
+                wopr_ss_container1.classList.remove('d-none')
+                wopr_ss_container2.classList.add('d-none')
+            }
+        }
         wopr_load_at()
         wopr_load_process_ct()
     }
