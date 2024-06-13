@@ -3,14 +3,8 @@
         <div class="row" id="rwo_cost_stack1">
             <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text" >From</span>
+                    <span class="input-group-text" >Date</span>
                     <input type="text" class="form-control" id="rwo_cost_txt_dt" readonly>
-                </div>
-            </div>
-            <div class="col-md-3 mb-1">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text" >To</span>
-                    <input type="text" class="form-control" id="rwo_cost_txt_dt2" readonly>
                 </div>
             </div>
             <div class="col-md-3 mb-1">
@@ -24,12 +18,9 @@
         format: 'yyyy-mm-dd',
         autoclose:true
     });
-    $("#rwo_cost_txt_dt2").datepicker({
-        format: 'yyyy-mm-dd',
-        autoclose:true
-    });
+
     $("#rwo_cost_txt_dt").datepicker('update', new Date());
-    $("#rwo_cost_txt_dt2").datepicker('update', new Date());
+    
 
     function rwo_cost_btn_gen_eCK(p) {
         p.disabled = true
@@ -37,12 +28,12 @@
         $.ajax({
             type: "GET",
             url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/export-cost",
-            data: { dateFrom : rwo_cost_txt_dt.value, dateTo: rwo_cost_txt_dt2.value , outputType:'spreadsheet' },
+            data: { dateFrom : rwo_cost_txt_dt.value, outputType:'spreadsheet' },
             success: function (response) {
                 p.disabled = false
                 p.innerHTML = '<i class="fas fa-file-excel"></i>'
                 const blob = new Blob([response], { type: "application/vnd.ms-excel" })
-                const fileName = `WIP Cost report from ${rwo_cost_txt_dt.value} to ${rwo_cost_txt_dt2.value}.xlsx`
+                const fileName = `WIP Cost report at ${rwo_cost_txt_dt.value} .xlsx`
                 saveAs(blob, fileName)
                 alertify.success('Done')
             },
