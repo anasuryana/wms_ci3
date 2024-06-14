@@ -87,6 +87,12 @@
         let mtype = $("#vexrat_type").val();
         let mdate = $("#vexrate_date").val();
         let mval = $("#vexrate_val").val();
+        
+        if(!mtype) {
+            vexrat_type.focus()
+            alertify.warning('Type is required')
+            return
+        }
         mval = mval.replace(',', '')
         $.ajax({
             type: "post",
