@@ -30,6 +30,14 @@ class WO extends CI_Controller
     {
         $this->load->view('wms/vwo_output');
     }
+    public function form_report()
+    {
+        $this->load->view('wms_report/vwo_output_daily');
+    }
+    public function form_cost_report()
+    {
+        $this->load->view('wms_report/vwo_cost');
+    }
 
     public function checkSimulation()
     {
