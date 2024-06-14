@@ -2155,14 +2155,18 @@ class SPL extends CI_Controller
                     while ($think) {
                         $grasp = false;
                         foreach ($rsdetail as $d) {
-                            if ((trim($r['SPL_ORDERNO']) == trim($d['SPLSCN_ORDERNO'])) && (trim($r['SPL_ITMCD']) == trim($d['SPLSCN_ITMCD'])) && $d['USED'] == false) {
+                            if ((trim($r['SPL_ORDERNO']) == trim($d['SPLSCN_ORDERNO'])) && (trim($r['SPL_ITMCD']) == trim($d['SPLSCN_ITMCD'])) 
+                            && (trim($r['SPL_LINE']) == trim($d['SPLSCN_LINE']))
+                            && $d['USED'] == false) {
                                 $grasp = true;
                                 break;
                             }
                         }
                         if ($grasp) {
                             foreach ($rsdetail as &$d) {
-                                if ((trim($r['SPL_ORDERNO']) == trim($d['SPLSCN_ORDERNO'])) && (trim($r['SPL_ITMCD']) == trim($d['SPLSCN_ITMCD'])) && $d['USED'] == false) {
+                                if ((trim($r['SPL_ORDERNO']) == trim($d['SPLSCN_ORDERNO'])) && (trim($r['SPL_ITMCD']) == trim($d['SPLSCN_ITMCD'])) 
+                                && (trim($r['SPL_LINE']) == trim($d['SPLSCN_LINE']))
+                                && $d['USED'] == false) {
                                     $think2 = true;
                                     while ($think2) {
                                         if ($r['TTLREQ'] > $r['TTLSCN']) {
