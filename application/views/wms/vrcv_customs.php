@@ -677,6 +677,7 @@
                         <input type="text" class="form-control" id="rcvcustoms_fg_customer_currency" readonly disabled>
                     </div>
                 </div>
+                <input type="hidden" id="rcvcustoms_fg_bisgrup">
             </div>
             <div class="row" id="rcvcustoms_fg_stack4">
                 <div class="col-md-6 mb-3">
@@ -3907,6 +3908,7 @@
                 inconaNum: cona,
                 invoice: invoice,
                 perNW: perNW,
+                inbisgrup: rcvcustoms_fg_bisgrup.value,
             },
             dataType: "json",
             success: function(response) {
@@ -4048,7 +4050,7 @@
 
                             rcvcustoms_fg_customer_name.value = response[i].MSUP_SUPNM
                             rcvcustoms_fg_customer_currency.value = ''
-
+                            rcvcustoms_fg_bisgrup.value = response[i].MBSG_BSGRP
                         }
                         newcell = newrow.insertCell(1)
                         newcell.innerHTML = response[i].ISUDT
