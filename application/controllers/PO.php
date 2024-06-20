@@ -682,9 +682,8 @@ class PO extends CI_Controller
             $sdata_section = substr($sdata_section, 0, strlen($sdata_section) - 1);
             $sdata_department = substr($sdata_department, 0, strlen($sdata_department) - 1);
             $sdata_subject = substr($sdata_subject, 0, strlen($sdata_subject) - 1);
-
             if ($ttldiscount_price > 0 || $discount_msg != '') {
-                $pdf->SetXY(6, $YStart);
+                $pdf->SetXY(6, 173 - $_y);
                 $pdf->Cell(10, 5, '', 0, 0, 'C');
                 $pdf->Cell(30, 5, '', 0, 0, 'L');
                 $pdf->Cell(60, 5, 'Discount (' . $discount_msg . ')', 0, 0, 'L');
