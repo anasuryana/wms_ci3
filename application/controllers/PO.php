@@ -238,6 +238,7 @@ class PO extends CI_Controller
             $discount_price = $amount * ($r['PO_DISC'] / 100);
             $ttldiscount_price += $discount_price;
         }
+        
         #additional row for discount
         if ($ttldiscount_price > 0) {
             if (count($discountlist_distinct) == 1) {
@@ -542,7 +543,6 @@ class PO extends CI_Controller
                 $pdf->Cell(27.5, 5, number_format($r['PO_PRICE'], 2), 0, 0, 'R');
                 $pdf->Cell(27.5, 5, number_format($amount, 2), 0, 0, 'R');
                 $total_amount += $finalamount;
-                $ttldiscount_price += $discount_price;
                 $YStart += (5 + $YExtra + $YExtra2);
             }
             $pdf->AddPage();
