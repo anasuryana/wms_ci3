@@ -1,11 +1,17 @@
 <div style="padding: 5px">
     <div class="container-fluid">
         <div class="row">
+            <div class="col mb-1" id="mpuror-div-alert">
+
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-6 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" id="mpuror_btn_new" onclick="mpuror_btn_new_eC()"><i class="fas fa-file"></i></button>
                     <button class="btn btn-outline-primary" id="mpuror_btn_save" onclick="mpuror_btn_save_eC()"><i class="fas fa-save"></i></button>
                     <button class="btn btn-outline-primary" id="mpuror_btn_print" onclick="mpuror_btn_print_eC()"><i class="fas fa-print"></i></button>
+                    <button class="btn btn-danger" title="Cancel PO" id="mpuror_btn_cancel" onclick="mpuror_btn_cancel_eC(this)"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
             <div class="col-md-6 mb-1 text-end">
@@ -23,7 +29,7 @@
             <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">PO No</label>
-                    <input type="text" class="form-control" id="mpuror_txt_doc" readonly title="autonumber">
+                    <input type="text" class="form-control" id="mpuror_txt_doc" readonly title="autonumber" disabled>
                     <button class="btn btn-primary" id="mpuror_btnmod" onclick="mpuror_btnmod_eC()"><i class="fas fa-search"></i></button>
                 </div>
             </div>
@@ -52,14 +58,14 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text">Vendor</span>
-                    <input type="text" class="form-control" id="mpuror_vendname" required readonly>
+                    <input type="text" class="form-control" id="mpuror_vendname" required readonly disabled>
                     <button class="btn btn-primary" id="mpuror_btnfindmodvend" onclick="mpuror_btnfindmodvend_eC()"><i class="fas fa-search"></i></button>
                 </div>
             </div>
             <div class="col-md-2 mb-1">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text">Currency</span>
-                    <input type="text" readonly class="form-control" id="mpuror_curr">
+                    <input type="text" readonly class="form-control" id="mpuror_curr" disabled>
                 </div>
             </div>
             <div class="col-md-4 mb-1">
@@ -632,10 +638,7 @@
         }
     }
 
-    function mpuror_btn_new_eC() {
-        if (!confirm("Are you sure want to create new document ?")) {
-            return
-        }
+    function mpuror_clear() {
         mpuror_cmb_customs.value = '-'
         document.getElementById('mpuror_txt_doc').value = ''
         document.getElementById('mpuror_txt_remark').value = ''
@@ -658,6 +661,13 @@
             [],
             []
         ])
+    }
+
+    function mpuror_btn_new_eC() {
+        if (!confirm("Are you sure want to create new document ?")) {
+            return
+        }
+        mpuror_clear()
     }
     $("#mpuror_txt_dlvreqdate").datepicker({
         format: 'yyyy-mm-dd',
@@ -1492,6 +1502,41 @@
             tabItem.disabled = true
             tabNonItem.disabled = false
             mpuror_txt_VAT.readOnly = false
+        }
+    }
+
+    function mpuror_btn_cancel_eC(p) {
+        if(mpuror_txt_doc.value.length > 0) {
+            if(confirm("This action will REMOVE the PO, are you sure ?")) {
+                const div_alert = document.getElementById('mpuror-div-alert')
+                p.disabled = true
+                $.ajax({
+                    type: "delete",
+                    url: "<?=$_ENV['APP_INTERNAL_API']?>purchase/remove",
+                    data: {document : mpuror_txt_doc.value.trim()},
+                    dataType: "json",
+                    success: function (response) {
+                        p.disabled = false
+                        alertify.message(response.message)
+                        mpuror_clear()
+                    },
+                    error: function(xhr, ajaxOptions, throwError) {
+                        alertify.error(xthrow)
+                        p.disabled = false
+
+                        const respon = Object.keys(xhr.responseJSON)
+
+                        let msg = ''
+                        for (const item of respon) {
+                            msg += `<p>${xhr.responseJSON[item]}</p>`
+                        }
+                        div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        ${msg}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    }
+                });
+            }
         }
     }
 </script>
