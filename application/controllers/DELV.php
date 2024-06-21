@@ -16651,6 +16651,7 @@ class DELV extends CI_Controller
                 if ($result['status']['cd'] != 1) {
                     $respon = [
                         'message' => $result['status']['msg'],
+                        'data' => $result['data'],
                     ];
                     $this->output->set_status_header(400);
                     die(json_encode($respon));
