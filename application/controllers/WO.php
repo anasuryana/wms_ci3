@@ -38,6 +38,11 @@ class WO extends CI_Controller
     {
         $this->load->view('wms_report/vwo_cost');
     }
+    
+    public function form_keikaku()
+    {
+        $this->load->view('wms/vkeikaku');
+    }
 
     public function checkSimulation()
     {
