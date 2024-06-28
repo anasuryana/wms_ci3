@@ -25,6 +25,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="keikaku_checksim-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_checksim" type="button" role="tab" aria-controls="home" aria-selected="true">Calculation</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true">Production Plan</button>
+                </li>
             </ul>
                 <div class="tab-content" id="keikaku_myTabContent">
                     <div class="tab-pane fade show active" id="keikaku_tabRM" role="tabpanel" aria-labelledby="home-tab">
@@ -58,6 +61,8 @@
                                 <div id="keikaku_calculation_spreadsheet"></div>
                             </div>
                         </div>
+                    </div>
+                    <div class="tab-pane fade" id="keikaku_tab_prodplan" role="tabpanel">
                     </div>
                 </div>
             </div>
@@ -155,7 +160,7 @@
                 align : 'left',
             }, ...Array.from({length: 24}, (_, i) => Object.create({
                     type : 'numeric',
-                    mask: '#,##.00',
+                    // mask: '#,##.00',
                     }))
         ],
         allowInsertColumn : false,
@@ -170,18 +175,59 @@
             ['MENT OT', ...Array.from({length: 24}, (_, i) => null)],
             ['MENT NON OT', ...Array.from({length: 24}, (_, i) => null)],
             ['MENT OT', ...Array.from({length: 24}, (_, i) => null)],
+            ['Change Model', ...Array.from({length: 24}, (_, i) => null)],
+            ['Change Model/OT', ...Array.from({length: 24}, (_, i) => null)],
+            ['Retention Time',
+            `=IF($B$8="M", B3, B2)`,
+            `=IF($B$8="M", C3, C2)`,
+            `=IF($B$8="M", D3, D2)`,
+            `=IF($B$8="M", E3, E2)`,
+            `=IF($B$8="M", F3, F2)`,
+            `=IF($B$8="M", G3, G2)`,
+            `=IF($B$8="M", H3, H2)`,
+            `=IF($B$8="M", I3, I2)`,
+            `=IF($J$8="OT", J4, J3)`,
+            `=IF($J$8="OT", K4, K3)`,
+            `=IF($J$8="OT", L2, L1)`,
+            `=IF($J$8="OT", M2, M1)`,
+
+            `=IF($B$8="M", N3, N2)`,
+            `=IF($B$8="M", O3, O2)`,
+            `=IF($B$8="M", P3, P2)`,
+            `=IF($B$8="M", Q3, Q2)`,
+            `=IF($B$8="M", R3, R2)`,
+            `=IF($B$8="M", S3, S2)`,
+            `=IF($B$8="M", T3, T2)`,
+            `=IF($B$8="M", U3, U2)`,
+            `=IF($V$8="OT", V2, V1)`,
+            `=IF($V$8="OT", W2, W1)`,
+            `=IF($V$8="OT", X2, X1)`,
+            `=IF($V$8="OT", Y2, Y1)`,
+            ],
             ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i)],
+            ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
+                '=M11','=N11', '=O11', '=P11', '=Q11', '=R11', '=S11', '=T11', '=U11', '=V11', '=W11', '=X11'
+            ],
         ],
         copyCompatibility:true,
         columnSorting:false,
         allowInsertRow : false,
         updateTable: function(el, cell, x, y, source, value, id) {
-            if (Array.from({length: 24}, (_, i) => i + 1).includes(x) && [6].includes(y)) {
+            if (Array.from({length: 24}, (_, i) => i + 1).includes(x) && [6,8,9].includes(y)) {
                 cell.classList.add('readonly');
                 cell.style.cssText = "font-weight: bold; text-align:center"
             }
+            if([1,2,3,4,5,6,7,8,9].includes(x) && [0,1,2,3,4,5].includes(y)) {
+                cell.style.cssText = "background-color:#daeef3"
+            }
+            if([10,11,12,22,23,24].includes(x) && [0,1,2,3,4,5].includes(y)) {
+                cell.style.cssText = "background-color:#e4dfec"
+            }
+            if([13,14,15,16,17,18,19,20,21].includes(x) && [0,1,2,3,4,5].includes(y)) {
+                cell.style.cssText = "background-color:#ebf1de"
+            }
         },
-        
+
     });
 
     function keikaku_load_line_code() {

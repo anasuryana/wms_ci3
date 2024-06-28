@@ -615,7 +615,7 @@ class SPL extends CI_Controller
                                 }
                             }
                             if (!$isallrack_ready) {
-                                $myar[] = ['cd' => 0, 'msg' => 'Rack is ' . trim($a_partcode[$i]) . ' not found'];
+                                $myar[] = ['cd' => 0, 'msg' => 'Rack ' . trim($a_partcode[$i]) . ' is not found'];
                                 die('{"status":' . json_encode($myar) . '}');
                             }
                         }
@@ -657,14 +657,20 @@ class SPL extends CI_Controller
                                 $ttlsaved += $this->SPL_mod->insert($rsSPL);
                                 $this->SPL_mod->insert_log($rsSPL);
                             } else {
-                                $ttlupdated += $this->SPL_mod->updatebyId(
-                                    [
-                                        'SPL_QTYREQ' => $a_qty[$i], 'SPL_ITMCD' => $a_partcode[$i], 'SPL_RMRK' => $remark, 'SPL_RACKNO' => $therack, 'SPL_ITMRMRK' => $a_partRemark[$i], 'SPL_REFDOCNO' => $a_reffdoc[$i],
-                                    ],
-                                    [
-                                        'SPL_DOC' => $docno, 'SPL_LINEDATA' => $a_line[$i],
-                                    ]
-                                );
+                                $rsdetail = $this->SPLSCN_mod->selectby_filter(['SPLSCN_DOC' => $docno]);
+                                if(count($rsdetail)===0) {
+                                    $ttlupdated += $this->SPL_mod->updatebyId(
+                                        [
+                                            'SPL_QTYREQ' => $a_qty[$i], 'SPL_ITMCD' => $a_partcode[$i], 'SPL_RMRK' => $remark, 'SPL_RACKNO' => $therack, 'SPL_ITMRMRK' => $a_partRemark[$i], 'SPL_REFDOCNO' => $a_reffdoc[$i],
+                                        ],
+                                        [
+                                            'SPL_DOC' => $docno, 'SPL_LINEDATA' => $a_line[$i],
+                                        ]
+                                    );
+                                } else {
+                                    $myar[] = ['cd' => 0, 'msg' => "Could not edit scanned Part Request"];
+                                    die(json_encode(['status' => $myar]));
+                                }
                             }
                         }
                         $myar[] = ['cd' => 1, 'msg' => "$ttlsaved row(s) saved and $ttlupdated row(s) updated", 'doc' => $docno];
