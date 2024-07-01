@@ -2103,7 +2103,7 @@ class RCV extends CI_Controller
                 }
                 break;
             case 'do':
-
+                $rs = $this->RCV_mod->MGSelectDO_return_fg_new($ckey);
                 break;
         }
         echo json_encode($rs);
