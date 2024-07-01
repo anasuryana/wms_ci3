@@ -546,7 +546,7 @@
                 <div class="col-md-5 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">DO Number</label>
-                        <input type="text" class="form-control" id="rcvcustoms_fg_docnoorigin" readonly>
+                        <input type="text" class="form-control" id="rcvcustoms_fg_docnoorigin" readonly disabled>
                         <button class="btn btn-primary" id="rcvcustoms_fg_btnmod"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
@@ -4039,6 +4039,7 @@
                                 alertify.warning('DO Number could not be empty')
                                 return
                             }
+                            rcvcustoms_fg_bisgrup.value = response[i].MBSG_BSGRP
                             rcvcustoms_suppliercode = response[i].RETFG_SUPCD
                             $("#rcvcustoms_fg_docnoorigin").val(response[i].SUPNO);
                             $("#rcvcustoms_fg_supplier_2").val(response[i].MSUP_SUPNM);
@@ -4050,7 +4051,7 @@
 
                             rcvcustoms_fg_customer_name.value = response[i].MSUP_SUPNM
                             rcvcustoms_fg_customer_currency.value = ''
-                            rcvcustoms_fg_bisgrup.value = response[i].MBSG_BSGRP
+                            
                         }
                         newcell = newrow.insertCell(1)
                         newcell.innerHTML = response[i].ISUDT
@@ -4146,7 +4147,8 @@
             type: "get",
             url: "<?=base_url('RCV/WMSGetDODetail')?>",
             data: {
-                indo: pdo
+                indo: pdo,
+                inbisgrup : rcvcustoms_fg_bisgrup.value
             },
             dataType: "json",
             success: function(response) {
