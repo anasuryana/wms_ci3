@@ -4,7 +4,7 @@
             <div class="col-md-6">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">Line</label>
-                    <select class="form-select" id="keikaku_line_input" required>
+                    <select class="form-select" id="keikaku_line_input" required onchange="keikaku_line_input_on_change()">
                         <option value="-">-</option>
                     </select>
                 </div>
@@ -12,7 +12,7 @@
             <div class="col-md-6">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">Production Date</label>
-                    <input type="text" class="form-control" id="keikaku_date_input" readonly>
+                    <input type="text" class="form-control" id="keikaku_date_input" readonly onchange="keikaku_date_input_on_change()">
                 </div>
             </div>
         </div>
@@ -265,49 +265,53 @@
         }
     }
 
+    function keikaku_reset_calculation() {
+        keikaku_calculation_sso.setData([
+            ['NON OT', ...Array.from({length: 24}, (_, i) => null)],
+            ['OT1', ...Array.from({length: 24}, (_, i) => null)],
+            ['MENT NON OT', ...Array.from({length: 24}, (_, i) => null)],
+            ['MENT OT', ...Array.from({length: 24}, (_, i) => null)],
+            ['MENT NON OT', ...Array.from({length: 24}, (_, i) => null)],
+            ['MENT OT', ...Array.from({length: 24}, (_, i) => null)],
+            ['Change Model', ...Array.from({length: 24}, (_, i) => null)],
+            ['Change Model/OT', ...Array.from({length: 24}, (_, i) => null)],
+            ['Retention Time',
+            `=IF($B$8="M", B3, B2)`,
+            `=IF($B$8="M", C3, C2)`,
+            `=IF($B$8="M", D3, D2)`,
+            `=IF($B$8="M", E3, E2)`,
+            `=IF($B$8="M", F3, F2)`,
+            `=IF($B$8="M", G3, G2)`,
+            `=IF($B$8="M", H3, H2)`,
+            `=IF($B$8="M", I3, I2)`,
+            `=IF($J$8="OT", J4, J3)`,
+            `=IF($J$8="OT", K4, K3)`,
+            `=IF($J$8="OT", L2, L1)`,
+            `=IF($J$8="OT", M2, M1)`,
+
+            `=IF($B$8="M", N3, N2)`,
+            `=IF($B$8="M", O3, O2)`,
+            `=IF($B$8="M", P3, P2)`,
+            `=IF($B$8="M", Q3, Q2)`,
+            `=IF($B$8="M", R3, R2)`,
+            `=IF($B$8="M", S3, S2)`,
+            `=IF($B$8="M", T3, T2)`,
+            `=IF($B$8="M", U3, U2)`,
+            `=IF($V$8="OT", V2, V1)`,
+            `=IF($V$8="OT", W2, W1)`,
+            `=IF($V$8="OT", X2, X1)`,
+            `=IF($V$8="OT", Y2, Y1)`,
+            ],
+            ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i)],
+            ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
+                '=M11','=N11', '=O11', '=P11', '=Q11', '=R11', '=S11', '=T11', '=U11', '=V11', '=W11', '=X11'
+            ],
+        ])
+    }
+
     function keikaku_btn_new_calculation_eClick() {
         if(confirm('Are you sure want to create new empty file... ?')) {
-            keikaku_calculation_sso.setData([
-                ['NON OT', ...Array.from({length: 24}, (_, i) => null)],
-                ['OT1', ...Array.from({length: 24}, (_, i) => null)],
-                ['MENT NON OT', ...Array.from({length: 24}, (_, i) => null)],
-                ['MENT OT', ...Array.from({length: 24}, (_, i) => null)],
-                ['MENT NON OT', ...Array.from({length: 24}, (_, i) => null)],
-                ['MENT OT', ...Array.from({length: 24}, (_, i) => null)],
-                ['Change Model', ...Array.from({length: 24}, (_, i) => null)],
-                ['Change Model/OT', ...Array.from({length: 24}, (_, i) => null)],
-                ['Retention Time',
-                `=IF($B$8="M", B3, B2)`,
-                `=IF($B$8="M", C3, C2)`,
-                `=IF($B$8="M", D3, D2)`,
-                `=IF($B$8="M", E3, E2)`,
-                `=IF($B$8="M", F3, F2)`,
-                `=IF($B$8="M", G3, G2)`,
-                `=IF($B$8="M", H3, H2)`,
-                `=IF($B$8="M", I3, I2)`,
-                `=IF($J$8="OT", J4, J3)`,
-                `=IF($J$8="OT", K4, K3)`,
-                `=IF($J$8="OT", L2, L1)`,
-                `=IF($J$8="OT", M2, M1)`,
-
-                `=IF($B$8="M", N3, N2)`,
-                `=IF($B$8="M", O3, O2)`,
-                `=IF($B$8="M", P3, P2)`,
-                `=IF($B$8="M", Q3, Q2)`,
-                `=IF($B$8="M", R3, R2)`,
-                `=IF($B$8="M", S3, S2)`,
-                `=IF($B$8="M", T3, T2)`,
-                `=IF($B$8="M", U3, U2)`,
-                `=IF($V$8="OT", V2, V1)`,
-                `=IF($V$8="OT", W2, W1)`,
-                `=IF($V$8="OT", X2, X1)`,
-                `=IF($V$8="OT", Y2, Y1)`,
-                ],
-                ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i)],
-                ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
-                    '=M11','=N11', '=O11', '=P11', '=Q11', '=R11', '=S11', '=T11', '=U11', '=V11', '=W11', '=X11'
-                ],
-            ])
+            keikaku_reset_calculation()
         }
     }
 
@@ -411,7 +415,7 @@
                 'worktype4' : numeral(inputSS[3][c]).value(),
                 'worktype5' : numeral(inputSS[4][c]).value(),
                 'worktype6' : numeral(inputSS[5][c]).value(),
-                'flag_mot' : numeral(inputSS[7][c]).value(),
+                'flag_mot' : inputSS[7][c],
                 'efficiency' : numeral(inputSS[10][c]).value()
             })
         }
@@ -452,5 +456,83 @@
                 }
             });
         }
+    }
+
+    function keikaku_date_input_on_change() {
+        keikaku_load_calcultion()
+    }
+
+    function keikaku_load_calcultion() {
+        keikaku_reset_calculation()
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/calculation",
+            data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value},
+            dataType: "json",
+            success: function (response) {
+                let worktype1 = ['NON OT'];
+                let worktype2 = ['OT1'];
+                let worktype3 = ['MENT NON OT'];
+                let worktype4 = ['MENT OT'];
+                let worktype5 = ['MENT NON OT'];
+                let worktype6 = ['MENT OT'];
+                let flag_mot = ['Change Model/OT'];
+                response.data.forEach((arrayItem) => {
+                    worktype1.push(Number.parseFloat(arrayItem['worktype1']).toFixed(2))
+                    worktype2.push(Number.parseFloat(arrayItem['worktype2']).toFixed(2))
+                    worktype3.push(Number.parseFloat(arrayItem['worktype3']).toFixed(2))
+                    worktype4.push(Number.parseFloat(arrayItem['worktype4']).toFixed(2))
+                    worktype5.push(Number.parseFloat(arrayItem['worktype5']).toFixed(2))
+                    worktype6.push(Number.parseFloat(arrayItem['worktype6']).toFixed(2))
+                    flag_mot.push(arrayItem['flag_mot'])                   
+                })
+
+                keikaku_calculation_sso.setData([
+                    worktype1,
+                    worktype2,
+                    worktype3,
+                    worktype4,
+                    worktype5,
+                    worktype6,
+                    ['Change Model', ...Array.from({length: 24}, (_, i) => null)],
+                    flag_mot,
+                    ['Retention Time',
+                    `=IF($B$8="M", B3, B2)`,
+                    `=IF($B$8="M", C3, C2)`,
+                    `=IF($B$8="M", D3, D2)`,
+                    `=IF($B$8="M", E3, E2)`,
+                    `=IF($B$8="M", F3, F2)`,
+                    `=IF($B$8="M", G3, G2)`,
+                    `=IF($B$8="M", H3, H2)`,
+                    `=IF($B$8="M", I3, I2)`,
+                    `=IF($J$8="OT", J4, J3)`,
+                    `=IF($J$8="OT", K4, K3)`,
+                    `=IF($J$8="OT", L2, L1)`,
+                    `=IF($J$8="OT", M2, M1)`,
+
+                    `=IF($B$8="M", N3, N2)`,
+                    `=IF($B$8="M", O3, O2)`,
+                    `=IF($B$8="M", P3, P2)`,
+                    `=IF($B$8="M", Q3, Q2)`,
+                    `=IF($B$8="M", R3, R2)`,
+                    `=IF($B$8="M", S3, S2)`,
+                    `=IF($B$8="M", T3, T2)`,
+                    `=IF($B$8="M", U3, U2)`,
+                    `=IF($V$8="OT", V2, V1)`,
+                    `=IF($V$8="OT", W2, W1)`,
+                    `=IF($V$8="OT", X2, X1)`,
+                    `=IF($V$8="OT", Y2, Y1)`,
+                    ],
+                    ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i)],
+                    ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
+                        '=M11','=N11', '=O11', '=P11', '=Q11', '=R11', '=S11', '=T11', '=U11', '=V11', '=W11', '=X11'
+                    ],
+                ])
+            }
+        });
+    }
+
+    function keikaku_line_input_on_change() {
+        keikaku_load_calcultion()
     }
 </script>
