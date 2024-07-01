@@ -30,9 +30,6 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="keikaku_checksim-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_checksim" type="button" role="tab" aria-controls="home" aria-selected="true">Calculation</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true">Production Plan</button>
-                </li>
             </ul>
                 <div class="tab-content" id="keikaku_myTabContent">
                     <div class="tab-pane fade show active" id="keikaku_tabRM" role="tabpanel" aria-labelledby="home-tab">
@@ -66,8 +63,6 @@
                                 <div id="keikaku_calculation_spreadsheet"></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="tab-pane fade" id="keikaku_tab_prodplan" role="tabpanel">
                     </div>
                 </div>
             </div>
@@ -256,13 +251,17 @@
 
     function keikaku_btn_new_eC() {
         if(confirm('Are you sure want to create new empty file ?')) {
-            keikaku_data_sso.setData([
-                [,],
-                [,],
-                [,],
-                [,]
-            ])
+            keikaku_reset_data()
         }
+    }
+
+    function keikaku_reset_data() {
+        keikaku_data_sso.setData([
+            [,],
+            [,],
+            [,],
+            [,]
+        ])
     }
 
     function keikaku_reset_calculation() {
@@ -327,22 +326,23 @@
 
         let inputSS = keikaku_data_sso.getData().filter((data) => data[2].length && data[7].length > 1)
         const inputSSCount = inputSS.length
-        
+
         for(let i=0; i<inputSSCount;i++) {
             let _job = inputSS[i][2].trim() + inputSS[i][7].trim()
             if(!JobUnique.includes(_job)) {
                 JobUnique.push(_job)
-                
+
                 dataDetail.push({
                     seq : inputSS[i][0],
+                    model_code : inputSS[i][1].trim(),
                     wo_code : inputSS[i][2].trim(),
                     item_code : inputSS[i][7].trim(),
                     lot_size : numeral(inputSS[i][3]).value(),
                     plan_qty : numeral(inputSS[i][4]).value(),
                     type : inputSS[i][5].trim(),
                     specs : inputSS[i][6].trim(),
-                    specs_side : inputSS[i][8].trim(),
-                    packaging : inputSS[i][9].trim(),
+                    packaging : inputSS[i][8].trim(),
+                    specs_side : inputSS[i][9].trim(),
                 })
             }
         }
@@ -396,7 +396,7 @@
         let inputSS = keikaku_calculation_sso.getData()
         const inputSSCount = inputSS.length
 
-        for(let c=1; c<25; c++) {     
+        for(let c=1; c<25; c++) {
             let _theShift = c<13 ? 'M' : 'N'
             let _theDate = keikaku_date_input.value
 
@@ -460,6 +460,7 @@
 
     function keikaku_date_input_on_change() {
         keikaku_load_calcultion()
+        keikaku_load_data()
     }
 
     function keikaku_load_calcultion() {
@@ -484,7 +485,7 @@
                     worktype4.push(Number.parseFloat(arrayItem['worktype4']).toFixed(2))
                     worktype5.push(Number.parseFloat(arrayItem['worktype5']).toFixed(2))
                     worktype6.push(Number.parseFloat(arrayItem['worktype6']).toFixed(2))
-                    flag_mot.push(arrayItem['flag_mot'])                   
+                    flag_mot.push(arrayItem['flag_mot'])
                 })
 
                 keikaku_calculation_sso.setData([
@@ -532,7 +533,38 @@
         });
     }
 
+    function keikaku_load_data() {
+        keikaku_reset_data()
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku",
+            data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value},
+            dataType: "json",
+            success: function (response) {
+                let theData = [];
+                response.data.forEach((arrayItem) => {
+                    theData.push([
+                        '',
+                        arrayItem['model_code'],
+                        arrayItem['wo_code'],
+                        arrayItem['lot_size'],
+                        arrayItem['plan_qty'],
+                        arrayItem['type'],
+                        arrayItem['specs'],
+                        arrayItem['item_code'],
+                        arrayItem['packaging'],
+                        arrayItem['specs_side'],
+                    ])
+                })
+                if(theData.length > 0) {
+                    keikaku_data_sso.setData(theData)
+                }
+            }
+        });
+    }
+
     function keikaku_line_input_on_change() {
         keikaku_load_calcultion()
+        keikaku_load_data()
     }
 </script>
