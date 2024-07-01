@@ -57,7 +57,7 @@
                             <div class="col-md-6">
                                 <div class="btn-group btn-group-sm">
                                     <button class="btn btn-outline-primary" id="keikaku_btn_new_calculation" title="New" onclick="keikaku_btn_new_calculation_eClick()"><i class="fas fa-file"></i></button>
-                                    <button class="btn btn-outline-primary" id="keikaku_btn_save_calculation" onclick="keikaku_btn_save_calculation_eClick()"><i class="fas fa-save"></i></button>
+                                    <button class="btn btn-outline-primary" id="keikaku_btn_save_calculation" onclick="keikaku_btn_save_calculation_eClick(this)"><i class="fas fa-save"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -404,9 +404,7 @@
             let _theTime = c === 17 ? '23' : numeral(inputSS[9][c]).value()-1
             dataDetail.push({
                 'shift_code' : _theShift,
-                'production_date' : keikaku_date_input.value,
                 'calculation_at' : _theDate + ' ' + _theTime + ':00:00',
-                'line_code' : keikaku_line_input.value,
                 'worktype1' : numeral(inputSS[0][c]).value(),
                 'worktype2' : numeral(inputSS[1][c]).value(),
                 'worktype3' : numeral(inputSS[2][c]).value(),
@@ -418,6 +416,41 @@
             })
         }
 
-        console.log(dataDetail)
+        const dataInput = {
+            line_code : keikaku_line_input.value,
+            production_date : keikaku_date_input.value,
+            user_id: uidnya,
+            detail : dataDetail
+        }
+
+        if(confirm('Are you sure want to save ?')) {
+            const div_alert = document.getElementById('keikaku-div-alert')
+            pThis.disabled = true
+            $.ajax({
+                type: "POST",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/calculation",
+                data: JSON.stringify(dataInput),
+                dataType: "JSON",
+                success: function (response) {
+                    alertify.success(response.message)
+                    pThis.disabled = false
+                    div_alert.innerHTML = ''
+                }, error: function(xhr, xopt, xthrow) {
+                    alertify.error(xthrow)
+                    pThis.disabled = false
+
+                    const respon = Object.keys(xhr.responseJSON)
+
+                    let msg = ''
+                    for (const item of respon) {
+                        msg += `<p>${xhr.responseJSON[item]}</p>`
+                    }
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${msg}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                }
+            });
+        }
     }
 </script>
