@@ -65,7 +65,7 @@
                                 <div class="col-md-3 mb-1">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Assy Code</label>
-                                        <input type="text" class="form-control" id="wopr_assycode_input" onfocusout="wopr_assycode_input_efocusout()" maxlength="15">
+                                        <input type="text" class="form-control" id="wopr_assycode_input" maxlength="15" disabled>
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-1">
@@ -217,69 +217,28 @@
         placeholder: $( this ).data( 'placeholder' ),
     });
 
-    function wopr_assycode_input_efocusout() {
-        if( wopr_assycode_input.value.trim().length > 3) {
-            if(wopr_wo_input.value!='-') {
-                const inputWO = wopr_wo_input.value.split('#')
-                const woCodeArray = inputWO[0].split('-')
-                let isRefreshWORequired = false
-                if(woCodeArray.length===3) {
-                    if(wopr_assycode_input.value!=woCodeArray[2]) {
-                        alertify.warning('please check Assy Code & WO')
-                        isRefreshWORequired = true
-                    }
-                }
-                if(!isRefreshWORequired) {
-                    return
-                }
-            }
-
-            wopr_wo_input.innerHTML = `<option value="-">Please wait</option>`
-            wopr_load_at()
-            $.ajax({
-                type: "GET",
-                url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/outstanding",
-                data: {item_code : wopr_assycode_input.value},
-                dataType: "json",
-                success: function (response) {
-                    wopr_wo_input.innerHTML = `<option value="-">-</option>`
-                    let inputs = '<option value="-">-</option>';
-                    response.data.forEach((arrayItem) => {
-                        inputs += `<option value="${arrayItem['PDPP_WONO']}#${arrayItem['PDPP_WORQT']}#${arrayItem['PDPP_BOMRV']}">${arrayItem['PDPP_WONO']}</option>`
-                    })
-                    wopr_wo_input.innerHTML = inputs
-                }, error: function(xhr, xopt, xthrow) {
-                    wopr_wo_input.innerHTML = `<option value="-">-</option>`
-                    alertify.error(xthrow)
-                }
-            });
-        }
-    }
-
     function wopr_wo_input_eChange(e) {
-        if(wopr_assycode_input.value.trim().length > 3) { // validasi inputan assy code
-            
-            let input = e.target.value.split('#')
-            wopr_wo_size_input.value = input.length === 3 ? numeral(input[1]).format(',') : '-'
-            wopr_process_input.innerHTML = `<option value="-">Please wait</option>`
-            wopr_load_resume()
-            $.ajax({
-                type: "GET",
-                url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/process",
-                data: {item_code: wopr_assycode_input.value, bomRev: input[2] },
-                dataType: "json",
-                success: function (response) {
-                    let inputs = '<option value="-">-</option>'
-                    response.data.forEach((arrayItem) => {
-                        inputs += `<option value="${arrayItem['MBO2_PROCD']}#${arrayItem['MBO2_SEQNO']}">${arrayItem['MBO2_PROCD']} (P${arrayItem['MBO2_SEQNO']})</option>`
-                    })
-                    wopr_process_input.innerHTML = inputs
-                }, error: function(xhr, xopt, xthrow) {
-                    alertify.error(xthrow)
-                    wopr_process_input.innerHTML = `<option value="-">-</option>`
-                }
-            });
-        }
+        let input = e.target.value.split('#')
+        wopr_wo_size_input.value = input.length > 1 ? numeral(input[1]).format(',') : '-'
+        wopr_process_input.innerHTML = `<option value="-">Please wait</option>`
+        wopr_assycode_input.value = input[3] ? input[3] : ''
+        wopr_load_resume()
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/process",
+            data: {item_code: input[3], bomRev: input[2] },
+            dataType: "json",
+            success: function (response) {
+                let inputs = '<option value="-">-</option>'
+                response.data.forEach((arrayItem) => {
+                    inputs += `<option value="${arrayItem['MBO2_PROCD']}#${arrayItem['MBO2_SEQNO']}">${arrayItem['MBO2_PROCD']} (P${arrayItem['MBO2_SEQNO']})</option>`
+                })
+                wopr_process_input.innerHTML = inputs
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                wopr_process_input.innerHTML = `<option value="-">-</option>`
+            }
+        });
         wopr_load_process_ct()
     }
 
@@ -1154,6 +1113,28 @@
         wopr_load_downTime()
         wopr_load_process_ct()
         wopr_load_productionTime()
+        wopr_load_keikaku_data()
+    }
+
+    function wopr_load_keikaku_data() {
+        if(wopr_line_input.value === '-') {
+            return
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku",
+            data: {line_code : wopr_line_input.value, production_date : wopr_date_input.value},
+            dataType: "json",
+            success: function (response) {
+                wopr_wo_input.innerHTML = `<option value="-">-</option>`
+                let inputs = '<option value="-">-</option>';
+                response.data.forEach((arrayItem) => {
+                    inputs += `<option value="${arrayItem['wo_full_code']}#${arrayItem['lot_size']}#${arrayItem['PDPP_BOMRV']}#${arrayItem['item_code']}">${arrayItem['wo_full_code']}</option>`
+                })
+                wopr_wo_input.innerHTML = inputs
+            }
+        });
     }
 
     function wopr_process_input_eChange() {
@@ -1175,6 +1156,7 @@
         wopr_load_at()
         wopr_load_downTime()
         wopr_load_productionTime()
+        wopr_load_keikaku_data()
     }
 
     function wopr_load_process_ct() {
