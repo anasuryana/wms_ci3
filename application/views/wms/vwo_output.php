@@ -1109,6 +1109,8 @@
     }
 
     function wopr_line_input_efocusout() {
+        wopr_process_input.value = '-'
+        wopr_input_ct.value = ''
         wopr_load_at()
         wopr_load_downTime()
         wopr_load_process_ct()
@@ -1120,7 +1122,7 @@
         if(wopr_line_input.value === '-') {
             return
         }
-
+        wopr_assycode_input.value = ''
         $.ajax({
             type: "GET",
             url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku",
