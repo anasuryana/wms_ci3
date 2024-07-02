@@ -250,9 +250,70 @@
     $("#keikaku_date_input").datepicker('update', new Date());
 
     function keikaku_btn_new_eC() {
-        if(confirm('Are you sure want to create new empty file ?')) {
-            keikaku_reset_data()
+        if(keikaku_line_input.value === '-') {
+            keikaku_line_input.focus()
+            alertify.warning('Line is required')
+            return
         }
+
+        if(confirm('Are you sure want to create new empty data ?')) {
+            const div_alert = document.getElementById('keikaku-div-alert')
+            div_alert.innerHTML = ''
+            $.ajax({
+                type: "GET",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku",
+                data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value},
+                dataType: "json",
+                success: function (response) {
+                    if(response.data.length === 0) {
+                        if(confirm('Create new data based on previous balance ?')) {
+                            const dataInput = {
+                                line_code : keikaku_line_input.value,
+                                production_date : keikaku_date_input.value,
+                                user_id: uidnya                
+                            }
+
+                            $.ajax({
+                                type: "POST",
+                                url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/from-balance",
+                                data: JSON.stringify(dataInput),
+                                dataType: "json",
+                                success: function (response) {
+                                    if(response.data.length > 0) {
+                                        keikaku_data_sso.setData(keikakuSetdata(response.data))
+                                    } else {
+                                        alertify.message(response.message)
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        if(response.data.length > 0) { 
+                            keikaku_data_sso.setData(keikakuSetdata(response.data))
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function keikakuSetdata(data) {
+        let theData = [];
+        data.forEach((arrayItem) => {
+            theData.push([
+                '',
+                arrayItem['model_code'],
+                arrayItem['wo_code'],
+                arrayItem['lot_size'],
+                arrayItem['plan_qty'],
+                arrayItem['type'],
+                arrayItem['specs'],
+                arrayItem['item_code'],
+                arrayItem['packaging'],
+                arrayItem['specs_side'],
+            ])
+        })
+        return theData       
     }
 
     function keikaku_reset_data() {
@@ -262,6 +323,7 @@
             [,],
             [,]
         ])
+        
     }
 
     function keikaku_reset_calculation() {
