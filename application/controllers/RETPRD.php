@@ -38,10 +38,14 @@ class RETPRD extends CI_Controller
 
     public function get_psn_list()
     {
-        header('Content-Type: application/json');
-        $currentYear = date('Y');
-        $currentMonth = date('m');
-        $rs = $this->SPLRET_mod->select_psn($currentYear, $currentMonth);
+        header('Content-Type: application/json');       
+
+        $dateWhenTwoMonthAgo = date_create(date('Y-m-d'));
+        date_add($dateWhenTwoMonthAgo, date_interval_create_from_date_string('-1 month'));
+        
+        $currentYear = date_format($dateWhenTwoMonthAgo, 'Y');
+        $currentMonth = date_format($dateWhenTwoMonthAgo, 'm');
+        $rs = $this->SPLRET_mod->select_psn_code_forward_filter($currentYear, $currentMonth);
         $rs_j = [];
         foreach ($rs as $r) {
             $rs_j[] = [

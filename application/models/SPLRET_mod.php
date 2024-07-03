@@ -34,6 +34,16 @@ class SPLRET_mod extends CI_Model {
         $this->db->order_by('RETSCN_SPLDOC asc');
         $query = $this->db->get();
         return $query->result_array();
+    }
+
+    public function select_psn_code_forward_filter($pyear,$pmonth){
+        $this->db->select("RETSCN_SPLDOC");
+        $this->db->from($this->TABLENAME);
+        $this->db->where("YEAR(RETSCN_LUPDT) >=",$pyear)->where("MONTH(RETSCN_LUPDT) >=", $pmonth);
+        $this->db->group_by('RETSCN_SPLDOC');
+        $this->db->order_by('RETSCN_SPLDOC asc');
+        $query = $this->db->get();
+        return $query->result_array();
     }   
 
     public function selectby_filter($pwhere){
