@@ -270,5 +270,15 @@ class SPLRET_mod extends CI_Model {
 		$query = $this->db->get();
 		return $query->result_array();
     }
+
+    public function select_psn_where_psn_in($docs){	
+        $this->db->limit(2500);
+        $this->db->select('RETSCN_SPLDOC');
+        $this->db->from("V_RETSCN_TBLC");
+        $this->db->where_in('RETSCN_SPLDOC', $docs);
+        $this->db->group_by('RETSCN_SPLDOC');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
         
 }
