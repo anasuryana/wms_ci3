@@ -30,6 +30,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="keikaku_checksim-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_checksim" type="button" role="tab" aria-controls="home" aria-selected="true">Calculation</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true">Calculation</button>
+                </li>
             </ul>
                 <div class="tab-content" id="keikaku_myTabContent">
                     <div class="tab-pane fade show active" id="keikaku_tabRM" role="tabpanel" aria-labelledby="home-tab">
@@ -64,15 +67,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="tab-pane fade" id="keikaku_tab_prodplan" role="tabpanel">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script>
-    if (localStorage.getItem("model_process_data") === null) {
-        localStorage.setItem('model_process_data', JSON.stringify([]))
-    }
     var keikakuModelUnique = []
     var keikaku_data_sso = jspreadsheet(keikaku_data_spreadsheet, {
         columns : [
@@ -126,12 +128,7 @@
             {
                 title:'Spec Side',
                 type: 'dropdown',
-                source: ['1','2','3','4','5','6'],
-                filter : function (instance, cell, c, r, source) {
-                    const valJob = instance.jexcel.getValueFromCoords(c - 7, r);
-                    const valAssyCode = instance.jexcel.getValueFromCoords(c - 2, r);
-                    return  keikakuGetProcess({item_code : valAssyCode})
-                }
+                source: ['A','B'],
             },
         ],
         allowInsertColumn : false,
@@ -140,127 +137,16 @@
         allowDeleteRow : false,
         rowDrag:false,
         data: [
-            [,,,,,,,,,1],
-            [,,,,,,,,,1],
-            [,,,,,,,,,1],
-            [,,,,,,,,,1],
+            [,,,,,,,,,'A'],
+            [,,,,,,,,,'A'],
+            [,,,,,,,,,'A'],
+            [,,,,,,,,,'A'],
         ],
         copyCompatibility:true,
         columnSorting:false,
-        oninsertrow : function() {
-            // console.log('sini insert')
-        },
         tableOverflow:true,
         tableHeight: ($(window).height()-keikaku_stack1.offsetHeight-keikaku_stack2.offsetHeight - 140) + 'px',
-        onchange:function(instance, cell, c, r, value) {
-            console.log('sini onchange')
-            if (c == 7) {
-                const columnName = jspreadsheet.getColumnNameFromId([c + 2, r]);
-                instance.jexcel.setValue(columnName, '');
-
-                if(!keikakuModelUnique.includes(value)) {
-                    keikakuModelUnique.push(value)
-                }
-            }
-
-        },
-        onafterchanges: function(a,b,c,d,e) {
-            console.log('sini onafterchanges')
-        },
-        onblur : function() {
-            console.log('sini onblur')
-            keikakuSynchronizeLocaleProcess()
-        }
-    });
-
-    function keikakuSynchronizeLocaleProcess() {
-        const dataLocal = JSON.parse(localStorage.getItem('model_process_data'))
-        if(dataLocal.length === 0) {
-            const newdata = kekikakuMakeLocalProcess({item_code : keikakuModelUnique})
-            localStorage.setItem('model_process_data', JSON.stringify(newdata))
-        } else {
-            // kondisi lain
-
-            // periksa table dengan local storage
-            console.log('kondisi lain')
-            let inputSS = keikaku_data_sso.getData().filter((data) => data[2].length && data[7].length > 1)
-            const inputSSCount = inputSS.length
-            const dataLocalLength = dataLocal.length
-
-            let newItems = [];
-            for(let x=0;x<inputSSCount; x++) {
-                let isFound = false
-                for(let i=0; i<dataLocalLength; i++) {
-                    if(dataLocal[i].item_code == inputSS[x][7].trim()) {
-                        isFound = true
-                        break
-                    }
-                }
-
-                if(!isFound) {
-                    if(!newItems.includes(inputSS[x][7].trim())) {
-                        newItems.push(inputSS[x][7].trim())
-                    }
-                }
-            }
-            newdata = kekikakuMakeLocalProcess({item_code : newItems})
-            newdata.forEach((item) => {
-                dataLocal.push({item_code : item.item_code, seq : item.seq})
-            })
-            localStorage.setItem('model_process_data', JSON.stringify(dataLocal))
-        }
-    }
-
-    function kekikakuMakeLocalProcess(params) {
-        const data = {item_code : params.item_code}
-        const theValue = []
-        $.ajax({
-            type: "post",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/process-big",
-            data: data,
-            dataType: "json",
-            success: function (response) {
-                response.data.forEach((arrayItem) => {
-                    let isFound = false
-                    for(let i=0; i < theValue.length; i++) {
-                        if(theValue[i].item_code == arrayItem['MBO2_MDLCD']) {
-                            isFound = true
-                            theValue[i].seq.push(Number(arrayItem['MBO2_SEQNO']))
-                            break;
-                        }
-                    }
-
-                    if(!isFound) {
-                        theValue.push({
-                            item_code: arrayItem['MBO2_MDLCD'],
-                            seq: [Number(arrayItem['MBO2_SEQNO'])]
-                        })
-                    }
-                })
-            },
-            async : false
-        });
-        
-        return theValue
-    }
-
-    function keikakuGetProcess(params) {
-        const data = {item_code : params.item_code}
-        const theValue = []
-        $.ajax({
-            type: "GET",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>work-order/process",
-            data: data,
-            dataType: "json",
-            success: function (response) {
-                response.data.forEach((arrayItem) => {
-                    theValue.push(Number(arrayItem['MBO2_SEQNO']))
-                })
-            },
-            async : false
-        });
-        return theValue
-    }
+    });   
 
     var keikaku_calculation_sso = jspreadsheet(keikaku_calculation_spreadsheet, {
         columns : [
@@ -434,10 +320,10 @@
 
     function keikaku_reset_data() {
         keikaku_data_sso.setData([
-            [,,,,,,,,,1],
-            [,,,,,,,,,1],
-            [,,,,,,,,,1],
-            [,,,,,,,,,1],
+            [,,,,,,,,,'A'],
+            [,,,,,,,,,'A'],
+            [,,,,,,,,,'A'],
+            [,,,,,,,,,'A'],
         ])
 
     }
