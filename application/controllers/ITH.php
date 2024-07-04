@@ -32,6 +32,7 @@ class ITH extends CI_Controller
         $this->load->model('XPGRN_mod');
         $this->load->model('SPL_mod');
         $this->load->model('PWOP_mod');
+        $this->load->model('SPLRET_mod');
         $this->load->helper('url');
         $this->load->library('session');
         $this->load->library('RMCalculator');
@@ -3515,7 +3516,7 @@ class ITH extends CI_Controller
                         }
                     }
 
-                    $rswip[$theIndex - 1]['STOCK'] += ($sampleRow['LOGRTN'] + $r['PARTQTY']);
+                    $rswip[$theIndex - 1]['STOCK'] += ($sampleRow['LOGRTN']);
                     $sampleRow['ITMD1'] = '';
                     $sampleRow['MITM_SPTNO'] = '';
                     $sampleRow['ARWH'] = 0;
@@ -3581,6 +3582,37 @@ class ITH extends CI_Controller
                 $sampleRow['COMMENTS'] = '';
                 $rswip = array_merge(array_slice($rswip, 0, $theIndex), [$sampleRow], array_slice($rswip, $theIndex));
             }
+        }
+        
+        # next filter set logical return = 0 when PSN already returned
+        $_uniquePSN = [];
+        foreach($rswip as $r) {
+            if(!in_array($r['PSN'], $_uniquePSN)) {
+                $_uniquePSN[] = $r['PSN'];
+            }
+        }
+       
+
+        $ReturnedPSN = $this->SPLRET_mod->select_psn_where_psn_in($_uniquePSN);
+
+        foreach($ReturnedPSN as $s) {
+            foreach($rswip as &$r) {
+                if($r['PSN'] == $s['RETSCN_SPLDOC']) {
+                    # deep search
+                    foreach($rswip as &$_d) {
+                        if($r['ITRN_ITMCD'] == $_d['ITRN_ITMCD'] && empty($_d['PSN'])) {
+                            $_d['STOCK']-=$r['LOGRTN'];
+                            break;
+                        }
+                    }
+                    unset($_d);
+
+                    $r['LOGRTN'] = 0;
+
+                    break;
+                }
+            }
+            unset($r);
         }
 
         $rang = "A1:A" . $sheet->getHighestDataRow();
@@ -3667,14 +3699,11 @@ class ITH extends CI_Controller
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
         header('Cache-Control: max-age=0');
-        if (is_readable('E:/PUBLIC_FOLDER/attachment_omi/')) {
-            $writer->save('E:/PUBLIC_FOLDER/attachment_omi/' . $filename . '.xlsx');
-        } else {
-            $writer->save('D:/PUBLIC_FOLDER/attachment_omi/' . $filename . '.xlsx');
-        }
-        if ($saveOutput == 1) {
+        
+        if ($saveOutput == 1) {            
             $writer->save('php://output');
         } else {
+            $writer->save($_ENV['APP_CRITICAL_PART_FILE_PATH'] . $filename . '.xlsx');
             echo "done";
         }
     }
