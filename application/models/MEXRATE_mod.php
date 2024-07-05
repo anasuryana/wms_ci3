@@ -61,4 +61,13 @@ class MEXRATE_mod extends CI_Model
       $query = $this->db->get($this->TABLENAME);
       return $query->result_array();
    }
+   function select_period($dateFrom, $dateTo)
+   {
+      $this->db->select("MEXRATE_DT,MEXRATE_VAL")
+      ->where('MEXRATE_DT >=', $dateFrom)
+      ->where('MEXRATE_DT <=', $dateTo)
+      ->where_not_in('MEXRATE_CURR', ['RPH']);
+      $query = $this->db->get($this->TABLENAME);
+      return $query->result_array();
+   }
 }

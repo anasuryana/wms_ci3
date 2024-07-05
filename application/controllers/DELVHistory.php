@@ -17,6 +17,7 @@ class DELVHistory extends CI_Controller
         $this->load->model('RPSAL_BCSTOCK_mod');
         $this->load->model('DisposeDraft_mod');
         $this->load->model('ZRPSTOCK_mod');
+        $this->load->model('MEXRATE_mod');
     }
     public function index()
     {
@@ -357,6 +358,7 @@ class DELVHistory extends CI_Controller
         $pdate2 = $_COOKIE["CKPSI_DATE2"];
         $sbgroup = $bsgrp;
         $rs = $this->ITH_mod->select_deliv_invo($pdate1, $pdate2, $sbgroup);
+        $kurs = $this->MEXRATE_mod->select_period($pdate1, $pdate2);
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('RESUME');
@@ -381,8 +383,17 @@ class DELVHistory extends CI_Controller
         $sheet->setCellValueByColumnAndRow(15, 4, 'SHIP QTY');
         $sheet->setCellValueByColumnAndRow(16, 4, 'SALES PRICE');
         $sheet->setCellValueByColumnAndRow(17, 4, 'AMOUNT');
+        $sheet->setCellValueByColumnAndRow(21, 4, 'Kurs');
+        $sheet->setCellValueByColumnAndRow(22, 4, 'AMOUNT IDR');
         $inx = 5;
         foreach ($rs as $r) {
+            $kursValue = 1;
+            foreach($kurs as $k) {
+                if($r['ITH_DATEC'] == $k['MEXRATE_DT']) {
+                    $kursValue = $k['MEXRATE_VAL'];
+                    break;
+                }
+            }
             $sheet->setCellValueByColumnAndRow(1, $inx, $r['ITH_DATEC']);
             $sheet->setCellValueByColumnAndRow(2, $inx, $r['ITH_DOC']);
             $sheet->setCellValueByColumnAndRow(3, $inx, $r['DLV_CUSTDO']);
@@ -400,6 +411,8 @@ class DELVHistory extends CI_Controller
             $sheet->setCellValueByColumnAndRow(15, $inx, $r['DLVPRC_QTY']);
             $sheet->setCellValueByColumnAndRow(16, $inx, $r['DLVPRC_PRC']);
             $sheet->setCellValueByColumnAndRow(17, $inx, "=ROUND(" . $r['AMOUNT'] . ",2)");
+            $sheet->setCellValueByColumnAndRow(21, $inx, $kursValue);
+            $sheet->setCellValueByColumnAndRow(22, $inx, substr($r['DLV_CUSTCD'], -1) === 'U' ? $r['AMOUNT']*$kursValue : $r['AMOUNT']);
             $inx++;
         }
         foreach (range('A', 'P') as $r) {
@@ -407,6 +420,7 @@ class DELVHistory extends CI_Controller
         }
         $rang = "P1:P" . $inx;
         $sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->getStyle('U1:V'. $inx)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
         $dodis = $pdate1 . " to " . $pdate2;
         $stringjudul = "Summary Sales Invoice " . $dodis;
         $writer = new Xlsx($spreadsheet);
