@@ -634,6 +634,7 @@ class DELV_mod extends CI_Model
                     ,MITM_BM
 					,MITM_PPN
 					,MITM_PPH
+                    ,isnull(MITM_NWG, 0.123) MITM_NWG
                 FROM (
                     SELECT DLV_ID
                         ,SISCN_LINENO

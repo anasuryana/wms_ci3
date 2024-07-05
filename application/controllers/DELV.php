@@ -9094,6 +9094,7 @@ class DELV extends CI_Controller
                     foreach ($rsPriceItemSer as &$b) {
                         if ($b['SSO2_MDLCD'] == $s['ITMID'] && $b['SSO2_SLPRC'] == $s['SSO2_SLPRC']) {
                             $b['SISOQTY'] += $qtyuse;
+                            $b['NWG'] += ($qtyuse * $k['MITM_NWG']);
                             $b['CIF'] = $b['SISOQTY'] * $s['SSO2_SLPRC'];
                             $isfound = true;
                             break;
@@ -9107,7 +9108,7 @@ class DELV extends CI_Controller
                             , 'SSO2_SLPRC' => $s['SSO2_SLPRC']
                             , 'SSO2_MDLCD' => $s['ITMID']#
                             , 'CIF' => $qtyuse * $s['SSO2_SLPRC']
-                            , 'NWG' => $k['NWG']
+                            , 'NWG' => $qtyuse * $k['MITM_NWG']
                             , 'MITM_HSCD' => $k['MITM_HSCD']
                             , 'MITM_STKUOM' => $k['MITM_STKUOM']
                             , 'SISOQTY_X' => 0
@@ -9118,7 +9119,7 @@ class DELV extends CI_Controller
                             , 'CPO' => $s['SISO_CPONO']
                             , 'BM' => $k['MITM_BM']
                             , 'PPN' => $k['MITM_PPN']
-                            , 'PPH' => $k['MITM_PPH'],
+                            , 'PPH' => $k['MITM_PPH']
                         ];
                     }
                     if ($k['SISOQTY'] === $k['SISOQTY_X']) {
@@ -16686,12 +16687,14 @@ class DELV extends CI_Controller
             $Packagings = $this->DELV_mod->select_packinglist_bydono($doc);
             $cz_JUMLAH_KEMASAN = $this->DELV_mod->check_Primary(['DLV_ID' => $doc]);
             $rsitem_p_price = $this->setPriceRS(base64_encode($doc));
+            
             $rsplotrm_per_fgprice = $this->perprice($doc, $rsitem_p_price);
             $BMFG = null;
-            foreach ($rsitem_p_price as &$r) {
+            foreach ($rsitem_p_price as $r) {
                 if (!$BMFG) {
                     $BMFG = $r['BM'];
                 }
+
                 $JumlahKemasan = 0;
                 $BeratKotor = 0;
                 foreach ($Packagings as &$pack) {
@@ -16702,6 +16705,7 @@ class DELV extends CI_Controller
                     }
                 }
                 unset($pack);
+
                 $t_HARGA_PENYERAHAN = $r['CIF'] * $czharga_matauang;
                 $cz_h_CIF_FG += $r['CIF'];
                 $cz_h_NETTO += $r['NWG'];
@@ -16727,7 +16731,6 @@ class DELV extends CI_Controller
                 ];
                 $SERI_BARANG++;
             }
-            unset($r);
 
             # cari HSCODE
             $rsRMOnly = $this->DELV_mod->select_pertxid_rmOnly($doc);
