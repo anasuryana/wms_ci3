@@ -3374,7 +3374,7 @@ class ITH extends CI_Controller
             $osWO = $this->ITH_mod->select_wo_side_detail_BGOther($date, $fgstring, $psnstring);
         } else {
             log_message('error', $_SERVER['REMOTE_ADDR'] . ', step2.2#, BG:OTHER, --without FG');
-            $osWO = $this->ITH_mod->select_wo_side_detail_byPSN_BGOther($date, $psnstring);
+            $osWO = $this->ITH_mod->select_wo_side_detail_byPSN_BGOther($date, $psnstring); // sampai sini
         }
         $rsPlot = [];
         $_aWO = [];
@@ -3465,7 +3465,7 @@ class ITH extends CI_Controller
             unset($o);
         }
         unset($w);
-
+        
         if (!empty($rsPlot)) {
             #add detail on specific index
             foreach ($rsPlot as $r) {
@@ -3533,6 +3533,7 @@ class ITH extends CI_Controller
                 }
             }
         }
+        
 
         log_message('error', $_SERVER['REMOTE_ADDR'] . ', step2.7#, analyze data when WO Closed but PSN is not returned');
         $arrPSNUnplotted = [];
@@ -3561,6 +3562,7 @@ class ITH extends CI_Controller
                 if ($r['ITMCD'] === $w['ITRN_ITMCD']) {
                     $theIndex = $index + 1;
                     $sampleRow = $w;
+                    $w['STOCK'] += $r['LOGRET'];
                     break;
                 }
             }
