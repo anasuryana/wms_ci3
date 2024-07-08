@@ -31,17 +31,22 @@
                     <button class="nav-link" id="keikaku_checksim-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_checksim" type="button" role="tab" aria-controls="home" aria-selected="true">Calculation</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true">Calculation</button>
+                    <button class="nav-link" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-chart-gantt text-success"></i> Production Plan</button>
                 </li>
             </ul>
                 <div class="tab-content" id="keikaku_myTabContent">
                     <div class="tab-pane fade show active" id="keikaku_tabRM" role="tabpanel" aria-labelledby="home-tab">
                         <div class="container-fluid p-1">
                             <div class="row" id="keikaku_stack2">
-                                <div class="col-md-2 mb-1">
+                                <div class="col-md-6 mb-1">
                                     <div class="btn-group btn-group-sm">
                                         <button class="btn btn-outline-primary" id="keikaku_btn_new" title="New" onclick="keikaku_btn_new_eC()"><i class="fas fa-file"></i></button>
                                         <button class="btn btn-outline-primary" id="keikaku_btn_save" title="Save" onclick="keikaku_btn_save_eC(this)"><i class="fas fa-save"></i></button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-1 text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" id="keikaku_btn_run_data" title="Run formula" onclick="keikaku_btn_run_data_eC(this)">Run</button>
                                     </div>
                                 </div>
                             </div>
@@ -60,6 +65,11 @@
                                     <button class="btn btn-outline-primary" id="keikaku_btn_save_calculation" onclick="keikaku_btn_save_calculation_eClick(this)"><i class="fas fa-save"></i></button>
                                 </div>
                             </div>
+                            <div class="col-md-6 mb-1 text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" id="keikaku_btn_run_calculation" title="Run formula" onclick="keikaku_btn_run_calculation_eC(this)">Run</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12 mb-1 table-responsive">
@@ -68,6 +78,16 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="keikaku_tab_prodplan" role="tabpanel">
+                        <div class="row mt-1 mb-1">
+                            <div class="col-md-6 mb-1">
+
+                            </div>
+                            <div class="col-md-6 mb-1 text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" id="keikaku_btn_run_prodplan" title="Run formula" onclick="keikaku_btn_run_prodplan_eC(this)">Run</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -130,6 +150,13 @@
                 type: 'dropdown',
                 source: ['A','B'],
             },
+            {
+                title:'CT',
+                type: 'numeric',
+                mask: '#,##.000',
+                decimal: '.',
+                readOnly: true
+            },
         ],
         allowInsertColumn : false,
         allowDeleteColumn : false,
@@ -146,7 +173,7 @@
         columnSorting:false,
         tableOverflow:true,
         tableHeight: ($(window).height()-keikaku_stack1.offsetHeight-keikaku_stack2.offsetHeight - 140) + 'px',
-    });   
+    });
 
     var keikaku_calculation_sso = jspreadsheet(keikaku_calculation_spreadsheet, {
         columns : [
@@ -393,6 +420,11 @@
 
         for(let i=0; i<inputSSCount;i++) {
             let _job = inputSS[i][2].trim() + inputSS[i][7].trim()
+            let _cycleTime = numeral(inputSS[i][10].trim()).value()
+            if(_cycleTime === 0 || !_cycleTime) {
+                alertify.warning('Cycle time should not be empty or zero')
+                return
+            }
             if(!JobUnique.includes(_job)) {
                 JobUnique.push(_job)
 
@@ -407,6 +439,7 @@
                     specs : inputSS[i][6].trim(),
                     packaging : inputSS[i][8].trim(),
                     specs_side : inputSS[i][9].trim(),
+                    cycle_time :  numeral(inputSS[i][10]).value()
                 })
             }
         }
@@ -430,6 +463,7 @@
                     alertify.success(response.message)
                     pThis.disabled = false
                     div_alert.innerHTML = ''
+                    keikaku_load_data()
                 }, error: function(xhr, xopt, xthrow) {
                     alertify.error(xthrow)
                     pThis.disabled = false
@@ -618,6 +652,7 @@
                         arrayItem['item_code'],
                         arrayItem['packaging'],
                         arrayItem['specs_side'],
+                        arrayItem['cycle_time'],
                     ])
                 })
                 if(theData.length > 0) {
@@ -630,5 +665,70 @@
     function keikaku_line_input_on_change() {
         keikaku_load_calcultion()
         keikaku_load_data()
+    }
+
+    function keikaku_btn_run_data_eC(pThis) {
+        if(keikaku_line_input.value === '-') {
+            alertify.warning(`Line is required`)
+            keikaku_line_input.focus()
+            return
+        }
+
+        const dataDetail = []
+        let JobUnique = []
+        let inputSS = keikaku_data_sso.getData().filter((data) => data[2].length && data[7].length > 1)
+        const inputSSCount = inputSS.length
+
+        for(let i=0; i<inputSSCount;i++) {
+            let _job = inputSS[i][2].trim() + inputSS[i][7].trim()
+            if(!JobUnique.includes(_job)) {
+                JobUnique.push(_job)
+                dataDetail.push({
+                    item_code : inputSS[i][7].trim(),
+                })
+            }
+        }
+
+        const dataInput = {
+            line_code : keikaku_line_input.value,
+            detail : dataDetail
+        }
+        pThis.disabled = true
+        $.ajax({
+            type: "POST",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>process-master/search",
+            data: JSON.stringify(dataInput),
+            dataType: "JSON",
+            success: function (response) {
+                pThis.disabled = false
+                let dataLength = keikaku_data_sso.getData().length
+                let responseDataLength = response.data.length
+                for(let i=0; i < dataLength; i++) {
+                    let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true)
+                    keikaku_data_sso.setValue('K'+(i+1), 0)
+                    for(let s=0;s<responseDataLength; s++) {
+                        if(_itemCode == response.data[s].assy_code) {
+                            keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
+                            break;
+                        }
+                    }
+                }
+
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                pThis.disabled = false
+
+                const respon = Object.keys(xhr.responseJSON)
+
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }
+        });
     }
 </script>
