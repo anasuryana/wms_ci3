@@ -8607,11 +8607,11 @@ class DELV extends CI_Controller
 
             $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $nomorajufull, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
             if (strpos($myar[0]['msg'], 'NOMOR AJU') !== false) {
+                
                 $myar = [];
                 $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
                 $responApiObj = json_decode($responApi->body);
-
-                if ($responApiObj->dataOri->message === 'sucess') {
+                if (strtolower($responApiObj->dataOri->message) === 'success') {
                     $_tanggalDaftar = $responApiObj->dataOri->data[0]->tanggalDaftar;
                     $_tanggalDaftarFormatted = null;
                     if ($_tanggalDaftar) {
