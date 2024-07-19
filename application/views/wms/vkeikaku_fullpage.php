@@ -1,17 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="Ana Suryana">
+	<title>Keikaku</title>
+    <link rel="icon" href="<?=base_url("assets/fiximgs/favicon.png")?>">
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/css/home.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/bootstrap/css/bootstrap.min.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/bootstrap_dp/css/bootstrap-datepicker.min.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/fontaw/css/all.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/select2/css/select2.min.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/select2/css/select2-bootstrap-5-theme.min.css")?>">	
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/alertify/css/alertify.min.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/alertify/css/themes/semantic.min.css")?>">	
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jspreadsheet/jspreadsheet.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jsuites/jsuites.min.css")?>">
+	<script type="text/javascript" src="<?=base_url("assets/chart/chart.umd.js")?>"></script>
+	<script type="text/javascript" src="<?=base_url("assets/jquery/jquery.min.js")?>"></script>
+	<script type="text/javascript" src="<?=base_url("assets/bootstrap_dp/js/bootstrap-datepicker.min.js")?>"></script>
+	<script type="text/javascript" src="<?=base_url("assets/numeral/numeral.min.js")?>"></script>
+	<script type="text/javascript" src="<?=base_url("assets/js/moment.min.js")?>"></script>
+	<script type="text/javascript" src="<?=base_url("assets/select2/js/select2.full.js")?>"></script>
+	<script type="text/javascript" src="<?=base_url("assets/js/js.cookie.min.js")?>"></script>
+	<script type="text/javascript" src="<?=base_url("assets/alertify/alertify.min.js")?>"></script>
+	<script type="text/javascript" src="<?=base_url("assets/js/clipboard.min.js")?>"></script>
+	<script type="text/javascript" src="<?=base_url("assets/js/xlsx.full.min.js")?>"></script>
+	<script type="text/javascript" src="<?=base_url("assets/js/FileSaver.js")?>"></script>
+	<script src="<?=base_url("assets/jspreadsheet/index.js")?>"></script>
+	<script src="<?=base_url("assets/jsuites/jsuites.min.js")?>"></script>
+
+</head>
+<body>
 <div style="padding: 5px" >
 	<div class="container-fluid">
         <div class="row" id="keikaku_stack1">
             <div class="col-md-6">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">Line</label>
-                    <select class="form-select" id="keikaku_line_input" required onchange="keikaku_line_input_on_change()">
+                    <select class="form-select" id="keikaku_line_input" disabled required onchange="keikaku_line_input_on_change()">
                         <option value="-">-</option>
                     </select>
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bars"></i></button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" onclick="keikaku_load_all()"><i class="fas fa-hurricane text-warning"></i> Open All Line</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="alert('sorry, this function is not ready')"><i class="fas fa-file-import text-success"></i> Import Asprova data</a></li>
-                    </ul>
                 </div>
             </div>
             <div class="col-md-6">
@@ -100,8 +130,8 @@
     </div>
 </div>
 <script>
-    var keikakuModelUnique = []
-    var keikaku_data_sso = jspreadsheet(keikaku_data_spreadsheet, {
+    let keikakuModelUnique = []
+    let keikaku_data_sso = jspreadsheet(keikaku_data_spreadsheet, {
         columns : [
             {
                 title:'Seq.',
@@ -180,7 +210,7 @@
         tableHeight: ($(window).height()-keikaku_stack1.offsetHeight-keikaku_stack2.offsetHeight - 140) + 'px',
     });
 
-    var keikaku_calculation_sso = jspreadsheet(keikaku_calculation_spreadsheet, {
+    const keikaku_calculation_sso = jspreadsheet(keikaku_calculation_spreadsheet, {
         columns : [
             {
                 readOnly : true,
@@ -271,17 +301,14 @@
                     inputs += `<option value="${arrayItem['line_code']}">${arrayItem['line_code']}</option>`
                 })
                 keikaku_line_input.innerHTML = inputs
+                keikaku_line_input.value = theLine
             }
         });
     }
 
     keikaku_load_line_code()
 
-    $("#keikaku_date_input").datepicker({
-        format: 'yyyy-mm-dd',
-        autoclose:true
-    });
-    $("#keikaku_date_input").datepicker('update', new Date());
+    
 
     function keikaku_btn_new_eC() {
         if(keikaku_line_input.value === '-') {
@@ -736,14 +763,11 @@
             }
         });
     }
-
-    function keikaku_load_all() {
-        let lines = document.getElementById('keikaku_line_input').options
-        for(let item of lines) {
-            if(item.value!='-') {
-                const endPoint = '<?=base_url('Keikaku') ?>' + '?line=' + btoa(item.value) + '&date=' + keikaku_date_input.value
-                window.open(endPoint)
-            }
-        }
-    }
+    const theLine = atob("<?=$_GET['line']?>")
+    const theDate = "<?=$_GET['date']?>"
+    document.title = 'Keikaku ' + theLine + '-' + theDate.substring(5, 10) 
+    keikaku_date_input.value = theDate
 </script>
+<script type="text/javascript" src="<?=base_url("assets/js/popper.min.js")?>"></script>
+<script type="text/javascript" src="<?=base_url("assets/bootstrap/js/bootstrap.min.js")?>"></script>
+</body>
