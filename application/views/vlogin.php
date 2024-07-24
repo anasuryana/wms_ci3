@@ -123,7 +123,8 @@ function btnLogin_eClick(e){
 		success: function(response) {
 			e.target.disabled = false
 			if (!response.tokennya) {
-				if(response.redirect_url){
+				if(response.redirect_url) {
+					alert('Password is expired')
 					location.href = response.redirect_url
 				}
             	feedBackContainer.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
