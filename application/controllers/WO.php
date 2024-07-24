@@ -44,6 +44,11 @@ class WO extends CI_Controller
         $this->load->view('wms/vkeikaku');
     }
 
+    public function form_keikaku_fullpage()
+    {
+        $this->load->view('wms/vkeikaku_fullpage');
+    }
+
     public function checkSimulation()
     {
         $ReffList = $this->input->post('ReffList');
