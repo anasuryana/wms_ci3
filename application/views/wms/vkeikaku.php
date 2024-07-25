@@ -275,11 +275,6 @@
                 width:100,
             },
             {
-                title:'ASP/KD',
-                type: 'text',
-                width:100,
-            },
-            {
                 title:'Spec Side',
                 type: 'dropdown',
                 source: ['A','B'],
@@ -313,10 +308,10 @@
         allowDeleteRow : false,
         rowDrag:false,
         data: [
-            [,,,,,,,,,'A'],
-            [,,,,,,,,,'A'],
-            [,,,,,,,,,'A'],
-            [,,,,,,,,,'A'],
+            [,,,,,,,,'A'],
+            [,,,,,,,,'A'],
+            [,,,,,,,,'A'],
+            [,,,,,,,,'A'],
         ],
         copyCompatibility:true,
         columnSorting:false,
@@ -1038,7 +1033,6 @@
                         arrayItem['type'],
                         arrayItem['specs'],
                         arrayItem['item_code'],
-                        arrayItem['packaging'],
                         arrayItem['specs_side'],
                         arrayItem['cycle_time'],
                         arrayItem['production_date'],
@@ -1048,10 +1042,10 @@
                 })
                 if(theData.length == 0) {
                     theData = [
-                        [,,,,,,,,,'A'],
-                        [,,,,,,,,,'A'],
-                        [,,,,,,,,,'A'],
-                        [,,,,,,,,,'A'],
+                        [,,,,,,,,'A'],
+                        [,,,,,,,,'A'],
+                        [,,,,,,,,'A'],
+                        [,,,,,,,,'A'],
                     ]
                 }
                 keikaku_draft_data_sso.setData(theData)
