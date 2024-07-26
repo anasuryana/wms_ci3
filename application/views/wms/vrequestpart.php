@@ -498,12 +498,18 @@
         let mtbltr = tableku2.getElementsByTagName('tr');
         let ttlrows = mtbltr.length;
         let partcode, qty, mmodel;
-        if(category=='PSN' && line.trim().length==0){
+
+        
+
+        if(category=='PSN' && line.trim().length==0) {
             alertify.warning('Line is required')
             document.getElementById('pareq_txtline').focus()
             return;
         }
+        let isReffDocInputFilled = false
         for(let i=0; i<ttlrows; i++){
+            let _reffDoc = tableku2.rows[i].cells[0].innerText.trim()
+
             partcode = tableku2.rows[i].cells[1].innerText.trim();
             qty = tableku2.rows[i].cells[2].innerText.trim().replace(/,/g, '');
             mmodel = tableku2.rows[i].cells[5].innerText.trim()
@@ -528,12 +534,20 @@
                 alertify.warning("Model should not be empty")
                 return
             }
-            a_reffdoc.push(tableku2.rows[i].cells[0].innerText.trim());
+            a_reffdoc.push(_reffDoc);
             a_partCode.push(partcode);
             a_qty.push(isNaN(tableku2.rows[i].cells[2].innerText) ? 0 : numeral(tableku2.rows[i].cells[2].innerText).value());
             a_line.push(tableku2.rows[i].cells[3].innerText.trim());
             a_partRemark.push(tableku2.rows[i].cells[4].innerText.trim());
             a_model.push(mmodel);
+
+            if(_reffDoc.length>3) {
+                isReffDocInputFilled = true
+            }
+        }
+        if (remark == 2 && !isReffDocInputFilled) {
+            alertify.warning('Please fill PSN or Job Number on Reff. Document column')
+            return
         }
         if(a_reffdoc.length==0){
             alertify.message("Nothing will be saved"); return;

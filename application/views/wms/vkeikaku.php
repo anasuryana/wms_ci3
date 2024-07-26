@@ -10,7 +10,6 @@
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bars"></i></button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#" onclick="keikaku_load_all()"><i class="fas fa-hurricane text-warning"></i> Open All Line</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="alert('sorry, this function is not ready')"><i class="fas fa-file-import text-success"></i> Import Asprova data</a></li>
                     </ul>
                 </div>
             </div>
@@ -28,18 +27,42 @@
         </div>
         <div class="row">
             <div class="col-md-12 mb-1">
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <ul class="nav nav-tabs nav-pills ">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="keikaku_home-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true">Data</button>
+                    <button class="nav-link rounded-5" id="keikaku_asprova-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_asprova" type="button" role="tab" aria-controls="home" aria-selected="true">Asprova</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="keikaku_checksim-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_checksim" type="button" role="tab" aria-controls="home" aria-selected="true">Calculation</button>
+                    <button class="nav-link active rounded-5" id="keikaku_home-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true">Data</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-chart-gantt text-success"></i> Production Plan</button>
+                    <button class="nav-link rounded-5" id="keikaku_checksim-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_checksim" type="button" role="tab" aria-controls="home" aria-selected="true">Calculation</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-5" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-chart-gantt"></i> Production Plan</button>
                 </li>
             </ul>
                 <div class="tab-content" id="keikaku_myTabContent">
+                    <div class="tab-pane fade" id="keikaku_tab_asprova" role="tabpanel">
+                        <div class="container-fluid p-1">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text">Revision</label>
+                                        <select class="form-select" id="keikaku_asprova_input_rev" required onchange="keikaku_asprova_input_rev_onchange()">
+                                            <option value="-">-</option>
+                                        </select>
+                                        <button class="btn btn-outline-primary" type="button" title="Refresh Revisons List" id="keikaku_btn_refresh_revision" onclick="keikaku_refresh_revisions_on_click()"><i class="fas fa-sync"></i></button>
+                                        <button class="btn btn-primary" type="button" title="Upload Asprova ProdPlan" data-bs-toggle="modal" data-bs-target="#keikakuUploadProdplanModal"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-1 table-responsive">
+                                    <div id="keikaku_draft_data_spreadsheet"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="tab-pane fade show active" id="keikaku_tabRM" role="tabpanel" aria-labelledby="home-tab">
                         <div class="container-fluid p-1">
                             <div class="row" id="keikaku_stack2">
@@ -98,6 +121,34 @@
             </div>
         </div>
     </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="keikakuUploadProdplanModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Upload Data</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col mb-1" id="keikaku-modal-div-alert">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <input class="form-control" type="file" id="keikakuformFile" onchange="keikakuformFile_on_change()" accept=".xlsx">
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="keikakuBtnUpload" onclick="keikakuBtnUploadOnClick(this)">Upload</button>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
     var keikakuModelUnique = []
@@ -177,7 +228,95 @@
         copyCompatibility:true,
         columnSorting:false,
         tableOverflow:true,
-        tableHeight: ($(window).height()-keikaku_stack1.offsetHeight-keikaku_stack2.offsetHeight - 140) + 'px',
+        tableHeight: ($(window).height()-keikaku_stack1.offsetHeight-keikaku_stack2.offsetHeight - 150) + 'px',
+    });
+    var keikaku_draft_data_sso = jspreadsheet(keikaku_draft_data_spreadsheet, {
+        columns : [
+            {
+                title:'Seq.',
+                type: 'numeric',
+                width:50,
+            },
+            {
+                title:'Model',
+                type: 'text',
+                width:100,
+            },
+            {
+                title:'Job',
+                type: 'text',
+                width:100,
+            },
+            {
+                title:'Lot',
+                type: 'numeric',
+                mask: '#,##',
+                width:75,
+            },
+            {
+                title:'Production',
+                type: 'numeric',
+                mask: '#,##',
+                width:75,
+            },
+            {
+                title:'Type',
+                type: 'text',
+                width:100,
+            },
+            {
+                title:'Spec',
+                type: 'text',
+                width:100,
+            },
+            {
+                title:'Assy Code',
+                type: 'text',
+                width:100,
+            },
+            {
+                title:'Spec Side',
+                type: 'dropdown',
+                source: ['A','B'],
+            },
+            {
+                title:'CT',
+                type: 'numeric',
+                mask: '#,##.000',
+                decimal: '.',
+                readOnly: true
+            },
+            {
+                title:'Plan Date',
+                type: 'text',
+                readOnly: true
+            },
+            {
+                title:'Shift',
+                type: 'text',
+                readOnly: true
+            },
+            {
+                title:'Simulation',
+                type: 'text',
+                readOnly: true
+            },
+        ],
+        allowInsertColumn : false,
+        allowDeleteColumn : false,
+        allowRenameColumn : false,
+        allowDeleteRow : false,
+        rowDrag:false,
+        data: [
+            [,,,,,,,,'A'],
+            [,,,,,,,,'A'],
+            [,,,,,,,,'A'],
+            [,,,,,,,,'A'],
+        ],
+        copyCompatibility:true,
+        columnSorting:false,
+        tableOverflow:true,
+        tableHeight: ($(window).height()-keikaku_stack1.offsetHeight-keikaku_stack2.offsetHeight - 150) + 'px',
     });
 
     var keikaku_calculation_sso = jspreadsheet(keikaku_calculation_spreadsheet, {
@@ -564,6 +703,7 @@
     function keikaku_date_input_on_change() {
         keikaku_load_calcultion()
         keikaku_load_data()
+        keikaku_load_asprova()
     }
 
     function keikaku_load_calcultion() {
@@ -670,6 +810,7 @@
     function keikaku_line_input_on_change() {
         keikaku_load_calcultion()
         keikaku_load_data()
+        keikaku_load_prodplan()
     }
 
     function keikaku_btn_run_data_eC(pThis) {
@@ -741,9 +882,189 @@
         let lines = document.getElementById('keikaku_line_input').options
         for(let item of lines) {
             if(item.value!='-') {
-                const endPoint = '<?=base_url('Keikaku') ?>' + '?line=' + btoa(item.value) + '&date=' + keikaku_date_input.value
+                const endPoint = '<?=base_url('Keikaku')?>' + '?line=' + btoa(item.value) + '&date=' + keikaku_date_input.value
                 window.open(endPoint)
             }
         }
+    }
+
+    function _importProdPlanDraft(data) {
+        keikakuformFile.disabled = true
+        //Read the Excel File data.
+        const workbook = XLSX.read(data, {
+            type: 'binary'
+        });
+
+        //Fetch the name of First Sheet.
+        let firstSheet = workbook.SheetNames[0];
+        if(workbook.SheetNames.includes('A1') || workbook.SheetNames.includes('B1')) {
+            const formData = new FormData()
+            formData.append('user_id', uidnya)
+            formData.append('template_file', keikakuformFile.files[0])
+
+
+            const div_alert = document.getElementById('keikaku-modal-div-alert')
+            keikakuBtnUpload.disabled = true
+            keikakuBtnUpload.innerHTML = 'Please wait'
+            $.ajax({
+                type: "POST",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>production-plan/import",
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: "json",
+                success: function (response) {
+                    keikakuformFile.disabled = false
+                    keikakuBtnUpload.disabled = false
+                    keikakuBtnUpload.innerHTML = 'Upload'
+                    keikakuformFile.value = ''
+                    div_alert.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <strong>${response.message}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                },
+                error: function(xhr, xopt, xthrow) {
+                    keikakuformFile.disabled = false
+                    keikakuBtnUpload.disabled = false
+                    keikakuBtnUpload.innerHTML = 'Upload'
+                    const respon = Object.keys(xhr.responseJSON)
+
+                    let msg = ''
+                    for (const item of respon) {
+                        msg += `<p>${xhr.responseJSON[item]}</p>`
+                    }
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        ${msg}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                }
+            });
+        } else {
+            keikakuformFile.disabled = false
+            alertify.warning('Please use a valid template')
+        }
+    }
+
+    function keikakuBtnUploadOnClick() {
+        if (document.getElementById('keikakuformFile').files.length == 0) {
+            alert('please select file to upload');
+        } else {
+            let fileUpload = $("#keikakuformFile")[0];
+            //Validate whether File is valid Excel file.
+            const regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
+            if (regex.test(fileUpload.value.toLowerCase())) {
+                if (typeof(FileReader) != "undefined") {
+                    const reader = new FileReader();
+                    //For Browsers other than IE.
+                    if (reader.readAsBinaryString) {
+                        console.log('saya perambaan selain IE');
+                        reader.onload = function(e) {
+                            _importProdPlanDraft(e.target.result);
+                        };
+                        reader.readAsBinaryString(fileUpload.files[0]);
+                    } else {
+                        //For IE Browser.
+                        reader.onload = function(e) {
+                            let data = "";
+                            const bytes = new Uint8Array(e.target.result);
+                            for (let i = 0; i < bytes.byteLength; i++) {
+                                data += String.fromCharCode(bytes[i]);
+                            }
+                            _importProdPlanDraft(data);
+                        };
+                        reader.readAsArrayBuffer(fileUpload.files[0]);
+                    }
+                } else {
+                    alert("This browser does not support HTML5.");
+                }
+            } else {
+                alert("Please upload a valid Excel file.");
+            }
+        }
+    }
+
+    function keikaku_load_asprova() {
+        keikaku_btn_refresh_revision.disabled = true
+        keikaku_asprova_input_rev.innerHTML = `<option value='-'>Please wait</option>`
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>production-plan/revisions",
+            data: {
+                start_production_date : keikaku_date_input.value
+            },
+            dataType: "json",
+            success: function (response) {
+                keikaku_btn_refresh_revision.disabled = false
+                let strTemp = `<option value='-'>-</option>`
+                strTemp += response.data.map((item, index) => {
+                    return `<option value="${item.revision}">${item.revision}</option>`
+                })
+                keikaku_asprova_input_rev.innerHTML = strTemp
+            }, error: function(xhr, xopt, xthrow) {
+                keikaku_asprova_input_rev.innerHTML = `<option value='-'>-</option>`
+                keikaku_btn_refresh_revision.disabled = false
+            }
+        });
+    }
+
+    function keikaku_load_prodplan() {
+        const revision = keikaku_asprova_input_rev.value
+        if(keikaku_asprova_input_rev.value == '-') {
+            return
+        }
+
+        $.ajax({
+            type: "GET",
+            url: `<?=$_ENV['APP_INTERNAL_API']?>production-plan/revisions/${btoa(revision)}`,
+            data: {
+                start_production_date : keikaku_date_input.value,
+                line_code : keikaku_line_input.value
+            },
+            dataType: "json",
+            success: function (response) {
+                let theData = [];
+                response.data.forEach((arrayItem) => {
+                    theData.push([
+                        '',
+                        arrayItem['model_code'],
+                        arrayItem['wo_code'],
+                        arrayItem['lot_size'],
+                        arrayItem['plan_qty'],
+                        arrayItem['type'],
+                        arrayItem['specs'],
+                        arrayItem['item_code'],
+                        arrayItem['specs_side'],
+                        arrayItem['cycle_time'],
+                        arrayItem['production_date'],
+                        arrayItem['shift'],
+                        '',
+                    ])
+                })
+                if(theData.length == 0) {
+                    theData = [
+                        [,,,,,,,,'A'],
+                        [,,,,,,,,'A'],
+                        [,,,,,,,,'A'],
+                        [,,,,,,,,'A'],
+                    ]
+                }
+                keikaku_draft_data_sso.setData(theData)
+            }, error: function(xhr, xopt, xthrow) {
+                keikaku_asprova_input_rev.innerHTML = `<option value='-'>-</option>`
+            }
+        });
+    }
+
+    function keikaku_asprova_input_rev_onchange() {
+        keikaku_load_prodplan()
+    }
+
+    function keikaku_refresh_revisions_on_click() {
+        keikaku_load_asprova()
+    }
+
+    function keikakuformFile_on_change() {
+        const el = document.getElementById('keikaku-modal-div-alert')
+        el.innerHTML = ''
     }
 </script>
