@@ -2704,26 +2704,34 @@ class RCV extends CI_Controller
         $sheet->mergeCells('J6:J7');
         $sheet->setCellValueByColumnAndRow(10, 6, 'HS CODE');
         $sheet->mergeCells('K6:K7');
-        $sheet->setCellValueByColumnAndRow(11, 6, 'JUMLAH');
+        $sheet->setCellValueByColumnAndRow(11, 6, 'BM');
         $sheet->mergeCells('L6:L7');
-        $sheet->setCellValueByColumnAndRow(12, 6, 'SATUAN');
+        $sheet->setCellValueByColumnAndRow(12, 6, 'PPN');
         $sheet->mergeCells('M6:M7');
-        $sheet->setCellValueByColumnAndRow(13, 6, 'Valuta');
-        $sheet->mergeCells('N6:N7');
-        $sheet->setCellValueByColumnAndRow(14, 6, 'NILAI PABEAN');
-        $sheet->mergeCells('O6:O7');
-        $sheet->setCellValueByColumnAndRow(15, 6, 'BERAT (KG)');
-        $sheet->mergeCells('P6:Q6');
-        $sheet->setCellValueByColumnAndRow(16, 6, 'ASAL PERUSAHAAN');
-        $sheet->mergeCells('R6:R7');
-        $sheet->setCellValueByColumnAndRow(18, 6, 'Surat Jalan');
+        $sheet->setCellValueByColumnAndRow(13, 6, 'PPH');
 
-        $sheet->mergeCells('S6:S7');
-        $sheet->mergeCells('T6:T7');
-        $sheet->setCellValueByColumnAndRow(19, 6, 'RA');
-        $sheet->setCellValueByColumnAndRow(20, 6, 'Keterangan');
-        $sheet->getStyle('B6:S7')->getAlignment()->setHorizontal('center');
-        $sheet->getStyle('B6:S7')->getAlignment()->setVertical('center');
+        $sheet->mergeCells('N6:N7');
+        $sheet->setCellValueByColumnAndRow(14, 6, 'JUMLAH');
+        $sheet->mergeCells('O6:O7');
+        $sheet->setCellValueByColumnAndRow(15, 6, 'SATUAN');
+        $sheet->mergeCells('P6:P7');
+        $sheet->setCellValueByColumnAndRow(16, 6, 'Valuta');
+        $sheet->mergeCells('Q6:Q7');
+        $sheet->setCellValueByColumnAndRow(17, 6, 'NILAI PABEAN');
+        $sheet->mergeCells('R6:R7');
+        $sheet->setCellValueByColumnAndRow(18, 6, 'BERAT (KG)');
+        $sheet->mergeCells('S6:T6');
+        $sheet->setCellValueByColumnAndRow(19, 6, 'ASAL PERUSAHAAN');
+        $sheet->mergeCells('U6:U7');
+        $sheet->setCellValueByColumnAndRow(21, 6, 'Surat Jalan');
+
+        $sheet->mergeCells('U6:U7');
+        $sheet->mergeCells('V6:V7');
+        $sheet->mergeCells('W6:W7');
+        $sheet->setCellValueByColumnAndRow(22, 6, 'RA');
+        $sheet->setCellValueByColumnAndRow(23, 6, 'Keterangan');
+        $sheet->getStyle('B6:W7')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('B6:W7')->getAlignment()->setVertical('center');
 
         $sheet->setCellValueByColumnAndRow(3, 7, 'NOMOR');
         $sheet->setCellValueByColumnAndRow(4, 7, 'TANGGAL DOKUMEN');
@@ -2787,16 +2795,19 @@ class RCV extends CI_Controller
             $sheet->setCellValueByColumnAndRow(8, $y, trim($r['MITM_ITMD1']));
             $sheet->setCellValueByColumnAndRow(9, $y, trim($r['RCV_ITMCD']));
             $sheet->setCellValueByColumnAndRow(10, $y, $r['RCV_HSCD']);
-            $sheet->setCellValueByColumnAndRow(11, $y, $r['RCV_QTY']);
-            $sheet->setCellValueByColumnAndRow(12, $y, trim($r['MITM_STKUOM']));
-            $sheet->setCellValueByColumnAndRow(13, $y, $r['MSUP_CURCD']);
-            $sheet->setCellValueByColumnAndRow(14, $y, $mnilaipab);
-            $sheet->setCellValueByColumnAndRow(15, $y, $mberatpabdis);
-            $sheet->setCellValueByColumnAndRow(16, $y, $msupdis);
-            $sheet->setCellValueByColumnAndRow(17, $y, trim($malamdis));
-            $sheet->setCellValueByColumnAndRow(18, $y, $mdodis);
-            $sheet->setCellValueByColumnAndRow(19, $y, $r['RCV_INVNO']);
-            $sheet->setCellValueByColumnAndRow(20, $y, $r['URAIAN_TUJUAN_PENGIRIMAN']);
+            $sheet->setCellValueByColumnAndRow(11, $y, $r['RCV_BM']);
+            $sheet->setCellValueByColumnAndRow(12, $y, $r['RCV_PPN']);
+            $sheet->setCellValueByColumnAndRow(13, $y, $r['RCV_PPH']);
+            $sheet->setCellValueByColumnAndRow(14, $y, $r['RCV_QTY']);
+            $sheet->setCellValueByColumnAndRow(15, $y, trim($r['MITM_STKUOM']));
+            $sheet->setCellValueByColumnAndRow(16, $y, $r['MSUP_CURCD']);
+            $sheet->setCellValueByColumnAndRow(17, $y, $mnilaipab);
+            $sheet->setCellValueByColumnAndRow(18, $y, $mberatpabdis);
+            $sheet->setCellValueByColumnAndRow(19, $y, $msupdis);
+            $sheet->setCellValueByColumnAndRow(20, $y, trim($malamdis));
+            $sheet->setCellValueByColumnAndRow(21, $y, $mdodis);
+            $sheet->setCellValueByColumnAndRow(22, $y, $r['RCV_INVNO']);
+            $sheet->setCellValueByColumnAndRow(23, $y, $r['URAIAN_TUJUAN_PENGIRIMAN']);
             $y++;
         }
 
@@ -2821,14 +2832,14 @@ class RCV extends CI_Controller
                 ],
             ],
         ];
-        $sheet->getStyle('B6:T' . $y)->applyFromArray($BStyle);
+        $sheet->getStyle('B6:W' . $y)->applyFromArray($BStyle);
         $sheet->freezePane('F8');
         $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
-        foreach (range("C", "T") as $r) {
+        foreach (range("C", "W") as $r) {
             $sheet->getColumnDimension($r)->setAutoSize(true);
         }
-        $sheet->getStyle('B6:T7')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('d4d4d4');
+        $sheet->getStyle('B6:W7')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('d4d4d4');
         $sheet->removeColumn('A');
         $rang = "J4:J" . $sheet->getHighestDataRow();
         $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0');
