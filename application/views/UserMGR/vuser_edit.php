@@ -44,7 +44,6 @@
         </div>
         <div class="row">
             <div class="col-md-12 mb-1">
-                <!-- <table id="tblUserInfo" class="table table-sm table-striped table-bordered display" style="width:100%;height:100%;cursor:pointer"> -->
                 <table id="tblUserInfo" class="table table-striped table-sm table-bordered" style="width:100%;">
                     <thead>
                         <tr>
@@ -250,7 +249,6 @@
             responsive: true,
             select: true,
             destroy: true,
-            scrollX: true,
             ajax: '<?=base_url("User/viewAll_reged")?>',
             columns:[
                 { "data": 'MSTEMP_ID'},

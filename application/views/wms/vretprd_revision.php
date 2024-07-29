@@ -157,8 +157,6 @@
             select: true,
             fixedHeader: true,
             destroy: true,
-            scrollX: true,
-            scrollY: true,
             ajax: {
                 url : '<?=base_url("RETPRD/get_data_bypsn")?>',         
                 data: {indoc: ppsn},
