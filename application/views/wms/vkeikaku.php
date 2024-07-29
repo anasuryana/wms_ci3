@@ -877,10 +877,10 @@
                 let dataLength = keikaku_data_sso.getData().length
                 let responseDataLength = response.data.length
                 for(let i=0; i < dataLength; i++) {
-                    let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true)
+                    let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim()
                     keikaku_data_sso.setValue('K'+(i+1), 0)
                     for(let s=0;s<responseDataLength; s++) {
-                        if(_itemCode == response.data[s].assy_code) {
+                        if(_itemCode == response.data[s].assy_code.trim()) {
                             keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
                             break;
                         }
