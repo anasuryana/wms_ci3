@@ -45,7 +45,32 @@
                     <div class="tab-pane fade" id="keikaku_tab_asprova" role="tabpanel">
                         <div class="container-fluid p-1">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text">Year</label>
+                                        <input type="number" class="form-control" id="keikaku_asprova_year">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text">Month</label>
+                                        <select class="form-select" id="keikaku_asprova_month" required onchange="keikaku_asprova_month_onchange()">
+                                            <option value="01">January</option>
+                                            <option value="02">February</option>
+                                            <option value="03">March</option>
+                                            <option value="04">April</option>
+                                            <option value="05">May</option>
+                                            <option value="06">June</option>
+                                            <option value="07">July</option>
+                                            <option value="08">August</option>
+                                            <option value="09">September</option>
+                                            <option value="10">October</option>
+                                            <option value="11">November</option>
+                                            <option value="12">December</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <div class="input-group input-group-sm mb-1">
                                         <label class="input-group-text">Revision</label>
                                         <select class="form-select" id="keikaku_asprova_input_rev" required onchange="keikaku_asprova_input_rev_onchange()">
@@ -151,6 +176,7 @@
   </div>
 </div>
 <script>
+    keikaku_asprova_year.value = new Date().toISOString().substring(0, 4)
     var keikakuModelUnique = []
     var keikaku_data_sso = jspreadsheet(keikaku_data_spreadsheet, {
         columns : [
@@ -299,7 +325,8 @@
             {
                 title:'Simulation',
                 type: 'text',
-                readOnly: true
+                readOnly: true,
+                width:150,
             },
         ],
         allowInsertColumn : false,
@@ -990,7 +1017,7 @@
             type: "GET",
             url: "<?=$_ENV['APP_INTERNAL_API']?>production-plan/revisions",
             data: {
-                start_production_date : keikaku_date_input.value
+                file_year : keikaku_asprova_year.value, file_month : keikaku_asprova_month.value
             },
             dataType: "json",
             success: function (response) {
@@ -1017,7 +1044,8 @@
             type: "GET",
             url: `<?=$_ENV['APP_INTERNAL_API']?>production-plan/revisions/${btoa(revision)}`,
             data: {
-                start_production_date : keikaku_date_input.value,
+                file_year : keikaku_asprova_year.value,
+                file_month : keikaku_asprova_month.value,
                 line_code : keikaku_line_input.value
             },
             dataType: "json",
@@ -1050,7 +1078,7 @@
                 }
                 keikaku_draft_data_sso.setData(theData)
             }, error: function(xhr, xopt, xthrow) {
-                keikaku_asprova_input_rev.innerHTML = `<option value='-'>-</option>`
+                alertify.error(xthrow)
             }
         });
     }
@@ -1066,5 +1094,15 @@
     function keikakuformFile_on_change() {
         const el = document.getElementById('keikaku-modal-div-alert')
         el.innerHTML = ''
+    }
+
+    initFileMonth()
+    function initFileMonth() {
+        const dateArray = new Date().toISOString().substring(0, 10).split('-')
+        keikaku_asprova_month.value = dateArray[1]
+    }
+
+    function keikaku_asprova_month_onchange() {
+        keikaku_load_asprova()
     }
 </script>
