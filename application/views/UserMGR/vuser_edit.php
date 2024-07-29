@@ -157,7 +157,7 @@
     initdataUSRList()
 
     function vuser_txtnewpassword_eKeyUp(e){
-        let statusPW = smtPWValidator(e.target.value)
+        let statusPW = smtPWValidator(e.target.value, PWPOL)
         if(statusPW.cd==='1') {
             vuser_newpw_div.innerHTML = `<span class="badge bg-success">${statusPW.msg}</span>`
         } else {
@@ -186,7 +186,7 @@
             alert('password does not match');
             $("#vuser_txtnewpassword_c").focus();
         } else {
-            let statusPW = smtPWValidator(newpw)
+            let statusPW = smtPWValidator(newpw, PWPOL)
             if(statusPW.cd==='1') {
                 vuser_newpw_div.innerHTML = `<span class="badge bg-success">${statusPW.msg}</span>`
             } else {
