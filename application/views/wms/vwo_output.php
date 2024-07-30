@@ -117,14 +117,9 @@
                                             <caption>Per WO Summary</caption>
                                             <thead>
                                                 <tr>
-                                                    <th class="align-middle" rowspan="2">Process</th>
-                                                    <!-- <th class="align-middle" colspan="2">Output</th>
-                                                    <th class="align-middle" rowspan="2">Total</th>
-                                                    <th class="align-middle" rowspan="2">Balance</th> -->
+                                                    <th class="align-middle" rowspan="2">Process</th>                                                    
                                                 </tr>
                                                 <tr>
-                                                    <!-- <th class="table-success">OK</th>
-                                                    <th class="table-danger">NG</th> -->
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -614,11 +609,6 @@
         if(wopr_process_input.value==='-') {
             alertify.warning(`Please select a process`)
             wopr_process_input.focus()
-            return
-        }
-
-        if(['-','--'].includes(wopr_input_ct.value)) {
-            alertify.warning(`Cycle Time is required`)
             return
         }
 
