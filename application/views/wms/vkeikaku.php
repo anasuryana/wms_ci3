@@ -537,31 +537,31 @@
             ['Change Model', ...Array.from({length: 24}, (_, i) => null)],
             ['Change Model/OT', ...Array.from({length: 24}, (_, i) => null)],
             ['Retention Time',
-            `=IF(UPPER($B$8)="M", B3, B2)`,
-            `=IF(UPPER($B$8)="M", C3, C2)`,
-            `=IF(UPPER($B$8)="M", D3, D2)`,
-            `=IF(UPPER($B$8)="M", E3, E2)`,
-            `=IF(UPPER($B$8)="M", F3, F2)`,
-            `=IF(UPPER($B$8)="M", G3, G2)`,
-            `=IF(UPPER($B$8)="M", H3, H2)`,
-            `=IF(UPPER($B$8)="M", I3, I2)`,
-            `=IF(UPPER($J$8)="OT", J4, J3)`,
-            `=IF(UPPER($J$8)="OT", K4, K3)`,
-            `=IF(UPPER($J$8)="OT", L2, L1)`,
-            `=IF(UPPER($J$8)="OT", M2, M1)`,
+            `=IF(OR(UPPER(B8)="N", UPPER(B8)="M", UPPER(B8)="4M"),0,IF($K$8="OT",B6,IF(B8>0,B8,B5)))`,
+            `=IF(OR(UPPER(C8)="N", UPPER(C8)="M", UPPER(C8)="4M"),0,IF($K$8="OT",C6,IF(C8>0,C8,C5)))`,
+            `=IF(OR(UPPER(D8)="N", UPPER(D8)="M", UPPER(D8)="4M"),0,IF($K$8="OT",D6,IF(D8>0,D8,D5)))`,
+            `=IF(OR(UPPER(E8)="N", UPPER(E8)="M", UPPER(E8)="4M"),0,IF($K$8="OT",E6,IF(E8>0,E8,E5)))`,
+            `=IF(OR(UPPER(F8)="N", UPPER(F8)="M", UPPER(F8)="4M"),0,IF($K$8="OT",F6,IF(F8>0,F8,F5)))`,
+            `=IF(OR(UPPER(G8)="N", UPPER(G8)="M", UPPER(G8)="4M"),0,IF($K$8="OT",G6,IF(G8>0,G8,G5)))`,
+            `=IF(OR(UPPER(H8)="N", UPPER(H8)="M", UPPER(H8)="4M"),0,IF($K$8="OT",H6,IF(H8>0,H8,H5)))`,
+            `=IF(OR(UPPER(I8)="N", UPPER(I8)="M", UPPER(I8)="4M"),0,IF($K$8="OT",I6,IF(I8>0,I8,I5)))`,
+            `=IF(OR(UPPER(J8)="N", UPPER(J8)="M", UPPER(J8)="4M"),0,IF($K$8="OT",J6,IF(J8>0,J8,J5)))`,
+            `=IF(OR(UPPER(K8)="N", UPPER(K8)="M", UPPER(K8)="4M"),0,IF($K$8="OT",K6,IF(K8>0,K8,K5)))`,
+            `=IF(OR(UPPER(L8)="N", UPPER(L8)="M", UPPER(L8)="4M"),0,IF($K$8="OT",L6,IF(L8>0,L8,L5)))`,
+            `=IF(OR(UPPER(M8)="N", UPPER(M8)="M", UPPER(M8)="4M"),0,IF($K$8="OT",M6,IF(M8>0,M8,M5)))`,
 
-            `=IF(UPPER($B$8)="M", N3, N2)`,
-            `=IF(UPPER($B$8)="M", O3, O2)`,
-            `=IF(UPPER($B$8)="M", P3, P2)`,
-            `=IF(UPPER($B$8)="M", Q3, Q2)`,
-            `=IF(UPPER($B$8)="M", R3, R2)`,
-            `=IF(UPPER($B$8)="M", S3, S2)`,
-            `=IF(UPPER($B$8)="M", T3, T2)`,
-            `=IF(UPPER($B$8)="M", U3, U2)`,
-            `=IF(UPPER($V$8)="OT", V2, V1)`,
-            `=IF(UPPER($V$8)="OT", W2, W1)`,
-            `=IF(UPPER($V$8)="OT", X2, X1)`,
-            `=IF(UPPER($V$8)="OT", Y2, Y1)`,
+            `=IF(OR(UPPER(N8)="N", UPPER(N8)="M", UPPER(N8)="4M"),0,IF($W$8="OT",N6,IF(N8>0,N8,N5)))`,
+            `=IF(OR(UPPER(O8)="N", UPPER(O8)="M", UPPER(O8)="4M"),0,IF($W$8="OT",O6,IF(O8>0,O8,O5)))`,
+            `=IF(OR(UPPER(P8)="N", UPPER(P8)="M", UPPER(P8)="4M"),0,IF($W$8="OT",P6,IF(P8>0,P8,P5)))`,
+            `=IF(OR(UPPER(Q8)="N", UPPER(Q8)="M", UPPER(Q8)="4M"),0,IF($W$8="OT",Q6,IF(Q8>0,Q8,Q5)))`,
+            `=IF(OR(UPPER(R8)="N", UPPER(R8)="M", UPPER(R8)="4M"),0,IF($W$8="OT",R6,IF(R8>0,R8,R5)))`,
+            `=IF(OR(UPPER(S8)="N", UPPER(S8)="M", UPPER(S8)="4M"),0,IF($W$8="OT",S6,IF(S8>0,S8,S5)))`,
+            `=IF(OR(UPPER(T8)="N", UPPER(T8)="M", UPPER(T8)="4M"),0,IF($W$8="OT",T6,IF(T8>0,T8,T5)))`,
+            `=IF(OR(UPPER(U8)="N", UPPER(U8)="M", UPPER(U8)="4M"),0,IF($W$8="OT",U6,IF(U8>0,U8,U5)))`,
+            `=IF(OR(UPPER(V8)="N", UPPER(V8)="M", UPPER(V8)="4M"),0,IF($W$8="OT",V6,IF(V8>0,V8,V5)))`,
+            `=IF(OR(UPPER(W8)="N", UPPER(W8)="M", UPPER(W8)="4M"),0,IF($W$8="OT",W6,IF(W8>0,W8,W5)))`,
+            `=IF(OR(UPPER(X8)="N", UPPER(X8)="M", UPPER(X8)="4M"),0,IF($W$8="OT",X6,IF(X8>0,X8,X5)))`,
+            `=IF(OR(UPPER(Y8)="N", UPPER(Y8)="M", UPPER(Y8)="4M"),0,IF($W$8="OT",Y6,IF(Y8>0,Y8,Y5)))`,
             ],
             ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i)],
             ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
@@ -746,15 +746,27 @@
                 let worktype5 = ['MENT NON OT'];
                 let worktype6 = ['MENT OT'];
                 let flag_mot = ['Change Model/OT'];
-                response.data.forEach((arrayItem) => {
-                    worktype1.push(Number.parseFloat(arrayItem['worktype1']).toFixed(2))
-                    worktype2.push(Number.parseFloat(arrayItem['worktype2']).toFixed(2))
-                    worktype3.push(Number.parseFloat(arrayItem['worktype3']).toFixed(2))
-                    worktype4.push(Number.parseFloat(arrayItem['worktype4']).toFixed(2))
-                    worktype5.push(Number.parseFloat(arrayItem['worktype5']).toFixed(2))
-                    worktype6.push(Number.parseFloat(arrayItem['worktype6']).toFixed(2))
-                    flag_mot.push(arrayItem['flag_mot'])
-                })
+                if(response.data.length > 0) {
+                    response.data.forEach((arrayItem) => {
+                        worktype1.push(Number.parseFloat(arrayItem['worktype1']).toFixed(2))
+                        worktype2.push(Number.parseFloat(arrayItem['worktype2']).toFixed(2))
+                        worktype3.push(Number.parseFloat(arrayItem['worktype3']).toFixed(2))
+                        worktype4.push(Number.parseFloat(arrayItem['worktype4']).toFixed(2))
+                        worktype5.push(Number.parseFloat(arrayItem['worktype5']).toFixed(2))
+                        worktype6.push(Number.parseFloat(arrayItem['worktype6']).toFixed(2))
+                        flag_mot.push(arrayItem['flag_mot'])
+                    })
+                } else {
+                    for(let i=0;i<25;i++) {
+                        worktype1.push(0)
+                        worktype2.push(0)
+                        worktype3.push(0)
+                        worktype4.push(0)
+                        worktype5.push(0)
+                        worktype6.push(0)
+                        flag_mot.push('')
+                    }
+                }
 
                 keikaku_calculation_sso.setData([
                     worktype1,
@@ -766,31 +778,31 @@
                     ['Change Model', ...Array.from({length: 24}, (_, i) => null)],
                     flag_mot,
                     ['Retention Time',
-                    `=IF(UPPER($B$8)="M", B3, B2)`,
-                    `=IF(UPPER($B$8)="M", C3, C2)`,
-                    `=IF(UPPER($B$8)="M", D3, D2)`,
-                    `=IF(UPPER($B$8)="M", E3, E2)`,
-                    `=IF(UPPER($B$8)="M", F3, F2)`,
-                    `=IF(UPPER($B$8)="M", G3, G2)`,
-                    `=IF(UPPER($B$8)="M", H3, H2)`,
-                    `=IF(UPPER($B$8)="M", I3, I2)`,
-                    `=IF(UPPER($J$8)="OT", J4, J3)`,
-                    `=IF(UPPER($J$8)="OT", K4, K3)`,
-                    `=IF(UPPER($J$8)="OT", L2, L1)`,
-                    `=IF(UPPER($J$8)="OT", M2, M1)`,
+                    `=IF(OR(UPPER(B8)="N", UPPER(B8)="M", UPPER(B8)="4M"),0,IF($K$8="OT",B6,IF(B8>0,B8,B5)))`,
+                    `=IF(OR(UPPER(C8)="N", UPPER(C8)="M", UPPER(C8)="4M"),0,IF($K$8="OT",C6,IF(C8>0,C8,C5)))`,
+                    `=IF(OR(UPPER(D8)="N", UPPER(D8)="M", UPPER(D8)="4M"),0,IF($K$8="OT",D6,IF(D8>0,D8,D5)))`,
+                    `=IF(OR(UPPER(E8)="N", UPPER(E8)="M", UPPER(E8)="4M"),0,IF($K$8="OT",E6,IF(E8>0,E8,E5)))`,
+                    `=IF(OR(UPPER(F8)="N", UPPER(F8)="M", UPPER(F8)="4M"),0,IF($K$8="OT",F6,IF(F8>0,F8,F5)))`,
+                    `=IF(OR(UPPER(G8)="N", UPPER(G8)="M", UPPER(G8)="4M"),0,IF($K$8="OT",G6,IF(G8>0,G8,G5)))`,
+                    `=IF(OR(UPPER(H8)="N", UPPER(H8)="M", UPPER(H8)="4M"),0,IF($K$8="OT",H6,IF(H8>0,H8,H5)))`,
+                    `=IF(OR(UPPER(I8)="N", UPPER(I8)="M", UPPER(I8)="4M"),0,IF($K$8="OT",I6,IF(I8>0,I8,I5)))`,
+                    `=IF(OR(UPPER(J8)="N", UPPER(J8)="M", UPPER(J8)="4M"),0,IF($K$8="OT",J6,IF(J8>0,J8,J5)))`,
+                    `=IF(OR(UPPER(K8)="N", UPPER(K8)="M", UPPER(K8)="4M"),0,IF($K$8="OT",K6,IF(K8>0,K8,K5)))`,
+                    `=IF(OR(UPPER(L8)="N", UPPER(L8)="M", UPPER(L8)="4M"),0,IF($K$8="OT",L6,IF(L8>0,L8,L5)))`,
+                    `=IF(OR(UPPER(M8)="N", UPPER(M8)="M", UPPER(M8)="4M"),0,IF($K$8="OT",M6,IF(M8>0,M8,M5)))`,
 
-                    `=IF(UPPER($B$8)="M", N3, N2)`,
-                    `=IF(UPPER($B$8)="M", O3, O2)`,
-                    `=IF(UPPER($B$8)="M", P3, P2)`,
-                    `=IF(UPPER($B$8)="M", Q3, Q2)`,
-                    `=IF(UPPER($B$8)="M", R3, R2)`,
-                    `=IF(UPPER($B$8)="M", S3, S2)`,
-                    `=IF(UPPER($B$8)="M", T3, T2)`,
-                    `=IF(UPPER($B$8)="M", U3, U2)`,
-                    `=IF(UPPER($V$8)="OT", V2, V1)`,
-                    `=IF(UPPER($V$8)="OT", W2, W1)`,
-                    `=IF(UPPER($V$8)="OT", X2, X1)`,
-                    `=IF(UPPER($V$8)="OT", Y2, Y1)`,
+                    `=IF(OR(UPPER(N8)="N", UPPER(N8)="M", UPPER(N8)="4M"),0,IF($W$8="OT",N6,IF(N8>0,N8,N5)))`,
+                    `=IF(OR(UPPER(O8)="N", UPPER(O8)="M", UPPER(O8)="4M"),0,IF($W$8="OT",O6,IF(O8>0,O8,O5)))`,
+                    `=IF(OR(UPPER(P8)="N", UPPER(P8)="M", UPPER(P8)="4M"),0,IF($W$8="OT",P6,IF(P8>0,P8,P5)))`,
+                    `=IF(OR(UPPER(Q8)="N", UPPER(Q8)="M", UPPER(Q8)="4M"),0,IF($W$8="OT",Q6,IF(Q8>0,Q8,Q5)))`,
+                    `=IF(OR(UPPER(R8)="N", UPPER(R8)="M", UPPER(R8)="4M"),0,IF($W$8="OT",R6,IF(R8>0,R8,R5)))`,
+                    `=IF(OR(UPPER(S8)="N", UPPER(S8)="M", UPPER(S8)="4M"),0,IF($W$8="OT",S6,IF(S8>0,S8,S5)))`,
+                    `=IF(OR(UPPER(T8)="N", UPPER(T8)="M", UPPER(T8)="4M"),0,IF($W$8="OT",T6,IF(T8>0,T8,T5)))`,
+                    `=IF(OR(UPPER(U8)="N", UPPER(U8)="M", UPPER(U8)="4M"),0,IF($W$8="OT",U6,IF(U8>0,U8,U5)))`,
+                    `=IF(OR(UPPER(V8)="N", UPPER(V8)="M", UPPER(V8)="4M"),0,IF($W$8="OT",V6,IF(V8>0,V8,V5)))`,
+                    `=IF(OR(UPPER(W8)="N", UPPER(W8)="M", UPPER(W8)="4M"),0,IF($W$8="OT",W6,IF(W8>0,W8,W5)))`,
+                    `=IF(OR(UPPER(X8)="N", UPPER(X8)="M", UPPER(X8)="4M"),0,IF($W$8="OT",X6,IF(X8>0,X8,X5)))`,
+                    `=IF(OR(UPPER(Y8)="N", UPPER(Y8)="M", UPPER(Y8)="4M"),0,IF($W$8="OT",Y6,IF(Y8>0,Y8,Y5)))`,
                     ],
                     ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i)],
                     ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
