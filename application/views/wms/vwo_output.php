@@ -355,7 +355,7 @@
         rowDrag:false,
         data: wopr_data_morning.slice(),
         updateTable: function(el, cell, x, y, source, value, id) {
-            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 4].includes(y)) {
+            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 4,5].includes(y)) {
                 cell.classList.add('readonly');
                 cell.style.cssText = "font-weight: bold; text-align:center"
             }
@@ -437,7 +437,7 @@
         rowDrag:false,
         data: wopr_data_morning2.slice(),
         updateTable: function(el, cell, x, y, source, value, id) {
-            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 5].includes(y)) {
+            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 5,6].includes(y)) {
                 cell.classList.add('readonly');
                 cell.style.cssText = "font-weight: bold; text-align:center"
             }
