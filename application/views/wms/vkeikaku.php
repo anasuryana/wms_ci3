@@ -583,6 +583,8 @@
             return
         }
 
+        keikaku_btn_run_data_eC(keikaku_btn_run_data)
+
         const dataDetail = []
         let JobUnique = []
 
@@ -590,12 +592,8 @@
         const inputSSCount = inputSS.length
 
         for(let i=0; i<inputSSCount;i++) {
-            let _job = inputSS[i][2].trim() + inputSS[i][7].trim()
+            let _job = inputSS[i][2].trim() + inputSS[i][7].trim() + inputSS[i][9].trim()
             let _cycleTime = numeral(inputSS[i][10].trim()).value()
-            if(_cycleTime === 0 || !_cycleTime) {
-                alertify.warning('Cycle time should not be empty or zero')
-                return
-            }
             if(!JobUnique.includes(_job)) {
                 JobUnique.push(_job)
 
