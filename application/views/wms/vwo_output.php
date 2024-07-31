@@ -263,6 +263,7 @@
         ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
+        ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
     ]
     var wopr_data_morning2 = [
         ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
@@ -271,6 +272,7 @@
         ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['Total', '=B3+B5', '=C3+C5', '=D3+D5', '=E3+E5', '=F3+F5', '=G3+G5', '=H3+H5', '=I3+I5', '=J3+J5', '=K3+K5', '=L3+L5', '=M3+M5'],
+        ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
        
     ]
     var wopr_data_night = [
@@ -279,6 +281,7 @@
         ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
+        ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
     ]
     var wopr_data_night2 = [
         ['Hour', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
@@ -287,6 +290,7 @@
         ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['Total', '=B3+B5', '=C3+C5', '=D3+D5', '=E3+E5', '=F3+F5', '=G3+G5', '=H3+H5', '=I3+I5', '=J3+J5', '=K3+K5', '=L3+L5', '=M3+M5'],
+        ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
     ]
 
     var wopr_sso = jspreadsheet(wopr_spreasheet, {
@@ -351,7 +355,7 @@
         rowDrag:false,
         data: wopr_data_morning.slice(),
         updateTable: function(el, cell, x, y, source, value, id) {
-            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 4].includes(y)) {
+            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 4,5].includes(y)) {
                 cell.classList.add('readonly');
                 cell.style.cssText = "font-weight: bold; text-align:center"
             }
@@ -433,7 +437,7 @@
         rowDrag:false,
         data: wopr_data_morning2.slice(),
         updateTable: function(el, cell, x, y, source, value, id) {
-            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 5].includes(y)) {
+            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 5,6].includes(y)) {
                 cell.classList.add('readonly');
                 cell.style.cssText = "font-weight: bold; text-align:center"
             }
@@ -1011,6 +1015,7 @@
                             ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
+                            ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
                         ]
                     } else {
                         inputSS = [
@@ -1019,6 +1024,7 @@
                             ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
+                            ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
                         ]
                     }
                     wopr_sso.setData(inputSS)
@@ -1032,6 +1038,7 @@
                             ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['Total', '=B3+B5', '=C3+C5', '=D3+D5', '=E3+E5', '=F3+F5', '=G3+G5', '=H3+H5', '=I3+I5', '=J3+J5', '=K3+K5', '=L3+L5', '=M3+M5'],
+                            ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
                         ]
                     } else {
                         inputSS2 = [
@@ -1041,6 +1048,7 @@
                             ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['Total', '=B3+B5', '=C3+C5', '=D3+D5', '=E3+E5', '=F3+F5', '=G3+G5', '=H3+H5', '=I3+I5', '=J3+J5', '=K3+K5', '=L3+L5', '=M3+M5'],
+                            ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
                         ]
                     }
                     wopr_sso2.setData(inputSS2)
