@@ -255,6 +255,16 @@
         columnSorting:false,
         tableOverflow:true,
         tableHeight: ($(window).height()-keikaku_stack1.offsetHeight-keikaku_stack2.offsetHeight - 150) + 'px',
+        updateTable: function(el, cell, x, y, source, value, id) {
+            if(x === 10) {
+                const _ct = numeral(value).value() ?? 0
+                const _job = keikaku_data_sso.getValueFromCoords(2, y, true).trim()
+                const _assy_code = keikaku_data_sso.getValueFromCoords(7, y, true).trim()
+                if(_ct === 0 && _job.length > 0 && _assy_code.length > 0 ) {
+                    cell.style.cssText = "background-color:#8aedff"
+                }
+            }
+        }
     });
     var keikaku_draft_data_sso = jspreadsheet(keikaku_draft_data_spreadsheet, {
         columns : [
