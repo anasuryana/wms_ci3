@@ -693,6 +693,7 @@
                 'worktype5' : numeral(inputSS[4][c]).value(),
                 'worktype6' : numeral(inputSS[5][c]).value(),
                 'flag_mot' : inputSS[7][c],
+                'plan_worktime' : numeral(inputSS[8][c]).value(),
                 'efficiency' : numeral(inputSS[10][c]).value()
             })
         }
