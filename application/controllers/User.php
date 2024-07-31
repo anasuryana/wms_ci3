@@ -1,7 +1,7 @@
 <?php
 class User extends CI_Controller
 {
-
+    private $specialCharList = ['~','!','@','#','$','%','^','&','*','(',')','_','+',':','"','<','>','?','{','}','|'];
     public function __construct()
     {
         parent::__construct();
@@ -256,19 +256,36 @@ class User extends CI_Controller
             if (strlen($confirmed_pw) < $r['PWPOL_LENGTH'] && $r['PWPOL_LENGTH'] > 0) {
                 $respon = ['cd' => 0, 'msg' => 'at least ' . $r['PWPOL_LENGTH'] . ' characters required'];
             } else {
-                # validate history
-                if ($r['PWPOL_HISTORY'] > 0) {
-                    foreach ($rschanges_history as $h) {
-                        if ($h['CHGPW_VALUE'] === $confirmed_pw_decrypt) {
-                            $respon = ['cd' => 0, 'msg' => 'please use another password'];
+                # validate complexity
+                $isComplexityPassed = false;
+                if($r['PWPOL_ISCOMPLEX'] == 1) {                
+                    foreach($this->specialCharList as $s) {
+                        if(str_contains($confirmed_pw, $s)) {
+                            $isComplexityPassed = true;
                             break;
                         }
-                    }
-                    if (empty($respon)) {
+                    }                    
+                } else {
+                    $isComplexityPassed = true;
+                }
+
+                if(!$isComplexityPassed) {
+                    $respon = ['cd' => 0, 'msg' => 'At least 1 special character is required..'];
+                } else {
+                    # validate history
+                    if ($r['PWPOL_HISTORY'] > 0) {
+                        foreach ($rschanges_history as $h) {
+                            if ($h['CHGPW_VALUE'] === $confirmed_pw_decrypt) {
+                                $respon = ['cd' => 0, 'msg' => 'please use another password'];
+                                break;
+                            }
+                        }
+                        if (empty($respon)) {
+                            $respon = ['cd' => 1, 'msg' => 'OK'];
+                        }
+                    } else {
                         $respon = ['cd' => 1, 'msg' => 'OK'];
                     }
-                } else {
-                    $respon = ['cd' => 1, 'msg' => 'OK'];
                 }
             }
         }
