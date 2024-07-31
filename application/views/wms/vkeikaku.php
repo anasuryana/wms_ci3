@@ -258,8 +258,8 @@
         updateTable: function(el, cell, x, y, source, value, id) {
             if(x === 10) {
                 const _ct = numeral(value).value() ?? 0
-                const _job = keikaku_data_sso.getValueFromCoords(2, y, true).trim()
-                const _assy_code = keikaku_data_sso.getValueFromCoords(7, y, true).trim()
+                const _job = el.jspreadsheet.getValueFromCoords(2, y, true).trim()
+                const _assy_code = el.jspreadsheet.getValueFromCoords(7, y, true).trim()
                 if(_ct === 0 && _job.length > 0 && _assy_code.length > 0 ) {
                     cell.style.cssText = "background-color:#8aedff"
                 }
