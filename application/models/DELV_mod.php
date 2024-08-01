@@ -71,6 +71,16 @@ class DELV_mod extends CI_Model
         return $this->db->affected_rows();
     }
 
+    public function selectDLVColumnsWhere($columns , $pWhere)
+    {
+        $this->db->select($columns);
+        $this->db->from($this->TABLENAME);
+        $this->db->join('SER_TBL', 'DLV_SER=SER_ID', "LEFT");
+        $this->db->where($pWhere);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function selectDELCD_where($pwhere)
     {
         $this->db->from("MDEL_TBL");

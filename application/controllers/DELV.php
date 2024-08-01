@@ -586,6 +586,15 @@ class DELV extends CI_Controller
     public function removeun()
     {
         $cser = $this->input->post('inser');
+        $DLVRows = $this->DELV_mod->selectDLVColumnsWhere(['DLV_ID', 'SER_ITMID'], ['DLV_SER' => $cser]);
+        $txid = '';
+        $itemid = '';
+        foreach($DLVRows as $r) {
+            $txid = $r['DLV_ID'];
+            $itemid = $r['SER_ITMID'];
+        }
+        
+
         #validate Already Posted to TPB
         $ttlPostedRows = $this->DELV_mod->check_Primary(['DLV_SER' => $cser, 'DLV_POSTTM IS NOT NULL' => null]);
         if ($ttlPostedRows > 0) {
@@ -594,6 +603,19 @@ class DELV extends CI_Controller
         }
         #end
         $resdelv = $this->DELV_mod->deleteby_filter(["DLV_SER" => $cser]);
+
+        $lastLineLog = $this->CSMLOG_mod->select_lastLine($txid, '') + 1;
+        $this->CSMLOG_mod->insert([
+            'CSMLOG_DOCNO' => $txid,
+            'CSMLOG_SUPZAJU' => '',
+            'CSMLOG_SUPZNOPEN' => '',
+            'CSMLOG_DESC' => 'remove item '. $itemid. ' with ID ' . $cser. ' from TXID',
+            'CSMLOG_LINE' => $lastLineLog,
+            'CSMLOG_TYPE' => 'OUT',
+            'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
+            'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+        ]);
+
         $myar[] = $resdelv > 0 ? ["cd" => strval($resdelv), "msg" => "Deleted"] :
         ["cd" => '0', "msg" => "Data not found, or may be it has been deleted"];
         die('{"status":' . json_encode($myar) . '}');
@@ -602,6 +624,7 @@ class DELV extends CI_Controller
     public function removeun_by_txid_item()
     {
         $txid = $this->input->post('txid');
+        $lastLineLog = $this->CSMLOG_mod->select_lastLine($txid, '') + 1;
         $itemid = $this->input->post('itemid');
         #validate Already Posted to TPB
         $ttlPostedRows = $this->DELV_mod->check_Primary(['DLV_ID' => $txid, 'DLV_POSTTM IS NOT NULL' => null]);
@@ -626,6 +649,16 @@ class DELV extends CI_Controller
             }
         }
         $myar[] = $res;
+        $this->CSMLOG_mod->insert([
+            'CSMLOG_DOCNO' => $txid,
+            'CSMLOG_SUPZAJU' => '',
+            'CSMLOG_SUPZNOPEN' => '',
+            'CSMLOG_DESC' => 'remove item '. $itemid. ' from TXID',
+            'CSMLOG_LINE' => $lastLineLog,
+            'CSMLOG_TYPE' => 'OUT',
+            'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
+            'CSMLOG_CREATED_BY' => $this->session->userdata('nama'),
+        ]);
         die('{"status":' . json_encode($myar) . '}');
     }
 
