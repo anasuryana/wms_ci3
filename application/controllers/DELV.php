@@ -15108,7 +15108,7 @@ class DELV extends CI_Controller
             $rspickingres = $this->SISCN_mod->select_exbc_fgrtn($doc);
 
             if ($rswhSI === 'AFWH3RT') {
-                $rsitem_p_price = $this->setPriceRS(base64_encode($csj));
+                $rsitem_p_price = $this->setPriceRS(base64_encode($doc));
                 $cz_h_JUMLAH_BARANG = count($rsitem_p_price);
                 #INIT PRICE
                 $rsresume = [];
@@ -15155,13 +15155,41 @@ class DELV extends CI_Controller
                     $cz_h_NETTO += $r['NWG'];
                     $cz_h_HARGA_PENYERAHAN_FG += $t_HARGA_PENYERAHAN;
                     $tpb_barang_temp[] = [
-                        'KODE_BARANG' => $r['SSO2_MDLCD'], 'POS_TARIF' => $r['MITM_HSCD'], 'URAIAN' => $r['MITM_ITMD1'], 'JUMLAH_SATUAN' => $r['SISOQTY'], 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 'NETTO' => 1, 'CIF' => round($r['CIF'], 2), 'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN, 'SERI_BARANG' => $SERI_BARANG, 'KODE_STATUS' => '02', 'PERPRICE' => $r['SSO2_SLPRC'],
+                        'KODE_BARANG' => $r['SSO2_MDLCD'], 
+                        'POS_TARIF' => $r['MITM_HSCD'], 
+                        'URAIAN' => $r['MITM_ITMD1'], 
+                        'JUMLAH_SATUAN' => $r['SISOQTY'], 
+                        'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 
+                        'NETTO' => 1, 
+                        'CIF' => round($r['CIF'], 2), 
+                        'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN, 
+                        'SERI_BARANG' => $SERI_BARANG, 
+                        'KODE_STATUS' => '02', 
+                        'PERPRICE' => $r['SSO2_SLPRC'],
                     ];
                     $SERI_BARANG++;
                 }
+                
                 foreach ($tpb_barang_temp as $r) {
+                    $_JUMLAH_KEMSASAN = 0;
+                    foreach ($rspickingres as $p) {
+                        if($r['KODE_BARANG'] == $p['SI_ITMCD']) {
+                            $_JUMLAH_KEMSASAN = $p['BOX'];
+                            break;
+                        }
+                    }
                     $tpb_barang[] = [
-                        'KODE_BARANG' => $r['KODE_BARANG'], 'POS_TARIF' => $r['POS_TARIF'], 'URAIAN' => $r['URAIAN'], 'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN'], 'KODE_SATUAN' => $r['KODE_SATUAN'], 'NETTO' => $r['NETTO'], 'CIF' => $r['CIF'], 'HARGA_PENYERAHAN' => $r['HARGA_PENYERAHAN'], 'SERI_BARANG' => $r['SERI_BARANG'], 'KODE_STATUS' => $r['KODE_STATUS'],
+                        'KODE_BARANG' => $r['KODE_BARANG'], 
+                        'POS_TARIF' => $r['POS_TARIF'], 
+                        'URAIAN' => $r['URAIAN'], 
+                        'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN'], 
+                        'KODE_SATUAN' => $r['KODE_SATUAN'], 
+                        'NETTO' => $r['NETTO'], 
+                        'CIF' => $r['CIF'], 
+                        'HARGA_PENYERAHAN' => $r['HARGA_PENYERAHAN'], 
+                        'SERI_BARANG' => $r['SERI_BARANG'], 
+                        'KODE_STATUS' => $r['KODE_STATUS'],
+                        'JUMLAH_KEMASAN' => $_JUMLAH_KEMSASAN,
                     ];
                 }
             } elseif ($rswhSI === 'NFWH4RT') {
