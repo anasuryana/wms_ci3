@@ -1278,19 +1278,20 @@ class SPL extends CI_Controller
                 }
             }
             unset($d);
+
             foreach ($rsv as &$r) {
                 $think = true;
                 while ($think) {
                     $grasp = false;
                     foreach ($rsdetail as $d) {
-                        if ((strtoupper(trim($r['SPL_ORDERNO'])) == strtoupper(trim($d['SPLSCN_ORDERNO']))) && (strtoupper(trim($r['SPL_ITMCD'])) == strtoupper(trim($d['SPLSCN_ITMCD']))) && $d['USED'] == false) {
+                        if (($r['SPL_ORDERNO'] == $d['SPLSCN_ORDERNO']) && ($r['SPL_ITMCD'] == $d['SPLSCN_ITMCD']) && $d['USED'] == false) {
                             $grasp = true;
                             break;
                         }
                     }
                     if ($grasp) {
                         foreach ($rsdetail as &$d) {
-                            if ((strtoupper(trim($r['SPL_ORDERNO'])) == strtoupper(trim($d['SPLSCN_ORDERNO']))) && (trim($r['SPL_ITMCD']) == strtoupper(trim($d['SPLSCN_ITMCD']))) && $d['USED'] == false) {
+                            if (($r['SPL_ORDERNO'] == $d['SPLSCN_ORDERNO']) && ($r['SPL_ITMCD'] == $d['SPLSCN_ITMCD']) && $d['USED'] == false) {
                                 $think2 = true;
                                 while ($think2) {
                                     if ($r['TTLREQ'] > $r['TTLSCN']) {
@@ -1314,17 +1315,33 @@ class SPL extends CI_Controller
                 }
             }
             unset($r);
+
+            // dua kali penyaringan
+            foreach ($rsdetail as &$d) {
+                if(!$d['USED']) {
+                    foreach($rsv as &$r) {
+                        if(($r['SPL_ORDERNO'] == $d['SPLSCN_ORDERNO']) && ($r['SPL_ITMCD'] == $d['SPLSCN_ITMCD'])) {
+                            $r['TTLSCN'] += $d['SPLSCN_QTY'];
+                            $d['USED'] = true;
+                            break;
+                        }
+                    }
+                    unset($r);
+                }
+            }
+            unset($d);
+          
             $rs2 = $this->SPL_mod->selecthead($cpsn, $cline, $cfr);
             $rssavedqty = $this->SPLSCN_mod->selectsaved($cpsn, $ccat, $cline, $cfr);
-            echo '{"data":'
-            . json_encode($rs)
-            . ',"datahead":'
-            . json_encode($rs2)
-            . ',"datasaved":'
-            . json_encode($rssavedqty)
-            . ',"datav":'
-            . json_encode($rsv)
-                . '}';
+            die(
+                json_encode([
+                    'data' => $rs,
+                    'datahead' => $rs2,
+                    'datasaved' => $rssavedqty,
+                    'datav' => $rsv,
+                    'rsdetail' => $rsdetail,
+                ])
+            );           
         } else {
             $myar[] = ["cd" => $ttlrows, "msg" => "Data not found"];
             echo '{"data":' . json_encode($myar) . '}';
