@@ -4166,6 +4166,7 @@ echo $tohtml;
                             $("#TXFG_MODSAVED").modal('hide');
                             txfg_getconsignee(scr_txfg_cust, mconsign);
                             txfg_f_getdetail(mtxid);
+                            document.getElementById('txfg_tblsoother_plot').getElementsByTagName('tbody')[0].innerHTML = ``
                         }
                         mydes.innerHTML = '';
                         mydes.appendChild(myfrag);
