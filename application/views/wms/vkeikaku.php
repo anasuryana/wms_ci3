@@ -262,6 +262,8 @@
                 const _assy_code = el.jspreadsheet.getValueFromCoords(7, y, true).trim()
                 if(_ct === 0 && _job.length > 0 && _assy_code.length > 0 ) {
                     cell.style.cssText = "background-color:#8aedff"
+                } else {
+                    cell.style.cssText = "background-color:#fafafa"
                 }
             }
         }
