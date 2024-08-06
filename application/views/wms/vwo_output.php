@@ -260,10 +260,11 @@
     var wopr_data_morning = [
         ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
         ['', 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        ['PLAN PROD', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
-        ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
+        ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
+        ['Total ↗', '=B4+B5', '=IF(C6=0,0,SUM(B4:C5))', '=IF(D6=0,0,SUM(B4:D5))', '=IF(E6=0,0,SUM(B4:E5))', '=IF(F6=0,0,SUM(B4:F5))', '=IF(G6=0,0,SUM(B4:G5))', '=IF(H6=0,0,SUM(B4:H5))', '=IF(I6=0,0,SUM(B4:I5))', '=IF(J6=0,0, SUM(B4:J5))', '=IF(K6=0,0,SUM(B4:K5))', '=IF(L6=0,0,SUM(B4:L5))', '=IF(M6=0,0,SUM(B4:M5))'],
     ]
     var wopr_data_morning2 = [
         ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
@@ -278,10 +279,11 @@
     var wopr_data_night = [
         ['Hour', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
         ['', 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6, 7],
+        ['PLAN PROD', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
-        ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
+        ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
+        ['Total ↗', '=B4+B5', '=IF(C6=0,0,SUM(B4:C5))', '=IF(D6=0,0,SUM(B4:D5))', '=IF(E6=0,0,SUM(B4:E5))', '=IF(F6=0,0,SUM(B4:F5))', '=IF(G6=0,0,SUM(B4:G5))', '=IF(H6=0,0,SUM(B4:H5))', '=IF(I6=0,0,SUM(B4:I5))', '=IF(J6=0,0, SUM(B4:J5))', '=IF(K6=0,0,SUM(B4:K5))', '=IF(L6=0,0,SUM(B4:L5))', '=IF(M6=0,0,SUM(B4:M5))'],
     ]
     var wopr_data_night2 = [
         ['Hour', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
@@ -355,14 +357,14 @@
         rowDrag:false,
         data: wopr_data_morning.slice(),
         updateTable: function(el, cell, x, y, source, value, id) {
-            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1, 4,5].includes(y)) {
+            if (Array.from({length: 12}, (_, i) => i + 1).includes(x) && [0,1,2, 5,6].includes(y)) {
                 cell.classList.add('readonly');
                 cell.style.cssText = "font-weight: bold; text-align:center"
             }
-            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===2) {
+            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===3) {
                 cell.style.cssText = "background-color:#d1e7dd;font-weight: bold; text-align:center"
             }
-            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===3) {
+            if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && y===4) {
                 cell.style.cssText = "background-color:#f8d7da;font-weight: bold; text-align:center"
             }
 
@@ -447,7 +449,6 @@
             if(Array.from({length: 13}, (_, i) => i + 0).includes(x) && [4].includes(y)) {
                 cell.style.cssText = "background-color:#f8d7da;font-weight: bold; text-align:center"
             }
-
         },
         onchange : function(instance, cell, x, y, value) {
             const cellName = jspreadsheet.getColumnNameFromId([x,y]);
@@ -635,8 +636,8 @@
                     _theDate = oMoment.add(1, 'days').format('YYYY-MM-DD')
                 }
     
-                const _valueOK = numeral(wopr_sso.getValueFromCoords(c, 2, true)).value()
-                const _valueNG = numeral(wopr_sso.getValueFromCoords(c, 3, true)).value()
+                const _valueOK = numeral(wopr_sso.getValueFromCoords(c, 3, true)).value()
+                const _valueNG = numeral(wopr_sso.getValueFromCoords(c, 4, true)).value()
     
                 outputQty.push({
                     output_at : _theDate + ' ' + inputSS[0][c] + ':00:00',
@@ -963,9 +964,11 @@
         wopr_sso.setData([
             ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
             ['', 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+            ['PLAN PROD', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
-            ['OK', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            ['NG', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ['Total ↗', '=B4+B5', '=IF(C6=0,0,SUM(B4:C5))', '=IF(D6=0,0,SUM(B4:D5))', '=IF(E6=0,0,SUM(B4:E5))', '=IF(F6=0,0,SUM(B4:F5))', '=IF(G6=0,0,SUM(B4:G5))', '=IF(H6=0,0,SUM(B4:H5))', '=IF(I6=0,0,SUM(B4:I5))', '=IF(J6=0,0, SUM(B4:J5))', '=IF(K6=0,0,SUM(B4:K5))', '=IF(L6=0,0,SUM(B4:L5))', '=IF(M6=0,0,SUM(B4:M5))'],
         ])
         wopr_downtime_sso.setData([
             ['M',0,0,'=ROUND(C1/B1*100,2)&"%"','=ROUND(C1/(B1-((F1+G1+H1+I1+J1+K1)/60))*100,2)&"%"',0,0,0,0,0,0,0,'=C1+((F1+G1+H1+I1+J1+K1+L1)/60)'],
@@ -1012,19 +1015,21 @@
                         inputSS = [
                             ['Hour', 19, 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6],
                             ['', 20, 21, 22, 23, 00, 1, 2, 3, 4, 5, 6, 7],
+                            ['PLAN PROD', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
-                            ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
+                            ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
+                            ['Total ↗', '=B4+B5', '=IF(C6=0,0,SUM(B4:C5))', '=IF(D6=0,0,SUM(B4:D5))', '=IF(E6=0,0,SUM(B4:E5))', '=IF(F6=0,0,SUM(B4:F5))', '=IF(G6=0,0,SUM(B4:G5))', '=IF(H6=0,0,SUM(B4:H5))', '=IF(I6=0,0,SUM(B4:I5))', '=IF(J6=0,0, SUM(B4:J5))', '=IF(K6=0,0,SUM(B4:K5))', '=IF(L6=0,0,SUM(B4:L5))', '=IF(M6=0,0,SUM(B4:M5))'],
                         ]
                     } else {
                         inputSS = [
                             ['Hour', 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
                             ['', 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+                            ['PLAN PROD', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['OUTPUT', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             ['MRB', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            ['Total', '=B3+B4', '=C3+C4', '=D3+D4', '=E3+E4', '=F3+F4', '=G3+G4', '=H3+H4', '=I3+I4', '=J3+J4', '=K3+K4', '=L3+L4', '=M3+M4'],
-                            ['Total ↗', '=B3+B4', '=IF(C5=0,0,SUM(B3:C4))', '=IF(D5=0,0,SUM(B3:D4))', '=IF(E5=0,0,SUM(B3:E4))', '=IF(F5=0,0,SUM(B3:F4))', '=IF(G5=0,0,SUM(B3:G4))', '=IF(H5=0,0,SUM(B3:H4))', '=IF(I5=0,0,SUM(B3:I4))', '=IF(J5=0,0, SUM(B3:J4))', '=IF(K5=0,0,SUM(B3:K4))', '=IF(L5=0,0,SUM(B3:L4))', '=IF(M5=0,0,SUM(B3:M4))'],
+                            ['Total', '=B4+B5', '=C4+C5', '=D4+D5', '=E4+E5', '=F4+F5', '=G4+G5', '=H4+H5', '=I4+I5', '=J4+J5', '=K4+K5', '=L4+L5', '=M4+M5'],
+                            ['Total ↗', '=B4+B5', '=IF(C6=0,0,SUM(B4:C5))', '=IF(D6=0,0,SUM(B4:D5))', '=IF(E6=0,0,SUM(B4:E5))', '=IF(F6=0,0,SUM(B4:F5))', '=IF(G6=0,0,SUM(B4:G5))', '=IF(H6=0,0,SUM(B4:H5))', '=IF(I6=0,0,SUM(B4:I5))', '=IF(J6=0,0, SUM(B4:J5))', '=IF(K6=0,0,SUM(B4:K5))', '=IF(L6=0,0,SUM(B4:L5))', '=IF(M6=0,0,SUM(B4:M5))'],
                         ]
                     }
                     wopr_sso.setData(inputSS)
@@ -1055,18 +1060,33 @@
                     
 
                     
+                    const totalRowsMatrix = response.asProdplan.length
                     if(!inputProcessCode[0].includes('HW')) {
                         const totalRows = response.data.length
                         for(let c=1; c<13; c++) {
                             for(let i=0; i<totalRows; i++) {
                                 const _jam = response.data[i].running_at.substring(11,13)*1
                                 if(_jam == inputSS[0][c]) {
-                                    inputSS[2][c] =response.data[i].ok_qty
-                                    inputSS[3][c] =response.data[i].ng_qty
+                                    inputSS[3][c] =response.data[i].ok_qty
+                                    inputSS[4][c] =response.data[i].ng_qty
                                     break;
                                 }
                             }
+
+                            for(let i=0; i<totalRowsMatrix; i++) {
+                                const _job = response.asProdplan[i][3]
+                                if(_job == inputWO[0]) {
+                                    for(let _c=5;_c<29;_c++) {
+                                        const _jam = response.asProdplan[0][_c]
+                                        if(_jam == inputSS[0][c]) {
+                                            inputSS[2][c] = response.asProdplan[i][(_c)]
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
                         }
+                        
                         wopr_sso.setData(inputSS)
 
                     } else {
