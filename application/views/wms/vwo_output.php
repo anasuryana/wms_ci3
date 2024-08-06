@@ -1057,9 +1057,7 @@
                         ]
                     }
                     wopr_sso2.setData(inputSS2)
-                    
 
-                    
                     const totalRowsMatrix = response.asProdplan.length
                     if(!inputProcessCode[0].includes('HW')) {
                         const totalRows = response.data.length
@@ -1076,7 +1074,7 @@
                             for(let i=0; i<totalRowsMatrix; i++) {
                                 const _job = response.asProdplan[i][3]
                                 if(_job == inputWO[0]) {
-                                    for(let _c=5;_c<29;_c++) {
+                                    for(let _c=5;_c<30;_c++) {
                                         const _jam = response.asProdplan[0][_c]
                                         if(_jam == inputSS[0][c]) {
                                             inputSS[2][c] = response.asProdplan[i][(_c)]
