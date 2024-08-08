@@ -463,7 +463,7 @@
     });
     var keikakuTableWidthObserver = 0
 
-    new ResizeObserver(() => {
+    resizeObserverO = new ResizeObserver(() => {
         keikakuTableWidthObserver = keikakuProdplanContainer.offsetWidth
         keikaku_prodplan_sso.table.parentNode.style.width = (keikakuTableWidthObserver-30)+'px'
     }).observe(keikakuProdplanContainer)

@@ -246,6 +246,14 @@
                         }
                     }
                 }
+
+                if(title == 'Keikaku') {
+                    if (typeof keikakuProdplanContainer != 'undefined') {
+                        if (typeof resizeObserverO != 'undefined') {
+                            resizeObserverO.disconnect()
+                        }
+                    }
+                }
             }
 
             return konf;
