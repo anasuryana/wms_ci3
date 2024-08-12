@@ -3394,14 +3394,11 @@ echo $tohtml;
                                     } else {
                                         mstatus = "Approved"
                                     }
-
                                 }
-                            } else {
-                                if (response.data[i].DLV_NOPEN != '') {
-                                    mstatus = "Closed"
-                                } else {
-                                    mstatus = "Posted"
-                                }
+                            }
+                            
+                            if (response.data[i].DLV_NOPEN != '') {
+                                mstatus = "Closed"
                             }
 
                             newcell = newrow.insertCell(38)
