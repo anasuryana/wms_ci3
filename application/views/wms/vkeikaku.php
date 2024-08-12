@@ -1,3 +1,23 @@
+<style>
+    .keikakuBlueColor {
+        background-color : #daeef3;
+    }
+    .keikakuVioletColor {
+        background-color : #e4dfec;
+    }
+    .keikakuGreenColor {
+        background-color : #d8e4bc;
+    }
+    .keikakuGreenOldColor {
+        background-color : #ebf1de;
+    }
+    .keikakuGrayOldColor {
+        background-color : #f2f2f2;
+    }
+    .keikakuFontColorRegular {
+        color: black !important
+    }
+</style>
 <div style="padding: 5px" >
 	<div class="container-fluid">
         <div class="row" id="keikaku_stack1">
@@ -139,6 +159,11 @@
                                 <div class="btn-group btn-group-sm">
                                     <button class="btn btn-outline-primary" id="keikaku_btn_run_prodplan" title="Run formula" onclick="keikaku_btn_run_prodplan_eC(this)">Run</button>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-1 table-responsive" id="keikakuProdplanContainer">
+                                <div id="keikaku_prodplan_spreadsheet" style="font-size:75%"></div>
                             </div>
                         </div>
                     </div>
@@ -436,6 +461,149 @@
         },
 
     });
+    var keikakuTableWidthObserver = 0
+
+    resizeObserverO = new ResizeObserver(() => {
+        if(typeof keikakuProdplanContainer != 'undefined') {
+            keikakuTableWidthObserver = keikakuProdplanContainer.offsetWidth
+            keikaku_prodplan_sso.table.parentNode.style.width = (keikakuTableWidthObserver-30)+'px'
+        }
+    }).observe(keikakuProdplanContainer)
+    
+    var keikaku_prodplan_sso = jspreadsheet(keikaku_prodplan_spreadsheet, {
+        columns : [
+            ...Array.from({length: 9+24}, (_, i) => {
+                            const objek = Object.create({
+                                type : 'text',
+                                readOnly : true
+                                })
+                            switch(i) {
+                                case 0 :
+                                    Object.defineProperty(objek, "width", {value : 30})
+                                    break;
+                                case 2 :
+                                    Object.defineProperty(objek, "width", {value : 155})
+                                    break;
+                                case 3 :
+                                    Object.defineProperty(objek, "width", {value : 60})
+                                    break;
+                                case 4 :
+                                    Object.defineProperty(objek, "width", {value : 60})
+                                    break;
+                                case 5 :
+                                    Object.defineProperty(objek, "width", {value : 95})
+                                    break;
+                                case 6 :
+                                    Object.defineProperty(objek, "width", {value : 70})
+                                    break;
+                                case 7 :
+                                    Object.defineProperty(objek, "width", {value : 105})
+                                    break;
+                                case 8 :
+                                    Object.defineProperty(objek, "width", {value : 90})
+                                    break;
+                            }
+                            return objek
+                        }
+                )
+        ],
+        allowInsertColumn : false,
+        allowDeleteColumn : false,
+        allowRenameColumn : false,
+        allowDeleteRow : false,
+        rowDrag:false,
+        columnResize:false,
+        data: [
+            ['', '', '' ,'','', '','','Date','','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
+            ['', '', '' ,'','', '','','Time','','7','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6'],
+            ['', '', '' ,'','', '','','Change Model','','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
+            ['SEQ', '', 'MODEL' ,'WO No','LOT', 'Production','S/T','Time', '','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6','7'],
+            ['#', '', '' ,'','', 'Quantity','(H)','Working Time','Retention Time','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
+            ['', 'Side', 'Type' ,'Spec','', 'Assy Code','Lot S/T','Efficiency','%','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
+            ['', '', '' ,'','', '','(H)','Shift','TOTAL','Morning','','','','','','','','','','','',  'Night','','','','','','','','','','' ,''],
+        ],
+        copyCompatibility:true,
+        columnSorting:false,
+        allowInsertRow : false,
+        updateTable: function(el, cell, x, y, source, value, id) {
+            
+            if (Array.from({length: 33}, (_, i) => i).includes(x) && [0,1,2,3,4,5,6].includes(y)) {
+                cell.classList.add('readonly');
+                cell.style.cssText = "font-weight: bold; text-align:center"
+            }
+            if(Array.from({length: 10}, (_, i) => i+9).includes(x) && y===1) {
+                cell.classList.add('keikakuBlueColor')
+            }
+            if(Array.from({length: 2}, (_, i) => i+19).includes(x) && y===1) {
+                cell.classList.add('keikakuVioletColor')
+            }
+            if(Array.from({length: 10}, (_, i) => i+21).includes(x) && y===1) {
+                cell.classList.add('keikakuGreenColor')
+            }
+            if(Array.from({length: 2}, (_, i) => i+31).includes(x) && y===1) {
+                cell.classList.add('keikakuVioletColor')
+            }
+
+            if(Array.from({length: 9}, (_, i) => i+9).includes(x) && y===3) {
+                cell.classList.add('keikakuBlueColor')
+            }
+            if(Array.from({length: 3}, (_, i) => i+18).includes(x) && y===3) {
+                cell.classList.add('keikakuVioletColor')
+            }
+            if(Array.from({length: 9}, (_, i) => i+21).includes(x) && y===3) {
+                cell.classList.add('keikakuGreenColor')
+            }
+            if(Array.from({length: 3}, (_, i) => i+30).includes(x) && y===3) {
+                cell.classList.add('keikakuVioletColor')
+            }
+
+            if(Array.from({length: 9}, (_, i) => i+9).includes(x) && y===4) {
+                cell.classList.add('keikakuBlueColor')
+            }
+            if(Array.from({length: 3}, (_, i) => i+18).includes(x) && y===4) {
+                cell.classList.add('keikakuVioletColor')
+            }
+            if(Array.from({length: 9}, (_, i) => i+21).includes(x) && y===4) {
+                cell.classList.add('keikakuGreenColor')
+            }
+            if(Array.from({length: 3}, (_, i) => i+30).includes(x) && y===4) {
+                cell.classList.add('keikakuVioletColor')
+            }
+            if(x===7) {
+                let cellName = '';
+                let theCells = ''
+                switch(value) {
+                    case 'Actual':
+                        cellName = jspreadsheet.getColumnNameFromId([x-1,y]);
+                        theCells = cell.parentNode.cells
+                        for(let i=0; i <theCells.length; i++) {
+                            const theCell = theCells[i]
+                            theCell.classList.add('keikakuGreenOldColor')
+                        }
+                        break;
+                    case 'Total':
+                        cellName = jspreadsheet.getColumnNameFromId([x-1,y]);
+                        theCells = cell.parentNode.cells
+                        for(let i=0; i <theCells.length; i++) {
+                            const theCell = theCells[i]
+                            theCell.classList.add('keikakuGrayOldColor')
+                        }
+                        break;
+                }
+            }
+
+            cell.classList.add('keikakuFontColorRegular')
+        },
+        tableOverflow:true,
+        tableHeight: ($(window).height()-keikaku_stack1.offsetHeight-keikaku_stack2.offsetHeight - 160) + 'px',
+        mergeCells:{
+            J7:[12,1],V7:[12,1]
+        },
+        freezeColumns: 5,
+        minDimensions: [50,10],
+        tableWidth: '1000px',
+    });
+    
 
     function keikaku_load_line_code() {
         $.ajax({
@@ -1127,5 +1295,179 @@
 
     function keikaku_asprova_month_onchange() {
         keikaku_load_asprova()
+    }
+
+    function keikaku_btn_run_prodplan_eC(pThis) {
+
+        const inputLine = keikaku_line_input.value
+        if(inputLine==='-') {
+            alertify.warning('Line is required')
+            keikaku_line_input.focus()
+            return
+        }
+        const data = {
+            line_code: inputLine,
+            production_date: keikaku_date_input.value,
+        }
+        pThis.disabled = true
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/production-plan",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                pThis.disabled = false
+                let inputSS = [
+                                ['', '', '' ,'','', '','','Date','','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
+                                ['', '', '' ,'','', '','','Time','','7','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6'],
+                                ['', '', '' ,'','', '','','Change Model','','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
+                                ['SEQ', '', 'MODEL' ,'WO No','LOT', 'Production','S/T','Time', '','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6','7'],
+                                ['#', '', '' ,'','', 'Quantity','(H)','Working Time','Retention Time','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
+                                ['', 'Side', 'Type' ,'Spec','', 'Assy Code','Lot S/T','Efficiency','%','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
+                                ['', '', '' ,'','', '','(H)','Shift','TOTAL','Morning','','','','','','','','','','','',  'Night','','','','','','','','','','' ,''],
+                            ];
+                keikaku_prodplan_sso.setData(inputSS)
+                const totalRowsMatrix = response.asProdplan.length
+                let nomorUrut = 1;
+                for(let i=3; i<totalRowsMatrix; i++) {
+                    let _newRow1 = []
+                    let _newRow2 = []
+                    let _newRow3 = []
+                    let _newRow4 = []
+                    let _newRow5 = []
+                    let _newRow6 = []
+                    let _newRow7 = []
+                    let _newRow8 = []
+                    if (response.asProdplan[i][0]) {
+                        const _tempA = response.asProdplan[i][5].split('#')
+                        const _model = _tempA[1]
+                        const _wo_no = _tempA[2]
+                        const _lot_size = _tempA[3]
+                        const _production_qty = _tempA[4]
+                        const _st = response.asProdplan[i][4]
+                        _newRow3.push(nomorUrut)
+                        _newRow3.push('')
+                        _newRow3.push(_model)
+                        _newRow3.push(_wo_no)
+                        _newRow3.push(_lot_size)
+                        _newRow3.push(_production_qty)
+                        _newRow3.push(Number(_st).toFixed(4))
+                        _newRow3.push('PLAN PROD')
+                        _newRow3.push(0)
+
+                        _newRow4.push('')
+                        _newRow4.push(_tempA[0])
+                        _newRow4.push(_tempA[5])
+                        _newRow4.push(_tempA[6])
+                        _newRow4.push('')
+                        _newRow4.push(response.asProdplan[i][0])
+                        _newRow4.push('')
+                        _newRow4.push('TOTAL')
+                        _newRow4.push('')
+
+                        let totalQtyRun = 0
+                        for(let c=9; c<(9+12+12); c++) {
+                            if(inputSS[1][c] == Number(response.asProdplan[0][(c-3)])) {
+                                inputSS[4][c] = Number(response.asProdplan[2][(c-3)]).toFixed(2)
+
+                                _newRow3[8]+=Number(response.asProdplan[i][c-3])
+                                _newRow3.push(response.asProdplan[i][c-3])
+                                totalQtyRun += Number(response.asProdplan[i][c-3])
+
+                                if(Number(response.asProdplan[i][c-3])==0) {
+                                    _newRow4.push('')
+                                } else {
+                                    _newRow4.push(totalQtyRun)
+                                }
+                            }
+                        }
+
+                                                
+                        _newRow5.push('')
+                        _newRow5.push('')
+                        _newRow5.push('')
+                        _newRow5.push('')
+                        _newRow5.push('')
+                        _newRow5.push('')
+                        _newRow5.push('')
+                        _newRow5.push('Actual')
+                        _newRow5.push('')
+
+                        _newRow6.push('')
+                        _newRow6.push('')
+                        _newRow6.push('')
+                        _newRow6.push('')
+                        _newRow6.push('')
+                        _newRow6.push('')
+                        _newRow6.push('')
+                        _newRow6.push('Total')
+                        _newRow6.push('')
+
+                        inputSS.push(_newRow3)
+                        inputSS.push(_newRow4)
+                        inputSS.push(_newRow5)
+                        inputSS.push(_newRow6)
+                    } else {
+
+                        let ChangeModelLabel = ''
+                        let ChangeModelTime = ''
+                        if(response.asProdplan[i][1]) {
+                            ChangeModelLabel = 'CHANGE MODEL'
+                            ChangeModelTime = response.asProdplan[i][2]
+                        } else {
+                            ChangeModelLabel = ''
+                            ChangeModelTime = ''
+                        }
+
+                        _newRow1.push(nomorUrut)
+                        _newRow1.push('')
+                        _newRow1.push(ChangeModelLabel)
+                        _newRow1.push('')
+                        _newRow1.push('')
+                        _newRow1.push('')
+                        _newRow1.push(ChangeModelTime)
+                        _newRow1.push('PLAN')
+                        _newRow1.push(0)
+
+                        if(response.asProdplan[i][1]) {
+                            for(let c=9; c<(9+12+12); c++) {
+                                if(inputSS[1][c] == Number(response.asProdplan[0][(c-3)])) {
+                                    if(response.asProdplan[i][c-3] >0) {
+                                        _newRow1.push(1)
+                                        _newRow1[8]+=1
+                                        inputSS[2][c] = 'C1'
+                                    } else {
+                                        _newRow1.push('')                                        
+                                    }
+                                }
+                            }
+                        }
+
+                        _newRow2.push('')
+                        _newRow2.push('')
+                        _newRow2.push('')
+                        _newRow2.push('')
+                        _newRow2.push('')
+                        _newRow2.push('')
+                        _newRow2.push('')
+                        _newRow2.push('Actual')
+                        _newRow2.push(0)
+
+                        inputSS.push(_newRow1)
+                        inputSS.push(_newRow2)
+                    }
+                    
+                   
+                    
+                    nomorUrut++
+                }
+                if(totalRowsMatrix>0) {
+                    keikaku_prodplan_sso.setData(inputSS)
+                }
+            }, error: function(xhr, xopt, xthrow) {
+                pThis.disabled = false
+                alertify.error(xthrow)
+            }
+        });
     }
 </script>

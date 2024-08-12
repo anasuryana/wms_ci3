@@ -36,3 +36,4 @@ const onlyInLeft = (left, right, compareFunction) =>
                                     compareFunction(leftValue, rightValue)
                                 )
                             );
+let resizeObserverO = new ResizeObserver(() => {})
