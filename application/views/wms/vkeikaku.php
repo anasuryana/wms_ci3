@@ -390,7 +390,7 @@
                 type : 'text',
                 width:120,
                 align : 'left',
-            }, ...Array.from({length: 24}, (_, i) => Object.create({
+            }, ...Array.from({length: 36}, (_, i) => Object.create({
                     type : 'numeric',
                     // mask: '#,##.00',
                     }))
@@ -401,14 +401,14 @@
         allowDeleteRow : false,
         rowDrag:false,
         data: [
-            ['NON OT', ...Array.from({length: 24}, (_, i) => null)],
-            ['OT1', ...Array.from({length: 24}, (_, i) => null)],
-            ['MENT NON OT', ...Array.from({length: 24}, (_, i) => null)],
-            ['MENT OT', ...Array.from({length: 24}, (_, i) => null)],
-            ['MENT NON OT', ...Array.from({length: 24}, (_, i) => null)],
-            ['MENT OT', ...Array.from({length: 24}, (_, i) => null)],
-            ['Change Model', ...Array.from({length: 24}, (_, i) => null)],
-            ['Change Model/OT', ...Array.from({length: 24}, (_, i) => null)],
+            ['NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['OT1', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['Change Model', ...Array.from({length: 36}, (_, i) => null)],
+            ['Change Model/OT', ...Array.from({length: 36}, (_, i) => null)],
             ['Retention Time',
             `=IF(UPPER($B$8)="M", B3, B2)`,
             `=IF(UPPER($B$8)="M", C3, C2)`,
@@ -436,30 +436,34 @@
             `=IF(UPPER($V$8)="OT", X2, X1)`,
             `=IF(UPPER($V$8)="OT", Y2, Y1)`,
             ],
-            ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i)],
+            ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i), ...Array.from({length: 16}, (_, i) => i + 8)],
             ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
-                '=M11','=N11', '=O11', '=P11', '=Q11', '=R11', '=S11', '=T11', '=U11', '=V11', '=W11', '=X11'
+                '=M11','=N11', '=O11', '=P11', '=Q11', '=R11', '=S11', '=T11', '=U11', '=V11', '=W11', '=X11',
+                '=Y11','=Z11','=AA11','=AB11','=AC11','=AD11','=AE11', '=AF11', '=AG11', '=AH11', '=AI11', '=AJ11'
             ],
         ],
         copyCompatibility:true,
         columnSorting:false,
         allowInsertRow : false,
         updateTable: function(el, cell, x, y, source, value, id) {
-            if (Array.from({length: 24}, (_, i) => i + 1).includes(x) && [6,8,9].includes(y)) {
+            if (Array.from({length: 36}, (_, i) => i + 1).includes(x) && [6,8,9].includes(y)) {
                 cell.classList.add('readonly');
                 cell.style.cssText = "font-weight: bold; text-align:center"
             }
-            if([1,2,3,4,5,6,7,8,9].includes(x) && [0,1,2,3,4,5].includes(y)) {
+            if([1,2,3,4,5,6,7,8,9,25,26,27,28,29,30,31,32,33].includes(x) && [0,1,2,3,4,5].includes(y)) {
                 cell.style.cssText = "background-color:#daeef3"
             }
-            if([10,11,12,22,23,24].includes(x) && [0,1,2,3,4,5].includes(y)) {
+            if([10,11,12,22,23,24,34,35,36].includes(x) && [0,1,2,3,4,5].includes(y)) {
                 cell.style.cssText = "background-color:#e4dfec"
             }
             if([13,14,15,16,17,18,19,20,21].includes(x) && [0,1,2,3,4,5].includes(y)) {
                 cell.style.cssText = "background-color:#ebf1de"
             }
         },
-
+        tableOverflow:true,
+        freezeColumns: 1,
+        minDimensions: [50,10],
+        tableWidth: '1000px',
     });
     var keikakuTableWidthObserver = 0
 
@@ -467,9 +471,10 @@
         if(typeof keikakuProdplanContainer != 'undefined') {
             keikakuTableWidthObserver = keikakuProdplanContainer.offsetWidth
             keikaku_prodplan_sso.table.parentNode.style.width = (keikakuTableWidthObserver-30)+'px'
+            keikaku_calculation_sso.table.parentNode.style.width = (keikakuTableWidthObserver-30)+'px'
         }
     }).observe(keikakuProdplanContainer)
-    
+
     var keikaku_prodplan_sso = jspreadsheet(keikaku_prodplan_spreadsheet, {
         columns : [
             ...Array.from({length: 9+24}, (_, i) => {
@@ -526,7 +531,7 @@
         columnSorting:false,
         allowInsertRow : false,
         updateTable: function(el, cell, x, y, source, value, id) {
-            
+
             if (Array.from({length: 33}, (_, i) => i).includes(x) && [0,1,2,3,4,5,6].includes(y)) {
                 cell.classList.add('readonly');
                 cell.style.cssText = "font-weight: bold; text-align:center"
@@ -599,11 +604,11 @@
         mergeCells:{
             J7:[12,1],V7:[12,1]
         },
-        freezeColumns: 5,
+        freezeColumns: 9,
         minDimensions: [50,10],
         tableWidth: '1000px',
     });
-    
+
 
     function keikaku_load_line_code() {
         $.ajax({
@@ -708,14 +713,14 @@
 
     function keikaku_reset_calculation() {
         keikaku_calculation_sso.setData([
-            ['NON OT', ...Array.from({length: 24}, (_, i) => null)],
-            ['OT1', ...Array.from({length: 24}, (_, i) => null)],
-            ['MENT NON OT', ...Array.from({length: 24}, (_, i) => null)],
-            ['MENT OT', ...Array.from({length: 24}, (_, i) => null)],
-            ['MENT NON OT', ...Array.from({length: 24}, (_, i) => null)],
-            ['MENT OT', ...Array.from({length: 24}, (_, i) => null)],
-            ['Change Model', ...Array.from({length: 24}, (_, i) => null)],
-            ['Change Model/OT', ...Array.from({length: 24}, (_, i) => null)],
+            ['NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['OT1', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['Change Model', ...Array.from({length: 36}, (_, i) => null)],
+            ['Change Model/OT', ...Array.from({length: 36}, (_, i) => null)],
             ['Retention Time',
             `=IF(OR(UPPER(B8)="N", UPPER(B8)="M", UPPER(B8)="4M"),0,IF($K$8="OT",B6,IF(B8>0,B8,B5)))`,
             `=IF(OR(UPPER(C8)="N", UPPER(C8)="M", UPPER(C8)="4M"),0,IF($K$8="OT",C6,IF(C8>0,C8,C5)))`,
@@ -742,8 +747,21 @@
             `=IF(OR(UPPER(W8)="N", UPPER(W8)="M", UPPER(W8)="4M"),0,IF($W$8="OT",W6,IF(W8>0,W8,W5)))`,
             `=IF(OR(UPPER(X8)="N", UPPER(X8)="M", UPPER(X8)="4M"),0,IF($W$8="OT",X6,IF(X8>0,X8,X5)))`,
             `=IF(OR(UPPER(Y8)="N", UPPER(Y8)="M", UPPER(Y8)="4M"),0,IF($W$8="OT",Y6,IF(Y8>0,Y8,Y5)))`,
+
+            `=IF(OR(UPPER(Z8)="N", UPPER(Z8)="M", UPPER(Z8)="4M"),0,IF($AI$8="OT",Z6,IF(Z8>0,Z8,Z5)))`,
+            `=IF(OR(UPPER(AA8)="N", UPPER(AA8)="M", UPPER(AA8)="4M"),0,IF($AI$8="OT",AA6,IF(AA8>0,AA8,AA5)))`,
+            `=IF(OR(UPPER(AB8)="N", UPPER(AB8)="M", UPPER(AB8)="4M"),0,IF($AI$8="OT",AB6,IF(AB8>0,AB8,AB5)))`,
+            `=IF(OR(UPPER(AC8)="N", UPPER(AC8)="M", UPPER(AC8)="4M"),0,IF($AI$8="OT",AC6,IF(AC8>0,AC8,AC5)))`,
+            `=IF(OR(UPPER(AD8)="N", UPPER(AD8)="M", UPPER(AD8)="4M"),0,IF($AI$8="OT",AD6,IF(AD8>0,AD8,AD5)))`,
+            `=IF(OR(UPPER(AE8)="N", UPPER(AE8)="M", UPPER(AE8)="4M"),0,IF($AI$8="OT",AE6,IF(AE8>0,AE8,AE5)))`,
+            `=IF(OR(UPPER(AF8)="N", UPPER(AF8)="M", UPPER(AF8)="4M"),0,IF($AI$8="OT",AF6,IF(AF8>0,AF8,AF5)))`,
+            `=IF(OR(UPPER(AG8)="N", UPPER(AG8)="M", UPPER(AG8)="4M"),0,IF($AI$8="OT",AG6,IF(AG8>0,AG8,AG5)))`,
+            `=IF(OR(UPPER(AH8)="N", UPPER(AH8)="M", UPPER(AH8)="4M"),0,IF($AI$8="OT",AH6,IF(AH8>0,AH8,AH5)))`,
+            `=IF(OR(UPPER(AI8)="N", UPPER(AI8)="M", UPPER(AI8)="4M"),0,IF($AI$8="OT",AI6,IF(AI8>0,AI8,AI5)))`,
+            `=IF(OR(UPPER(AJ8)="N", UPPER(AJ8)="M", UPPER(AJ8)="4M"),0,IF($AI$8="OT",AJ6,IF(AJ8>0,AJ8,AJ5)))`,
+            `=IF(OR(UPPER(AK8)="N", UPPER(AK8)="M", UPPER(AK8)="4M"),0,IF($AI$8="OT",AK6,IF(AK8>0,AK8,AK5)))`,
             ],
-            ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i)],
+            ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i), ...Array.from({length: 16}, (_, i) => i + 8)],
             ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
                 '=M11','=N11', '=O11', '=P11', '=Q11', '=R11', '=S11', '=T11', '=U11', '=V11', '=W11', '=X11'
             ],
@@ -843,13 +861,17 @@
         let inputSS = keikaku_calculation_sso.getData()
         const inputSSCount = inputSS.length
 
-        for(let c=1; c<25; c++) {
+        for(let c=1; c<37; c++) {
             let _theShift = c<13 ? 'M' : 'N'
             let _theDate = keikaku_date_input.value
 
             if(_theShift === 'N' && c>17) {
                 let oMoment = moment(_theDate)
                 _theDate = oMoment.add(1, 'days').format('YYYY-MM-DD')
+            }
+
+            if(c>24) {
+                _theShift = 'M' 
             }
 
             let _theTime = c === 17 ? '23' : numeral(inputSS[9][c]).value()-1
@@ -874,7 +896,7 @@
             user_id: uidnya,
             detail : dataDetail
         }
-
+        
         if(confirm('Are you sure want to save ?')) {
             const div_alert = document.getElementById('keikaku-div-alert')
             pThis.disabled = true
@@ -912,6 +934,26 @@
         keikaku_load_asprova()
     }
 
+    function keikaku_calc_friday(hourAt) {
+        const currentDay = new Date().getDay();
+        let _defaultWorkHour = 0
+        switch(hourAt) {
+            case 12:
+                _defaultWorkHour = (currentDay == 5 ? 0.25 : 0.5)
+                break;
+            case 15:
+                _defaultWorkHour = (currentDay == 5 ? 1 : 0.83)
+                break;
+            case 16:
+                _defaultWorkHour = (currentDay == 5 ? 0.67 : 1)
+                break;
+            case 18:
+                _defaultWorkHour = (currentDay == 5 ? 0.33 : 0.42)
+                break;
+        }
+        return _defaultWorkHour
+    }
+
     function keikaku_load_calcultion() {
         keikaku_reset_calculation()
         $.ajax({
@@ -938,13 +980,13 @@
                         flag_mot.push(arrayItem['flag_mot'])
                     })
                 } else {
-                    for(let i=0;i<25;i++) {
-                        worktype1.push(0)
-                        worktype2.push(0)
-                        worktype3.push(0)
-                        worktype4.push(0)
-                        worktype5.push(0)
-                        worktype6.push(0)
+                    worktype1.push(...[0.75, 1,	0.75, 1, 1, keikaku_calc_friday(12) , 1, 1, keikaku_calc_friday(15), 0, 0,0, 0.75, 1, 0.67, 1, 1, 0.33, 1, 1, 1, 0,	0,0	,0.75,	1, 0.75, 1, 1, 0.50, 1, 1, 0.75,0,0,0])
+                    worktype2.push(...[0.75 ,1 ,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,keikaku_calc_friday(16) ,1 ,keikaku_calc_friday(18) ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1.00 ,1.00 ,1.00 ,0.75 ,1.00 ,0.75 ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.83 ,1.00 ,1.00 ,0.42])
+                    worktype3.push(...[0    ,0 ,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,0    ,0    ,0    ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1 ,1 ,1 ,0    ,0    ,0    ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.75 ,0    ,0    ,0])
+                    worktype4.push(...[0,0,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,keikaku_calc_friday(16) ,1 ,keikaku_calc_friday(18) ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1.00 ,1.00 ,1.00 ,0.75 ,1.00 ,0.75 ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.83 ,1.00 ,1.00 ,0.42])
+                    worktype5.push(...[0.75 ,1 ,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,0,0,0,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1 ,1 ,1 ,0,0,0,0.75 ,1 ,0.75 ,1 ,1 ,0.50 ,1.00 ,1.00 ,0.75,0,0,0])
+                    worktype6.push(...[0.75 ,1 ,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,keikaku_calc_friday(16) ,1 ,keikaku_calc_friday(18) ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1.00 ,1.00 ,1.00 ,0.75 ,1.00 ,0.75 ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.83 ,1.00 ,1.00 ,0.42])
+                    for(let i=0;i<36;i++) {
                         flag_mot.push('')
                     }
                 }
@@ -956,7 +998,7 @@
                     worktype4,
                     worktype5,
                     worktype6,
-                    ['Change Model', ...Array.from({length: 24}, (_, i) => null)],
+                    ['Change Model', ...Array.from({length: 36}, (_, i) => null)],
                     flag_mot,
                     ['Retention Time',
                     `=IF(OR(UPPER(B8)="N", UPPER(B8)="M", UPPER(B8)="4M"),0,IF($K$8="OT",B6,IF(B8>0,B8,B5)))`,
@@ -984,10 +1026,24 @@
                     `=IF(OR(UPPER(W8)="N", UPPER(W8)="M", UPPER(W8)="4M"),0,IF($W$8="OT",W6,IF(W8>0,W8,W5)))`,
                     `=IF(OR(UPPER(X8)="N", UPPER(X8)="M", UPPER(X8)="4M"),0,IF($W$8="OT",X6,IF(X8>0,X8,X5)))`,
                     `=IF(OR(UPPER(Y8)="N", UPPER(Y8)="M", UPPER(Y8)="4M"),0,IF($W$8="OT",Y6,IF(Y8>0,Y8,Y5)))`,
+
+                    `=IF(OR(UPPER(Z8)="N", UPPER(Z8)="M", UPPER(Z8)="4M"),0,IF($AI$8="OT",Z6,IF(Z8>0,Z8,Z5)))`,
+                    `=IF(OR(UPPER(AA8)="N", UPPER(AA8)="M", UPPER(AA8)="4M"),0,IF($AI$8="OT",AA6,IF(AA8>0,AA8,AA5)))`,
+                    `=IF(OR(UPPER(AB8)="N", UPPER(AB8)="M", UPPER(AB8)="4M"),0,IF($AI$8="OT",AB6,IF(AB8>0,AB8,AB5)))`,
+                    `=IF(OR(UPPER(AC8)="N", UPPER(AC8)="M", UPPER(AC8)="4M"),0,IF($AI$8="OT",AC6,IF(AC8>0,AC8,AC5)))`,
+                    `=IF(OR(UPPER(AD8)="N", UPPER(AD8)="M", UPPER(AD8)="4M"),0,IF($AI$8="OT",AD6,IF(AD8>0,AD8,AD5)))`,
+                    `=IF(OR(UPPER(AE8)="N", UPPER(AE8)="M", UPPER(AE8)="4M"),0,IF($AI$8="OT",AE6,IF(AE8>0,AE8,AE5)))`,
+                    `=IF(OR(UPPER(AF8)="N", UPPER(AF8)="M", UPPER(AF8)="4M"),0,IF($AI$8="OT",AF6,IF(AF8>0,AF8,AF5)))`,
+                    `=IF(OR(UPPER(AG8)="N", UPPER(AG8)="M", UPPER(AG8)="4M"),0,IF($AI$8="OT",AG6,IF(AG8>0,AG8,AG5)))`,
+                    `=IF(OR(UPPER(AH8)="N", UPPER(AH8)="M", UPPER(AH8)="4M"),0,IF($AI$8="OT",AH6,IF(AH8>0,AH8,AH5)))`,
+                    `=IF(OR(UPPER(AI8)="N", UPPER(AI8)="M", UPPER(AI8)="4M"),0,IF($AI$8="OT",AI6,IF(AI8>0,AI8,AI5)))`,
+                    `=IF(OR(UPPER(AJ8)="N", UPPER(AJ8)="M", UPPER(AJ8)="4M"),0,IF($AI$8="OT",AJ6,IF(AJ8>0,AJ8,AJ5)))`,
+                    `=IF(OR(UPPER(AK8)="N", UPPER(AK8)="M", UPPER(AK8)="4M"),0,IF($AI$8="OT",AK6,IF(AK8>0,AK8,AK5)))`,
                     ],
-                    ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i)],
+                    ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i), ...Array.from({length: 12}, (_, i) => i + 8)],
                     ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
-                        '=M11','=N11', '=O11', '=P11', '=Q11', '=R11', '=S11', '=T11', '=U11', '=V11', '=W11', '=X11'
+                        '=M11','=N11', '=O11', '=P11', '=Q11', '=R11', '=S11', '=T11', '=U11', '=V11', '=W11', '=X11',
+                        '=Y11','=Z11','=AA11','=AB11','=AC11','=AD11','=AE11', '=AF11', '=AG11', '=AH11', '=AI11', '=AJ11'
                     ],
                 ])
             }
@@ -1382,7 +1438,7 @@
                             }
                         }
 
-                                                
+
                         _newRow5.push('')
                         _newRow5.push('')
                         _newRow5.push('')
@@ -1437,7 +1493,7 @@
                                         _newRow1[8]+=1
                                         inputSS[2][c] = 'C1'
                                     } else {
-                                        _newRow1.push('')                                        
+                                        _newRow1.push('')
                                     }
                                 }
                             }
@@ -1456,9 +1512,9 @@
                         inputSS.push(_newRow1)
                         inputSS.push(_newRow2)
                     }
-                    
-                   
-                    
+
+
+
                     nomorUrut++
                 }
                 if(totalRowsMatrix>0) {
