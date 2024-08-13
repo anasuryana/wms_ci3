@@ -4,20 +4,20 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.1.2/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.3
+ *   https://datatables.net/download/#bs5/dt-2.1.3/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.4
  *
  * Included libraries:
- *   DataTables 2.1.2, FixedColumns 5.0.1, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.2, RowReorder 1.5.0, Scroller 2.4.3, Select 2.0.3
+ *   DataTables 2.1.3, FixedColumns 5.0.1, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.2, RowReorder 1.5.0, Scroller 2.4.3, Select 2.0.4
  */
 
-/*! DataTables 2.1.2
+/*! DataTables 2.1.3
  * © SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     2.1.2
+ * @version     2.1.3
  * @author      SpryMedia Ltd
  * @contact     www.datatables.net
  * @copyright   SpryMedia Ltd.
@@ -538,7 +538,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs5/dt-2.1.2/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.3",
+		builder: "bs5/dt-2.1.3/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.4",
 	
 	
 		/**
@@ -1282,7 +1282,7 @@
 	
 	// Replaceable function in api.util
 	var _stripHtml = function (input) {
-		if (! input) {
+		if (! input || typeof input !== 'string') {
 			return input;
 		}
 	
@@ -4743,7 +4743,7 @@
 	 */
 	function _fnInitialise ( settings )
 	{
-		var i, iAjaxStart=settings.iInitDisplayStart;
+		var i;
 		var init = settings.oInit;
 		var deferLoading = settings.deferLoading;
 		var dataSrc = _fnDataSource( settings );
@@ -4763,6 +4763,9 @@
 			// Then draw the header / footer
 			_fnDrawHead( settings, settings.aoHeader );
 			_fnDrawHead( settings, settings.aoFooter );
+	
+			// Cache the paging start point, as the first redraw will reset it
+			var iAjaxStart = settings.iInitDisplayStart
 	
 			// Local data load
 			// Check if there is data passing into the constructor
@@ -4978,6 +4981,11 @@
 	 */
 	function _fnProcessingDisplay ( settings, show )
 	{
+		// Ignore cases when we are still redrawing
+		if (settings.bDrawing && show === false) {
+			return;
+		}
+	
 		_fnCallbackFire( settings, null, 'processing', [settings, show] );
 	}
 	
@@ -6234,8 +6242,7 @@
 			}
 		}
 	
-		// Restore key features - todo - for 1.11 this needs to be done by
-		// subscribed events
+		// Restore key features
 		if ( s.start !== undefined ) {
 			if(api === null) {
 				settings._iDisplayStart    = s.start;
@@ -9816,7 +9823,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.1.2";
+	DataTable.version = "2.1.3";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -21247,7 +21254,7 @@ return DataTable;
 }));
 
 
-/*! Select for DataTables 2.0.3
+/*! Select for DataTables 2.0.4
  * © SpryMedia Ltd - datatables.net/license/mit
  */
 
@@ -21305,7 +21312,7 @@ DataTable.select.classes = {
 	checkbox: 'dt-select-checkbox'
 };
 
-DataTable.select.version = '2.0.3';
+DataTable.select.version = '2.0.4';
 
 DataTable.select.init = function (dt) {
 	var ctx = dt.settings()[0];
@@ -22018,6 +22025,8 @@ function init(ctx) {
 	api.on('destroy.dtSelect', function () {
 		// Remove class directly rather than calling deselect - which would trigger events
 		$(api.rows({ selected: true }).nodes()).removeClass(api.settings()[0]._select.className);
+
+		$('input.' + checkboxClass(true), api.table().header()).remove();
 
 		disableMouseSelection(api);
 		api.off('.dtSelect');
@@ -22763,12 +22772,26 @@ $.each(['Row', 'Column', 'Cell'], function (i, item) {
 	};
 });
 
+// Note that DataTables 2.1 has more robust type detection, but we retain
+// backwards compatbility with 2.0 for the moment.
 DataTable.type('select-checkbox', {
 	className: 'dt-select',
-	detect: function (data) {
-		// Rendering function will tell us if it is a checkbox type
-		return data === 'select-checkbox' ? data : false;
-	},
+	detect: DataTable.versionCheck('2.1')
+		? {
+			oneOf: function () {
+				return false; // no op
+			},
+			allOf: function () {
+				return false; // no op
+			},
+			init: function (settings, col, idx) {
+				return col.mRender && col.mRender.name === 'selectCheckbox';
+			}
+		}
+		: function (data) {
+			// Rendering function will tell us if it is a checkbox type
+			return data === 'select-checkbox' ? data : false;
+		},
 	order: {
 		pre: function (d) {
 			return d === 'X' ? -1 : 0;
@@ -22788,7 +22811,7 @@ DataTable.render.select = function (valueProp, nameProp) {
 	var valueFn = valueProp ? DataTable.util.get(valueProp) : null;
 	var nameFn = nameProp ? DataTable.util.get(nameProp) : null;
 
-	return function (data, type, row, meta) {
+	return function selectCheckbox(data, type, row, meta) {
 		var dtRow = meta.settings.aoData[meta.row];
 		var selected = dtRow._select_selected;
 		var ariaLabel = meta.settings.oLanguage.select.aria.rowCheckbox;
@@ -22831,10 +22854,10 @@ DataTable.ext.order['select-checkbox'] = function (settings, col) {
 		.nodes()
 		.map(function (td) {
 			if (settings._select.items === 'row') {
-				return $(td).parent().hasClass(settings._select.className);
+				return $(td).parent().hasClass(settings._select.className).toString();
 			}
 			else if (settings._select.items === 'cell') {
-				return $(td).hasClass(settings._select.className);
+				return $(td).hasClass(settings._select.className).toString();
 			}
 			return false;
 		});
