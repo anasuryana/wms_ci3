@@ -2734,7 +2734,8 @@ echo $tohtml;
                 pElement.disabled = false
                 pElement.innerHTML = `<i class="fas fa-sync"></i>`
                 if (response.status[0].cd != '0') {
-                    if (response.data[0].NOMOR_DAFTAR.length == 6) {
+                    const nopen = response.data[0].NOMOR_DAFTAR?? ''
+                    if (nopen.length == 6) {
                         document.getElementById('txfg_txt_nopen').value = response.data[0].NOMOR_DAFTAR;
                         document.getElementById('txfg_txt_tglpen').value = response.data[0].TANGGAL_DAFTAR.substr(0, 10);
                         if (response.data2.length > 0) {
