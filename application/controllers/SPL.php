@@ -538,19 +538,26 @@ class SPL extends CI_Controller
                 if ($category == "PSN") {
                     $rsReffDoc = $this->SPL_mod->select_ppsn2_psno($u_reffdoc);
                     if (count($rsReffDoc) > 0) { #IF REFF PSN EXIST ?
-                        $aField = explode("-", $u_reffdoc[0]);
+                        $_PSN = '';
+                        foreach($rsReffDoc as $r) {
+                            $_PSN = $r['PPSN2_PSNNO'];
+                        }
+                        $aField = explode("-", $_PSN);
                         $bg_initial = $aField[1];
                         $initData2 = $bg_initial;
+
                         $u_bg = [];
                         for ($i = 0; $i < $u_reffdoc_length; $i++) {
                             $aField = explode("-", $u_reffdoc[0]);
-                            $bg_initial = $aField[1];
-                            if (!in_array($bg_initial, $u_bg)) {
-                                $u_bg[] = $bg_initial;
+                            if(count($aField)>1) {
+                                $bg_initial = $aField[1];
+                                if (!in_array($bg_initial, $u_bg)) {
+                                    $u_bg[] = $bg_initial;
+                                }
                             }
                         }
                         if (count($u_bg) > 1) {
-                            $myar[] = ['cd' => 0, 'msg' => 'Could not request from more than 1 rows'];
+                            $myar[] = ['cd' => 0, 'msg' => 'Could not request from more than 1 rows BG'];
                         } else {
                             $rsBISGRP = $this->SPL_mod->select_bg_ppsn($u_reffdoc);
                             foreach ($rsBISGRP as $k) {
@@ -616,7 +623,7 @@ class SPL extends CI_Controller
                             }
                             if (!$isallrack_ready) {
                                 $myar[] = ['cd' => 0, 'msg' => 'Rack ' . trim($a_partcode[$i]) . ' is not found'];
-                                die('{"status":' . json_encode($myar) . '}');
+                                die(json_encode(['status' => $myar, 'data' => $rsrack]));                                
                             }
                         }
                         $ttlsaved = 0;
@@ -657,7 +664,7 @@ class SPL extends CI_Controller
                                 $ttlsaved += $this->SPL_mod->insert($rsSPL);
                                 $this->SPL_mod->insert_log($rsSPL);
                             } else {
-                                $rsdetail = $this->SPLSCN_mod->selectby_filter(['SPLSCN_DOC' => $docno]);
+                                $rsdetail = $this->SPLSCN_mod->selectby_filter(['SPLSCN_DOC' => $docno, 'SPLSCN_ITMCD' => $a_partcode[$i] ]);
                                 if(count($rsdetail)===0) {
                                     $ttlupdated += $this->SPL_mod->updatebyId(
                                         [
@@ -667,9 +674,6 @@ class SPL extends CI_Controller
                                             'SPL_DOC' => $docno, 'SPL_LINEDATA' => $a_line[$i],
                                         ]
                                     );
-                                } else {
-                                    $myar[] = ['cd' => 0, 'msg' => "Could not edit scanned Part Request"];
-                                    die(json_encode(['status' => $myar]));
                                 }
                             }
                         }
