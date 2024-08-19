@@ -68,6 +68,11 @@
             </div>
         </div>
         <div class="row">
+            <div class="col-md-12" id="pareq_alert_container">
+
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-12 mb-2">
                 <div class="table-responsive" id="pareq_divku">
                     <table id="pareq_tbl" class="table table-sm table-hover table-bordered" style="width:100%">
@@ -270,13 +275,15 @@
         }
     }
 
-    function pareq_load_saved_data(pdoc){
+    function pareq_load_saved_data(pdata){
         document.getElementById('lblinfo_pareq_tbl').innerText = "Please wait...";
         $("#pareq_tbl tbody").empty();
+        const div_alert = document.getElementById('pareq_alert_container')
+        div_alert.innerHTML = ''
         $.ajax({
             type: "get",
             url: "<?=base_url('SPL/get_saved_partreq')?>",
-            data: {indoc: pdoc},
+            data: {indoc: pdata.pdoc},
             dataType: "json",
             success: function (response) {
                 document.getElementById('lblinfo_pareq_tbl').innerText = "";
@@ -313,6 +320,14 @@
                     newcell.contentEditable = true;
                     newcell.classList.add('font-monospace')
                     newcell.innerHTML = response.data[i].SPL_FMDL
+                }
+
+                if(pdata.reffData) {
+                    const msg = `Data on ${pdata.reffData[0].lineData + smtGetOrdinal(pdata.reffData[0].lineData)} row could not be edited`
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${msg}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
                 }
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
@@ -355,7 +370,7 @@
                                 document.getElementById('pareq_category').disabled = true;
                                 document.getElementById('pareq_txtdept').disabled = true;
                                 $("#PR_MOD").modal('hide');
-                                pareq_load_saved_data(response.data[i].SPL_DOC);
+                                pareq_load_saved_data({pdoc: response.data[i].SPL_DOC});
                             };
                             newText = document.createTextNode(response.data[i].SPL_DOC);
                             newcell.appendChild(newText);
@@ -553,6 +568,7 @@
             alertify.message("Nothing will be saved"); return;
         }
         if(confirm("Are you sure ?")){
+            pareq_btnsave.disabled = true
             $.ajax({
                 type: "post",
                 url: "<?=base_url('SPL/requestpart')?>",
@@ -561,15 +577,17 @@
                 , category: category, remark: remark, line: line, a_partRemark: a_partRemark},
                 dataType: "json",
                 success: function (response) {
-                    if(response.status[0].cd==1){
+                    pareq_btnsave.disabled = false
+                    if(response.status[0].cd==1) {
                         alertify.success(response.status[0].msg);
                         document.getElementById('pareq_txtPRN').value = response.status[0].doc;
-                        pareq_load_saved_data(response.status[0].doc);
+                        pareq_load_saved_data({pdoc : response.status[0].doc, reffData: response.status[0].data});
                     } else {
                         alertify.warning(response.status[0].msg);
                     }
                 }, error: function(xhr, xopt, xthrow){
                     alertify.error(xthrow);
+                    pareq_btnsave.disabled = false
                 }
             });
         }

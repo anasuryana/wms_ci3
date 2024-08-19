@@ -610,6 +610,7 @@ class SPL extends CI_Controller
                     }
                 }
                 if ($shouldContinue) {
+                    $dataScannedAffected = [];
                     if ($this->SPL_mod->check_Primary(['SPL_DOC' => $docno])) {
                         $rsSPL = [];
                         #validate rack
@@ -664,7 +665,7 @@ class SPL extends CI_Controller
                                 $ttlsaved += $this->SPL_mod->insert($rsSPL);
                                 $this->SPL_mod->insert_log($rsSPL);
                             } else {
-                                $rsdetail = $this->SPLSCN_mod->selectby_filter(['SPLSCN_DOC' => $docno, 'SPLSCN_ITMCD' => $a_partcode[$i] ]);
+                                $rsdetail = $this->SPLSCN_mod->selectby_filter(['SPLSCN_DOC' => $docno, 'SPLSCN_ORDERNO' => $a_line[$i] ]);
                                 if(count($rsdetail)===0) {
                                     $ttlupdated += $this->SPL_mod->updatebyId(
                                         [
@@ -674,10 +675,12 @@ class SPL extends CI_Controller
                                             'SPL_DOC' => $docno, 'SPL_LINEDATA' => $a_line[$i],
                                         ]
                                     );
+                                } else {
+                                    $dataScannedAffected[] = ['itemCode' => $a_partcode[$i], 'lineData' => $a_line[$i]+1];
                                 }
                             }
                         }
-                        $myar[] = ['cd' => 1, 'msg' => "$ttlsaved row(s) saved and $ttlupdated row(s) updated", 'doc' => $docno];
+                        $myar[] = ['cd' => 1, 'msg' => "$ttlsaved row(s) saved and $ttlupdated row(s) updated", 'doc' => $docno, 'data' => $dataScannedAffected];
                     } else {
                         $lastno = $this->SPL_mod->selectlastno_request($crn_year, $crn_month, $initData2) + 1;
                         $initData5 = substr('000' . $lastno, -4);

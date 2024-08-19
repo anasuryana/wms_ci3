@@ -1016,7 +1016,7 @@ class SPL_mod extends CI_Model
     public function select_partreq_d_bydoc($pdok)
     {
         $this->db->from($this->TABLENAME);
-        $this->db->order_by("SPL_ITMCD");
+        $this->db->order_by("SPL_ORDERNO");
         $this->db->where("SPL_DOC", $pdok);
         $query = $this->db->get();
         return $query->result_array();
