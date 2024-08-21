@@ -288,6 +288,10 @@
                             <label class="form-check-label" for="spl_rdKIT">Picking</label>
                         </li>
                         <li class="list-group-item">
+                            <input class="form-check-input" name="spl_doctype" type="radio" value="KITALL" id="spl_rdKITALL" checked>
+                            <label class="form-check-label" for="spl_rdKITALL">Picking All</label>
+                        </li>
+                        <li class="list-group-item">
                             <input class="form-check-input" name="spl_doctype" type="radio" value="KITALL_UK" id="spl_rdKITALL_UK">
                             <label class="form-check-label" for="spl_rdKITALL_UK">Picking All (Unique Key)</label>
                         </li>

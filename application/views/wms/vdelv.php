@@ -188,6 +188,7 @@ echo $todis;
                                                 <li><a class="dropdown-item" href="#" onclick="txfg_btn_tocustomscontrol_e_click()"><i class="fas fa-copy"></i> AKB Clipboard</a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="txfg_btn_toepro_e_click()">EPRO</a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="txfg_btn_toceisa_e_click(this)">CEISA 4.0</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="txfg_btn_to_konversi_bahan_baku_e_click(this)">Konversi Bahan Baku</a></li>
                                                 <li>
                                                     <h6 class="dropdown-header">Miscellaneous</h6>
                                                 </li>
@@ -5722,5 +5723,13 @@ echo $tohtml;
             return false;
         }
         return true;
+    }
+
+    function txfg_btn_to_konversi_bahan_baku_e_click() {
+        if(txfg_txt_id.value.length===0) {
+            alertify.warning('TX ID is required')
+            return
+        }
+        window.open("<?=$_ENV['APP_INTERNAL_API']?>report/konversi-bahan-baku?doc="+txfg_txt_id.value, '_blank');
     }
 </script>
