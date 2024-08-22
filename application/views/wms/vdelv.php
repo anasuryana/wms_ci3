@@ -5730,6 +5730,29 @@ echo $tohtml;
             alertify.warning('TX ID is required')
             return
         }
+        switch(txfg_cmb_bcdoc.value) {
+            case '25':
+                if(txfg_txt_nopen25.value.trim().length===0) {
+                    alertify.warning('Nomor Pendaftaran is required')
+                    return
+                }
+                break;
+            case '27':
+                if(txfg_txt_nopen.value.trim().length===0) {
+                    alertify.warning('Nomor Pendaftaran is required')
+                    return
+                }
+                break;
+            case '41':
+                if(txfg_txt_nopen41.value.trim().length===0) {
+                    alertify.warning('Nomor Pendaftaran is required')
+                    return
+                }
+                break;
+            default:
+                txfg_cmb_bcdoc.focus()
+                return
+        }
         window.open("<?=$_ENV['APP_INTERNAL_API']?>report/konversi-bahan-baku?doc="+txfg_txt_id.value, '_blank');
     }
 </script>
