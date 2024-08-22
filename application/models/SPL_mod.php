@@ -703,7 +703,7 @@ class SPL_mod extends CI_Model
     }
     public function select_ppsn2_psno($pPSN)
     {
-        $this->db->select("PPSN2_PSNNO");
+        $this->db->select("RTRIM(PPSN2_PSNNO) PPSN2_PSNNO");
         $this->db->from("XPPSN2");
         $this->db->where_in("PPSN2_PSNNO", $pPSN);
         $this->db->group_by("PPSN2_PSNNO");
@@ -1016,7 +1016,7 @@ class SPL_mod extends CI_Model
     public function select_partreq_d_bydoc($pdok)
     {
         $this->db->from($this->TABLENAME);
-        $this->db->order_by("SPL_ITMCD");
+        $this->db->order_by("SPL_ORDERNO");
         $this->db->where("SPL_DOC", $pdok);
         $query = $this->db->get();
         return $query->result_array();

@@ -188,6 +188,7 @@ echo $todis;
                                                 <li><a class="dropdown-item" href="#" onclick="txfg_btn_tocustomscontrol_e_click()"><i class="fas fa-copy"></i> AKB Clipboard</a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="txfg_btn_toepro_e_click()">EPRO</a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="txfg_btn_toceisa_e_click(this)">CEISA 4.0</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="txfg_btn_to_konversi_bahan_baku_e_click(this)">Konversi Bahan Baku</a></li>
                                                 <li>
                                                     <h6 class="dropdown-header">Miscellaneous</h6>
                                                 </li>
@@ -2734,7 +2735,8 @@ echo $tohtml;
                 pElement.disabled = false
                 pElement.innerHTML = `<i class="fas fa-sync"></i>`
                 if (response.status[0].cd != '0') {
-                    if (response.data[0].NOMOR_DAFTAR.length == 6) {
+                    const nopen = response.data[0].NOMOR_DAFTAR?? ''
+                    if (nopen.length == 6) {
                         document.getElementById('txfg_txt_nopen').value = response.data[0].NOMOR_DAFTAR;
                         document.getElementById('txfg_txt_tglpen').value = response.data[0].TANGGAL_DAFTAR.substr(0, 10);
                         if (response.data2.length > 0) {
@@ -5721,5 +5723,36 @@ echo $tohtml;
             return false;
         }
         return true;
+    }
+
+    function txfg_btn_to_konversi_bahan_baku_e_click() {
+        if(txfg_txt_id.value.length===0) {
+            alertify.warning('TX ID is required')
+            return
+        }
+        switch(txfg_cmb_bcdoc.value) {
+            case '25':
+                if(txfg_txt_nopen25.value.trim().length===0) {
+                    alertify.warning('Nomor Pendaftaran is required')
+                    return
+                }
+                break;
+            case '27':
+                if(txfg_txt_nopen.value.trim().length===0) {
+                    alertify.warning('Nomor Pendaftaran is required')
+                    return
+                }
+                break;
+            case '41':
+                if(txfg_txt_nopen41.value.trim().length===0) {
+                    alertify.warning('Nomor Pendaftaran is required')
+                    return
+                }
+                break;
+            default:
+                txfg_cmb_bcdoc.focus()
+                return
+        }
+        window.open("<?=$_ENV['APP_INTERNAL_API']?>report/konversi-bahan-baku?doc="+txfg_txt_id.value, '_blank');
     }
 </script>
