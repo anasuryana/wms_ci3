@@ -282,14 +282,14 @@
             }        
         }
     });
-    var rt_rcvscan = setInterval( fscn_balancing, 3000);
+    var rt_rcvscan = setInterval( fscn_balancing, 300000);
     function fscn_balancing(){
-        let mval = $("#rcvscn_txt_dn").val();
-        if(mval.trim()!=''){
+        const mval = rcvscn_txt_dn.value.trim();
+        if(mval.length!=0){
             $.ajax({
                 type: "get",
                 url: "<?=base_url('RCV/scn_balancing')?>",
-                data: {inDO: mval},
+                data: {inDO:mval},
                 dataType: "json",
                 success: function (response) {
                     var ttlrows = response.data.length;
