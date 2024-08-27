@@ -5633,6 +5633,10 @@ echo $tohtml;
             txfg_txt_id.focus()
             return
         }
+        if (!document.getElementById('txfg_btn_rmstatus').classList.contains('btn-outline-success') && !doc.includes("RTN")) {
+            alertify.warning("Raw material need to be fixed first !");
+            return
+        }
         p.classList.add('disabled')
         p.innerHTML = 'Please wait'
         const div_alert = document.getElementById('txfg-div-alert')
