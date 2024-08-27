@@ -224,7 +224,7 @@ echo $todis;
     function stapartreq_printki(pdoc){
         if(confirm("Are you sure ?")){
             Cookies.set('CKPSI_DPSN', pdoc, {expires:365});
-            window.open("<?=base_url('SPL/printkit_all')?>",'_blank');
+            window.open(`<?=$_ENV['APP_INTERNAL_API']?>supply/supply-pdf?psn=${pdoc}`,'_blank');
         }
     }
     function stapartreq_searchjob(ppsn){
