@@ -5658,33 +5658,6 @@ echo $tohtml;
                     for (const item of respon) {
                         msg += `<p>${response[item]}</p>`
                     }
-                    if(response.status){
-                        if (response.status.cd == '110') {
-                            document.getElementById('txfg_alert_rmexbcnull').innerText = response.status[0].msg;
-                            let mydes = document.getElementById("txfg_divrmexbcnull");
-                            let myfrag = document.createDocumentFragment();
-                            let mtabel = document.getElementById("txfg_tblrmexbcnull");
-                            let cln = mtabel.cloneNode(true);
-                            myfrag.appendChild(cln);
-                            let tabell = myfrag.getElementById("txfg_tblrmexbcnull");
-                            let tableku2 = tabell.getElementsByTagName("tbody")[0];
-                            let ttlrows = response.data.length;
-                            tableku2.innerHTML = ''
-                            for (let i = 0; i < ttlrows; i++) {
-                                newrow = tableku2.insertRow(-1);
-                                newcell = newrow.insertCell(0);
-                                newcell.innerHTML = response.data[i].ITMCD
-                                newcell = newrow.insertCell(1);
-                                newcell.style.cssText = "text-align:right";
-                                newcell.innerHTML = numeral(response.data[i].QTY).format(',')
-                                newcell = newrow.insertCell(2);
-                                newcell.innerHTML = response.data[i].LOTNO
-                            }
-                            mydes.innerHTML = '';
-                            mydes.appendChild(myfrag);
-                            $('#txfg_w_rmexbcnull').window('open');
-                        }
-                    }
 
                     div_alert.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
                                             ${msg}
@@ -5710,7 +5683,36 @@ echo $tohtml;
                                             ${msg}
                                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                             </div>`
+                    const response = xhr.responseJSON
+                    if(response.status) {
+                        if (response.status.cd == '110') {
+                            document.getElementById('txfg_alert_rmexbcnull').innerText = response.status.msg;
+                            let mydes = document.getElementById("txfg_divrmexbcnull");
+                            let myfrag = document.createDocumentFragment();
+                            let mtabel = document.getElementById("txfg_tblrmexbcnull");
+                            let cln = mtabel.cloneNode(true);
+                            myfrag.appendChild(cln);
+                            let tabell = myfrag.getElementById("txfg_tblrmexbcnull");
+                            let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                            let ttlrows = response.data.length;
+                            tableku2.innerHTML = ''
+                            for (let i = 0; i < ttlrows; i++) {
+                                newrow = tableku2.insertRow(-1);
+                                newcell = newrow.insertCell(0);
+                                newcell.innerHTML = response.data[i].ITMCD
+                                newcell = newrow.insertCell(1);
+                                newcell.style.cssText = "text-align:right";
+                                newcell.innerHTML = numeral(response.data[i].QTY).format(',')
+                                newcell = newrow.insertCell(2);
+                                newcell.innerHTML = response.data[i].LOTNO
+                            }
+                            mydes.innerHTML = '';
+                            mydes.appendChild(myfrag);
+                            $('#txfg_w_rmexbcnull').window('open');
+                        }
+                    }
                 } catch (ex) {
+                    console.log(ex)
                     div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
                                             ${xhr.responseText}
                                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
