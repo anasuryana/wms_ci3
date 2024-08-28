@@ -1778,6 +1778,85 @@ echo $tohtml;
         </div>
     </div>
 </div>
+<div class="modal fade" id="TXFG_MOD_EXBC_HELPER">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">EXBC Helper <span id="TXFG_MOD_EXBC_HELPER_txid"></span></h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3 mb-1">
+                        <h3><span class="badge bg-info">1 <i class="fas fa-hand-point-right"></i></span> <span class="badge bg-info">PSN</span></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1 p-1">
+                        <div class="table-responsive" id="TXFG_MOD_EXBC_HELPER_PSN_Table_div" style="height: 30vh; overflow-y: auto;">
+                            <table id="TXFG_MOD_EXBC_HELPER_PSN_Table" class="table table-sm table-striped table-bordered table-hover" style="width:100%;font-size:91%">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>DOC NO</th>
+                                        <th>PSN NO</th>
+                                        <th>LINE NO</th>
+                                        <th>Process</th>
+                                        <th>FR</th>
+                                        <th>Category</th>
+                                        <th class="text-center">MC</th>
+                                        <th class="text-center">MCZ</th>
+                                        <th class="text-center">S/M</th>
+                                        <th class="text-center">Item Code</th>
+                                        <th class="text-center">Item Name</th>
+                                        <th class="text-center">Kind</th>
+                                        <th class="text-end">REQ QTY</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-1">
+                        <h3><span class="badge bg-info">2 <i class="fas fa-hand-point-right"></i></span> <span class="badge bg-info">Decision</span></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1 p-1">
+                        What is alternative part for <strong><span id="TXFG_MOD_EXBC_HELPER_part"></span></strong> ?
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1 p-1">
+                        <div class="table-responsive" id="TXFG_MOD_EXBC_HELPER_Alternative_Table_div">
+                            <table id="TXFG_MOD_EXBC_HELPER_Alternative_Table" class="table table-sm table-striped table-bordered table-hover" style="width:100%;font-size:91%">
+                                <thead class="table-light text-center">
+                                    <tr>
+                                        <th>Item Code</th>
+                                        <th>Item Name</th>
+                                        <th>Remain EXBC</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-1">
+                        <h3><span class="badge bg-info">3 <i class="fas fa-hand-point-right"></i></span> <span class="badge bg-info">Confirmation</span></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <input type="hidden" id="TXFG_hid_idx">
 <input type="hidden" id="TXFG_hid_idx2">
 <script>
@@ -5700,6 +5779,13 @@ echo $tohtml;
                                 newrow = tableku2.insertRow(-1);
                                 newcell = newrow.insertCell(0);
                                 newcell.innerHTML = response.data[i].ITMCD
+                                newcell.style.cssText = 'cursor:pointer'
+                                newcell.onclick = function() {
+                                    txfg_get_spl_delivery({doc : doc, part_code : response.data[i].ITMCD})
+                                    TXFG_MOD_EXBC_HELPER_txid.innerText = doc
+                                    TXFG_MOD_EXBC_HELPER_part.innerText = response.data[i].ITMCD
+                                    $('#TXFG_MOD_EXBC_HELPER').modal('show')
+                                }
                                 newcell = newrow.insertCell(1);
                                 newcell.style.cssText = "text-align:right";
                                 newcell.innerHTML = numeral(response.data[i].QTY).format(',')
@@ -5720,6 +5806,96 @@ echo $tohtml;
                 }
             }
         })
+    }
+
+    function txfg_get_spl_delivery(data) {
+        TXFG_MOD_EXBC_HELPER_PSN_Table.getElementsByTagName("tbody")[0].innerHTML = `<tr><td colspan="13" class="text-center bg-info">Please wait</td></tr>`
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>supply/document-delivery",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                let ttlrows = response.data.length;
+                let mydes = document.getElementById("TXFG_MOD_EXBC_HELPER_PSN_Table_div");
+                let myfrag = document.createDocumentFragment();
+                let mtabel = document.getElementById("TXFG_MOD_EXBC_HELPER_PSN_Table")
+                let cln = mtabel.cloneNode(true)
+                myfrag.appendChild(cln)
+                let tabell = myfrag.getElementById("TXFG_MOD_EXBC_HELPER_PSN_Table")
+                let tableku2 = tabell.getElementsByTagName("tbody")[0]
+                let newrow, newcell, newText;
+                tableku2.innerHTML=''
+                for (let i = 0; i<ttlrows; i++){
+                    newrow = tableku2.insertRow(-1)
+                    newcell = newrow.insertCell(0);
+                    newcell.innerText = response.data[i].SPL_DOCNO
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.data[i].SPL_DOC
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.data[i].SPL_LINE
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.data[i].SPL_PROCD
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.data[i].SPL_FEDR
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.data[i].SPL_CAT
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.data[i].SPL_MC
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.data[i].SPL_ORDERNO
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.data[i].SPL_MS
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.data[i].SPL_ITMCD
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.data[i].SPTNO
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.data[i].ITMD1
+                    newcell = newrow.insertCell(-1);
+                    newcell.classList.add('text-end')
+                    newcell.innerText = numeral(response.data[i].SPL_QTYREQ).format(',')
+                }
+                mydes.innerHTML=''
+                mydes.appendChild(myfrag)
+
+
+                ttlrows = response.CustomsParts.length;
+                mydes = document.getElementById("TXFG_MOD_EXBC_HELPER_Alternative_Table_div");
+                myfrag = document.createDocumentFragment();
+                mtabel = document.getElementById("TXFG_MOD_EXBC_HELPER_Alternative_Table")
+                cln = mtabel.cloneNode(true)
+                myfrag.appendChild(cln)
+                tabell = myfrag.getElementById("TXFG_MOD_EXBC_HELPER_Alternative_Table")
+                tableku2 = tabell.getElementsByTagName("tbody")[0]
+
+                tableku2.innerHTML=''
+                for (let i = 0; i<ttlrows; i++){
+                    newrow = tableku2.insertRow(-1)
+                    newrow.onclick = function() {
+                        let currentidx = TXFG_hid_idx
+                        if(currentidx.value!=''){
+                            tableku2.rows[currentidx.value].classList.remove('table-info')
+                        }
+                        tableku2.rows[i].classList.add('table-info')
+                        currentidx.value = i
+                    }
+                    newrow.style.cssText = 'cursor:pointer'
+                    newcell = newrow.insertCell(0);
+                    newcell.innerText = response.CustomsParts[i].RPSTOCK_ITMNUM
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = response.CustomsParts[i].SPTNO
+                    newcell = newrow.insertCell(-1);
+                    newcell.classList.add('text-end')
+                    newcell.innerText = numeral(response.CustomsParts[i].RMQT).format(',')
+                }
+                mydes.innerHTML=''
+                mydes.appendChild(myfrag)
+            }, error: function(xhr, xopt, xthrow){
+                alertify.error(`${xthrow}, please try again`);
+                TXFG_MOD_EXBC_HELPER_PSN_Table.getElementsByTagName("tbody")[0].innerHTML = `<tr><td colspan="13" class="text-center bg-info">empty</td></tr>`
+            }
+        });
     }
 
     function isJson(str) {
