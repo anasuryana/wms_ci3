@@ -1539,7 +1539,7 @@ class ITH extends CI_Controller
                     'RPSTOCK_ITMNUM' => $t['RPSTOCK_ITMNUM'], 'MITM_ITMD1' => $t['MITM_ITMD1'], 'AJU' => $t['RPSTOCK_NOAJU'], 'DAFTAR' => $t['RPSTOCK_BCNUM'], 'DOC' => $t['RPSTOCK_DOC'], 'IODATE' => $t['INCDATE'], 'INCQTY' => '', 'OUTQTY' => '', 'BAL' => $t['BALQTY'], 'INCDATE' => $t['INCDATE'], 'HEADER' => '1',
                 ];
                 foreach ($rs as &$r) {
-                    if ($r['ITMCD'] == $t['RPSTOCK_ITMNUM'] && $r['RPSTOCK_NOAJU'] == $t['RPSTOCK_NOAJU'] && $r['RPSTOCK_DOC'] === $t['RPSTOCK_DOC'] && $r['MUSED'] == '') {
+                    if ($r['ITMCD'] == $t['RPSTOCK_ITMNUM'] && $r['RPSTOCK_NOAJU'] == $t['RPSTOCK_NOAJU'] && $r['RPSTOCK_DOC'] == $t['RPSTOCK_DOC'] && $r['MUSED'] == '') {
                         $rstoret[] = $r;
                         $r['MUSED'] = 'PASS';
                     }
