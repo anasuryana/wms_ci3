@@ -1791,11 +1791,11 @@ echo $tohtml;
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-3 mb-1">
-                        <h3><span class="badge bg-info">1 <i class="fas fa-hand-point-right"></i></span> <span class="badge bg-info">PSN</span></h3>
+                        <h3><span class="badge bg-info">1 <i class="fas fa-hand-point-right"></i></span> <span class="badge bg-info">PSN</span> <span class="badge bg-info" style="cursor:pointer" id="TXFG_MOD_EXBC_HELPER_PSN_toggler" onclick="TXFG_MOD_EXBC_HELPER_PSN_toggler_onclick(this)"><span class="fas fa-chevron-right"></span></span></h3>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12 mb-1 p-1">
+                <div class="row d-none" id="TXFG_MOD_EXBC_HELPER_PSN_Row_container">
+                    <div class="col-md-12 mb-1 p-1" >
                         <div class="table-responsive" id="TXFG_MOD_EXBC_HELPER_PSN_Table_div" style="height: 30vh; overflow-y: auto;">
                             <table id="TXFG_MOD_EXBC_HELPER_PSN_Table" class="table table-sm table-striped table-bordered table-hover" style="width:100%;font-size:91%">
                                 <thead class="table-light">
@@ -1828,13 +1828,13 @@ echo $tohtml;
                 </div>
                 <div class="row">
                     <div class="col-md-12 mb-1 p-1">
-                        What is alternative part for <strong><span id="TXFG_MOD_EXBC_HELPER_part"></span></strong> ?
+                        <h5>Please select alternative part for <strong><span id="TXFG_MOD_EXBC_HELPER_part"></span></strong> : </h5>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 mb-1 p-1">
                         <div class="table-responsive" id="TXFG_MOD_EXBC_HELPER_Alternative_Table_div">
-                            <table id="TXFG_MOD_EXBC_HELPER_Alternative_Table" class="table table-sm table-striped table-bordered table-hover" style="width:100%;font-size:91%">
+                            <table id="TXFG_MOD_EXBC_HELPER_Alternative_Table" class="table table-sm table-striped table-bordered table-hover">
                                 <thead class="table-light text-center">
                                     <tr>
                                         <th>Item Code</th>
@@ -1853,6 +1853,20 @@ echo $tohtml;
                         <h3><span class="badge bg-info">3 <i class="fas fa-hand-point-right"></i></span> <span class="badge bg-info">Confirmation</span></h3>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1 p-1">
+                        <h5 id="TXFG_MOD_EXBC_HELPER_Statement"></h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col" id="txfg-mod-exbc-div-alert">
+
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="TXFG_MOD_EXBC_HELPER_part_new">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" disabled id="TXFG_MOD_EXBC_HELPER_Alternative_Button_confirm" onclick="TXFG_MOD_EXBC_HELPER_Alternative_Button_confirm_onclick(this)">I confirm</button>
             </div>
         </div>
     </div>
@@ -5798,7 +5812,6 @@ echo $tohtml;
                         }
                     }
                 } catch (ex) {
-                    console.log(ex)
                     div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
                                             ${xhr.responseText}
                                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -5810,6 +5823,10 @@ echo $tohtml;
 
     function txfg_get_spl_delivery(data) {
         TXFG_MOD_EXBC_HELPER_PSN_Table.getElementsByTagName("tbody")[0].innerHTML = `<tr><td colspan="13" class="text-center bg-info">Please wait</td></tr>`
+        TXFG_MOD_EXBC_HELPER_Alternative_Table.getElementsByTagName("tbody")[0].innerHTML = `<tr><td colspan="3" class="text-center bg-info">Please wait</td></tr>`
+        TXFG_MOD_EXBC_HELPER_Statement.innerHTML = ''
+        TXFG_MOD_EXBC_HELPER_Alternative_Button_confirm.disabled = true
+        document.getElementById('txfg-mod-exbc-div-alert').innerHTML = ''
         $.ajax({
             type: "GET",
             url: "<?=$_ENV['APP_INTERNAL_API']?>supply/document-delivery",
@@ -5879,6 +5896,10 @@ echo $tohtml;
                         }
                         tableku2.rows[i].classList.add('table-info')
                         currentidx.value = i
+
+                        TXFG_MOD_EXBC_HELPER_Statement.innerHTML = `Are you sure that <strong>${response.CustomsParts[i].RPSTOCK_ITMNUM}</strong> is the alternative one ?`
+                        TXFG_MOD_EXBC_HELPER_part_new.value = response.CustomsParts[i].RPSTOCK_ITMNUM
+                        TXFG_MOD_EXBC_HELPER_Alternative_Button_confirm.disabled = false
                     }
                     newrow.style.cssText = 'cursor:pointer'
                     newcell = newrow.insertCell(0);
@@ -5891,9 +5912,10 @@ echo $tohtml;
                 }
                 mydes.innerHTML=''
                 mydes.appendChild(myfrag)
-            }, error: function(xhr, xopt, xthrow){
+            }, error: function(xhr, xopt, xthrow) {
                 alertify.error(`${xthrow}, please try again`);
                 TXFG_MOD_EXBC_HELPER_PSN_Table.getElementsByTagName("tbody")[0].innerHTML = `<tr><td colspan="13" class="text-center bg-info">empty</td></tr>`
+                TXFG_MOD_EXBC_HELPER_Alternative_Table.getElementsByTagName("tbody")[0].innerHTML = `<tr><td colspan="3" class="text-center bg-info">empty</td></tr>`
             }
         });
     }
@@ -5936,5 +5958,61 @@ echo $tohtml;
                 return
         }
         window.open("<?=$_ENV['APP_INTERNAL_API']?>report/konversi-bahan-baku?doc="+txfg_txt_id.value, '_blank');
+    }
+
+    function TXFG_MOD_EXBC_HELPER_PSN_toggler_onclick(pthis) {
+        if(TXFG_MOD_EXBC_HELPER_PSN_Row_container.classList.contains('d-none')) {
+            pthis.innerHTML = `<span class="fas fa-chevron-down"></span>`
+            TXFG_MOD_EXBC_HELPER_PSN_Row_container.classList.remove('d-none')
+        } else {
+            pthis.innerHTML = `<span class="fas fa-chevron-right"></span>`
+            TXFG_MOD_EXBC_HELPER_PSN_Row_container.classList.add('d-none')
+        }
+    }
+
+    function TXFG_MOD_EXBC_HELPER_Alternative_Button_confirm_onclick(pthis) {
+        if(confirm('Are you sure ?')) {
+            const data = {
+                doc : txfg_txt_id.value,
+                part_code_before : TXFG_MOD_EXBC_HELPER_part.innerText,
+                part_code_after : TXFG_MOD_EXBC_HELPER_part_new.value,
+            }
+            pthis.disabled = true
+
+            const div_alert = document.getElementById('txfg-mod-exbc-div-alert')
+            div_alert.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
+                                <i class="fas fa-paper-plane fa-bounce"></i> Please wait
+                                            </div>`
+            $.ajax({
+                type: "PUT",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>bom-calculation/delivery",
+                data: data,
+                dataType: "JSON",
+                success: function (response) {
+                    div_alert.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                                            ${response.message}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+                }, error: function(xhr, xopt, xthrow) {
+                    alertify.error(`${xthrow}, please try again`);
+                    try {
+                        const respon = Object.keys(xhr.responseJSON)
+                        let msg = ''
+                        for (const item of respon) {
+                            msg += `<p>${xhr.responseJSON[item]}</p>`
+                        }
+                        div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            ${msg}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>`
+                    } catch (ex) {
+                        div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                                ${xhr.responseText}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                </div>`
+                    }
+                }
+            });
+        }
     }
 </script>
