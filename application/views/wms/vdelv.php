@@ -5976,6 +5976,7 @@ echo $tohtml;
                 doc : txfg_txt_id.value,
                 part_code_before : TXFG_MOD_EXBC_HELPER_part.innerText,
                 part_code_after : TXFG_MOD_EXBC_HELPER_part_new.value,
+                user_id : uidnya
             }
             pthis.disabled = true
 
