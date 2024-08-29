@@ -437,7 +437,7 @@ class SPL extends CI_Controller
     {
         $userid = $this->session->userdata('nama');
         $rsemp = $this->Usr_mod->select_NPSI_user_where(['MSTEMP_ID' => $userid]);
-        $rsremark = $this->RQSRMRK_mod->selectAll();
+        $rsremark = $this->RQSRMRK_mod->selectAllActive();
         $usrdept = '';
         foreach ($rsemp as $r) {
             $usrdept = $r['PSIDEPT'] == "" ? "OTH" : $r['PSIDEPT'];
@@ -1538,6 +1538,7 @@ class SPL extends CI_Controller
         $clot = $this->input->post('inlot');
         $corder = $this->input->post('inorder');
         $datac = ['SPL_DOC' => $cpsn, 'SPL_LINE' => $cline, 'SPL_CAT' => $ccat, 'SPL_FEDR' => $cfr, 'SPL_ITMCD' => $citm];
+        $splData = $this->SPL_mod->select_where(['SPL_MC', 'SPL_PROCD'], $datac);
         if ($this->SPL_mod->check_Primary($datac) > 0) {
             echo "1";
             $mlastid = $this->SPLSCN_mod->lastserialid();
