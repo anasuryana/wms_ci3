@@ -14554,6 +14554,8 @@ class DELV extends CI_Controller
                 $this->setFinishPosting($csj);
                 $this->inventory_cancelDO($csj);
                 $myar = ['cd' => 110, 'msg' => 'EX-BC for ' . count($listNeedExBC) . ' item(s) is not found. ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman];
+
+                log_message('error', $_SERVER['REMOTE_ADDR'] . ',EXBC IS NOT ENOUGH '.json_encode($listNeedExBC));
                 return ['status' => $myar,
                     'data' => $listNeedExBC,
                     'rawdata' => $rstemp,
@@ -14699,8 +14701,6 @@ class DELV extends CI_Controller
 
         if (!empty($TPBData)) {
             $message = 'Already exist in TPB';
-            // if (empty($TPBData)) {
-            //     $message = 'Please posting to TPB first';
         } else {
 
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
