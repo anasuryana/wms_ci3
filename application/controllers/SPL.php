@@ -34,6 +34,7 @@ class SPL extends CI_Controller
         $this->load->model('SCNDOCITM_mod');
         $this->load->model('XMBOM_mod');
         $this->load->model('XWO_mod');
+        $this->load->model('WMS_PPSN2_LOG_mod');
         date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
@@ -539,7 +540,7 @@ class SPL extends CI_Controller
                     $rsReffDoc = $this->SPL_mod->select_ppsn2_psno($u_reffdoc);
                     if (count($rsReffDoc) > 0) { #IF REFF PSN EXIST ?
                         $_PSN = '';
-                        foreach($rsReffDoc as $r) {
+                        foreach ($rsReffDoc as $r) {
                             $_PSN = $r['PPSN2_PSNNO'];
                         }
                         $aField = explode("-", $_PSN);
@@ -549,7 +550,7 @@ class SPL extends CI_Controller
                         $u_bg = [];
                         for ($i = 0; $i < $u_reffdoc_length; $i++) {
                             $aField = explode("-", $u_reffdoc[0]);
-                            if(count($aField)>1) {
+                            if (count($aField) > 1) {
                                 $bg_initial = $aField[1];
                                 if (!in_array($bg_initial, $u_bg)) {
                                     $u_bg[] = $bg_initial;
@@ -624,7 +625,7 @@ class SPL extends CI_Controller
                             }
                             if (!$isallrack_ready) {
                                 $myar[] = ['cd' => 0, 'msg' => 'Rack ' . trim($a_partcode[$i]) . ' is not found'];
-                                die(json_encode(['status' => $myar, 'data' => $rsrack]));                                
+                                die(json_encode(['status' => $myar, 'data' => $rsrack]));
                             }
                         }
                         $ttlsaved = 0;
@@ -665,8 +666,8 @@ class SPL extends CI_Controller
                                 $ttlsaved += $this->SPL_mod->insert($rsSPL);
                                 $this->SPL_mod->insert_log($rsSPL);
                             } else {
-                                $rsdetail = $this->SPLSCN_mod->selectby_filter(['SPLSCN_DOC' => $docno, 'SPLSCN_ORDERNO' => $a_line[$i] ]);
-                                if(count($rsdetail)===0) {
+                                $rsdetail = $this->SPLSCN_mod->selectby_filter(['SPLSCN_DOC' => $docno, 'SPLSCN_ORDERNO' => $a_line[$i]]);
+                                if (count($rsdetail) === 0) {
                                     $ttlupdated += $this->SPL_mod->updatebyId(
                                         [
                                             'SPL_QTYREQ' => $a_qty[$i], 'SPL_ITMCD' => $a_partcode[$i], 'SPL_RMRK' => $remark, 'SPL_RACKNO' => $therack, 'SPL_ITMRMRK' => $a_partRemark[$i], 'SPL_REFDOCNO' => $a_reffdoc[$i],
@@ -676,7 +677,7 @@ class SPL extends CI_Controller
                                         ]
                                     );
                                 } else {
-                                    $dataScannedAffected[] = ['itemCode' => $a_partcode[$i], 'lineData' => $a_line[$i]+1];
+                                    $dataScannedAffected[] = ['itemCode' => $a_partcode[$i], 'lineData' => $a_line[$i] + 1];
                                 }
                             }
                         }
@@ -1109,6 +1110,7 @@ class SPL extends CI_Controller
         $_month = $bookdate_a[1] * 1;
         $_date = $bookdate_a[2];
         $rsdiscrepancy = substr($cpsn, 0, 2) == 'PR' ? [] : $this->SPLSCN_mod->select_discrepancy_scanned_vs_newsynchronized($cpsn);
+
         if (count($rsdiscrepancy) > 0) {
             $fedr_mcz = '';
             $fedr_item = $fedr_cat = $fedr_line = '';
@@ -1123,15 +1125,21 @@ class SPL extends CI_Controller
                 'cd' => '0', 'msg' => 'There is a discrepancy between <b>scanned data</b> and <b>the latest data of MEGA</b>',
                 'msgdetail' => 'Please check Category <b>' . $fedr_cat . '</b>, Line <b>' . $fedr_line . '</b>, FR <b>' . $fedr_fr . '</b>,  Table <b>' . $fedr_mcz . '</b> and Item <b>' . $fedr_item . ' </b> . Canceling scanned data might be required',
             ];
-            exit('{"status": ' . json_encode($mystatus) . '}');
+            exit(json_encode(['status' => $mystatus]));
+
         } else {
             $mystatus[] = ['cd' => '1', 'msg' => 'go ahead'];
         }
+
         $rs = $this->SPL_mod->xspl_mega($cpsn, $cline, $ccat, $cfr);
+
         $criteria = ["SPL_DOC" => $cpsn];
+
         if ($this->SPL_mod->check_Primary($criteria) > 0) {
+            $this->logPPSN2($cpsn);
             $this->SPL_mod->deleteby_filter($criteria);
         }
+
         $ttlrows = count($rs);
         if ($ttlrows > 0) {
             foreach ($rs as $r) {
@@ -1157,13 +1165,111 @@ class SPL extends CI_Controller
                     $this->SPL_mod->insert($datac);
                 }
             }
-            echo '{"data":' . json_encode($rs) . ',"status": ' . json_encode($mystatus) . '}';
+            echo json_encode(['data' => $rs, 'status' => $mystatus]);
         } else {
             $this->SPLBOOK_mod->deleteby_filter(['SPLBOOK_SPLDOC' => $cpsn]);
             $this->ITH_mod->deletebyID(['ITH_REMARK' => $cpsn]);
             $myar[] = ["cd" => 1, "msg" => "Data not found " . $cpsn];
             echo json_encode(['status' => $myar]);
         }
+    }
+
+    public function logPPSN2($doc)
+    {
+        $data = $this->SPL_mod->select_where(['SPL_LINE', 'SPL_PROCD', 'SPL_FEDR', 'SPL_ITMCD', 'SPL_ORDERNO', 'SPL_MC'], ['SPL_DOC' => $doc]);
+        $dataMEGA = $this->SPL_mod->xspl_mega($doc, '', '', '');
+        foreach ($dataMEGA as &$m) {
+            $m['PLOT'] = 0;
+        }
+        unset($m);
+
+        $BussinessGroup = null;
+
+        foreach ($data as &$r) {
+            $r['PLOT'] = 0;
+            foreach ($dataMEGA as &$m) {
+                if ($r['SPL_FEDR'] == $m['PPSN2_FR']
+                    && $r['SPL_ITMCD'] == $m['PPSN2_SUBPN']
+                    && $r['SPL_ORDERNO'] == $m['PPSN2_MCZ']
+                    && $r['SPL_MC'] == $m['PPSN2_MC']
+                    && $r['SPL_LINE'] == $m['PPSN2_LINENO']
+                    && $r['SPL_PROCD'] == $m['PPSN2_PROCD']
+                    && $m['PLOT'] == 0
+                ) {
+                    $r['PLOT'] = 1;
+                    $m['PLOT'] = 1;
+                    $BussinessGroup = $m['PPSN2_BSGRP'];
+                    break;
+                }
+            }
+            unset($m);
+        }
+        unset($r);
+
+        $differences = [];
+
+        // from WMS Side
+        foreach ($data as $r) {
+            if ($r['PLOT'] == 0) {
+                $r['REMARK'] = 'WMS Side';
+                $differences[] = $r;
+            }
+        }
+
+        // from MEGA Side
+        foreach ($dataMEGA as $r) {
+            if ($r['PLOT'] == 0) {
+                $_row = [
+                    'SPL_LINE' => $r['PPSN2_LINENO'],
+                    'SPL_PROCD' => $r['PPSN2_PROCD'],
+                    'SPL_FEDR' => $r['PPSN2_FR'],
+                    'SPL_ITMCD' => $r['PPSN2_SUBPN'],
+                    'SPL_ORDERNO' => $r['PPSN2_MCZ'],
+                    'SPL_MC' => $r['PPSN2_MC'],
+                    'PLOT' => $r['PLOT'],
+                    'REMARK' => 'MEGA Side',
+                ];
+                $differences[] = $_row;
+            }
+        }
+
+        if ($differences) {
+            $sort = [];
+            foreach ($differences as $k => $v) {
+                $sort['SPL_ORDERNO'][$k] = $v['SPL_ORDERNO'];
+                $sort['SPL_MC'][$k] = $v['SPL_MC'];
+                $sort['SPL_ITMCD'][$k] = $v['SPL_ITMCD'];
+            }
+            array_multisort($sort['SPL_ORDERNO'], SORT_ASC, $sort['SPL_MC'], SORT_ASC, $sort['SPL_ITMCD'], SORT_ASC, $differences);
+
+            $dataSave = [];
+
+            foreach ($differences as $r) {
+                $_status = $r['REMARK'] == 'MEGA Side' ? 'Insert' : 'Delete';
+                $_r = [
+                    'PPSN2_STATUS' => $_status,
+                    'PPSN2_BSGRP' => $BussinessGroup,
+                    'PPSN2_PSNNO' => $doc,
+                    'PPSN2_LINENO' => $r['SPL_LINE'],
+                    'PPSN2_FR' => $r['SPL_FEDR'],
+                    'PPSN2_SUBPN' => $r['SPL_ITMCD'],
+                    'PPSN2_MCZ' => $r['SPL_ORDERNO'],
+                    'PPSN2_MC' => $r['SPL_MC'],
+                    'PPSN2_PROCD' => $r['SPL_PROCD'],
+                ];
+
+                if ($this->WMS_PPSN2_LOG_mod->check_Primary($_r) === 0) {
+                    $_r['PPSN2_LUPDT'] = date('Y-m-d H:i:s');
+                    $this->WMS_PPSN2_LOG_mod->insert($_r);
+                }
+                $dataSave[] = $_r;
+            }
+        }
+
+        return ['data' => $data,
+            'dataMEGA' => $dataMEGA,
+            'differences' => $differences,
+        ];
     }
 
     public function getline_mfg()
@@ -1325,9 +1431,9 @@ class SPL extends CI_Controller
 
             // dua kali penyaringan
             foreach ($rsdetail as &$d) {
-                if(!$d['USED']) {
-                    foreach($rsv as &$r) {
-                        if(($r['SPL_ORDERNO'] == $d['SPLSCN_ORDERNO']) && ($r['SPL_ITMCD'] == $d['SPLSCN_ITMCD'])) {
+                if (!$d['USED']) {
+                    foreach ($rsv as &$r) {
+                        if (($r['SPL_ORDERNO'] == $d['SPLSCN_ORDERNO']) && ($r['SPL_ITMCD'] == $d['SPLSCN_ITMCD'])) {
                             $r['TTLSCN'] += $d['SPLSCN_QTY'];
                             $d['USED'] = true;
                             break;
@@ -1337,7 +1443,7 @@ class SPL extends CI_Controller
                 }
             }
             unset($d);
-          
+
             $rs2 = $this->SPL_mod->selecthead($cpsn, $cline, $cfr);
             $rssavedqty = $this->SPLSCN_mod->selectsaved($cpsn, $ccat, $cline, $cfr);
             die(
@@ -1348,7 +1454,7 @@ class SPL extends CI_Controller
                     'datav' => $rsv,
                     'rsdetail' => $rsdetail,
                 ])
-            );           
+            );
         } else {
             $myar[] = ["cd" => $ttlrows, "msg" => "Data not found"];
             echo '{"data":' . json_encode($myar) . '}';
@@ -2186,18 +2292,18 @@ class SPL extends CI_Controller
                     while ($think) {
                         $grasp = false;
                         foreach ($rsdetail as $d) {
-                            if ((trim($r['SPL_ORDERNO']) == trim($d['SPLSCN_ORDERNO'])) && (trim($r['SPL_ITMCD']) == trim($d['SPLSCN_ITMCD'])) 
-                            && (trim($r['SPL_LINE']) == trim($d['SPLSCN_LINE']))
-                            && $d['USED'] == false) {
+                            if ((trim($r['SPL_ORDERNO']) == trim($d['SPLSCN_ORDERNO'])) && (trim($r['SPL_ITMCD']) == trim($d['SPLSCN_ITMCD']))
+                                && (trim($r['SPL_LINE']) == trim($d['SPLSCN_LINE']))
+                                && $d['USED'] == false) {
                                 $grasp = true;
                                 break;
                             }
                         }
                         if ($grasp) {
                             foreach ($rsdetail as &$d) {
-                                if ((trim($r['SPL_ORDERNO']) == trim($d['SPLSCN_ORDERNO'])) && (trim($r['SPL_ITMCD']) == trim($d['SPLSCN_ITMCD'])) 
-                                && (trim($r['SPL_LINE']) == trim($d['SPLSCN_LINE']))
-                                && $d['USED'] == false) {
+                                if ((trim($r['SPL_ORDERNO']) == trim($d['SPLSCN_ORDERNO'])) && (trim($r['SPL_ITMCD']) == trim($d['SPLSCN_ITMCD']))
+                                    && (trim($r['SPL_LINE']) == trim($d['SPLSCN_LINE']))
+                                    && $d['USED'] == false) {
                                     $think2 = true;
                                     while ($think2) {
                                         if ($r['TTLREQ'] > $r['TTLSCN']) {
