@@ -4,20 +4,20 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.1.3/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.4
+ *   https://datatables.net/download/#bs5/dt-2.1.4/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.5
  *
  * Included libraries:
- *   DataTables 2.1.3, FixedColumns 5.0.1, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.2, RowReorder 1.5.0, Scroller 2.4.3, Select 2.0.4
+ *   DataTables 2.1.4, FixedColumns 5.0.1, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.2, RowReorder 1.5.0, Scroller 2.4.3, Select 2.0.5
  */
 
-/*! DataTables 2.1.3
+/*! DataTables 2.1.4
  * © SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     2.1.3
+ * @version     2.1.4
  * @author      SpryMedia Ltd
  * @contact     www.datatables.net
  * @copyright   SpryMedia Ltd.
@@ -538,7 +538,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs5/dt-2.1.3/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.4",
+		builder: "bs5/dt-2.1.4/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.5",
 	
 	
 		/**
@@ -8494,8 +8494,10 @@
 				switch( match[2] ) {
 					case 'visIdx':
 					case 'visible':
-						if (match[1]) {
+						// Selector is a column index
+						if (match[1] && match[1].match(/^\d+$/)) {
 							var idx = parseInt( match[1], 10 );
+	
 							// Visible index given, convert to column index
 							if ( idx < 0 ) {
 								// Counting from the right
@@ -8508,9 +8510,19 @@
 							return [ _fnVisibleToColumnIndex( settings, idx ) ];
 						}
 						
-						// `:visible` on its own
-						return columns.map( function (col, i) {
-							return col.bVisible ? i : null;
+						return columns.map( function (col, idx) {
+							// Not visible, can't match
+							if (! col.bVisible) {
+								return null;
+							}
+	
+							// Selector
+							if (match[1]) {
+								return $(nodes[idx]).filter(match[1]).length > 0 ? idx : null;
+							}
+	
+							// `:visible` on its own
+							return idx;
 						} );
 	
 					case 'name':
@@ -9823,7 +9835,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.1.3";
+	DataTable.version = "2.1.4";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -12497,7 +12509,7 @@
 			pre: function ( a ) {
 				// This is a little complex, but faster than always calling toString,
 				// http://jsperf.com/tostring-v-check
-				return _empty(a) ?
+				return _empty(a) && typeof a !== 'boolean' ?
 					'' :
 					typeof a === 'string' ?
 						a.toLowerCase() :
@@ -12750,6 +12762,12 @@
 						return;               // table, not a nested one
 					}
 	
+					var sorting = ctx.sortDetails;
+	
+					if (! sorting) {
+						return;
+					}
+	
 					var i;
 					var orderClasses = classes.order;
 					var columns = ctx.api.columns( cell );
@@ -12758,7 +12776,6 @@
 					var ariaType = '';
 					var indexes = columns.indexes();
 					var sortDirs = columns.orderable(true).flatten();
-					var sorting = ctx.sortDetails;
 					var orderedColumns = _pluck(sorting, 'col');
 	
 					cell
@@ -21254,7 +21271,7 @@ return DataTable;
 }));
 
 
-/*! Select for DataTables 2.0.4
+/*! Select for DataTables 2.0.5
  * © SpryMedia Ltd - datatables.net/license/mit
  */
 
@@ -21312,7 +21329,7 @@ DataTable.select.classes = {
 	checkbox: 'dt-select-checkbox'
 };
 
-DataTable.select.version = '2.0.4';
+DataTable.select.version = '2.0.5';
 
 DataTable.select.init = function (dt) {
 	var ctx = dt.settings()[0];
@@ -21806,6 +21823,15 @@ function eventTrigger(api, type, args, any) {
 }
 
 /**
+ * Determine if a column is a checkbox column
+ * @param {*} col DataTables column object
+ * @returns 
+ */
+function isCheckboxColumn(col) {
+	return col.mRender && col.mRender._name === 'selectCheckbox';
+}
+
+/**
  * Update the information element of the DataTable showing information about the
  * items selected. This is done by adding tags to the existing text
  *
@@ -21859,9 +21885,17 @@ function info(api, node) {
  * @param {*} headerCheckbox the header checkbox option
  */
 function initCheckboxHeader( dt, headerCheckbox ) {
+	var dtInternalColumns = dt.settings()[0].aoColumns;
+
 	// Find any checkbox column(s)
-	dt.columns('.dt-select').every(function () {
-		var header = this.header();
+	dt.columns().iterator('column', function (s, idx) {
+		var col = dtInternalColumns[idx];
+
+		// Checkbox columns have a rendering function with a given name
+		if (! isCheckboxColumn(col)) {
+			return;
+		}
+		var header = dt.column(idx).header();
 
 		if (! $('input', header).length) {
 			// If no checkbox yet, insert one
@@ -22386,7 +22420,7 @@ apiRegisterPlural('rows().select()', 'row().select()', function (select) {
 				api.columns().types()
 			}
 			
-			if (col.sType === 'select-checkbox') {
+			if (isCheckboxColumn(col)) {
 				var cells = dtData.anCells;
 
 				// Make sure the checkbox shows the right state
@@ -22520,7 +22554,7 @@ apiRegisterPlural('rows().deselect()', 'row().deselect()', function () {
 				api.columns().types()
 			}
 			
-			if (col.sType === 'select-checkbox') {
+			if (isCheckboxColumn(col)) {
 				var cells = dtData.anCells;
 
 				// Make sure the checkbox shows the right state
@@ -22773,7 +22807,7 @@ $.each(['Row', 'Column', 'Cell'], function (i, item) {
 });
 
 // Note that DataTables 2.1 has more robust type detection, but we retain
-// backwards compatbility with 2.0 for the moment.
+// backwards compatibility with 2.0 for the moment.
 DataTable.type('select-checkbox', {
 	className: 'dt-select',
 	detect: DataTable.versionCheck('2.1')
@@ -22785,7 +22819,7 @@ DataTable.type('select-checkbox', {
 				return false; // no op
 			},
 			init: function (settings, col, idx) {
-				return col.mRender && col.mRender.name === 'selectCheckbox';
+				return isCheckboxColumn(col);
 			}
 		}
 		: function (data) {
@@ -22811,7 +22845,7 @@ DataTable.render.select = function (valueProp, nameProp) {
 	var valueFn = valueProp ? DataTable.util.get(valueProp) : null;
 	var nameFn = nameProp ? DataTable.util.get(nameProp) : null;
 
-	return function selectCheckbox(data, type, row, meta) {
+	var fn = function (data, type, row, meta) {
 		var dtRow = meta.settings.aoData[meta.row];
 		var selected = dtRow._select_selected;
 		var ariaLabel = meta.settings.oLanguage.select.aria.rowCheckbox;
@@ -22845,6 +22879,12 @@ DataTable.render.select = function (valueProp, nameProp) {
 
 		return selected ? 'X' : '';
 	}
+
+	// Workaround so uglify doesn't strip the function name. It is used
+	// for the column type detection.
+	fn._name = 'selectCheckbox';
+
+	return fn;
 }
 
 // Legacy checkbox ordering
