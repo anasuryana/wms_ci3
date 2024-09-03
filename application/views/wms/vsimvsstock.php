@@ -91,6 +91,7 @@
             <div class="col-md-12 mb-1 text-center">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-primary" type="button" id="simvsstock_btn_simulate" onclick="simvsstock_btn_simulate_e_click()">Process</button>
+                    <button class="btn btn-outline-primary" title="Copy to clipboard" type="button" id="simvsstock_btn_copy" onclick="simvsstock_btn_copy_e_click()"><i class="fas fa-clipboard"></i></button>
                 </div>
             </div>
         </div>
@@ -347,5 +348,11 @@
                 alertify.error(xthrow);
             }
         });
+    }
+
+    function simvsstock_btn_copy_e_click() {
+        cmpr_selectElementContents(document.getElementById('simvsstock_tbl'))
+        document.execCommand("copy")
+        alert("Copied")
     }
 </script>
