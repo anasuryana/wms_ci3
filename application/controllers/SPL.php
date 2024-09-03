@@ -35,6 +35,7 @@ class SPL extends CI_Controller
         $this->load->model('XMBOM_mod');
         $this->load->model('XWO_mod');
         $this->load->model('WMS_PPSN2_LOG_mod');
+        $this->load->model('ENGBOMSTX_mod');
         date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
@@ -354,10 +355,12 @@ class SPL extends CI_Controller
         $qty = $this->input->post('qty');
         $rs = [];
         $myar = [];
+        $flag = 1;
         if ($tab === 'simvsstock_byassy-tab') {
             $rs = $this->XMBOM_mod->select_for_simulation($assycode, $qty);
             $rsstock = $this->XMBOM_mod->select_sim_item_stock($assycode);
             foreach ($rs as &$n) {
+                $n['REMARK'] = '';
                 foreach ($rsstock as &$k) {
                     if ($n['PIS3_MPART'] == $k['ITEMCODE'] && $k['TSTKQTY'] > 0) {
                         if ($n['REQQTY'] > $n['PLOTQTY']) {
@@ -379,17 +382,22 @@ class SPL extends CI_Controller
             unset($n);
             $myar[] = ['cd' => 1, 'msg' => 'OK', 'reff' => $rsstock];
         } else {
+            $flag = 2;
             $myar[] = ['cd' => 1, 'msg' => 'OK'];
             $csimnoCount = count($csimno);
             $docno_in = "";
+
             for ($i = 0; $i < $csimnoCount; $i++) {
                 $docno_in .= "'" . $csimno[$i] . "',";
                 $rsget = $this->SPL_mod->select_psnjob_req_for_simulate($csimno[$i]);
                 $rs = array_merge($rs, $rsget);
             }
+
             $docno_in = substr($docno_in, 0, strlen($docno_in) - 1);
             $rsstock = $this->SPL_mod->select_sim_item_stock($docno_in);
+
             foreach ($rs as &$n) {
+                $n['REMARK'] = '';
                 foreach ($rsstock as &$k) {
                     if ($n['PIS3_MPART'] == $k['ITEMCODE'] && $k['TSTKQTY'] > 0) {
                         if ($n['REQQTY'] > $n['PLOTQTY']) {
@@ -430,8 +438,132 @@ class SPL extends CI_Controller
                 unset($k);
             }
             unset($n);
+
+            $outstandings = [];
+            $outstanding_models = [];
+            $outstanding_parts = [];
+
+            foreach ($rs as $n) {
+                if ($n['PIS3_ITMCD'] == '') {
+                    if (($n['REQQTY'] - $n['PLOTQTY'] - $n['PLOTSUBQTY']) > 0) {
+                        if (!in_array($n['PDPP_MDLCD'], $outstanding_models)) {
+                            $outstanding_models[] = $n['PDPP_MDLCD'];
+                        }
+                        if (!in_array($n['PIS3_MPART'], $outstanding_parts)) {
+                            $outstanding_parts[] = $n['PIS3_MPART'];
+                        }
+                    }
+                }
+            }
+
+            // cari ke Logical return
+            foreach ($outstanding_parts as $p) {
+                $logicalReturn = $this->SPL_mod->selectSupplyVsReturn($p);
+                foreach ($logicalReturn as &$r) {
+                    foreach ($rs as &$n) {
+                        $_reqQty = $n['REQQTY'] - $n['PLOTQTY'] - $n['PLOTSUBQTY'];
+                        if ($_reqQty > 0 && $r['TLGCRTN'] > 0) {
+                            if ($_reqQty >= $r['TLGCRTN']) {
+                                $n['PLOTQTY'] += $r['TLGCRTN'];
+                                $r['TLGCRTN'] = 0;
+                            } else {
+                                $n['PLOTQTY'] += $_reqQty;
+                                $r['TLGCRTN'] -= $_reqQty;
+                            }
+                            $n['REMARK'] .= '|' . $r['SPL_DOC'];
+                        }
+                    }
+                    unset($n);
+                }
+                unset($r);
+            }
+
+            // cari ke pa100
+
+            foreach ($rs as $n) {
+                if ($n['PIS3_ITMCD'] == '') {
+                    if (($n['REQQTY'] - $n['PLOTQTY'] - $n['PLOTSUBQTY']) > 0) {
+                        if (!in_array($n['PDPP_MDLCD'], $outstanding_models)) {
+                            $outstanding_models[] = $n['PDPP_MDLCD'];
+                        }
+                        if (!in_array($n['PIS3_MPART'], $outstanding_parts)) {
+                            $outstanding_parts[] = $n['PIS3_MPART'];
+                        }
+                    }
+                }
+            }
+
+            $PA100 = [];
+            $PA100Parts = [];
+            $PA100PartsDictionary = [];
+            $PA100PartsStock = [];
+            if (count($outstanding_models) > 0 && count($outstanding_parts) > 0) {
+                $PA100 = $this->ENGBOMSTX_mod->selectColumnsWhereModelInAndPartIn(['*'], $outstanding_models, $outstanding_parts);
+
+                $_items = [];
+                foreach ($PA100 as $r) {
+                    if ($r['MAIN_PART_CODE'] != $r['EPSON_ORG_PART']) {
+                        if (!in_array($r['EPSON_ORG_PART'], $PA100Parts)) {
+                            $PA100Parts[] = $r['EPSON_ORG_PART'];
+                        }
+
+                        if (!$this->_isUnique($PA100PartsDictionary, $r['MAIN_PART_CODE'], $r['EPSON_ORG_PART'])) {
+                            $PA100PartsDictionary[] = [
+                                'MPART' => $r['MAIN_PART_CODE'],
+                                'SPART' => $r['EPSON_ORG_PART'],
+                            ];
+                        }
+
+                    }
+
+                    if ($r['MAIN_PART_CODE'] != $r['SUB'] && strlen($r['SUB']) > 0) {
+                        if (!in_array($r['SUB'], $PA100Parts)) {
+                            $PA100Parts[] = $r['SUB'];
+                        }
+
+                        if (!$this->_isUnique($PA100PartsDictionary, $r['MAIN_PART_CODE'], $r['SUB'])) {
+                            $PA100PartsDictionary[] = [
+                                'MPART' => $r['MAIN_PART_CODE'],
+                                'SPART' => $r['SUB'],
+                            ];
+                        }
+                    }
+
+                    if ($r['MAIN_PART_CODE'] != $r['SUB1'] && strlen($r['SUB1']) > 0) {
+                        if (!in_array($r['SUB1'], $PA100Parts)) {
+                            $PA100Parts[] = $r['SUB1'];
+                        }
+
+                        if (!$this->_isUnique($PA100PartsDictionary, $r['MAIN_PART_CODE'], $r['SUB1'])) {
+                            $PA100PartsDictionary[] = [
+                                'MPART' => $r['MAIN_PART_CODE'],
+                                'SPART' => $r['SUB1'],
+                            ];
+                        }
+                    }
+                }
+            }
+
         }
-        die(json_encode(['data' => $rs, 'status' => $myar]));
+        die(json_encode(['data' => $rs, 'status' => $myar, 'flag' => $flag,
+            '$outstanding_models' => $outstanding_models,
+            '$outstanding_parts' => $outstanding_parts,
+            '$PA100' => $PA100,
+            '$PA100Parts' => $PA100Parts,
+            '$PA100PartsDictionary' => $PA100PartsDictionary,
+        ]));
+    }
+
+    public function _isUnique($stacks, $part1, $part2)
+    {
+        $isFound = false;
+        foreach ($stacks as $n) {
+            if ($n['MPART'] == $part1 && $n['SPART'] == $part2) {
+                $isFound = true;
+                break;
+            }
+        }
+        return $isFound;
     }
 
     public function requestdoc()
