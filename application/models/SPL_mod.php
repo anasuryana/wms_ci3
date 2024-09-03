@@ -1208,4 +1208,67 @@ class SPL_mod extends CI_Model
         $query = $this->db->query($qry, [$wo]);
         return $query->result_array();
     }
+
+    public function selectSupplyVsReturn($part) {
+        $qry = "
+            SELECT
+                VSPL.*,
+                VSPLSCN.TSCN,
+                TRTN,
+                TSCN-TREQ TLGCRTN
+                FROM
+                (
+                    select
+                    SPL_ITMCD,
+                    SPL_DOC,
+                    SUM(SPL_QTYREQ) TREQ,
+                    MIN(SPL_LUPDT) MINTIME_SUP,
+                    DATEDIFF(DAY, MIN(SPL_LUPDT), GETDATE()) DAYPASS
+                    from
+                    SPL_TBL
+                    WHERE
+                    SPL_ITMCD = ?
+                    GROUP BY
+                    SPL_ITMCD,
+                    SPL_DOC
+                ) VSPL
+                LEFT JOIN (
+                    SELECT
+                    B.SPLSCN_DOC,
+                    B.SPLSCN_ITMCD,
+                    SUM(SPLSCN_QTY) TSCN
+                    FROM
+                    SPLSCN_TBL B
+                    WHERE
+                    B.SPLSCN_ITMCD = ?
+                    GROUP BY
+                    B.SPLSCN_DOC,
+                    B.SPLSCN_ITMCD
+                ) VSPLSCN ON SPL_DOC = SPLSCN_DOC
+                AND SPL_ITMCD = SPLSCN_ITMCD
+                LEFT JOIN (
+                    SELECT
+                    RTN.RETSCN_SPLDOC,
+                    RTN.RETSCN_ITMCD,
+                    SUM(RTN.RETSCN_QTYAFT) TRTN
+                    FROM
+                    RETSCN_TBL RTN
+                    WHERE
+                    RTN.RETSCN_ITMCD = ?
+                    AND RTN.RETSCN_CNFRMDT IS NULL
+                    GROUP BY
+                    RTN.RETSCN_SPLDOC,
+                    RTN.RETSCN_ITMCD
+                ) VRTNSCN ON VSPL.SPL_DOC = VRTNSCN.RETSCN_SPLDOC
+                AND VSPL.SPL_ITMCD = VRTNSCN.RETSCN_ITMCD
+                WHERE
+                ISNULL(TREQ, 0) < ISNULL(TSCN, 0)
+                AND TRTN IS NULL
+                AND DAYPASS < 31
+                ORDER BY
+                SPL_DOC DESC
+        ";        
+        $query = $this->db->query($qry, [$part, $part, $part]);
+        return $query->result_array();
+    }
 }

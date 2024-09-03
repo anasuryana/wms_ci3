@@ -186,8 +186,8 @@
                     let jobno = '';
                     let jobno_dis = '';
                     let shortage = 0;
-                    for (let i = 0; i<ttlrows; i++){
-                        if(simno!=response.data[i].SIMNO){
+                    for (let i = 0; i<ttlrows; i++) {
+                        if(simno!=response.data[i].SIMNO) {
                             simno=response.data[i].SIMNO;
                             simno_dis = simno;
                             jobno = response.data[i].PIS3_WONO;
@@ -203,6 +203,10 @@
                         }
                         shortage = numeral(response.data[i].REQQTY).value() - (numeral(response.data[i].PLOTQTY).value()+numeral(response.data[i].PLOTSUBQTY).value());
                         newrow = tableku2.insertRow(-1);
+                        if(response.data[i].REMARK) {
+                            newrow.classList.add('table-info')
+                            newrow.title = 'full filled by ' + response.data[i].REMARK
+                        }
                         newcell = newrow.insertCell(0);
                         newText = document.createTextNode(simno_dis);
                         newcell.appendChild(newText);
