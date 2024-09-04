@@ -963,6 +963,7 @@ class SPL extends CI_Controller
                 $thedoc = trim($r['SPLSCN_DOC']) . "|" . trim($r['SPLSCN_CAT']) . "|" . trim($r['SPLSCN_LINE']) . "|" . trim($r['SPLSCN_FEDR']);
                 $theitem = trim($r['SPLSCN_ITMCD']);
                 $theqty = $r['SPLSCN_QTY'];
+                $theuniqueKey = $r['SPLSCN_UNQCODE'];
                 $where = ['ITH_DOC' => $thedoc, 'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_out];
                 if ($this->ITH_mod->check_Primary($where) > 0) {
                     $retith = 0;
@@ -970,10 +971,12 @@ class SPL extends CI_Controller
                     $retith = $this->ITH_mod->insert_cancel_kitting_out([
                         'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_out,
                         'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => -$theqty, 'ITH_USRID' => $this->session->userdata('nama'),
+                        'ITH_SER' => $theuniqueKey
                     ]);
                     $retith += $this->ITH_mod->insert_cancel_kitting_in([
                         'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_inc,
                         'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => $theqty, 'ITH_USRID' => $this->session->userdata('nama'),
+                        'ITH_SER' => $theuniqueKey
                     ]);
                     if ($retith == 2) {
                         //delete scannning history
@@ -1084,10 +1087,12 @@ class SPL extends CI_Controller
             $thedoc = '';
             $theitem = '';
             $theqty = 0;
+            $theuniqueKey = 0;
             foreach ($rs as $r) {
                 $thedoc = trim($r['SPLSCN_DOC']) . "|" . trim($r['SPLSCN_CAT']) . "|" . trim($r['SPLSCN_LINE']) . "|" . trim($r['SPLSCN_FEDR']);
                 $theitem = trim($r['SPLSCN_ITMCD']);
                 $theqty = $r['SPLSCN_QTY'];
+                $theuniqueKey = $r['SPLSCN_UNQCODE'];
             }
             $where = ['ITH_DOC' => $thedoc, 'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_out];
             if ($this->ITH_mod->check_Primary($where) > 0) {
@@ -1095,10 +1100,12 @@ class SPL extends CI_Controller
                 $retith = $this->ITH_mod->insert_cancel_kitting_out([
                     'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_out,
                     'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => -$theqty, 'ITH_USRID' => $this->session->userdata('nama'),
+                    'ITH_SER' => $theuniqueKey
                 ]);
                 $retith += $this->ITH_mod->insert_cancel_kitting_in([
                     'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_inc,
                     'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => $theqty, 'ITH_USRID' => $this->session->userdata('nama'),
+                    'ITH_SER' => $theuniqueKey
                 ]);
                 if ($retith == 2) {
                     //delete scannning history
@@ -1118,10 +1125,9 @@ class SPL extends CI_Controller
                     } else {
                         $myar[] = ['cd' => 0, 'msg' => 'the transaction is successfully deleted but could not remove scanning history, please contact admin'];
                     }
-                    // $myar[] = ['cd' => 0, 'msg' => 'Please recheck your selected warehouse', 'where' => $where];
                 } else {
                     if ($this->SPLSCN_mod->deleteby_filter(['SPLSCN_ID' => $cidscan]) > 0) {
-                        $myar[] = ['cd' => 1, 'msg' => 'canceled successfully'];
+                        $myar[] = ['cd' => 1, 'msg' => 'canceled successfully.'];
                     } else {
                         $myar[] = ['cd' => 0, 'msg' => 'delete failed'];
                     }
