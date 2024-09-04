@@ -28,7 +28,7 @@ class SPLSCN_mod extends CI_Model {
 
     public function selectby_filter($pwhere){
         $this->db->select("SPLSCN_ID,SPLSCN_DOC,SPLSCN_CAT,SPLSCN_LINE,SPLSCN_FEDR,UPPER(RTRIM(SPLSCN_ORDERNO)) SPLSCN_ORDERNO,UPPER(RTRIM(SPLSCN_ITMCD)) SPLSCN_ITMCD,SPLSCN_LOTNO,SPLSCN_SAVED,
-        SPLSCN_QTY,SPLSCN_LUPDT,SPLSCN_USRID,SPLSCN_EXPORTED");
+        SPLSCN_QTY,SPLSCN_LUPDT,SPLSCN_USRID,SPLSCN_EXPORTED,SPLSCN_UNQCODE");
         $this->db->from($this->TABLENAME);        
         $this->db->where($pwhere);
         $this->db->order_by('SPLSCN_FEDR,SPLSCN_LUPDT ASC');

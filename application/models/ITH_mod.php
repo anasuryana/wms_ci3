@@ -193,11 +193,11 @@ class ITH_mod extends CI_Model
     public function insert_cancel_kitting_out($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LUPDT,ITH_USRID,ITH_REMARK)
-        VALUES(?,?,'CANCELING-RM-PSN-OUT',?,?,?,?,?,GETDATE())";
+        ITH_WH,ITH_LUPDT,ITH_USRID,ITH_REMARK,ITH_SER)
+        VALUES(?,?,'CANCELING-RM-PSN-OUT',?,?,?,?,?,GETDATE(), ?)";
         $this->db->query($qry, array(
             $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_DOC'], $data['ITH_QTY'], $data['ITH_WH'],
-            $data['ITH_DATE'], $data['ITH_USRID'],
+            $data['ITH_DATE'], $data['ITH_USRID'],  $data['ITH_SER']
         ));
         return $this->db->affected_rows();
     }
@@ -205,11 +205,11 @@ class ITH_mod extends CI_Model
     public function insert_cancel_kitting_in($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LUPDT,ITH_USRID,ITH_REMARK)
-        VALUES(?,?,'CANCELING-RM-PSN-IN',?,?,?,?,?,GETDATE())";
+        ITH_WH,ITH_LUPDT,ITH_USRID,ITH_REMARK,ITH_SER)
+        VALUES(?,?,'CANCELING-RM-PSN-IN',?,?,?,?,?,GETDATE(), ?)";
         $this->db->query($qry, [
             $data['ITH_ITMCD'], $data['ITH_DATE'], $data['ITH_DOC'], $data['ITH_QTY'], $data['ITH_WH'], 
-            $data['ITH_DATE'], $data['ITH_USRID'],
+            $data['ITH_DATE'], $data['ITH_USRID'], $data['ITH_SER']
         ]);
         return $this->db->affected_rows();
     }
