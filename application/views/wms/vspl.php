@@ -284,10 +284,6 @@
                 <div class="col mb-1">
                     <ul class="list-group text-center">
                         <li class="list-group-item">
-                            <input class="form-check-input" name="spl_doctype" type="radio" value="KIT" id="spl_rdKIT">
-                            <label class="form-check-label" for="spl_rdKIT">Picking</label>
-                        </li>
-                        <li class="list-group-item">
                             <input class="form-check-input" name="spl_doctype" type="radio" value="KITALL_UK" id="spl_rdKITALL_UK">
                             <label class="form-check-label" for="spl_rdKITALL_UK">Picking All (Unique Key)</label>
                         </li>
