@@ -1426,7 +1426,9 @@ class SPL extends CI_Controller
         $cfr = $this->input->get('infr');
         $myar = [];
         $ttlrows = $this->SPL_mod->check_Primary(['SPL_DOC' => $cpsn, 'SPL_CAT' => $ccat, 'SPL_LINE' => $cline, 'SPL_FEDR' => $cfr]);
+        
         if ($ttlrows > 0) {
+            $ProcessDB = $this->SPL_mod->selectProcess($cpsn);
             $rs = $this->SPL_mod->selectby4par($cpsn, $ccat, $cline, $cfr);
             $rsv = $this->SPL_mod->selectkitby4parv($cpsn, $ccat, $cline, $cfr);
             $rsdetail = $this->SPLSCN_mod->selectby_filter(['SPLSCN_DOC' => $cpsn, 'SPLSCN_CAT' => $ccat, 'SPLSCN_LINE' => $cline, 'SPLSCN_FEDR' => $cfr]);
@@ -1498,6 +1500,7 @@ class SPL extends CI_Controller
                     'datasaved' => $rssavedqty,
                     'datav' => $rsv,
                     'rsdetail' => $rsdetail,
+                    'Processes' => $ProcessDB
                 ])
             );
         } else {
@@ -1688,6 +1691,9 @@ class SPL extends CI_Controller
         $cqty = $this->input->post('inqty');
         $clot = $this->input->post('inlot');
         $corder = $this->input->post('inorder');
+        $inMC = $this->input->post('inMC');
+        $inProcess = $this->input->post('inProcess');
+
         $datac = ['SPL_DOC' => $cpsn, 'SPL_LINE' => $cline, 'SPL_CAT' => $ccat, 'SPL_FEDR' => $cfr, 'SPL_ITMCD' => $citm];
         $splData = $this->SPL_mod->select_where(['SPL_MC', 'SPL_PROCD'], $datac);
         if ($this->SPL_mod->check_Primary($datac) > 0) {
@@ -1713,6 +1719,8 @@ class SPL extends CI_Controller
                         $datas['SPLSCN_QTY'] = $cqty;
                         $datas['SPLSCN_LUPDT'] = $currrtime;
                         $datas['SPLSCN_USRID'] = $this->session->userdata('nama');
+                        $datas['SPLSCN_MC'] = $inMC;
+                        $datas['SPLSCN_PROCD'] = $inProcess;
                     }
                     $toret = $this->SPLSCN_mod->insert($datas);
                     if ($toret > 0) {
@@ -1736,6 +1744,8 @@ class SPL extends CI_Controller
                 $datas['SPLSCN_QTY'] = $cqty;
                 $datas['SPLSCN_LUPDT'] = $currrtime;
                 $datas['SPLSCN_USRID'] = $this->session->userdata('nama');
+                $datas['SPLSCN_MC'] = $inMC;
+                $datas['SPLSCN_PROCD'] = $inProcess;
 
                 $toret = $this->SPLSCN_mod->insert($datas);
                 if ($toret > 0) {

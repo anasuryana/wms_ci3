@@ -271,8 +271,8 @@ class SPL_mod extends CI_Model
 
     public function selectkitby4parv($pspl, $pcat, $pline, $pfr)
     {
-        $this->db->select("UPPER(RTRIM(SPL_ORDERNO)) SPL_ORDERNO,SPL_RACKNO, UPPER(RTRIM(SPL_ITMCD)) SPL_ITMCD,MITM_SPTNO, SPL_QTYUSE, SPL_MC, SPL_MS, TTLREQ, TTLSCN");
-        $this->db->from("(SELECT SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD, max(SPL_QTYUSE) SPL_QTYUSE,SPL_MS, SPL_MC, SUM(SPL_QTYREQ) TTLREQ, 0 TTLSCN
+        $this->db->select("UPPER(RTRIM(SPL_ORDERNO)) SPL_ORDERNO,SPL_RACKNO, UPPER(RTRIM(SPL_ITMCD)) SPL_ITMCD,MITM_SPTNO, SPL_QTYUSE, SPL_MC, SPL_MS, TTLREQ, TTLSCN, GROUPEDROWS, SPL_PROCD");
+        $this->db->from("(SELECT SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD, max(SPL_QTYUSE) SPL_QTYUSE,SPL_MS, SPL_MC, SUM(SPL_QTYREQ) TTLREQ, 0 TTLSCN, COUNT(*) GROUPEDROWS,MAX(SPL_PROCD) SPL_PROCD
         FROM $this->TABLENAME LEFT JOIN (select MSTLOC_CD,max(aliasrack) aliasrack  from vinitlocation group by MSTLOC_CD) vloc on SPL_RACKNO=MSTLOC_CD
         WHERE SPL_DOC='$pspl' AND SPL_CAT='$pcat' AND SPL_LINE='$pline' AND SPL_FEDR='$pfr'
         GROUP BY SPL_ORDERNO,SPL_RACKNO,aliasrack, SPL_ITMCD,  SPL_MC,SPL_MS) a");
@@ -1209,7 +1209,8 @@ class SPL_mod extends CI_Model
         return $query->result_array();
     }
 
-    public function selectSupplyVsReturn($part) {
+    public function selectSupplyVsReturn($part)
+    {
         $qry = "
             SELECT
                 VSPL.*,
@@ -1267,8 +1268,18 @@ class SPL_mod extends CI_Model
                 AND DAYPASS < 31
                 ORDER BY
                 SPL_DOC DESC
-        ";        
+        ";
         $query = $this->db->query($qry, [$part, $part, $part]);
+        return $query->result_array();
+    }
+
+    public function selectProcess($doc)
+    {
+        $this->db->select("SPL_PROCD");
+        $this->db->from($this->TABLENAME);
+        $this->db->where("SPL_DOC", $doc);
+        $this->db->group_by("SPL_PROCD");
+        $query = $this->db->get();
         return $query->result_array();
     }
 }
