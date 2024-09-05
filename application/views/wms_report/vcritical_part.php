@@ -29,9 +29,9 @@
             <div class="col-md-2 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" id="criticpart_btn_new" title="New" onclick="criticpart_btn_new_eC()"><i class="fas fa-file"></i></button>
-                    <button class="btn btn-outline-success" id="criticpart_btn_save" title="Save as Sepreadsheet" onclick="criticpart_btn_save_eC(this)"><i class="fas fa-file-excel"></i></button>
+                    <button class="btn btn-outline-success" id="criticpart_btn_save" title="Generate Critical Part Report" onclick="criticpart_btn_save_eC(this)">Check Crticial Part</button>
                 </div>
-            </div>            
+            </div>
         </div>
         <div class="row">
             <div class="col-md-12 mb-1">
@@ -45,7 +45,12 @@
             </ul>
                 <div class="tab-content" id="criticpart_myTabContent">
                     <div class="tab-pane fade show active" id="criticpart_tabRM" role="tabpanel" aria-labelledby="home-tab">
-                        <div class="container-fluid">                        
+                        <div class="container-fluid">
+                            <div class="row pt-3">
+                                <div class="col-md-12 mb-1">
+                                    <button class="btn btn-outline-success btn-sm" title="Generate Shortage Part Report" onclick="criticpart_btn_loc_eC(this)">Check Shortage Part</button>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-12 mb-1 table-responsive">
                                     <div id="vcritical_partcd"></div>
@@ -77,7 +82,7 @@
         let FGList = datanya_FG.filter((data) => data[0].length > 1)
         let RMList = datanya_RM.filter((data) => data[0].length > 1)
         RMList = [...new Set(RMList.map(data => data[0]))]
-        FGList = [...new Set(FGList.map(data => data[0]))]        
+        FGList = [...new Set(FGList.map(data => data[0]))]
         p.disabled = true
         p.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'
         $.ajax({
@@ -88,7 +93,7 @@
                 const blob = new Blob([response], { type: "application/vnd.ms-excel" })
                 const fileName = business==='PSI2PPZOMI' ? `Daily Stock Report On ${cutoffdate}.xlsx` : `Critical Part ${business} On ${cutoffdate}.xlsx`
                 saveAs(blob, fileName)
-                p.innerHTML = '<i class="fas fa-file-excel"></i>'
+                p.innerHTML = 'Check Crticial Part'
                 p.disabled = false
                 alertify.success('Done')
             },
@@ -99,7 +104,7 @@
                         if (xhr.status == 200) {
                             xhr.responseType = "blob";
                         } else {
-                            p.innerHTML = '<i class="fas fa-file-excel"></i>'
+                            p.innerHTML = 'Check Crticial Part'
                             p.disabled = false
                             xhr.responseType = "text";
                         }
@@ -148,5 +153,41 @@
             },         
             
         ],    
-    });    
+    });
+
+    function criticpart_btn_loc_eC(p) {
+        let datanya_RM = criticpart_sso_part.getData()
+        let RMList = datanya_RM.filter((data) => data[0].length > 1)
+        RMList = [...new Set(RMList.map(data => data[0]))]
+        const cutoffdate = criticpart_txt_date.value
+        p.disabled = true
+        $.ajax({
+            type: "POST",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>transaction/shortage-part-report",
+            data: {rm: RMList, date : cutoffdate },
+            success: function (response) {
+                alertify.success('Done')
+                const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                const fileName = `Shortage Part ${cutoffdate}.xlsx`
+                saveAs(blob, fileName)
+            },
+            xhr: function () {
+                const xhr = new XMLHttpRequest()
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 2) {
+                        if (xhr.status == 200) {
+                            p.innerHTML = 'Check Shortage Part'
+                            p.disabled = false
+                            xhr.responseType = "blob";
+                        } else {
+                            p.innerHTML = 'Check Shortage Part'
+                            p.disabled = false
+                            xhr.responseType = "text";
+                        }
+                    }
+                }
+                return xhr
+            },
+        })
+    }
 </script>
