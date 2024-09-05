@@ -487,10 +487,47 @@
       </div>
     </div>
 </div>
+<div class="modal fade" id="SPL_MOD_PROCD">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Process Selection</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col">
+                    <div class="alert alert-warning" role="alert">
+                        Process is required
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Process</span>
+                        <select class="form-select" id="spl_mod_procd_selection" required>
+                            <option value="-">-</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-primary" id="spl_mod_procd_btn_ok" onclick="spl_mod_procd_btn_ok_e_click(this)">OK</button>
+        </div>
+      </div>
+    </div>
+</div>
 <div id='spl_contextmenu'></div>
 <input type="hidden" id="spl_hid_idx">
 <script>
     var spl_rowsObj = {}
+    var spl_mc = ''
+    var spl_grouped_rows = 0
     var spl_contextMenu = jSuites.contextmenu(document.getElementById('spl_contextmenu'), {
         items:[
             {
@@ -938,6 +975,12 @@
             let mitemcd = $("#psn_txt_itmcd").val();
             let morder = $('#psn_sel_order').val();
             let mval = $(this).val();
+
+            if(spl_grouped_rows>1 && spl_mod_procd_selection.value === '-') {
+                $("#SPL_MOD_PROCD").modal('show')
+                return
+            }
+
             if(mpsn.trim()==''){
                 document.getElementById('psn_txt_psn').focus();
                 alertify.message('Please fill PSN No');
@@ -997,7 +1040,15 @@
                 $.ajax({
                     type: "post",
                     url: "<?=base_url('SPL/scn_set')?>",
-                    data: {inpsn: mpsn, incat: mcat, inline: mline, infr: mfedr, incode : mitemcd, inqty: mqty, inlot:mlot, inorder: morder},
+                    data: {inpsn: mpsn, incat: mcat, 
+                        inline: mline, 
+                        infr: mfedr, 
+                        incode : mitemcd, 
+                        inqty: mqty, 
+                        inlot:mlot, 
+                        inorder: morder,
+                        inMC: spl_mc,
+                        inProcess : spl_mod_procd_selection.value},
                     dataType: "text",
                     success: function (response) {
                         switch(response){
@@ -1047,6 +1098,11 @@
                     if(response.data[0].cd=='0'){
                         alertify.warning(response[0].msg);
                     } else {
+                        let inputs = '<option value="-">-</option>';
+                        response.Processes.forEach((arrayItem) => {
+                            inputs += `<option value="${arrayItem['SPL_PROCD']}">${arrayItem['SPL_PROCD']}</option>`
+                        })
+                        spl_mod_procd_selection.innerHTML = inputs
                         //per JOBS
                         let mjobs =[];
                         let strjob = '';
@@ -1097,6 +1153,9 @@
                             newcell = newrow.insertCell(0);
                             newcell.style.cssText = "cursor:pointer"
                             newcell.onclick = function() {
+                                spl_mc = response.datav[i].SPL_MC
+                                spl_grouped_rows = response.datav[i].GROUPEDROWS
+                                spl_mod_procd_selection.value = spl_grouped_rows > 1 ? '-' : response.datav[i].SPL_PROCD
                                 document.getElementById('psn_sel_order').value = response.datav[i].SPL_ORDERNO
                                 document.getElementById('psn_txt_rackcd').value = response.datav[i].SPL_RACKNO
                                 document.getElementById('psn_txt_itmcd').value = response.datav[i].SPL_ITMCD
@@ -1460,6 +1519,9 @@
     $("#SPL_CHANGE_ISSUE_MOD").on('shown.bs.modal', function(){
         spl_cid_txtpsn.focus()
     })
+    $("#SPL_MOD_PROCD").on('hidden.bs.modal', function(){
+        psn_txt_itmqty.focus()
+    })
     $("#SPL_PROGRESS").on('shown.bs.modal', function(){
         let mpsn = document.getElementById("psn_txt_psn").value;
         $.ajax({
@@ -1721,5 +1783,9 @@
             
             }
         });
+    }
+
+    function spl_mod_procd_btn_ok_e_click(p) {
+        $("#SPL_MOD_PROCD").modal('hide')
     }
 </script>
