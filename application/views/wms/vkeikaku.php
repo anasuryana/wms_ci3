@@ -29,7 +29,7 @@
                     </select>
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bars"></i></button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" onclick="keikaku_load_all()"><i class="fas fa-hurricane text-warning"></i> Open All Line</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="keikakuShowLineModal()">Open Multiple Line</a></li>
                     </ul>
                 </div>
             </div>
@@ -158,6 +158,7 @@
                             <div class="col-md-6 mb-1 text-end">
                                 <div class="btn-group btn-group-sm">
                                     <button class="btn btn-outline-primary" id="keikaku_btn_run_prodplan" title="Run formula" onclick="keikaku_btn_run_prodplan_eC(this)">Run</button>
+                                    <button class="btn btn-outline-primary" id="keikaku_btn_run_filter_wo_prodplan" title="Filter" onclick="keikaku_btn_run_filter_wo_prodplan_eC(this)">Filter</button>
                                 </div>
                             </div>
                         </div>
@@ -173,6 +174,39 @@
     </div>
 </div>
 <!-- Modal -->
+<div class="modal fade" id="keikakuLineListModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Line selection</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive" id="keikakuLineTblDiv">
+                        <table id="keikakuLineTbl" class="table table-sm table-striped table-bordered table-hover">
+                            <thead class="table-light text-center">
+                                <tr>
+                                    <th><input id="keikakuCheckAll" class="form-check-input" type="checkbox"></th>
+                                    <th>Line</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="keikakuBtnOpen" onclick="keikakuBtnOpenOnClick(this)">Open</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="modal fade" id="keikakuUploadProdplanModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -477,7 +511,7 @@
 
     var keikaku_prodplan_sso = jspreadsheet(keikaku_prodplan_spreadsheet, {
         columns : [
-            ...Array.from({length: 9+24}, (_, i) => {
+            ...Array.from({length: 9+36}, (_, i) => {
                             const objek = Object.create({
                                 type : 'text',
                                 readOnly : true
@@ -517,22 +551,23 @@
         allowRenameColumn : false,
         allowDeleteRow : false,
         rowDrag:false,
+        rowResize:true,
         columnResize:false,
         data: [
-            ['', '', '' ,'','', '','','Date','','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
-            ['', '', '' ,'','', '','','Time','','7','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6'],
-            ['', '', '' ,'','', '','','Change Model','','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
-            ['SEQ', '', 'MODEL' ,'WO No','LOT', 'Production','S/T','Time', '','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6','7'],
-            ['#', '', '' ,'','', 'Quantity','(H)','Working Time','Retention Time','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
-            ['', 'Side', 'Type' ,'Spec','', 'Assy Code','Lot S/T','Efficiency','%','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
-            ['', '', '' ,'','', '','(H)','Shift','TOTAL','Morning','','','','','','','','','','','',  'Night','','','','','','','','','','' ,''],
+            ['', '', '' ,'','', '','','Date','','','','','','','','','','','','','',  '','','','','','','','','','','' ,'','','','','','','','','','','','' ,''],
+            ['', '', '' ,'','', '','','Time','','7','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6', '7','8','9','10','11','12','13','14','15','16','17','18'],
+            ['', '', '' ,'','', '','','Change Model','','','','','','','','','','','','','',  '','','','','','','','','','','' ,'', '','','','','','','','','','','' ,''],
+            ['SEQ', '', 'MODEL' ,'WO No','LOT', 'Production','S/T','Time', '','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6','7','8','9','10','11','12','13','14','15','16','17','18','19'],
+            ['#', '', '' ,'','', 'Quantity','(H)','Working Time','Retention Time','','','','','','','','','','','','',  '','','','','','','','','','','' ,'', '','','','','','','','','','','' ,''],
+            ['', 'Side', 'Type' ,'Spec','', 'Assy Code','Lot S/T','Efficiency','%','','','','','','','','','','','','',  '','','','','','','','','','','' ,'', '','','','','','','','','','','' ,''],
+            ['', '', '' ,'','', '','(H)','Shift','TOTAL','Morning','','','','','','','','','','','',  'Night','','','','','','','','','','' ,'', 'Morning','','','','','','','','','','',''],
         ],
         copyCompatibility:true,
         columnSorting:false,
         allowInsertRow : false,
         updateTable: function(el, cell, x, y, source, value, id) {
 
-            if (Array.from({length: 33}, (_, i) => i).includes(x) && [0,1,2,3,4,5,6].includes(y)) {
+            if (Array.from({length: 42}, (_, i) => i).includes(x) && [0,1,2,3,4,5,6].includes(y)) {
                 cell.classList.add('readonly');
                 cell.style.cssText = "font-weight: bold; text-align:center"
             }
@@ -548,6 +583,12 @@
             if(Array.from({length: 2}, (_, i) => i+31).includes(x) && y===1) {
                 cell.classList.add('keikakuVioletColor')
             }
+            if(Array.from({length: 10}, (_, i) => i+33).includes(x) && y===1) {
+                cell.classList.add('keikakuBlueColor')
+            }
+            if(Array.from({length: 2}, (_, i) => i+43).includes(x) && y===1) {
+                cell.classList.add('keikakuVioletColor')
+            }
 
             if(Array.from({length: 9}, (_, i) => i+9).includes(x) && y===3) {
                 cell.classList.add('keikakuBlueColor')
@@ -561,6 +602,12 @@
             if(Array.from({length: 3}, (_, i) => i+30).includes(x) && y===3) {
                 cell.classList.add('keikakuVioletColor')
             }
+            if(Array.from({length: 9}, (_, i) => i+33).includes(x) && y===3) {
+                cell.classList.add('keikakuBlueColor')
+            }
+            if(Array.from({length: 3}, (_, i) => i+42).includes(x) && y===3) {
+                cell.classList.add('keikakuVioletColor')
+            }
 
             if(Array.from({length: 9}, (_, i) => i+9).includes(x) && y===4) {
                 cell.classList.add('keikakuBlueColor')
@@ -572,6 +619,12 @@
                 cell.classList.add('keikakuGreenColor')
             }
             if(Array.from({length: 3}, (_, i) => i+30).includes(x) && y===4) {
+                cell.classList.add('keikakuVioletColor')
+            }
+            if(Array.from({length: 9}, (_, i) => i+33).includes(x) && y===4) {
+                cell.classList.add('keikakuBlueColor')
+            }
+            if(Array.from({length: 3}, (_, i) => i+42).includes(x) && y===4) {
                 cell.classList.add('keikakuVioletColor')
             }
             if(x===7) {
@@ -602,7 +655,7 @@
         tableOverflow:true,
         tableHeight: ($(window).height()-keikaku_stack1.offsetHeight-keikaku_stack2.offsetHeight - 160) + 'px',
         mergeCells:{
-            J7:[12,1],V7:[12,1]
+            J7:[12,1],V7:[12,1], AH7:[12,1]
         },
         freezeColumns: 9,
         minDimensions: [50,10],
@@ -622,6 +675,46 @@
                     inputs += `<option value="${arrayItem['line_code']}">${arrayItem['line_code']}</option>`
                 })
                 keikaku_line_input.innerHTML = inputs
+
+
+                let mydes = document.getElementById("keikakuLineTblDiv");
+                let myfrag = document.createDocumentFragment();
+                let mtabel = document.getElementById("keikakuLineTbl");
+                let cln = mtabel.cloneNode(true);
+                myfrag.appendChild(cln);
+                let tabell = myfrag.getElementById("keikakuLineTbl");
+                let checkBox = myfrag.getElementById("keikakuCheckAll");
+                let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                let newrow, newcell;
+
+                tableku2.innerHTML='';
+                response.data.forEach((arrayItem) => {
+                    let _EleInput = document.createElement('input')
+                    _EleInput.type = 'checkbox'
+                    _EleInput.classList.add('form-check-input')
+
+                    newrow = tableku2.insertRow(-1);
+                    newcell = newrow.insertCell(0);
+                    newcell.classList.add('text-center')
+                    newcell.append(_EleInput)
+
+                    newcell = newrow.insertCell(1);
+                    newcell.classList.add('text-center')
+                    newcell.innerText = arrayItem['line_code']
+                })
+                mydes.innerHTML='';
+                mydes.appendChild(myfrag);
+
+
+                checkBox.onclick = () => {
+                    let ttlrows = tableku2.rows.length
+                    for (let i = 0; i<ttlrows; i++)
+                    {
+                        tableku2.rows[i].cells[0].getElementsByTagName('input')[0].checked = checkBox.checked
+                    }
+                }
+
+                checkBox.checked = false
             }
         });
     }
@@ -871,7 +964,7 @@
             }
 
             if(c>24) {
-                _theShift = 'M' 
+                _theShift = 'M'
             }
 
             let _theTime = c === 17 ? '23' : numeral(inputSS[9][c]).value()-1
@@ -896,7 +989,7 @@
             user_id: uidnya,
             detail : dataDetail
         }
-        
+
         if(confirm('Are you sure want to save ?')) {
             const div_alert = document.getElementById('keikaku-div-alert')
             pThis.disabled = true
@@ -1152,16 +1245,6 @@
         });
     }
 
-    function keikaku_load_all() {
-        let lines = document.getElementById('keikaku_line_input').options
-        for(let item of lines) {
-            if(item.value!='-') {
-                const endPoint = '<?=base_url('Keikaku')?>' + '?line=' + btoa(item.value) + '&date=' + keikaku_date_input.value
-                window.open(endPoint)
-            }
-        }
-    }
-
     function _importProdPlanDraft(data) {
         keikakuformFile.disabled = true
         //Read the Excel File data.
@@ -1366,6 +1449,7 @@
             production_date: keikaku_date_input.value,
         }
         pThis.disabled = true
+
         $.ajax({
             type: "GET",
             url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/production-plan",
@@ -1374,13 +1458,13 @@
             success: function (response) {
                 pThis.disabled = false
                 let inputSS = [
-                                ['', '', '' ,'','', '','','Date','','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
-                                ['', '', '' ,'','', '','','Time','','7','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6'],
-                                ['', '', '' ,'','', '','','Change Model','','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
-                                ['SEQ', '', 'MODEL' ,'WO No','LOT', 'Production','S/T','Time', '','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6','7'],
-                                ['#', '', '' ,'','', 'Quantity','(H)','Working Time','Retention Time','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
-                                ['', 'Side', 'Type' ,'Spec','', 'Assy Code','Lot S/T','Efficiency','%','','','','','','','','','','','','',  '','','','','','','','','','','' ,''],
-                                ['', '', '' ,'','', '','(H)','Shift','TOTAL','Morning','','','','','','','','','','','',  'Night','','','','','','','','','','' ,''],
+                                ['', '', '' ,'','', '','','Date','','','','','','','','','','','','','',  '','','','','','','','','','','' ,'',  '','','','','','','','','','','' ,''],
+                                ['', '', '' ,'','', '','','Time','','7','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6',  '7','8','9','10','11','12','13','14','15','16','17','18'],
+                                ['', '', '' ,'','', '','','Change Model','','','','','','','','','','','','','',  '','','','','','','','','','','' ,'',  '','','','','','','','','','','' ,''],
+                                ['SEQ', '', 'MODEL' ,'WO No','LOT', 'Production','S/T','Time', '','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6','7', '8','9','10','11','12','13','14','15','16','17','18','19'],
+                                ['#', '', '' ,'','', 'Quantity','(H)','Working Time','Retention Time','','','','','','','','','','','','',  '','','','','','','','','','','' ,'',  '','','','','','','','','','','' ,''],
+                                ['', 'Side', 'Type' ,'Spec','', 'Assy Code','Lot S/T','Efficiency','%','','','','','','','','','','','','',  '','','','','','','','','','','' ,'',  '','','','','','','','','','','' ,''],
+                                ['', '', '' ,'','', '','(H)','Shift','TOTAL','Morning','','','','','','','','','','','',  'Night','','','','','','','','','','' ,'',  'Morning','','','','','','','','','','' ,'' ],
                             ];
                 keikaku_prodplan_sso.setData(inputSS)
                 const totalRowsMatrix = response.asProdplan.length
@@ -1422,13 +1506,15 @@
                         _newRow4.push('')
 
                         let totalQtyRun = 0
-                        for(let c=9; c<(9+12+12); c++) {
+                        for(let c=9; c<(9+12+12+12); c++) {
                             if(inputSS[1][c] == Number(response.asProdplan[0][(c-3)])) {
                                 inputSS[4][c] = Number(response.asProdplan[2][(c-3)]).toFixed(2)
-
-                                _newRow3[8]+=Number(response.asProdplan[i][c-3])
+                                if(c<33) {
+                                    _newRow3[8]+=Number(response.asProdplan[i][c-3])
+                                }
                                 _newRow3.push(response.asProdplan[i][c-3])
-                                totalQtyRun += Number(response.asProdplan[i][c-3])
+
+                                    totalQtyRun += Number(response.asProdplan[i][c-3])
 
                                 if(Number(response.asProdplan[i][c-3])==0) {
                                     _newRow4.push('')
@@ -1486,7 +1572,7 @@
                         _newRow1.push(0)
 
                         if(response.asProdplan[i][1]) {
-                            for(let c=9; c<(9+12+12); c++) {
+                            for(let c=9; c<(9+12+12+12); c++) {
                                 if(inputSS[1][c] == Number(response.asProdplan[0][(c-3)])) {
                                     if(response.asProdplan[i][c-3] >0) {
                                         _newRow1.push(1)
@@ -1525,5 +1611,22 @@
                 alertify.error(xthrow)
             }
         });
+    }
+
+    function keikakuShowLineModal() {
+        $("#keikakuLineListModal").modal('show')
+    }
+
+    function keikakuBtnOpenOnClick() {
+        let tableku2 = keikakuLineTbl.getElementsByTagName("tbody")[0];
+        let ttlrows = tableku2.rows.length
+        for (let i = 0; i<ttlrows; i++)
+        {
+            if(tableku2.rows[i].cells[0].getElementsByTagName('input')[0].checked) {
+                const _line = tableku2.rows[i].cells[1].innerText
+                const endPoint = '<?=base_url('Keikaku')?>' + '?line=' + btoa(_line) + '&date=' + keikaku_date_input.value
+                window.open(endPoint)
+            }
+        }
     }
 </script>
