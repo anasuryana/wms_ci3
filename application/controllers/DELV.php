@@ -516,7 +516,7 @@ class DELV extends CI_Controller
                         } else {
                             $image_name = trim($r['SI_ITMCD']) . "\t\t\t\t\t" . number_format($r['TTLQTY'], 0, "", "") . "\t" . number_format($r['REMARK'], 0, "", "") . " BOX " . $cpono . " RFID";
                         }
-                        $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" 1 ");
+                        $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" 1 ");
                     } else {
                         if ($ASPFLAG || $KDFLAG) {
                             $image_name = trim($r['SI_ITMCD']) . "\t\t\t\t\t" . number_format($r['TTLQTY'], 0, "", "") . "\t" . number_format($r[$ASPFLAG ? 'TTLQTY' : 'REMARK'], 0, "", "") . " BOX";
@@ -524,7 +524,7 @@ class DELV extends CI_Controller
                         } else {
                             $image_name = trim($r['SI_ITMCD']) . "\t\t\t\t\t" . number_format($r['TTLQTY'], 0, "", "") . "\t" . number_format($r['REMARK'], 0, "", "") . " BOX";
                         }
-                        $cmd = escapeshellcmd("Python d:\Apache24\htdocs\wms\smt.py \"$image_name\" 1 ");
+                        $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" 1 ");
                     }
                     $op = shell_exec($cmd);
                     $image_name = str_replace("/", "xxx", $image_name);
@@ -557,7 +557,7 @@ class DELV extends CI_Controller
                 }
             }
         }
-        $pdf->Output('I', ' FG Picking Result Doc  ' . date("d-M-Y") . '.pdf');
+        $pdf->Output('I', ' FG Picking Result Doc  ' . date("d-M-Y") . '.pdf', true);
     }
 
     public function create_confirmation()
