@@ -1007,12 +1007,12 @@ class ITH_mod extends CI_Model
     }
     public function select_output_prd_byjob($dtfrom, $dtto, $pjob, $pbg)
     {
-        $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_QTY,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,PDPP_BSGRP,SER_RMRK FROM ITH_TBL inner join SER_TBL
+        $qry = "SELECT ITH_ITMCD,MITM_ITMD1, ITH_QTY,SER_LOTNO, SER_DOC,ITH_QTY,ITH_SER,concat(MSTEMP_FNM, ' ', MSTEMP_LNM) PIC,ITH_LUPDT,SER_BSGRP PDPP_BSGRP,SER_RMRK 
+        FROM ITH_TBL inner join SER_TBL
         on ITH_SER=SER_ID INNER JOIN MITM_TBL ON ITH_ITMCD=MITM_ITMCD
         INNER JOIN MSTEMP_TBL ON ITH_USRID=MSTEMP_ID
-        INNER JOIN XWO ON SER_DOC=PDPP_WONO
         WHERE ITH_WH='ARPRD1' AND (ITH_LUPDT BETWEEN ? AND ?)
-        AND ITH_QTY > 0 AND ITH_FORM='INC-PRD-FG' AND ITH_DOC LIKE ? and PDPP_BSGRP IN ($pbg)
+        AND ITH_QTY > 0 AND ITH_FORM='INC-PRD-FG' AND ITH_DOC LIKE ? and SER_BSGRP IN ($pbg)
         order by ITH_LUPDT ASC ";
         $query = $this->db->query($qry, [$dtfrom, $dtto, '%' . $pjob . '%']);
         return $query->result_array();

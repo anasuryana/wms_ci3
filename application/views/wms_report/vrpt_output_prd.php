@@ -225,13 +225,9 @@
         let dtto = document.getElementById('routput_prd_txt_dt2').value;
         let reporttype = $('input[name="routput_prd_typereport"]:checked').val();
         let assyno = document.getElementById('routput_prd_txt_assy').value;
-        // let bgroup = $('#routput_prd_bisgrup').selectpicker('val');
-        let bgroup = $('#routput_prd_bisgrup').combobox('getValues');
-        let sbsgroup='';
-        for(let i=0;i<bgroup.length;i++){
-            sbsgroup += bgroup[i] + "|";
-        }
-        sbsgroup = sbsgroup.substr(0,sbsgroup.length-1);        
+        
+        let bgroup = routput_prd_bisgrup.value;
+        let sbsgroup=bgroup;
         Cookies.set('CKPSI_DDATE', dtfrom, {expires:365});
         Cookies.set('CKPSI_DDATE2', dtto, {expires:365});
         Cookies.set('CKPSI_DREPORT', reporttype, {expires:365});
