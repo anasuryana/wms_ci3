@@ -21,6 +21,8 @@ class SER extends CI_Controller
     {
         parent::__construct();
         $this->load->helper('url');
+        $this->load->helper('file');
+        $this->load->helper('directory');
         $this->load->library('session');
         $this->load->library('RMCalculator');
         $this->load->library('Code39e128');
@@ -980,13 +982,13 @@ class SER extends CI_Controller
         ];
         $toret = $this->SER_mod->insert($datas);
         $this->ITH_mod->insert([
-            'ITH_ITMCD' => $citem, 
-            'ITH_DATE' => $cproddt, 
-            'ITH_FORM' => 'INC-PRD-FG', 
-            'ITH_DOC' => $cjob, 
-            'ITH_QTY' => $cqty, 
-            'ITH_WH' => 'ARPRD1', 
-            'ITH_SER' => $newid, 
+            'ITH_ITMCD' => $citem,
+            'ITH_DATE' => $cproddt,
+            'ITH_FORM' => 'INC-PRD-FG',
+            'ITH_DOC' => $cjob,
+            'ITH_QTY' => $cqty,
+            'ITH_WH' => 'ARPRD1',
+            'ITH_SER' => $newid,
             'ITH_LUPDT' => $cproddt . ' ' . date('H:i:s'),
             'ITH_USRID' => $this->session->userdata('nama'),
         ]);
@@ -1178,7 +1180,7 @@ class SER extends CI_Controller
 
             $noserencode = "Z1" . trim($cmitmid) . "&" . trim($crank) . "|Z7" . trim($cprdline) . "&" . $cprdshift . "|Z2" . $cwo . "|Z3" . number_format($cserqty, 0, '', '') . "|Z4" . trim($cmitmd1) . "|Z5" . $noseri . "|Z6";
             $image_name = $noserencode;
-            $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" 1 ");
+            $cmd = escapeshellcmd("Python " . FCPATH . "smt.py \"$image_name\" 1 ");
             $op = shell_exec($cmd);
             $image_name = str_replace("/", "xxx", $image_name);
             $image_name = str_replace(" ", "___", $image_name);
@@ -1541,7 +1543,7 @@ class SER extends CI_Controller
                 $pdf->Text($th_x + 35 + 15, $th_y + 66, ': ' . $OMR_UNIQUE);
                 $OMRQR .= $OMR_PIM . $OMR_QTY . $OMR_DT . $OMR_CVT . $OMR_MC . $OMR_DIES . $OMR_SHIFT . $OMR_UNIQUE . $OMR_LOT;
                 $image_omr = $OMRQR;
-                $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_omr\" 1 ");
+                $cmd = escapeshellcmd("Python " . FCPATH . "smt.py \"$image_omr\" 1 ");
                 $op = shell_exec($cmd);
                 $image_omr = str_replace("/", "xxx", $image_omr);
                 $image_omr = str_replace(" ", "___", $image_omr);
@@ -1556,7 +1558,7 @@ class SER extends CI_Controller
 
             $noserencode = "Z1" . trim($cmitmid) . "&" . trim($crank) . "|Z7" . trim($cprdline) . "&" . $cprdshift . "|Z2" . $cwo . "|Z3" . number_format($cserqty, 0, '', '') . "|Z4" . trim($cmitmd1) . "|Z5" . $noseri . "|Z6";
             $image_name = $noserencode; //$noseri; //'LB'.$cmitmid.'|'.$cwo.'|'.number_format($cserqty);
-            $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" 1 ");
+            $cmd = escapeshellcmd("Python " . FCPATH . "smt.py \"$image_name\" 1 ");
             $op = shell_exec($cmd);
             $image_name = str_replace("/", "xxx", $image_name);
             $image_name = str_replace(" ", "___", $image_name);
@@ -1587,6 +1589,7 @@ class SER extends CI_Controller
             $lbltype = $_COOKIE["PRINTLABEL_FG_LBLTYPE"];
             $pser = str_replace(str_split('"[]'), '', $pser);
             $pser = explode(",", $pser);
+            $ItemCodeTodelete = '';
             $rs = [];
             if ($this->SERC_mod->check_Primary(['SERC_NEWID' => $pser[0]]) > 0) {
                 $rs = $this->SER_mod->selectBCField_in_nomega($pser);
@@ -1618,6 +1621,7 @@ class SER extends CI_Controller
                     if ($r->SER_DOC === '9A04-3263941-5') {
                         $awo = explode('-', '23-9A04-3263941-5');
                     }
+                    $ItemCodeTodelete = trim($r->SER_ITMID);
                     $ccustnm = $r->MCUS_CUSNM;
                     $cuscd = trim($r->PDPP_BSGRP);
                     $noseri = $r->SER_ID;
@@ -1733,7 +1737,7 @@ class SER extends CI_Controller
                     $pdf->Text(30, 64, ':');
 
                     $image_name = 'LB' . $cmitmid . '|' . $cwo . '|' . number_format($cserqty);
-                    $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" ");
+                    $cmd = escapeshellcmd("Python " . FCPATH . "smt.py \"$image_name\" ");
                     $op = shell_exec($cmd);
                     $image_name = str_replace("/", "xxx", $image_name);
                     $image_name = str_replace(" ", "___", $image_name);
@@ -1745,6 +1749,14 @@ class SER extends CI_Controller
                     $pdf->Text(3, 74, 'PT. SMT INDONESIA');
                     // $pdf->Code39(32,71.5,$r->SER_ID,0.5,4);
                     $pdf->Text(85, 74, $r->SER_ID);
+                }
+            }
+
+            $files = directory_map('./assets/imgs');
+
+            foreach ($files as $r) {
+                if (str_contains($r, $ItemCodeTodelete)) {
+                    $tesDelete = unlink('./assets/imgs/' . $r);
                 }
             }
 
@@ -1861,7 +1873,7 @@ class SER extends CI_Controller
 
             $noserencode = "Z1" . trim($cmitmid) . "&" . trim($crank) . "|Z7" . trim($cprdline) . "&" . $cprdshift . "|Z2" . $cwo . "|Z3" . number_format($cserqty, 0, '', '') . "|Z4" . trim($cmitmd1) . "|Z5" . $noseri . "|Z6";
             $image_name = $noserencode;
-            $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" 2 ");
+            $cmd = escapeshellcmd("Python " . FCPATH . "smt.py \"$image_name\" 2 ");
             $op = shell_exec($cmd);
             $image_name = str_replace("/", "xxx", $image_name);
             $image_name = str_replace(" ", "___", $image_name);
