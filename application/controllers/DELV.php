@@ -553,6 +553,7 @@ class DELV extends CI_Controller
                         $left_y += $h_content;
                         $cury += $h_content;
                     }
+                    unlink('./assets/imgs/' . $image_name . ".png");
                     $no++;
                 }
             }
