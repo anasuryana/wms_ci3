@@ -434,17 +434,14 @@ table.dataTable.fixedHeader-floating {
         $("#ser_txt_prodline").focus();
     });
     initLASTSERList();
-    function initLASTSERList(){
-        var mdoc = $("#ser_txt_jobno_tobfind").val();
-        var mitem = $("#ser_txt_item_tobfind").val();
+    function initLASTSERList() {
         tableSERLAST =  $('#ser_tbllastjobno').DataTable({
-            responsive: true,
-            destroy: true,
-            ordering: true,
+            scrollX : true,
+            // responsive: true,
+            // destroy: true,
             ajax: {
                 url : '<?=base_url("SER/getdoclike")?>',
                 type: 'get',
-                data: {indoc: mdoc, initm: mitem}
             },
             columns:[
                 { "data": 'SER_ID',
@@ -469,10 +466,11 @@ table.dataTable.fixedHeader-floating {
                 },
                 {
                     targets: 0,
-                    className: 'text-center'
+                    className: 'text-center',
+                    orderable: false
                 },
             ],
-            initComplete: function (settings, json) {
+            footerCallback: function ( row, data, start, end, display ) {
                 let apik = this.api();
                 let intVal = function ( i ) {
                                 return typeof i === 'string' ?
@@ -487,7 +485,10 @@ table.dataTable.fixedHeader-floating {
                         return intVal(a) + intVal(b);
                     }, 0 );
                 apik.column(3).footer().innerHTML = 'Total: ' + numeral(total).format(',')
-            },
+            }
+        }).on('preXhr.dt', function ( e, settings, data ) {
+            data.indoc = $("#ser_txt_jobno_tobfind").val()
+            data.initm = $("#ser_txt_item_tobfind").val()
         });
     }
     $("#ser_btn_findser").click(function (e) {
@@ -529,7 +530,7 @@ table.dataTable.fixedHeader-floating {
         document.getElementById('ser_txt_lblcolor').value=mcolor;
         $("#ser_txt_item_tobfind").val(mitem); $("#ser_txt_jobno_tobfind").val(mjob);
         $("#SER_MODJOB").modal('hide');
-        initLASTSERList();
+        tableSERLAST.ajax.reload();
     });
 
 
