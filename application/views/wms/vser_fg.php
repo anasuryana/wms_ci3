@@ -365,7 +365,7 @@ table.dataTable.fixedHeader-floating {
             success: function (response) {
                 if(response.status[0].cd!='0'){
                     alertify.success(response.status[0].msg);
-                    initLASTSERList();
+                    tableSERLAST.ajax.reload();
                 } else {
                     alertify.message(response.status[0].msg);
                 }
@@ -423,7 +423,7 @@ table.dataTable.fixedHeader-floating {
                     alertify.message(response[0].msg);
                     document.getElementById('ser_txt_jobno_tobfind').value=response[0].doc;
                     document.getElementById('ser_txt_item_tobfind').value=response[0].itemcd;
-                    initLASTSERList();
+                    tableSERLAST.ajax.reload();
                 }
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
@@ -437,8 +437,6 @@ table.dataTable.fixedHeader-floating {
     function initLASTSERList() {
         tableSERLAST =  $('#ser_tbllastjobno').DataTable({
             scrollX : true,
-            // responsive: true,
-            // destroy: true,
             ajax: {
                 url : '<?=base_url("SER/getdoclike")?>',
                 type: 'get',
@@ -686,7 +684,7 @@ table.dataTable.fixedHeader-floating {
                             $("#ser_txt_item_tobfind").val(mitem); $("#ser_txt_jobno_tobfind").val(mjob);
                             $("#SER_MODSELJOB").modal('hide');
 
-                            initLASTSERList();
+                            tableSERLAST.ajax.reload();
                         } else {
                             alertify.message('all labels are already created');
                         }
