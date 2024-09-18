@@ -623,4 +623,8 @@
             PWPOL = {PWPOL_LENGTH: response.data[0].PWPOL_LENGTH, PWPOL_ISCOMPLEX: response.data[0].PWPOL_ISCOMPLEX}
         }
     });
+
+    window.onbeforeunload = function(e) {
+       return true
+    }
 </script>
