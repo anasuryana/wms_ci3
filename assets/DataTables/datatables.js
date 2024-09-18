@@ -4,20 +4,20 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.1.4/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.5
+ *   https://datatables.net/download/#dt/dt-2.1.6/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.3/rr-1.5.0/sc-2.4.3/sl-2.1.0
  *
  * Included libraries:
- *   DataTables 2.1.4, FixedColumns 5.0.1, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.2, RowReorder 1.5.0, Scroller 2.4.3, Select 2.0.5
+ *   DataTables 2.1.6, FixedColumns 5.0.1, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.3, RowReorder 1.5.0, Scroller 2.4.3, Select 2.1.0
  */
 
-/*! DataTables 2.1.4
+/*! DataTables 2.1.6
  * © SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     2.1.4
+ * @version     2.1.6
  * @author      SpryMedia Ltd
  * @contact     www.datatables.net
  * @copyright   SpryMedia Ltd.
@@ -266,6 +266,7 @@
 				"caption",
 				"layout",
 				"orderDescReverse",
+				"typeDetect",
 				[ "iCookieDuration", "iStateDuration" ], // backwards compat
 				[ "oSearch", "oPreviousSearch" ],
 				[ "aoSearchCols", "aoPreSearchCols" ],
@@ -489,7 +490,7 @@
 				} );
 			}
 			else {
-				_fnCallbackFire( oSettings, null, 'i18n', [oSettings]);
+				_fnCallbackFire( oSettings, null, 'i18n', [oSettings], true);
 				_fnInitialise( oSettings );
 			}
 		} );
@@ -538,7 +539,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs5/dt-2.1.4/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rr-1.5.0/sc-2.4.3/sl-2.0.5",
+		builder: "dt/dt-2.1.6/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.3/rr-1.5.0/sc-2.4.3/sl-2.1.0",
 	
 	
 		/**
@@ -1065,7 +1066,8 @@
 			active: 'current',
 			button: 'dt-paging-button',
 			container: 'dt-paging',
-			disabled: 'disabled'
+			disabled: 'disabled',
+			nav: ''
 		}
 	} );
 	
@@ -1228,7 +1230,7 @@
 		// is essential here
 		if ( prop2 !== undefined ) {
 			for ( ; i<ien ; i++ ) {
-				if ( a[ order[i] ][ prop ] ) {
+				if ( a[ order[i] ] && a[ order[i] ][ prop ] ) {
 					out.push( a[ order[i] ][ prop ][ prop2 ] );
 				}
 			}
@@ -2167,7 +2169,11 @@
 		for (var i=0 ; i<cols.length ; i++) {
 			var width = _fnColumnsSumWidth(settings, [i], false, false);
 	
-			cols[i].colEl.css('width', width);
+			// Need to set the min-width, otherwise the browser might try to collapse
+			// it further
+			cols[i].colEl
+				.css('width', width)
+				.css('min-width', width);
 		}
 	}
 	
@@ -2281,12 +2287,6 @@
 		var i, ien, j, jen, k, ken;
 		var col, detectedType, cache;
 	
-		// If SSP then we don't have the full data set, so any type detection would be
-		// unreliable and error prone
-		if (_fnDataSource( settings ) === 'ssp') {
-			return;
-		}
-	
 		// For each column, spin over the data type detection functions, seeing if one matches
 		for ( i=0, ien=columns.length ; i<ien ; i++ ) {
 			col = columns[i];
@@ -2296,6 +2296,12 @@
 				col.sType = col._sManualType;
 			}
 			else if ( ! col.sType ) {
+				// With SSP type detection can be unreliable and error prone, so we provide a way
+				// to turn it off.
+				if (! settings.typeDetect) {
+					return;
+				}
+	
 				for ( j=0, jen=types.length ; j<jen ; j++ ) {
 					var typeDetect = types[j];
 	
@@ -3133,6 +3139,9 @@
 					_fnWriteCell(nTd, display[i]);
 				}
 	
+				// column class
+				_addClass(nTd, oCol.sClass);
+	
 				// Visibility - add or remove as required
 				if ( oCol.bVisible && create )
 				{
@@ -3464,7 +3473,6 @@
 					var td = aoData.anCells[i];
 	
 					_addClass(td, _ext.type.className[col.sType]); // auto class
-					_addClass(td, col.sClass); // column class
 					_addClass(td, oSettings.oClasses.tbody.cell); // all cells
 				}
 	
@@ -4345,6 +4353,7 @@
 		}
 		settings.aiDisplay = settings.aiDisplayMaster.slice();
 	
+		_fnColumnTypes(settings);
 		_fnDraw( settings, true );
 		_fnInitComplete( settings );
 		_fnProcessingDisplay( settings, false );
@@ -5238,21 +5247,37 @@
 		// is because of Responsive which might remove `col` elements, knocking the alignment
 		// of the indexes out.
 		if (settings.aiDisplay.length) {
-			// Get the column sizes from the first row in the table
-			var colSizes = table.children('tbody').eq(0).children('tr').eq(0).children('th, td').map(function (vis) {
-				return {
-					idx: _fnVisibleToColumnIndex(settings, vis),
-					width: $(this).outerWidth()
+			// Get the column sizes from the first row in the table. This should really be a
+			// [].find, but it wasn't supported in Chrome until Sept 2015, and DT has 10 year
+			// browser support
+			var firstTr = null;
+	
+			for (i=0 ; i<settings.aiDisplay.length ; i++) {
+				var idx = settings.aiDisplay[i];
+				var tr = settings.aoData[idx].nTr;
+	
+				if (tr) {
+					firstTr = tr;
+					break;
 				}
-			});
+			}
 	
-			// Check against what the colgroup > col is set to and correct if needed
-			for (var i=0 ; i<colSizes.length ; i++) {
-				var colEl = settings.aoColumns[ colSizes[i].idx ].colEl[0];
-				var colWidth = colEl.style.width.replace('px', '');
+			if (firstTr) {
+				var colSizes = $(firstTr).children('th, td').map(function (vis) {
+					return {
+						idx: _fnVisibleToColumnIndex(settings, vis),
+						width: $(this).outerWidth()
+					}
+				});
 	
-				if (colWidth !== colSizes[i].width) {
-					colEl.style.width = colSizes[i].width + 'px';
+				// Check against what the colgroup > col is set to and correct if needed
+				for (var i=0 ; i<colSizes.length ; i++) {
+					var colEl = settings.aoColumns[ colSizes[i].idx ].colEl[0];
+					var colWidth = colEl.style.width.replace('px', '');
+	
+					if (colWidth !== colSizes[i].width) {
+						colEl.style.width = colSizes[i].width + 'px';
+					}
 				}
 			}
 		}
@@ -5395,7 +5420,11 @@
 			var width = _fnColumnsSumWidth( settings, this, true, false );
 	
 			if ( width ) {
+				// Need to set the width and min-width, otherwise the browser
+				// will attempt to collapse the table beyond want might have
+				// been specified
 				this.style.width = width;
+				this.style.minWidth = width;
 	
 				// For scrollX we need to force the column width otherwise the
 				// browser will collapse it. If this width is smaller than the
@@ -6780,6 +6809,7 @@
 			return new _Api( context, data );
 		}
 	
+		var i;
 		var settings = [];
 		var ctxSettings = function ( o ) {
 			var a = _toSettings( o );
@@ -6789,7 +6819,7 @@
 		};
 	
 		if ( Array.isArray( context ) ) {
-			for ( var i=0, ien=context.length ; i<ien ; i++ ) {
+			for ( i=0 ; i<context.length ; i++ ) {
 				ctxSettings( context[i] );
 			}
 		}
@@ -6804,7 +6834,16 @@
 	
 		// Initial data
 		if ( data ) {
-			this.push.apply(this, data);
+			// Chrome can throw a max stack error if apply is called with
+			// too large an array, but apply is faster.
+			if (data.length < 10000) {
+				this.push.apply(this, data);
+			}
+			else {
+				for (i=0 ; i<data.length ; i++) {
+					this.push(data[i]);
+				}
+			}
 		}
 	
 		// selector
@@ -9835,7 +9874,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.1.4";
+	DataTable.version = "2.1.6";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -11935,7 +11974,10 @@
 		colgroup: null,
 	
 		/** Delay loading of data */
-		deferLoading: null
+		deferLoading: null,
+	
+		/** Allow auto type detection */
+		typeDetect: true
 	};
 	
 	/**
@@ -13143,7 +13185,11 @@
 	
 		var host = $('<div/>')
 			.addClass(settings.oClasses.paging.container + (opts.type ? ' paging_' + opts.type : ''))
-			.append('<nav>');
+			.append(
+				$('<nav>')
+					.attr('aria-label', 'pagination')
+					.addClass(settings.oClasses.paging.nav)
+			);
 		var draw = function () {
 			_pagingDraw(settings, host.children(), opts);
 		};
@@ -13573,7 +13619,7 @@
 }));
 
 
-/*! DataTables Bootstrap 5 integration
+/*! DataTables styling integration
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -13624,108 +13670,6 @@ var DataTable = $.fn.dataTable;
 
 
 
-/**
- * DataTables integration for Bootstrap 5.
- *
- * This file sets the defaults and adds options to DataTables to style its
- * controls using Bootstrap. See https://datatables.net/manual/styling/bootstrap
- * for further information.
- */
-
-/* Set the defaults for DataTables initialisation */
-$.extend( true, DataTable.defaults, {
-	renderer: 'bootstrap'
-} );
-
-
-/* Default class modification */
-$.extend( true, DataTable.ext.classes, {
-	container: "dt-container dt-bootstrap5",
-	search: {
-		input: "form-control form-control-sm"
-	},
-	length: {
-		select: "form-select form-select-sm"
-	},
-	processing: {
-		container: "dt-processing card"
-	},
-	layout: {
-		row: 'row mt-2 justify-content-between',
-		cell: 'd-md-flex justify-content-between align-items-center',
-		tableCell: 'col-12',
-		start: 'dt-layout-start col-md-auto me-auto',
-		end: 'dt-layout-end col-md-auto ms-auto',
-		full: 'dt-layout-full col-md'
-	}
-} );
-
-
-/* Bootstrap paging button renderer */
-DataTable.ext.renderer.pagingButton.bootstrap = function (settings, buttonType, content, active, disabled) {
-	var btnClasses = ['dt-paging-button', 'page-item'];
-
-	if (active) {
-		btnClasses.push('active');
-	}
-
-	if (disabled) {
-		btnClasses.push('disabled')
-	}
-
-	var li = $('<li>').addClass(btnClasses.join(' '));
-	var a = $('<button>', {
-		'class': 'page-link',
-		role: 'link',
-		type: 'button'
-	})
-		.html(content)
-		.appendTo(li);
-
-	return {
-		display: li,
-		clicker: a
-	};
-};
-
-DataTable.ext.renderer.pagingContainer.bootstrap = function (settings, buttonEls) {
-	return $('<ul/>').addClass('pagination').append(buttonEls);
-};
-
-// DataTable.ext.renderer.layout.bootstrap = function ( settings, container, items ) {
-// 	var row = $( '<div/>', {
-// 			"class": items.full ?
-// 				'row mt-2 justify-content-md-center' :
-// 				'row mt-2 justify-content-between'
-// 		} )
-// 		.appendTo( container );
-
-// 	$.each( items, function (key, val) {
-// 		var klass;
-// 		var cellClass = '';
-
-// 		// Apply start / end (left / right when ltr) margins
-// 		if (val.table) {
-// 			klass = 'col-12';
-// 		}
-// 		else if (key === 'start') {
-// 			klass = '' + cellClass;
-// 		}
-// 		else if (key === 'end') {
-// 			klass = '' + cellClass;
-// 		}
-// 		else {
-// 			klass = ' ' + cellClass;
-// 		}
-
-// 		$( '<div/>', {
-// 				id: val.id || null,
-// 				"class": klass + ' ' + (val.className || '')
-// 			} )
-// 			.append( val.contents )
-// 			.appendTo( row );
-// 	} );
-// };
 
 
 return DataTable;
@@ -16863,7 +16807,7 @@ return DataTable;
 }));
 
 
-/*! Responsive 3.0.2
+/*! Responsive 3.0.3
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -16917,7 +16861,7 @@ var DataTable = $.fn.dataTable;
 /**
  * @summary     Responsive
  * @description Responsive tables plug-in for DataTables
- * @version     3.0.2
+ * @version     3.0.3
  * @author      SpryMedia Ltd
  * @copyright   SpryMedia Ltd.
  *
@@ -17089,7 +17033,6 @@ $.extend(Responsive.prototype, {
 		});
 
 		this._classLogic();
-		this._resizeAuto();
 
 		// Details handler
 		var details = this.c.details;
@@ -17126,18 +17069,6 @@ $.extend(Responsive.prototype, {
 			$(dt.table().node()).addClass('dtr-' + details.type);
 		}
 
-		dt.on('column-reorder.dtr', function (e, settings, details) {
-			that._classLogic();
-			that._resizeAuto();
-			that._resize(true);
-		});
-
-		// Change in column sizes means we need to calc
-		dt.on('column-sizing.dtr', function () {
-			that._resizeAuto();
-			that._resize();
-		});
-
 		// DT2 let's us tell it if we are hiding columns
 		dt.on('column-calc.dt', function (e, d) {
 			var curr = that.s.current;
@@ -17171,19 +17102,28 @@ $.extend(Responsive.prototype, {
 			});
 		});
 
-		dt.on('draw.dtr', function () {
-			that._controlClass();
-		}).on('init.dtr', function (e, settings, details) {
-			if (e.namespace !== 'dt') {
-				return;
-			}
+		// First pass when the table is ready
+		dt
+			.on('draw.dtr', function () {
+				that._controlClass();
+			})
+			.ready(function () {
+				that._resizeAuto();
+				that._resize();
 
-			that._resizeAuto();
-			that._resize();
-		});
+				// Attach listeners after first pass
+				dt.on('column-reorder.dtr', function (e, settings, details) {
+					that._classLogic();
+					that._resizeAuto();
+					that._resize(true);
+				});
 
-		// First pass - draw the table for the current viewport size
-		this._resize();
+				// Change in column sizes means we need to calc
+				dt.on('column-sizing.dtr', function () {
+					that._resizeAuto();
+					that._resize();
+				});
+			});
 	},
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -17877,7 +17817,6 @@ $.extend(Responsive.prototype, {
 		dt.columns()
 			.eq(0)
 			.each(function (colIdx, i) {
-				//console.log(colIdx, i);
 				// Do nothing on DataTables' hidden column - DT removes it from the table
 				// so we need to slide back
 				if (! dt.column(colIdx).visible()) {
@@ -18004,33 +17943,42 @@ $.extend(Responsive.prototype, {
 		}
 
 		// Body rows
-		dt.rows({ page: 'current' }).every(function (rowIdx) {
-			var node = this.node();
+		if (this.c.details.renderer._responsiveMovesNodes) {
+			// Slow but it allows for moving elements around the document
+			dt.rows({ page: 'current' }).every(function (rowIdx) {
+				var node = this.node();
 
-			if (! node) {
-				return;
-			}
-
-			// We clone the table's rows and cells to create the sizing table
-			var tr = node.cloneNode(false);
-
-			dt.cells(rowIdx, visibleColumns).every(function (rowIdx2, colIdx) {
-				// If nodes have been moved out (listHiddenNodes), we need to
-				// clone from the store
-				var store = that.s.childNodeStore[rowIdx + '-' + colIdx];
-
-				if (store) {
-					$(this.node().cloneNode(false))
-						.append($(store).clone())
-						.appendTo(tr);
+				if (! node) {
+					return;
 				}
-				else {
-					$(this.node()).clone(false).appendTo(tr);
-				}
+
+				// We clone the table's rows and cells to create the sizing table
+				var tr = node.cloneNode(false);
+
+				dt.cells(rowIdx, visibleColumns).every(function (rowIdx2, colIdx) {
+					// If nodes have been moved out (listHiddenNodes), we need to
+					// clone from the store
+					var store = that.s.childNodeStore[rowIdx + '-' + colIdx];
+
+					if (store) {
+						$(this.node().cloneNode(false))
+							.append($(store).clone())
+							.appendTo(tr);
+					}
+					else {
+						$(this.node()).clone(false).appendTo(tr);
+					}
+				});
+
+				clonedBody.append(tr);
 			});
-
-			clonedBody.append(tr);
-		});
+		}
+		else {
+			// This is much faster, but it doesn't account for moving nodes around
+			$(clonedBody)
+				.append( $(dt.rows( { page: 'current' } ).nodes()).clone( false ) )
+				.find( 'th, td' ).css( 'display', '' );
+		}
 
 		// Any cells which were hidden by Responsive in the host table, need to
 		// be visible here for the calculations
@@ -18410,7 +18358,7 @@ Responsive.display = {
  */
 Responsive.renderer = {
 	listHiddenNodes: function () {
-		return function (api, rowIdx, columns) {
+		var fn = function (api, rowIdx, columns) {
 			var that = this;
 			var ul = $(
 				'<ul data-dtr-index="' + rowIdx + '" class="dtr-details"/>'
@@ -18455,6 +18403,10 @@ Responsive.renderer = {
 
 			return found ? ul : false;
 		};
+
+		fn._responsiveMovesNodes = true;
+
+		return fn;
 	},
 
 	listHidden: function () {
@@ -18666,7 +18618,7 @@ Api.registerPlural(
  * @name Responsive.version
  * @static
  */
-Responsive.version = '3.0.2';
+Responsive.version = '3.0.3';
 
 $.fn.dataTable.Responsive = Responsive;
 $.fn.DataTable.Responsive = Responsive;
@@ -18697,14 +18649,14 @@ return DataTable;
 }));
 
 
-/*! Bootstrap 5 integration for DataTables' Responsive
+/*! DataTables styling wrapper for Responsive
  * © SpryMedia Ltd - datatables.net/license
  */
 
 (function( factory ){
 	if ( typeof define === 'function' && define.amd ) {
 		// AMD
-		define( ['jquery', 'datatables.net-bs5', 'datatables.net-responsive'], function ( $ ) {
+		define( ['jquery', 'datatables.net-dt', 'datatables.net-responsive'], function ( $ ) {
 			return factory( $, window, document );
 		} );
 	}
@@ -18713,7 +18665,7 @@ return DataTable;
 		var jq = require('jquery');
 		var cjsRequires = function (root, $) {
 			if ( ! $.fn.dataTable ) {
-				require('datatables.net-bs5')(root, $);
+				require('datatables.net-dt')(root, $);
 			}
 
 			if ( ! $.fn.dataTable.Responsive ) {
@@ -18751,82 +18703,6 @@ return DataTable;
 var DataTable = $.fn.dataTable;
 
 
-
-var _display = DataTable.Responsive.display;
-var _original = _display.modal;
-var _modal = $(
-	'<div class="modal fade dtr-bs-modal" role="dialog">' +
-		'<div class="modal-dialog" role="document">' +
-		'<div class="modal-content">' +
-		'<div class="modal-header">' +
-		'<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
-		'</div>' +
-		'<div class="modal-body"/>' +
-		'</div>' +
-		'</div>' +
-		'</div>'
-);
-var modal;
-
-// Note this could be undefined at the time of initialisation - the
-// DataTable.Responsive.bootstrap function can be used to set a different
-// bootstrap object
-var _bs = window.bootstrap;
-
-DataTable.Responsive.bootstrap = function (bs) {
-	_bs = bs;
-};
-
-_display.modal = function (options) {
-	if (!modal && _bs.Modal) {
-		modal = new _bs.Modal(_modal[0]);
-	}
-
-	return function (row, update, render, closeCallback) {
-		if (! modal) {
-			return _original(row, update, render, closeCallback);
-		}
-		else {
-			var rendered = render();
-
-			if (rendered === false) {
-				return false;
-			}
-
-			if (!update) {
-				if (options && options.header) {
-					var header = _modal.find('div.modal-header');
-					var button = header.find('button').detach();
-
-					header
-						.empty()
-						.append('<h4 class="modal-title">' + options.header(row) + '</h4>')
-						.append(button);
-				}
-
-				_modal.find('div.modal-body').empty().append(rendered);
-
-				_modal
-					.data('dtr-row-idx', row.index())
-					.one('hidden.bs.modal', closeCallback)
-					.appendTo('body');
-
-				modal.show();
-			}
-			else {
-				if ($.contains(document, _modal[0]) && row.index() === _modal.data('dtr-row-idx')) {
-					_modal.find('div.modal-body').empty().append(rendered);
-				}
-				else {
-					// Modal not shown for this row - do nothing
-					return null;
-				}
-			}
-
-			return true;
-		}
-	};
-};
 
 
 return DataTable;
@@ -21271,7 +21147,7 @@ return DataTable;
 }));
 
 
-/*! Select for DataTables 2.0.5
+/*! Select for DataTables 2.1.0
  * © SpryMedia Ltd - datatables.net/license/mit
  */
 
@@ -21329,7 +21205,7 @@ DataTable.select.classes = {
 	checkbox: 'dt-select-checkbox'
 };
 
-DataTable.select.version = '2.0.5';
+DataTable.select.version = '2.1.0';
 
 DataTable.select.init = function (dt) {
 	var ctx = dt.settings()[0];
@@ -21399,6 +21275,7 @@ DataTable.select.init = function (dt) {
 	var style = 'api';
 	var blurable = false;
 	var toggleable = true;
+	var selectable = null;
 	var info = true;
 	var selector = 'td, th';
 	var className = 'selected';
@@ -21455,6 +21332,10 @@ DataTable.select.init = function (dt) {
 		if (opts.headerCheckbox !== undefined) {
 			headerCheckbox = opts.headerCheckbox;
 		}
+
+		if (opts.selectable !== undefined) {
+			selectable = opts.selectable;
+		}
 	}
 
 	dt.select.selector(selector);
@@ -21463,6 +21344,7 @@ DataTable.select.init = function (dt) {
 	dt.select.blurable(blurable);
 	dt.select.toggleable(toggleable);
 	dt.select.info(info);
+	dt.select.selectable(selectable);
 	ctx._select.className = className;
 
 	// If the init options haven't enabled select, but there is a selectable
@@ -21472,11 +21354,9 @@ DataTable.select.init = function (dt) {
 	}
 
 	// Insert a checkbox into the header if needed - might need to wait
-	// for init complete, or it might already be done
+	// for init complete
 	if (headerCheckbox || headerCheckbox === 'select-page' || headerCheckbox === 'select-all') {
-		initCheckboxHeader(dt, headerCheckbox);
-
-		dt.on('init', function () {
+		dt.ready(function () {
 			initCheckboxHeader(dt, headerCheckbox);
 		});
 	}
@@ -21843,9 +21723,13 @@ function info(api, node) {
 		return;
 	}
 
-	var rows = api.rows({ selected: true }).flatten().length;
-	var columns = api.columns({ selected: true }).flatten().length;
-	var cells = api.cells({ selected: true }).flatten().length;
+	// If _select_set has any length, then ids are available and should be used
+	// as the counter. Otherwise use the API to workout how many rows are
+	// selected.
+	var rowSetLength = api.settings()[0]._select_set.length;
+	var rows = rowSetLength ? rowSetLength : api.rows({ selected: true }).count();
+	var columns = api.columns({ selected: true }).count();
+	var cells = api.cells({ selected: true }).count();
 
 	var add = function (el, name, num) {
 		el.append(
@@ -21885,7 +21769,8 @@ function info(api, node) {
  * @param {*} headerCheckbox the header checkbox option
  */
 function initCheckboxHeader( dt, headerCheckbox ) {
-	var dtInternalColumns = dt.settings()[0].aoColumns;
+	var dtSettings = dt.settings()[0];
+	var dtInternalColumns = dtSettings.aoColumns;
 
 	// Find any checkbox column(s)
 	dt.columns().iterator('column', function (s, idx) {
@@ -21909,33 +21794,36 @@ function initCheckboxHeader( dt, headerCheckbox ) {
 				.on('change', function () {
 					if (this.checked) {
 						if (headerCheckbox == 'select-page') {
-							dt.rows({page: 'current'}).select()
+							dt.rows({page: 'current'}).select();
 						} else {
 							dt.rows({search: 'applied'}).select();
 						}
 					}
 					else {
-						dt.rows({selected: true}).deselect();
+						if (headerCheckbox == 'select-page') {
+							dt.rows({page: 'current', selected: true}).deselect();
+						}
+						else {
+							dt.rows({selected: true}).deselect();
+						}
 					}
 				})
 				.on('click', function (e) {
 					e.stopPropagation();
 				});
-	
+
 			// Update the header checkbox's state when the selection in the
 			// table changes
 			dt.on('draw select deselect', function (e, pass, type) {
 				if (type === 'row' || ! type) {
-					var count = dt.rows({selected: true}).count();
-					var search = dt.rows({search: 'applied', selected: true}).count();
-					var available = headerCheckbox == 'select-page' ? dt.rows({page: 'current'}).count() : dt.rows({search: 'applied'}).count();
+					var nums = headerCheckboxState(dt, headerCheckbox);
 
-					if (search && search <= count && search === available) {
+					if (nums.search && nums.search <= nums.count && nums.search === nums.available) {
 						input
 							.prop('checked', true)
 							.prop('indeterminate', false);
 					}
-					else if (search === 0 && count === 0) {
+					else if (nums.search === 0 && nums.count === 0) {
 						input
 							.prop('checked', false)
 							.prop('indeterminate', false);
@@ -21952,6 +21840,54 @@ function initCheckboxHeader( dt, headerCheckbox ) {
 }
 
 /**
+ * Determine the counts used to define the header checkbox's state
+ *
+ * @param {*} dt DT API
+ * @param {*} headerCheckbox Configuration for what the header checkbox does
+ * @returns Counts object
+ */
+function headerCheckboxState(dt, headerCheckbox) {
+	var ctx = dt.settings()[0];
+	var selectable = ctx._select.selectable;
+	var available = 0;
+	var count = headerCheckbox == 'select-page'
+		? dt.rows({page: 'current', selected: true}).count()
+		: dt.rows({selected: true}).count();
+	var search = headerCheckbox == 'select-page'
+		? dt.rows({page: 'current', selected: true}).count()
+		: dt.rows({search: 'applied', selected: true}).count();
+
+	if (! selectable) {
+		available = headerCheckbox == 'select-page'
+			? dt.rows({page: 'current'}).count()
+			: dt.rows({search: 'applied'}).count();	
+	}
+	else {
+		// Need to count how many rows are actually selectable to know if all selectable
+		// rows are selected or not
+		var indexes = headerCheckbox == 'select-page'
+			? dt.rows({page: 'current'}).indexes()
+			: dt.rows({search: 'applied'}).indexes();
+
+		for (var i=0 ; i<indexes.length ; i++) {
+			// For speed I use the internal DataTables object.
+			var rowInternal = ctx.aoData[indexes[i]];
+			var result = selectable(rowInternal._aData, rowInternal.nTr, indexes[i]);
+
+			if (result) {
+				available++;
+			}
+		}
+	}
+
+	return {
+		available: available,
+		count: count,
+		search: search
+	}
+}
+
+/**
  * Initialisation of a new table. Attach event handlers and callbacks to allow
  * Select to operate correctly.
  *
@@ -21965,6 +21901,9 @@ function init(ctx) {
 	var api = new DataTable.Api(ctx);
 	ctx._select_init = true;
 
+	// _select_set contains a list of the ids of all rows that are selected
+	ctx._select_set = [];
+
 	// Row callback so that classes can be added to rows and cells if the item
 	// was selected before the element was created. This will happen with the
 	// `deferRender` option enabled.
@@ -21975,9 +21914,15 @@ function init(ctx) {
 	ctx.aoRowCreatedCallback.push(function (row, data, index) {
 			var i, ien;
 			var d = ctx.aoData[index];
+			var id = api.row(index).id();
 
 			// Row
-			if (d._select_selected) {
+			if (
+				d._select_selected ||
+				(id !== 'undefined' && ctx._select_set.includes(id))
+			) {
+				d._select_selected = true;
+
 				$(row)
 					.addClass(ctx._select.className)
 					.find('input.' + checkboxClass(true)).prop('checked', true);
@@ -21996,46 +21941,7 @@ function init(ctx) {
 		}
 	);
 
-	// On Ajax reload we want to reselect all rows which are currently selected,
-	// if there is an rowId (i.e. a unique value to identify each row with)
-	api.on('preXhr.dt.dtSelect', function (e, settings) {
-		if (settings !== api.settings()[0]) {
-			// Not triggered by our DataTable!
-			return;
-		}
-
-		// note that column selection doesn't need to be cached and then
-		// reselected, as they are already selected
-		var rows = api
-			.rows({ selected: true })
-			.ids(true)
-			.filter(function (d) {
-				return d !== undefined;
-			});
-
-		var cells = api
-			.cells({ selected: true })
-			.eq(0)
-			.map(function (cellIdx) {
-				var id = api.row(cellIdx.row).id(true);
-				return id ? { row: id, column: cellIdx.column } : undefined;
-			})
-			.filter(function (d) {
-				return d !== undefined;
-			});
-
-		// On the next draw, reselect the currently selected items
-		api.one('draw.dt.dtSelect', function () {
-			api.rows(rows).select();
-
-			// `cells` is not a cell index selector, so it needs a loop
-			if (cells.any()) {
-				cells.each(function (id) {
-					api.cells(id.row, id.column).select();
-				});
-			}
-		});
-	});
+	_cumulativeEvents(api);
 
 	// Update the table information element with selected item summary
 	api.on('info.dt', function (e, ctx, node) {
@@ -22208,6 +22114,57 @@ function _safeId(node) {
 	return node.id.replace(/[^a-zA-Z0-9\-\_]/g, '-');
 }
 
+/**
+ * Set up event handlers for cumulative selection
+ *
+ * @param {*} api DT API instance
+ */
+function _cumulativeEvents(api) {
+	// Add event listeners to add / remove from the _select_set
+	api.on('select', function (e, dt, type, indexes) {
+		// Only support for rows at the moment
+		if (type !== 'row') {
+			return;
+		}
+
+		var ctx = api.settings()[0];
+
+		_add(api, ctx._select_set, indexes);
+	});
+
+	api.on('deselect', function (e, dt, type, indexes) {
+		// Only support for rows at the moment
+		if (type !== 'row') {
+			return;
+		}
+
+		var ctx = api.settings()[0];
+
+		_remove(api, ctx._select_set, indexes);
+	});
+}
+
+function _add(api, arr, indexes) {
+	for (var i=0 ; i<indexes.length ; i++) {
+		var id = api.row(indexes[i]).id();
+
+		if (id && id !== 'undefined' && ! arr.includes(id)) {
+			arr.push(id);
+		}
+	}
+}
+
+function _remove(api, arr, indexes) {
+	for (var i=0 ; i<indexes.length ; i++) {
+		var id = api.row(indexes[i]).id();
+		var idx = arr.indexOf(id);
+
+		if (idx !== -1) {
+			arr.splice(idx, 1);
+		}
+	}
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * DataTables selectors
  */
@@ -22356,10 +22313,15 @@ apiRegister('select.style()', function (style) {
 		// Add / remove mouse event handlers. They aren't required when only
 		// API selection is available
 		var dt = new DataTable.Api(ctx);
-		disableMouseSelection(dt);
 
 		if (style !== 'api') {
-			enableMouseSelection(dt);
+			dt.ready(function () {
+				disableMouseSelection(dt);
+				enableMouseSelection(dt);
+			});
+		}
+		else {
+			disableMouseSelection(dt);
 		}
 
 		eventTrigger(new DataTable.Api(ctx), 'selectStyle', [style]);
@@ -22372,14 +22334,34 @@ apiRegister('select.selector()', function (selector) {
 	}
 
 	return this.iterator('table', function (ctx) {
-		disableMouseSelection(new DataTable.Api(ctx));
+		var dt = new DataTable.Api(ctx);
+		var style = ctx._select.style;
+
+		disableMouseSelection(dt);
 
 		ctx._select.selector = selector;
 
-		if (ctx._select.style !== 'api') {
-			enableMouseSelection(new DataTable.Api(ctx));
+		if (style && style !== 'api') {
+			dt.ready(function () {
+				disableMouseSelection(dt);
+				enableMouseSelection(dt);
+			});
+		}
+		else {
+			disableMouseSelection(dt);
 		}
 	});
+});
+
+apiRegister('select.selectable()', function (set) {
+	let ctx = this.context[0];
+
+	if (set) {
+		ctx._select.selectable = set;
+		return this;
+	}
+
+	return ctx._select.selectable;
 });
 
 apiRegister('select.last()', function (set) {
@@ -22393,8 +22375,17 @@ apiRegister('select.last()', function (set) {
 	return ctx._select_lastCell;
 });
 
+apiRegister('select.cumulative()', function () {
+	let ctx = this.context[0];
+
+	return ctx && ctx._select_set
+		? ctx._select_set
+		: [];
+});
+
 apiRegisterPlural('rows().select()', 'row().select()', function (select) {
 	var api = this;
+	var selectedIndexes = [];
 
 	if (select === false) {
 		return this.deselect();
@@ -22409,8 +22400,19 @@ apiRegisterPlural('rows().select()', 'row().select()', function (select) {
 		var dtData = ctx.aoData[idx];
 		var dtColumns = ctx.aoColumns;
 
+		if (ctx._select.selectable) {
+			var result = ctx._select.selectable(dtData._aData, dtData.nTr, idx);
+
+			if (result === false) {
+				// Not selectable - do nothing
+				return;
+			}
+		}
+
 		$(dtData.nTr).addClass(ctx._select.className);
 		dtData._select_selected = true;
+
+		selectedIndexes.push(idx);
 
 		for (var i=0 ; i<dtColumns.length ; i++) {
 			var col = dtColumns[i];
@@ -22436,8 +22438,8 @@ apiRegisterPlural('rows().select()', 'row().select()', function (select) {
 		}
 	});
 
-	this.iterator('table', function (ctx, i) {
-		eventTrigger(api, 'select', ['row', api[i]], true);
+	this.iterator('table', function (ct) {
+		eventTrigger(api, 'select', ['row', selectedIndexes], true);
 	});
 
 	return this;
@@ -22799,6 +22801,8 @@ $.each(['Row', 'Column', 'Cell'], function (i, item) {
 		init: function (dt) {
 			var that = this;
 
+			this.active(dt.select.items() === lc);
+
 			dt.on('selectItems.dt.DT', function (e, ctx, items) {
 				that.active(items === lc);
 			});
@@ -22849,8 +22853,18 @@ DataTable.render.select = function (valueProp, nameProp) {
 		var dtRow = meta.settings.aoData[meta.row];
 		var selected = dtRow._select_selected;
 		var ariaLabel = meta.settings.oLanguage.select.aria.rowCheckbox;
+		var selectable = meta.settings._select.selectable;
 
 		if (type === 'display') {
+			// Check if the row is selectable before showing the checkbox
+			if (selectable) {
+				var result = selectable(row, dtRow.nTr, meta.row);
+	
+				if (result === false) {
+					return '';
+				}
+			}
+
 			return $('<input>')
 				.attr({
 					'aria-label': ariaLabel,
@@ -22909,11 +22923,10 @@ $.fn.DataTable.select = DataTable.select;
  * Initialisation
  */
 
-// DataTables creation - check if select has been defined in the options. Note
-// this required that the table be in the document! If it isn't then something
-// needs to trigger this method unfortunately. The next major release of
-// DataTables will rework the events and address this.
-$(document).on('preInit.dt.dtSelect', function (e, ctx) {
+// DataTables creation - we need this to run _before_ data is read in, but
+// for backwards compat. we also run again on preInit. If it happens twice
+// it will simply do nothing the second time around.
+$(document).on('i18n.dt.dtSelect preInit.dt.dtSelect', function (e, ctx) {
 	if (e.namespace !== 'dt') {
 		return;
 	}
