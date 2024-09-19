@@ -15901,9 +15901,14 @@ class DELV extends CI_Controller
             $IncDateCR_FLGList = []; #Currency
             $tpb_barang = [];
 
+            $rs_xbc_scr = $this->DLVSCR_BB_mod->select_where(['DLVSCR_BB_TXID' => $doc]);
+            if(count($rs_xbc_scr)>0) {
+                $isScrapItem = true;
+            }
+            
             if($isScrapItem) {
                 
-                $rs_xbc = $this->DLVSCR_BB_mod->select_where(['DLVSCR_BB_TXID' => $doc]);
+                $rs_xbc = $rs_xbc_scr;
                 $Barang = $this->DLVSCR_mod->select_where([
                     'RTRIM(MITM_ITMCD) MITM_ITMCD',
                     'RTRIM(MITM_ITMD1) MITM_ITMD1',
