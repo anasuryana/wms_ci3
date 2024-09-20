@@ -3595,7 +3595,7 @@ class ITH extends CI_Controller
         }
        
 
-        $ReturnedPSN = $this->SPLRET_mod->select_psn_where_psn_in($_uniquePSN);
+        $ReturnedPSN = empty($_uniquePSN) ? [] : $this->SPLRET_mod->select_psn_where_psn_in($_uniquePSN);
 
         foreach($ReturnedPSN as $s) {
             foreach($rswip as &$r) {
@@ -3616,7 +3616,6 @@ class ITH extends CI_Controller
             }
             unset($r);
         }
-
         $rang = "A1:A" . $sheet->getHighestDataRow();
         if (!empty($rswip)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . ', step3#, BG:OTHER, rsPSN to Spreadsheet');
