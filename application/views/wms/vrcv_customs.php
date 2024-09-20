@@ -450,7 +450,7 @@
                 <div class="col-md-4 mb-1">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Supplier</label>
-                        <input type="text" class="form-control" id="rcvcustoms_supplier_1" readonly>
+                        <input type="text" class="form-control" id="rcvcustoms_supplier_1" readonly disabled>
                         <button class="btn btn-primary" id="rcvcustoms_btn_find_supplier_1" onclick="rcvcustoms_th_sup_eC(this)"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
@@ -2150,6 +2150,7 @@
     }
 
     function rcvcustoms_new_1_eCK() {
+        rcvcustoms_btn_find_supplier_1.disabled = false
         document.getElementById('rcvcustoms_tbl_1').getElementsByTagName('tbody')[0].innerHTML = ""
         rcvcustoms_selected_row = 0
         document.getElementById('rcvcustoms_docnoorigin_1').value = ''
@@ -4639,6 +4640,7 @@
             }
         }
         if (isexist) {
+            rcvcustoms_btn_find_supplier_1.disabled = true
             document.getElementById('rcvcustoms_supplier_1').value = supplierName
             let tabell = document.getElementById("rcvcustoms_tbl_1")
             let tableku2 = tabell.getElementsByTagName("tbody")[0]
