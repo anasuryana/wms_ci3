@@ -516,7 +516,7 @@ class DELV extends CI_Controller
                         } else {
                             $image_name = trim($r['SI_ITMCD']) . "\t\t\t\t\t" . number_format($r['TTLQTY'], 0, "", "") . "\t" . number_format($r['REMARK'], 0, "", "") . " BOX " . $cpono . " RFID";
                         }
-                        $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" 1 ");
+                        $cmd = escapeshellcmd("Python " . FCPATH . "smt.py \"$image_name\" 1 ");
                     } else {
                         if ($ASPFLAG || $KDFLAG) {
                             $image_name = trim($r['SI_ITMCD']) . "\t\t\t\t\t" . number_format($r['TTLQTY'], 0, "", "") . "\t" . number_format($r[$ASPFLAG ? 'TTLQTY' : 'REMARK'], 0, "", "") . " BOX";
@@ -524,7 +524,7 @@ class DELV extends CI_Controller
                         } else {
                             $image_name = trim($r['SI_ITMCD']) . "\t\t\t\t\t" . number_format($r['TTLQTY'], 0, "", "") . "\t" . number_format($r['REMARK'], 0, "", "") . " BOX";
                         }
-                        $cmd = escapeshellcmd("Python ".FCPATH."smt.py \"$image_name\" 1 ");
+                        $cmd = escapeshellcmd("Python " . FCPATH . "smt.py \"$image_name\" 1 ");
                     }
                     $op = shell_exec($cmd);
                     $image_name = str_replace("/", "xxx", $image_name);
@@ -590,11 +590,10 @@ class DELV extends CI_Controller
         $DLVRows = $this->DELV_mod->selectDLVColumnsWhere(['DLV_ID', 'SER_ITMID'], ['DLV_SER' => $cser]);
         $txid = '';
         $itemid = '';
-        foreach($DLVRows as $r) {
+        foreach ($DLVRows as $r) {
             $txid = $r['DLV_ID'];
             $itemid = $r['SER_ITMID'];
         }
-        
 
         #validate Already Posted to TPB
         $ttlPostedRows = $this->DELV_mod->check_Primary(['DLV_SER' => $cser, 'DLV_POSTTM IS NOT NULL' => null]);
@@ -610,7 +609,7 @@ class DELV extends CI_Controller
             'CSMLOG_DOCNO' => $txid,
             'CSMLOG_SUPZAJU' => '',
             'CSMLOG_SUPZNOPEN' => '',
-            'CSMLOG_DESC' => 'remove item '. $itemid. ' with ID ' . $cser. ' from TXID',
+            'CSMLOG_DESC' => 'remove item ' . $itemid . ' with ID ' . $cser . ' from TXID',
             'CSMLOG_LINE' => $lastLineLog,
             'CSMLOG_TYPE' => 'OUT',
             'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
@@ -654,7 +653,7 @@ class DELV extends CI_Controller
             'CSMLOG_DOCNO' => $txid,
             'CSMLOG_SUPZAJU' => '',
             'CSMLOG_SUPZNOPEN' => '',
-            'CSMLOG_DESC' => 'remove item '. $itemid. ' from TXID',
+            'CSMLOG_DESC' => 'remove item ' . $itemid . ' from TXID',
             'CSMLOG_LINE' => $lastLineLog,
             'CSMLOG_TYPE' => 'OUT',
             'CSMLOG_CREATED_AT' => date('Y-m-d H:i:s'),
@@ -1591,15 +1590,15 @@ class DELV extends CI_Controller
                     );
                 } else {
                     $saveRows[] = [
-                        'DLVRMDOC_TXID' => $doNum, 
-                        'DLVRMDOC_ITMID' => $armdoc_itmID[$i], 
-                        'DLVRMDOC_ITMQT' => str_replace(',', '', $armdoc_itmQT[$i]), 
-                        'DLVRMDOC_DO' => $armdoc_itmDO[$i], 
-                        'DLVRMDOC_AJU' => $armdoc_itmNOAJU[$i], 
-                        'DLVRMDOC_NOPEN' => $armdoc_itmNOPEN[$i], 
-                        'DLVRMDOC_PRPRC' => $armdoc_itmPRC[$i], 
-                        'DLVRMDOC_ZPRPRC' => $armdoc_itmPRC[$i], 
-                        'DLVRMDOC_LINE' => $newLine_rmFromDO, 
+                        'DLVRMDOC_TXID' => $doNum,
+                        'DLVRMDOC_ITMID' => $armdoc_itmID[$i],
+                        'DLVRMDOC_ITMQT' => str_replace(',', '', $armdoc_itmQT[$i]),
+                        'DLVRMDOC_DO' => $armdoc_itmDO[$i],
+                        'DLVRMDOC_AJU' => $armdoc_itmNOAJU[$i],
+                        'DLVRMDOC_NOPEN' => $armdoc_itmNOPEN[$i],
+                        'DLVRMDOC_PRPRC' => $armdoc_itmPRC[$i],
+                        'DLVRMDOC_ZPRPRC' => $armdoc_itmPRC[$i],
+                        'DLVRMDOC_LINE' => $newLine_rmFromDO,
                         'DLVRMDOC_TYPE' => $armdoc_TYPE[$i],
                     ];
                     $newLine_rmFromDO++;
@@ -1734,15 +1733,15 @@ class DELV extends CI_Controller
             $saveRows = [];
             for ($i = 0; $i < $aRMDOCCount; $i++) {
                 $saveRows[] = [
-                    'DLVRMDOC_TXID' => $ctxid, 
-                    'DLVRMDOC_ITMID' => $armdoc_itmID[$i], 
-                    'DLVRMDOC_ITMQT' => str_replace(',', '', $armdoc_itmQT[$i]), 
-                    'DLVRMDOC_DO' => $armdoc_itmDO[$i], 
-                    'DLVRMDOC_AJU' => $armdoc_itmNOAJU[$i], 
-                    'DLVRMDOC_NOPEN' => $armdoc_itmNOPEN[$i], 
-                    'DLVRMDOC_PRPRC' => $armdoc_itmPRC[$i], 
-                    'DLVRMDOC_ZPRPRC' => $armdoc_itmPRC[$i], 
-                    'DLVRMDOC_TYPE' => $armdoc_TYPE[$i], 
+                    'DLVRMDOC_TXID' => $ctxid,
+                    'DLVRMDOC_ITMID' => $armdoc_itmID[$i],
+                    'DLVRMDOC_ITMQT' => str_replace(',', '', $armdoc_itmQT[$i]),
+                    'DLVRMDOC_DO' => $armdoc_itmDO[$i],
+                    'DLVRMDOC_AJU' => $armdoc_itmNOAJU[$i],
+                    'DLVRMDOC_NOPEN' => $armdoc_itmNOPEN[$i],
+                    'DLVRMDOC_PRPRC' => $armdoc_itmPRC[$i],
+                    'DLVRMDOC_ZPRPRC' => $armdoc_itmPRC[$i],
+                    'DLVRMDOC_TYPE' => $armdoc_TYPE[$i],
                     'DLVRMDOC_LINE' => $i,
                 ];
             }
@@ -1881,7 +1880,7 @@ class DELV extends CI_Controller
             $rsRMFromSO = $this->DLVRMSO_mod->select_where([
                 'DLVRMSO_TXID', 'DLVRMSO_ITMID', 'DLVRMSO_ITMQT', 'DLVRMSO_CPO', 'DLVRMSO_CPOLINE', 'DLVRMSO_PRPRC', 'DLVRMSO_LINE',
             ], ['DLVRMSO_TXID' => $cid]);
-            $rsscr = $this->DLVSCR_mod->select_where(['*'],['DLVSCR_TXID' => $cid]);
+            $rsscr = $this->DLVSCR_mod->select_where(['*'], ['DLVSCR_TXID' => $cid]);
             die(json_encode([
                 'data' => $rs, 'data_rmdo' => $rsRMFromDO, 'data_pkg' => $rspkg, 'data_rmso' => $rsRMFromSO, 'data_scr' => $rsscr,
             ]));
@@ -3362,7 +3361,7 @@ class DELV extends CI_Controller
             $pdf->SetMargins(0, 0);
             $rsinv = [];
             if ($rswhSI === 'AFWH3RT' || $rswhSI === 'AFWH3') {
-                
+
                 $rsinv = $this->setPriceRS(base64_encode($pid));
                 $rsresume = [];
                 $rsmultiprice = [];
@@ -3391,7 +3390,7 @@ class DELV extends CI_Controller
                     }
                 }
                 unset($k);
-                
+
                 foreach ($rsresume as $k) {
                     if ($k['RCOUNT'] > 1) {
                         $rsmultiprice[] = $k;
@@ -3426,7 +3425,7 @@ class DELV extends CI_Controller
                     ];
                 }
             }
-            
+
             $pdf->SetFont('Arial', '', 8);
             $pdf->Text(144, 67, 'Nopen : ' . $hinv_nopen);
             $pdf->Text(162, 78 + 5, $hinv_inv);
@@ -6927,7 +6926,8 @@ class DELV extends CI_Controller
 
         if ($this->DELV_mod->check_Primary(['DLV_ID' => $csj]) == 0) {
             $myar = ['cd' => 0, 'msg' => 'DO is not found'];
-            return ["status" => $myar];}
+            return ["status" => $myar];
+        }
 
         $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
         if (count($rscurr) == 0) {
@@ -8641,26 +8641,27 @@ class DELV extends CI_Controller
 
             $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $nomorajufull, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
             if (strpos($myar[0]['msg'], 'NOMOR AJU') !== false) {
-                
+
                 $myar = [];
                 $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
                 $responApiObj = json_decode($responApi->body);
-                if (strtolower($responApiObj->dataOri->message) === 'success') {
-                    $_tanggalDaftar = $responApiObj->dataOri->data[0]->tanggalDaftar;
+                
+                if (strtolower($responApiObj->status) === 'success') {
+                    $_tanggalDaftar = $responApiObj->dataRespon[0]->tanggalDaftar;
                     $_tanggalDaftarFormatted = null;
                     if ($_tanggalDaftar) {
-                        $_arrayTanggal = explode('-', $_tanggalDaftar);
-                        $_tanggalDaftarFormatted = $_arrayTanggal[2] . '-' . $_arrayTanggal[1] . '-' . $_arrayTanggal[0];
+                        $_arrayTanggal = explode(' ', $_tanggalDaftar);
+                        $_tanggalDaftarFormatted = $_arrayTanggal[0];
                     }
                     $result_data = [
                         [
-                            'NOMOR_DAFTAR' => $responApiObj->dataOri->data[0]->nomorDaftar,
+                            'NOMOR_DAFTAR' => $responApiObj->dataRespon[0]->nomorDaftar,
                             'TANGGAL_DAFTAR' => $_tanggalDaftarFormatted,
                         ],
                     ];
                     $response_data = [
                         [
-                            'NOMOR_RESPON' => $responApiObj->dataOri->data[0]->nomorRespon,
+                            'NOMOR_RESPON' => $responApiObj->dataRespon[0]->nomorRespon,
                         ],
                     ];
                 }
@@ -9153,7 +9154,7 @@ class DELV extends CI_Controller
                             , 'CPO' => $s['SISO_CPONO']
                             , 'BM' => $k['MITM_BM']
                             , 'PPN' => $k['MITM_PPN']
-                            , 'PPH' => $k['MITM_PPH']
+                            , 'PPH' => $k['MITM_PPH'],
                         ];
                     }
                     if ($k['SISOQTY'] === $k['SISOQTY_X']) {
@@ -9273,19 +9274,19 @@ class DELV extends CI_Controller
                     unset($b);
                     if (!$isfound) {
                         $rsPriceItemSer[] = [
-                            'DLV_ID' => $doc, 
-                            'SISOQTY' => $qtyuse, 
-                            'SSO2_SLPRC' => $s['SSO2_SLPRC'], 
+                            'DLV_ID' => $doc,
+                            'SISOQTY' => $qtyuse,
+                            'SSO2_SLPRC' => $s['SSO2_SLPRC'],
                             'SSO2_MDLCD' => $s['ITMID'],
-                            'CIF' => $qtyuse * $s['SSO2_SLPRC'], 
-                            'NWG' => $k['NWG'], 
-                            'MITM_HSCD' => $k['MITM_HSCD'], 
-                            'MITM_STKUOM' => $k['MITM_STKUOM'], 
-                            'SISOQTY_X' => 0, 
-                            'MITM_ITMD1' => $k['MITM_ITMD1'], 
-                            'CPO' => $s['SISO_CPONO'], 
-                            'SISO_SOLINE' => $s['SISO_SOLINE'], 
-                            'SI_BSGRP' => $k['SI_BSGRP'], 
+                            'CIF' => $qtyuse * $s['SSO2_SLPRC'],
+                            'NWG' => $k['NWG'],
+                            'MITM_HSCD' => $k['MITM_HSCD'],
+                            'MITM_STKUOM' => $k['MITM_STKUOM'],
+                            'SISOQTY_X' => 0,
+                            'MITM_ITMD1' => $k['MITM_ITMD1'],
+                            'CPO' => $s['SISO_CPONO'],
+                            'SISO_SOLINE' => $s['SISO_SOLINE'],
+                            'SI_BSGRP' => $k['SI_BSGRP'],
                             'SI_CUSCD' => $k['SI_CUSCD'],
                         ];
                     }
@@ -9426,7 +9427,7 @@ class DELV extends CI_Controller
                     }
                 }
                 if (!$isfound) {
-                    if ($k['SISO_SOLINE'] == 'X' || ($k['SSO2_BSGRP'] == 'PSI1PPZIEP' && $k['SSO2_CUSCD']!='IEP001U') ) {
+                    if ($k['SISO_SOLINE'] == 'X' || ($k['SSO2_BSGRP'] == 'PSI1PPZIEP' && $k['SSO2_CUSCD'] != 'IEP001U')) {
                         $k['PLOTQTY'] = $k['SCNQT'];
                     }
                 }
@@ -11150,7 +11151,7 @@ class DELV extends CI_Controller
 
         $rsallitem_cd = $this->input->post('itemcode');
         $rsallitem_qty = $this->input->post('qty');
-        foreach($rsallitem_cd as $r) {
+        foreach ($rsallitem_cd as $r) {
             $rsallitem_qtyplot[] = 0;
         }
 
@@ -14556,7 +14557,7 @@ class DELV extends CI_Controller
                 $this->inventory_cancelDO($csj);
                 $myar = ['cd' => 110, 'msg' => 'EX-BC for ' . count($listNeedExBC) . ' item(s) is not found. ', "doctype" => $czdocbctype, "tujuankirim" => $cztujuanpengiriman];
 
-                log_message('error', $_SERVER['REMOTE_ADDR'] . ',EXBC IS NOT ENOUGH '.json_encode($listNeedExBC));
+                log_message('error', $_SERVER['REMOTE_ADDR'] . ',EXBC IS NOT ENOUGH ' . json_encode($listNeedExBC));
                 return ['status' => $myar,
                     'data' => $listNeedExBC,
                     'rawdata' => $rstemp,
@@ -15059,7 +15060,7 @@ class DELV extends CI_Controller
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
             $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/27', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 1500]);
             $responApiObj = json_decode($responApi->body);
-            if(isset($responApiObj->message)) {
+            if (isset($responApiObj->message)) {
                 $isFrom3rdPartyOK = true;
                 $message = $responApiObj->message;
             } else {
@@ -15068,10 +15069,10 @@ class DELV extends CI_Controller
             }
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
         }
-        
-        if(!$isFrom3rdPartyOK) {
-            $this->output->set_status_header(500);           
-            $respon[] = $message == 'Already exist in TPB' ? 'Already exist in TPB' : substr($message,48,700);
+
+        if (!$isFrom3rdPartyOK) {
+            $this->output->set_status_header(500);
+            $respon[] = $message == 'Already exist in TPB' ? 'Already exist in TPB' : substr($message, 48, 700);
         } else {
             $respon = [
                 'message' => $message,
@@ -15189,39 +15190,39 @@ class DELV extends CI_Controller
                     $cz_h_NETTO += $r['NWG'];
                     $cz_h_HARGA_PENYERAHAN_FG += $t_HARGA_PENYERAHAN;
                     $tpb_barang_temp[] = [
-                        'KODE_BARANG' => $r['SSO2_MDLCD'], 
-                        'POS_TARIF' => $r['MITM_HSCD'], 
-                        'URAIAN' => $r['MITM_ITMD1'], 
-                        'JUMLAH_SATUAN' => $r['SISOQTY'], 
-                        'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 
-                        'NETTO' => 1, 
-                        'CIF' => round($r['CIF'], 2), 
-                        'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN, 
-                        'SERI_BARANG' => $SERI_BARANG, 
-                        'KODE_STATUS' => '02', 
+                        'KODE_BARANG' => $r['SSO2_MDLCD'],
+                        'POS_TARIF' => $r['MITM_HSCD'],
+                        'URAIAN' => $r['MITM_ITMD1'],
+                        'JUMLAH_SATUAN' => $r['SISOQTY'],
+                        'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'],
+                        'NETTO' => 1,
+                        'CIF' => round($r['CIF'], 2),
+                        'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN,
+                        'SERI_BARANG' => $SERI_BARANG,
+                        'KODE_STATUS' => '02',
                         'PERPRICE' => $r['SSO2_SLPRC'],
                     ];
                     $SERI_BARANG++;
                 }
-                
+
                 foreach ($tpb_barang_temp as $r) {
                     $_JUMLAH_KEMSASAN = 0;
                     foreach ($rspickingres as $p) {
-                        if($r['KODE_BARANG'] == $p['SI_ITMCD']) {
+                        if ($r['KODE_BARANG'] == $p['SI_ITMCD']) {
                             $_JUMLAH_KEMSASAN = $p['BOX'];
                             break;
                         }
                     }
                     $tpb_barang[] = [
-                        'KODE_BARANG' => $r['KODE_BARANG'], 
-                        'POS_TARIF' => $r['POS_TARIF'], 
-                        'URAIAN' => $r['URAIAN'], 
-                        'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN'], 
-                        'KODE_SATUAN' => $r['KODE_SATUAN'], 
-                        'NETTO' => $r['NETTO'], 
-                        'CIF' => $r['CIF'], 
-                        'HARGA_PENYERAHAN' => $r['HARGA_PENYERAHAN'], 
-                        'SERI_BARANG' => $r['SERI_BARANG'], 
+                        'KODE_BARANG' => $r['KODE_BARANG'],
+                        'POS_TARIF' => $r['POS_TARIF'],
+                        'URAIAN' => $r['URAIAN'],
+                        'JUMLAH_SATUAN' => $r['JUMLAH_SATUAN'],
+                        'KODE_SATUAN' => $r['KODE_SATUAN'],
+                        'NETTO' => $r['NETTO'],
+                        'CIF' => $r['CIF'],
+                        'HARGA_PENYERAHAN' => $r['HARGA_PENYERAHAN'],
+                        'SERI_BARANG' => $r['SERI_BARANG'],
                         'KODE_STATUS' => $r['KODE_STATUS'],
                         'JUMLAH_KEMASAN' => $_JUMLAH_KEMSASAN,
                     ];
@@ -15235,7 +15236,7 @@ class DELV extends CI_Controller
                     foreach ($tpb_barang_temp as &$p) {
                         if ($r['SI_ITMCD'] == $p['KODE_BARANG'] && $r['RCV_PRPRC'] == $p['PERPRICE']) {
                             $p['JUMLAH_SATUAN'] += $r['INTQTY'];
-                            $p['CIF'] = round($p['JUMLAH_SATUAN'] * $p['PERPRICE'],2);
+                            $p['CIF'] = round($p['JUMLAH_SATUAN'] * $p['PERPRICE'], 2);
                             $p['HARGA_PENYERAHAN'] = $p['CIF'] * $czharga_matauang;
                             $p['NETTO'] += $r['NWG'];
                             $isplot = true;
@@ -15245,23 +15246,23 @@ class DELV extends CI_Controller
                     unset($p);
                     if (!$isplot) {
                         $tpb_barang_temp[] = [
-                            'KODE_BARANG' => $r['SI_ITMCD'], 
-                            'POS_TARIF' => $r['RCV_HSCD'], 
-                            'URAIAN' => $r['MITM_ITMD1'], 
-                            'JUMLAH_SATUAN' => $r['INTQTY'], 
-                            'JUMLAH_KEMASAN' => $r['BOX'], 
-                            'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 
-                            'NETTO' => $r['NWG'] * 1, 
-                            'CIF' => round($CIF, 2), 
-                            'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN, 
-                            'SERI_BARANG' => $SERI_BARANG, 
-                            'KODE_STATUS' => '02', 
+                            'KODE_BARANG' => $r['SI_ITMCD'],
+                            'POS_TARIF' => $r['RCV_HSCD'],
+                            'URAIAN' => $r['MITM_ITMD1'],
+                            'JUMLAH_SATUAN' => $r['INTQTY'],
+                            'JUMLAH_KEMASAN' => $r['BOX'],
+                            'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'],
+                            'NETTO' => $r['NWG'] * 1,
+                            'CIF' => round($CIF, 2),
+                            'HARGA_PENYERAHAN' => $t_HARGA_PENYERAHAN,
+                            'SERI_BARANG' => $SERI_BARANG,
+                            'KODE_STATUS' => '02',
                             'PERPRICE' => $r['RCV_PRPRC'],
                         ];
                         $SERI_BARANG++;
                     }
                 }
-                
+
                 foreach ($tpb_barang_temp as $r) {
                     $cz_h_HARGA_PENYERAHAN_FG += $r['HARGA_PENYERAHAN'];
                     $tpb_barang[] = [
@@ -15275,7 +15276,7 @@ class DELV extends CI_Controller
                         , 'HARGA_PENYERAHAN' => $r['HARGA_PENYERAHAN']
                         , 'SERI_BARANG' => $r['SERI_BARANG']
                         , 'KODE_STATUS' => $r['KODE_STATUS']
-                        , 'JUMLAH_KEMASAN' => $r['JUMLAH_KEMASAN']
+                        , 'JUMLAH_KEMASAN' => $r['JUMLAH_KEMASAN'],
                     ];
                 }
                 $this->setPriceFGNonSales(base64_encode($doc));
@@ -15771,7 +15772,7 @@ class DELV extends CI_Controller
         $responApi = null;
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-27, step0#, DO:' . $doc);
-            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);            
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/27', [], $data, 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-27, step0#, DO:' . $doc);
@@ -15788,18 +15789,18 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 
-        'DLV_BCDATE', 
-        'RTRIM(ISNULL(MCUS_CURCD,MSUP_SUPCR)) MCUS_CURCD', 
-        'DLV_ZNOMOR_AJU', 
-        'DLV_PURPOSE', 
-        'DLV_ITMCD',
+        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID',
+            'DLV_BCDATE',
+            'RTRIM(ISNULL(MCUS_CURCD,MSUP_SUPCR)) MCUS_CURCD',
+            'DLV_ZNOMOR_AJU',
+            'DLV_PURPOSE',
+            'DLV_ITMCD',
         ], ['DLV_ID' => $doc]);
         $data = [];
         $message = null;
         $isScrapItem = false;
         $NDPBM = 0;
-       
+
         $itemCodeBarang = '';
         foreach ($RSHeader as $r) {
             $ccustdate = $r['DLV_BCDATE'];
@@ -15807,11 +15808,11 @@ class DELV extends CI_Controller
             $NomorAju = $r['DLV_ZNOMOR_AJU'];
             $TujuanPengiriman = $r['DLV_PURPOSE'];
             $itemCodeBarang = $r['DLV_ITMCD'];
-            if(str_contains($r['DLV_ITMCD'], 'SCRAP')) {
+            if (str_contains($r['DLV_ITMCD'], 'SCRAP')) {
                 $isScrapItem = true;
             }
         }
-        
+
         $TPBData = $this->TPB_HEADER_imod->select_where(
             ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
             ['NOMOR_AJU' => $NomorAju]
@@ -15873,7 +15874,7 @@ class DELV extends CI_Controller
             # akhir validasi
 
             # validasi exchange rate
-            
+
             $rscurr = $this->MEXRATE_mod->selectfor_posting($ccustdate, $czcurrency);
             if (count($rscurr) == 0) {
                 $myar[] = ["cd" => "0", "msg" => "Please fill exchange rate data !"];
@@ -15893,21 +15894,21 @@ class DELV extends CI_Controller
             # akhir validasi
 
             $tpb_bahan_baku = [];
-           
+
             $IncDateList = [];
             $IncCRList = []; #Currency
             $IncDateListDistinct = [];
-            $IncCRListDistinct = []; 
+            $IncCRListDistinct = [];
             $IncDateCR_FLGList = []; #Currency
             $tpb_barang = [];
 
             $rs_xbc_scr = $this->DLVSCR_BB_mod->select_where(['DLVSCR_BB_TXID' => $doc]);
-            if(count($rs_xbc_scr)>0) {
+            if (count($rs_xbc_scr) > 0) {
                 $isScrapItem = true;
             }
-            
-            if($isScrapItem) {
-                
+
+            if ($isScrapItem) {
+
                 $rs_xbc = $rs_xbc_scr;
                 $Barang = $this->DLVSCR_mod->select_where([
                     'RTRIM(MITM_ITMCD) MITM_ITMCD',
@@ -15923,7 +15924,7 @@ class DELV extends CI_Controller
 
                 $SeriBarang = 1;
                 $_cifBarang = 0;
-                foreach($Barang as $r) {
+                foreach ($Barang as $r) {
                     $_cifBarang = $r['DLVSCR_PRPRC'];
                     $tpb_barang[] = [
                         'KODE_BARANG' => $r['MITM_ITMCD'],
@@ -15937,18 +15938,18 @@ class DELV extends CI_Controller
                         'HARGA_PENYERAHAN' => $_cifBarang,
                         'SERI_BARANG' => $SeriBarang,
                         'KODE_STATUS' => '02',
-                        'JUMLAH_BAHAN_BAKU' => count($tpb_bahan_baku),                        
+                        'JUMLAH_BAHAN_BAKU' => count($tpb_bahan_baku),
                         'SPESIFIKASI_LAIN' => null,
                         'JUMLAH_KEMASAN' => 1,
                         'RBM' => $r['MITM_BM'],
                         'CURRENCY' => 'RPH',
-                        'BRUTO' => $r['DLVSCR_ITMQT']+1,
+                        'BRUTO' => $r['DLVSCR_ITMQT'] + 1,
                         'KODE_GUNA' => '0',
-                        'KODE_KEMASAN' => 'BX'
+                        'KODE_KEMASAN' => 'BX',
                     ];
                 }
-                
-                foreach($rs_xbc as $r) {
+
+                foreach ($rs_xbc as $r) {
                     $tpb_bahan_baku[] = [
                         'KODE_JENIS_DOK_ASAL' => $r['DLVSCR_BB_BCTYPE'],
                         'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVSCR_BB_NOPEN'],
@@ -15973,16 +15974,16 @@ class DELV extends CI_Controller
                         'PPN' => 11, //bu gusti, terkait peraturan 1 april
                         'RASSYCODE' => $itemCodeBarang,
                         'RPRICEGROUP' => $_cifBarang,
-                        'NDPBM' => (float) $NDPBM
+                        'NDPBM' => (float) $NDPBM,
                     ];
 
                     $IncDateList[] = $r['DLVSCR_BB_TGLPEN'];
                     $IncCRList[] = $r['DLVSCR_BB_MATA_UANG'];
-                    
-                    if(!in_array($r['DLVSCR_BB_TGLPEN'], $IncDateListDistinct)) {
+
+                    if (!in_array($r['DLVSCR_BB_TGLPEN'], $IncDateListDistinct)) {
                         $IncDateListDistinct[] = $r['DLVSCR_BB_TGLPEN'];
                     }
-                    if(!in_array($r['DLVSCR_BB_MATA_UANG'], $IncCRListDistinct)) {
+                    if (!in_array($r['DLVSCR_BB_MATA_UANG'], $IncCRListDistinct)) {
                         $IncCRListDistinct[] = $r['DLVSCR_BB_MATA_UANG'];
                     }
                 }
@@ -16039,10 +16040,10 @@ class DELV extends CI_Controller
                             $IncDateList[] = $x['RCV_BCDATE'];
                             $IncCRList[] = $x['MSUP_SUPCR'];
 
-                            if(!in_array($r['RCV_BCDATE'], $IncDateListDistinct)) {
+                            if (!in_array($r['RCV_BCDATE'], $IncDateListDistinct)) {
                                 $IncDateListDistinct[] = $r['RCV_BCDATE'];
                             }
-                            if(!in_array($r['MSUP_SUPCR'], $IncCRListDistinct)) {
+                            if (!in_array($r['MSUP_SUPCR'], $IncCRListDistinct)) {
                                 $IncCRListDistinct[] = $r['MSUP_SUPCR'];
                             }
 
@@ -16057,7 +16058,6 @@ class DELV extends CI_Controller
                 unset($r);
             }
 
-            
             $no = 1;
             $rscurr = $this->MEXRATE_mod->selectfor_posting_in($IncDateListDistinct, $IncCRListDistinct);
             $listcount = count($IncDateCR_FLGList);
@@ -16078,7 +16078,7 @@ class DELV extends CI_Controller
                 }
             }
             # akhir validasi
-           
+
             $SeriBarang = 1;
 
             foreach ($tpb_bahan_baku as &$r) {
@@ -16095,7 +16095,7 @@ class DELV extends CI_Controller
                     }
                 }
                 $r['HARGA_PENYERAHAN'] = $r['CIF'] * $czharga_matauang;
-                if(!$isScrapItem) {
+                if (!$isScrapItem) {
                     $tpb_barang[] = [
                         'KODE_BARANG' => $r['KODE_BARANG'],
                         'POS_TARIF' => $r['POS_TARIF'],
@@ -16122,7 +16122,7 @@ class DELV extends CI_Controller
                         'SPESIFIKASI_LAIN' => null,
                         'JUMLAH_KEMASAN' => 1,
                         'RBM' => $r['RBM'],
-                        'CURRENCY' => $r['CURRENCY']
+                        'CURRENCY' => $r['CURRENCY'],
                     ];
                 }
                 $r['SERI_BARANG'] = $SeriBarang;
@@ -16137,7 +16137,6 @@ class DELV extends CI_Controller
                 $cz_h_CIF_FG += $r['CIF'];
                 $cz_h_HARGA_PENYERAHAN_FG += $r['HARGA_PENYERAHAN'];
             }
-            
 
             # Isi nilai BAKU TARIF
             $tpb_bahan_baku_tarif = [];
@@ -16189,7 +16188,6 @@ class DELV extends CI_Controller
                 $czizinpengusaha = $r['NOMOR_SKEP'];
             }
 
-            
             foreach ($tpb_barang as &$n) {
                 $tpb_barang_tarif = [
                     [
@@ -16206,8 +16204,6 @@ class DELV extends CI_Controller
             }
             unset($n);
 
-            
-
             $data = [
                 'txid' => $doc,
                 'cif' => $cz_h_CIF_FG,
@@ -16219,16 +16215,15 @@ class DELV extends CI_Controller
                 'nomorIjinEntitas' => $czizinpengusaha,
             ];
 
-
         }
         $responApi = null;
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-25rm, step0#, DO:' . $doc);
-            
-            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/25', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);            
+
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/25', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
-            
+
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-25rm, step0#, DO:' . $doc);
         }
         $respon = [
@@ -16254,7 +16249,7 @@ class DELV extends CI_Controller
             $czcurrency = $r['MCUS_CURCD'];
             $NomorAju = $r['DLV_ZNOMOR_AJU'];
             $itemCodeBarang = $r['DLV_ITMCD'];
-            if(str_contains($r['DLV_ITMCD'], 'SCRAP')) {
+            if (str_contains($r['DLV_ITMCD'], 'SCRAP')) {
                 $isScrapItem = true;
             }
         }
@@ -16346,8 +16341,8 @@ class DELV extends CI_Controller
             $IncDateListDistinct = [];
             $IncCRListDistinct = [];
 
-            if($isScrapItem) {
-                
+            if ($isScrapItem) {
+
                 $rs_xbc = $this->DLVSCR_BB_mod->select_where(['DLVSCR_BB_TXID' => $doc]);
                 $Barang = $this->DLVSCR_mod->select_where([
                     'RTRIM(MITM_ITMCD) MITM_ITMCD',
@@ -16363,7 +16358,7 @@ class DELV extends CI_Controller
 
                 $SeriBarang = 1;
                 $_cifBarang = 0;
-                foreach($Barang as $r) {
+                foreach ($Barang as $r) {
                     $_cifBarang = $r['DLVSCR_PRPRC'];
                     $tpb_barang[] = [
                         'KODE_BARANG' => $r['MITM_ITMCD'],
@@ -16377,18 +16372,18 @@ class DELV extends CI_Controller
                         'HARGA_PENYERAHAN' => $_cifBarang,
                         'SERI_BARANG' => $SeriBarang,
                         'KODE_STATUS' => '02',
-                        'JUMLAH_BAHAN_BAKU' => count($tpb_bahan_baku),                        
+                        'JUMLAH_BAHAN_BAKU' => count($tpb_bahan_baku),
                         'SPESIFIKASI_LAIN' => null,
                         'JUMLAH_KEMASAN' => 1,
                         'RBM' => $r['MITM_BM'],
                         'CURRENCY' => 'RPH',
-                        'BRUTO' => $r['DLVSCR_ITMQT']+1,
+                        'BRUTO' => $r['DLVSCR_ITMQT'] + 1,
                         'KODE_GUNA' => '0',
-                        'KODE_KEMASAN' => 'BX'
+                        'KODE_KEMASAN' => 'BX',
                     ];
                 }
-                
-                foreach($rs_xbc as $r) {
+
+                foreach ($rs_xbc as $r) {
                     $tpb_bahan_baku[] = [
                         'KODE_JENIS_DOK_ASAL' => $r['DLVSCR_BB_BCTYPE'],
                         'NOMOR_DAFTAR_DOK_ASAL' => $r['DLVSCR_BB_NOPEN'],
@@ -16413,27 +16408,24 @@ class DELV extends CI_Controller
                         'PPN' => 11, //bu gusti, terkait peraturan 1 april
                         'RASSYCODE' => $itemCodeBarang,
                         'RPRICEGROUP' => $_cifBarang,
-                        'NDPBM' => (float) $NDPBM
+                        'NDPBM' => (float) $NDPBM,
                     ];
 
                     $IncDateList[] = $r['DLVSCR_BB_TGLPEN'];
                     $IncCRList[] = $r['DLVSCR_BB_MATA_UANG'];
-                    
-                    if(!in_array($r['DLVSCR_BB_TGLPEN'], $IncDateListDistinct)) {
+
+                    if (!in_array($r['DLVSCR_BB_TGLPEN'], $IncDateListDistinct)) {
                         $IncDateListDistinct[] = $r['DLVSCR_BB_TGLPEN'];
                     }
-                    if(!in_array($r['DLVSCR_BB_MATA_UANG'], $IncCRListDistinct)) {
+                    if (!in_array($r['DLVSCR_BB_MATA_UANG'], $IncCRListDistinct)) {
                         $IncCRListDistinct[] = $r['DLVSCR_BB_MATA_UANG'];
                     }
-
-
 
                 }
             } else {
                 $rs_do = $this->DELV_mod->select_for_do_rm_rtn_v1($doc);
                 $rs_xbc = $this->RCV_mod->select_for_rmrtn_bytxid($doc);
-                
-                
+
                 foreach ($rs_do as $r) {
                     $r['PLOTQT'] = 0;
                     foreach ($rs_xbc as &$x) {
@@ -16492,7 +16484,7 @@ class DELV extends CI_Controller
                     unset($x);
                 }
                 unset($r);
-    
+
                 $tpb_barang = [];
                 $no = 1;
                 $rscurr = $this->MEXRATE_mod->selectfor_posting_in($IncDateList, $IncCRList);
@@ -16655,11 +16647,11 @@ class DELV extends CI_Controller
         $responApi = null;
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-41, step0#, DO:' . $doc);
-            
-            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/41', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);            
+
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/41', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
-            
+
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-41, step0#, DO:' . $doc);
         }
         $respon = [
@@ -16693,8 +16685,8 @@ class DELV extends CI_Controller
         $data = [];
         if (!empty($TPBData)) {
             $message = 'Already exist in TPB';
-        // if (empty($TPBData)) {
-        //     $message = 'Please posting to TPB first';
+            // if (empty($TPBData)) {
+            //     $message = 'Please posting to TPB first';
         } else {
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
             $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
@@ -16712,7 +16704,7 @@ class DELV extends CI_Controller
             $RSHeaderPosted = $this->DELV_mod->selectPostedDocument(['DLV_ID'], ['DLV_ID' => $doc]);
             # jalankan fungsi request exbc
             if (empty($RSHeaderPosted)) {
-                
+
                 $result = $this->_posting25($doc);
 
                 # validasi apakah request berjalan dengan mulus
@@ -16754,7 +16746,7 @@ class DELV extends CI_Controller
             $Packagings = $this->DELV_mod->select_packinglist_bydono($doc);
             $cz_JUMLAH_KEMASAN = $this->DELV_mod->check_Primary(['DLV_ID' => $doc]);
             $rsitem_p_price = $this->setPriceRS(base64_encode($doc));
-            
+
             $rsplotrm_per_fgprice = $this->perprice($doc, $rsitem_p_price);
             $BMFG = null;
             foreach ($rsitem_p_price as $r) {
@@ -17074,7 +17066,7 @@ class DELV extends CI_Controller
 
         if (!empty($data)) {
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'start DELV/ceisa40-25, step0#, DO:' . $doc);
-            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/25', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);           
+            $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/sendPosting/25', ['Content-Type' => 'application/json', 'Accept' => 'application/json'], json_encode($data), 'POST', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
             $message = $responApiObj->message;
             log_message('error', $_SERVER['REMOTE_ADDR'] . 'finish DELV/ceisa40-25, step0#, DO:' . $doc);
