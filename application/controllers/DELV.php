@@ -8645,6 +8645,8 @@ class DELV extends CI_Controller
                 $myar = [];
                 $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
                 $responApiObj = json_decode($responApi->body);
+
+                $responApiObjEncoded = json_encode($responApiObj);
                 
                 if (strtolower($responApiObj->status) === 'success') {
                     $_tanggalDaftar = $responApiObj->dataRespon[0]->tanggalDaftar;
@@ -8664,6 +8666,27 @@ class DELV extends CI_Controller
                             'NOMOR_RESPON' => $responApiObj->dataRespon[0]->nomorRespon,
                         ],
                     ];
+                } else {
+                    // another format
+                    if(strtolower($responApiObj->message) === 'success') {
+                        $_tanggalDaftar = $responApiObj->data[0]->tanggalDaftar;
+                        $_tanggalDaftarFormatted = null;
+                        if ($_tanggalDaftar) {
+                            $_arrayTanggal = explode('-', $_tanggalDaftar);
+                            $_tanggalDaftarFormatted = $_arrayTanggal[2] . '-' . $_arrayTanggal[1] . '-' . $_arrayTanggal[0];
+                        }
+                        $result_data = [
+                            [
+                                'NOMOR_DAFTAR' => $responApiObj->data[0]->nomorDaftar,
+                                'TANGGAL_DAFTAR' => $_tanggalDaftarFormatted,
+                            ],
+                        ];
+                        $response_data = [
+                            [
+                                'NOMOR_RESPON' => $responApiObj->data[0]->nomorRespon,
+                            ],
+                        ];
+                    }
                 }
             }
         }
