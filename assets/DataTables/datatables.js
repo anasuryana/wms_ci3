@@ -4,20 +4,20 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.1.6/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.3/rr-1.5.0/sc-2.4.3/sl-2.1.0
+ *   https://datatables.net/download/#bs5/dt-2.1.7/fc-5.0.2/fh-4.0.1/kt-2.12.1/r-3.0.3/rr-1.5.0/sc-2.4.3/sl-2.1.0
  *
  * Included libraries:
- *   DataTables 2.1.6, FixedColumns 5.0.1, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.3, RowReorder 1.5.0, Scroller 2.4.3, Select 2.1.0
+ *   DataTables 2.1.7, FixedColumns 5.0.2, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.3, RowReorder 1.5.0, Scroller 2.4.3, Select 2.1.0
  */
 
-/*! DataTables 2.1.6
+/*! DataTables 2.1.7
  * © SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     2.1.6
+ * @version     2.1.7
  * @author      SpryMedia Ltd
  * @contact     www.datatables.net
  * @copyright   SpryMedia Ltd.
@@ -539,7 +539,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs5/dt-2.1.6/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.3/rr-1.5.0/sc-2.4.3/sl-2.1.0",
+		builder: "bs5/dt-2.1.7/fc-5.0.2/fh-4.0.1/kt-2.12.1/r-3.0.3/rr-1.5.0/sc-2.4.3/sl-2.1.0",
 	
 	
 		/**
@@ -1330,8 +1330,11 @@
 		}
 	
 		// It is faster to just run `normalize` than it is to check if
-		// we need to with a regex!
-		var res = str.normalize("NFD");
+		// we need to with a regex! (Check as it isn't available in old
+		// Safari)
+		var res = str.normalize
+			? str.normalize("NFD")
+			: str;
 	
 		// Equally, here we check if a regex is needed or not
 		return res.length !== str.length
@@ -2169,11 +2172,7 @@
 		for (var i=0 ; i<cols.length ; i++) {
 			var width = _fnColumnsSumWidth(settings, [i], false, false);
 	
-			// Need to set the min-width, otherwise the browser might try to collapse
-			// it further
-			cols[i].colEl
-				.css('width', width)
-				.css('min-width', width);
+			cols[i].colEl.css('width', width);
 		}
 	}
 	
@@ -2270,7 +2269,7 @@
 	 */
 	function _typeResult (typeDetect, res) {
 		return res === true
-			? typeDetect.name
+			? typeDetect._name
 			: res;
 	}
 	
@@ -3053,8 +3052,8 @@
 	 * @returns 
 	 */
 	function _fnGetRowDisplay (settings, rowIdx) {
-		let rowModal = settings.aoData[rowIdx];
-		let columns = settings.aoColumns;
+		var rowModal = settings.aoData[rowIdx];
+		var columns = settings.aoColumns;
 	
 		if (! rowModal.displayData) {
 			// Need to render and cache
@@ -5420,11 +5419,7 @@
 			var width = _fnColumnsSumWidth( settings, this, true, false );
 	
 			if ( width ) {
-				// Need to set the width and min-width, otherwise the browser
-				// will attempt to collapse the table beyond want might have
-				// been specified
 				this.style.width = width;
-				this.style.minWidth = width;
 	
 				// For scrollX we need to force the column width otherwise the
 				// browser will collapse it. If this width is smaller than the
@@ -7726,7 +7721,7 @@
 	// Reduce the API instance to the first item found
 	var _selector_first = function ( old )
 	{
-		let inst = new _Api(old.context[0]);
+		var inst = new _Api(old.context[0]);
 	
 		// Use a push rather than passing to the constructor, since it will
 		// merge arrays down automatically, which isn't what is wanted here
@@ -9721,7 +9716,7 @@
 				fn.call(this);
 			}
 			else {
-				this.on('init', function () {
+				this.on('init.dt.DT', function () {
 					fn.call(this);
 				});
 			}
@@ -9874,7 +9869,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.1.6";
+	DataTable.version = "2.1.7";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -12438,7 +12433,7 @@
 			return {
 				className: _extTypes.className[name],
 				detect: _extTypes.detect.find(function (fn) {
-					return fn.name === name;
+					return fn._name === name;
 				}),
 				order: {
 					pre: _extTypes.order[name + '-pre'],
@@ -12456,10 +12451,10 @@
 		var setDetect = function (detect) {
 			// `detect` can be a function or an object - we set a name
 			// property for either - that is used for the detection
-			Object.defineProperty(detect, "name", {value: name});
+			Object.defineProperty(detect, "_name", {value: name});
 	
 			var idx = _extTypes.detect.findIndex(function (item) {
-				return item.name === name;
+				return item._name === name;
 			});
 	
 			if (idx === -1) {
@@ -12522,13 +12517,13 @@
 	// Get a list of types
 	DataTable.types = function () {
 		return _extTypes.detect.map(function (fn) {
-			return fn.name;
+			return fn._name;
 		});
 	};
 	
 	var __diacriticSort = function (a, b) {
-		a = a.toString().toLowerCase();
-		b = b.toString().toLowerCase();
+		a = a !== null && a !== undefined ? a.toString().toLowerCase() : '';
+		b = b !== null && b !== undefined ? b.toString().toLowerCase() : '';
 	
 		// Checked for `navigator.languages` support in `oneOf` so this code can't execute in old
 		// Safari and thus can disable this check
@@ -13242,15 +13237,17 @@
 			all        = len === -1,
 			page = all ? 0 : Math.ceil( start / len ),
 			pages = all ? 1 : Math.ceil( visRecords / len ),
-			buttons = plugin(opts)
+			buttons = [],
+			buttonEls = [],
+			buttonsNested = plugin(opts)
 				.map(function (val) {
 					return val === 'numbers'
 						? _pagingNumbers(page, pages, opts.buttons, opts.boundaryNumbers)
 						: val;
-				})
-				.flat();
+				});
 	
-		var buttonEls = [];
+		// .flat() would be better, but not supported in old Safari
+		buttons = buttons.concat.apply(buttons, buttonsNested);
 	
 		for (var i=0 ; i<buttons.length ; i++) {
 			var button = buttons[i];
@@ -13529,14 +13526,14 @@
 	
 		// Save text node content for macro updating
 		var textNodes = [];
-		div.find('label')[0].childNodes.forEach(function (el) {
+		Array.from(div.find('label')[0].childNodes).forEach(function (el) {
 			if (el.nodeType === Node.TEXT_NODE) {
 				textNodes.push({
 					el: el,
 					text: el.textContent
 				});
 			}
-		})
+		});
 	
 		// Update the label text in case it has an entries value
 		var updateEntries = function (len) {
@@ -13778,7 +13775,7 @@ return DataTable;
 }));
 
 
-/*! FixedColumns 5.0.1
+/*! FixedColumns 5.0.2
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -14177,7 +14174,7 @@ var DataTable = $.fn.dataTable;
             }
             return widths.slice(0, index).reduce(function (accum, val) { return accum + val; }, 0);
         };
-        FixedColumns.version = '5.0.1';
+        FixedColumns.version = '5.0.2';
         FixedColumns.classes = {
             bottomBlocker: 'dtfc-bottom-blocker',
             fixedEnd: 'dtfc-fixed-end',
@@ -14204,7 +14201,7 @@ var DataTable = $.fn.dataTable;
         return FixedColumns;
     }());
 
-    /*! FixedColumns 5.0.1
+    /*! FixedColumns 5.0.2
      * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery($);
