@@ -4,7 +4,7 @@
             <div class="col-md-12 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button title="New" id="itmjr_btnnew" onclick="itmjr_btnnew_eclick()" class="btn btn-primary" ><i class="fas fa-file"></i></button>
-                    <button title="Save" id="itmjr_btnsave" onclick="itmjr_btnsave_eclick()" class="btn btn-primary" ><i class="fas fa-save"></i></button>
+                    <button title="Save" id="itmjr_btnsave" onclick="itmjr_btnsave_eclick(this)" class="btn btn-primary" ><i class="fas fa-save"></i></button>
                 </div>
             </div>
         </div>
@@ -54,6 +54,11 @@
                     <label class="input-group-text">MCZ</label>
                     <input type="text" class="form-control" id="itmjr_mcz" disabled>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mb-1" id="itmjr-div-alert">
+
             </div>
         </div>
         <div class="row">
@@ -163,7 +168,7 @@
                     itmjrSuppliedQty = 0
                     e.target.value = rawValue.substring(3, 20)
                 }
-                
+
                 if(!itmjr_validateItemList({item_code : e.target.value})) {
                     return
                 }
@@ -261,7 +266,7 @@
     }
 
     function itmjr_isReachedMaximumQuota() {
-        
+
         let mtbl = document.getElementById('itmjr_tbl');
         let tableku2 = mtbl.getElementsByTagName("tbody")[0];
         let ttlrows = mtbl.getElementsByTagName('tr').length;
@@ -339,37 +344,66 @@
         }
     }
 
-    function itmjr_btnsave_eclick() {
+    function itmjr_btnsave_eclick(pThis) {
         let mtbl = document.getElementById('itmjr_tbl');
         let tableku2 = mtbl.getElementsByTagName("tbody")[0];
         let mtbltr = tableku2.getElementsByTagName('tr');
         const ttlrows = mtbltr.length
-        if( ttlrows=== 0) {
+        if( ttlrows<=1 ) {
+            alertify.info("nothing to be saved")
             return
         }
 
+        let dataDetail = [];
+
         for(let i=0;i<ttlrows;i++) {
-            console.log(tableku2.rows[i].cells[1].innerText)
-            console.log(tableku2.rows[i].cells[2].innerText)
-            console.log(tableku2.rows[i].cells[3].innerText)
+            dataDetail.push({
+                lotNumber : tableku2.rows[i].cells[1].innerText,
+                qty : numeral(tableku2.rows[i].cells[2].innerText).value(),
+                id : tableku2.rows[i].cells[3].innerText,
+            })
         }
 
         const dataInput = {
-            REELC_DOC : itmjr_doc.value
-            item_code : tableku2.rows[0].cells[0].innerText
-            mc : itmjr_mc.value
+            REELC_DOC : itmjr_doc.value,
+            REELC_ITMCD : tableku2.rows[0].cells[0].innerText,
+            REELC_FOR_PROCESS : itmjr_mc.value,
+            REELC_FOR_MC : itmjr_mc.value,
+            REELC_FOR_MCZ : itmjr_mc.value,
+            detail : dataDetail
         }
 
         if(!confirm('Are you sure ?')) {
             return
         }
+
+        pThis.disabled = true
+        const div_alert = document.getElementById('itmjr-div-alert')
+        div_alert.innerHTML = ''
+
         $.ajax({
             type: "POST",
             url: "<?=$_ENV['APP_INTERNAL_API']?>supply/join-reel",
-            data: data,
+            data: JSON.stringify(dataInput),
             dataType: "JSON",
             success: function (response) {
-                
+                pThis.disabled = false
+                alertify.success(response.message)
+
+                itmjr_btnnew_eclick()
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                pThis.disabled = false
+                const respon = Object.keys(xhr.responseJSON)
+
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
             }
         });
     }

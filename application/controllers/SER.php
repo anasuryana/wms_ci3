@@ -64,6 +64,10 @@ class SER extends CI_Controller
     {
         $this->load->view('wms/vser_fg');
     }
+    public function form_join_reel()
+    {
+        $this->load->view('wms/vjoin_reel');
+    }
     public function createstatus()
     {
         $this->load->view('wms/vser_fg_status');
