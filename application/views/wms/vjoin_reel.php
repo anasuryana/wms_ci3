@@ -32,7 +32,7 @@
             <div class="col-md-12 mb-1">
                 <div class="input-group input-group-sm">
                     <label class="input-group-text">Uniquekey</label>
-                    <input type="text" class="form-control" id="itmjr_uniquekey">
+                    <input type="text" class="form-control" id="itmjr_uniquekey" onkeypress="itmjr_uniquekey_ekeypress(event)" max="250">
                 </div>
             </div>
         </div>
@@ -236,32 +236,37 @@
                         return
                     }
 
-                    if(itmjr_isAbleToAdded(response.status[0].data)) {
-
-                        // validate maximum row
-                        if(itmjr_isReachedMaximumQuota()) {
-                            alertify.warning('Maximum rows is 5')
-                            return
-                        }
-
-                        itmjr_process.value = response.status[0].data[0].SPLSCN_PROCD
-                        itmjr_mc.value = response.status[0].data[0].SPLSCN_MC
-                        itmjr_mcz.value = response.status[0].data[0].SPLSCN_ORDERNO
-                        itmjr_addToList(response.status[0].data)
-
-                        itmjr_3n1.value = ''
-                        itmjr_3n2.value = ''
-
-                        itmjr_3n1.disabled = false
-                        itmjr_3n2.disabled = false
-
-                        itmjr_3n1.focus()
-                    }
+                    itmjr_validateAfter3N2(response)
 
                 }, error: function(xhr, xopt, xthrow) {
                     e.target.disabled = false
                 }
             });
+        }
+    }
+
+    function itmjr_validateAfter3N2(response) {
+        if(itmjr_isAbleToAdded(response.status[0].data)) {
+
+            // validate maximum row
+            if(itmjr_isReachedMaximumQuota()) {
+                alertify.warning('Maximum rows is 5')
+                return
+            }
+
+            itmjr_process.value = response.status[0].data[0].SPLSCN_PROCD
+            itmjr_mc.value = response.status[0].data[0].SPLSCN_MC
+            itmjr_mcz.value = response.status[0].data[0].SPLSCN_ORDERNO
+            itmjr_addToList(response.status[0].data)
+
+            itmjr_3n1.value = ''
+            itmjr_3n2.value = ''
+            itmjr_uniquekey.value = ''
+
+            itmjr_3n1.disabled = false
+            itmjr_3n2.disabled = false
+
+            itmjr_3n1.focus()
         }
     }
 
@@ -332,7 +337,7 @@
         for(let i=0;i<ttlrows;i++) {
             newrow = tableku2.insertRow(-1);
             newcell = newrow.insertCell(0);
-            newcell.innerText = itmjr_3n1.value
+            newcell.innerText = data[i].SPLSCN_ITMCD
             newcell = newrow.insertCell(-1);
             newcell.innerText = data[i].SPLSCN_LOTNO
             newcell = newrow.insertCell(-1);
@@ -406,5 +411,52 @@
                 </div>`
             }
         });
+    }
+
+    function itmjr_uniquekey_ekeypress(e) {
+        if(e.key === 'Enter') {
+            let rawValue = e.target.value.trim().toUpperCase()
+            if(!rawValue.includes('|')) {
+                alertify.warning('It is not valid C3 Label')
+                return
+            }
+
+            let rawValueArray = rawValue.split('|')
+
+            let itemCode = rawValueArray[0].substring(4, 25)
+            let _3n2 = rawValueArray[1].split(' ')
+
+            if(!itmjr_validateItemList({item_code : itemCode})) {
+                return
+            }
+
+            const data = {doc : itmjr_doc.value,
+                    item : itemCode,
+                    lotNumber : _3n2[2],
+                    qty : _3n2[1],
+                    uniquekey : rawValueArray[2]
+                }
+
+            e.target.disabled = true
+
+            $.ajax({
+                type: "POST",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>supply/validate-supplied-item",
+                data: data,
+                dataType: "json",
+                success: function (response) {
+                    e.target.disabled = false
+                    if(response.status[0].cd == 0) {
+                        alertify.warning(response.status[0].msg)
+                        return
+                    }
+
+                    itmjr_validateAfter3N2(response)
+                }, error: function(xhr, xopt, xthrow) {
+                    alertify.error(xthrow)
+                    e.target.disabled = false
+                }
+            });
+        }
     }
 </script>
