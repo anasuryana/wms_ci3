@@ -288,7 +288,7 @@
                 document.getElementById('splitlabel1V1_txt_newmodel').focus();
                 return;
             }
-            if (olditem.toUpperCase().includes('ES')) {
+            if (olditem.toUpperCase().includes('ES') || olditem.toUpperCase().includes('TMA')) {
 
             } else {
 
@@ -328,7 +328,7 @@
                 }
 
                 ///#1 check item code
-                if (newitem != olditem.substr(0, 9)) {
+                if (newitem.substr(0, 9) != olditem.substr(0, 9) ) {
                     if (newitem != olditem.substr(0, 10)) {
                         alertify.warning('New Item is not same with old item, please compare the label !');
                         $(this).val('');
