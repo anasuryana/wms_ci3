@@ -84,8 +84,8 @@
 <script>
 
     var itmjrSuppliedQty = 0;
-    function itmjr_btnnew_eclick() {
-        itmjr_doc.value = ''
+
+    function itmjr_clear_label_input() {
         itmjr_3n1.value = ''
         itmjr_3n2.value = ''
         itmjr_uniquekey.value = ''
@@ -93,11 +93,16 @@
         itmjr_mc.value = ''
         itmjr_mcz.value = ''
 
-        itmjr_doc.disabled = false
         itmjr_3n1.disabled = false
-        itmjr_doc.focus()
-
         document.getElementById('itmjr_tbl').getElementsByTagName('tbody')[0].innerHTML = ''
+    }
+
+    function itmjr_btnnew_eclick() {
+        itmjr_doc.value = ''
+        itmjr_clear_label_input()
+        itmjr_doc.disabled = false
+        itmjr_doc.focus()
+        
     }
 
     function itmjr_doc_ekeypress(e) {
@@ -222,7 +227,8 @@
             const data = {doc : itmjr_doc.value,
                     item : itmjr_3n1.value,
                     lotNumber : _lot,
-                    qty : _qty }
+                    qty : _qty
+                    }
 
             $.ajax({
                 type: "POST",
@@ -355,7 +361,7 @@
         let mtbltr = tableku2.getElementsByTagName('tr');
         const ttlrows = mtbltr.length
         if( ttlrows<=1 ) {
-            alertify.info("nothing to be saved")
+            alertify.warning("nothing to be saved")
             return
         }
 
@@ -375,7 +381,8 @@
             REELC_FOR_PROCESS : itmjr_mc.value,
             REELC_FOR_MC : itmjr_mc.value,
             REELC_FOR_MCZ : itmjr_mc.value,
-            detail : dataDetail
+            detail : dataDetail,
+            user_id : uidnya
         }
 
         if(!confirm('Are you sure ?')) {
@@ -395,7 +402,8 @@
                 pThis.disabled = false
                 alertify.success(response.message)
 
-                itmjr_btnnew_eclick()
+                itmjr_clear_label_input()
+                itmjr_3n1.focus()
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
                 pThis.disabled = false
