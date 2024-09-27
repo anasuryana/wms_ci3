@@ -5,6 +5,7 @@
                 <div class="btn-group btn-group-sm">
                     <button title="New" id="itmjr_btnnew" onclick="itmjr_btnnew_eclick()" class="btn btn-primary" ><i class="fas fa-file"></i></button>
                     <button title="Save" id="itmjr_btnsave" onclick="itmjr_btnsave_eclick(this)" class="btn btn-primary" ><i class="fas fa-save"></i></button>
+                    <button title="Export" id="itmjr_btn_trigger_export" data-bs-toggle="modal" data-bs-target="#itmjr_modal_export" class="btn btn-outline-primary" ><i class="fas fa-file-export"></i></button>
                 </div>
             </div>
         </div>
@@ -81,9 +82,74 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="itmjr_modal_export" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Options</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">From</span>
+                        <input type="text" class="form-control" id="itmjr_txt_dt" readonly>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">To</span>
+                        <input type="text" class="form-control" id="itmjr_txt_dt2" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="itmjr_btn_export(this)">Export</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 
     var itmjrSuppliedQty = 0;
+
+    function itmjr_btn_export(p) {
+        
+        p.disabled = true
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>supply/join-reel-report",
+            data: {dateFrom: itmjr_txt_dt.value, dateTo : itmjr_txt_dt2.value },
+            success: function (response) {
+                alertify.success('Done')
+                const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                const fileName = `Report Joint Period from ${itmjr_txt_dt.value} to ${itmjr_txt_dt2.value}.xlsx`
+                saveAs(blob, fileName)
+            },
+            xhr: function () {
+                const xhr = new XMLHttpRequest()
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 2) {
+                        p.innerHTML = 'Export'
+                        p.disabled = false
+                        if (xhr.status == 200) {
+                            xhr.responseType = "blob";
+                        } else {
+                            xhr.responseType = "text";
+                        }
+                    }
+                }
+                return xhr
+            },
+        })
+    }
 
     function itmjr_clear_label_input() {
         itmjr_3n1.value = ''
@@ -102,7 +168,7 @@
         itmjr_clear_label_input()
         itmjr_doc.disabled = false
         itmjr_doc.focus()
-        
+
     }
 
     function itmjr_doc_ekeypress(e) {
@@ -467,4 +533,15 @@
             });
         }
     }
+
+    $("#itmjr_txt_dt").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+    $("#itmjr_txt_dt2").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+    $("#itmjr_txt_dt").datepicker('update', new Date());
+    $("#itmjr_txt_dt2").datepicker('update', new Date());
 </script>
