@@ -1321,7 +1321,16 @@ echo $tohtml;
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save30" onclick="retrm_out_inc_z_btn_save30_e_click()">Save changes</button>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_relink30" onclick="retrm_out_inc_z_btn_relink_e_click(this)">Re-link IT Inventory</button>
+                        </div>
+                        <div class="col text-end">
+                            <button type="button" class="btn btn-primary btn-sm" id="retrm_out_inc_z_btn_save30" onclick="retrm_out_inc_z_btn_save30_e_click()">Save changes</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
