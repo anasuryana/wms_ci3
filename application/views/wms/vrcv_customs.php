@@ -287,8 +287,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 mb-1 text-center">
-                    <span class="badge bg-info" id="rcvcustoms_lbltbl"></span>
+                <div class="col-md-4 mb-1 text-center">                    
+                    <button class="btn btn-primary btn-sm" onclick="rcvcustoms_show_docs_modal()">Documents</button>
                 </div>
                 <div class="col-md-4 mb-1 text-end">
                     <div class="btn-group btn-group-sm">
@@ -300,7 +300,8 @@
             <div class="row">
                 <div class="col-md-12 mb-1">
                     <div class="table-responsive" id="rcvcustoms_divku">
-                        <table id="rcvcustoms_tbl" class="table table-sm table-striped table-hover table-bordered" style="width:100%;cursor:pointer;font-size:75%">
+                        <table id="rcvcustoms_tbl" class="table table-sm table-striped table-hover table-bordered caption-top" style="width:100%;cursor:pointer;font-size:75%">
+                            <caption id="rcvcustoms_lbltbl">-</caption>
                             <thead class="table-light">
                                 <tr class="text-center">
                                     <th>Status</th> <!-- 0 -->
@@ -1774,7 +1775,7 @@
                             <video autoplay></video>
                             <canvas class="d-none"></canvas>
                         </div>
-                        <img id="rcvcustoms_img" class="screenshot-image" alt="" src="<?=base_url('assets/imgs/bc_sample.JPG')?>">
+                        <img id="rcvcustoms_img" class="screenshot-image" alt="">
                     </div>
                 </div>
             </div>
@@ -1825,6 +1826,38 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="rcvcustoms_btn_set_location" onclick="rcvcustoms_btn_set_locationOnClick()" title="OK">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="RCVCUSTOMS_DOCUMENTS">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Documents</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <img id="rcvcustoms_image" style="border: 1px solid silver; width: 320px; height: 240px" />
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary" onclick="rcvcustoms_get_image()">Paste</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="rcvcustoms_nomor_faktur_pajak" class="form-label">Nomor Faktur Pajak</label>
+                        <input type="text" class="form-control" id="rcvcustoms_nomor_faktur_pajak" maxlength="40">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="rcvcustoms_btn_save_docs()" title="Save"><i class="fas fa-save"></i></button>
             </div>
         </div>
     </div>
@@ -5197,5 +5230,34 @@
     function rcvcustoms_btn_set_locationOnClick() {
         document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[15].innerHTML = rcvcustoms_modal_cmb_locTo.value
         $("#RCVCUSTOMS_LOCATION").modal('hide')
+    }
+
+    function rcvcustoms_show_docs_modal() {
+        const selectedTab = document.querySelector('input[name="rcvcustoms_mode"]:checked').value
+        console.log({selectedTab : selectedTab})
+        $("#RCVCUSTOMS_DOCUMENTS").modal('show')
+    }
+
+    function rcvcustoms_get_image() {
+        ClipboardUtils.readImage(function(data, error) {
+            if (error) {
+                console.error(error);
+                return;
+            }
+            if (data) {
+                rcvcustoms_image.src = data;
+                $.ajax({
+                    type: "POST",
+                    url: "<?=$_ENV['APP_INTERNAL_API']?>receive/parse-image",
+                    data: {'gambarnya' : data},
+                    dataType: "json",
+                    success: function (response) {
+                        
+                    }
+                });
+                return;
+            }
+            console.log('Image bitmap is not avaialble - copy it to clipboard.');
+        });
     }
 </script>
