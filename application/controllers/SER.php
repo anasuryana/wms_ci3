@@ -5281,6 +5281,10 @@ class SER extends CI_Controller
     {
         $this->load->view('wms_report/vrpt_conversion_test');
     }
+    public function form_split_c3()
+    {
+        $this->load->view('wms/vsplit_c3');
+    }
     public function conversion_test()
     {
         header('Content-Type: application/json');
