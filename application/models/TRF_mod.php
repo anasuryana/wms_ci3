@@ -162,6 +162,17 @@ class TRF_mod extends CI_Model
         return $query->result_array();
     }
 
+    public function selectOpenForIDWhereDoc($UserId, $Doc)
+    {
+        $qry = "SELECT TRFH_DOC,TRFD_ITEMCD,TRFH_LOC_FR,TRFH_LOC_TO,SUM(TRFD_QTY) TTLQTY FROM TRFH_TBL LEFT JOIN TRFD_TBL ON TRFH_DOC=TRFD_DOC
+        LEFT JOIN MSTLOCG_TBL TFR ON  TRFH_LOC_FR=TFR.MSTLOCG_ID
+                WHERE TRFD_DELETED_DT IS NULL AND TRFH_LOC_TO IN (SELECT TRFSET_WH FROM TRFSET_TBL WHERE TRFSET_APPROVER=?)
+                AND TRFH_DOC=? AND TRFD_RECEIVE_DT IS NULL
+                GROUP BY TRFH_DOC,TRFH_LOC_FR,TRFH_LOC_TO,MSTLOCG_NM,TRFD_ITEMCD";
+        $query = $this->db->query($qry, [$UserId,  $Doc]);
+        return $query->result_array();
+    }
+
     function selectBalanceTransferByPO($PONumber){
         $qry = "SELECT VPO.*
                     ,TRFQT
