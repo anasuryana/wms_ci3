@@ -472,4 +472,14 @@ class SER_mod extends CI_Model
         $query = $this->db->query($qry, [$pYear, $pMonth]);
         return $query->result_array();
     }
+
+    public function selectOutput($pwhere)
+    {
+        $this->db->from($this->TABLENAME);
+        $this->db->select("RTRIM(SER_DOC) WONO, SUM(SER_QTY) OUTQT");
+        $this->db->where($pwhere);
+        $this->db->group_by('SER_DOC');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 }
