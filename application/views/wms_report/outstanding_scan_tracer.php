@@ -75,7 +75,7 @@
                 response.data.forEach((arrayItem) => {
                     newrow = tableku2.insertRow(-1)
                     newcell = newrow.insertCell(0)
-                    newcell.innerText = arrayItem['itm']
+                    newcell.innerText = arrayItem['Item_code']
                     newcell = newrow.insertCell(-1)
                     newcell.innerText = arrayItem['SPTNO']
                     newcell = newrow.insertCell(-1)
