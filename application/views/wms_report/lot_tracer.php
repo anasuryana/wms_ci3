@@ -71,8 +71,9 @@
                                 <th rowspan="2" class="align-middle">DATE</th>
                                 <th rowspan="2" class="align-middle">NIK</th>
                                 <th rowspan="2" class="align-middle">REMARK</th>
+                                <th rowspan="2" class="align-middle">JOB</th>
                             </tr>
-                            <tr>
+                            <tr class="second">
                                 <th  class="align-middle">ITEM CODE</th>
                                 <th  class="align-middle">LOT NO</th>
                                 <th  class="align-middle">QTY</th>
@@ -140,7 +141,8 @@
                     newcell = newrow.insertCell(-1)
                     newcell.innerHTML = response.data[i].OLD_LOT_CODE
                     newcell = newrow.insertCell(-1)
-                    newcell.innerHTML = response.data[i].OLD_QTY
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(response.data[i].OLD_QTY).format(',')
                     newcell = newrow.insertCell(-1)
                     newcell.innerHTML = response.data[i].OLD_UNIQUE
                     newcell = newrow.insertCell(-1)
@@ -148,7 +150,8 @@
                     newcell = newrow.insertCell(-1)
                     newcell.innerHTML = response.data[i].NEW_LOT_CODE
                     newcell = newrow.insertCell(-1)
-                    newcell.innerHTML = response.data[i].NEW_QTY
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(response.data[i].NEW_QTY).format(',')
                     newcell = newrow.insertCell(-1)
                     newcell.innerHTML = response.data[i].NEW_UNIQUE
                     newcell = newrow.insertCell(-1)
@@ -157,6 +160,8 @@
                     newcell.innerHTML = response.data[i].NIK
                     newcell = newrow.insertCell(-1)
                     newcell.innerHTML = response.data[i].REMARK
+                    newcell = newrow.insertCell(-1)
+                    newcell.innerHTML = response.data[i].JOB
                 }
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
@@ -172,4 +177,9 @@
         let mdate1 = document.getElementById('rtracelot_txt_dt').value;
         let mdate2 = document.getElementById('rtracelot_txt_dt2').value;
     }
+
+    $("#rtracelot_divku").css('height', $(window).height()   
+    -document.getElementById('rtracelot_stack1').offsetHeight 
+    -document.getElementById('rtracelot_stack2').offsetHeight    
+    -100);
 </script>
