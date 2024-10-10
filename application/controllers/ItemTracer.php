@@ -17,4 +17,9 @@ class ItemTracer extends CI_Controller
     {
         $this->load->view('wms_report/outstanding_scan_tracer');
     }
+
+    public function form_lot_report()
+    {
+        $this->load->view('wms_report/lot_tracer');
+    }
 }
