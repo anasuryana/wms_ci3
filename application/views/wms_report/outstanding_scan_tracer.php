@@ -88,6 +88,11 @@
                     newcell.classList.add('text-center')
                 })
 
+                if(response.data.length === 0) {
+                    newrow = tableku2.insertRow(-1)
+                    newrow.innerHTML = '<td colspan="5" class="table-success text-center">OK</td>'
+                }
+
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
             }, error: function(xhr, xopt, xthrow) {
