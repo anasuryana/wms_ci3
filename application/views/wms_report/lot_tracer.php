@@ -44,7 +44,7 @@
                             Export to
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                            <li><a class="dropdown-item" href="#" id="rtracelot_btn_xls" onclick="rtracelot_btn_xls_eCK()"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> XLS</a></li>
+                            <li><a class="dropdown-item" href="#" id="rtracelot_btn_xls" onclick="rtracelot_btn_xls_eCK(this)"><span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet</a></li>
                         </ul>
                     </div>
                 </div>
@@ -173,13 +173,43 @@
         });
     }
 
-    function rtracelot_btn_xls_eCK() {
+    function rtracelot_btn_xls_eCK(p) {
         let mdate1 = document.getElementById('rtracelot_txt_dt').value;
         let mdate2 = document.getElementById('rtracelot_txt_dt2').value;
+        p.classList.add('disabled')
+        p.innerHTML = 'Please wait'
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>report/lot-tracer",
+            data: {dateFrom: mdate1, dateTo : mdate2 },
+            success: function (response) {
+                alertify.success('Done')
+                const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                const fileName = `Trace Lot Report from ${mdate1} to ${mdate2}.xlsx`
+                saveAs(blob, fileName)
+            },
+            xhr: function () {
+                const xhr = new XMLHttpRequest()
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 2) {
+                        if (xhr.status == 200) {
+                            p.innerHTML = `<span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet`
+                            p.classList.remove('disabled')
+                            xhr.responseType = "blob";
+                        } else {
+                            p.innerHTML = `<span style="color: MediumSeaGreen"><i class="fas fa-file-excel"></i></span> Spreadsheet`
+                            p.classList.remove('disabled')
+                            xhr.responseType = "text";
+                        }
+                    }
+                }
+                return xhr
+            },
+        })
     }
 
-    $("#rtracelot_divku").css('height', $(window).height()   
-    -document.getElementById('rtracelot_stack1').offsetHeight 
-    -document.getElementById('rtracelot_stack2').offsetHeight    
+    $("#rtracelot_divku").css('height', $(window).height()
+    -document.getElementById('rtracelot_stack1').offsetHeight
+    -document.getElementById('rtracelot_stack2').offsetHeight
     -100);
 </script>
