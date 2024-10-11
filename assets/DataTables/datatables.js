@@ -4,20 +4,20 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.1.7/fc-5.0.2/fh-4.0.1/kt-2.12.1/r-3.0.3/rr-1.5.0/sc-2.4.3/sl-2.1.0
+ *   https://datatables.net/download/#bs5/dt-2.1.8/fc-5.0.3/fh-4.0.1/kt-2.12.1/r-3.0.3/rr-1.5.0/sc-2.4.3/sl-2.1.0
  *
  * Included libraries:
- *   DataTables 2.1.7, FixedColumns 5.0.2, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.3, RowReorder 1.5.0, Scroller 2.4.3, Select 2.1.0
+ *   DataTables 2.1.8, FixedColumns 5.0.3, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.3, RowReorder 1.5.0, Scroller 2.4.3, Select 2.1.0
  */
 
-/*! DataTables 2.1.7
+/*! DataTables 2.1.8
  * © SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     DataTables
  * @description Paginate, search and order HTML tables
- * @version     2.1.7
+ * @version     2.1.8
  * @author      SpryMedia Ltd
  * @contact     www.datatables.net
  * @copyright   SpryMedia Ltd.
@@ -539,7 +539,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs5/dt-2.1.7/fc-5.0.2/fh-4.0.1/kt-2.12.1/r-3.0.3/rr-1.5.0/sc-2.4.3/sl-2.1.0",
+		builder: "bs5/dt-2.1.8/fc-5.0.3/fh-4.0.1/kt-2.12.1/r-3.0.3/rr-1.5.0/sc-2.4.3/sl-2.1.0",
 	
 	
 		/**
@@ -3259,9 +3259,6 @@
 			settings.aoFooter = detected;
 		}
 	
-		// ARIA role for the rows
-		$(target).children('tr').attr('role', 'row');
-	
 		// Every cell needs to be passed through the renderer
 		$(target).children('tr').children('th, td')
 			.each( function () {
@@ -5251,7 +5248,7 @@
 			// browser support
 			var firstTr = null;
 	
-			for (i=0 ; i<settings.aiDisplay.length ; i++) {
+			for (i=settings._iDisplayStart ; i<settings.aiDisplay.length ; i++) {
 				var idx = settings.aiDisplay[i];
 				var tr = settings.aoData[idx].nTr;
 	
@@ -9869,7 +9866,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.1.7";
+	DataTable.version = "2.1.8";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -12194,7 +12191,7 @@
 	
 			// Add type detection and sorting specific to this date format - we need to be able to identify
 			// date type columns as such, rather than as numbers in extensions. Hence the need for this.
-			if (! DataTable.ext.type.order[typeName]) {
+			if (! DataTable.ext.type.order[typeName + '-pre']) {
 				DataTable.type(typeName, {
 					detect: function (d) {
 						// The renderer will give the value to type detect as the type!
@@ -13775,7 +13772,7 @@ return DataTable;
 }));
 
 
-/*! FixedColumns 5.0.2
+/*! FixedColumns 5.0.3
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -14174,7 +14171,7 @@ var DataTable = $.fn.dataTable;
             }
             return widths.slice(0, index).reduce(function (accum, val) { return accum + val; }, 0);
         };
-        FixedColumns.version = '5.0.2';
+        FixedColumns.version = '5.0.3';
         FixedColumns.classes = {
             bottomBlocker: 'dtfc-bottom-blocker',
             fixedEnd: 'dtfc-fixed-end',
@@ -14201,7 +14198,7 @@ var DataTable = $.fn.dataTable;
         return FixedColumns;
     }());
 
-    /*! FixedColumns 5.0.2
+    /*! FixedColumns 5.0.3
      * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery($);
