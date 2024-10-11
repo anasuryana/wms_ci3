@@ -75,6 +75,7 @@
                                 <th>Lot No</th>
                                 <th>QTY</th>
                                 <th>Time</th>
+                                <th>Unique Code</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -242,6 +243,8 @@
                         newcell = newrow.insertCell(8);
                         newText = document.createTextNode(response.data[i].SPLSCN_LUPDT);
                         newcell.appendChild(newText);
+                        newcell = newrow.insertCell(-1);
+                        newcell.innerText = response.data[i].SPLSCN_UNQCODE
                     }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
