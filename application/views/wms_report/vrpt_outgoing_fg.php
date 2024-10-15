@@ -252,7 +252,7 @@
             data: {indate: dtfrom,indate2: dtto, inreport: reporttype, inassy: assyno, insearchby : searchby, inbsgrp: bsgroup },
             success: function (response) {                       
                 const blob = new Blob([response], { type: "application/vnd.ms-excel" })
-                const fileName = `Outgoing FG ${bsgroup}.xlsx`
+                const fileName = `Outgoing FG from ${dtfrom} to ${dtto}, ${bsgroup}.xlsx`
                 saveAs(blob, fileName)                
                 p.innerHTML = '<span class="fas fa-file-excel"></span>'
                 p.disabled = false
