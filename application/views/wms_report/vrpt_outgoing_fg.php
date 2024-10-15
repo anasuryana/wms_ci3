@@ -95,6 +95,7 @@
                                 <th  class="align-middle">Job Number</th>
                                 <th  class="text-right">Qty</th>
                                 <th  class="text-center">Reff. Number</th>
+                                <th  class="text-center">ETA</th>
                                 <th  class="text-center">ETD</th>
                                 <th  class="text-center">Scanning Time</th>                                
                                 <th  class="align-middle">Plant</th>
@@ -194,23 +195,27 @@
                     newcell.style.cssText= 'text-align:right';
                     newcell.innerHTML = numeral(response.data[i].SISCN_SERQTY).format(',')
 
-                    newcell = newrow.insertCell(6);                    
+                    newcell = newrow.insertCell(6);
                     newcell.style.cssText= 'text-align:center';
                     newcell.innerHTML = response.data[i].SISCN_SER
 
-                    newcell = newrow.insertCell(7);                    
+                    newcell = newrow.insertCell(-1);                    
+                    newcell.style.cssText= 'text-align:center';
+                    newcell.innerHTML = response.data[i].SI_DOCREFFETA
+
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= 'text-align:center';
                     newcell.innerHTML = response.data[i].ITH_LUPDT
 
-                    newcell = newrow.insertCell(8);                    
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= 'text-align:center';
                     newcell.innerHTML = response.data[i].SISCN_LUPDT
 
-                    newcell = newrow.insertCell(9);                    
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= 'text-align:center';
                     newcell.innerHTML = response.data[i].SI_OTHRMRK
                     
-                    newcell = newrow.insertCell(10);                    
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= 'text-align:center';
                     newcell.innerHTML = response.data[i].SI_BSGRP
                 }
