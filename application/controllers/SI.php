@@ -2115,11 +2115,12 @@ class SI extends CI_Controller
         $sheet->setCellValueByColumnAndRow(5, 2, 'Job Number');
         $sheet->setCellValueByColumnAndRow(6, 2, 'Qty');
         $sheet->setCellValueByColumnAndRow(7, 2, 'Reff. Number');
-        $sheet->setCellValueByColumnAndRow(8, 2, 'ETD');
-        $sheet->setCellValueByColumnAndRow(9, 2, 'Scanning Time');
-        $sheet->setCellValueByColumnAndRow(10, 2, 'Plant');
-        $sheet->setCellValueByColumnAndRow(11, 2, 'Business');
-        $sheet->setCellValueByColumnAndRow(12, 2, 'Remark');
+        $sheet->setCellValueByColumnAndRow(8, 2, 'ETA');
+        $sheet->setCellValueByColumnAndRow(9, 2, 'ETD');
+        $sheet->setCellValueByColumnAndRow(10, 2, 'Scanning Time');
+        $sheet->setCellValueByColumnAndRow(11, 2, 'Plant');
+        $sheet->setCellValueByColumnAndRow(12, 2, 'Business');
+        $sheet->setCellValueByColumnAndRow(13, 2, 'Remark');
         $sheet->freezePane('A3');
         $y = 3;
         foreach ($rs as $r) {
@@ -2131,10 +2132,11 @@ class SI extends CI_Controller
             $sheet->setCellValueByColumnAndRow(6, $y, $r['SISCN_SERQTY']);
             $sheet->setCellValueByColumnAndRow(7, $y, $r['SISCN_SER']);
             $sheet->setCellValueByColumnAndRow(8, $y, $r['ITH_LUPDT']);
-            $sheet->setCellValueByColumnAndRow(9, $y, $r['SISCN_LUPDT']);
-            $sheet->setCellValueByColumnAndRow(10, $y, $r['SI_OTHRMRK']);
-            $sheet->setCellValueByColumnAndRow(11, $y, $r['SI_BSGRP']);
-            $sheet->setCellValueByColumnAndRow(12, $y, $r['SER_RMRK']);
+            $sheet->setCellValueByColumnAndRow(9, $y, $r['SI_DOCREFFETA']);
+            $sheet->setCellValueByColumnAndRow(10, $y, $r['SISCN_LUPDT']);
+            $sheet->setCellValueByColumnAndRow(11, $y, $r['SI_OTHRMRK']);
+            $sheet->setCellValueByColumnAndRow(12, $y, $r['SI_BSGRP']);
+            $sheet->setCellValueByColumnAndRow(13, $y, $r['SER_RMRK']);
             $y++;
         }
         foreach (range('A', 'L') as $v) {
