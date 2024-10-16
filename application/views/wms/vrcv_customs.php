@@ -684,7 +684,8 @@
                 <div class="col-md-6 mb-3">
                     <div class="btn-group btn-group-sm">
                         <button class="btn btn-primary" id="rcvcustoms_fg_save" title="Save"><i class="fas fa-save"></i></button>
-                        <button class="btn btn-success" id="rcvcustoms_fg_save_as_xls" onclick="rcvcustoms_fg_save_as_xls_eCK()" title="Save as excel"><i class="fas fa-file-excel"></i></button>
+                        <button class="btn btn-success" id="rcvcustoms_fg_hscode" title="Update HS Code" data-bs-toggle="modal" data-bs-target="#RCVCUSTOMS_IMPORTDATA">Update from xls</button>
+                        <button class="btn btn-outline-success" id="rcvcustoms_fg_save_as_xls" onclick="rcvcustoms_fg_save_as_xls_eCK()" title="Save as excel"><i class="fas fa-file-excel"></i></button>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3 text-end">
