@@ -160,7 +160,7 @@ class TRF extends CI_Controller
                 $isFound = false;
                 foreach ($RSResume as &$r) {
                     if ($r['ITEMCD'] === strtoupper($LineItemCode[$i])) {
-                        $r['ITEMCD'] += $LineItemQty[$i];
+                        $r['ITEMQT'] += $LineItemQty[$i];
                     }
                 }
                 unset($r);
@@ -431,10 +431,12 @@ class TRF extends CI_Controller
         $this->checkSession();
         $doc = $this->input->post('doc');
         $item = $this->input->post('item');
-        $rs = $this->TRF_mod->selectOpenForIDWhereItem($this->session->userdata('nama'), $item, $doc);
+        $rs = $this->TRF_mod->selectOpenForIDWhereDoc($this->session->userdata('nama'), $doc);
         foreach ($rs as $r) {
-            $this->TRF_mod->updatebyId(['TRFD_DOC' => $doc
-                , 'TRFD_ITEMCD' => $r['TRFD_ITEMCD']]
+            $this->TRF_mod->updatebyId([
+                'TRFD_DOC' => $doc
+                , 'TRFD_ITEMCD' => $r['TRFD_ITEMCD']
+                ]
                 , ['TRFD_RECEIVE_BY' => $this->session->userdata('nama')
                     , 'TRFD_RECEIVE_DT' => date('Y-m-d H:i:s')]);
             $RsToBeSaved[] = [
