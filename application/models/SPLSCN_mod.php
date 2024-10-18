@@ -44,6 +44,15 @@ class SPLSCN_mod extends CI_Model {
 		return $query->result_array();
     }
 
+    public function selectby_LOT_whereIn($values){
+	
+        $this->db->from($this->TABLENAME);        
+        $this->db->where_in("SPLSCN_LOTNO", $values);
+        $this->db->order_by('SPLSCN_FEDR,SPLSCN_LUPDT ASC');
+		$query = $this->db->get();
+		return $query->result_array();
+    }
+
     public function selectby_filter_like($pwhere){	
         $this->db->limit(2500);
         $this->db->from($this->TABLENAME);        

@@ -63,7 +63,7 @@
         <div class="row">
             <div class="col-md-12 mb-1">
                 <div class="table-responsive" id="trace_divku">
-                    <table id="trace_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer;font-size:80%">
+                    <table id="trace_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;font-size:85%">
                         <thead class="table-light">
                             <tr class="first">
                                 <th>PSN No</th>
@@ -205,27 +205,23 @@
                         newcell.onclick = function(){
                             trace_e_tdcgetval(response.data[i].SPLSCN_DOC, response.data[i].SPLSCN_LINE, response.data[i].SPLSCN_FEDR);
                         };
-                        newText = document.createTextNode(response.data[i].SPLSCN_DOC);
-                        newcell.appendChild(newText);
+                        newcell.style.cssText = 'cursor:pointer'
+                        newcell.innerText = response.data[i].SPLSCN_DOC
                         newcell = newrow.insertCell(1);
-                        newText = document.createTextNode(response.data[i].SPLSCN_CAT);
-                        newcell.appendChild(newText);
+                        newcell.innerText = response.data[i].SPLSCN_CAT
                         newcell = newrow.insertCell(2);
-                        newText = document.createTextNode(response.data[i].SPLSCN_LINE);
-                        newcell.appendChild(newText);
+                        newcell.innerText = response.data[i].SPLSCN_LINE
                         newcell = newrow.insertCell(3);
-                        newText = document.createTextNode(response.data[i].SPLSCN_FEDR);
-                        newcell.appendChild(newText);
+                        newcell.innerText = response.data[i].SPLSCN_FEDR
                         newcell = newrow.insertCell(4);
-                        newText = document.createTextNode(response.data[i].SPLSCN_ORDERNO);
-                        newcell.appendChild(newText);
+                        newcell.innerText = response.data[i].SPLSCN_ORDERNO
                         newcell = newrow.insertCell(5);
-                        newText = document.createTextNode(response.data[i].SPLSCN_ITMCD);
-                        newcell.appendChild(newText);
+                        newcell.innerText = response.data[i].SPLSCN_ITMCD
                         newcell = newrow.insertCell(6);
                         newcell.classList.add('font-monospace');
                         newcell.classList.add('fw-bold');
-                        if(response.data[i].SPLSCN_LOTNO.indexOf("#C")>-1){
+                        if(response.data[i].SPLSCN_LOTNO.includes("$C") || response.data[i].SPLSCN_LOTNO.includes("#C")){
+                            newcell.style.cssText = 'cursor:pointer'
                             newcell.onclick = function(){
                                 let param = {itemcode : response.data[i].SPLSCN_ITMCD
                                 ,lotno : response.data[i].SPLSCN_LOTNO
@@ -234,15 +230,12 @@
                                 trace_e_get_joined(param);
                             };
                         }
-                        newText = document.createTextNode(response.data[i].SPLSCN_LOTNO);
-                        newcell.appendChild(newText);
+                        newcell.innerText = response.data[i].SPLSCN_LOTNO
                         newcell = newrow.insertCell(7);
-                        newText = document.createTextNode(numeral(response.data[i].SPLSCN_QTY).format(','));
                         newcell.style.cssText= "white-space: nowrap;text-align:right";
-                        newcell.appendChild(newText);
+                        newcell.innerText = numeral(response.data[i].SPLSCN_QTY).format(',')
                         newcell = newrow.insertCell(8);
-                        newText = document.createTextNode(response.data[i].SPLSCN_LUPDT);
-                        newcell.appendChild(newText);
+                        newcell.innerText = response.data[i].SPLSCN_LUPDT
                         newcell = newrow.insertCell(-1);
                         newcell.innerText = response.data[i].SPLSCN_UNQCODE
                     }
@@ -279,12 +272,10 @@
                     for(let i =0; i<ttldata; i ++){
                         newrow = tableku2.insertRow(-1);
                         newcell = newrow.insertCell(0);
-                        newText = document.createTextNode(response.data[i].C3LC_LOTNO);
-                        newcell.appendChild(newText);
+                        newcell.innerText = response.data[i].C3LC_LOTNO
                         newcell = newrow.insertCell(1);
                         newcell.style.cssText= "text-align:right";
-                        newText = document.createTextNode(response.data[i].C3LC_QTY);
-                        newcell.appendChild(newText);
+                        newcell.innerText = response.data[i].C3LC_QTY
                     }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
@@ -314,9 +305,9 @@
     });
     function trace_e_tdcgetval(ppsn, pline, pfedr){
         $("#TRACE_HEADERPSN").modal('show');
-        let vpsn = ppsn; //prow.getElementsByTagName("td")[0].innerText;
-        let vlineno = pline ; // prow.getElementsByTagName("td")[2].innerText;
-        let vfedr = pfedr; // prow.getElementsByTagName("td")[3].innerText;
+        let vpsn = ppsn;
+        let vlineno = pline ;
+        let vfedr = pfedr;
         document.getElementById('trace_lblinfo_h').innerHTML = 'Please wait... <i class="fas fa-spinner fa-spin"></i>';
         $.ajax({
             type: "get",
@@ -339,15 +330,12 @@
                     for(let i =0; i<ttldata; i ++){
                         newrow = tableku2.insertRow(-1);
                         newcell = newrow.insertCell(0);
-                        newText = document.createTextNode(response.data[i].PPSN1_WONO);
-                        newcell.appendChild(newText);
+                        newcell.innerText = response.data[i].PPSN1_WONO
                         newcell = newrow.insertCell(1);
                         newcell.style.cssText= "white-space: nowrap;text-align:right";
-                        newText = document.createTextNode(numeral(response.data[i].PPSN1_SIMQT).format(','));
-                        newcell.appendChild(newText);
+                        newcell.innerText = numeral(response.data[i].PPSN1_SIMQT).format(',')
                         newcell = newrow.insertCell(2);
-                        newText = document.createTextNode(response.data[i].PPSN1_PROCD);
-                        newcell.appendChild(newText);
+                        newcell.innerText = response.data[i].PPSN1_PROCD
                     }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
