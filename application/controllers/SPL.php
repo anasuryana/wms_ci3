@@ -148,6 +148,7 @@ class SPL extends CI_Controller
         header('Content-Type: application/json');
         $clotno = $this->input->post('inlot');
         $citemcd = $this->input->post('initemcd');
+        $qty = $this->input->post('inqty');
         $rs = $this->C3LC_mod->selectall_where(['C3LC_ITMCD' => $citemcd, 'C3LC_NLOTNO' => $clotno]);
         die('{"data":' . json_encode($rs) . '}');
     }
@@ -457,7 +458,7 @@ class SPL extends CI_Controller
             }
 
         }
-        die(json_encode(['data' => $rs, 'status' => $myar, 'flag' => $flag         
+        die(json_encode(['data' => $rs, 'status' => $myar, 'flag' => $flag,
         ]));
     }
 
@@ -971,12 +972,12 @@ class SPL extends CI_Controller
                     $retith = $this->ITH_mod->insert_cancel_kitting_out([
                         'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_out,
                         'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => -$theqty, 'ITH_USRID' => $this->session->userdata('nama'),
-                        'ITH_SER' => $theuniqueKey
+                        'ITH_SER' => $theuniqueKey,
                     ]);
                     $retith += $this->ITH_mod->insert_cancel_kitting_in([
                         'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_inc,
                         'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => $theqty, 'ITH_USRID' => $this->session->userdata('nama'),
-                        'ITH_SER' => $theuniqueKey
+                        'ITH_SER' => $theuniqueKey,
                     ]);
                     if ($retith == 2) {
                         //delete scannning history
@@ -1100,12 +1101,12 @@ class SPL extends CI_Controller
                 $retith = $this->ITH_mod->insert_cancel_kitting_out([
                     'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_out,
                     'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => -$theqty, 'ITH_USRID' => $this->session->userdata('nama'),
-                    'ITH_SER' => $theuniqueKey
+                    'ITH_SER' => $theuniqueKey,
                 ]);
                 $retith += $this->ITH_mod->insert_cancel_kitting_in([
                     'ITH_ITMCD' => $theitem, 'ITH_WH' => $cwh_inc,
                     'ITH_DATE' => $crn_date, 'ITH_DOC' => $thedoc, 'ITH_QTY' => $theqty, 'ITH_USRID' => $this->session->userdata('nama'),
-                    'ITH_SER' => $theuniqueKey
+                    'ITH_SER' => $theuniqueKey,
                 ]);
                 if ($retith == 2) {
                     //delete scannning history
@@ -1426,7 +1427,7 @@ class SPL extends CI_Controller
         $cfr = $this->input->get('infr');
         $myar = [];
         $ttlrows = $this->SPL_mod->check_Primary(['SPL_DOC' => $cpsn, 'SPL_CAT' => $ccat, 'SPL_LINE' => $cline, 'SPL_FEDR' => $cfr]);
-        
+
         if ($ttlrows > 0) {
             $ProcessDB = $this->SPL_mod->selectProcess($cpsn);
             $rs = $this->SPL_mod->selectby4par($cpsn, $ccat, $cline, $cfr);
@@ -1500,7 +1501,7 @@ class SPL extends CI_Controller
                     'datasaved' => $rssavedqty,
                     'datav' => $rsv,
                     'rsdetail' => $rsdetail,
-                    'Processes' => $ProcessDB
+                    'Processes' => $ProcessDB,
                 ])
             );
         } else {
@@ -5818,13 +5819,29 @@ class SPL extends CI_Controller
         : $this->SPLSCN_mod->selectby_filter_like($where);
 
         $rsreff = $this->SPLREFF_mod->selectby_filter_like(['SPLREFF_DOC' => $cpsn, 'SPLREFF_ACT_PART' => $citmcd, 'SPLREFF_ACT_LOTNUM' => $citmlot]);
+        $combinedLot = $this->C3LC_mod->selectall_where(['C3LC_ITMCD' => $citmcd, 'C3LC_LOTNO' => $citmlot]);
+
         $rsmix = array_merge($rs, $rsreff);
+
+        $uniqueNewLot = [];
+
+        foreach ($combinedLot as $r) {
+            if (!in_array($r['C3LC_NLOTNO'], $uniqueNewLot)) {
+                $uniqueNewLot[] = $r['C3LC_NLOTNO'];
+            }
+        }
+
+        $deepSplscn = $this->SPLSCN_mod->selectby_LOT_whereIn($uniqueNewLot);
+
+        $rsmix = array_merge($rsmix, $deepSplscn);
+
         if (count($rsmix) > 0) {
             $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
         } else {
             $myar[] = ['cd' => 0, 'msg' => 'not found'];
         }
-        exit('{"status" : ' . json_encode($myar) . ', "data": ' . json_encode($rsmix) . '}');
+
+        exit(json_encode(['status' => $myar, 'data' => $rsmix, 'uniquelot' => $uniqueNewLot]));
     }
 
     public function tracelot_head()
