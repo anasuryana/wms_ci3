@@ -2131,8 +2131,8 @@ class SI extends CI_Controller
             $sheet->setCellValueByColumnAndRow(5, $y, $r['SER_DOC']);
             $sheet->setCellValueByColumnAndRow(6, $y, $r['SISCN_SERQTY']);
             $sheet->setCellValueByColumnAndRow(7, $y, $r['SISCN_SER']);
-            $sheet->setCellValueByColumnAndRow(8, $y, $r['ITH_LUPDT']);
-            $sheet->setCellValueByColumnAndRow(9, $y, $r['SI_DOCREFFETA']);
+            $sheet->setCellValueByColumnAndRow(8, $y, $r['SI_DOCREFFETA']);
+            $sheet->setCellValueByColumnAndRow(9, $y, $r['ITH_LUPDT']);
             $sheet->setCellValueByColumnAndRow(10, $y, $r['SISCN_LUPDT']);
             $sheet->setCellValueByColumnAndRow(11, $y, $r['SI_OTHRMRK']);
             $sheet->setCellValueByColumnAndRow(12, $y, $r['SI_BSGRP']);
