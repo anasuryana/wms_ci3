@@ -13115,11 +13115,16 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $ptxid = $this->input->get('txid');
-        $rs = $this->DLVCK_mod->select_display($ptxid);
+        $data = $this->getckData($ptxid);
+        die(json_encode(['data' => $data[0], 'rsbase' => $data[1]]));
+    }
+
+    function getckData($document) {
+        $rs = $this->DLVCK_mod->select_display($document);
         $rsbase = $this->DELV_mod->select_group(
             ['SER_ITMID', 'sum(SER_QTY) DLVQT'],
             ['SER_ITMID'],
-            ['DLV_ID' => $ptxid]
+            ['DLV_ID' => $document]
         );
         foreach ($rs as &$r) {
             $r['QTY'] = 0;
@@ -13143,8 +13148,10 @@ class DELV extends CI_Controller
             $r['STATUS'] = $r['QTY'] == $r['DLVCK_QTY'] ? 'OK' : 'NOT OK';
         }
         unset($r);
-        die(json_encode(['data' => $rs, 'rsbase' => $rsbase]));
+
+        return [$rs, $rsbase];
     }
+
     public function getck_h()
     {
         header('Content-Type: application/json');
@@ -14707,17 +14714,35 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU'], ['DLV_ID' => $doc]);
+        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU', 'DLV_CONSIGN'], ['DLV_ID' => $doc]);
         $NomorAju = '';
         $message = '';
         $czcurrency = null;
         $ccustdate = null;
         $responApi = null;
+        $Consign = null;
+
         foreach ($RSHeader as $r) {
             $ccustdate = $r['DLV_BCDATE'];
             $czcurrency = $r['MCUS_CURCD'];
             $NomorAju = $r['DLV_ZNOMOR_AJU'];
+            $Consign = $r['DLV_CONSIGN'];
         }
+
+        if($Consign === 'IEI') {
+            $EPROData = $this->getckData($doc);
+
+            foreach($EPROData[1] as $r) {
+                if($r['DLVQT']!=0) {
+                    $respon = [
+                        'message' => 'Please check EPRO DO and Our DO'
+                    ];
+                    $this->output->set_status_header(409);
+                    die(json_encode($respon));
+                }
+            }           
+        }
+
         $TPBData = $this->TPB_HEADER_imod->select_where(
             ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
             ['NOMOR_AJU' => $NomorAju]
