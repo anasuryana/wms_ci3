@@ -20,6 +20,8 @@ class INCFG extends CI_Controller
         $this->load->model('RCVFGSCN_mod');
         $this->load->model('SERML_mod');
         $this->load->model('PWOP_mod');
+        $this->load->model('Closing_job_model');
+        $this->load->model('SWPS_model');
     }
 
     public function index()
@@ -110,7 +112,7 @@ class INCFG extends CI_Controller
         $cismanual = trim($this->input->post("inismanual"));
         $creason = $this->input->post("inreason");
         $ckeys = trim($ckeys);
-        if($ckeys[0]==='3'){
+        if ($ckeys[0] === '3') {
             $myar[] = ["cd" => "0", "msg" => "this function is not for status label"];
             exit(json_encode($myar));
         }
@@ -129,11 +131,12 @@ class INCFG extends CI_Controller
             }
         }
         $myar = [];
+        $flagLineCodeWOChecking = [];
         if ($isinternal) { // handle internal serial code
             $astr = explode("|", $ckeys);
             $creffcd = $astr[5];
             $creffcd = substr($creffcd, 2, strlen($creffcd));
-            if($creffcd[0] === '3'){
+            if ($creffcd[0] === '3') {
                 $myar[] = ["cd" => "0", "msg" => "this function is not for status label..."];
                 exit(json_encode($myar));
             }
@@ -212,7 +215,7 @@ class INCFG extends CI_Controller
                             }
                         }
                     }
-                    if($creffcd[0]=='3'){
+                    if ($creffcd[0] == '3') {
                         $myar[] = ["cd" => "0", "msg" => "this function is not for status label."];
                         exit(json_encode($myar));
                     }
@@ -228,20 +231,24 @@ class INCFG extends CI_Controller
                     }
                     # Akhir pengkhususan
                     $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
+                    $flagLineCodeWOChecking[] = ['code' => 'A' , 'reff' => $rsostqty];
                     $rsostku0 = $rsostqty;
                     if (!empty($rsostqty)) {
                     } else {
                         $newjob = substr($cjob, 2, 100);
                         $cjob = $nextYear . $newjob;
                         $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
+                        $flagLineCodeWOChecking[] = ['code' => 'B', 'reff' => $rsostqty];
                         if (count($rsostqty) > 0) {
                         } else {
+                            $flagLineCodeWOChecking = 'C';
                             $newjob = substr($cjob, 2, 100);
                             $cjob = $prevYear . $newjob;
                             $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
                         }
                     }
-                    if (!empty($rsostqty)) {
+                    if (!empty($rsostqty)) {                        
+                        $flagLineCodeWOChecking[] = ['code' => 'B1', 'reff' => $rsostqty];
                         $ostqty = 0;
                         $lotsizeqty = 0;
                         $grnqty = 0;
@@ -263,6 +270,7 @@ class INCFG extends CI_Controller
                             $newjob = substr($cjob, 2, 100);
                             $cjob = $nextYear . $newjob;
                             $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
+                            $flagLineCodeWOChecking[] = ['code' => 'C1', 'reff' => $rsostqty];
                             foreach ($rsostqty as $r) {
                                 $ostqty = $r['OSTQTY'] < $r['OSTQTYMG'] ? $r['OSTQTY'] : $r['OSTQTYMG'];
                                 $lotsizeqty = $r['PDPP_WORQT'];
@@ -277,6 +285,7 @@ class INCFG extends CI_Controller
                                 $newjob = substr($cjob, 2, 100);
                                 $cjob = $prevYear . $newjob;
                                 $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
+                                $flagLineCodeWOChecking[] = ['code' => 'D', 'reff' => $rsostqty];
                                 foreach ($rsostqty as $r) {
                                     $ostqty = $r['OSTQTY'] < $r['OSTQTYMG'] ? $r['OSTQTY'] : $r['OSTQTYMG'];
                                     $lotsizeqty = $r['PDPP_WORQT'];
@@ -297,6 +306,7 @@ class INCFG extends CI_Controller
                             $newjob = substr($cjob, 2, 100);
                             $cjob = $nextYear . $newjob;
                             $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
+                            $flagLineCodeWOChecking[] = ['code' => 'C2', 'reff' => $rsostqty];
                             foreach ($rsostqty as $r) {
                                 $ostqty = $r['OSTQTY'] < $r['OSTQTYMG'] ? $r['OSTQTY'] : $r['OSTQTYMG'];
                                 $lotsizeqty = $r['PDPP_WORQT'];
@@ -311,6 +321,7 @@ class INCFG extends CI_Controller
                                 $newjob = substr($cjob, 2, 100);
                                 $cjob = $prevYear . $newjob;
                                 $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
+                                $flagLineCodeWOChecking[] = ['code' => 'D2', 'reff' => $rsostqty];
                                 foreach ($rsostqty as $r) {
                                     $ostqty = $r['OSTQTY'] < $r['OSTQTYMG'] ? $r['OSTQTY'] : $r['OSTQTYMG'];
                                     $lotsizeqty = $r['PDPP_WORQT'];
@@ -331,6 +342,7 @@ class INCFG extends CI_Controller
                             $newjob = substr($cjob, 2, 100);
                             $cjob = $nextYear . $newjob;
                             $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
+                            $flagLineCodeWOChecking[] = ['code' => 'C3', 'reff' => $rsostqty];
                             foreach ($rsostqty as $r) {
                                 $ostqty = $r['OSTQTY'] < $r['OSTQTYMG'] ? $r['OSTQTY'] : $r['OSTQTYMG'];
                                 $lotsizeqty = $r['PDPP_WORQT'];
@@ -345,6 +357,7 @@ class INCFG extends CI_Controller
                                 $newjob = substr($cjob, 2, 100);
                                 $cjob = $prevYear . $newjob;
                                 $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
+                                $flagLineCodeWOChecking[] = ['code' => 'D3', 'reff' => $rsostqty];
                                 foreach ($rsostqty as $r) {
                                     $ostqty = $r['OSTQTY'] < $r['OSTQTYMG'] ? $r['OSTQTY'] : $r['OSTQTYMG'];
                                     $lotsizeqty = $r['PDPP_WORQT'];
@@ -365,6 +378,7 @@ class INCFG extends CI_Controller
                             $newjob = substr($cjob, 2, 100);
                             $cjob = $nextYear . $newjob;
                             $rsostqty = $this->SPL_mod->selectWOITEM_open($cjob, $citem);
+                            $flagLineCodeWOChecking[] = ['code' => 'C4', 'reff' => $rsostqty];
                             foreach ($rsostqty as $r) {
                                 $ostqty = $r['OSTQTY'] < $r['OSTQTYMG'] ? $r['OSTQTY'] : $r['OSTQTYMG'];
                                 $lotsizeqty = $r['PDPP_WORQT'];
@@ -379,6 +393,7 @@ class INCFG extends CI_Controller
                                 $newjob = substr($cjob, 2, 100);
                                 $cjob = $prevYear . $newjob;
                                 $rsostqty = $this->SPL_mod->selectWOITEM_open($cjob, $citem);
+                                $flagLineCodeWOChecking[] = ['code' => 'D4', 'reff' => $rsostqty];
                                 foreach ($rsostqty as $r) {
                                     $ostqty = $r['OSTQTY'] < $r['OSTQTYMG'] ? $r['OSTQTY'] : $r['OSTQTYMG'];
                                     $lotsizeqty = $r['PDPP_WORQT'];
@@ -392,7 +407,7 @@ class INCFG extends CI_Controller
                         }
 
                         if ($cqty > $ostqty) {
-                            $datar = ["cd" => "0", "msg" => "Over JOB ..! $FJOB"];
+                            $datar = ["cd" => "0", "msg" => "Over JOB ..! $FJOB", "debugCode" => $flagLineCodeWOChecking];
                         } else {
                             #new rule 6 month from isudate
                             $current_ym = (int) date('Ym');
@@ -431,7 +446,7 @@ class INCFG extends CI_Controller
 
                             # validasi sub assy
                             $FGSubAssies = $this->SPL_mod->selectWOOpen_assy_as_sub($cjob);
-                            if(count($FGSubAssies)>0){
+                            if (count($FGSubAssies) > 0) {
                                 $myar[] = ["cd" => "0", "msg" => "For sub-assy we agree to use status label"];
                                 die(json_encode($myar));
                             }
@@ -461,6 +476,13 @@ class INCFG extends CI_Controller
                                         exit(json_encode($myar));
                                     }
                                 }
+
+                                // additional validation, check output of "All New Traceability System"
+                                $validationTraceResult = $this->validateTraceability(['job' => $cjob, 'qty' => $cqty]);
+                                if ($validationTraceResult['cd'] == 0) {
+                                    exit(json_encode([$validationTraceResult]));
+                                }
+
                                 $datas = [
                                     "SER_ID" => $creffcd, "SER_DOC" => $cjob, "SER_REFNO" => $creffcd, "SER_ITMID" => $citem, "SER_LOTNO" => $clot, "SER_QTY" => $cqty, "SER_QTYLOT" => $cqty, "SER_RAWTXT" => $ckeys,
                                     "SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd, "SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama'),
@@ -593,6 +615,12 @@ class INCFG extends CI_Controller
                                     exit(json_encode($myar));
                                 }
 
+                                // additional validation, check output of "All New Traceability System"
+                                $validationTraceResult = $this->validateTraceability(['job' => $cjob, 'qty' => $cqty]);
+                                if ($validationTraceResult['cd'] == 0) {
+                                    exit(json_encode([$validationTraceResult]));
+                                }
+
                                 $datas = [
                                     "SER_ID" => $creffcd, "SER_DOC" => $jobFromRs, "SER_REFNO" => $creffcd, "SER_ITMID" => $citem . $cremark, "SER_LOTNO" => $clot, "SER_QTY" => $cqty, "SER_QTYLOT" => $cqty, "SER_RAWTXT" => $ckeys,
                                     "SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd, "SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama'),
@@ -697,6 +725,13 @@ class INCFG extends CI_Controller
                                     $myar[] = ["cd" => "0", "msg" => "Kitting for The Job is not ready KD ASP"];
                                     exit(json_encode($myar));
                                 }
+
+                                // additional validation, check output of "All New Traceability System"
+                                $validationTraceResult = $this->validateTraceability(['job' => $cjob, 'qty' => $cinqty]);
+                                if ($validationTraceResult['cd'] == 0) {
+                                    exit(json_encode([$validationTraceResult]));
+                                }
+
                                 $datas = [
                                     "SER_ID" => $ckeys, "SER_DOC" => $cjob, "SER_REFNO" => $ckeys, "SER_ITMID" => $citemcd . $cfgtype . $cremark_ka, "SER_LOTNO" => $cinlot, "SER_QTY" => $cinqty, "SER_QTYLOT" => $cinqty,
                                     "SER_BSGRP" => $bsgrp, "SER_CUSCD" => $cuscd, "SER_LUPDT" => $currrtime, "SER_USRID" => $this->session->userdata('nama'),
@@ -736,6 +771,34 @@ class INCFG extends CI_Controller
         }
         $myar[] = $datar;
         echo json_encode($myar);
+    }
+
+    private function validateTraceability($data)
+    {
+        if($this->SWPS_model->check_Primary(['SWPS_JOBNO' => $data['job']])) {
+            $TraceDB = $this->Closing_job_model->selectOutput(['CLS_JOBNO' => $data['job']]);
+            $SerDB = $this->SER_mod->selectOutput(['SER_DOC' => $data['job']]);
+            $TraceQT = 0;
+            $SerQT = 0;
+            foreach ($TraceDB as $r) {
+                $TraceQT = $r['OUTQT'];
+            }
+            foreach ($SerDB as $r) {
+                $SerQT = $r['OUTQT'];
+            }
+    
+            if ($TraceQT >= ($SerQT + $data['qty'])) {
+                return ['cd' => 1, 'msg' => 'OK'];
+            } else {
+                return ['cd' => 0, 'msg' => 'Greater than output of Traceability System',
+                    'data' => $TraceDB,
+                    'data_reff' => $SerDB,
+                    'params' => $data,
+                ];
+            }
+        } else {
+            return ['cd' => 1, 'msg' => 'OK'];
+        }
     }
 
     public function setqa()
