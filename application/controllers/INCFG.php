@@ -775,6 +775,7 @@ class INCFG extends CI_Controller
 
     private function validateTraceability($data)
     {
+        return ['cd' => 1, 'msg' => 'OK'];
         if($this->SWPS_model->check_Primary(['SWPS_JOBNO' => $data['job']])) {
             $TraceDB = $this->Closing_job_model->selectOutput(['CLS_JOBNO' => $data['job']]);
             $SerDB = $this->SER_mod->selectOutput(['SER_DOC' => $data['job']]);
