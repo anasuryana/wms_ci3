@@ -431,11 +431,15 @@ class MSTITM extends CI_Controller
                 'MITM_NCAT' => $incategory,
                 'MITM_ITMCDCUS' => $mitmcd_Ext,
             ];
-            if ($this->session->userdata('gid') === 'ROOT' || $this->session->userdata('gid') === 'ADMIN' || $ctype == '6') {
+            if (in_array($this->session->userdata('gid'), ['ROOT', 'ADMIN']) || $ctype == '6') {
                 $datau['MITM_ITMD1'] = $cnm1;
+                $datau['MITM_ITMD2'] = $cnm2;
                 $datau['MITM_STKUOM'] = $mstkuom;
                 $datau['MITM_SPTNO'] = $cspt;
                 $datau['MITM_ITMCD'] = $cid;
+            }
+            if (in_array($this->session->userdata('gid'), ['EXMS', 'EXMV'])) {
+                $datau['MITM_ITMD2'] = $cnm2;
             }
             $toret = $this->MSTITM_mod->updatebyId($datau, $cid_old);
             $myar[] = $toret > 0 ? ['cd' => 1, 'msg' => 'Updated successfully'] : ['cd' => 0, 'msg' => 'Could not updated'];
