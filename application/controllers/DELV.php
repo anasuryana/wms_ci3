@@ -3332,6 +3332,7 @@ class DELV extends CI_Controller
         $customer_hasPO = '';
         $ATTN = '';
         $DLV_DESCRIPTION = '';
+        $DLV_CONSIGN ='';
         foreach ($rs as $r) {
             $hinv_date = $r['DLV_INVDT'];
             $hinv_date = date_create($hinv_date);
@@ -3350,6 +3351,7 @@ class DELV extends CI_Controller
             $ATTN = $r['ATTN'];
             $h_tujuanPengiriman = $r['DLV_PURPOSE'];
             $DLV_DESCRIPTION = $r['DLV_DSCRPTN'];
+            $DLV_CONSIGN =$r['DLV_CONSIGN'];
             break;
         }
         //end of data base
@@ -3449,6 +3451,8 @@ class DELV extends CI_Controller
             $MAX_INVL_PERPAGE = $curLine + (10 * $MAX_INVD_PERPAGE);
             $ttlqty_ = 0;
             foreach ($rsinv as $r) {
+                // $_itemName = $DLV_CONSIGN == 'IEI' ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
+                $_itemName = $r['MITM_ITMD1'];
                 if ($ttlbrs > $MAX_INVD_PERPAGE) {
                     $ttlbrs = 1;
                     $pdf->AddPage();
@@ -3472,16 +3476,16 @@ class DELV extends CI_Controller
                 $pdf->SetXY(14, $curY - 3);
                 $pdf->Cell(27, 4, $no, 0, 0, 'L');
                 $pdf->SetXY(43, $curY - 3);
-                $ttlwidth = $pdf->GetStringWidth(trim($r['MITM_ITMD1']));
+                $ttlwidth = $pdf->GetStringWidth($_itemName);
                 if ($ttlwidth > 51) {
                     $ukuranfont = 7.5;
                     while ($ttlwidth > 50) {
                         $pdf->SetFont('Arial', '', $ukuranfont);
-                        $ttlwidth = $pdf->GetStringWidth(trim($r['MITM_ITMD1']));
+                        $ttlwidth = $pdf->GetStringWidth($_itemName);
                         $ukuranfont = $ukuranfont - 0.5;
                     }
                 }
-                $pdf->Cell(51, 4, $r['MITM_ITMD1'], 0, 0, 'L');
+                $pdf->Cell(51, 4, $_itemName, 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->Text(45, $curY + 4, "(" . trim($r['SSO2_MDLCD']) . ")");
                 $pdf->Text(103, $curY, $r['MITM_STKUOM']);
@@ -3601,6 +3605,7 @@ class DELV extends CI_Controller
                     if ($par_item != $r['SI_ITMCD']) {
                         $par_item = $r['SI_ITMCD'];
                         $dis_item = $r['SI_ITMCD'];
+                        // $dis_itemnm = $DLV_CONSIGN == 'IEI' ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
                         $dis_itemnm = $r['MITM_ITMD1'];
                         $dis_qty = number_format($r['TTLBOX'], 0);
                         $no++;
@@ -3667,6 +3672,7 @@ class DELV extends CI_Controller
                     if ($par_item != $r['SI_ITMCD']) {
                         $par_item = $r['SI_ITMCD'];
                         $dis_item = $r['SI_ITMCD'];
+                        // $dis_itemnm = $DLV_CONSIGN == 'IEI' ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
                         $dis_itemnm = $r['MITM_ITMD1'];
                         $dis_qty = number_format($r['TTLDLV'], 0);
                         $no++;
@@ -9171,6 +9177,7 @@ class DELV extends CI_Controller
                             , 'MITM_STKUOM' => $k['MITM_STKUOM']
                             , 'SISOQTY_X' => 0
                             , 'MITM_ITMD1' => $k['MITM_ITMD1']
+                            , 'MITM_ITMD2' => $k['MITM_ITMD2']
                             , 'SISO_SOLINE' => $s['SISO_SOLINE']
                             , 'SI_BSGRP' => $k['SI_BSGRP']
                             , 'SI_CUSCD' => $k['SI_CUSCD']
@@ -14714,22 +14721,24 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU', 'DLV_CONSIGN'], ['DLV_ID' => $doc]);
+        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU', 'DLV_CONSIGN', 'RTRIM(DLV_CUSTCD) DLV_CUSTCD'], ['DLV_ID' => $doc]);
         $NomorAju = '';
         $message = '';
         $czcurrency = null;
         $ccustdate = null;
         $responApi = null;
         $Consign = null;
+        $CustomerSOCode = null;
 
         foreach ($RSHeader as $r) {
             $ccustdate = $r['DLV_BCDATE'];
             $czcurrency = $r['MCUS_CURCD'];
             $NomorAju = $r['DLV_ZNOMOR_AJU'];
             $Consign = $r['DLV_CONSIGN'];
+            $CustomerSOCode = $r['DLV_CUSTCD'];
         }
 
-        if($Consign === 'IEI') {
+        if($Consign === 'IEI' && $CustomerSOCode!='IEP001U') {
             $EPROData = $this->getckData($doc);
 
             foreach($EPROData[1] as $r) {
@@ -14827,6 +14836,7 @@ class DELV extends CI_Controller
                 $tpb_barang[] = [
                     'KODE_BARANG' => $r['SSO2_MDLCD']
                     , 'POS_TARIF' => $r['MITM_HSCD']
+                    // , 'URAIAN' => $Consign == 'IEI' ? $r['MITM_ITMD2'] : $r['MITM_ITMD1']
                     , 'URAIAN' => $r['MITM_ITMD1']
                     , 'JUMLAH_SATUAN' => $r['SISOQTY']
                     , 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM']
