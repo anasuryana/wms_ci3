@@ -3416,14 +3416,24 @@ class DELV extends CI_Controller
                     unset($p);
                     if (!$isplot) {
                         $tpb_barang_temp[] = [
-                            'KODE_BARANG' => $r['SI_ITMCD'], 'POS_TARIF' => $r['RCV_HSCD'], 'URAIAN' => $r['MITM_ITMD1'], 'JUMLAH_SATUAN' => $r['INTQTY'], 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 'NETTO' => $r['NWG'] * 1, 'CIF' => round($CIF, 2), 'KODE_STATUS' => '02', 'PERPRICE' => $r['RCV_PRPRC'],
+                            'KODE_BARANG' => $r['SI_ITMCD'], 'POS_TARIF' => $r['RCV_HSCD'], 
+                            'URAIAN' => $r['MITM_ITMD1'], 
+                            'URAIAN2' => $r['MITM_ITMD2'], 
+                            'JUMLAH_SATUAN' => $r['INTQTY'], 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 'NETTO' => $r['NWG'] * 1, 'CIF' => round($CIF, 2), 'KODE_STATUS' => '02', 'PERPRICE' => $r['RCV_PRPRC'],
                         ];
                     }
                 }
                 foreach ($tpb_barang_temp as $r) {
                     $rsinv[] = [
-                        'DLV_ID' => $pid, 'SISOQTY' => $r['JUMLAH_SATUAN'], 'SSO2_SLPRC' => $r['PERPRICE'], 'SSO2_MDLCD' => $r['KODE_BARANG']#
-                        , 'CIF' => $r['CIF'], 'NWG' => $r['NETTO'], 'MITM_HSCD' => $r['POS_TARIF'], 'MITM_STKUOM' => $r['KODE_SATUAN'], 'MITM_ITMD1' => $r['URAIAN'],
+                        'DLV_ID' => $pid, 
+                        'SISOQTY' => $r['JUMLAH_SATUAN'], 
+                        'SSO2_SLPRC' => $r['PERPRICE'], 
+                        'SSO2_MDLCD' => $r['KODE_BARANG']#
+                        , 'CIF' => $r['CIF'], 
+                        'NWG' => $r['NETTO'], 
+                        'MITM_HSCD' => $r['POS_TARIF'], 'MITM_STKUOM' => $r['KODE_SATUAN'], 
+                        'MITM_ITMD1' => $r['URAIAN'],
+                        'MITM_ITMD2' => $r['URAIAN2'],
                     ];
                 }
             }
