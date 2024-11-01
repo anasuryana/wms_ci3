@@ -15517,6 +15517,7 @@ class DELV extends CI_Controller
             // 'data' => $data,
             'Apirespon' => $responApi,
         ];
+        $this->DELV_mod->updatebyVAR(['DLV_POST' => $this->session->userdata('nama'), 'DLV_POSTTM' => date('Y-m-d H:i:s')], ['DLV_ID' => $doc]);
         die(json_encode($respon));
     }
 
