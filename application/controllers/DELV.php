@@ -15408,7 +15408,7 @@ class DELV extends CI_Controller
                                 , 'KODE_BARANG' => $p['OLDITEM']
                                 , 'KODE_STATUS' => "03"
                                 , 'POS_TARIF' => $p['RCV_HSCD']
-                                , 'URAIAN' => $p['MITM_ITMD1']
+                                , 'URAIAN' => $DLV_CONSIGN == 'IEI' ? $p['MITM_ITMD2'] : $p['MITM_ITMD1']
                                 , 'TIPE' => $p['MITM_SPTNO']
                                 , 'JUMLAH_SATUAN' => $p['PERBOX'] * $p['BOX']
                                 , 'JENIS_SATUAN' => ($p['MITM_STKUOM'] == 'PCS') ? 'PCE' : $p['MITM_STKUOM']
