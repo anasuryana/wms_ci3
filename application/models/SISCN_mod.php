@@ -145,6 +145,7 @@ class SISCN_mod extends CI_Model
     {
         $qry = "SELECT VDET.*
                 ,RTRIM(MITM_ITMD1) MITM_ITMD1
+                ,RTRIM(MITM_ITMD2) MITM_ITMD2
                 ,RTRIM(MITM_SPTNO) MITM_SPTNO
                 ,RTRIM(MITM_STKUOM) MITM_STKUOM
                 ,MITM_NWG* INTQTY NWG
