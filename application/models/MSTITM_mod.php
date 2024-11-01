@@ -161,6 +161,18 @@ class MSTITM_mod extends CI_Model
         $resq = $this->db->query($qry);
         return $this->db->affected_rows();
     }
+    public function update_all_d2()
+    {
+        $qry = "UPDATE A
+            SET A.MITM_ITMD2=B.ITMNM
+            FROM MITM_TBL A
+            LEFT JOIN ENG_TECPRT B ON A.MITM_ITMCD=B.ITMCD
+            WHERE A.MITM_MODEL='1'
+            AND A.MITM_ITMD2!=B.ITMNM
+            AND B.ITMCD IS NOT NULL";
+        $resq = $this->db->query($qry);
+        return $this->db->affected_rows();
+    }
     public function selectboxes($pkeys)
     {
         $qry = "select DISTINCT MITM_BOXTYPE from MITM_TBL WHERE MITM_BOXTYPE LIKE ?";
