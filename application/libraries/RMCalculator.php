@@ -3138,6 +3138,7 @@ class RMCalculator
     public function sync_item_description1()
     {
         $affect = $this->CI->MSTITM_mod->update_all_d1();
+        $affect += $this->CI->MSTITM_mod->update_all_d2();
         $myar = [];
         if ($affect) {
             $myar[] = ['cd' => 1, 'msg' => $affect . ' updated'];
