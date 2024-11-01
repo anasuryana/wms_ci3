@@ -166,9 +166,9 @@ class MSTITM_mod extends CI_Model
         $qry = "UPDATE A
             SET A.MITM_ITMD2=B.ITMNM
             FROM MITM_TBL A
-            LEFT JOIN ENG_TECPRT B ON A.MITM_ITMCD=B.ITMCD
+            LEFT JOIN ENG_TECPRT B ON substring(A.MITM_ITMCD, 1 ,9)=B.ITMCD
             WHERE A.MITM_MODEL='1'
-            AND A.MITM_ITMD2!=B.ITMNM
+            AND ISNULL(A.MITM_ITMD2,'')!=B.ITMNM
             AND B.ITMCD IS NOT NULL";
         $resq = $this->db->query($qry);
         return $this->db->affected_rows();

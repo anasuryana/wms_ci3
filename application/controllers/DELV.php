@@ -15156,13 +15156,16 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 'DLV_ZNOMOR_AJU'], ['DLV_ID' => $doc]);
+        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 
+        'DLV_ZNOMOR_AJU','DLV_CONSIGN'], ['DLV_ID' => $doc]);
         $NomorAju = '';
+        $DLV_CONSIGN ='';
         $responApi = null;
         foreach ($RSHeader as $r) {
             $ccustdate = $r['DLV_BCDATE'];
             $czcurrency = $r['MCUS_CURCD'];
             $NomorAju = $r['DLV_ZNOMOR_AJU'];
+            $DLV_CONSIGN =$r['DLV_CONSIGN'];
         }
         $TPBData = $this->TPB_HEADER_imod->select_where(
             ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
@@ -15316,7 +15319,7 @@ class DELV extends CI_Controller
                         $tpb_barang_temp[] = [
                             'KODE_BARANG' => $r['SI_ITMCD'],
                             'POS_TARIF' => $r['RCV_HSCD'],
-                            'URAIAN' => $r['MITM_ITMD1'],
+                            'URAIAN' => $DLV_CONSIGN == 'IEI' ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'],
                             'JUMLAH_SATUAN' => $r['INTQTY'],
                             'JUMLAH_KEMASAN' => $r['BOX'],
                             'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'],
