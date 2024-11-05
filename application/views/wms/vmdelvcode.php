@@ -100,13 +100,17 @@
         <!-- Modal body -->
         <div class="modal-body">
             <div class="row">
-                <div class="col-md-6 mb-1">
+                <div class="col-md-4 mb-1">
                     <label for="mst_dlvcode_plus_txt_dlvcode_edit" class="form-label" >Delivery Code</label>
                     <input type="text" class="form-control form-control-sm" id="mst_dlvcode_plus_txt_dlvcode_edit" readonly disabled>
                 </div>
-                <div class="col-md-6 mb-1">
+                <div class="col-md-4 mb-1">
                     <label for="mst_dlvcode_plus_txt_custcode_edit" class="form-label" >Customer Code</label>
                     <input type="text" class="form-control form-control-sm" id="mst_dlvcode_plus_txt_custcode_edit">
+                </div>
+                <div class="col-md-4 mb-1">
+                    <label for="mst_dlvcode_plus_txt_custcode_edit" class="form-label" >NIB</label>
+                    <input type="text" class="form-control form-control-sm" id="mst_dlvcode_plus_txt_custnib_edit">
                 </div>
             </div>
             <div class="row">
@@ -160,12 +164,14 @@
         const tax = mst_dlvcode_plus_txt_tax_edit.value
         const tpbno = mst_dlvcode_plus_txt_nomor_skep_edit.value
         const tpbDate = mst_dlvcode_plus_txt_tanggal_skep_edit.value
+        const cusNIB = mst_dlvcode_plus_txt_custnib_edit.value
         if(confirm("Are you sure ?")) {
             p.disabled = true
             $.ajax({
                 type: "POST",
                 url: "<?=base_url('MDEL/save')?>",
-                data: {dlvCD: dlvCD, cusNM: cusNM, addr: addr, tax: tax, tpbno: tpbno, txcode: txcode, tpbDate : tpbDate },
+                data: {dlvCD: dlvCD, cusNM: cusNM, addr: addr, tax: tax, tpbno: tpbno, txcode: txcode, 
+                    tpbDate : tpbDate, cusNIB : cusNIB },
                 dataType: "json",
                 success: function (response) {
                     p.disabled = false
@@ -210,6 +216,7 @@
                             mst_dlvcode_plus_txt_tax_edit.value = rowData['MDEL_ZTAX']
                             mst_dlvcode_plus_txt_nomor_skep_edit.value = rowData['MDEL_ZSKEP']
                             mst_dlvcode_plus_txt_tanggal_skep_edit.value = rowData['MDEL_ZSKEP_DATE']
+                            mst_dlvcode_plus_txt_custnib_edit.value = rowData['MDEL_NIB']
                             mst_dlvcode_plus_txt_custcode_edit.value = rowData['MDEL_TXCD']
                             $("#mst_dlvcode_modedit").modal('show')
                         });

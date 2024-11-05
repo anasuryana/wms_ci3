@@ -23,6 +23,7 @@ class MDEL extends CI_Controller {
         header('Content-Type: application/json');
         $dlvCD = $this->input->post('dlvCD');
         $cusNM = $this->input->post('cusNM');
+        $cusNIB = $this->input->post('cusNIB');
         $addr = $this->input->post('addr');
         $tax = $this->input->post('tax');
         $tpbno = $this->input->post('tpbno');
@@ -32,6 +33,7 @@ class MDEL extends CI_Controller {
         if($this->DELV_mod->updatebyVAR_DELCD([
             'MDEL_ZNAMA' => $cusNM
             ,'MDEL_DELNM' => $cusNM
+            ,'MDEL_NIB' => $cusNIB
             ,'MDEL_ADDRCUSTOMS' => $addr
             ,'MDEL_ZTAX' => $tax
             ,'MDEL_ZSKEP' => $tpbno
