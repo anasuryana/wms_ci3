@@ -3332,7 +3332,7 @@ class DELV extends CI_Controller
         $customer_hasPO = '';
         $ATTN = '';
         $DLV_DESCRIPTION = '';
-        $DLV_CONSIGN ='';
+        $DLV_CONSIGN = '';
         foreach ($rs as $r) {
             $hinv_date = $r['DLV_INVDT'];
             $hinv_date = date_create($hinv_date);
@@ -3351,7 +3351,7 @@ class DELV extends CI_Controller
             $ATTN = $r['ATTN'];
             $h_tujuanPengiriman = $r['DLV_PURPOSE'];
             $DLV_DESCRIPTION = $r['DLV_DSCRPTN'];
-            $DLV_CONSIGN =$r['DLV_CONSIGN'];
+            $DLV_CONSIGN = $r['DLV_CONSIGN'];
             break;
         }
         //end of data base
@@ -3416,22 +3416,22 @@ class DELV extends CI_Controller
                     unset($p);
                     if (!$isplot) {
                         $tpb_barang_temp[] = [
-                            'KODE_BARANG' => $r['SI_ITMCD'], 'POS_TARIF' => $r['RCV_HSCD'], 
-                            'URAIAN' => $r['MITM_ITMD1'], 
-                            'URAIAN2' => $r['MITM_ITMD2'], 
+                            'KODE_BARANG' => $r['SI_ITMCD'], 'POS_TARIF' => $r['RCV_HSCD'],
+                            'URAIAN' => $r['MITM_ITMD1'],
+                            'URAIAN2' => $r['MITM_ITMD2'],
                             'JUMLAH_SATUAN' => $r['INTQTY'], 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'], 'NETTO' => $r['NWG'] * 1, 'CIF' => round($CIF, 2), 'KODE_STATUS' => '02', 'PERPRICE' => $r['RCV_PRPRC'],
                         ];
                     }
                 }
                 foreach ($tpb_barang_temp as $r) {
                     $rsinv[] = [
-                        'DLV_ID' => $pid, 
-                        'SISOQTY' => $r['JUMLAH_SATUAN'], 
-                        'SSO2_SLPRC' => $r['PERPRICE'], 
+                        'DLV_ID' => $pid,
+                        'SISOQTY' => $r['JUMLAH_SATUAN'],
+                        'SSO2_SLPRC' => $r['PERPRICE'],
                         'SSO2_MDLCD' => $r['KODE_BARANG']#
-                        , 'CIF' => $r['CIF'], 
-                        'NWG' => $r['NETTO'], 
-                        'MITM_HSCD' => $r['POS_TARIF'], 'MITM_STKUOM' => $r['KODE_SATUAN'], 
+                        , 'CIF' => $r['CIF'],
+                        'NWG' => $r['NETTO'],
+                        'MITM_HSCD' => $r['POS_TARIF'], 'MITM_STKUOM' => $r['KODE_SATUAN'],
                         'MITM_ITMD1' => $r['URAIAN'],
                         'MITM_ITMD2' => $r['URAIAN2'],
                     ];
@@ -8663,7 +8663,7 @@ class DELV extends CI_Controller
                 $responApiObj = json_decode($responApi->body);
 
                 $responApiObjEncoded = json_encode($responApiObj);
-                
+
                 if (strtolower($responApiObj->status) === 'success') {
                     $_tanggalDaftar = $responApiObj->dataRespon[0]->tanggalDaftar;
                     $_tanggalDaftarFormatted = null;
@@ -8684,7 +8684,7 @@ class DELV extends CI_Controller
                     ];
                 } else {
                     // another format
-                    if(strtolower($responApiObj->message) === 'success') {
+                    if (strtolower($responApiObj->message) === 'success') {
                         $_tanggalDaftar = $responApiObj->data[0]->tanggalDaftar;
                         $_tanggalDaftarFormatted = null;
                         if ($_tanggalDaftar) {
@@ -8708,6 +8708,20 @@ class DELV extends CI_Controller
         }
         die(json_encode(['status' => $myar, 'data' => $result_data, 'data2' => $response_data
             , 'CeisaFourRespon' => $responApi]));
+    }
+
+    public function getCEISA40Status()
+    {
+        $doc = $this->input->get('doc');
+        $DLVHead = $this->DELV_mod->select_header_bydo($doc);
+        $nomorajufull = '-';
+        foreach ($DLVHead as $r) {
+            $nomorajufull = $r['DLV_ZNOMOR_AJU'];
+        }
+        $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $nomorajufull, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
+        $responApiObj = json_decode($responApi->body);
+
+        die(json_encode(['data' => $responApiObj]));
     }
 
     public function getjobstatus()
@@ -13136,7 +13150,8 @@ class DELV extends CI_Controller
         die(json_encode(['data' => $data[0], 'rsbase' => $data[1]]));
     }
 
-    function getckData($document) {
+    public function getckData($document)
+    {
         $rs = $this->DLVCK_mod->select_display($document);
         $rsbase = $this->DELV_mod->select_group(
             ['SER_ITMID', 'sum(SER_QTY) DLVQT'],
@@ -14748,18 +14763,18 @@ class DELV extends CI_Controller
             $CustomerSOCode = $r['DLV_CUSTCD'];
         }
 
-        if($Consign === 'IEI' && $CustomerSOCode!='IEP001U') {
+        if ($Consign === 'IEI' && $CustomerSOCode != 'IEP001U') {
             $EPROData = $this->getckData($doc);
 
-            foreach($EPROData[1] as $r) {
-                if($r['DLVQT']!=0) {
+            foreach ($EPROData[1] as $r) {
+                if ($r['DLVQT'] != 0) {
                     $respon = [
-                        'message' => 'Please check EPRO DO and Our DO'
+                        'message' => 'Please check EPRO DO and Our DO',
                     ];
                     $this->output->set_status_header(409);
                     die(json_encode($respon));
                 }
-            }           
+            }
         }
 
         $TPBData = $this->TPB_HEADER_imod->select_where(
@@ -15156,16 +15171,16 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $doc = $this->input->post('doc');
-        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD', 
-        'DLV_ZNOMOR_AJU','DLV_CONSIGN'], ['DLV_ID' => $doc]);
+        $RSHeader = $this->DELV_mod->selectDocument(['DLV_ID', 'DLV_BCDATE', 'RTRIM(MCUS_CURCD) MCUS_CURCD',
+            'DLV_ZNOMOR_AJU', 'DLV_CONSIGN'], ['DLV_ID' => $doc]);
         $NomorAju = '';
-        $DLV_CONSIGN ='';
+        $DLV_CONSIGN = '';
         $responApi = null;
         foreach ($RSHeader as $r) {
             $ccustdate = $r['DLV_BCDATE'];
             $czcurrency = $r['MCUS_CURCD'];
             $NomorAju = $r['DLV_ZNOMOR_AJU'];
-            $DLV_CONSIGN =$r['DLV_CONSIGN'];
+            $DLV_CONSIGN = $r['DLV_CONSIGN'];
         }
         $TPBData = $this->TPB_HEADER_imod->select_where(
             ["TANGGAL_DAFTAR", "coalesce(NOMOR_DAFTAR,0) NOMOR_DAFTAR"],
