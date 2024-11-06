@@ -172,6 +172,11 @@
                 break;
             }
         }
+        if(mjob.length <=3 && selectedValue == 1) {
+            alertify.warning('Please at least input 4 character')
+            rincfg_txt_item.focus()
+            return
+        } 
         document.getElementById("rincfg_lblinfo").innerText= "Please wait . . .";
         $.ajax({
             type: "post",
