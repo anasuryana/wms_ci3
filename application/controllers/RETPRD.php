@@ -1589,11 +1589,12 @@ class RETPRD extends CI_Controller
         $cpsn = $this->input->get('inpsn');
         $citmcd = $this->input->get('initmcd');
         $citmlot = $this->input->get('initmlot');
+        $uc = $this->input->get('uc');
         $date1 = $this->input->get('date1');
         $date2 = $this->input->get('date2');
         $myar = [];
 
-        $where = ['RETSCN_SPLDOC' => $cpsn, 'RETSCN_ITMCD' => $citmcd, 'RETSCN_LOT' => $citmlot];
+        $where = ['RETSCN_SPLDOC' => $cpsn, 'RETSCN_ITMCD' => $citmcd, 'RETSCN_LOT' => $citmlot, 'RETSCN_UNIQUEKEY' => $uc];
         $rs = $date1 && $date2 ? $this->SPLRET_mod->selectby_filter_like_with_period($where, $date1, $date2)
             : $this->SPLRET_mod->selectby_filter_like($where);
         

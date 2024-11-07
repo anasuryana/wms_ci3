@@ -204,7 +204,8 @@
                         <table id="spl_tbldetissu" class="table table-hover table-sm table-bordered">
                             <thead class="table-light">
                                 <tr>
-                                    <th>ID</th>
+                                    <th class="d-none">IDRow</th>
+                                    <th title="Unique Code">UC</th>
                                     <th>QTY</th>
                                     <th>Lot No</th>
                                     <th>Last Update</th>
@@ -1290,9 +1291,12 @@
                     }
                     newrow = tableku2.insertRow(-1);
                     newcell = newrow.insertCell(0);
+                    newcell.classList.add('d-none')
                     newcell.innerHTML = response.data[i].SPLSCN_ID
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerHTML = response.data[i].SPLSCN_UNQCODE
 
-                    newcell = newrow.insertCell(1);
+                    newcell = newrow.insertCell(-1);
                     newcell.innerHTML = numeral(response.data[i].SPLSCN_QTY).format('0,0')
                     newcell.style.cssText = 'text-align: right';
                     newcell.onclick = function(p) {
@@ -1306,14 +1310,14 @@
                         spltxtLineID.value = p.target.parentNode.firstChild.innerText
                     }
 
-                    newcell = newrow.insertCell(2);
+                    newcell = newrow.insertCell(-1);
                     newcell.innerHTML = response.data[i].SPLSCN_LOTNO
                     newcell.style.cssText = 'text-align: center';
-                    newcell = newrow.insertCell(3);                    
+                    newcell = newrow.insertCell(-1);                    
                     newcell.innerHTML = response.data[i].SPLSCN_LUPDT
-                    newcell = newrow.insertCell(4);
+                    newcell = newrow.insertCell(-1);
                     newcell.innerHTML = msts
-                    newcell = newrow.insertCell(5);
+                    newcell = newrow.insertCell(-1);
                     newText = document.createElement('i');
                     newText.classList.add("fas");
                     if(msts.charAt(0)=="s"){
@@ -1323,7 +1327,7 @@
                     }
                     newcell.appendChild(newText);
                     newcell.style.cssText = ''.concat('cursor: pointer;','text-align:center;');
-                    newcell = newrow.insertCell(6);
+                    newcell = newrow.insertCell(-1);
                     if(msts.charAt(0)=="s"){
                         newText = document.createElement('i');
                         newText.classList.add("fas");
@@ -1337,7 +1341,7 @@
                 let mrows = tableku2.getElementsByTagName("tr");
                 function cgetvaldet(prow){
                     let tcell0 = prow.getElementsByTagName("td")[0]
-                    let tcell4 = prow.getElementsByTagName("td")[4];
+                    let tcell4 = prow.getElementsByTagName("td")[5];
                     if(tcell4.innerText.charAt(0)=='n'){
                         let konf = confirm("Are you sure want to delete the transaction ["+ tcell0.innerText + "] ?");
                         if(konf){
@@ -1357,8 +1361,8 @@
                         return
                     }
                     let tcell0 = prow.getElementsByTagName("td")[0];
-                    let tcell3 = prow.getElementsByTagName("td")[3];
-                    let tcell4 = prow.getElementsByTagName("td")[4];
+                    let tcell3 = prow.getElementsByTagName("td")[4];
+                    let tcell4 = prow.getElementsByTagName("td")[5];
                     if(tcell4.innerText.charAt(0)!='n'){
                         let konf = confirm("Are you sure want to cancel kitting ["+ tcell0.innerText + "] ?");
                         if(konf){
@@ -1383,9 +1387,9 @@
                 }
                 for(let x=0;x<mrows.length;x++){
                     for(let h=0; h<tableku2.rows[x].cells.length; h++){
-                        if(h==5){
+                        if(h==6){
                             tableku2.rows[x].cells[h].onclick = () => {cgetvaldet(tableku2.rows[x])};
-                        } else if (h==6) {
+                        } else if (h==7) {
                             tableku2.rows[x].cells[h].onclick = () => {spl_e_delete(tableku2.rows[x])};
                         }
                     }

@@ -5810,15 +5810,16 @@ class SPL extends CI_Controller
         $cpsn = $this->input->get('inpsn');
         $citmcd = $this->input->get('initmcd');
         $citmlot = $this->input->get('initmlot');
+        $uc = $this->input->get('uc');
         $date1 = $this->input->get('date1');
         $date2 = $this->input->get('date2');
         $myar = [];
 
-        $where = ['SPLSCN_DOC' => $cpsn, 'SPLSCN_ITMCD' => $citmcd, 'SPLSCN_LOTNO' => $citmlot];
+        $where = ['SPLSCN_DOC' => $cpsn, 'SPLSCN_ITMCD' => $citmcd, 'SPLSCN_LOTNO' => $citmlot, 'SPLSCN_UNQCODE' => $uc];
         $rs = $date1 && $date2 ? $this->SPLSCN_mod->selectby_filter_like_with_period($where, $date1, $date2)
         : $this->SPLSCN_mod->selectby_filter_like($where);
 
-        $rsreff = $this->SPLREFF_mod->selectby_filter_like(['SPLREFF_DOC' => $cpsn, 'SPLREFF_ACT_PART' => $citmcd, 'SPLREFF_ACT_LOTNUM' => $citmlot]);
+        $rsreff = $uc ? [] : $this->SPLREFF_mod->selectby_filter_like(['SPLREFF_DOC' => $cpsn, 'SPLREFF_ACT_PART' => $citmcd, 'SPLREFF_ACT_LOTNUM' => $citmlot]);
         $combinedLot = $this->C3LC_mod->selectall_where(['C3LC_ITMCD' => $citmcd, 'C3LC_LOTNO' => $citmlot]);
 
         $rsmix = array_merge($rs, $rsreff);
@@ -5831,7 +5832,7 @@ class SPL extends CI_Controller
             }
         }
 
-        $deepSplscn = $this->SPLSCN_mod->selectby_LOT_whereIn($uniqueNewLot);
+        $deepSplscn = $uniqueNewLot ? $this->SPLSCN_mod->selectby_LOT_whereIn($uniqueNewLot) : [];
 
         $rsmix = array_merge($rsmix, $deepSplscn);
 

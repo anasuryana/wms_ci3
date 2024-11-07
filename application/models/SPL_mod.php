@@ -507,6 +507,55 @@ class SPL_mod extends CI_Model
         }
         return $query->result_array();
     }
+    public function select_psnjob_req_tracer($pdocno, $pwo, $output)
+    {
+        
+        $qry = "SELECT PPSN1_MDLCD PDPP_MDLCD
+            ,RTRIM(PIS3_WONO) PIS3_WONO
+            ,RTRIM(PIS3_LINENO) PIS3_LINENO
+            ,RTRIM(PIS3_FR) PIS3_FR
+            ,UPPER(RTRIM(PIS3_PROCD)) PIS3_PROCD
+            ,RTRIM(PIS3_MC) PIS3_MC
+            ,RTRIM(PIS3_MCZ) PIS3_MCZ
+            ,CASE
+                WHEN SIMQT != $output
+                    THEN (SUM(PIS3_REQQT) / SIMQT * $output)
+                ELSE
+                SUM(PIS3_REQQT)
+                END
+            PIS3_REQQTSUM
+            ,SUM(PIS3_REQQT) / SIMQT MYPER
+            ,max(RTRIM(PIS3_ITMCD)) PIS3_ITMCD
+            ,RTRIM(PIS3_MPART) PIS3_MPART
+        FROM XPIS3
+        LEFT JOIN XWO ON PIS3_WONO = PDPP_WONO and PDPP_BSGRP=PIS3_BSGRP
+        LEFT JOIN (
+            SELECT PPSN1_WONO
+                ,MAX(PPSN1_SIMQT) SIMQT
+                ,RTRIM(PPSN1_MDLCD) PPSN1_MDLCD
+            FROM XPPSN1
+            WHERE PPSN1_WONO=?
+            GROUP BY PPSN1_WONO
+                ,PPSN1_MDLCD
+            ) VPPSN1 ON PPSN1_WONO = PIS3_WONO       
+        WHERE PIS3_WONO = ? and PIS3_DOCNO=?
+        GROUP BY PIS3_WONO
+            ,PIS3_LINENO
+            ,PIS3_MC
+            ,PIS3_MCZ
+            ,PDPP_WORQT
+            ,PPSN1_MDLCD
+            ,PIS3_FR
+            ,PIS3_PROCD
+            ,PIS3_MPART
+            ,SIMQT          
+        ORDER BY PIS3_MCZ
+            ,PIS3_MC
+            ,PIS3_PROCD";
+        $query = $this->db->query($qry, [$pwo, $pwo, $pdocno]);
+        
+        return $query->result_array();
+    }
     public function select_psnjob_req_from_CIMS($pwo, $assycode)
     {
         $qry = "SELECT PDPP_MDLCD,PDPP_WONO PIS3_WONO, RTRIM(MBLA_LINENO) PIS3_LINENO, RTRIM(MBLA_FR) PIS3_FR, RTRIM(MBLA_PROCD) PIS3_PROCD, RTRIM(MBLA_MC) PIS3_MC
