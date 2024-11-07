@@ -17,7 +17,7 @@
 <div style="padding: 10px">
 	<div class="container-fluid">
         <div class="row" id="trace_stack1">
-            <div class="col-md-5 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <span class="input-group-text" >PSN No.</span>
                     <input type="text" class="form-control" id="trace_txt_txno" required>
@@ -29,10 +29,16 @@
                     <input type="text" class="form-control" id="trace_txt_itmcd" required>
                 </div>
             </div>
-            <div class="col-md-4 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <span class="input-group-text" >Lot Number</span>
                     <input type="text" class="form-control font-monospace" id="trace_txt_itmlot" required >
+                </div>
+            </div>
+            <div class="col-md-3 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <span class="input-group-text" title="Unique Code">UC</span>
+                    <input type="text" class="form-control font-monospace" id="trace_txt_itmuc" maxlength="21">
                 </div>
             </div>
         </div>
@@ -184,7 +190,8 @@
         $.ajax({
             type: "get",
             url: "<?=base_url('SPL/tracelot')?>",
-            data: {inpsn: mpsn, initmcd: mitmcd, initmlot: mitmlot, date1: trace_txt_dt.value, date2: trace_txt_dt2.value},
+            data: {inpsn: mpsn, initmcd: mitmcd, initmlot: mitmlot, date1: trace_txt_dt.value, 
+                date2: trace_txt_dt2.value, uc : trace_txt_itmuc.value.trim()},
             dataType: "json",
             success: function (response) {
                 if(response.status[0].cd!='0'){

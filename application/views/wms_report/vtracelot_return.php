@@ -17,7 +17,7 @@
 <div style="padding: 10px">
 	<div class="container-fluid">
         <div class="row" id="trace_return_stack1">
-            <div class="col-md-5 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <span class="input-group-text" >PSN No.</span>
                     <input type="text" class="form-control" id="trace_return_txt_txno" required>
@@ -29,10 +29,16 @@
                     <input type="text" class="form-control" id="trace_return_txt_itmcd" required>
                 </div>
             </div>
-            <div class="col-md-4 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <span class="input-group-text" >Lot Number</span>
                     <input type="text" class="form-control font-monospace" id="trace_return_txt_itmlot" required >
+                </div>
+            </div>
+            <div class="col-md-3 mb-1">
+                <div class="input-group input-group-sm mb-1">
+                    <span class="input-group-text" title="Unique Code">UC</span>
+                    <input type="text" class="form-control font-monospace" id="trace_return_txt_itmuc" maxlength="21">
                 </div>
             </div>
         </div>
@@ -75,6 +81,7 @@
                                 <th>Lot No</th>
                                 <th>QTY</th>
                                 <th>Time</th>
+                                <th>Unique Code</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -112,7 +119,9 @@
         $.ajax({
             type: "get",
             url: "<?=base_url('RETPRD/tracelot')?>",
-            data: {inpsn: mpsn, initmcd: mitmcd, initmlot: mitmlot, date1: trace_return_txt_dt.value, date2: trace_return_txt_dt2.value},
+            data: {inpsn: mpsn, initmcd: mitmcd, initmlot: mitmlot, date1: trace_return_txt_dt.value, date2: trace_return_txt_dt2.value,
+                uc : trace_return_txt_itmuc.value.trim()
+            },
             dataType: "json",
             success: function (response) {
                 trace_return_btnsearch.disabled = false
@@ -168,6 +177,10 @@
                         newcell = newrow.insertCell(8);
                         newcell.classList.add('text-center')
                         newcell.innerHTML = response.data[i].created_at ?? response.data[i].RETSCN_LUPDT
+
+                        newcell = newrow.insertCell(9);
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = response.data[i].RETSCN_UNIQUEKEY ?? ''
                     }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
