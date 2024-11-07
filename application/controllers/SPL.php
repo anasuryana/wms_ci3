@@ -5832,9 +5832,10 @@ class SPL extends CI_Controller
             }
         }
 
-        $deepSplscn = $uniqueNewLot ? $this->SPLSCN_mod->selectby_LOT_whereIn($uniqueNewLot) : [];
-
-        $rsmix = array_merge($rsmix, $deepSplscn);
+        if($uniqueNewLot) {
+            $deepSplscn = $this->SPLSCN_mod->selectby_LOT_whereIn($uniqueNewLot);
+            $rsmix = array_merge($rsmix, $deepSplscn);
+        }
 
         if (count($rsmix) > 0) {
             $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
