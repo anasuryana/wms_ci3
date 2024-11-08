@@ -10,7 +10,14 @@
         from {background: #fc033d;}
         to {background: #11faea;}
     }
-
+    .anastylesel_home_password{
+        background: red;
+        animation: anamoveHomePassword 0.5s infinite;
+    }
+    @keyframes anamoveHomePassword {
+        from {background: #fafa0f;}
+        to {background: #fa850f;}
+    }
     ol li.active:hover span {
         color: black;
     }
@@ -29,7 +36,7 @@
 
     <div id="tab-tools">
     <a href="#" title="Tasks" class="easyui-linkbutton" onclick="home_btn_task_eCK()" id="linkNotif"><span class="fas fa-tasks"></span> <i class="badge bg-info" id="homeQTNotif"></i></a>
-    <a href="#" title="Change your password" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-change_pw'" onclick="dlgChangePW();"></a>
+    <a href="#" title="Change your password" class="easyui-linkbutton" id="linkNotifPassword" data-options="plain:true,iconCls:'icon-change_pw'" onclick="dlgChangePW();"></a>
     <a href="#" title="Exit" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-exit'" onclick="dlgExit()"></a>
       </div>
 </div>
@@ -57,6 +64,9 @@
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="TabChildPWWEB" role="tabpanel">
                             <div class="container-fluid">
+                                <div class="row mt-3" id="home_expire_password_container">
+
+                                </div>
                                 <div class="row mt-3">
                                     <div class="col mb-1">
                                         <div class="input-group input-group-sm mb-1">
@@ -207,13 +217,17 @@
     var uidnya = '<?php echo $sapaDiaID; ?>';
     var home_selected_id = ''
     var PWPOL = {}
+    var expireIn = '<?=$EXPIRE_IN?>';
 
     function dlgExit(){
-        if(confirm("Are You sure want to exit ?")){
+        if(confirm("Are You sure want to exit ?")) {
             window.open("<?=base_url("pages/logout")?>","_self");
         }
     }
-    function dlgChangePW(){
+    function dlgChangePW() {
+        home_expire_password_container.innerHTML = numeral(expireIn).value() <= 14 ? `<div class="alert alert-warning" role="alert">
+            Your password will expire in ${expireIn} days
+            </div>` : ``
         $("#HOME_MODCHGPW").modal('show')
     }
     function home_btn_task_eCK() {
@@ -502,6 +516,16 @@
         }
     }
 
+    function homeSetNotifPassword(total){
+        if(total<=14) {
+            linkNotifPassword.classList.add('anastylesel_home_password')
+        } else {            
+            linkNotifPassword.classList.remove('anastylesel_home_password')
+        }
+    }
+
+    homeSetNotifPassword(expireIn)
+
     function home_get_open_documents(){
         $.ajax({
             type: "GET",
@@ -626,5 +650,6 @@
 
     window.onbeforeunload = function(e) {
        return true
-    }
+    }    
+
 </script>

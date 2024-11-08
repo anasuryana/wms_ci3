@@ -10,6 +10,7 @@ class Home extends CI_Controller
         $this->load->library('session');
         $this->load->model('MSTLOCG_mod');
         $this->load->model('PWPOL_mod');
+        $this->load->model('Usr_mod');
         if ($this->session->userdata('status') != "login") {
             redirect(base_url(""));
         }
@@ -39,6 +40,8 @@ class Home extends CI_Controller
             $data['PASSWORD_MININUM_LENGTH'] = $r['PWPOL_LENGTH'];
         }
 
+        $data['EXPIRE_IN'] = $this->passwordAges($data['sapaDiaID'])['expireIn'];
+
         $this->load->view('templet/header', $data);
         $this->load->view('vhome', $data);
         $this->load->view('templet/footer', $data);
@@ -64,5 +67,18 @@ class Home extends CI_Controller
     public function form_dashboard()
     {
         $this->load->view('vdashboard');
+    }
+
+    private function passwordAges($userId) {
+        $data = $this->Usr_mod->cek_login(['MSTEMP_ID' => $userId]);
+        $rsPWPolicy = $this->PWPOL_mod->select();
+
+        $days = 0;
+        foreach($data as $r) {            
+            foreach($rsPWPolicy as $p) {
+                $days = $p['PWPOL_MAXAGE']-$r['DAY_AFTER_CHANGE_PW'];
+            }
+        }
+        return ['expireIn' => $days];
     }
 }
