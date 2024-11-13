@@ -1100,7 +1100,7 @@ class SER extends CI_Controller
         $cmdl = 5; #label status
         $myar = [];
 
-        $rsjob = $this->SPL_mod->selectWO($cjob);
+        $rsjob = $this->SPL_mod->selectWOWIP($cjob);
         foreach ($rsjob as $r) {
             if (((int) $r['LBLTTL'] + $cqty) > (int) $r['PDPP_WORQT']) {
                 $myar[] = ["cd" => 0, "msg" => "Over"];

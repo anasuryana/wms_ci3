@@ -121,6 +121,17 @@ class SPL_mod extends CI_Model
         $query = $this->db->query($qry);
         return $query->result_array();
     }
+    public function selectWOWIP($pwo)
+    {
+        $qry = "select XWO.*, CONVERT(bigint,coalesce(LBLTTL,0)) LBLTTL,MITM_ITMD1,PDPP_BSGRP,PDPP_CUSCD,MITM_LBLCLR,COALESCE(MITM_SHTQTY,0) MITM_SHTQTY,MITM_SPQ from
+        XWO LEFT JOIN MITM_TBL ON MITM_ITMCD=PDPP_MDLCD
+        LEFT JOIN
+        ( select SER_DOC,SUM(SER_QTYLOT) LBLTTL from SER_WIP_TBL x WHERE SER_DOC LIKE '%$pwo%'
+        GROUP BY SER_DOC
+        ) v2 on PDPP_WONO=v2.SER_DOC WHERE PDPP_WONO LIKE '%$pwo%'";
+        $query = $this->db->query($qry);
+        return $query->result_array();
+    }
     public function selectWOOpen($pwo)
     {
         $qry = "select XWO.*, CONVERT(bigint,coalesce(LBLTTL,0)) LBLTTL,MITM_ITMD1,PDPP_BSGRP,PDPP_CUSCD,MITM_LBLCLR,COALESCE(MITM_SHTQTY,0) MITM_SHTQTY,MITM_SPQ from
