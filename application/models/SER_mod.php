@@ -3,6 +3,7 @@
 class SER_mod extends CI_Model
 {
     private $TABLENAME = "SER_TBL";
+    private $TABLENAME_WIP = "SER_WIP_TBL";
     public function __construct()
     {
         $this->load->database();
@@ -11,6 +12,12 @@ class SER_mod extends CI_Model
     public function insert($data)
     {
         $this->db->insert($this->TABLENAME, $data);
+        return $this->db->affected_rows();
+    }
+
+    public function insert_wip($data)
+    {
+        $this->db->insert($this->TABLENAME_WIP, $data);
         return $this->db->affected_rows();
     }
 
@@ -26,6 +33,14 @@ class SER_mod extends CI_Model
         $this->db->delete($this->TABLENAME);
         return $this->db->affected_rows();
     }
+    
+    public function deleteWIPbyID($parr)
+    {
+        $this->db->where($parr);
+        $this->db->delete($this->TABLENAME_WIP);
+        return $this->db->affected_rows();
+    }
+
     public function check_Primary($data)
     {
         return $this->db->get_where($this->TABLENAME, $data)->num_rows();
@@ -34,6 +49,17 @@ class SER_mod extends CI_Model
     public function lastserialid($modeltype, $prodt)
     {
         $qry = "exec sp_lastser @typemodel=" . $modeltype . ", @prodt='" . $prodt . "'";
+        $query =  $this->db->query($qry);
+        if ($query->num_rows() > 0) {
+            $ret = $query->row();
+            return $ret->lser;
+        } else {
+            return '0';
+        }
+    }
+    public function lastserialid_wip($modeltype, $prodt)
+    {
+        $qry = "exec sp_lastser_wip @typemodel=" . $modeltype . ", @prodt='" . $prodt . "'";
         $query =  $this->db->query($qry);
         if ($query->num_rows() > 0) {
             $ret = $query->row();
@@ -58,6 +84,17 @@ class SER_mod extends CI_Model
     {
         $this->db->select('SER_DOC,UPPER(SER_ITMID) SER_ITMID,MITM_LBLCLR');
         $this->db->from($this->TABLENAME);
+        $this->db->join('MITM_TBL', 'SER_ITMID=MITM_ITMCD');
+        $this->db->like($pwhere);
+        $this->db->group_by('SER_DOC,SER_ITMID,MITM_LBLCLR');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function selectbyVARg_wip($pwhere)
+    {
+        $this->db->select('SER_DOC,UPPER(SER_ITMID) SER_ITMID,MITM_LBLCLR');
+        $this->db->from($this->TABLENAME_WIP);
         $this->db->join('MITM_TBL', 'SER_ITMID=MITM_ITMCD');
         $this->db->like($pwhere);
         $this->db->group_by('SER_DOC,SER_ITMID,MITM_LBLCLR');
@@ -142,6 +179,23 @@ class SER_mod extends CI_Model
         $query = $this->db->query($qry, [$pjob, $pitem]);
         return $query->result_array();
     }
+    public function select_checklistprintwip_label($pjob, $pitem)
+    {
+        $qry = "select SER_WIP_TBL.*, convert(int,SER_QTY-isnull(v1.ITH_QTY,0)) BALQTY, convert(int,SER_QTY+isnull(v2.ITH_QTY,0)) BALJNTQTY,VLOC.ITH_WH from SER_WIP_TBL 
+        left join
+		(SELECT ITH_SER,ITH_QTY FROM ITH_TBL WHERE isnull(ITH_WH,'')='AWIP1' and isnull(ITH_QTY,0)>0 ) V1 on SER_ID=v1.ITH_SER
+		left join
+		(SELECT * FROM ITH_TBL WHERE isnull(ITH_WH,'')='AWIP1' and isnull(ITH_FORM,'')='OUT-USE') V2 on SER_ID=v2.ITH_SER
+        LEFT JOIN 
+		(
+		select ITH_SER,ITH_WH,sum(ITH_QTY) STKQT from ith_tbl where ITH_SER is not null		
+		group by ITH_SER,ITH_WH
+		having sum(ITH_QTY)>0
+		) VLOC ON SER_ID=VLOC.ITH_SER
+        where SUBSTRING(SER_ID,1,1)='5' AND SER_DOC=? and SER_ITMID=? ORDER BY SER_ID";
+        $query = $this->db->query($qry, [$pjob, $pitem]);
+        return $query->result_array();
+    }
 
     public function selectbyVAR_where($pwhere)
     {
@@ -188,6 +242,17 @@ class SER_mod extends CI_Model
     {
         $this->db->select("SER_ID,SER_ITMID,MITM_ITMD1,SER_PRDDT,SER_DOC,SER_PRDLINE,SER_PRDSHFT,SER_QTY,SER_SHEET,MCUS_CUSNM,MITM_STKUOM,SER_GRADE MBOM_GRADE,PDPP_BSGRP,SER_RMRK");
         $this->db->from($this->TABLENAME . ' a');
+        $this->db->join('MITM_TBL b', 'a.SER_ITMID=b.MITM_ITMCD', 'LEFT');
+        $this->db->join('XWO c', 'a.SER_DOC=c.PDPP_WONO', 'LEFT');
+        $this->db->join('MCUS_TBL d', 'c.PDPP_CUSCD=d.MCUS_CUSCD', 'LEFT');
+        $this->db->where_in('SER_ID', $pser);
+        $query = $this->db->get();
+        return $query->result();
+    }
+    public function selectBCField_wip_in($pser)
+    {
+        $this->db->select("SER_ID,SER_ITMID,MITM_ITMD1,SER_PRDDT,SER_DOC,SER_PRDLINE,SER_PRDSHFT,SER_QTY,SER_SHEET,MCUS_CUSNM,MITM_STKUOM,SER_GRADE MBOM_GRADE,PDPP_BSGRP,SER_RMRK");
+        $this->db->from($this->TABLENAME_WIP . ' a');
         $this->db->join('MITM_TBL b', 'a.SER_ITMID=b.MITM_ITMCD', 'LEFT');
         $this->db->join('XWO c', 'a.SER_DOC=c.PDPP_WONO', 'LEFT');
         $this->db->join('MCUS_TBL d', 'c.PDPP_CUSCD=d.MCUS_CUSCD', 'LEFT');

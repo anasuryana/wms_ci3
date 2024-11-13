@@ -53,6 +53,7 @@ $route['default_controller'] = 'welcome';
 $route['printlabel_do'] = 'RCV/printlabel';
 $route['printlabel_fg'] = 'SER/printfglabel';
 $route['printlabel_fgstatus'] = 'SER/printfgstatuslabel';
+$route['printlabel_fgwip'] = 'SER/printfgwiplabel';
 $route['printlabel_fgrtnstatus'] = 'SER/print_return_control_label';
 $route['print_serahterima_rcqc'] = 'SER/print_st_rcqc';
 $route['printlabel_si'] = 'SI/printlabel';

@@ -72,6 +72,10 @@ class SER extends CI_Controller
     {
         $this->load->view('wms/vser_fg_status');
     }
+    public function createwip()
+    {
+        $this->load->view('wms/vser_fg_wip');
+    }
     public function createrm()
     {
         $data['lmade'] = $this->MADE_mod->selectAll();
@@ -856,7 +860,26 @@ class SER extends CI_Controller
             }
         }
         $myar[] = ["cd" => $toret, "msg" => $remark];
-        echo '{"status":' . json_encode($myar) . '}';
+        die(json_encode(['status' => $myar]));
+    }
+    public function remove_wip_label()
+    {
+        $cid = $this->input->post('inid');
+        $toret = 0;
+        $myar = [];
+        $remark = "";
+        $retfail = 0;
+        if (is_array($cid)) {
+            for ($i = 0; $i < count($cid); $i++) {
+                $toret += $this->SER_mod->deleteWIPbyID(['SER_ID' => $cid[$i]]);
+            }
+            if ($retfail == 0 && $toret > 0) {
+                $remark = "Deleted";
+            }
+        }
+
+        $myar[] = ["cd" => $toret, "msg" => $remark];
+        die(json_encode(['status' => $myar]));
     }
 
     public function getMonthDis($par)
@@ -1054,6 +1077,61 @@ class SER extends CI_Controller
                     'ITH_ITMCD' => $citem, 'ITH_DATE' => $current_date, 'ITH_FORM' => 'INC', 'ITH_DOC' => $cjob, 'ITH_QTY' => $cqty, 'ITH_WH' => 'ARPRD1', 'ITH_SER' => $newid, 'ITH_LUPDT' => $currrtime, 'ITH_USRID' => $this->session->userdata('nama'),
                 ]);
             }
+            $datar = ["cd" => $toret, "msg" => "Saved successfully", "itemcd" => $citem, "doc" => $cjob];
+        } else {
+            $datar = ["cd" => $toret, "msg" => "Could not be saved"];
+        }
+        $myar[] = $datar;
+        echo json_encode($myar);
+    }
+
+    public function setfg_wip()
+    {
+        $this->checkSession();
+        $current_date = date('Y-m-d');
+        $currrtime = date('Y-m-d H:i:s');
+        $citem = $this->input->post('initemcd');
+        $cjob = $this->input->post('injob');
+        $cqty = $this->input->post('inqty');
+        $cproddt = $this->input->post('inproddt');
+        $cline = $this->input->post('inline');
+        $cshift = $this->input->post('inshift');
+        $cremark = $this->input->post('inremark');
+        $cmdl = 5; #label status
+        $myar = [];
+
+        $rsjob = $this->SPL_mod->selectWO($cjob);
+        foreach ($rsjob as $r) {
+            if (((int) $r['LBLTTL'] + $cqty) > (int) $r['PDPP_WORQT']) {
+                $myar[] = ["cd" => 0, "msg" => "Over"];
+                exit(json_encode($myar));
+            }
+        }
+        $pYear = substr($cproddt, 2, 2);
+        $pMonth = substr($cproddt, 5, 2);
+        $pDay = substr($cproddt, -2);
+        $pMonthdis = $this->getMonthDis($pMonth);
+        $newid = $this->SER_mod->lastserialid_wip($cmdl, $cproddt);
+        $newid++;
+        $newid = $cmdl . $pYear . $pMonthdis . $pDay . substr('000000000' . $newid, -10);
+        $datas = [
+            'SER_ID' => $newid,
+            'SER_REFNO' => $newid,
+            'SER_DOC' => $cjob,
+            'SER_DOCTYPE' => '1',
+            'SER_ITMID' => $citem,
+            'SER_QTY' => $cqty,
+            'SER_QTYLOT' => $cqty,
+            'SER_SHEET' => '',
+            'SER_PRDDT' => $cproddt,
+            'SER_PRDLINE' => $cline,
+            'SER_PRDSHFT' => $cshift,
+            'SER_RMRK' => $cremark,
+            'SER_LUPDT' => $currrtime,
+            'SER_USRID' => $this->session->userdata('nama'),
+        ];
+        $toret = $this->SER_mod->insert_wip($datas);
+        if ($toret > 0) {
             $datar = ["cd" => $toret, "msg" => "Saved successfully", "itemcd" => $citem, "doc" => $cjob];
         } else {
             $datar = ["cd" => $toret, "msg" => "Could not be saved"];
@@ -1329,6 +1407,13 @@ class SER extends CI_Controller
         echo json_encode($rs);
     }
 
+    public function getdocg_wip()
+    {
+        $cdoc = $this->input->get('inkey');
+        $rs = $this->SER_mod->selectbyVARg_wip(['SER_DOC' => $cdoc, 'SER_DOCTYPE' => '1', 'SUBSTRING(SER_ID,1,1)' => 5]);
+        echo json_encode($rs);
+    }
+
     public function getdocg_rm()
     {
         $cdoc = $this->input->get('inkey');
@@ -1356,6 +1441,17 @@ class SER extends CI_Controller
             echo '{"data":' . json_encode([]) . '}';
         } else {
             $rs = $this->SER_mod->select_checklistprintstatus_label($cdoc, $citem);
+            echo '{"data":' . json_encode($rs) . '}';
+        }
+    }
+    public function getdoclike_lblwip()
+    {
+        $cdoc = $this->input->get('indoc');
+        $citem = $this->input->get('initm');
+        if ($citem == '') {
+            echo '{"data":' . json_encode([]) . '}';
+        } else {
+            $rs = $this->SER_mod->select_checklistprintwip_label($cdoc, $citem);
             echo '{"data":' . json_encode($rs) . '}';
         }
     }
@@ -1908,6 +2004,192 @@ class SER extends CI_Controller
             $pser = str_replace(str_split('"[]'), '', $pser);
             $pser = explode(",", $pser);
             $rs = $this->SER_mod->selectBCField_in($pser);
+            $pdf = new PDF_Code39e128('L', 'mm', $pprsize);
+            $pdf->AddPage();
+            $hgt_p = $pdf->GetPageHeight();
+            $wid_p = $pdf->GetPageWidth();
+            $pdf->SetAutoPageBreak(true, 10);
+            //$pdf->SetMargins(0,0);
+            $cY = 0;
+            $cX = 0;
+            foreach ($rs as $r) {
+                $awo = explode('-', $r->SER_DOC);
+                $ccustnm = $r->MCUS_CUSNM;
+                $cuscd = trim($r->PDPP_BSGRP);
+                $noseri = $r->SER_ID;
+                $cmitmid = trim($r->SER_ITMID);
+                $cmitmd1 = trim($r->MITM_ITMD1);
+                $cprodt = explode('-', $r->SER_PRDDT);
+                $cwo = $awo[0] . '-' . $awo[1];
+                $cprdline = strpos(trim($r->SER_PRDLINE), 'SMT-') !== false ? substr(trim($r->SER_PRDLINE), 4, strlen(trim($r->SER_PRDLINE))) : trim($r->SER_PRDLINE);
+                $cprdshift = $r->SER_PRDSHFT[0] == 'M' ? 'A' : 'B';
+                $cserqty = $r->SER_QTY;
+                $csersheet = $r->SER_SHEET;
+                $cum = trim($r->MITM_STKUOM) == '' ? 'PCS' : trim($r->MITM_STKUOM);
+                $crank = trim($r->MBOM_GRADE);
+                $cremark = $r->SER_RMRK;
+                //check wheter the height is enough
+                if (($hgt_p - ($cY + $thegap)) < $hgt) {
+                    $pdf->AddPage();
+                    $cY = 0;
+                    $cX = 0;
+                    printTagstatus($pdf, $cX, $cY);
+                    $cX += $wid + $thegap;
+                } else {
+                    if (($wid_p - $cX) > $wid) { // jika (lebar printer-posisi X)> lebar label
+                        printTagstatus($pdf, $cX, $cY);
+                        $cX += $wid + $thegap;
+                    } else {
+                        $cY += $hgt + $thegap;
+                        if (($hgt_p - ($cY + $thegap)) < $hgt) {
+                            $pdf->AddPage();
+                            $cX = 0;
+                            $cY = 0;
+                            printTagstatus($pdf, $cX, $cY);
+                        } else {
+                            $cX = 0;
+                            printTagstatus($pdf, $cX, $cY);
+                        }
+                        $cX += $wid + $thegap;
+                    }
+                }
+            }
+            $pdf->Output('I', 'FG LABEL ' . date("d-M-Y") . '.pdf');
+        }
+    }
+    public function printfgwiplabel()
+    {
+        global $wid, $hgt, $padX, $padY, $noseri, $ccustnm, $cmitmid, $cmitmd1, $cprodt, $cwo, $cprdline, $cprdshift, $cserqty, $csersheet, $cum, $crank, $cuscd, $cremark;
+        function fnLeftstatus($pdf, $cleft, $pword)
+        {
+            global $wid, $hgt, $padX, $padY;
+            if ($cleft > 0) {
+                return $cleft + ($wid / 2 - ($pdf->GetStringWidth($pword) / 2));
+            } else {
+                return $wid / 2 - ($pdf->GetStringWidth($pword) / 2);
+            }
+        }
+
+        function printTagstatus($pdf, $myleft, $mytop)
+        {
+            global $wid, $hgt, $padX, $padY, $noseri, $cmitmid, $cmitmd1, $cprodt, $cwo, $cprdline, $cprdshift, $cserqty, $cum, $crank, $cremark;
+            $th_x = $padX + $myleft + 3;
+            $th_y = $padY + $mytop + 4;
+            $yearCODE = '';
+            $monthCODE = '';
+            switch ($cprodt[0]) {
+                case '2020':
+                    $yearCODE = 'A';
+                    break;
+                case '2021':
+                    $yearCODE = 'B';
+                    break;
+                case '2022':
+                    $yearCODE = 'C';
+                    break;
+                case '2023':
+                    $yearCODE = 'D';
+                    break;
+                case '2024':
+                    $yearCODE = 'E';
+                    break;
+                case '2025':
+                    $yearCODE = 'F';
+                    break;
+                case '2026':
+                    $yearCODE = 'G';
+                    break;
+            }
+            $cmonth = intval($cprodt[1]);
+            if ($cmonth == 10) {
+                $monthCODE = 'X';
+            } else if ($cmonth == 11) {
+                $monthCODE = 'Y';
+            } else if ($cmonth == 12) {
+                $monthCODE = 'Z';
+            } else {
+                $monthCODE = $cmonth;
+            }
+
+            $_aWO = explode("-", $cwo);
+            $_woQR = substr("00000" . $_aWO[1], -5);
+            $clineNAME = preg_replace('/[0-9]+/', '', $cprdline);
+            $pdf->AddFont('Tahoma', '', 'tahoma.php');
+            $pdf->AddFont('Tahoma', 'B', 'tahomabd.php');
+            $pdf->SetFont('Tahoma', '', 9 + 3);
+            $pdf->Text($th_x + 3, $th_y + 5, 'PT SMT INDONESIA');
+
+            $pdf->SetFont('Tahoma', 'B', 8 + 4);
+            $pdf->Text($th_x + 13, $th_y + 10, 'LABEL STATUS');
+
+            $pdf->SetFont('Tahoma', 'B', 8);
+            $pdf->SetXY($th_x + 3, $th_y + 15);
+            $pdf->Cell(21, 5, 'GROUP/LINE', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(30, 5, $cprdshift . ' / ' . $cprdline, 1, 0, 'L');
+
+            $pdf->SetXY($th_x + 3, $th_y + 20);
+            $pdf->SetFont('Tahoma', 'B', 8 + 3);
+            $pdf->Cell(21, 7, 'ASSY NO.', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 8);
+            $pdf->Cell(30, 7, $cmitmid, 1, 0, 'L');
+            $pdf->SetXY($th_x + 3, $th_y + 27);
+            $pdf->SetFont('Tahoma', 'B', 8 + 3);
+            $pdf->Cell(21, 7, 'JOB NO.', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 8);
+            $pdf->Cell(30, 7, $cwo, 1, 0, 'L');
+
+            $pdf->SetXY($th_x + 3, $th_y + 34);
+            $pdf->SetFont('Tahoma', 'B', 8 + 3);
+            $pdf->Cell(21, 5, 'QTY', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(30, 5, number_format($cserqty), 1, 0, 'L');
+            $pdf->SetXY($th_x + 3, $th_y + 39);
+            $pdf->SetFont('Tahoma', 'B', 8 + 3);
+            $pdf->Cell(21, 10, 'REMARK', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(30, 10, $cremark, 1, 0, 'L');
+
+            $pdf->SetXY($th_x + 3, $th_y + 49);
+            $pdf->SetFont('Tahoma', 'B', 8 + 3);
+            $pdf->Cell(51, 5, 'MODEL', 1, 0, 'C');
+            $pdf->SetXY($th_x + 3, $th_y + 54);
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(51, 5, $cmitmd1, 1, 0, 'C');
+
+            $pdf->SetXY($th_x + 3, $th_y + 54);
+
+            $noserencode = "Z1" . trim($cmitmid) . "|Z7" . trim($cprdline) . "&" . $cprdshift . "|Z2070" . $_woQR . "|Z3" . number_format($cserqty, 0, '', '') . "|Z4" . trim($cmitmd1) . "|Z5" . $noseri . "|Z6";
+            $image_name = $noserencode;
+            $cmd = escapeshellcmd("Python " . FCPATH . "smt.py \"$image_name\" 2 ");
+            $op = shell_exec($cmd);
+            $image_name = str_replace("/", "xxx", $image_name);
+            $image_name = str_replace(" ", "___", $image_name);
+            $image_name = str_replace("|", "lll", $image_name);
+            $pdf->SetFont('Tahoma', '', 10);
+
+            $pdf->Image(base_url("assets/imgs/" . $image_name . ".png"), $th_x + 17, $th_y + 70);
+
+            $pdf->Rect($th_x + 1, $th_y + 1, $wid, $hgt);
+            $clebar = $pdf->GetStringWidth($noseri);
+            $pdf->Text($th_x + ($wid / 2) - ($clebar / 2), $th_y + 95, $noseri);
+        }
+        $pser = '';
+        if (isset($_COOKIE["PRINTLABEL_FG"])) {
+            $pser = $_COOKIE["PRINTLABEL_FG"];
+        }
+        if ($pser == '') {
+            die('stop');
+        } else {
+            $wid = 55;
+            $hgt = 95;
+            $thegap = 3;
+            $padX = 0.35;
+            $padY = 0.35;
+            $pprsize = $_COOKIE["PRINTLABEL_FG_SIZE"];
+            $pser = str_replace(str_split('"[]'), '', $pser);
+            $pser = explode(",", $pser);
+            $rs = $this->SER_mod->selectBCField_wip_in($pser);
             $pdf = new PDF_Code39e128('L', 'mm', $pprsize);
             $pdf->AddPage();
             $hgt_p = $pdf->GetPageHeight();
