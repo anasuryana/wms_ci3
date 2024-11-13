@@ -1346,6 +1346,13 @@ class SPL extends CI_Controller
         $rs = $this->SPL_mod->selectWOOpen_assy_as_sub($cwo);
         echo json_encode($rs);
     }
+    public function getWOOpen_wip()
+    {
+        header('Content-Type: application/json');
+        $cwo = $this->input->get('inwo');
+        $rs = $this->SPL_mod->selectWOOpen_wip($cwo);
+        echo json_encode($rs);
+    }
 
     public function checkPSN()
     {
