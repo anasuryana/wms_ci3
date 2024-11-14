@@ -5822,7 +5822,7 @@ class SPL extends CI_Controller
         $date2 = $this->input->get('date2');
         $myar = [];
 
-        $where = ['SPLSCN_DOC' => $cpsn, 'SPLSCN_ITMCD' => $citmcd, 'SPLSCN_LOTNO' => $citmlot, 'SPLSCN_UNQCODE' => $uc];
+        $where = ['SPLSCN_DOC' => $cpsn, 'SPLSCN_ITMCD' => $citmcd, 'SPLSCN_LOTNO' => $citmlot, "ISNULL(SPLSCN_UNQCODE,'')" => $uc];
         $rs = $date1 && $date2 ? $this->SPLSCN_mod->selectby_filter_like_with_period($where, $date1, $date2)
         : $this->SPLSCN_mod->selectby_filter_like($where);
 
