@@ -251,7 +251,7 @@ class SER_mod extends CI_Model
     }
     public function selectBCField_wip_in($pser)
     {
-        $this->db->select("SER_ID,SER_ITMID,MITM_ITMD1,SER_PRDDT,SER_DOC,SER_PRDLINE,SER_PRDSHFT,SER_QTY,SER_SHEET,MCUS_CUSNM,MITM_STKUOM,SER_GRADE MBOM_GRADE,PDPP_BSGRP,SER_RMRK");
+        $this->db->select("SER_ID,SER_ITMID,MITM_ITMD1,SER_PRDDT,SER_DOC,SER_PRDLINE,SER_PRDSHFT,SER_QTY,SER_SHEET,MCUS_CUSNM,MITM_STKUOM,SER_GRADE MBOM_GRADE,PDPP_BSGRP,SER_RMRK,SER_STATUS");
         $this->db->from($this->TABLENAME_WIP . ' a');
         $this->db->join('MITM_TBL b', 'a.SER_ITMID=b.MITM_ITMCD', 'LEFT');
         $this->db->join('XWO c', 'a.SER_DOC=c.PDPP_WONO', 'LEFT');
