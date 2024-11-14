@@ -2130,32 +2130,46 @@ class SER extends CI_Controller
 
             $pdf->SetXY($th_x + 3, $th_y + 20);
             $pdf->SetFont('Tahoma', 'B', 8 + 3);
+            $pdf->Cell(51, 5, 'MODEL', 1, 0, 'C');
+            $pdf->SetXY($th_x + 3, $th_y + 25);
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(51, 5, $cmitmd1, 1, 0, 'C');
+
+            $pdf->SetXY($th_x + 3, $th_y + 30);
+            $pdf->SetFont('Tahoma', 'B', 8 + 3);
             $pdf->Cell(21, 7, 'ASSY NO.', 1, 0, 'L');
             $pdf->SetFont('Tahoma', '', 8 + 8);
             $pdf->Cell(30, 7, $cmitmid, 1, 0, 'L');
-            $pdf->SetXY($th_x + 3, $th_y + 27);
+
+            $pdf->SetXY($th_x + 3, $th_y + 37);
             $pdf->SetFont('Tahoma', 'B', 8 + 3);
             $pdf->Cell(21, 7, 'JOB NO.', 1, 0, 'L');
             $pdf->SetFont('Tahoma', '', 8 + 8);
             $pdf->Cell(30, 7, $cwo, 1, 0, 'L');
 
-            $pdf->SetXY($th_x + 3, $th_y + 34);
+            $pdf->SetXY($th_x + 3, $th_y + 44);
             $pdf->SetFont('Tahoma', 'B', 8 + 3);
             $pdf->Cell(21, 5, 'QTY', 1, 0, 'L');
             $pdf->SetFont('Tahoma', '', 8 + 3);
             $pdf->Cell(30, 5, number_format($cserqty), 1, 0, 'L');
-            $pdf->SetXY($th_x + 3, $th_y + 39);
-            $pdf->SetFont('Tahoma', 'B', 8 + 3);
-            $pdf->Cell(21, 10, 'REMARK', 1, 0, 'L');
-            $pdf->SetFont('Tahoma', '', 8 + 3);
-            $pdf->Cell(30, 10, $cremark, 1, 0, 'L');
 
             $pdf->SetXY($th_x + 3, $th_y + 49);
             $pdf->SetFont('Tahoma', 'B', 8 + 3);
-            $pdf->Cell(51, 5, 'MODEL', 1, 0, 'C');
-            $pdf->SetXY($th_x + 3, $th_y + 54);
+            $pdf->Cell(21, 5, 'Prod.Date', 1, 0, 'L');
             $pdf->SetFont('Tahoma', '', 8 + 3);
-            $pdf->Cell(51, 5, $cmitmd1, 1, 0, 'C');
+            $pdf->Cell(30, 5, 'JM' . $yearCODE . $monthCODE . $cprodt[2][0] . $cprodt[2][1] . $clineNAME . $cprdshift, 1, 0, 'L');
+
+            $pdf->SetXY($th_x + 3, $th_y + 54);
+            $pdf->SetFont('Tahoma', 'B', 8 + 3);
+            $pdf->Cell(21, 5, 'Status', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(30, 5, '', 1, 0, 'L');
+
+            $pdf->SetXY($th_x + 3, $th_y + 59);
+            $pdf->SetFont('Tahoma', 'B', 8 + 3);
+            $pdf->Cell(21, 10, 'Remark', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(30, 10, $cremark, 1, 0, 'L');
 
             $pdf->SetXY($th_x + 3, $th_y + 54);
 
@@ -2240,7 +2254,7 @@ class SER extends CI_Controller
                     }
                 }
             }
-            $pdf->Output('I', 'FG LABEL ' . date("d-M-Y") . '.pdf');
+            $pdf->Output('I', 'WIP LABEL ' . date("d-M-Y") . '.pdf');
         }
     }
 
