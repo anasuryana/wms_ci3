@@ -1097,14 +1097,15 @@ class SER extends CI_Controller
         $cline = $this->input->post('inline');
         $cshift = $this->input->post('inshift');
         $cremark = $this->input->post('inremark');
+        $status = $this->input->post('status');
         $cmdl = 5; #label status
         $myar = [];
 
         $rsjob = $this->SPL_mod->selectWOWIP($cjob);
         foreach ($rsjob as $r) {
             if (((int) $r['LBLTTL'] + $cqty) > (int) $r['PDPP_WORQT']) {
-                $myar[] = ["cd" => 0, "msg" => "Over"];
-                exit(json_encode($myar));
+                // $myar[] = ["cd" => 0, "msg" => "Over"];
+                // exit(json_encode($myar));
             }
         }
         $pYear = substr($cproddt, 2, 2);
@@ -1129,6 +1130,7 @@ class SER extends CI_Controller
             'SER_RMRK' => $cremark,
             'SER_LUPDT' => $currrtime,
             'SER_USRID' => $this->session->userdata('nama'),
+            'SER_STATUS' => $status,
         ];
         $toret = $this->SER_mod->insert_wip($datas);
         if ($toret > 0) {
@@ -2060,6 +2062,7 @@ class SER extends CI_Controller
     public function printfgwiplabel()
     {
         global $wid, $hgt, $padX, $padY, $noseri, $ccustnm, $cmitmid, $cmitmd1, $cprodt, $cwo, $cprdline, $cprdshift, $cserqty, $csersheet, $cum, $crank, $cuscd, $cremark;
+        global $newStatus;
         function fnLeftstatus($pdf, $cleft, $pword)
         {
             global $wid, $hgt, $padX, $padY;
@@ -2073,6 +2076,7 @@ class SER extends CI_Controller
         function printTagstatus($pdf, $myleft, $mytop)
         {
             global $wid, $hgt, $padX, $padY, $noseri, $cmitmid, $cmitmd1, $cprodt, $cwo, $cprdline, $cprdshift, $cserqty, $cum, $crank, $cremark;
+            global $newStatus;
             $th_x = $padX + $myleft + 3;
             $th_y = $padY + $mytop + 4;
             $yearCODE = '';
@@ -2163,7 +2167,7 @@ class SER extends CI_Controller
             $pdf->SetFont('Tahoma', 'B', 8 + 3);
             $pdf->Cell(21, 5, 'Status', 1, 0, 'L');
             $pdf->SetFont('Tahoma', '', 8 + 3);
-            $pdf->Cell(30, 5, '', 1, 0, 'L');
+            $pdf->Cell(30, 5, $newStatus, 1, 0, 'L');
 
             $pdf->SetXY($th_x + 3, $th_y + 59);
             $pdf->SetFont('Tahoma', 'B', 8 + 3);
@@ -2228,6 +2232,7 @@ class SER extends CI_Controller
                 $cum = trim($r->MITM_STKUOM) == '' ? 'PCS' : trim($r->MITM_STKUOM);
                 $crank = trim($r->MBOM_GRADE);
                 $cremark = $r->SER_RMRK;
+                $newStatus = $r->SER_STATUS;
                 //check wheter the height is enough
                 if (($hgt_p - ($cY + $thegap)) < $hgt) {
                     $pdf->AddPage();

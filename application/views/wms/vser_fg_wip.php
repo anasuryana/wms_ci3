@@ -77,6 +77,14 @@
                             <div class="row">
                                 <div class="col-md-12 mb-1">
                                     <div class="input-group input-group-sm">                                        
+                                        <span class="input-group-text">Status</span>                                        
+                                        <input type="text" class="form-control" id="sersts_txt_status" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">Remark</span>                                        
                                         <input type="text" class="form-control" id="sersts_txt_remark" required>
                                     </div>
@@ -308,6 +316,7 @@
         document.getElementById('sersts_txt_itmnm').value='';
         document.getElementById('sersts_txt_jobqty').value='';
         document.getElementById('sersts_txt_proddt').value='';
+        document.getElementById('sersts_txt_status').value='';
         document.getElementById('sersts_txt_remark').value='';
         document.getElementById('sersts_txt_jobno_tobfind').value='';
         document.getElementById('sersts_txt_item_tobfind').value='';
@@ -383,7 +392,7 @@
             type: "post",
             url: "<?=base_url('SER/setfg_wip')?>",
             data: {initemcd: mitem, injob: mjob, inqty: mqty, inproddt: mproddt, inline: mprodline, inshift: mprodshift,
-            inremark: mremark },
+            status : sersts_txt_status.value.trim(),inremark: mremark },
             dataType: "json",
             success: function (response) {
                 if(response[0].cd=='0'){

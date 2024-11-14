@@ -160,7 +160,7 @@ class SPL_mod extends CI_Model
         ( select RTRIM(PPSN1_WONO) WONO,MAX(PPSN1_SIMQT) SIMQT from XPPSN1 z WHERE PPSN1_WONO LIKE '%$pwo%'
         GROUP BY PPSN1_WONO
         ) v3 on PDPP_WONO=v3.WONO
-        WHERE PDPP_WONO LIKE '%$pwo%' and PDPP_WORQT!=PDPP_GRNQT AND PDPP_COMFG=0"; #
+        WHERE PDPP_WONO LIKE '%$pwo%' AND PDPP_COMFG=0"; #
         $query = $this->db->query($qry);
         return $query->result_array();
     }
