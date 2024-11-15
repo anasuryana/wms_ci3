@@ -245,6 +245,16 @@ class TRF extends CI_Controller
                 if ($AffectedRows) {
                     $TobeSaved_d = [];
                     $RSAutoConform = [];
+                    $ITH_FORM_INC = $ITH_FORM_OUT = '';
+
+                    if(str_contains($toLoc, 'SCR')) {
+                        $ITH_FORM_INC = 'INC-SCR-'.$toLoc;
+                        $ITH_FORM_OUT = 'OUT-WH-SCR-'.$frLoc;
+                    } else {
+                        $ITH_FORM_INC = 'TRF-INC';
+                        $ITH_FORM_OUT = 'TRF-OUT';
+                    }
+
                     for ($i = 0; $i < $TotalRows; $i++) {
                         $_TobeSaved = [
                             'TRFD_DOC' => $NewDocument,
@@ -258,7 +268,7 @@ class TRF extends CI_Controller
                             $RSAutoConform[] = [
                                 'ITH_ITMCD' => $LineItemCode[$i],
                                 'ITH_DATE' => $docDate,
-                                'ITH_FORM' => 'TRF-INC',
+                                'ITH_FORM' => $ITH_FORM_INC,
                                 'ITH_DOC' => $NewDocument,
                                 'ITH_QTY' => $LineItemQty[$i] * 1,
                                 'ITH_WH' => $toLoc,
@@ -268,7 +278,7 @@ class TRF extends CI_Controller
                             $RSAutoConform[] = [
                                 'ITH_ITMCD' => $LineItemCode[$i],
                                 'ITH_DATE' => $docDate,
-                                'ITH_FORM' => 'TRF-OUT',
+                                'ITH_FORM' => $ITH_FORM_OUT,
                                 'ITH_DOC' => $NewDocument,
                                 'ITH_QTY' => $LineItemQty[$i] * -1,
                                 'ITH_WH' => $frLoc,
@@ -432,6 +442,7 @@ class TRF extends CI_Controller
         $doc = $this->input->post('doc');
         $item = $this->input->post('item');
         $rs = $this->TRF_mod->selectOpenForIDWhereDoc($this->session->userdata('nama'), $doc);
+        $ITH_FORM_INC = $ITH_FORM_OUT = '';
         foreach ($rs as $r) {
             $this->TRF_mod->updatebyId([
                 'TRFD_DOC' => $doc
@@ -439,10 +450,20 @@ class TRF extends CI_Controller
                 ]
                 , ['TRFD_RECEIVE_BY' => $this->session->userdata('nama')
                     , 'TRFD_RECEIVE_DT' => date('Y-m-d H:i:s')]);
+
+            
+            if(str_contains($r['TRFH_LOC_TO'], 'SCR')) {
+                $ITH_FORM_INC = 'INC-SCR-'.$r['TRFH_LOC_TO'];
+                $ITH_FORM_OUT = 'OUT-WH-SCR-'.$r['TRFH_LOC_FR'];
+            } else {
+                $ITH_FORM_INC = 'TRF-INC';
+                $ITH_FORM_OUT = 'TRF-OUT';
+            }
+
             $RsToBeSaved[] = [
                 'ITH_ITMCD' => $r['TRFD_ITEMCD'],
                 'ITH_DATE' => date('Y-m-d'),
-                'ITH_FORM' => 'TRF-INC',
+                'ITH_FORM' => $ITH_FORM_INC,
                 'ITH_DOC' => $r['TRFH_DOC'],
                 'ITH_QTY' => $r['TTLQTY'] * 1,
                 'ITH_WH' => $r['TRFH_LOC_TO'],
@@ -452,7 +473,7 @@ class TRF extends CI_Controller
             $RsToBeSaved[] = [
                 'ITH_ITMCD' => $r['TRFD_ITEMCD'],
                 'ITH_DATE' => date('Y-m-d'),
-                'ITH_FORM' => 'TRF-OUT',
+                'ITH_FORM' => $ITH_FORM_OUT,
                 'ITH_DOC' => $r['TRFH_DOC'],
                 'ITH_QTY' => $r['TTLQTY'] * -1,
                 'ITH_WH' => $r['TRFH_LOC_FR'],
