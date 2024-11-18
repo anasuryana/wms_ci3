@@ -65,6 +65,7 @@ class TRF extends CI_Controller
             'QAEQUIP',
             'FCTEQUIP',
             'ICTEQUIP',
+            'HRDEQUIP',
         ]);
         $rsFromWH = $this->TRFSET_mod->selectColumnWhere(['MSTLOCG_ID', 'MSTLOCG_NM'], ['TRFSET_APPROVER' => $this->session->userdata('nama')]);
         $_listOfLocationTobeMerged = [];
