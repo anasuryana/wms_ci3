@@ -305,6 +305,10 @@
 <script>
     var tableSERLAST ;
     var sersts_serprint = [];
+    $("#sersts_MODPRINT").on('hidden.bs.modal', function(){
+        initLASTSERList();
+    })
+
     $("#sersts_txt_proddt").datepicker({
         format: 'yyyy-mm-dd',
         autoclose:true
@@ -473,16 +477,10 @@
                     }, 0 );
                 apik.column(3).footer().innerHTML = 'Total: ' + numeral(total).format(',')
             },
-            fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {                
-                if(aData.ITH_WH=='AFWH9SC'){
-                    $('td', nRow).css('background-color', '#ff6347');
-                } else {
-                    if(aData.BALQTY<=0){
-                        $('td', nRow).css('background-color', '#F0ED2E');
-                    }                
-                    if(aData.BALJNTQTY<=0){
-                        $('td', nRow).css('background-color', '#4CAF50');
-                    }                
+            fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                if(aData.printed_at) {
+                    $('td', nRow).css('background-color', '#AAFF00');
+                    $('td', nRow).prop('title', 'already printed');
                 }
             }
         });             

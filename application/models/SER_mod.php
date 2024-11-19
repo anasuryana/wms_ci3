@@ -411,6 +411,14 @@ class SER_mod extends CI_Model
         return $this->db->affected_rows();
     }
 
+    public function updatebySERwhereNotPrinted($pdata, $pSer)
+    {
+        $this->db->where_in('SER_ID', $pSer);
+        $this->db->where('printed_at is null', null, false);
+        $this->db->update($this->TABLENAME_WIP, $pdata);
+        return $this->db->affected_rows();
+    }
+
     public function selectsync()
     {
         $qry = "select RTRIM(PDPP_MDLCD) PDPP_MDLCD,RTRIM(PDPP_WONO) PDPP_WONO,PDPP_WORQT,PDPP_GRNQT,TTLCARD,CONVERT(BIGINT,(PDPP_GRNQT-isnull(TTLCARD,0))) ADDQTY from XWO 

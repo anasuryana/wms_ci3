@@ -2216,6 +2216,7 @@ class SER extends CI_Controller
             //$pdf->SetMargins(0,0);
             $cY = 0;
             $cX = 0;
+            
             foreach ($rs as $r) {
                 $awo = explode('-', $r->SER_DOC);
                 $ccustnm = $r->MCUS_CUSNM;
@@ -2259,6 +2260,10 @@ class SER extends CI_Controller
                     }
                 }
             }
+            $this->SER_mod->updatebySERwhereNotPrinted([
+                'printed_at' => date('Y-m-d H:i:s'), 
+                'printed_by' => $this->session->userdata('nama')],
+            $pser);
             $pdf->Output('I', 'WIP LABEL ' . date("d-M-Y") . '.pdf');
         }
     }
