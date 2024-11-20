@@ -641,8 +641,7 @@
             alertify.warning('PSN is required')
             return
         }
-        if(wms_usergroupid=="PCC" || wms_usergroupid=="ADMIN"){
-        } else {
+        if(!["PCC", "ADMIN", "ROOT"].includes(wms_usergroupid)) {
             alertify.warning("Sorry, we could not process, this function is only for specific user group");
             return;
         }
@@ -1349,10 +1348,8 @@
                         }
                     }
                 }
-                function spl_e_delete(prow){
-                    if(wms_usergroupid=="PCC" || wms_usergroupid=="ADMIN"){
-
-                    } else {
+                function spl_e_delete(prow) {
+                    if(!["PCC", "ADMIN", "ROOT"].includes(wms_usergroupid)) {
                         alertify.warning("Sorry, we could not process, this function is only for specific user group");
                         return;
                     }
@@ -1363,7 +1360,7 @@
                     let tcell0 = prow.getElementsByTagName("td")[0];
                     let tcell3 = prow.getElementsByTagName("td")[4];
                     let tcell4 = prow.getElementsByTagName("td")[5];
-                    if(tcell4.innerText.charAt(0)!='n'){
+                    if(tcell4.innerText.charAt(0)!='n') {
                         let konf = confirm("Are you sure want to cancel kitting ["+ tcell0.innerText + "] ?");
                         if(konf){
                             $.ajax({
