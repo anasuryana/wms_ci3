@@ -14764,15 +14764,17 @@ class DELV extends CI_Controller
         }
 
         if ($Consign === 'IEI' && $CustomerSOCode != 'IEP001U') {
-            $EPROData = $this->getckData($doc);
-
-            foreach ($EPROData[1] as $r) {
-                if ($r['DLVQT'] != 0) {
-                    $respon = [
-                        'message' => 'Please check EPRO DO and Our DO',
-                    ];
-                    $this->output->set_status_header(409);
-                    die(json_encode($respon));
+            if($this->DELV_mod->check_Primary(['DLV_ID' => $doc, 'DLV_RMRK' => 'OFFLINE']) == 0 ) {
+                $EPROData = $this->getckData($doc);
+    
+                foreach ($EPROData[1] as $r) {
+                    if ($r['DLVQT'] != 0) {
+                        $respon = [
+                            'message' => 'Please check EPRO DO and Our DO',
+                        ];
+                        $this->output->set_status_header(409);
+                        die(json_encode($respon));
+                    }
                 }
             }
         }
