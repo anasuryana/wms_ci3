@@ -809,12 +809,14 @@
             let _itemBalQty = numeral(tableku2.rows[i].cells[2].innerText.trim()).value()
             let _itemQty = numeral(tableku2.rows[i].cells[3].innerText.trim()).value()
             let _reffDoc = tableku2.rows[i].cells[4].innerText.trim()
-            if(_itemQty > 0 && _itemQty<=_itemBalQty)
+            if(_itemQty<=_itemBalQty)
             {
-                ARItem.push(_itemCode)
-                ARItemName.push(tableku2.rows[i].cells[1].innerText.trim())
-                ARQty.push(_itemQty)
-                ARDocument.push(_reffDoc)
+                if(_itemQty > 0) {
+                    ARItem.push(_itemCode)
+                    ARItemName.push(tableku2.rows[i].cells[1].innerText.trim())
+                    ARQty.push(_itemQty)
+                    ARDocument.push(_reffDoc)
+                }
             } else {
                 alertify.message('please recheck the data')
                 return
