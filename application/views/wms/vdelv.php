@@ -6045,107 +6045,211 @@ echo $tohtml;
                 let myfrag = document.createDocumentFragment();                
 
                 if(response.data.status) {
-                    response.data.dataRespon.forEach((arrayItem, i) => {
-                        let _EleRow = document.createElement('div')
-                        _EleRow.classList.add('row')
-                        let _EleDot = document.createElement('div')
-                        _EleDot.classList.add('col-auto', 'text-center', 'flex-column', 'd-none', 'd-sm-flex')
-                        
-                        let strTemp = ''
-                        let strTemp0 = ''
-                        switch(i) {
-                            case 0:
-                                strTemp = 'border-end order';
-                                strTemp0 = ''
-                                break;
-                            case response.data.length-1:
-                                strTemp = '';
-                                strTemp0 = 'border-end'
-                                break;
-                            default:
-                                strTemp = 'border-end'
-                                strTemp0 = 'border-end'
-                        }
-
-                        let _EleDotRow1 = document.createElement('div')
-                        _EleDotRow1.classList.add('row' ,'h-50')
-                        let _EleDotRow1Col1 = document.createElement('div')
-                        _EleDotRow1Col1.classList.add('col')
-                        if(strTemp0) {
-                            _EleDotRow1Col1.classList.add(strTemp0)
-                        }
-
-                        _EleDotRow1Col1.innerHTML = '&nbsp;'
-                        let _EleDotRow1Col2 = document.createElement('div')
-                        _EleDotRow1Col2.classList.add('col')
-                        _EleDotRow1Col2.innerHTML = '&nbsp;'
-
-                        _EleDotRow1.appendChild(_EleDotRow1Col1)
-                        _EleDotRow1.appendChild(_EleDotRow1Col2)
-                        _EleDot.appendChild(_EleDotRow1)
-
-
-                        let _EleDotM = document.createElement('div')
-                        _EleDotM.classList.add('m-2')
-                        let _EleDotMSpan = document.createElement('span')
-                        _EleDotMSpan.classList.add('badge', 'rounded-pill' ,'bg-light', 'border')
-                        _EleDotMSpan.innerHTML = '&nbsp;'
-                        _EleDotM.appendChild(_EleDotMSpan)
-
-                        _EleDot.appendChild(_EleDotM)
-
-                        let _EleDotRow2 = document.createElement('div')
-                        
-                        
-                        _EleDotRow2.classList.add('row', 'h-50')
-                        _EleDotRow2.innerHTML = `<div class="col ${strTemp}">&nbsp;</div>
-                                        <div class="col">&nbsp;</div>`
-
-                        _EleDot.appendChild(_EleDotRow2)
-                        _EleRow.appendChild(_EleDot)
-
-                        let _EleCol = document.createElement('div')
-                        _EleCol.classList.add('col', 'py-2')
-
-                        let _EleColCard = document.createElement('div')
-                        _EleColCard.classList.add('card')
-                        let _EleColCardBody = document.createElement('div')
-                        _EleColCardBody.classList.add('card-body')
-                        let _EleColCardBodyFloat = document.createElement('div')
-                        _EleColCardBodyFloat.classList.add('float-end', 'text-muted')
-                        _EleColCardBodyFloat.innerHTML = arrayItem['tanggalRespon']
-
-                        let _EleColCardBodyTitle = document.createElement('h4')
-                        _EleColCardBodyTitle.classList.add('card-title', 'text-muted')
-                        _EleColCardBodyTitle.innerHTML = arrayItem['keterangan']
-
-                        let _EleColCardBodyText = document.createElement('p')
-                        _EleColCardBodyText.classList.add('card-title', 'text-muted')
-                        _EleColCardBodyText.innerHTML = arrayItem['nomorRespon']
-
-                        
-                        _EleColCardBody.appendChild(_EleColCardBodyFloat)
-                        _EleColCardBody.appendChild(_EleColCardBodyTitle)
-                        _EleColCardBody.appendChild(_EleColCardBodyText)
-                        if(arrayItem['keterangan'].includes('SPPB')) {
-                            let _EleColCardBodyButton = document.createElement('button')
-                            _EleColCardBodyButton.classList.add('btn', 'btn-primary', 'btn-sm')
-                            _EleColCardBodyButton.innerHTML = 'Select'
-                            _EleColCardBodyButton.onclick = function() {
-                                if(confirm('Are you sure ?')) {
-                                    txfg_txt_sppb27.value = arrayItem['nomorRespon']
-                                    TXFGOffcanvas27.hide()
-                                }
+                    if(response.data.dataRespon) {
+                        response.data.dataRespon.forEach((arrayItem, i) => {
+                            let _EleRow = document.createElement('div')
+                            _EleRow.classList.add('row')
+                            let _EleDot = document.createElement('div')
+                            _EleDot.classList.add('col-auto', 'text-center', 'flex-column', 'd-none', 'd-sm-flex')
+                            
+                            let strTemp = ''
+                            let strTemp0 = ''
+                            switch(i) {
+                                case 0:
+                                    strTemp = 'border-end order';
+                                    strTemp0 = ''
+                                    break;
+                                case response.data.length-1:
+                                    strTemp = '';
+                                    strTemp0 = 'border-end'
+                                    break;
+                                default:
+                                    strTemp = 'border-end'
+                                    strTemp0 = 'border-end'
                             }
-                            _EleColCardBody.appendChild(_EleColCardBodyButton)
-                        }
-                        _EleColCard.appendChild(_EleColCardBody)
-                        _EleCol.appendChild(_EleColCard)                        
-
-                        _EleRow.appendChild(_EleCol)
-
-                        myfrag.appendChild(_EleRow)
-                    });
+    
+                            let _EleDotRow1 = document.createElement('div')
+                            _EleDotRow1.classList.add('row' ,'h-50')
+                            let _EleDotRow1Col1 = document.createElement('div')
+                            _EleDotRow1Col1.classList.add('col')
+                            if(strTemp0) {
+                                _EleDotRow1Col1.classList.add(strTemp0)
+                            }
+    
+                            _EleDotRow1Col1.innerHTML = '&nbsp;'
+                            let _EleDotRow1Col2 = document.createElement('div')
+                            _EleDotRow1Col2.classList.add('col')
+                            _EleDotRow1Col2.innerHTML = '&nbsp;'
+    
+                            _EleDotRow1.appendChild(_EleDotRow1Col1)
+                            _EleDotRow1.appendChild(_EleDotRow1Col2)
+                            _EleDot.appendChild(_EleDotRow1)
+    
+    
+                            let _EleDotM = document.createElement('div')
+                            _EleDotM.classList.add('m-2')
+                            let _EleDotMSpan = document.createElement('span')
+                            _EleDotMSpan.classList.add('badge', 'rounded-pill' ,'bg-light', 'border')
+                            _EleDotMSpan.innerHTML = '&nbsp;'
+                            _EleDotM.appendChild(_EleDotMSpan)
+    
+                            _EleDot.appendChild(_EleDotM)
+    
+                            let _EleDotRow2 = document.createElement('div')
+                            
+                            
+                            _EleDotRow2.classList.add('row', 'h-50')
+                            _EleDotRow2.innerHTML = `<div class="col ${strTemp}">&nbsp;</div>
+                                            <div class="col">&nbsp;</div>`
+    
+                            _EleDot.appendChild(_EleDotRow2)
+                            _EleRow.appendChild(_EleDot)
+    
+                            let _EleCol = document.createElement('div')
+                            _EleCol.classList.add('col', 'py-2')
+    
+                            let _EleColCard = document.createElement('div')
+                            _EleColCard.classList.add('card')
+                            let _EleColCardBody = document.createElement('div')
+                            _EleColCardBody.classList.add('card-body')
+                            let _EleColCardBodyFloat = document.createElement('div')
+                            _EleColCardBodyFloat.classList.add('float-end', 'text-muted')
+                            _EleColCardBodyFloat.innerHTML = arrayItem['tanggalRespon']
+    
+                            let _EleColCardBodyTitle = document.createElement('h4')
+                            _EleColCardBodyTitle.classList.add('card-title', 'text-muted')
+                            _EleColCardBodyTitle.innerHTML = arrayItem['keterangan']
+    
+                            let _EleColCardBodyText = document.createElement('p')
+                            _EleColCardBodyText.classList.add('card-title', 'text-muted')
+                            _EleColCardBodyText.innerHTML = arrayItem['nomorRespon']
+    
+                            
+                            _EleColCardBody.appendChild(_EleColCardBodyFloat)
+                            _EleColCardBody.appendChild(_EleColCardBodyTitle)
+                            _EleColCardBody.appendChild(_EleColCardBodyText)
+                            if(arrayItem['keterangan'].includes('SPPB')) {
+                                let _EleColCardBodyButton = document.createElement('button')
+                                _EleColCardBodyButton.classList.add('btn', 'btn-primary', 'btn-sm')
+                                _EleColCardBodyButton.innerHTML = 'Select'
+                                _EleColCardBodyButton.onclick = function() {
+                                    if(confirm('Are you sure ?')) {
+                                        txfg_txt_sppb27.value = arrayItem['nomorRespon']
+                                        TXFGOffcanvas27.hide()
+                                    }
+                                }
+                                _EleColCardBody.appendChild(_EleColCardBodyButton)
+                            }
+                            _EleColCard.appendChild(_EleColCardBody)
+                            _EleCol.appendChild(_EleColCard)                        
+    
+                            _EleRow.appendChild(_EleCol)
+    
+                            myfrag.appendChild(_EleRow)
+                        });
+                    } else {
+                        response.data.data.forEach((arrayItem, i) => {
+                            let _EleRow = document.createElement('div')
+                            _EleRow.classList.add('row')
+                            let _EleDot = document.createElement('div')
+                            _EleDot.classList.add('col-auto', 'text-center', 'flex-column', 'd-none', 'd-sm-flex')
+                            
+                            let strTemp = ''
+                            let strTemp0 = ''
+                            switch(i) {
+                                case 0:
+                                    strTemp = 'border-end order';
+                                    strTemp0 = ''
+                                    break;
+                                case response.data.length-1:
+                                    strTemp = '';
+                                    strTemp0 = 'border-end'
+                                    break;
+                                default:
+                                    strTemp = 'border-end'
+                                    strTemp0 = 'border-end'
+                            }
+    
+                            let _EleDotRow1 = document.createElement('div')
+                            _EleDotRow1.classList.add('row' ,'h-50')
+                            let _EleDotRow1Col1 = document.createElement('div')
+                            _EleDotRow1Col1.classList.add('col')
+                            if(strTemp0) {
+                                _EleDotRow1Col1.classList.add(strTemp0)
+                            }
+    
+                            _EleDotRow1Col1.innerHTML = '&nbsp;'
+                            let _EleDotRow1Col2 = document.createElement('div')
+                            _EleDotRow1Col2.classList.add('col')
+                            _EleDotRow1Col2.innerHTML = '&nbsp;'
+    
+                            _EleDotRow1.appendChild(_EleDotRow1Col1)
+                            _EleDotRow1.appendChild(_EleDotRow1Col2)
+                            _EleDot.appendChild(_EleDotRow1)
+    
+    
+                            let _EleDotM = document.createElement('div')
+                            _EleDotM.classList.add('m-2')
+                            let _EleDotMSpan = document.createElement('span')
+                            _EleDotMSpan.classList.add('badge', 'rounded-pill' ,'bg-light', 'border')
+                            _EleDotMSpan.innerHTML = '&nbsp;'
+                            _EleDotM.appendChild(_EleDotMSpan)
+    
+                            _EleDot.appendChild(_EleDotM)
+    
+                            let _EleDotRow2 = document.createElement('div')
+                            
+                            
+                            _EleDotRow2.classList.add('row', 'h-50')
+                            _EleDotRow2.innerHTML = `<div class="col ${strTemp}">&nbsp;</div>
+                                            <div class="col">&nbsp;</div>`
+    
+                            _EleDot.appendChild(_EleDotRow2)
+                            _EleRow.appendChild(_EleDot)
+    
+                            let _EleCol = document.createElement('div')
+                            _EleCol.classList.add('col', 'py-2')
+    
+                            let _EleColCard = document.createElement('div')
+                            _EleColCard.classList.add('card')
+                            let _EleColCardBody = document.createElement('div')
+                            _EleColCardBody.classList.add('card-body')
+                            let _EleColCardBodyFloat = document.createElement('div')
+                            _EleColCardBodyFloat.classList.add('float-end', 'text-muted')
+                            _EleColCardBodyFloat.innerHTML = arrayItem['tanggalRespon']
+    
+                            let _EleColCardBodyTitle = document.createElement('h4')
+                            _EleColCardBodyTitle.classList.add('card-title', 'text-muted')
+                            _EleColCardBodyTitle.innerHTML = arrayItem['namaRespon']
+    
+                            let _EleColCardBodyText = document.createElement('p')
+                            _EleColCardBodyText.classList.add('card-title', 'text-muted')
+                            _EleColCardBodyText.innerHTML = arrayItem['nomorRespon']
+    
+                            
+                            _EleColCardBody.appendChild(_EleColCardBodyFloat)
+                            _EleColCardBody.appendChild(_EleColCardBodyTitle)
+                            _EleColCardBody.appendChild(_EleColCardBodyText)
+                            if(arrayItem['namaRespon'].includes('SPPB')) {
+                                let _EleColCardBodyButton = document.createElement('button')
+                                _EleColCardBodyButton.classList.add('btn', 'btn-primary', 'btn-sm')
+                                _EleColCardBodyButton.innerHTML = 'Select'
+                                _EleColCardBodyButton.onclick = function() {
+                                    if(confirm('Are you sure ?')) {
+                                        txfg_txt_sppb27.value = arrayItem['nomorRespon']
+                                        TXFGOffcanvas27.hide()
+                                    }
+                                }
+                                _EleColCardBody.appendChild(_EleColCardBodyButton)
+                            }
+                            _EleColCard.appendChild(_EleColCardBody)
+                            _EleCol.appendChild(_EleColCard)                        
+    
+                            _EleRow.appendChild(_EleCol)
+    
+                            myfrag.appendChild(_EleRow)
+                        });
+                    }
                     mydes.innerHTML = ''
                     mydes.appendChild(myfrag)
                 }
