@@ -2137,6 +2137,15 @@ class SER extends CI_Controller
             $pdf->Cell(51, 5, 'MODEL', 1, 0, 'C');
             $pdf->SetXY($th_x + 3, $th_y + 25);
             $pdf->SetFont('Tahoma', '', 8 + 3);
+            $ttlwidth = $pdf->GetStringWidth($cmitmd1);
+            if ($ttlwidth > 51) {
+                $ukuranfont = 7.5;
+                while ($ttlwidth > 51) {
+                    $pdf->SetFont('Arial', '', $ukuranfont);
+                    $ttlwidth = $pdf->GetStringWidth($cmitmd1);
+                    $ukuranfont = $ukuranfont - 0.5;
+                }
+            }
             $pdf->Cell(51, 5, $cmitmd1, 1, 0, 'C');
 
             $pdf->SetXY($th_x + 3, $th_y + 30);
