@@ -43,7 +43,7 @@ class Inventory_mod extends CI_Model {
     
 	public function selectAll_rm_group($pwhere)
 	{	        
-        $this->db->select("CPARTCODE,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOC,sum(CQTY) CQTY");
+        $this->db->select("RTRIM(CPARTCODE) CPARTCODE,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOC,sum(CQTY) CQTY");
         $this->db->from($this->TABLENAMERM." a");        
         $this->db->join('MITM_TBL c', 'CPARTCODE=MITM_ITMCD','left');
         $this->db->like($pwhere);
@@ -54,7 +54,7 @@ class Inventory_mod extends CI_Model {
     }
 	public function selectAll_rm_group_with_bisgrup($plike,$pbisgrup)
 	{	        
-        $this->db->select("CPARTCODE,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOC,sum(CQTY) CQTY");
+        $this->db->select("RTRIM(CPARTCODE) CPARTCODE,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOC,sum(CQTY) CQTY");
         $this->db->from($this->TABLENAMERM." a");        
         $this->db->join('MITM_TBL c', 'CPARTCODE=MITM_ITMCD','left');
         $this->db->join('ITMLOC_TBL d', 'CLOC=ITMLOC_LOC AND CPARTCODE=ITMLOC_ITM','left');
@@ -82,7 +82,7 @@ class Inventory_mod extends CI_Model {
 
 	public function selectAll_rm_rack_like_group($pitem, $plot, $prack)
 	{	        
-        $this->db->select("CPARTCODE,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOC,sum(CQTY) CQTY");
+        $this->db->select("RTRIM(CPARTCODE) CPARTCODE,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOC,sum(CQTY) CQTY");
         $this->db->from($this->TABLENAMERM." a");        
         $this->db->join('MITM_TBL c', 'CPARTCODE=MITM_ITMCD','left');
         $this->db->join('vinitlocation d', 'CLOC=MSTLOC_CD','left');
@@ -95,7 +95,7 @@ class Inventory_mod extends CI_Model {
     }
 	public function selectAll_rm_rack_like_group_with_bisgrup($pitem, $plot, $prack, $pbisgrup)
 	{	        
-        $this->db->select("CPARTCODE,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOC,sum(CQTY) CQTY");
+        $this->db->select("RTRIM(CPARTCODE) CPARTCODE,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOC,sum(CQTY) CQTY");
         $this->db->from($this->TABLENAMERM." a");        
         $this->db->join('MITM_TBL c', 'CPARTCODE=MITM_ITMCD','left');
         $this->db->join('ITMLOC_TBL d', 'CLOC=ITMLOC_LOC AND CPARTCODE=ITMLOC_ITM','left');
@@ -137,7 +137,7 @@ class Inventory_mod extends CI_Model {
     
 	public function selectAll_rm_like($plike)
 	{	        
-        $this->db->select("CPARTCODE,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOTNO,CLOC,CQTY,CDATE");
+        $this->db->select("RTRIM(CPARTCODE) CPARTCODE,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOTNO,CLOC,CQTY,CDATE");
         $this->db->from($this->TABLENAMERM." a");
         $this->db->join('MSTEMP_TBL b', 'cPic=MSTEMP_ID','left');
         $this->db->join('MITM_TBL c', 'CPARTCODE=MITM_ITMCD','left');
@@ -148,7 +148,7 @@ class Inventory_mod extends CI_Model {
     }
 	public function selectAll_rm_like_with_bisgrup($plike, $pbisgrup)
 	{	        
-        $this->db->select("CPARTCODE,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOTNO,CLOC,CQTY,CDATE");
+        $this->db->select("RTRIM(CPARTCODE) CPARTCODE,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOTNO,CLOC,CQTY,CDATE");
         $this->db->from($this->TABLENAMERM." a");
         $this->db->join('MSTEMP_TBL b', 'cPic=MSTEMP_ID','left');
         $this->db->join('MITM_TBL c', 'CPARTCODE=MITM_ITMCD','left');
@@ -161,7 +161,7 @@ class Inventory_mod extends CI_Model {
     }
 	public function selectAll_rm_rack_like($pitem, $plot, $prack)
 	{	        
-        $this->db->select("CPARTCODE,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOTNO,CLOC,CQTY,CDATE");
+        $this->db->select("RTRIM(CPARTCODE) CPARTCODE,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOTNO,CLOC,CQTY,CDATE");
         $this->db->from($this->TABLENAMERM." a");
         $this->db->join('MSTEMP_TBL b', 'cPic=MSTEMP_ID','left');
         $this->db->join('MITM_TBL c', 'CPARTCODE=MITM_ITMCD','left');
@@ -173,7 +173,7 @@ class Inventory_mod extends CI_Model {
     }
 	public function selectAll_rm_rack_like_with_bisgrup($pitem, $plot, $prack, $pbisgrup)
 	{	        
-        $this->db->select("CPARTCODE,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOTNO,CLOC,CQTY,CDATE");
+        $this->db->select("RTRIM(CPARTCODE) CPARTCODE,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,RTRIM(MITM_SPTNO) MITM_SPTNO,CLOTNO,CLOC,CQTY,CDATE");
         $this->db->from($this->TABLENAMERM." a");
         $this->db->join('MSTEMP_TBL b', 'cPic=MSTEMP_ID','left');
         $this->db->join('MITM_TBL c', 'CPARTCODE=MITM_ITMCD','left');
