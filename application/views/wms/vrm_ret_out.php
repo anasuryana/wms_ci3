@@ -5575,7 +5575,7 @@ echo $tohtml;
             let _KodeBarang = arrayItem[2].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
             Qty.push(arrayItem[3])
             let _Satuan = arrayItem[4].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
-            BeratBersih.push(arrayItem[5])
+            BeratBersih.push(numeral(arrayItem[5]).value())
             let _BCType = arrayItem[6].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
             let _NomorAju = arrayItem[7].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
             let _NomorPendaftaran = arrayItem[8].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
