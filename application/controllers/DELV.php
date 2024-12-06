@@ -8432,6 +8432,7 @@ class DELV extends CI_Controller
             }
 
             if (count($listNeedExBC)) {
+                $this->set_log_finish_posting($csj);
                 $this->inventory_cancelDO($csj);
                 $myar = ['cd' => 110, 'msg' => 'EX-BC for ' . count($listNeedExBC) . ' item(s) is not found. ', "doctype" => $czdocbctype];
                 return ["status" => $myar,
@@ -17524,7 +17525,7 @@ class DELV extends CI_Controller
         ];
         $fields_string = http_build_query($fields);
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8080/api_inventory/api/inventory/getStockBCArray');
+        curl_setopt($ch, CURLOPT_URL, $_ENV['APP_INTERNAL2_API'] . 'inventory/getStockBCArray');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
