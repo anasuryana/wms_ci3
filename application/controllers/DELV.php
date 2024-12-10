@@ -13410,6 +13410,11 @@ class DELV extends CI_Controller
         $this->load->view('wms_report/vrpt_pab_out', $data);
     }
 
+    public function vgate_out()
+    {
+        $this->load->view('wms/vgate_out');
+    }
+
     public function pab_out()
     {
         header('Content-Type: application/json');
