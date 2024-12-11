@@ -136,7 +136,7 @@ class SERRC_mod extends CI_Model
         ,MAX(STKTRND1H_BSGRP) MBSG_BSGRP,RTRIM(MAX(STKTRND1H_LOCCDTO)) STKTRND1_LOCCDFR");
         $this->db->from($this->TABLENAME . ' a');
         $this->db->join("SER_TBL", "SERRC_SER=SER_ID");
-        $this->db->join("(select MAX(STKTRND1H_BSGRP) STKTRND1H_BSGRP,MAX(STKTRND1H_LOCCDTO) STKTRND1H_LOCCDTO,STKTRND1H_DOCNO FROM XSTKTRND1H GROUP BY STKTRND1H_DOCNO) V", "SER_DOC=STKTRND1H_DOCNO", "LEFT");
+        $this->db->join("(select MAX(MBSG_BSGRP) STKTRND1H_BSGRP,MAX(STKTRND1_LOCCDFR) STKTRND1H_LOCCDTO,STKTRND1_DOCNO STKTRND1H_DOCNO FROM XVU_RTNX GROUP BY STKTRND1_DOCNO) V", "SER_DOC=STKTRND1H_DOCNO", "LEFT");
         $this->db->where($pwhere);
         $query = $this->db->get();
         return $query->result_array();
