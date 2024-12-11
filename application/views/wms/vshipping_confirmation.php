@@ -94,7 +94,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="si_conf_btn_confirm_on_click(this)">Save</button>
+        <button type="button" class="btn btn-primary" id="si_conf_btn_confirm" onclick="si_conf_btn_confirm_on_click(this)">Save</button>
       </div>
     </div>
   </div>
@@ -155,6 +155,7 @@
         }
 
         si_conf_get_resume(event.data.DLV_ID)
+        si_conf_btn_confirm.disabled = false
     }
 
     function si_conf_btn_sync_e_click(){
