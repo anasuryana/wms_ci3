@@ -5573,7 +5573,7 @@ echo $tohtml;
         dataList.forEach((arrayItem) => {
             let _NamaBarang = arrayItem[1].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
             let _KodeBarang = arrayItem[2].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
-            Qty.push(arrayItem[3])
+            Qty.push(numeral(arrayItem[3]).value())
             let _Satuan = arrayItem[4].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
             BeratBersih.push(numeral(arrayItem[5]).value())
             let _BCType = arrayItem[6].trim().replace(/[\u0000-\u0008,\u000A-\u001F,\u007F-\u00A0]+/g, "")
