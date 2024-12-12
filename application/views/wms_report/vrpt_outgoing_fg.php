@@ -57,7 +57,7 @@ echo $todis;
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 mb-1">
+            <div class="col-md-7 mb-1">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text" >Search by</span>
                     <select class="form-select" id="routgoing_wh_seachby">
@@ -70,10 +70,23 @@ echo $todis;
                     <input type="text" class="form-control" id="routgoing_wh_txt_assy">
                 </div>
             </div>
-            <div class="col-md-6 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-primary" type="button" id="routgoing_wh_btn_gen" onclick="routgoing_wh_btn_gen_e_click(this)">Search</button>
                     <button class="btn btn-success" title="export to spreadsheet file" type="button" id="routgoing_wh_btn_spreadsheet" onclick="routgoing_wh_btn_spreadsheet_e_click(this)"><span class="fas fa-file-excel"></span> </button>
+                </div>
+            </div>
+            <div class="col-md-2 mb-1 text-end">
+                <div class="btn-group btn-group-sm">
+                    <div class="btn-group btn-group-sm dropend" role="group">
+                        <button title="Another Report" class="btn btn-outline-primary dropdown-toggle" type="button" id="txfg_btn_export" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-file-export"></i></button>
+                        <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                            <li>
+                                <h6 class="dropdown-header">Miscellaneous</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="#" id="routgoing_wh_btn_torgate_out" onclick="routgoing_wh_btn_torgate_out_e_click()"><i class="fas fa-file-excel text-success"></i> Gate out</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -390,6 +403,37 @@ echo $todis;
                         } else {
                             p.innerHTML = '<span class="fas fa-file-excel"></span>'
                             p.disabled = false
+                            xhr.responseType = "text";
+                        }
+                    }
+                }
+                return xhr
+            },
+        })
+    }
+
+    function routgoing_wh_btn_torgate_out_e_click() {
+        routgoing_wh_btn_torgate_out.classList.add('disabled')
+        $.ajax({
+            type: "GET",
+            url: `<?=$_ENV['APP_INTERNAL_API']?>report/gate-out`,
+            data: { dateFrom : routgoing_wh_txt_dt.value , dateTo:routgoing_wh_txt_dt2.value },
+            success: function (response) {
+                let waktuSekarang = moment().format('YYYY MMM DD, h_mm')
+                const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                const fileName = `gate-out from ${routgoing_wh_txt_dt.value} to ${routgoing_wh_txt_dt2.value}.xlsx`
+                saveAs(blob, fileName)
+
+                alertify.success('Done')
+            },
+            xhr: function () {
+                const xhr = new XMLHttpRequest()
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 2) {
+                        routgoing_wh_btn_torgate_out.classList.remove('disabled')
+                        if (xhr.status == 200) {
+                            xhr.responseType = "blob";
+                        } else {
                             xhr.responseType = "text";
                         }
                     }
