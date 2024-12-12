@@ -127,17 +127,13 @@
         if(confirm("Are you sure ?")) {
             pThis.disabled = true
             $.ajax({
-                type: "get",
-                url: `<?=base_url('DELV/confirm_delivery')?>`,
-                data: {indo: inputTXID.value, DLVH_TRANS : finalPlatNo },
+                type: "PUT",
+                url: `<?=$_ENV['APP_INTERNAL_API']?>delivery/vehicle/${btoa(doc)}`,
+                data: {DLVH_TRANS : finalPlatNo, user_id: uidnya },
                 dataType: "json",
                 success: function (response) {
-                    if(response.status[0].cd==1){
-                        alertify.success(response.status[0].msg);
-                        si_conf_btn_sync_e_click();
-                    } else {
-                        alertify.message(response.status[0].msg);
-                    }
+                    alertify.success(response.message);
+                    si_conf_btn_sync_e_click();
                 }, error: function(xhr, xopt, xthrow) {
                     pThis.disabled = false
                     alertify.error(xhr.responseJSON.message);
