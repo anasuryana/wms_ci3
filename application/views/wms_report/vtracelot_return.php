@@ -82,6 +82,7 @@
                                 <th>QTY</th>
                                 <th>Time</th>
                                 <th>Unique Code</th>
+                                <th>Item Value</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -181,6 +182,10 @@
                         newcell = newrow.insertCell(9);
                         newcell.classList.add('text-center')
                         newcell.innerHTML = response.data[i].RETSCN_UNIQUEKEY ?? ''
+
+                        newcell = newrow.insertCell(-1);
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = response.data[i].item_value ?? ''
                     }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);

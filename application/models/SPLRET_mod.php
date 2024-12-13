@@ -253,7 +253,9 @@ class SPLRET_mod extends CI_Model {
 
     public function selectby_filter_like($pwhere){	
         $this->db->limit(2500);
-        $this->db->from($this->TABLENAME);        
+        $this->db->select("RETSCN_TBL.*, item_value");
+        $this->db->from($this->TABLENAME); 
+        $this->db->join("raw_material_labels", "isnull(RETSCN_UNIQUEKEY,'')=code", 'left');       
         $this->db->like($pwhere);
         $this->db->order_by('RETSCN_LUPDT DESC,RETSCN_SPLDOC ASC, RETSCN_CAT ASC, RETSCN_LINE ASC, RETSCN_FEDR ASC, RETSCN_ORDERNO ASC , RETSCN_ITMCD ASC');
 		$query = $this->db->get();
@@ -262,7 +264,9 @@ class SPLRET_mod extends CI_Model {
 
     public function selectby_filter_like_with_period($pwhere, $dateFrom, $dateTo){	
         $this->db->limit(2500);
+        $this->db->select("V_RETSCN_TBLC.*, item_value");
         $this->db->from("V_RETSCN_TBLC");
+        $this->db->join("raw_material_labels", "isnull(RETSCN_UNIQUEKEY,'')=code", 'left');
         $this->db->like($pwhere);
         $this->db->where('RETSCN_DATE >=', $dateFrom);
         $this->db->where('RETSCN_DATE <=', $dateTo);
