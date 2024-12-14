@@ -345,7 +345,9 @@ echo $todis;
                             $.ajax({
                                 type: "DELETE",
                                 url: "<?=$_ENV['APP_INTERNAL_API']?>delivery/checking",
-                                data: {doc : data.doc, id: response.data[i].SER_ID, itemCode : response.data[i].SER_ITMID},
+                                data: {doc : data.doc, id: response.data[i].SER_ID, itemCode : response.data[i].SER_ITMID,
+                                    user_id: uidnya
+                                },
                                 dataType: "json",
                                 success: function (response) {
                                     alertify.message(response.message);
