@@ -564,7 +564,7 @@ class DELV extends CI_Controller
     public function create_confirmation()
     {
         $rs = $this->DELV_mod->select_unconfirmed();
-        $rsTrans = $this->Trans_mod->selectall();
+        $rsTrans = $this->Trans_mod->selectallActive();
         $strtemp = $strTrans = '';
         foreach ($rs as $r) {
             $strtemp .= "<tr>" .

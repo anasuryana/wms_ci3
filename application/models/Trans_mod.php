@@ -32,7 +32,14 @@ class Trans_mod extends CI_Model {
     }
 
     public function selectall(){
-        $this->db->from($this->TABLENAME);        
+        $this->db->from($this->TABLENAME);    
+		$query = $this->db->get();
+		return $query->result();
+    }
+
+    public function selectallActive(){
+        $this->db->from($this->TABLENAME);    
+        $this->db->where('deleted_at is null', null, false);    
 		$query = $this->db->get();
 		return $query->result();
     }
