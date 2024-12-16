@@ -13412,7 +13412,13 @@ class DELV extends CI_Controller
 
     public function vgate_out()
     {
-        $this->load->view('wms/vgate_out');
+        $rsTrans = $this->Trans_mod->selectallActive();
+        $strTrans = '';
+        foreach ($rsTrans as $r) {
+            $strTrans .= "<option value='" . $r->MSTTRANS_ID . "'>" . $r->MSTTRANS_ID . "</option>";
+        }
+        $data['ltrans'] = $strTrans;
+        $this->load->view('wms/vgate_out', $data);
     }
 
     public function pab_out()
