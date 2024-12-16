@@ -20,7 +20,7 @@ class Trans extends CI_Controller {
     
     public function getall(){
         header('Content-Type: application/json');
-		$rs 	= $this->Trans_mod->selectall();
+		$rs 	= $this->Trans_mod->selectallActive();
 		echo '{"data":';
 		echo json_encode($rs);
 		echo '}';
