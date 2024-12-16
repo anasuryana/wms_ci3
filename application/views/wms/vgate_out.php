@@ -28,7 +28,7 @@
         </div>
         <div class="row">
             <div class="col-md-6 mb-1 text-end">
-                <button class="btn btn-sm btn-outline-primary" id="go_conf_btn_confirm" onclick="go_conf_btn_confirm_e_click(this)">Confirm</button>
+                <button class="btn btn-sm btn-primary" id="go_conf_btn_confirm" onclick="go_conf_btn_confirm_e_click(this)">Confirm</button>
             </div>
         </div>
         <div class="row">
@@ -39,6 +39,7 @@
                             <tr>
                                 <th class="text-center">TX ID</th>
                                 <th class="text-center">Consignee</th>
+                                <th class="text-center">...</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,9 +50,60 @@
         </div>
 	</div>
 </div>
+
+<div class="modal fade" id="go_wh_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Edit Vehicle Registration Number</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text" >TX ID</span>
+                        <input type="text" class="form-control" id="go_wh_txt_tx_id" disabled>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text" >Consignee</span>
+                        <input type="text" class="form-control" id="go_wh_txt_consignee" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text" >From</span>
+                        <input type="text" class="form-control" id="go_wh_txt_old_vn" disabled>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text" >To</span>
+                        <select class="form-control" id="go_wh_txt_new_vn">
+                            <option value="-">-</option>
+                            <?=$ltrans?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="go_conf_btn_confirm_on_click(this)">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
 
 function go_conf_btn_sync_e_click() {
+    let mtabel = document.getElementById("go_conf_tbl");
+    mtabel.getElementsByTagName("tbody")[0].innerHTML = '<tr><td class="text-center" colspan=3>-</td></tr>'
     go_conf_btn_sync.disabled = true
     go_platNomor.innerHTML = `<option value="-">Please wait</option>`
     $.ajax({
@@ -80,7 +132,7 @@ go_conf_btn_sync_e_click()
 
 function go_platNomor_e_change() {
     let mtabel = document.getElementById("go_conf_tbl");
-    mtabel.getElementsByTagName("tbody")[0].innerHTML = '<tr><td class="text-center" colspan=4>Please wait</td></tr>'
+    mtabel.getElementsByTagName("tbody")[0].innerHTML = '<tr><td class="text-center" colspan=3>Please wait</td></tr>'
     $.ajax({
         type: "get",
         url: `<?=$_ENV['APP_INTERNAL_API']?>delivery/gate-out/${btoa(go_platNomor.value)}`,
@@ -103,13 +155,24 @@ function go_platNomor_e_change() {
                 newcell = newrow.insertCell(-1);
                 newcell.innerText = arrayItem['PLANT']
                 newcell.classList.add('text-center')
+                newcell = newrow.insertCell(-1);
+                newcell.title = 'Edit'
+                newcell.style.cssText = 'cursor:pointer'
+                newcell.innerHTML = `<span class="badge bg-warning"><strong>Edit</strong></span>`
+                newcell.classList.add('text-center')
+                newcell.onclick = function() {
+                    go_wh_txt_tx_id.value = arrayItem['DLV_ID']
+                    go_wh_txt_consignee.value = arrayItem['PLANT']
+                    go_wh_txt_old_vn.value = go_platNomor.value
+                    $("#go_wh_modal").modal('show')
+                }
             })
             mydes.innerHTML='';
             mydes.appendChild(myfrag);
             go_driver_name.focus()
         }, error: function(xhr, xopt, xthrow){
             alertify.error(xthrow);
-            mtabel.getElementsByTagName("tbody")[0].innerHTML = '<tr><td class="text-center" colspan=4>-</td></tr>'
+            mtabel.getElementsByTagName("tbody")[0].innerHTML = '<tr><td class="text-center" colspan=3>-</td></tr>'
         }
     });
 }
@@ -147,6 +210,36 @@ function go_conf_btn_confirm_e_click(pThis) {
             pThis.disabled = false
             alertify.success(response.message)
         }, error: function(xhr, xopt, xthrow){
+            pThis.disabled = false
+            alertify.error(xhr.responseJSON.message);
+        }
+    });
+}
+
+
+function go_conf_btn_confirm_on_click(pThis) {
+    if(go_wh_txt_new_vn.value === '-') {
+        alertify.warning('New Vehicle Registration Number is required')
+        go_wh_txt_new_vn.focus()
+        return
+    }
+
+    let doc = go_wh_txt_tx_id.value
+    let finalPlatNo = go_wh_txt_new_vn.value
+
+    pThis.disabled = true
+    $.ajax({
+        type: "PUT",
+        url: `<?=$_ENV['APP_INTERNAL_API']?>delivery/vehicle/${btoa(doc)}`,
+        data: {DLVH_TRANS : finalPlatNo, user_id: uidnya },
+        dataType: "json",
+        success: function (response) {
+            pThis.disabled = false
+            alertify.success(response.message);
+            go_platNomor_e_change();
+            $("#go_wh_modal").modal('hide')
+        }, error: function(xhr, xopt, xthrow) {
+            $("#go_wh_modal").modal('hide')
             pThis.disabled = false
             alertify.error(xhr.responseJSON.message);
         }
