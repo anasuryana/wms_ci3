@@ -60,6 +60,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link rounded-5" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-chart-gantt"></i> Production Plan</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-5" id="keikaku_downtime-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_downtime" type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-down-long text-warning"></i> Down Time</button>
+                </li>
             </ul>
                 <div class="tab-content" id="keikaku_myTabContent">
                     <div class="tab-pane fade" id="keikaku_tab_asprova" role="tabpanel">
@@ -158,13 +161,32 @@
                             <div class="col-md-6 mb-1 text-end">
                                 <div class="btn-group btn-group-sm">
                                     <button class="btn btn-outline-primary" id="keikaku_btn_run_prodplan" title="Run formula" onclick="keikaku_btn_run_prodplan_eC(this)">Run</button>
-                                    
+
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12 mb-1 table-responsive" id="keikakuProdplanContainer">
                                 <div id="keikaku_prodplan_spreadsheet" style="font-size:75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade p-1" id="keikaku_tab_downtime" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="input-group input-group-sm mb-1">
+                                    <label class="input-group-text">Shift</label>
+                                    <select class="form-select" id="keikaku_shift_input">
+                                        <option value="M">Morning</option>
+                                        <option value="N">Night</option>
+                                    </select>
+                                    <button class="btn btn-primary" id="keikaku_btn_save_downtime" title="Save" onclick="keikaku_btn_save_downtime_eC(this)"><i class="fas fa-save"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-1 table-responsive">
+                                <div id="keikaku_downtime_spreadsheet"></div>
                             </div>
                         </div>
                     </div>
@@ -265,7 +287,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        
+
       </div>
     </div>
   </div>
@@ -1495,7 +1517,7 @@
             dataType: "json",
             success: function (response) {
                 pThis.disabled = false
-                
+
                 _temp_asProdpan = response.asProdplan
 
                 // populate filter data
@@ -1517,7 +1539,7 @@
                         _EleInput.checked = true
 
                         let _concatedColumn = currentValue[5].split('#')
-    
+
                         newrow = tableku2.insertRow(-1);
                         newcell = newrow.insertCell(0);
                         newcell.classList.add('text-center')
@@ -1526,11 +1548,11 @@
                         newcell = newrow.insertCell(-1);
                         newcell.classList.add('text-center')
                         newcell.innerText = _concatedColumn[0]
-    
+
                         newcell = newrow.insertCell(-1);
                         newcell.classList.add('text-center')
                         newcell.innerText = currentValue[3]
-                        
+
                         newcell = newrow.insertCell(-1);
                         newcell.classList.add('text-center')
                         newcell.innerText = _concatedColumn[1]
@@ -1563,7 +1585,7 @@
         const totalRowsMatrix = data.length
         const totalRowsSensor = dataS.length
 
-                
+
         let nomorUrut = 1;
         for(let i=3; i<totalRowsMatrix; i++) {
             let _newRow1 = []
@@ -1575,7 +1597,7 @@
             let _newRow7 = []
             let _newRow8 = []
             if (data[i][0]) {
-                
+
                 const _tempA = data[i][5].split('#')
                 const _model = _tempA[1]
                 const _wo_no = _tempA[2]
@@ -1661,8 +1683,8 @@
                     }
                 }
                 inputSS.push(_newRow5)
-                inputSS.push(_newRow6)               
-                              
+                inputSS.push(_newRow6)
+
             } else {
 
                 let ChangeModelLabel = ''
@@ -1735,7 +1757,149 @@
                 window.open(endPoint)
             }
         }
-    }    
+    }
 
-    
+    var keikaku_downtime_sso = jspreadsheet(keikaku_downtime_spreadsheet, {
+        data : [
+            ['19', '7', '', '', '', '', '', '', '', ''],
+            ['20', '8', '', '', '', '', '', '', '', ''],
+            ['21', '9', '', '', '', '', '', '', '', ''],
+            ['22', '10', '', '', '', '', '', '', '', ''],
+            ['23', '11', '', '', '', '', '', '', '', ''],
+            ['0', '12', '', '', '', '', '', '', '', ''],
+            ['1', '13', '', '', '', '', '', '', '', ''],
+            ['2', '14', '', '', '', '', '', '', '', ''],
+            ['3', '15', '', '', '', '', '', '', '', ''],
+            ['4', '16', '', '', '', '', '', '', '', ''],
+            ['5', '17', '', '', '', '', '', '', '', ''],
+            ['6', '18', '', '', '', '', '', '', '', ''],
+            ['7', '19', '', '', '', '', '', '', '', ''],
+        ],
+        columns : [
+            {
+                title : '_',
+                type : 'text',
+                readOnly : true,
+            },
+            {
+                title : '_',
+                type : 'text',
+                readOnly : true,
+            },
+            {
+                title : 'Duration',
+                type : 'numeric',
+                width:65,
+                mask: '#,##.00',
+            },
+            {
+                title : 'Remark',
+                type : 'text',
+                width:150,
+            },
+            {
+                title : 'Duration',
+                type : 'numeric',
+                width:65,
+                mask: '#,##.00',
+            },
+            {
+                title : 'Remark',
+                type : 'text',
+                width:150,
+            },
+            {
+                title : 'Duration',
+                type : 'numeric',
+                width:65,
+                mask: '#,##.00',
+            },
+            {
+                title : 'Remark',
+                type : 'text',
+                width:150,
+            },
+            {
+                title : 'Duration',
+                type : 'numeric',
+                width:65,
+                mask: '#,##.00',
+            },
+            {
+                title : 'Remark',
+                type : 'text',
+                width:150,
+            },
+            {
+                title : 'Duration',
+                type : 'numeric',
+                width:65,
+                mask: '#,##.00',
+            },
+            {
+                title : 'Duration',
+                type : 'numeric',
+                width:65,
+                mask: '#,##.00',
+            },
+            {
+                title : 'Duration',
+                type : 'numeric',
+                width:65,
+                mask: '#,##.00',
+            },
+        ],
+        allowInsertColumn : false,
+        allowDeleteColumn : false,
+        allowRenameColumn : false,
+        allowDeleteRow : false,
+        rowDrag:false,
+
+        nestedHeaders : [
+            [
+                {
+                    title : 'Jam',
+                    colspan : '1',
+                },
+                {
+                    title : '_',
+                    colspan : '1'
+                },
+                {
+                    title : 'M/C Trouble',
+                    colspan : '2',
+                },
+                {
+                    title : 'Change model',
+                    colspan : '2',
+                },
+                {
+                    title : '4M (New model )',
+                    colspan : '2',
+                },
+                {
+                    title : 'Other',
+                    colspan : '2',
+                },
+                {
+                    title : 'Maintenance',
+                    colspan : '1',
+                },
+                {
+                    title : 'Not Production 15 minutes',
+                    colspan : '1',
+                },
+                {
+                    title : 'Not Production No Plan',
+                    colspan : '1',
+                },
+            ],
+        ]
+    })
+
+    function keikaku_btn_save_downtime_eC() {
+        alertify.message('this function is not ready')
+    }
+
+
 </script>
