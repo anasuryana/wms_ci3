@@ -16442,9 +16442,12 @@ class DELV extends CI_Controller
             $IncDateListDistinct = [];
             $IncCRListDistinct = [];
 
-            if ($isScrapItem) {
+            $rs_xbc = $this->DLVSCR_BB_mod->select_where(['DLVSCR_BB_TXID' => $doc]);
+            if(!empty($rs_xbc)) {
+                $isScrapItem = true;
+            }
 
-                $rs_xbc = $this->DLVSCR_BB_mod->select_where(['DLVSCR_BB_TXID' => $doc]);
+            if ($isScrapItem) {                
                 $Barang = $this->DLVSCR_mod->select_where([
                     'RTRIM(MITM_ITMCD) MITM_ITMCD',
                     'RTRIM(MITM_ITMD1) MITM_ITMD1',
