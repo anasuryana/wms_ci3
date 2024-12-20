@@ -88,10 +88,19 @@
             </div>
         </div>
         <div class="row" id="simvsstock_stack3">
-            <div class="col-md-12 mb-1 text-center">
+            
+            <div class="col-md-6 mb-1 text-center">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-primary" type="button" id="simvsstock_btn_simulate" onclick="simvsstock_btn_simulate_e_click()">Process</button>
                     <button class="btn btn-outline-primary" title="Copy to clipboard" type="button" id="simvsstock_btn_copy" onclick="simvsstock_btn_copy_e_click()"><i class="fas fa-clipboard"></i></button>
+                </div>
+            </div>
+            <div class="col-md-6 mb-1">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="simvsstock_filter">
+                    <label class="form-check-label" for="simvsstock_filter">
+                        Show Shortage only
+                    </label>
                 </div>
             </div>
         </div>
@@ -165,7 +174,10 @@
             $.ajax({
                 type: "post",
                 url: "<?=base_url('SPL/simulate_sim_vs_stock')?>",
-                data: {insimno: simvsstock_a_simno, tab: simvsstock_selected_Tab, assycode: txtassycode.value.trim(), qty: txtassycodeQty.value},
+                data: {insimno: simvsstock_a_simno, tab: simvsstock_selected_Tab, assycode: txtassycode.value.trim(), 
+                    qty: txtassycodeQty.value,
+                    filter : document.getElementById('simvsstock_filter').checked ? 'shortage' : 'all'
+                },
                 dataType: "json",
                 success: function (response) {
                     document.getElementById('simvsstock_btn_simulate').innerText = "Process";
