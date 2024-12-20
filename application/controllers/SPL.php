@@ -354,6 +354,7 @@ class SPL extends CI_Controller
         $tab = $this->input->post('tab');
         $assycode = $this->input->post('assycode');
         $qty = $this->input->post('qty');
+        $filter = $this->input->post('filter');
         $rs = [];
         $myar = [];
         $flag = 1;
@@ -456,10 +457,24 @@ class SPL extends CI_Controller
                     }
                 }
             }
-
         }
-        die(json_encode(['data' => $rs, 'status' => $myar, 'flag' => $flag,
-        ]));
+
+        $filteredRS = [];
+        if($filter=='shortage') {
+            foreach($rs as $r) {
+                if($r['REQQTY'] > $r['PLOTQTY']) {
+                    $filteredRS[] = $r;
+                }
+            }
+        }
+
+        die(
+            json_encode([
+                'data' => $filter=='shortage' ? $filteredRS : $rs, 
+                'status' => $myar, 
+                'flag' => $flag,
+            ])
+        );
     }
 
     public function _isUnique($stacks, $part1, $part2)
