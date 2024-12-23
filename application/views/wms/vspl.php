@@ -175,6 +175,74 @@
                     </div>
                 </div>
             </div>
+             <!-- offCanvas lot -->
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="sploffcanvasLot" aria-labelledby="offcanvasBottomLabel">
+                <div class="offcanvas-header bg-warning shadow">
+                    <h5 class="offcanvas-title" id="offcanvasBottomLabel">Edit Lot Number</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body small">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12 text-center" id="spl-div-alert-lot">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-1">
+                                <label for="spltxtcurrentLot" class="form-label">Lot Before</label>
+                                <input type="text" class="form-control" id="spltxtcurrentLot" disabled>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-1">
+                                <label for="spltxtcurrentQtyLot" class="form-label">Qty Before</label>
+                                <input type="text" class="form-control" id="spltxtcurrentQtyLot" disabled>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="txtnewtLot" class="form-label">After</label>
+                                <input type="text" class="form-control" id="txtnewtLot" onkeypress="txtnewtLotOnKeypress(event)" maxlength="150" title="Fill with unique code or QR Content">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive" id="spl_editlot_divku">
+                                    <table id="spl_editlot_tbl" class="table table-sm table-striped table-hover table-bordered">
+                                        <thead class="table-light text-center">
+                                            <tr>
+                                                <th>UC</th>
+                                                <th>New Lot</th>
+                                                <th>Qty</th>
+                                                <th>...</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="4">Empty</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="2" class="text-end"><strong>Total</strong></td>
+                                                <td id="spl_editlot_tbl_total" class="text-end"></td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="spltxtLineIDLot">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <button title="Save changes" type="button" class="btn btn-outline-primary" id="psn_btn_save_changes_lot" onclick="psn_btn_save_changes_lot_eclick(this)"><i class="fas fa-save"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col">
@@ -1036,12 +1104,12 @@
                 $.ajax({
                     type: "post",
                     url: "<?=base_url('SPL/scn_set')?>",
-                    data: {inpsn: mpsn, incat: mcat, 
-                        inline: mline, 
-                        infr: mfedr, 
-                        incode : mitemcd, 
-                        inqty: mqty, 
-                        inlot:mlot, 
+                    data: {inpsn: mpsn, incat: mcat,
+                        inline: mline,
+                        infr: mfedr,
+                        incode : mitemcd,
+                        inqty: mqty,
+                        inlot:mlot,
                         inorder: morder,
                         inMC: spl_mc,
                         inProcess : spl_mod_procd_selection.value},
@@ -1244,7 +1312,7 @@
             alertify.warning('should not be empty');
         }
     }
-    
+
     Inputmask({
         'alias': 'decimal',
         'groupSeparator': ',',
@@ -1255,7 +1323,11 @@
         txtnewtQty.focus()
         txtnewtQty.select()
     })
-        
+    var splbsOffcanvasLot = new bootstrap.Offcanvas('#sploffcanvasLot')
+    sploffcanvasLot.addEventListener('shown.bs.offcanvas', event => {
+        spl_editlot_tbl.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4">Empty</td></tr>'
+    })
+
     function getdetailissue(pitem,purut){
         let mpsn = $("#psn_txt_psn").val();
         let mcat = $("#psn_txt_cat").val();
@@ -1311,8 +1383,14 @@
 
                     newcell = newrow.insertCell(-1);
                     newcell.innerHTML = response.data[i].SPLSCN_LOTNO
-                    newcell.style.cssText = 'text-align: center';
-                    newcell = newrow.insertCell(-1);                    
+                    newcell.style.cssText = 'text-align: center;cursor:pointer';
+                    newcell.onclick = function() {
+                        spltxtcurrentLot.value = response.data[i].SPLSCN_LOTNO
+                        spltxtcurrentQtyLot.value = numeral(response.data[i].SPLSCN_QTY).format(',')
+                        splbsOffcanvasLot.show()
+                    }
+
+                    newcell = newrow.insertCell(-1);
                     newcell.innerHTML = response.data[i].SPLSCN_LUPDT
                     newcell = newrow.insertCell(-1);
                     newcell.innerHTML = msts
@@ -1760,7 +1838,7 @@
                 p.innerHTML = `<i class="fas fa-save"></i>`
                 p.disabled = false
                 div_alert.innerHTML = ''
-                alertify.success(response.message)                
+                alertify.success(response.message)
                 splbsOffcanvas.hide()
                 psn_getdata();
                 getdetailissue(spl_txtsel_Item.value, spl_txtsel_urut.value);
@@ -1777,12 +1855,108 @@
                 ${msg}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>`
-            
+
             }
         });
     }
 
     function spl_mod_procd_btn_ok_e_click(p) {
         $("#SPL_MOD_PROCD").modal('hide')
+    }
+
+    function psn_btn_save_changes_lot_eclick(pThis) {
+        if(confirm('Are you sure ?')) {
+            $.ajax({
+                type: "PUT",
+                url: "url",
+                data: "data",
+                dataType: "json",
+                success: function (response) {
+
+                }
+            });
+        }
+    }
+
+    function txtnewtLotOnKeypress(e) {
+        if(e.key === 'Enter') {
+            const rawText = e.target.value.trim()
+            let uniqueKey = rawText
+            if(rawText.includes('|')) {
+                const arrText = rawText.split('|')
+                uniqueKey = arrText[2]
+            }
+            if(spl_check_is_scanned(uniqueKey)) {
+                alertify.warning('This item has been scanned')
+                e.target.value = ''
+                return
+            }
+            e.target.value = ''
+            $.ajax({
+                type: "GET",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>label/c3-active",
+                data: {id : uniqueKey},
+                dataType: "json",
+                success: function (response) {
+                    if(response.data) {
+                        let tabell = spl_editlot_tbl
+                        let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                        let newrow, newcell;
+
+                        if(tableku2.innerHTML === '') {
+                            tableku2.innerHTML = ''
+                        } else {
+                            if(tableku2.rows[0].cells[0].innerText === 'Empty') {
+                                tableku2.innerHTML = ''
+                            }
+                        }
+
+                        if(!spl_redraw_total(numeral(response.data.quantity).value())) {
+                            newrow = tableku2.insertRow(-1)
+                            newcell = newrow.insertCell(0)
+                            newcell.innerHTML = response.data.code
+                            newcell = newrow.insertCell(1)
+                            newcell.innerHTML = response.data.lot_code
+                            newcell = newrow.insertCell(2)
+                            newcell.classList.add('text-end')
+                            newcell.innerHTML = numeral(response.data.quantity).format(',')
+                            newcell = newrow.insertCell(3)
+                            newcell.onclick = function(e) {
+                                if(e.target.tagName === 'I') {
+                                    e.target.parentNode.parentNode.remove()
+                                } else {
+                                    e.target.parentNode.remove()
+                                }
+                                spl_editlot_tbl_total.innerText = numeral(numeral(spl_editlot_tbl_total.innerText).value() - numeral(response.data.quantity).value()).format(',')
+                            }
+                            newcell.classList.add('text-center')
+                            newcell.innerHTML = '<i class="fas fa-trash text-danger"></i>'
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function spl_redraw_total(newQty) {
+        let finalQty = numeral(spl_editlot_tbl_total.innerText).value() + newQty
+        if(finalQty > numeral(spltxtcurrentQtyLot.value).value()) {
+            alertify.warning('Total quantity is greater than before')
+            return true
+        }
+        spl_editlot_tbl_total.innerText = numeral(finalQty).format(',')
+        return false
+    }
+
+    function spl_check_is_scanned(id) {
+        let totalRows = spl_editlot_tbl.getElementsByTagName('tbody')[0].rows.length
+        let isAdded = false
+        for(let i=0;i<totalRows;i++) {
+            if(spl_editlot_tbl.getElementsByTagName('tbody')[0].rows[i].cells[0].innerText === id) {
+                isAdded = true
+                break
+            }
+        }
+        return isAdded
     }
 </script>
