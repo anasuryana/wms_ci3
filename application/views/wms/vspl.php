@@ -1326,6 +1326,7 @@
     var splbsOffcanvasLot = new bootstrap.Offcanvas('#sploffcanvasLot')
     sploffcanvasLot.addEventListener('shown.bs.offcanvas', event => {
         spl_editlot_tbl.getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="4">Empty</td></tr>'
+        spl_editlot_tbl_total.innerText = '0'
     })
 
     function getdetailissue(pitem,purut){
