@@ -535,7 +535,7 @@ class DELV_mod extends CI_Model
         $this->db->join("SI_TBL c", "a.SISCN_LINENO=c.SI_LINENO");
         $this->db->join("DLV_TBL d", "a.SISCN_SER=DLV_SER");
         $this->db->join("(select SISO_HLINE,MAX(SISO_CPONO) SO from SISO_TBL
-        group by SISO_HLINE) VSO", "SISCN_LINENO=SISO_HLINE");
+        group by SISO_HLINE) VSO", "SISCN_LINENO=SISO_HLINE", "left");
         $this->db->where('DLV_ID', $pdo);
         $this->db->group_by('SI_ITMCD,SI_OTHRMRK');
         $this->db->order_by('SI_OTHRMRK ASC,SI_ITMCD asc');
