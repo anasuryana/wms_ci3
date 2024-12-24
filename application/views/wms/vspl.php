@@ -1384,9 +1384,10 @@
                     newcell = newrow.insertCell(-1);
                     newcell.innerHTML = response.data[i].SPLSCN_LOTNO
                     newcell.style.cssText = 'text-align: center;cursor:pointer';
-                    newcell.onclick = function() {
+                    newcell.onclick = function(p) {
                         spltxtcurrentLot.value = response.data[i].SPLSCN_LOTNO
                         spltxtcurrentQtyLot.value = numeral(response.data[i].SPLSCN_QTY).format(',')
+                        spltxtLineID.value = p.target.parentNode.firstChild.innerText
                         splbsOffcanvasLot.show()
                     }
 
@@ -1865,14 +1866,42 @@
     }
 
     function psn_btn_save_changes_lot_eclick(pThis) {
-        if(confirm('Are you sure ?')) {
+        const newQty = numeral(spltxtcurrentQtyLot.value).value()
+        
+        if( newQty<=0 ) {
+            alertify.warning('There is nothing to be saved')
+            return
+        }
+
+        if(confirm('Are you sure ??')) {
+            const totalRows = spl_editlot_tbl.getElementsByTagName('tbody')[0].rows.length
+            let details = []
+            for(let i=0;i<totalRows;i++) {
+                details.push({
+                    code : spl_editlot_tbl.getElementsByTagName('tbody')[0].rows[i].cells[0].innerText,
+                    lot : spl_editlot_tbl.getElementsByTagName('tbody')[0].rows[i].cells[1].innerText,
+                    qty : numeral(spl_editlot_tbl.getElementsByTagName('tbody')[0].rows[i].cells[2].innerText).value()
+                })
+            }
+            
+            const data = {
+                user_id : uidnya,
+                scan_id : spltxtLineID.value,
+                details : details
+            }
+            pThis.disabled = true
+
             $.ajax({
-                type: "PUT",
-                url: "url",
-                data: "data",
+                type: "POST",
+                url: "<?=$_ENV['APP_INTERNAL_API']?>supply/change-reel",
+                data: JSON.stringify(data),
                 dataType: "json",
                 success: function (response) {
-
+                    alertify.message(response.message)
+                    pThis.disabled = false
+                }, error: function(xhr, xopt, xthrow) {
+                    pThis.disabled = false
+                    alertify.error(xhr.responseJSON.message)
                 }
             });
         }
@@ -1899,6 +1928,16 @@
                 dataType: "json",
                 success: function (response) {
                     if(response.data) {
+                        if(response.data.item_code != spl_txtsel_Item.value) {
+                            alertify.warning('This item is not match with the selected item')
+                            return
+                        }
+
+                        if(response.data.lot_code == spltxtcurrentLot.value) {
+                            alertify.warning('New Lot number must be different from the old one')
+                            return
+                        }
+
                         let tabell = spl_editlot_tbl
                         let tableku2 = tabell.getElementsByTagName("tbody")[0];
                         let newrow, newcell;
