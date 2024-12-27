@@ -1,7 +1,7 @@
 <div style="padding: 10px">
 	<div class="container-fluid">
         <div class="row">
-            <div class="col-md-4 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="mb-3">
                     <label for="platNomor" class="form-label" id="go_platNomor_label">Vehicle Registration Number</label>
                     <div class="input-group">
@@ -13,16 +13,22 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="mb-3">
                     <label for="go_driver_name" class="form-label" id="go_driver_name_label">Driver Name</label>
                     <input type="text" class="form-control" id="go_driver_name">
                 </div>
             </div>
-            <div class="col-md-4 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="mb-3">
                     <label for="go_co_driver_name" class="form-label" id="go_co_driver_name_label">Co Driver Name</label>
                     <input type="text" class="form-control" id="go_co_driver_name">
+                </div>
+            </div>
+            <div class="col-md-3 mb-1">
+                <div class="mb-3">
+                    <label for="go_co_driver_name" class="form-label" id="go_co_driver_name_label">DateTime</label>
+                    <input type="text" class="form-control" id="go_date_time" autocomplete="off" data-td-toggle="datetimepicker" data-td-target="#go_date_time" readonly>
                 </div>
             </div>
         </div>
@@ -102,6 +108,7 @@
 <script>
 
 function go_conf_btn_sync_e_click() {
+    go_date_time_pub.updateOptions({restrictions : {maxDate: new Date}})
     let mtabel = document.getElementById("go_conf_tbl");
     mtabel.getElementsByTagName("tbody")[0].innerHTML = '<tr><td class="text-center" colspan=3>-</td></tr>'
     go_conf_btn_sync.disabled = true
@@ -127,6 +134,18 @@ function go_conf_btn_sync_e_click() {
         }
     });
 }
+
+var go_date_time_pub = new tempusDominus.TempusDominus(go_date_time,
+        {
+            localization: {
+                locale : 'en',
+                format : 'yyyy-MM-dd HH:mm:ss'
+            },
+            restrictions : {
+                maxDate: new Date
+            }
+        }
+    )
 
 go_conf_btn_sync_e_click()
 
@@ -198,17 +217,25 @@ function go_conf_btn_confirm_e_click(pThis) {
         return
     }
 
+    if(go_date_time.value.length <= 1) {
+        go_date_time.focus()
+        alertify.message(`Datetime is required`)
+        return
+    }
+
     pThis.disabled = true
     $.ajax({
         type: "post",
         url: `<?=$_ENV['APP_INTERNAL_API']?>delivery/gate-out`,
         data : {regNumber : btoa(go_platNomor.value),driverName: driverName, codriverName: codriverName,
-            user_id: uidnya
+            user_id: uidnya, datetimeShip : go_date_time.value
         },
         dataType: "json",
         success: function (response) {
             pThis.disabled = false
             alertify.success(response.message)
+            go_date_time.value = ''
+            go_platNomor_e_change();
         }, error: function(xhr, xopt, xthrow){
             pThis.disabled = false
             alertify.error(xhr.responseJSON.message);
