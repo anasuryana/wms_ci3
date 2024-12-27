@@ -16795,13 +16795,16 @@ class DELV extends CI_Controller
             # validasi apakah Nomor Aju sudah ada di CEISA4.0
             $responApi = Requests::request($_ENV['APP_INTERNAL2_API'] . 'ciesafour/getDetailAju/' . $NomorAju, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
             $responApiObj = json_decode($responApi->body);
-            if ($responApiObj->dataOri->message === 'sucess') {
-                $respon = [
-                    'message' => 'already in CEISA 4.0, please check',
-                    '$responApi' => $responApi,
-                ];
-                $this->output->set_status_header(409);
-                die(json_encode($respon));
+            
+            if(property_exists($responApiObj, 'dataOri')) {
+                if ($responApiObj->dataOri->message === 'sucess') {
+                    $respon = [
+                        'message' => 'already in CEISA 4.0, please check',
+                        '$responApi' => $responApi,
+                    ];
+                    $this->output->set_status_header(409);
+                    die(json_encode($respon));
+                }
             }
             # akhir validasi
 
