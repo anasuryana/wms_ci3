@@ -292,7 +292,69 @@
     </div>
   </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="keikakuEditActualModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Editing</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12" id="keikakuEditAlert">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="platNomor" class="form-label">WO</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="keikakuEditWO" disabled>
+                        <button class="btn btn-outline-primary" type="button" title="Copy" onclick="keikakuCopyWO()"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label for="platNomor" class="form-label">Hour</label>
+                        <input type="text" class="form-control" id="keikakuEditHour" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label for="platNomor" class="form-label">Actual Output</label>
+                        <input type="text" class="form-control" id="keikakuEditOutput" onkeypress="keikakuEditOutputOnKeyPress(event)">
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <input type="hidden" id="keikakuEditDate">
+      <input type="hidden" id="keikakuEditXCoordinate">
+      <input type="hidden" id="keikakuEditSide">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="keikakuBtnEditActual" onclick="keikakuBtnEditActualOnClick(this)"><i class="fas fa-save"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
+    function keikakuCopyWO() {
+        navigator.clipboard.writeText(document.getElementById('keikakuEditWO').value)
+        alertify.message('copied')
+    }
+    $("#keikakuEditActualModal").on('shown.bs.modal', function(){
+        $("#keikakuEditOutput").focus();
+    });
+    Inputmask({
+        'alias': 'decimal',
+        'groupSeparator': ',',
+    }).mask(keikakuEditOutput);
     keikaku_asprova_year.value = new Date().toISOString().substring(0, 4)
     var keikakuModelUnique = []
     var keikaku_data_sso = jspreadsheet(keikaku_data_spreadsheet, {
@@ -718,7 +780,38 @@
         freezeColumns: 9,
         minDimensions: [50,10],
         tableWidth: '1000px',
+        onselection : function(instance, x1, y1, x2, y2, origin) {
+            let aRow = instance.jspreadsheet.getRowData(y2)
+            let aRowSibling = instance.jspreadsheet.getRowData(y2-1)
+            let aRowSibling2 = instance.jspreadsheet.getRowData(y2-2)
+            if(aRow[7] === 'Actual' && x2 >=9 && aRowSibling[7] === 'TOTAL') {
+                let aRowTime = instance.jspreadsheet.getRowData(1)
+                keikakuEditHour.value = aRowTime[x2]
+                keikakuEditXCoordinate.value = x2
+                keikaku_get_wo({
+                    prefWO : aRowSibling2[3],
+                    procWO : aRowSibling[1],
+                    itemWO : aRowSibling[5],
+                })
+                keikakuEditOutput.value = aRow[x2]
+                keikakuEditSide.value = aRowSibling[1]
+                instance.jspreadsheet.resetSelection(true);
+                $("#keikakuEditActualModal").modal('show')
+            }
+        }
     });
+
+    function keikaku_get_wo(data) {
+        let ttlRows = _temp_asProdpan.length
+        for(let i=4; i<ttlRows;i+=2) {
+            if(_temp_asProdpan[i][0] == data.itemWO
+            && _temp_asProdpan[i][3].includes(data.prefWO)
+            && _temp_asProdpan[i][5].substr(0,1) == data.procWO) {
+                keikakuEditWO.value = _temp_asProdpan[i][3]
+                break;
+            }
+        }
+    }
 
 
     function keikaku_load_line_code() {
@@ -1509,6 +1602,7 @@
             production_date: keikaku_date_input.value,
         }
         pThis.disabled = true
+        keikakuEditDate.value = keikaku_date_input.value
 
         $.ajax({
             type: "GET",
@@ -1899,6 +1993,59 @@
 
     function keikaku_btn_save_downtime_eC() {
         alertify.message('this function is not ready')
+    }
+
+    function keikakuBtnEditActualOnClick(pThis) {
+        let qty = numeral(keikakuEditOutput.value).value()
+
+        if(qty==0) {
+            alertify.warning('Quantity is required')
+            keikakuEditOutput.focus()
+            return
+        }
+
+        const data = {
+            line : keikaku_line_input.value,
+            job : keikakuEditWO.value,
+            side : keikakuEditSide.value,
+            productionDate : keikakuEditDate.value,
+            runningAtTime : keikakuEditHour.value,
+            quantity : qty,
+            user_id : uidnya
+        }
+        pThis.disabled = true
+        $.ajax({
+            type: "POST",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/output",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                pThis.disabled = false
+                alertify.success(response.message)
+                $('#keikakuEditActualModal').modal('hide')
+                keikaku_btn_run_prodplan_eC(keikaku_btn_run_prodplan)
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                pThis.disabled = false
+
+                const respon = Object.keys(xhr.responseJSON)
+
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                keikakuEditAlert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }
+        });
+    }
+
+    function keikakuEditOutputOnKeyPress(e) {
+        if(e.key === 'Enter') {
+            keikakuBtnEditActual.focus()
+        }
     }
 
 
