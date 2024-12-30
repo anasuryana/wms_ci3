@@ -2012,7 +2012,8 @@
             productionDate : keikakuEditDate.value,
             runningAtTime : keikakuEditHour.value,
             quantity : qty,
-            user_id : uidnya
+            user_id : uidnya,
+            XCoordinate : keikakuEditXCoordinate.value
         }
         pThis.disabled = true
         $.ajax({
