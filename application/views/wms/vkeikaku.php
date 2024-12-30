@@ -427,6 +427,14 @@
                 readOnly: true,
                 width:100,
             },
+            {
+                title:'Difference',
+                type: 'numeric',
+                mask: '#,##.000',
+                decimal: '.',
+                readOnly: true,
+                width:90,
+            },
         ],
         allowInsertColumn : false,
         allowDeleteColumn : false,
@@ -452,6 +460,15 @@
                     cell.style.cssText = "background-color:#8aedff"
                 } else {
                     cell.style.cssText = "background-color:#fafafa"
+                }
+            }
+
+            if(x === 12) {
+                const _diff = numeral(value).value() ?? 0
+                if(_diff<0) {
+                    cell.style.cssText = "color:#ff0000"
+                } else {
+                    cell.style.cssText = "color:#d3d3d3"
                 }
             }
         }
@@ -1313,7 +1330,7 @@
             dataType: "json",
             success: function (response) {
                 let theData = [];
-                response.data.forEach((arrayItem) => {
+                response.data.forEach((arrayItem, index) => {
                     theData.push([
                         '',
                         arrayItem['model_code'],
@@ -1327,6 +1344,7 @@
                         arrayItem['specs_side'],
                         arrayItem['cycle_time'],
                         arrayItem['ok_qty'],
+                        `=L${index+1}-E${index+1}`,
                     ])
                 })
                 if(theData.length > 0) {
