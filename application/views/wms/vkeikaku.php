@@ -1758,7 +1758,7 @@
                 _newRow5.push('')
                 _newRow5.push('')
                 _newRow5.push('Actual')
-                _newRow5.push('')
+                _newRow5.push(0)
 
                 _newRow6.push('')
                 _newRow6.push('')
@@ -1775,6 +1775,10 @@
                     if(data[i][3] == dataS[r][3]) {
                         for(let c=9; c<(9+12+12+12); c++) {
                             _newRow5.push(dataS[r][c-3])
+
+                            if(c<33) {
+                                _newRow5[8]+=Number(dataS[r][c-3])
+                            }
 
                             totalQtySensor += Number(dataS[r][c-3])
 
