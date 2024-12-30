@@ -419,6 +419,14 @@
                 decimal: '.',
                 readOnly: true
             },
+            {
+                title:'Production Result',
+                type: 'numeric',
+                mask: '#,##.000',
+                decimal: '.',
+                readOnly: true,
+                width:100,
+            },
         ],
         allowInsertColumn : false,
         allowDeleteColumn : false,
@@ -426,10 +434,10 @@
         allowDeleteRow : false,
         rowDrag:false,
         data: [
-            [,,,,,,,,,'A'],
-            [,,,,,,,,,'A'],
-            [,,,,,,,,,'A'],
-            [,,,,,,,,,'A'],
+            [,,,,,,,,,'A',],
+            [,,,,,,,,,'A',],
+            [,,,,,,,,,'A',],
+            [,,,,,,,,,'A',],
         ],
         copyCompatibility:true,
         columnSorting:false,
@@ -941,6 +949,7 @@
                 arrayItem['item_code'],
                 arrayItem['packaging'],
                 arrayItem['specs_side'],
+                ''
             ])
         })
         return theData
@@ -948,10 +957,10 @@
 
     function keikaku_reset_data() {
         keikaku_data_sso.setData([
-            [,,,,,,,,,'A'],
-            [,,,,,,,,,'A'],
-            [,,,,,,,,,'A'],
-            [,,,,,,,,,'A'],
+            [,,,,,,,,,'A',],
+            [,,,,,,,,,'A',],
+            [,,,,,,,,,'A',],
+            [,,,,,,,,,'A',],
         ])
 
     }
@@ -1317,6 +1326,7 @@
                         arrayItem['packaging'],
                         arrayItem['specs_side'],
                         arrayItem['cycle_time'],
+                        arrayItem['ok_qty'],
                     ])
                 })
                 if(theData.length > 0) {
