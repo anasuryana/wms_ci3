@@ -422,18 +422,20 @@
             {
                 title:'Production Result',
                 type: 'numeric',
-                mask: '#,##.000',
+                mask: '#,##',
                 decimal: '.',
                 readOnly: true,
                 width:100,
+                align: 'right'
             },
             {
                 title:'Difference',
                 type: 'numeric',
-                mask: '#,##.000',
+                mask: '#,##',
                 decimal: '.',
                 readOnly: true,
                 width:90,
+                align: 'right'
             },
         ],
         allowInsertColumn : false,
@@ -442,10 +444,10 @@
         allowDeleteRow : false,
         rowDrag:false,
         data: [
-            [,,,,,,,,,'A',],
-            [,,,,,,,,,'A',],
-            [,,,,,,,,,'A',],
-            [,,,,,,,,,'A',],
+            [,,,,,,,,,'A',,],
+            [,,,,,,,,,'A',,],
+            [,,,,,,,,,'A',,],
+            [,,,,,,,,,'A',,],
         ],
         copyCompatibility:true,
         columnSorting:false,
@@ -974,10 +976,10 @@
 
     function keikaku_reset_data() {
         keikaku_data_sso.setData([
-            [,,,,,,,,,'A',],
-            [,,,,,,,,,'A',],
-            [,,,,,,,,,'A',],
-            [,,,,,,,,,'A',],
+            [,,,,,,,,,'A',,],
+            [,,,,,,,,,'A',,],
+            [,,,,,,,,,'A',,],
+            [,,,,,,,,,'A',,],
         ])
 
     }
@@ -1344,7 +1346,7 @@
                         arrayItem['specs_side'],
                         arrayItem['cycle_time'],
                         arrayItem['ok_qty'],
-                        `=L${index+1}-E${index+1}`,
+                        `=IF(L${index+1}=0,0,L${index+1}-E${index+1})`,
                     ])
                 })
                 if(theData.length > 0) {
