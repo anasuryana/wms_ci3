@@ -2034,7 +2034,7 @@
     function keikakuBtnEditActualOnClick(pThis) {
         let qty = numeral(keikakuEditOutput.value).value()
 
-        if(qty==0) {
+        if(qty<0) {
             alertify.warning('Quantity is required')
             keikakuEditOutput.focus()
             return
