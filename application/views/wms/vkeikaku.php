@@ -1387,7 +1387,8 @@
 
         const dataInput = {
             line_code : keikaku_line_input.value,
-            detail : dataDetail
+            detail : dataDetail,
+            production_date : keikaku_date_input.value
         }
         pThis.disabled = true
         $.ajax({

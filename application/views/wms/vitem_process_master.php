@@ -6,11 +6,17 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-9 mb-2">
+            <div class="col-md-6 mb-2">
                 <div class="btn-group btn-group-sm">
                     <button title="New" id="itm_process_btnnew" class="btn btn-primary" onclick="itm_process_btnnew_eClick()"><i class="fas fa-file"></i></button>
                     <button title="Save" id="itm_process_btnsave" class="btn btn-primary" onclick="itm_process_btnsave_eClick(this)"><i class="fas fa-save"></i></button>
                     <button title="History" class="btn btn-outline-secondary" type="button" id="itm_process_btnformoditem" onclick="itm_process_btnformoditem_eClick()"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            <div class="col-md-6 mb-2">
+                <div class="input-group input-group-sm mb-3">
+                    <label for="itm_process_date_time" class="input-group-text">Valid from</label>
+                    <input type="text" class="form-control" id="itm_process_date_time" autocomplete="off" data-td-toggle="datetimepicker" data-td-target="#go_date_time" readonly>
                 </div>
             </div>
         </div>
@@ -76,12 +82,26 @@
     </div>
 </div>
 <script>
+
+    var itm_process_date_time_pub = new tempusDominus.TempusDominus(itm_process_date_time,
+        {
+            localization: {
+                locale : 'en',
+                format : 'yyyy-MM-dd HH:mm:ss'
+            },
+            restrictions : {
+                maxDate: new Date
+            }
+        }
+    )
+
     function itm_process_btnnew_eClick() {
         itm_process_sso.setData([
             ['','','','','',0],
             ['','','','','',0],
         ])
     }
+
     var itm_process_sso = jspreadsheet(itm_process_spreasheet, {
         columns : [
             {
@@ -184,9 +204,17 @@
 
     function itm_process_btnsave_eClick(pThis) {
         let inputSS = itm_process_sso.getData()
-        console.log(inputSS)
+        
         let dataMaster = [];
+        
         const inputLength = inputSS.length
+        
+        if(itm_process_date_time.value === '') {
+            itm_process_date_time.focus()
+            alertify.warning('Please fill [valid from]')
+            return
+        }
+
         for(let i=0; i < inputLength; i++) {
             dataMaster.push({
                 line_code : inputSS[i][0],
@@ -200,12 +228,14 @@
 
         const dataInput = {
             user_id: uidnya,
+            valid_from : itm_process_date_time.value,
             master : dataMaster
         }
 
         if(!confirm('Are you sure ?')) {
             return
         }
+        
         const div_alert = document.getElementById('itm-process-div-alert')
         div_alert.innerHTML = ''
         pThis.disabled = true
