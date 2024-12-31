@@ -318,9 +318,9 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div class="mb-3">
-                        <label for="platNomor" class="form-label">Hour</label>
+                    <div class="input-group mb-3">
                         <input type="text" class="form-control" id="keikakuEditHour" disabled>
+                        <span class="input-group-text">o'clock</label>
                     </div>
                 </div>
             </div>
@@ -2061,6 +2061,7 @@
                 alertify.success(response.message)
                 $('#keikakuEditActualModal').modal('hide')
                 keikaku_btn_run_prodplan_eC(keikaku_btn_run_prodplan)
+                keikaku_load_data()
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
                 pThis.disabled = false
