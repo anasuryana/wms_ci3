@@ -351,6 +351,7 @@
     $("#keikakuEditActualModal").on('shown.bs.modal', function(){
         $("#keikakuEditOutput").focus();
         keikaku_prodplan_sso.resetSelection(true);
+        keikakuEditAlert.innerHTML = ''
     });
     Inputmask({
         'alias': 'decimal',
