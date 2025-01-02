@@ -434,7 +434,7 @@
                         tempjob = tempjob.substr(1,4);
                     }                    
                     if(tempoldjob!=tempjob){
-                        alertify.warning('Job is not same, please check lot number on the label !');
+                        alertify.warning(`Job is not same, please check lot number on the label !. ${tempoldjob}!=${tempjob}`);
                         $(this).val('');
                         return;
                     }
@@ -557,7 +557,7 @@
                 $(this).val('');
                 return;
             }
-            if(reff_ka.length!=18){
+            if(![16,18].includes(reff_ka.length)){
                 alertify.warning('Please enter valid Reff No');
                 return;
             }
