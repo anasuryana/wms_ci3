@@ -241,7 +241,7 @@ class INCFG extends CI_Controller
                         $flagLineCodeWOChecking[] = ['code' => 'B', 'reff' => $rsostqty];
                         if (count($rsostqty) > 0) {
                         } else {
-                            $flagLineCodeWOChecking = 'C';
+                            $flagLineCodeWOChecking[] = ['code' => 'C', 'reff' => $rsostqty];
                             $newjob = substr($cjob, 2, 100);
                             $cjob = $prevYear . $newjob;
                             $rsostqty = $this->SPL_mod->selectWOITEM($cjob, $citem);
