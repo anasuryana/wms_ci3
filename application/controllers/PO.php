@@ -131,7 +131,7 @@ class PO extends CI_Controller
         $pdf->SetXY(160, 18 - $_y);
         $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
         $pdf->SetXY(160, 22 - $_y);
-        $pdf->Cell(21, 4, 'REV.00', 0, 0, 'R');
+        $pdf->Cell(21, 4, 'REV.01', 0, 0, 'R');
         
         $pdf->SetFont('Times', 'B', 9);
         $pdf->SetXY(115, 45 - $_y);
@@ -400,7 +400,7 @@ class PO extends CI_Controller
                     $pdf->SetXY(160, 18 - $_y);
                     $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
                     $pdf->SetXY(160, 22 - $_y);
-                    $pdf->Cell(21, 4, 'REV.00', 0, 0, 'R');
+                    $pdf->Cell(21, 4, 'REV.01', 0, 0, 'R');
                    
                     $pdf->SetFont('Times', 'B', 9);
                     $pdf->SetXY(115, 45 - $_y);
@@ -578,7 +578,7 @@ class PO extends CI_Controller
             $pdf->SetXY(160, 18 - $_y);
             $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
             $pdf->SetXY(160, 22 - $_y);
-            $pdf->Cell(21, 4, 'REV.00', 0, 0, 'R');
+            $pdf->Cell(21, 4, 'REV.01', 0, 0, 'R');
             
             $pdf->SetFont('Times', 'B', 9);
             $pdf->SetXY(115, 45 - $_y);
@@ -667,7 +667,7 @@ class PO extends CI_Controller
             $pdf->Cell(27.5, 75, '', 1, 0, 'C'); #amount
             #footermain
             $total_amount -= $ttldiscount_priceSpecial;
-            $dpp_price = 11/12 * $total_amount;
+            $dpp_price = $ppn == 0 ? 0 : 11/12 * $total_amount;
             $ppn_price = $dpp_price * $ppn / 100;
             $pph_price = $dpp_price * $pph / 100;
             $netpayment = $dpp_price - $pph_price + $ppn_price;
@@ -720,12 +720,13 @@ class PO extends CI_Controller
             $pdf->Cell(30, 5, '', 0, 0, 'C');
             $pdf->Cell(127.5, 5, 'W/H TAX ART 23/26 ' . $pph . ' %', 1, 0, 'L');
             $pdf->Cell(27.5, 5, number_format($pph_price, 2), 1, 0, 'R');
-            $pdf->SetFont('Times', 'B', 9);
+            $pdf->SetFont('Times', '', 9);
             $pdf->SetXY(6, 200 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
             $pdf->Cell(127.5, 5, 'DELIVERY / SHIPPING COST', 1, 0, 'L');
             $pdf->Cell(27.5, 5, number_format($shipping_cost, 2), 1, 0, 'R');
+            $pdf->SetFont('Times', '', 9);
             $pdf->SetXY(6, 205 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
@@ -875,7 +876,7 @@ class PO extends CI_Controller
                     $pdf->SetXY(160, 18 - $_y);
                     $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
                     $pdf->SetXY(160, 22 - $_y);
-                    $pdf->Cell(21, 4, 'REV.00', 0, 0, 'R');
+                    $pdf->Cell(21, 4, 'REV.01', 0, 0, 'R');
                     
                     $pdf->SetFont('Times', 'B', 9);
                     $pdf->SetXY(115, 45 - $_y);
@@ -1036,7 +1037,7 @@ class PO extends CI_Controller
 
             #footermain
             $total_amount -= $ttldiscount_priceSpecial;
-            $dpp_price = 11/12 * $total_amount;
+            $dpp_price = $ppn == 0 ? 0 : 11/12 * $total_amount;
             $ppn_price = $dpp_price * $ppn / 100;
             $pph_price = $dpp_price * $pph / 100;
             $netpayment = $total_amount - $pph_price + $ppn_price;
@@ -1091,12 +1092,13 @@ class PO extends CI_Controller
             $pdf->Cell(30, 5, '', 0, 0, 'C');
             $pdf->Cell(127.5, 5, 'W/H TAX ART 23/26 ' . $pph . ' %', 1, 0, 'L');
             $pdf->Cell(27.5, 5, number_format($pph_price, 2), 1, 0, 'R');
-            $pdf->SetFont('Times', 'B', 9);
+            $pdf->SetFont('Times', '', 9);
             $pdf->SetXY(6, 200 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
             $pdf->Cell(127.5, 5, 'DELIVERY / SHIPPING COST', 1, 0, 'L');
             $pdf->Cell(27.5, 5, number_format($shipping_cost, 2), 1, 0, 'R');
+            $pdf->SetFont('Times', 'B', 9);
             $pdf->SetXY(6, 205 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
