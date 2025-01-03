@@ -71,6 +71,7 @@ class PO extends CI_Controller
         $supplier_faxno = '';
         $total_amount = 0;
         $ppn = 0;
+        $dpp = 0;
         $pph = 0;
         $trans_date = '';
         $required_date = '';
@@ -666,9 +667,10 @@ class PO extends CI_Controller
             $pdf->Cell(27.5, 75, '', 1, 0, 'C'); #amount
             #footermain
             $total_amount -= $ttldiscount_priceSpecial;
-            $ppn_price = $total_amount * $ppn / 100;
-            $pph_price = $total_amount * $pph / 100;
-            $netpayment = $total_amount - $pph_price + $ppn_price;
+            $dpp_price = 11/12 * $total_amount;
+            $ppn_price = $dpp_price * $ppn / 100;
+            $pph_price = $dpp_price * $pph / 100;
+            $netpayment = $dpp_price - $pph_price + $ppn_price;
 
             $sdata_section = '';
             foreach ($adata_section as $r) {
@@ -696,6 +698,7 @@ class PO extends CI_Controller
                 $pdf->Cell(27.5, 5, "(" . number_format($ttldiscount_price + $ttldiscount_priceSpecial, 2) . ")", 0, 0, 'R');
                 $pdf->Cell(27.5, 5, "(" . number_format($ttldiscount_price + $ttldiscount_priceSpecial, 2) . ")", 0, 0, 'R');
             }
+            
             // #footer
             $pdf->SetXY(6, 180 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
@@ -705,24 +708,24 @@ class PO extends CI_Controller
             $pdf->SetXY(6, 185 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
+            $pdf->Cell(127.5, 5, 'DPP', 1, 0, 'L');
+            $pdf->Cell(27.5, 5, number_format($dpp_price, 2), 1, 0, 'R');
+            $pdf->SetXY(6, 190 - $_y);
+            $pdf->Cell(10, 5, '', 0, 0, 'C');
+            $pdf->Cell(30, 5, '', 0, 0, 'C');
             $pdf->Cell(127.5, 5, 'PPN ' . $ppn . '%', 1, 0, 'L');
             $pdf->Cell(27.5, 5, number_format($ppn_price, 2), 1, 0, 'R');
-            $pdf->SetXY(6, 190 - $_y);
+            $pdf->SetXY(6, 195 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
             $pdf->Cell(127.5, 5, 'W/H TAX ART 23/26 ' . $pph . ' %', 1, 0, 'L');
             $pdf->Cell(27.5, 5, number_format($pph_price, 2), 1, 0, 'R');
-            $pdf->SetXY(6, 195 - $_y);
-            $pdf->Cell(10, 5, '', 0, 0, 'C');
-            $pdf->Cell(30, 5, '', 0, 0, 'C');
-            $pdf->Cell(127.5, 5, 'DELIVERY / SHIPPING COST', 1, 0, 'L');
-            $pdf->Cell(27.5, 5, number_format($shipping_cost, 2), 1, 0, 'R');
             $pdf->SetFont('Times', 'B', 9);
             $pdf->SetXY(6, 200 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
-            $pdf->Cell(127.5, 5, 'NET PAYMENT ( PAY TO SUPPLIER )', 1, 0, 'L');
-            $pdf->Cell(27.5, 5, number_format($netpayment, 2), 1, 0, 'R');
+            $pdf->Cell(127.5, 5, 'DELIVERY / SHIPPING COST', 1, 0, 'L');
+            $pdf->Cell(27.5, 5, number_format($shipping_cost, 2), 1, 0, 'R');
             $pdf->SetXY(6, 205 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
@@ -1033,8 +1036,9 @@ class PO extends CI_Controller
 
             #footermain
             $total_amount -= $ttldiscount_priceSpecial;
-            $ppn_price = $total_amount * $ppn / 100;
-            $pph_price = $total_amount * $pph / 100;
+            $dpp_price = 11/12 * $total_amount;
+            $ppn_price = $dpp_price * $ppn / 100;
+            $pph_price = $dpp_price * $pph / 100;
             $netpayment = $total_amount - $pph_price + $ppn_price;
 
             $sdata_section = '';
@@ -1065,6 +1069,7 @@ class PO extends CI_Controller
                 $pdf->Cell(27.5, 5, "(" . number_format($ttldiscount_price + $ttldiscount_priceSpecial, 2) . ")", 0, 0, 'R');
                 $pdf->Cell(27.5, 5, "(" . number_format($ttldiscount_price + $ttldiscount_priceSpecial, 2) . ")", 0, 0, 'R');
             }
+            
             #footer
             $pdf->SetXY(6, 180 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
@@ -1074,24 +1079,24 @@ class PO extends CI_Controller
             $pdf->SetXY(6, 185 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
+            $pdf->Cell(127.5, 5, 'DPP ', 1, 0, 'L');
+            $pdf->Cell(27.5, 5, number_format($dpp_price, 2), 1, 0, 'R');
+            $pdf->SetXY(6, 190 - $_y);
+            $pdf->Cell(10, 5, '', 0, 0, 'C');
+            $pdf->Cell(30, 5, '', 0, 0, 'C');
             $pdf->Cell(127.5, 5, 'PPN ' . $ppn . '%', 1, 0, 'L');
             $pdf->Cell(27.5, 5, number_format($ppn_price, 2), 1, 0, 'R');
-            $pdf->SetXY(6, 190 - $_y);
+            $pdf->SetXY(6, 195 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
             $pdf->Cell(127.5, 5, 'W/H TAX ART 23/26 ' . $pph . ' %', 1, 0, 'L');
             $pdf->Cell(27.5, 5, number_format($pph_price, 2), 1, 0, 'R');
-            $pdf->SetXY(6, 195 - $_y);
-            $pdf->Cell(10, 5, '', 0, 0, 'C');
-            $pdf->Cell(30, 5, '', 0, 0, 'C');
-            $pdf->Cell(127.5, 5, 'DELIVERY / SHIPPING COST', 1, 0, 'L');
-            $pdf->Cell(27.5, 5, number_format($shipping_cost, 2), 1, 0, 'R');
             $pdf->SetFont('Times', 'B', 9);
             $pdf->SetXY(6, 200 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
-            $pdf->Cell(127.5, 5, 'NET PAYMENT ( PAY TO SUPPLIER )', 1, 0, 'L');
-            $pdf->Cell(27.5, 5, number_format($netpayment, 2), 1, 0, 'R');
+            $pdf->Cell(127.5, 5, 'DELIVERY / SHIPPING COST', 1, 0, 'L');
+            $pdf->Cell(27.5, 5, number_format($shipping_cost, 2), 1, 0, 'R');
             $pdf->SetXY(6, 205 - $_y);
             $pdf->Cell(10, 5, '', 0, 0, 'C');
             $pdf->Cell(30, 5, '', 0, 0, 'C');
