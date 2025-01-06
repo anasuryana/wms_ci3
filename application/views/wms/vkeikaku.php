@@ -1905,7 +1905,7 @@
             ['5', '17', '', '', '', '', '', '', '', ''],
             ['6', '18', '', '', '', '', '', '', '', ''],
             ['7', '19', '', '', '', '', '', '', '', ''],
-            ['Sub Total', '', '=C1+C2+C3+C4+C5+C6+C7+C8+C9+C10+C11+C12+C13', '', '=E1+E2+E3+E4+E5+E6+E7+E8+E9+E10+E11+E12+E13', '', '=G1+G2+G3+G4+G5+G6+G7+G8+G9+G10+G11+G12+G13', '', '=I1+I2+I3+I4+I5+I6+I7+I8+I9+I10+I11+I12+I13', '','=K1+K2+K3+K4+K5+K6+K7+K8+K9+K10+K11+K12+K13','','=M1+M2+M3+M4+M5+M6+M7+M8+M9+M10+M11+M12+M13'],            
+            ['Sub Total', '', '=C1+C2+C3+C4+C5+C6+C7+C8+C9+C10+C11+C12+C13', '', '=E1+E2+E3+E4+E5+E6+E7+E8+E9+E10+E11+E12+E13', '', '=G1+G2+G3+G4+G5+G6+G7+G8+G9+G10+G11+G12+G13', '', '=I1+I2+I3+I4+I5+I6+I7+I8+I9+I10+I11+I12+I13', '','=K1+K2+K3+K4+K5+K6+K7+K8+K9+K10+K11+K12+K13','','=M1+M2+M3+M4+M5+M6+M7+M8+M9+M10+M11+M12+M13'],
             ['Total', '', '=C14+E14+G14+I14+K14+M14', '', '', '', '', '', '', ''],
         ],
         columns : [
@@ -2036,58 +2036,128 @@
         updateTable: function(el, cell, x, y, source, value, id) {
             if(y===13 ) {
                 cell.classList.add('readonly');
-            }            
+            }
             if(y===14) {
                 cell.classList.add('readonly');
-            }            
+            }
         }
     })
 
-    function keikaku_btn_save_downtime_eC() {
-        alertify.message('This feature is under development (80%)')
-        return
+    function keikaku_btn_save_downtime_eC(pThis) {
+
         if(keikaku_line_input.value === '-') {
             alertify.warning(`Line is required`)
             keikaku_line_input.focus()
             return
         }
 
-        let inputSS = keikaku_data_sso.getData()
+        let inputSS = keikaku_downtime_sso.getData()
         const inputSSCount = inputSS.length
-        
-        console.log(inputSS)
-
-        if(!confirm(`Are you sure ?`)) {
-            return
-        }
 
         let dataDetail = []
         let columnTime = keikaku_shift_input.value === 'M' ? 1 : 0
         for(let i=0; i<inputSSCount-2;i++) {
             // machine trouble
-            dataDetail.push({
-                runningAt : inputSS[i][columnTime].trim(),
-                reqMinutes : inputSS[i][12],
-                downTimeCode : 2,
-                remark : inputSS[i][3]
-            })
-
-
+            if(inputSS[i][2].length > 0) {
+                dataDetail.push({
+                    runningAt : inputSS[i][columnTime].trim(),
+                    reqMinutes : inputSS[i][2],
+                    downTimeCode : 2,
+                    remark : inputSS[i][3]
+                })
+            }
+            // change model
+            if(inputSS[i][4].length > 0) {
+                dataDetail.push({
+                    runningAt : inputSS[i][columnTime].trim(),
+                    reqMinutes : inputSS[i][4],
+                    downTimeCode : 3,
+                    remark : inputSS[i][5]
+                })
+            }
+            // new model
+            if(inputSS[i][6].length > 0) {
+                dataDetail.push({
+                    runningAt : inputSS[i][columnTime].trim(),
+                    reqMinutes : inputSS[i][6],
+                    downTimeCode : 4,
+                    remark : inputSS[i][7]
+                })
+            }
+            // other
+            if(inputSS[i][8].length > 0) {
+                dataDetail.push({
+                    runningAt : inputSS[i][columnTime].trim(),
+                    reqMinutes : inputSS[i][8],
+                    downTimeCode : 8,
+                    remark : inputSS[i][9]
+                })
+            }
+            // maintenance
+            if(inputSS[i][10].length > 0) {
+                dataDetail.push({
+                    runningAt : inputSS[i][columnTime].trim(),
+                    reqMinutes : inputSS[i][10],
+                    downTimeCode : 1,
+                    remark : ''
+                })
+            }
+            // not production 15 min
+            if(inputSS[i][11].length > 0) {
+                dataDetail.push({
+                    runningAt : inputSS[i][columnTime].trim(),
+                    reqMinutes : inputSS[i][11],
+                    downTimeCode : 5,
+                    remark : ''
+                })
+            }
+            // not production no plan
+            if(inputSS[i][12].length > 0) {
+                dataDetail.push({
+                    runningAt : inputSS[i][columnTime].trim(),
+                    reqMinutes : inputSS[i][12],
+                    downTimeCode : 7,
+                    remark : ''
+                })
+            }
         }
 
         const data = {
             lineCode : keikaku_line_input.value,
             productionDate : keikaku_date_input.value,
+            shift : keikaku_shift_input.value,
+            user_id : uidnya,
             detail : dataDetail,
         }
 
+        if(!confirm(`Are you sure ?`)) {
+            return
+        }
+        const containerInfo = document.getElementById('keikaku-div-alert')
+        pThis.disabled = true
         $.ajax({
             type: "POST",
             url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/downtime",
-            data: data,
+            data: JSON.stringify(data),
             dataType: "json",
             success: function (response) {
-                
+                pThis.disabled = false
+                containerInfo.innerHTML = ``
+                alertify.success(response.message)
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                pThis.disabled = false
+
+                const respon = Object.keys(xhr.responseJSON)
+
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                containerInfo.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
             }
         });
     }
