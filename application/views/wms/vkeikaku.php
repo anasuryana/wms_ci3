@@ -176,7 +176,7 @@
                             <div class="col-md-4">
                                 <div class="input-group input-group-sm mb-1">
                                     <label class="input-group-text">Shift</label>
-                                    <select class="form-select" id="keikaku_shift_input">
+                                    <select class="form-select" id="keikaku_shift_input" onchange="keikaku_shift_input_on_change()">
                                         <option value="M">Morning</option>
                                         <option value="N">Night</option>
                                     </select>
@@ -1206,6 +1206,7 @@
         keikaku_load_calcultion()
         keikaku_load_data()
         keikaku_load_asprova()
+        keikakuGetDownTime()
     }
 
     function keikaku_calc_friday(hourAt) {
@@ -1361,6 +1362,7 @@
         keikaku_load_calcultion()
         keikaku_load_data()
         keikaku_load_prodplan()
+        keikakuGetDownTime()
     }
 
     function keikaku_btn_run_data_eC(pThis) {
@@ -2217,5 +2219,61 @@
         }
     }
 
+    function keikakuGetDownTime() {
+        const data = {
+            lineCode : keikaku_line_input.value,
+            productionDate : keikaku_date_input.value,
+            shift : keikaku_shift_input.value,
+        }
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/downtime",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                let columnTime = keikaku_shift_input.value === 'M' ? 1 : 0
+                let inputSS = keikaku_downtime_sso.getData()
+                let dataLength = inputSS.length -2
+                let responseDataLength = response.data.length
+
+                
+                for(let i=0; i < dataLength; i++) {
+                    // let _itemTime = keikaku_data_sso.getValueFromCoords(columnTime, i, true)
+                    let _itemTime = inputSS[i][columnTime]                    
+                    for(let s=0;s<responseDataLength; s++) {
+                        const _itemTime2 = response.data[s].running_at.split(' ')
+                        const _jam = _itemTime2[1].split(':')
+                        const _jam2 = numeral(_jam[0]).value()
+                        if(_itemTime == _jam2) {
+                            if(response.data[s].downtime_code == 2) {
+                                keikaku_downtime_sso.setValue('C'+(i+1), response.data[s].req_minutes, true)
+                                keikaku_downtime_sso.setValue('D'+(i+1), response.data[s].remark, true)
+                            } else if(response.data[s].downtime_code == 3) {
+                                keikaku_downtime_sso.setValue('E'+(i+1), response.data[s].req_minutes, true)
+                                keikaku_downtime_sso.setValue('F'+(i+1), response.data[s].remark, true)
+                            } else if(response.data[s].downtime_code == 4) {
+                                keikaku_downtime_sso.setValue('G'+(i+1), response.data[s].req_minutes, true)
+                                keikaku_downtime_sso.setValue('H'+(i+1), response.data[s].remark, true)
+                            } else if(response.data[s].downtime_code == 8) {
+                                keikaku_downtime_sso.setValue('I'+(i+1), response.data[s].req_minutes, true)
+                                keikaku_downtime_sso.setValue('J'+(i+1), response.data[s].remark, true)
+                            } else if(response.data[s].downtime_code == 1) {
+                                keikaku_downtime_sso.setValue('K'+(i+1), response.data[s].req_minutes, true)
+                            } else if(response.data[s].downtime_code == 5) {
+                                keikaku_downtime_sso.setValue('L'+(i+1), response.data[s].req_minutes, true)
+                            } else if(response.data[s].downtime_code == 7) {
+                                keikaku_downtime_sso.setValue('M'+(i+1), response.data[s].req_minutes, true)
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function keikaku_shift_input_on_change() {
+        keikakuGetDownTime()
+    }
 
 </script>
