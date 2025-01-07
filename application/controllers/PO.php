@@ -670,7 +670,7 @@ class PO extends CI_Controller
             $dpp_price = $ppn == 0 ? 0 : 11/12 * $total_amount;
             $ppn_price = $dpp_price * $ppn / 100;
             $pph_price = $dpp_price * $pph / 100;
-            $netpayment = $dpp_price - $pph_price + $ppn_price;
+            $netpayment = $total_amount - $pph_price + $ppn_price;
 
             $sdata_section = '';
             foreach ($adata_section as $r) {
