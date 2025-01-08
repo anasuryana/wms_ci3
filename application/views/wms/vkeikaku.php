@@ -17,6 +17,9 @@
     .keikakuFontColorRegular {
         color: black !important
     }
+    .keikakuRedColor {
+        color : red !important
+    }
 </style>
 <div style="padding: 5px" >
 	<div class="container-fluid">
@@ -167,7 +170,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 mb-1 table-responsive" id="keikakuProdplanContainer">
-                                <div id="keikaku_prodplan_spreadsheet" style="font-size:75%"></div>
+                                <div id="keikaku_prodplan_spreadsheet" style="font-size:80%"></div>
                             </div>
                         </div>
                     </div>
@@ -794,6 +797,26 @@
                         for(let i=0; i <theCells.length; i++) {
                             const theCell = theCells[i]
                             theCell.classList.add('keikakuGrayOldColor')
+                        }
+                        break;
+                    case 'Progress' :
+                        cellName = jspreadsheet.getColumnNameFromId([x-1,y]);
+                        theCells = cell.parentNode.cells
+                        for(let i=0; i <theCells.length; i++) {
+                            const theCell = theCells[i]
+                            if(numeral(theCell.innerText).value() < 0) {
+                                theCell.classList.add('keikakuRedColor')
+                            }
+                        }
+                        break;
+                    case 'Total.' :
+                        cellName = jspreadsheet.getColumnNameFromId([x-1,y]);
+                        theCells = cell.parentNode.cells
+                        for(let i=0; i <theCells.length; i++) {
+                            const theCell = theCells[i]
+                            if(numeral(theCell.innerText).value() < 0) {
+                                theCell.classList.add('keikakuRedColor')
+                            }
                         }
                         break;
                 }
@@ -1805,29 +1828,54 @@
                 _newRow7.push('Progress')
                 _newRow7.push(0)
 
+                _newRow8.push('')
+                _newRow8.push('')
+                _newRow8.push('')
+                _newRow8.push('')
+                _newRow8.push('')
+                _newRow8.push('')
+                _newRow8.push('')
+                _newRow8.push('Total.')
+                _newRow8.push('')
+
                 let totalQtySensor = 0
                 for(let r=0; r<totalRowsSensor; r++) {
                     if(data[i][3] == dataS[r][3]) {
                         for(let c=9; c<(9+12+12+12); c++) {
                             _newRow5.push(dataS[r][c-3])
-
+                            const _output = Number(dataS[r][c-3])
                             if(c<33) {
-                                _newRow5[8]+=Number(dataS[r][c-3])
+                                _newRow5[8]+=_output
                             }
 
-                            totalQtySensor += Number(dataS[r][c-3])
+                            totalQtySensor += _output
 
-                            if(Number(dataS[r][c-3])==0) {
+                            if(_output==0) {
                                 _newRow6.push('')
+                                _newRow7.push('')
+                                _newRow8.push('')
                             } else {
+                                let _totalLastPlan = 0
+                                for(let d=c;d>=9;d--) {
+                                    if(_newRow4[d]) {
+                                        _totalLastPlan = Number(_newRow4[d])
+                                        break;
+                                    }
+                                }
                                 _newRow6.push(totalQtySensor)
+                                _newRow7.push(_output-_newRow3[c])
+                                _newRow8.push(totalQtySensor-_totalLastPlan)
                             }
+
                         }
                         break;
                     }
                 }
+                _newRow7[8] = numeral(_newRow5[8] - _newRow3[5]).format(',')
                 inputSS.push(_newRow5)
                 inputSS.push(_newRow6)
+                inputSS.push(_newRow7)
+                inputSS.push(_newRow8)
 
             } else {
 
@@ -2249,20 +2297,20 @@
 
                 for(let i=0; i < dataLength; i++) {
                     keikaku_downtime_sso.setValue('C'+(i+1), '', true)
-                    keikaku_downtime_sso.setValue('D'+(i+1), '', true)                            
+                    keikaku_downtime_sso.setValue('D'+(i+1), '', true)
                     keikaku_downtime_sso.setValue('E'+(i+1), '', true)
-                    keikaku_downtime_sso.setValue('F'+(i+1), '', true)                           
+                    keikaku_downtime_sso.setValue('F'+(i+1), '', true)
                     keikaku_downtime_sso.setValue('G'+(i+1), '', true)
-                    keikaku_downtime_sso.setValue('H'+(i+1), '', true)                            
+                    keikaku_downtime_sso.setValue('H'+(i+1), '', true)
                     keikaku_downtime_sso.setValue('I'+(i+1), '', true)
-                    keikaku_downtime_sso.setValue('J'+(i+1), '', true)                           
-                    keikaku_downtime_sso.setValue('K'+(i+1), '', true)                          
-                    keikaku_downtime_sso.setValue('L'+(i+1), '', true)                            
+                    keikaku_downtime_sso.setValue('J'+(i+1), '', true)
+                    keikaku_downtime_sso.setValue('K'+(i+1), '', true)
+                    keikaku_downtime_sso.setValue('L'+(i+1), '', true)
                     keikaku_downtime_sso.setValue('M'+(i+1), '', true)
                 }
 
                 for(let i=0; i < dataLength; i++) {
-                    let _itemTime = inputSS[i][columnTime]                    
+                    let _itemTime = inputSS[i][columnTime]
                     for(let s=0;s<responseDataLength; s++) {
                         const _itemTime2 = response.data[s].running_at.split(' ')
                         const _jam = _itemTime2[1].split(':')
