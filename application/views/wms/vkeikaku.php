@@ -1794,6 +1794,17 @@
                 _newRow6.push('Total')
                 _newRow6.push('')
 
+
+                _newRow7.push('')
+                _newRow7.push('')
+                _newRow7.push('')
+                _newRow7.push('')
+                _newRow7.push('')
+                _newRow7.push('')
+                _newRow7.push('')
+                _newRow7.push('Progress')
+                _newRow7.push(0)
+
                 let totalQtySensor = 0
                 for(let r=0; r<totalRowsSensor; r++) {
                     if(data[i][3] == dataS[r][3]) {
@@ -1907,8 +1918,8 @@
             ['5', '17', '', '', '', '', '', '', '', ''],
             ['6', '18', '', '', '', '', '', '', '', ''],
             ['7', '19', '', '', '', '', '', '', '', ''],
-            ['Sub Total', '', '=C1+C2+C3+C4+C5+C6+C7+C8+C9+C10+C11+C12+C13', '', '=E1+E2+E3+E4+E5+E6+E7+E8+E9+E10+E11+E12+E13', '', '=G1+G2+G3+G4+G5+G6+G7+G8+G9+G10+G11+G12+G13', '', '=I1+I2+I3+I4+I5+I6+I7+I8+I9+I10+I11+I12+I13', '','=K1+K2+K3+K4+K5+K6+K7+K8+K9+K10+K11+K12+K13','','=M1+M2+M3+M4+M5+M6+M7+M8+M9+M10+M11+M12+M13'],
-            ['Total', '', '=C14+E14+G14+I14+K14+M14', '', '', '', '', '', '', ''],
+            ['Sub Total', '', '=C1+C2+C3+C4+C5+C6+C7+C8+C9+C10+C11+C12+C13', '', '=E1+E2+E3+E4+E5+E6+E7+E8+E9+E10+E11+E12+E13', '', '=G1+G2+G3+G4+G5+G6+G7+G8+G9+G10+G11+G12+G13', '', '=I1+I2+I3+I4+I5+I6+I7+I8+I9+I10+I11+I12+I13', '','=K1+K2+K3+K4+K5+K6+K7+K8+K9+K10+K11+K12+K13','=L1+L2+L3+L4+L5+L6+L7+L8+L9+L10+L11+L12+L13','=M1+M2+M3+M4+M5+M6+M7+M8+M9+M10+M11+M12+M13'],
+            ['Total', '', '=C14+E14+G14+I14+K14+L14+M14', '', '', '', '', '', '', ''],
         ],
         columns : [
             {
@@ -2236,9 +2247,21 @@
                 let dataLength = inputSS.length -2
                 let responseDataLength = response.data.length
 
-                
                 for(let i=0; i < dataLength; i++) {
-                    // let _itemTime = keikaku_data_sso.getValueFromCoords(columnTime, i, true)
+                    keikaku_downtime_sso.setValue('C'+(i+1), '', true)
+                    keikaku_downtime_sso.setValue('D'+(i+1), '', true)                            
+                    keikaku_downtime_sso.setValue('E'+(i+1), '', true)
+                    keikaku_downtime_sso.setValue('F'+(i+1), '', true)                           
+                    keikaku_downtime_sso.setValue('G'+(i+1), '', true)
+                    keikaku_downtime_sso.setValue('H'+(i+1), '', true)                            
+                    keikaku_downtime_sso.setValue('I'+(i+1), '', true)
+                    keikaku_downtime_sso.setValue('J'+(i+1), '', true)                           
+                    keikaku_downtime_sso.setValue('K'+(i+1), '', true)                          
+                    keikaku_downtime_sso.setValue('L'+(i+1), '', true)                            
+                    keikaku_downtime_sso.setValue('M'+(i+1), '', true)
+                }
+
+                for(let i=0; i < dataLength; i++) {
                     let _itemTime = inputSS[i][columnTime]                    
                     for(let s=0;s<responseDataLength; s++) {
                         const _itemTime2 = response.data[s].running_at.split(' ')
