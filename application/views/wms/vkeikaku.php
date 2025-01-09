@@ -943,7 +943,7 @@
             $.ajax({
                 type: "GET",
                 url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku",
-                data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value},
+                data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value, user_id: uidnya},
                 dataType: "json",
                 success: function (response) {
                     if(response.data.length === 0) {
@@ -1353,7 +1353,7 @@
         $.ajax({
             type: "GET",
             url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku",
-            data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value},
+            data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value, user_id : uidnya},
             dataType: "json",
             success: function (response) {
                 let theData = [];
