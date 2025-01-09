@@ -69,6 +69,7 @@
                                     <th>Type</th>
                                     <th>Process</th>
                                     <th>Cycle Time</th>
+                                    <th>Valid from</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -189,6 +190,8 @@
                         newcell.innerHTML = arrayItem['process_code']
                         newcell = newrow.insertCell(-1)
                         newcell.innerHTML = arrayItem['cycle_time']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerHTML = arrayItem['valid_date_time']
                     })
                     myContainer.innerHTML = ''
                     myContainer.appendChild(myfrag)
