@@ -818,7 +818,7 @@
             }
             if(x>7 && y==7) {
                 if(value === 'MTN') {
-                    const theDataCount = keikaku_prodplan_sso.getData().length                    
+                    const theDataCount = keikaku_prodplan_sso.getData().length
                     for(let _y=y; _y<theDataCount;_y++) {
                         cellName = jspreadsheet.getColumnNameFromId([x,_y]);
                         const theCell = keikaku_prodplan_sso.getCell(cellName)
@@ -1238,7 +1238,7 @@
         keikakuGetDownTime()
     }
 
-    function keikaku_calc_friday(hourAt) {
+    function keikaku_calc_friday(hourAt, isOT) {
         const currentDay = new Date().getDay();
         let _defaultWorkHour = 0
         switch(hourAt) {
@@ -1246,7 +1246,11 @@
                 _defaultWorkHour = (currentDay == 5 ? 0.25 : 0.5)
                 break;
             case 15:
-                _defaultWorkHour = (currentDay == 5 ? 1 : 0.83)
+                if(isOT) {
+                    _defaultWorkHour = (currentDay == 5 ? 1 : 0.83)
+                } else {
+                    _defaultWorkHour = (currentDay == 5 ? 1 : 0.75)
+                }
                 break;
             case 16:
                 _defaultWorkHour = (currentDay == 5 ? 0.67 : 1)
@@ -1285,12 +1289,12 @@
                     })
                 } else {
                     // kalau data kosong
-                    worktype1.push(...[0.75, 1,	0.75, 1, 1, keikaku_calc_friday(12) , 1, 1, keikaku_calc_friday(15), 0, 0,0, 0.75, 1, 0.67, 1, 1, 0.33, 1, 1, 1, 0,	0,0	,0.75,	1, 0.75, 1, 1, 0.50, 1, 1, 0.75,0,0,0])
-                    worktype2.push(...[0.75 ,1 ,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,keikaku_calc_friday(16) ,1 ,keikaku_calc_friday(18) ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1.00 ,1.00 ,1.00 ,0.75 ,1.00 ,0.75 ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.83 ,1.00 ,1.00 ,0.42])
-                    worktype3.push(...[0    ,0 ,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,0    ,0    ,0    ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1 ,1 ,1 ,0    ,0    ,0    ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.75 ,0    ,0    ,0])
-                    worktype4.push(...[0,0,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,keikaku_calc_friday(16) ,1 ,keikaku_calc_friday(18) ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1.00 ,1.00 ,1.00 ,0.75 ,1.00 ,0.75 ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.83 ,1.00 ,1.00 ,0.42])
-                    worktype5.push(...[0.75 ,1 ,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,0,0,0,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1 ,1 ,1 ,0,0,0,0.75 ,1 ,0.75 ,1 ,1 ,0.50 ,1.00 ,1.00 ,0.75,0,0,0])
-                    worktype6.push(...[0.75 ,1 ,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,keikaku_calc_friday(16) ,1 ,keikaku_calc_friday(18) ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1.00 ,1.00 ,1.00 ,0.75 ,1.00 ,0.75 ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.83 ,1.00 ,1.00 ,0.42])
+                    worktype1.push(...[0.75, 1,	0.75, 1, 1, keikaku_calc_friday(12, false) , 1, 1, keikaku_calc_friday(15,false), 0, 0,0, 0.75, 1, 0.67, 1, 1, 0.33, 1, 1, 1, 0,	0,0	,0.75,	1, 0.75, 1, 1, 0.50, 1, 1, 0.75,0,0,0])
+                    worktype2.push(...[0.75 ,1 ,0.75 ,1 ,1 ,keikaku_calc_friday(12, true) ,1 ,1 ,keikaku_calc_friday(15, true) ,keikaku_calc_friday(16, true) ,1 ,keikaku_calc_friday(18,true) ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1.00 ,1.00 ,1.00 ,0.75 ,1.00 ,0.75 ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.83 ,1.00 ,1.00 ,0.42])
+                    worktype3.push(...[0    ,0 ,0.75 ,1 ,1 ,keikaku_calc_friday(12, false) ,1 ,1 ,keikaku_calc_friday(15,false) ,0    ,0    ,0    ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1 ,1 ,1 ,0    ,0    ,0    ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.75 ,0    ,0    ,0])
+                    worktype4.push(...[0,0,0.75 ,1 ,1 ,keikaku_calc_friday(12,true) ,1 ,1 ,keikaku_calc_friday(15, true) ,keikaku_calc_friday(16, true) ,1 ,keikaku_calc_friday(18, true) ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1.00 ,1.00 ,1.00 ,0.75 ,1.00 ,0.75 ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.83 ,1.00 ,1.00 ,0.42])
+                    worktype5.push(...[0.75 ,1 ,0.75 ,1 ,1 ,keikaku_calc_friday(12,false) ,1 ,1 ,keikaku_calc_friday(15,false) ,0,0,0,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1 ,1 ,1 ,0,0,0,0.75 ,1 ,0.75 ,1 ,1 ,0.50 ,1.00 ,1.00 ,0.75,0,0,0])
+                    worktype6.push(...[0.75 ,1 ,0.75 ,1 ,1 ,keikaku_calc_friday(12,true) ,1 ,1 ,keikaku_calc_friday(15,true) ,keikaku_calc_friday(16,true) ,1 ,keikaku_calc_friday(18,true) ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1.00 ,1.00 ,1.00 ,0.75 ,1.00 ,0.75 ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.83 ,1.00 ,1.00 ,0.42])
                     for(let i=0;i<36;i++) {
                         flag_mot.push('')
                     }
