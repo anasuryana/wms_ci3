@@ -345,6 +345,10 @@
   </div>
 </div>
 <script>
+    var tempX1 = 0
+    var tempX2 = 0
+    var tempY1 = 0
+    var tempY2 = 0
     function keikakuCopyWO() {
         navigator.clipboard.writeText(document.getElementById('keikakuEditWO').value)
         alertify.message('copied')
@@ -353,6 +357,9 @@
         $("#keikakuEditOutput").focus();
         keikaku_prodplan_sso.resetSelection(true);
         keikakuEditAlert.innerHTML = ''
+    });
+    $("#keikakuEditActualModal").on('hidden.bs.modal', function() {
+        keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1-1, tempX2, tempY2-1);
     });
     Inputmask({
         'alias': 'decimal',
@@ -852,7 +859,10 @@
                 })
                 keikakuEditOutput.value = aRow[x2]
                 keikakuEditSide.value = aRowSibling[1]
-                instance.jspreadsheet.resetSelection(true);
+                tempX1 = x1
+                tempX2 = x2
+                tempY1 = y1
+                tempY2 = y2                
                 $("#keikakuEditActualModal").modal('show')
             }
         }
@@ -1726,7 +1736,8 @@
 
                 // display prodplan to grid
                 keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation)
-
+                keikaku_prodplan_sso.resetSelection();
+                keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1+1, tempX2, tempY2+1);
             }, error: function(xhr, xopt, xthrow) {
                 pThis.disabled = false
                 alertify.error(xthrow)
