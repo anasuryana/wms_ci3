@@ -20,6 +20,9 @@
     .keikakuRedColor {
         color : red !important
     }
+    .keikakuGrayColorStrong {
+        background-color : #888888 !important
+    }
 </style>
 <div style="padding: 5px" >
 	<div class="container-fluid">
@@ -142,11 +145,6 @@
                                 <div class="btn-group btn-group-sm">
                                     <button class="btn btn-outline-primary" id="keikaku_btn_new_calculation" title="New" onclick="keikaku_btn_new_calculation_eClick()"><i class="fas fa-file"></i></button>
                                     <button class="btn btn-outline-primary" id="keikaku_btn_save_calculation" onclick="keikaku_btn_save_calculation_eClick(this)"><i class="fas fa-save"></i></button>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-1 text-end">
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-primary" id="keikaku_btn_run_calculation" title="Run formula" onclick="keikaku_btn_run_calculation_eC(this)">Run</button>
                                 </div>
                             </div>
                         </div>
@@ -792,7 +790,6 @@
                         }
                         break;
                     case 'Total':
-                        cellName = jspreadsheet.getColumnNameFromId([x-1,y]);
                         theCells = cell.parentNode.cells
                         for(let i=0; i <theCells.length; i++) {
                             const theCell = theCells[i]
@@ -800,7 +797,6 @@
                         }
                         break;
                     case 'Progress' :
-                        cellName = jspreadsheet.getColumnNameFromId([x-1,y]);
                         theCells = cell.parentNode.cells
                         for(let i=0; i <theCells.length; i++) {
                             const theCell = theCells[i]
@@ -810,7 +806,6 @@
                         }
                         break;
                     case 'Total.' :
-                        cellName = jspreadsheet.getColumnNameFromId([x-1,y]);
                         theCells = cell.parentNode.cells
                         for(let i=0; i <theCells.length; i++) {
                             const theCell = theCells[i]
@@ -819,6 +814,16 @@
                             }
                         }
                         break;
+                }
+            }
+            if(x>7 && y==7) {
+                if(value === 'MTN') {
+                    const theDataCount = keikaku_prodplan_sso.getData().length                    
+                    for(let _y=y; _y<theDataCount;_y++) {
+                        cellName = jspreadsheet.getColumnNameFromId([x,_y]);
+                        const theCell = keikaku_prodplan_sso.getCell(cellName)
+                        theCell.classList.add('keikakuGrayColorStrong')
+                    }
                 }
             }
 
@@ -1206,6 +1211,7 @@
                     alertify.success(response.message)
                     pThis.disabled = false
                     div_alert.innerHTML = ''
+                    keikaku_btn_run_prodplan_eC(keikaku_btn_run_prodplan)
                 }, error: function(xhr, xopt, xthrow) {
                     alertify.error(xthrow)
                     pThis.disabled = false
@@ -1278,6 +1284,7 @@
                         flag_mot.push(arrayItem['flag_mot'])
                     })
                 } else {
+                    // kalau data kosong
                     worktype1.push(...[0.75, 1,	0.75, 1, 1, keikaku_calc_friday(12) , 1, 1, keikaku_calc_friday(15), 0, 0,0, 0.75, 1, 0.67, 1, 1, 0.33, 1, 1, 1, 0,	0,0	,0.75,	1, 0.75, 1, 1, 0.50, 1, 1, 0.75,0,0,0])
                     worktype2.push(...[0.75 ,1 ,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,keikaku_calc_friday(16) ,1 ,keikaku_calc_friday(18) ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1.00 ,1.00 ,1.00 ,0.75 ,1.00 ,0.75 ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.83 ,1.00 ,1.00 ,0.42])
                     worktype3.push(...[0    ,0 ,0.75 ,1 ,1 ,keikaku_calc_friday(12) ,1 ,1 ,keikaku_calc_friday(15) ,0    ,0    ,0    ,0.75 ,1 ,0.67 ,1 ,1 ,0.33 ,1 ,1 ,1 ,0    ,0    ,0    ,0.75 ,1.00 ,0.75 ,1.00 ,1.00 ,0.50 ,1.00 ,1.00 ,0.75 ,0    ,0    ,0])
@@ -1714,7 +1721,7 @@
                 mydes.appendChild(myfrag);
 
                 // display prodplan to grid
-                keikakuDisplayProdplan(response.asProdplan, response.dataSensor)
+                keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation)
 
             }, error: function(xhr, xopt, xthrow) {
                 pThis.disabled = false
@@ -1723,7 +1730,20 @@
         });
     }
 
-    function keikakuDisplayProdplan(data, dataS) {
+    function keikakuDisplayProdplan(data, dataS, dataCalculation) {
+        let _newRowH = []
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        for(let c=9; c<(9+12+12+12); c++) {
+            _newRowH.push(dataCalculation[c-3] == 'M' ? 'MTN' : dataCalculation[c-3])
+        }
         let inputSS = [
                         ['', '', '' ,'','', '','','Date','','','','','','','','','','','','','',  '','','','','','','','','','','' ,'',  '','','','','','','','','','','' ,''],
                         ['', '', '' ,'','', '','','Time','','7','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6',  '7','8','9','10','11','12','13','14','15','16','17','18'],
@@ -1732,6 +1752,7 @@
                         ['#', '', '' ,'','', 'Quantity','(H)','Working Time','Retention Time','','','','','','','','','','','','',  '','','','','','','','','','','' ,'',  '','','','','','','','','','','' ,''],
                         ['', 'Side', 'Type' ,'Spec','', 'Assy Code','Lot S/T','Efficiency','%','','','','','','','','','','','','',  '','','','','','','','','','','' ,'',  '','','','','','','','','','','' ,''],
                         ['', '', '' ,'','', '','(H)','Shift','TOTAL','Morning','','','','','','','','','','','',  'Night','','','','','','','','','','' ,'',  'Morning','','','','','','','','','','' ,'' ],
+                        _newRowH
                     ];
         keikaku_prodplan_sso.setData(inputSS)
         const totalRowsMatrix = data.length
