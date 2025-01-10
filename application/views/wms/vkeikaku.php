@@ -1472,7 +1472,7 @@
             if(!JobUnique.includes(_job)) {
                 JobUnique.push(_job)
                 dataDetail.push({
-                    item_code : inputSS[i][7].trim(),
+                    item_code : inputSS[i][7].trim().substring(0,9),
                 })
             }
         }
@@ -1493,7 +1493,7 @@
                 let dataLength = keikaku_data_sso.getData().length
                 let responseDataLength = response.data.length
                 for(let i=0; i < dataLength; i++) {
-                    let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim()
+                    let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim().substring(0,9)
                     keikaku_data_sso.setValue('K'+(i+1), 0)
                     for(let s=0;s<responseDataLength; s++) {
                         if(_itemCode == response.data[s].assy_code.trim()) {
