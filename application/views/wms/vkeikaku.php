@@ -27,7 +27,7 @@
 <div style="padding: 5px" >
 	<div class="container-fluid">
         <div class="row" id="keikaku_stack1">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">Line</label>
                     <select class="form-select" id="keikaku_line_input" required onchange="keikaku_line_input_on_change()">
@@ -39,10 +39,16 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="input-group input-group-sm mb-1">
                     <label class="input-group-text">Production Date</label>
                     <input type="text" class="form-control" id="keikaku_date_input" readonly onchange="keikaku_date_input_on_change()">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group input-group-sm mb-1">
+                    <label class="input-group-text"><i class="fas fa-user-pen"></i></label>
+                    <input type="text" class="form-control" id="keikaku_user_first_active" readonly title="first open by">
                 </div>
             </div>
         </div>
@@ -1007,6 +1013,7 @@
                 data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value, user_id: uidnya},
                 dataType: "json",
                 success: function (response) {
+                    keikaku_user_first_active.value = response.currentActiveUser.MSTEMP_ID + ':' + response.currentActiveUser.MSTEMP_FNM
                     if(response.data.length === 0) {
                         if(confirm('Create new data based on previous balance ?')) {
                             const dataInput = {
@@ -1423,6 +1430,7 @@
             data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value, user_id : uidnya},
             dataType: "json",
             success: function (response) {
+                keikaku_user_first_active.value = response.currentActiveUser.MSTEMP_ID + ':' + response.currentActiveUser.MSTEMP_FNM
                 let theData = [];
                 response.data.forEach((arrayItem, index) => {
                     theData.push([
