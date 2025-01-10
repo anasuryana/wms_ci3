@@ -650,20 +650,20 @@
             if([13,14,15,16,17,18,19,20,21].includes(x) && [0,1,2,3,4,5].includes(y)) {
                 cell.style.cssText = "background-color:#ebf1de"
             }
-            
+
         },
         oneditionend : function(el, cell, x, y, value, flag) {
-            if(y==7 && x>0) {                
+            if(y==7 && x>0) {
                 const cellNO_OT_value = keikaku_calculation_sso.getValueFromCoords(x,4);
                 const cellOT_value = keikaku_calculation_sso.getValueFromCoords(x,5);
                 let retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
                 el.jspreadsheet.setValueFromCoords(x,y+1, retValue, true)
-            }           
+            }
         },
         onblur : function (instance, cell, x, y, value) {
             keikaku_calc_make_sure(instance)
         },
-        onload : function (instance) {        
+        onload : function (instance) {
             keikaku_calc_make_sure(instance)
         },
         tableOverflow:true,
@@ -673,16 +673,20 @@
     });
 
     function keikaku_calc_make_sure(el) {
-        for(let x=1;x<=36;x++) {
-            let value = keikaku_calculation_sso.getValueFromCoords(x, 7)            
-            const cellNO_OT_value = keikaku_calculation_sso.getValueFromCoords(x,4);
-            const cellOT_value = keikaku_calculation_sso.getValueFromCoords(x,5);
-            let retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
-            el.jspreadsheet.setValueFromCoords(x,8, retValue, true)
+        try {
+            for(let x=1;x<=36;x++) {
+                let value = keikaku_calculation_sso.getValueFromCoords(x, 7)
+                const cellNO_OT_value = keikaku_calculation_sso.getValueFromCoords(x,4);
+                const cellOT_value = keikaku_calculation_sso.getValueFromCoords(x,5);
+                let retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
+                el.jspreadsheet.setValueFromCoords(x,8, retValue, true)
+            }
+        } catch (err) {
+            console.log({'keikaku_calc_make_sure' : err})
         }
     }
 
-    function keikaku_calc_function(data) {        
+    function keikaku_calc_function(data) {
         if(['N','M','4M'].includes(data.value)) {
             return 0
         }
