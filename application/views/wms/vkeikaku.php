@@ -650,12 +650,54 @@
             if([13,14,15,16,17,18,19,20,21].includes(x) && [0,1,2,3,4,5].includes(y)) {
                 cell.style.cssText = "background-color:#ebf1de"
             }
+            
+        },
+        oneditionend : function(el, cell, x, y, value, flag) {
+            if(y==7 && x>0) {                
+                const cellNO_OT_value = keikaku_calculation_sso.getValueFromCoords(x,4);
+                const cellOT_value = keikaku_calculation_sso.getValueFromCoords(x,5);
+                let retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
+                el.jspreadsheet.setValueFromCoords(x,y+1, retValue, true)
+            }           
+        },
+        onblur : function (instance, cell, x, y, value) {
+            keikaku_calc_make_sure(instance)
+        },
+        onload : function (instance) {        
+            keikaku_calc_make_sure(instance)
         },
         tableOverflow:true,
         freezeColumns: 1,
         minDimensions: [50,10],
         tableWidth: '1000px',
     });
+
+    function keikaku_calc_make_sure(el) {
+        for(let x=1;x<=36;x++) {
+            let value = keikaku_calculation_sso.getValueFromCoords(x, 7)            
+            const cellNO_OT_value = keikaku_calculation_sso.getValueFromCoords(x,4);
+            const cellOT_value = keikaku_calculation_sso.getValueFromCoords(x,5);
+            let retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
+            el.jspreadsheet.setValueFromCoords(x,8, retValue, true)
+        }
+    }
+
+    function keikaku_calc_function(data) {        
+        if(['N','M','4M'].includes(data.value)) {
+            return 0
+        }
+
+        if(data.value == 'OT') {
+            return data.valueOT
+        } else {
+            if(data.value>0) {
+                return data.value
+            } else {
+                return data.valueNO_OT
+            }
+        }
+
+    }
     var keikakuTableWidthObserver = 0
 
     resizeObserverO = new ResizeObserver(() => {
@@ -862,7 +904,7 @@
                 tempX1 = x1
                 tempX2 = x2
                 tempY1 = y1
-                tempY2 = y2                
+                tempY2 = y2
                 $("#keikakuEditActualModal").modal('show')
             }
         }
@@ -1034,44 +1076,44 @@
             ['Change Model', ...Array.from({length: 36}, (_, i) => null)],
             ['Change Model/OT', ...Array.from({length: 36}, (_, i) => null)],
             ['Retention Time',
-            `=IF(OR(UPPER(B8)="N", UPPER(B8)="M", UPPER(B8)="4M"),0,IF($K$8="OT",B6,IF(B8>0,B8,B5)))`,
-            `=IF(OR(UPPER(C8)="N", UPPER(C8)="M", UPPER(C8)="4M"),0,IF($K$8="OT",C6,IF(C8>0,C8,C5)))`,
-            `=IF(OR(UPPER(D8)="N", UPPER(D8)="M", UPPER(D8)="4M"),0,IF($K$8="OT",D6,IF(D8>0,D8,D5)))`,
-            `=IF(OR(UPPER(E8)="N", UPPER(E8)="M", UPPER(E8)="4M"),0,IF($K$8="OT",E6,IF(E8>0,E8,E5)))`,
-            `=IF(OR(UPPER(F8)="N", UPPER(F8)="M", UPPER(F8)="4M"),0,IF($K$8="OT",F6,IF(F8>0,F8,F5)))`,
-            `=IF(OR(UPPER(G8)="N", UPPER(G8)="M", UPPER(G8)="4M"),0,IF($K$8="OT",G6,IF(G8>0,G8,G5)))`,
-            `=IF(OR(UPPER(H8)="N", UPPER(H8)="M", UPPER(H8)="4M"),0,IF($K$8="OT",H6,IF(H8>0,H8,H5)))`,
-            `=IF(OR(UPPER(I8)="N", UPPER(I8)="M", UPPER(I8)="4M"),0,IF($K$8="OT",I6,IF(I8>0,I8,I5)))`,
-            `=IF(OR(UPPER(J8)="N", UPPER(J8)="M", UPPER(J8)="4M"),0,IF($K$8="OT",J6,IF(J8>0,J8,J5)))`,
-            `=IF(OR(UPPER(K8)="N", UPPER(K8)="M", UPPER(K8)="4M"),0,IF($K$8="OT",K6,IF(K8>0,K8,K5)))`,
-            `=IF(OR(UPPER(L8)="N", UPPER(L8)="M", UPPER(L8)="4M"),0,IF($K$8="OT",L6,IF(L8>0,L8,L5)))`,
-            `=IF(OR(UPPER(M8)="N", UPPER(M8)="M", UPPER(M8)="4M"),0,IF($K$8="OT",M6,IF(M8>0,M8,M5)))`,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
 
-            `=IF(OR(UPPER(N8)="N", UPPER(N8)="M", UPPER(N8)="4M"),0,IF($W$8="OT",N6,IF(N8>0,N8,N5)))`,
-            `=IF(OR(UPPER(O8)="N", UPPER(O8)="M", UPPER(O8)="4M"),0,IF($W$8="OT",O6,IF(O8>0,O8,O5)))`,
-            `=IF(OR(UPPER(P8)="N", UPPER(P8)="M", UPPER(P8)="4M"),0,IF($W$8="OT",P6,IF(P8>0,P8,P5)))`,
-            `=IF(OR(UPPER(Q8)="N", UPPER(Q8)="M", UPPER(Q8)="4M"),0,IF($W$8="OT",Q6,IF(Q8>0,Q8,Q5)))`,
-            `=IF(OR(UPPER(R8)="N", UPPER(R8)="M", UPPER(R8)="4M"),0,IF($W$8="OT",R6,IF(R8>0,R8,R5)))`,
-            `=IF(OR(UPPER(S8)="N", UPPER(S8)="M", UPPER(S8)="4M"),0,IF($W$8="OT",S6,IF(S8>0,S8,S5)))`,
-            `=IF(OR(UPPER(T8)="N", UPPER(T8)="M", UPPER(T8)="4M"),0,IF($W$8="OT",T6,IF(T8>0,T8,T5)))`,
-            `=IF(OR(UPPER(U8)="N", UPPER(U8)="M", UPPER(U8)="4M"),0,IF($W$8="OT",U6,IF(U8>0,U8,U5)))`,
-            `=IF(OR(UPPER(V8)="N", UPPER(V8)="M", UPPER(V8)="4M"),0,IF($W$8="OT",V6,IF(V8>0,V8,V5)))`,
-            `=IF(OR(UPPER(W8)="N", UPPER(W8)="M", UPPER(W8)="4M"),0,IF($W$8="OT",W6,IF(W8>0,W8,W5)))`,
-            `=IF(OR(UPPER(X8)="N", UPPER(X8)="M", UPPER(X8)="4M"),0,IF($W$8="OT",X6,IF(X8>0,X8,X5)))`,
-            `=IF(OR(UPPER(Y8)="N", UPPER(Y8)="M", UPPER(Y8)="4M"),0,IF($W$8="OT",Y6,IF(Y8>0,Y8,Y5)))`,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
 
-            `=IF(OR(UPPER(Z8)="N", UPPER(Z8)="M", UPPER(Z8)="4M"),0,IF($AI$8="OT",Z6,IF(Z8>0,Z8,Z5)))`,
-            `=IF(OR(UPPER(AA8)="N", UPPER(AA8)="M", UPPER(AA8)="4M"),0,IF($AI$8="OT",AA6,IF(AA8>0,AA8,AA5)))`,
-            `=IF(OR(UPPER(AB8)="N", UPPER(AB8)="M", UPPER(AB8)="4M"),0,IF($AI$8="OT",AB6,IF(AB8>0,AB8,AB5)))`,
-            `=IF(OR(UPPER(AC8)="N", UPPER(AC8)="M", UPPER(AC8)="4M"),0,IF($AI$8="OT",AC6,IF(AC8>0,AC8,AC5)))`,
-            `=IF(OR(UPPER(AD8)="N", UPPER(AD8)="M", UPPER(AD8)="4M"),0,IF($AI$8="OT",AD6,IF(AD8>0,AD8,AD5)))`,
-            `=IF(OR(UPPER(AE8)="N", UPPER(AE8)="M", UPPER(AE8)="4M"),0,IF($AI$8="OT",AE6,IF(AE8>0,AE8,AE5)))`,
-            `=IF(OR(UPPER(AF8)="N", UPPER(AF8)="M", UPPER(AF8)="4M"),0,IF($AI$8="OT",AF6,IF(AF8>0,AF8,AF5)))`,
-            `=IF(OR(UPPER(AG8)="N", UPPER(AG8)="M", UPPER(AG8)="4M"),0,IF($AI$8="OT",AG6,IF(AG8>0,AG8,AG5)))`,
-            `=IF(OR(UPPER(AH8)="N", UPPER(AH8)="M", UPPER(AH8)="4M"),0,IF($AI$8="OT",AH6,IF(AH8>0,AH8,AH5)))`,
-            `=IF(OR(UPPER(AI8)="N", UPPER(AI8)="M", UPPER(AI8)="4M"),0,IF($AI$8="OT",AI6,IF(AI8>0,AI8,AI5)))`,
-            `=IF(OR(UPPER(AJ8)="N", UPPER(AJ8)="M", UPPER(AJ8)="4M"),0,IF($AI$8="OT",AJ6,IF(AJ8>0,AJ8,AJ5)))`,
-            `=IF(OR(UPPER(AK8)="N", UPPER(AK8)="M", UPPER(AK8)="4M"),0,IF($AI$8="OT",AK6,IF(AK8>0,AK8,AK5)))`,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
+            ``,
             ],
             ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i), ...Array.from({length: 16}, (_, i) => i + 8)],
             ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
@@ -1249,7 +1291,7 @@
     }
 
     function keikaku_calc_friday(hourAt, isOT) {
-        const currentDay = new Date().getDay();
+        const currentDay = new Date(keikaku_date_input.value).getDay();
         let _defaultWorkHour = 0
         switch(hourAt) {
             case 12:
@@ -1320,44 +1362,44 @@
                     ['Change Model', ...Array.from({length: 36}, (_, i) => null)],
                     flag_mot,
                     ['Retention Time',
-                    `=IF(OR(UPPER(B8)="N", UPPER(B8)="M", UPPER(B8)="4M"),0,IF($K$8="OT",B6,IF(B8>0,B8,B5)))`,
-                    `=IF(OR(UPPER(C8)="N", UPPER(C8)="M", UPPER(C8)="4M"),0,IF($K$8="OT",C6,IF(C8>0,C8,C5)))`,
-                    `=IF(OR(UPPER(D8)="N", UPPER(D8)="M", UPPER(D8)="4M"),0,IF($K$8="OT",D6,IF(D8>0,D8,D5)))`,
-                    `=IF(OR(UPPER(E8)="N", UPPER(E8)="M", UPPER(E8)="4M"),0,IF($K$8="OT",E6,IF(E8>0,E8,E5)))`,
-                    `=IF(OR(UPPER(F8)="N", UPPER(F8)="M", UPPER(F8)="4M"),0,IF($K$8="OT",F6,IF(F8>0,F8,F5)))`,
-                    `=IF(OR(UPPER(G8)="N", UPPER(G8)="M", UPPER(G8)="4M"),0,IF($K$8="OT",G6,IF(G8>0,G8,G5)))`,
-                    `=IF(OR(UPPER(H8)="N", UPPER(H8)="M", UPPER(H8)="4M"),0,IF($K$8="OT",H6,IF(H8>0,H8,H5)))`,
-                    `=IF(OR(UPPER(I8)="N", UPPER(I8)="M", UPPER(I8)="4M"),0,IF($K$8="OT",I6,IF(I8>0,I8,I5)))`,
-                    `=IF(OR(UPPER(J8)="N", UPPER(J8)="M", UPPER(J8)="4M"),0,IF($K$8="OT",J6,IF(J8>0,J8,J5)))`,
-                    `=IF(OR(UPPER(K8)="N", UPPER(K8)="M", UPPER(K8)="4M"),0,IF($K$8="OT",K6,IF(K8>0,K8,K5)))`,
-                    `=IF(OR(UPPER(L8)="N", UPPER(L8)="M", UPPER(L8)="4M"),0,IF($K$8="OT",L6,IF(L8>0,L8,L5)))`,
-                    `=IF(OR(UPPER(M8)="N", UPPER(M8)="M", UPPER(M8)="4M"),0,IF($K$8="OT",M6,IF(M8>0,M8,M5)))`,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
 
-                    `=IF(OR(UPPER(N8)="N", UPPER(N8)="M", UPPER(N8)="4M"),0,IF($W$8="OT",N6,IF(N8>0,N8,N5)))`,
-                    `=IF(OR(UPPER(O8)="N", UPPER(O8)="M", UPPER(O8)="4M"),0,IF($W$8="OT",O6,IF(O8>0,O8,O5)))`,
-                    `=IF(OR(UPPER(P8)="N", UPPER(P8)="M", UPPER(P8)="4M"),0,IF($W$8="OT",P6,IF(P8>0,P8,P5)))`,
-                    `=IF(OR(UPPER(Q8)="N", UPPER(Q8)="M", UPPER(Q8)="4M"),0,IF($W$8="OT",Q6,IF(Q8>0,Q8,Q5)))`,
-                    `=IF(OR(UPPER(R8)="N", UPPER(R8)="M", UPPER(R8)="4M"),0,IF($W$8="OT",R6,IF(R8>0,R8,R5)))`,
-                    `=IF(OR(UPPER(S8)="N", UPPER(S8)="M", UPPER(S8)="4M"),0,IF($W$8="OT",S6,IF(S8>0,S8,S5)))`,
-                    `=IF(OR(UPPER(T8)="N", UPPER(T8)="M", UPPER(T8)="4M"),0,IF($W$8="OT",T6,IF(T8>0,T8,T5)))`,
-                    `=IF(OR(UPPER(U8)="N", UPPER(U8)="M", UPPER(U8)="4M"),0,IF($W$8="OT",U6,IF(U8>0,U8,U5)))`,
-                    `=IF(OR(UPPER(V8)="N", UPPER(V8)="M", UPPER(V8)="4M"),0,IF($W$8="OT",V6,IF(V8>0,V8,V5)))`,
-                    `=IF(OR(UPPER(W8)="N", UPPER(W8)="M", UPPER(W8)="4M"),0,IF($W$8="OT",W6,IF(W8>0,W8,W5)))`,
-                    `=IF(OR(UPPER(X8)="N", UPPER(X8)="M", UPPER(X8)="4M"),0,IF($W$8="OT",X6,IF(X8>0,X8,X5)))`,
-                    `=IF(OR(UPPER(Y8)="N", UPPER(Y8)="M", UPPER(Y8)="4M"),0,IF($W$8="OT",Y6,IF(Y8>0,Y8,Y5)))`,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
 
-                    `=IF(OR(UPPER(Z8)="N", UPPER(Z8)="M", UPPER(Z8)="4M"),0,IF($AI$8="OT",Z6,IF(Z8>0,Z8,Z5)))`,
-                    `=IF(OR(UPPER(AA8)="N", UPPER(AA8)="M", UPPER(AA8)="4M"),0,IF($AI$8="OT",AA6,IF(AA8>0,AA8,AA5)))`,
-                    `=IF(OR(UPPER(AB8)="N", UPPER(AB8)="M", UPPER(AB8)="4M"),0,IF($AI$8="OT",AB6,IF(AB8>0,AB8,AB5)))`,
-                    `=IF(OR(UPPER(AC8)="N", UPPER(AC8)="M", UPPER(AC8)="4M"),0,IF($AI$8="OT",AC6,IF(AC8>0,AC8,AC5)))`,
-                    `=IF(OR(UPPER(AD8)="N", UPPER(AD8)="M", UPPER(AD8)="4M"),0,IF($AI$8="OT",AD6,IF(AD8>0,AD8,AD5)))`,
-                    `=IF(OR(UPPER(AE8)="N", UPPER(AE8)="M", UPPER(AE8)="4M"),0,IF($AI$8="OT",AE6,IF(AE8>0,AE8,AE5)))`,
-                    `=IF(OR(UPPER(AF8)="N", UPPER(AF8)="M", UPPER(AF8)="4M"),0,IF($AI$8="OT",AF6,IF(AF8>0,AF8,AF5)))`,
-                    `=IF(OR(UPPER(AG8)="N", UPPER(AG8)="M", UPPER(AG8)="4M"),0,IF($AI$8="OT",AG6,IF(AG8>0,AG8,AG5)))`,
-                    `=IF(OR(UPPER(AH8)="N", UPPER(AH8)="M", UPPER(AH8)="4M"),0,IF($AI$8="OT",AH6,IF(AH8>0,AH8,AH5)))`,
-                    `=IF(OR(UPPER(AI8)="N", UPPER(AI8)="M", UPPER(AI8)="4M"),0,IF($AI$8="OT",AI6,IF(AI8>0,AI8,AI5)))`,
-                    `=IF(OR(UPPER(AJ8)="N", UPPER(AJ8)="M", UPPER(AJ8)="4M"),0,IF($AI$8="OT",AJ6,IF(AJ8>0,AJ8,AJ5)))`,
-                    `=IF(OR(UPPER(AK8)="N", UPPER(AK8)="M", UPPER(AK8)="4M"),0,IF($AI$8="OT",AK6,IF(AK8>0,AK8,AK5)))`,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
+                    ``,
                     ],
                     ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i), ...Array.from({length: 12}, (_, i) => i + 8)],
                     ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
