@@ -20,8 +20,8 @@
     .keikakuRedColor {
         color : red !important
     }
-    .keikakuGrayColorStrong {
-        background-color : #888888 !important
+    .keikakuGrayColorLight {
+        background-color : #f3f3f3 !important
     }
 </style>
 <div style="padding: 5px" >
@@ -829,7 +829,7 @@
                     for(let _y=y; _y<theDataCount;_y++) {
                         cellName = jspreadsheet.getColumnNameFromId([x,_y]);
                         const theCell = keikaku_prodplan_sso.getCell(cellName)
-                        theCell.classList.add('keikakuGrayColorStrong')
+                        theCell.classList.add('keikakuGrayColorLight')
                     }
                 }
             }
