@@ -80,7 +80,43 @@
         </div>
     </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="keikaku_rpt_summary_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Report Filter</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12" id="keikaku_rpt_summart_Alert">
 
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">From</label>
+                        <input type="text" class="form-control" id="keikaku_rpt_date_from" readonly>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">To</label>
+                        <input type="text" class="form-control" id="keikaku_rpt_date_to" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" id="keikakuRptBtnExportSummary" onclick="keikakuRptBtnExportSummary(this)">Export</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
     function keikaku_rpt_randomNum () {
         return Math.floor(Math.random() * (235 - 52 + 1) + 52)
@@ -94,6 +130,16 @@
         autoclose:true
     });
     $("#keikaku_rpt_date_input").datepicker('update', new Date());
+    $("#keikaku_rpt_date_from").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true
+    });
+    $("#keikaku_rpt_date_from").datepicker('update', new Date());
+    $("#keikaku_rpt_date_to").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true
+    });
+    $("#keikaku_rpt_date_to").datepicker('update', new Date());
 
     function keikaku_rpt_load_line_code() {
         $.ajax({
@@ -284,6 +330,38 @@
     }
 
     function keikaku_rpt_btn_summary_e_click() {
-        alertify.message('This function is also under construction')
+        $("#keikaku_rpt_summary_modal").modal('show')
+    }
+
+    function keikakuRptBtnExportSummary(pThis) {
+        pThis.disabled = true
+        $.ajax({
+            type: "GET",
+            url: `<?=$_ENV['APP_INTERNAL_API']?>report/keikaku`,
+            data: { dateFrom : keikaku_rpt_date_from.value , dateTo:keikaku_rpt_date_to.value },
+            success: function (response) {
+                pThis.disabled = false
+                let waktuSekarang = moment().format('YYYY MMM DD, h_mm')
+                const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                const fileName = `keikaku from ${keikaku_rpt_date_from.value} to ${keikaku_rpt_date_to.value}.xlsx`
+                saveAs(blob, fileName)
+
+                alertify.success('Done')
+            },
+            xhr: function () {
+                const xhr = new XMLHttpRequest()
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 2) {
+                        pThis.disabled = false
+                        if (xhr.status == 200) {
+                            xhr.responseType = "blob";
+                        } else {
+                            xhr.responseType = "text";
+                        }
+                    }
+                }
+                return xhr
+            },
+        })
     }
 </script>
