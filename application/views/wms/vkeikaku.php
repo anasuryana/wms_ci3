@@ -344,6 +344,7 @@
       <input type="hidden" id="keikakuEditDate">
       <input type="hidden" id="keikakuEditXCoordinate">
       <input type="hidden" id="keikakuEditSide">
+      <input type="hidden" id="keikakuEditHeadSeq">
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="keikakuBtnEditActual" onclick="keikakuBtnEditActualOnClick(this)"><i class="fas fa-save"></i></button>
       </div>
@@ -904,6 +905,7 @@
                 let aRowTime = instance.jspreadsheet.getRowData(1)
                 keikakuEditHour.value = aRowTime[x2]
                 keikakuEditXCoordinate.value = x2
+                keikakuEditHeadSeq.value = aRowSibling2[0]/2
                 keikaku_get_wo({
                     prefWO : aRowSibling2[3],
                     procWO : aRowSibling[1],
@@ -2397,7 +2399,8 @@
             runningAtTime : keikakuEditHour.value,
             quantity : qty,
             user_id : uidnya,
-            XCoordinate : keikakuEditXCoordinate.value
+            XCoordinate : keikakuEditXCoordinate.value,
+            seq_data : keikakuEditHeadSeq.value
         }
         pThis.disabled = true
         $.ajax({
