@@ -936,7 +936,7 @@
     function keikaku_load_line_code() {
         $.ajax({
             type: "GET",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>process-master/line-code",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>process-master/line-code",
             dataType: "json",
             success: function (response) {
                 keikaku_line_input.innerHTML = `<option value="-">-</option>`
@@ -1009,7 +1009,7 @@
             div_alert.innerHTML = ''
             $.ajax({
                 type: "GET",
-                url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku",
+                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku",
                 data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value, user_id: uidnya},
                 dataType: "json",
                 success: function (response) {
@@ -1024,7 +1024,7 @@
 
                             $.ajax({
                                 type: "POST",
-                                url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/from-balance",
+                                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/from-balance",
                                 data: JSON.stringify(dataInput),
                                 dataType: "json",
                                 success: function (response) {
@@ -1150,9 +1150,44 @@
 
         const dataDetail = []
         let JobUnique = []
+        let JobUniqueDetail = []
 
         let inputSS = keikaku_data_sso.getData().filter((data) => data[2].length && data[7].length > 1)
         const inputSSCount = inputSS.length
+
+        // check wo proses unique
+        for(let i=0; i<inputSSCount;i++) {
+            let _job = inputSS[i][2].trim()
+            let _assyCode = inputSS[i][7].trim()
+            let _process = inputSS[i][9].trim()
+            let _rowK = _job + _assyCode + _process
+            let _qty = numeral(inputSS[i][4]).value()
+            let _size = numeral(inputSS[i][3]).value()
+            let JobUniqueDetailLength = JobUniqueDetail.length
+
+            let isFound = false
+            for(let s=0; s<JobUniqueDetailLength; s++) {
+                if(JobUniqueDetail[s].job == _job
+                    && JobUniqueDetail[s].assyCode == _assyCode
+                    && JobUniqueDetail[s].process == _process
+                ) {
+                    JobUniqueDetail[s].qty += _qty
+                    isFound = true
+                    break;
+                }
+            }
+
+            if(!isFound) {
+                JobUniqueDetail.push({
+                    job : _job,
+                    size : _size,
+                    assyCode : _assyCode,
+                    process : _process,
+                    qty : _qty,
+                    rowK : _rowK
+                })
+            }
+        }
 
         for(let i=0; i<inputSSCount;i++) {
             let _job = inputSS[i][2].trim() + inputSS[i][7].trim() + inputSS[i][9].trim()
@@ -1171,8 +1206,38 @@
                     specs : inputSS[i][6].trim(),
                     packaging : inputSS[i][8].trim(),
                     specs_side : inputSS[i][9].trim(),
-                    cycle_time :  numeral(inputSS[i][10]).value()
+                    cycle_time : numeral(inputSS[i][10]).value()
                 })
+            } else {
+                let JobUniqueDetailLength = JobUniqueDetail.length
+
+                let isOK = false
+                for(let s=0; s<JobUniqueDetailLength; s++) {
+                    if(JobUniqueDetail[s].rowK == _job && JobUniqueDetail[s].qty <= JobUniqueDetail[s].size
+                    ) {
+                        isOK = true
+                        break;
+                    }
+                }
+
+                if(isOK) {
+                    dataDetail.push({
+                        seq : inputSS[i][0],
+                        model_code : inputSS[i][1].trim(),
+                        wo_code : inputSS[i][2].trim(),
+                        item_code : inputSS[i][7].trim(),
+                        lot_size : numeral(inputSS[i][3]).value(),
+                        plan_qty : numeral(inputSS[i][4]).value(),
+                        type : inputSS[i][5].trim(),
+                        specs : inputSS[i][6].trim(),
+                        packaging : inputSS[i][8].trim(),
+                        specs_side : inputSS[i][9].trim(),
+                        cycle_time : numeral(inputSS[i][10]).value()
+                    })
+                } else {
+                    alertify.warning(`Production Qty > Lot Size !`)
+                    return
+                }
             }
         }
 
@@ -1188,7 +1253,7 @@
             pThis.disabled = true
             $.ajax({
                 type: "POST",
-                url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku",
+                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku",
                 data: JSON.stringify(dataInput),
                 dataType: "JSON",
                 success: function (response) {
@@ -1267,7 +1332,7 @@
             pThis.disabled = true
             $.ajax({
                 type: "POST",
-                url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/calculation",
+                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/calculation",
                 data: JSON.stringify(dataInput),
                 dataType: "JSON",
                 success: function (response) {
@@ -1329,7 +1394,7 @@
         keikaku_reset_calculation()
         $.ajax({
             type: "GET",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/calculation",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/calculation",
             data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value},
             dataType: "json",
             success: function (response) {
@@ -1426,7 +1491,7 @@
         keikaku_reset_data()
         $.ajax({
             type: "GET",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku",
             data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value, user_id : uidnya},
             dataType: "json",
             success: function (response) {
@@ -1493,7 +1558,7 @@
         pThis.disabled = true
         $.ajax({
             type: "POST",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>process-master/search",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>process-master/search",
             data: JSON.stringify(dataInput),
             dataType: "JSON",
             success: function (response) {
@@ -1549,7 +1614,7 @@
             keikakuBtnUpload.innerHTML = 'Please wait'
             $.ajax({
                 type: "POST",
-                url: "<?=$_ENV['APP_INTERNAL_API']?>production-plan/import",
+                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>production-plan/import",
                 data: formData,
                 contentType: false,
                 processData: false,
@@ -1629,7 +1694,7 @@
         keikaku_asprova_input_rev.innerHTML = `<option value='-'>Please wait</option>`
         $.ajax({
             type: "GET",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>production-plan/revisions",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>production-plan/revisions",
             data: {
                 file_year : keikaku_asprova_year.value, file_month : keikaku_asprova_month.value
             },
@@ -1656,7 +1721,7 @@
 
         $.ajax({
             type: "GET",
-            url: `<?=$_ENV['APP_INTERNAL_API']?>production-plan/revisions/${btoa(revision)}`,
+            url: `<?php echo $_ENV['APP_INTERNAL_API'] ?>production-plan/revisions/${btoa(revision)}`,
             data: {
                 file_year : keikaku_asprova_year.value,
                 file_month : keikaku_asprova_month.value,
@@ -1739,7 +1804,7 @@
 
         $.ajax({
             type: "GET",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/production-plan",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/production-plan",
             data: data,
             dataType: "json",
             success: function (response) {
@@ -1789,7 +1854,7 @@
                 mydes.appendChild(myfrag);
 
                 // display prodplan to grid
-                keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation)
+                keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation, response.dataSensor)
                 keikaku_prodplan_sso.resetSelection();
                 keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1+1, tempX2, tempY2+1);
             }, error: function(xhr, xopt, xthrow) {
@@ -1799,7 +1864,7 @@
         });
     }
 
-    function keikakuDisplayProdplan(data, dataS, dataCalculation) {
+    function keikakuDisplayProdplan(data, dataS, dataCalculation, dataSC) {
         let _newRowH = []
         _newRowH.push('')
         _newRowH.push('')
@@ -1846,6 +1911,7 @@
                 const _lot_size = _tempA[3]
                 const _production_qty = _tempA[4]
                 const _st = data[i][4]
+                const _specsSide = _tempA[0]
                 _newRow3.push(nomorUrut)
                 _newRow3.push('')
                 _newRow3.push(_model)
@@ -1857,7 +1923,7 @@
                 _newRow3.push(0)
 
                 _newRow4.push('')
-                _newRow4.push(_tempA[0])
+                _newRow4.push(_specsSide)
                 _newRow4.push(_tempA[5])
                 _newRow4.push(_tempA[6])
                 _newRow4.push('')
@@ -1930,7 +1996,8 @@
 
                 let totalQtySensor = 0
                 for(let r=0; r<totalRowsSensor; r++) {
-                    if(data[i][3] == dataS[r][3]) {
+                    if(data[i][3] == dataS[r][3] && _specsSide == dataS[r][4] && dataSC[r][4] == dataS[r][4]) { // by job & specs_side
+                        dataSC[r][4] = 'processed'
                         for(let c=9; c<(9+12+12+12); c++) {
                             _newRow5.push(dataS[r][c-3])
                             const _output = Number(dataS[r][c-3])
@@ -2035,7 +2102,7 @@
         {
             if(tableku2.rows[i].cells[0].getElementsByTagName('input')[0].checked) {
                 const _line = tableku2.rows[i].cells[1].innerText
-                const endPoint = '<?=base_url('Keikaku')?>' + '?line=' + btoa(_line) + '&date=' + keikaku_date_input.value
+                const endPoint = '<?php echo base_url('Keikaku') ?>' + '?line=' + btoa(_line) + '&date=' + keikaku_date_input.value
                 window.open(endPoint)
             }
         }
@@ -2288,7 +2355,7 @@
         pThis.disabled = true
         $.ajax({
             type: "POST",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/downtime",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/downtime",
             data: JSON.stringify(data),
             dataType: "json",
             success: function (response) {
@@ -2335,7 +2402,7 @@
         pThis.disabled = true
         $.ajax({
             type: "POST",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/output",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/output",
             data: data,
             dataType: "json",
             success: function (response) {
@@ -2376,7 +2443,7 @@
         }
         $.ajax({
             type: "GET",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>keikaku/downtime",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/downtime",
             data: data,
             dataType: "json",
             success: function (response) {
