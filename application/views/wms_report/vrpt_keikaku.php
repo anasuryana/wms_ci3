@@ -144,7 +144,7 @@
     function keikaku_rpt_load_line_code() {
         $.ajax({
             type: "GET",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>process-master/line-code",
+            url: "<?php echo $_ENV['APP_INTERNAL_API']?>process-master/line-code",
             dataType: "json",
             success: function (response) {
                 keikaku_rpt_line_input.innerHTML = `<option value="-">-</option>`
@@ -226,107 +226,162 @@
         tableWidth: '1000px',
     });
 
-    function keikaku_rpt_generate_chart() {
-        let ctx = document.getElementById('keikaku_rpt_chart_qty');
-        var labels = [...Array.from({length: 17}, (_, i) => i + 7),...Array.from({length: 8}, (_, i) => i)]
-        var data = {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Qty Plan',
-                    data: [20,33,40],
-                    borderColor: `rgb(0, 71, 171)`,
-                    tension: 0.1,
-                    type: 'line',
+    var ctx = document.getElementById('keikaku_rpt_chart_qty');
+    var labels = [...Array.from({length: 17}, (_, i) => i + 7),...Array.from({length: 8}, (_, i) => i)]
+    var data = {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Qty Plan',
+                data: [20,33,40],
+                borderColor: `rgb(0, 71, 171)`,
+                tension: 0.1,
+                type: 'line',
+            },
+            {
+                label: 'Qty Actual',
+                data: [20,30,22],
+                backgroundColor: `rgb(124,252,0)`,
+                borderColor: `rgb(0, 71, 171)`,
+            },
+        ]
+    };
+    var config = {
+        type: 'bar',
+        data: data,
+        options: {
+            maintainAspectRatio: true,
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
                 },
-                {
-                    label: 'Qty Actual',
-                    data: [20,30,22],
-                    backgroundColor: `rgb(124,252,0)`,
-                    borderColor: `rgb(0, 71, 171)`,
+                title: {
+                    display: true,
+                    text: 'Production Quantity'
+                }
+            }
+        },
+    };
+    var myChart = new Chart(ctx, config);
+
+
+    ////
+    var ctx2 = document.getElementById('keikaku_rpt_chart_time');
+    var labels2 = [...Array.from({length: 17}, (_, i) => i + 7),...Array.from({length: 8}, (_, i) => i)]
+    var data2 = {
+        labels: labels2,
+        datasets: [
+
+            {
+                label: 'Time Progress',
+                data: [0,-3,-4],
+                backgroundColor: `rgb(255, 0, 0)`,
+                tension: 0.3,
+            },
+            {
+                label: 'Time Plan',
+                data: [20,33,40],
+                borderColor: `rgb(0, 71, 171)`,
+                tension: 0.1,
+                type: 'line',
+            },
+            {
+                label: 'Time Actual',
+                data: [20,30,22],
+                backgroundColor: `rgb(8, 181, 118)`,
+                borderColor: `rgb(0, 71, 171)`,
+            },
+        ]
+    };
+    var config2 = {
+        type: 'bar',
+        data: data2,
+        options: {
+            maintainAspectRatio: true,
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
                 },
-            ]
-        };
-        let config = {
-            type: 'bar',
+                title: {
+                    display: true,
+                    text: 'Production Time'
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                },
+                y: {
+                    stacked: true
+                }
+            }
+        },
+    };
+
+    var myChart2 = new Chart(ctx2, config2);
+
+    function keikaku_rpt_btn_gen_e_click(pThis) {
+
+        const data = {
+            line_code: keikaku_rpt_line_input.value,
+            production_date: keikaku_rpt_date_input.value,
+        }
+        pThis.disabled = true
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/production-plan",
             data: data,
-            options: {
-                maintainAspectRatio: true,
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Production Quantity'
+            dataType: "JSON",
+            success: function (response) {
+                pThis.disabled = false
+                let plan = [0]
+                let actual = [0]
+                let prodPlanLength = response.asProdplan.length
+                let outputLength = response.dataSensor.length
+                let _totalPlan = 0
+                let _totalActual = 0
+                for(let i=6; i<=29; i++) {
+
+                    for(let r=4;r<prodPlanLength;r++) {
+                        if(response.asProdplan[r][0]) {
+                            _totalPlan += Number(response.asProdplan[r][i])
+                        }
                     }
+
+                    for(let r=0;r<outputLength;r++) {
+                        _totalActual += Number(response.dataSensor[r][i])
+                    }
+
+                    plan.push(_totalPlan)
+                    actual.push(_totalActual)
+
+                    keikaku_rpt_qty_sso.setValueFromCoords(i-4, 1, _totalPlan, true)
+                    keikaku_rpt_qty_sso.setValueFromCoords(i-4, 2, _totalActual, true)
+
                 }
-            },
-        };
-        let myChart = new Chart(ctx, config);
-
-
-        ////
-        let ctx2 = document.getElementById('keikaku_rpt_chart_time');
-        var labels2 = [...Array.from({length: 17}, (_, i) => i + 7),...Array.from({length: 8}, (_, i) => i)]
-        var data2 = {
-            labels: labels2,
-            datasets: [
-
-                {
-                    label: 'Time Progress',
-                    data: [0,-3,-4],
-                    backgroundColor: `rgb(255, 0, 0)`,
-                    tension: 0.3,
-                },
-                {
-                    label: 'Time Plan',
-                    data: [20,33,40],
-                    borderColor: `rgb(0, 71, 171)`,
-                    tension: 0.1,
-                    type: 'line',
-                },
-                {
-                    label: 'Time Actual',
-                    data: [20,30,22],
-                    backgroundColor: `rgb(8, 181, 118)`,
-                    borderColor: `rgb(0, 71, 171)`,
-                },
-            ]
-        };
-        let config2 = {
-            type: 'bar',
-            data: data2,
-            options: {
-                maintainAspectRatio: true,
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
+                myChart.data.datasets = [
+                    {
+                        label: 'Qty Plan',
+                        data: plan,
+                        borderColor: `rgb(0, 71, 171)`,
+                        tension: 0.1,
+                        type: 'line',
                     },
-                    title: {
-                        display: true,
-                        text: 'Production Time'
-                    }
-                },
-                scales: {
-                    x: {
-                        stacked: true,
+                    {
+                        label: 'Qty Actual',
+                        data: actual,
+                        backgroundColor: `rgb(124,252,0)`,
+                        borderColor: `rgb(0, 71, 171)`,
                     },
-                    y: {
-                        stacked: true
-                    }
-                }
-            },
-        };
-        let myChart2 = new Chart(ctx2, config2);
-    }
-
-    keikaku_rpt_generate_chart()
-
-    function keikaku_rpt_btn_gen_e_click() {
-        alertify.message('This function is under construction')
+                ]
+                myChart.update()
+            }, error: function(xhr, xopt, xthrow) {
+                pThis.disabled = false
+                alertify.error(xthrow)
+            }
+        });
     }
 
     function keikaku_rpt_btn_summary_e_click() {
@@ -337,7 +392,7 @@
         pThis.disabled = true
         $.ajax({
             type: "GET",
-            url: `<?=$_ENV['APP_INTERNAL_API']?>report/keikaku`,
+            url: `<?php echo $_ENV['APP_INTERNAL_API']?>report/keikaku`,
             data: { dateFrom : keikaku_rpt_date_from.value , dateTo:keikaku_rpt_date_to.value },
             success: function (response) {
                 pThis.disabled = false
