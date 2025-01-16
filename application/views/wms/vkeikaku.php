@@ -1856,7 +1856,7 @@
                 mydes.appendChild(myfrag);
 
                 // display prodplan to grid
-                keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation, response.dataSensor)
+                keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation)
                 keikaku_prodplan_sso.resetSelection();
                 keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1+1, tempX2, tempY2+1);
             }, error: function(xhr, xopt, xthrow) {
@@ -1866,7 +1866,7 @@
         });
     }
 
-    function keikakuDisplayProdplan(data, dataS, dataCalculation, dataSC) {
+    function keikakuDisplayProdplan(data, dataS, dataCalculation) {
         let _newRowH = []
         _newRowH.push('')
         _newRowH.push('')
@@ -1914,6 +1914,7 @@
                 const _production_qty = _tempA[4]
                 const _st = data[i][4]
                 const _specsSide = _tempA[0]
+                const _seq = _tempA[7]
                 _newRow3.push(nomorUrut)
                 _newRow3.push('')
                 _newRow3.push(_model)
@@ -1998,8 +1999,7 @@
 
                 let totalQtySensor = 0
                 for(let r=0; r<totalRowsSensor; r++) {
-                    if(data[i][3] == dataS[r][3] && _specsSide == dataS[r][4] && dataSC[r][4] == dataS[r][4]) { // by job & specs_side
-                        dataSC[r][4] = 'processed'
+                    if(data[i][3] == dataS[r][3] && _specsSide == dataS[r][4] && _seq == dataS[r][1]) { // by job & seq                        
                         for(let c=9; c<(9+12+12+12); c++) {
                             _newRow5.push(dataS[r][c-3])
                             const _output = Number(dataS[r][c-3])
