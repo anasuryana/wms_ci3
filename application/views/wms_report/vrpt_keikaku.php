@@ -214,8 +214,8 @@
             ['Hour', ...Array.from({length: 17}, (_, i) => i + 7), ...Array.from({length: 8}, (_, i) => i)],
             ['QTY Plan',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
             ['QTY Actual',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
-            ['Progress', '0', '=C3/C2' , '=D3/D2' , '=E3/E2' , '=F3/F2' , '=G3/G2' , '=H3/H2', '=I3/I2', '=J3/J2', '=K3/K2', '=L3/L2', '=M3/M2', '=N3/N2', '=O3/O2', '=P3/P2', '=Q3/Q2', '=R3/R2', '=S3/S2', '=T3/T2', '=U3/U2', '=V3/V2', '=W3/W2', '=X3/X2', '=Y3/Y2', '=Z3/Z2'],
-            ['Progress.',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
+            ['Progress', '0', '=C3/C2', '=D3/D2' , '=E3/E2' , '=F3/F2' , '=G3/G2' , '=H3/H2', '=I3/I2', '=J3/J2', '=K3/K2', '=L3/L2', '=M3/M2', '=N3/N2', '=O3/O2', '=P3/P2', '=Q3/Q2', '=R3/R2', '=S3/S2', '=T3/T2', '=U3/U2', '=V3/V2', '=W3/W2', '=X3/X2', '=Y3/Y2', '=Z3/Z2'],
+            ['Progress.',0,'=IF(C3-C2>0,0,C3-C2)' , '=IF(D3-D2>0,0,D3-D2)', '=IF(E3-E2>0,0,E3-E2)', '=IF(F3-F2>0,0,F3-F2)', '=IF(G3-G2>0,0,G3-G2)', '=IF(H3-H2>0,0,H3-H2)', '=IF(I3-I2>0,0,I3-I2)', '=IF(J3-J2>0,0,J3-J2)', '=IF(K3-K2>0,0,K3-K2)', '=IF(L3-L2>0,0,L3-L2)', '=IF(M3-M2>0,0,M3-M2)', '=IF(N3-N2>0,0,N3-N2)', '=IF(O3-O2>0,0,O3-O2)', '=IF(P3-P2>0,0,P3-P2)', '=IF(Q3-Q2>0,0,Q3-Q2)', '=IF(R3-R2>0,0,R3-R2)',  '=IF(S3-S2>0,0,S3-S2)', '=IF(T3-T2>0,0,T3-T2)', '=IF(U3-U2>0,0,U3-U2)', '=IF(V3-V2>0,0,V3-V2)', '=IF(W3-W2>0,0,W3-W2)', '=IF(X3-X2>0,0,X3-X2)', '=IF(Y3-Y2>0,0,Y3-Y2)', '=IF(Z3-Z2>0,0,Z3-Z2)' ],
         ],
         copyCompatibility:true,
         columnSorting:false,
@@ -338,10 +338,17 @@
                 pThis.disabled = false
                 let plan = [0]
                 let actual = [0]
+                let planTime = [0]                
+                let actualTime = [0]
+                let progressTime = [0]
                 let prodPlanLength = response.asProdplan.length
                 let outputLength = response.dataSensor.length
+                let timeLength = response.asMatrix.length
                 let _totalPlan = 0
                 let _totalActual = 0
+                let _totalPlanTime = 0
+                let _totalActualTime = 0
+                let _totalProgressTime = 0
                 for(let i=6; i<=29; i++) {
 
                     for(let r=4;r<prodPlanLength;r++) {
@@ -352,14 +359,29 @@
 
                     for(let r=0;r<outputLength;r++) {
                         _totalActual += Number(response.dataSensor[r][i])
+                        _totalActualTime += (response.dataSensor[r][5] *Number(response.dataSensor[r][i]) )
+                    }
+
+                    for(let r=0;r<timeLength;r++) {
+                        if(response.asMatrix[r][0]) {
+                            _totalPlanTime += Number(response.asMatrix[r][i])
+                        }
                     }
 
                     plan.push(_totalPlan)
+                    planTime.push(_totalPlanTime)
                     actual.push(_totalActual)
+                    actualTime.push(_totalActualTime)                    
+
+                    _totalProgressTime = _totalActualTime - _totalPlanTime > 0 ? 0 : _totalActualTime - _totalPlanTime
+                    progressTime.push(_totalProgressTime)
 
                     keikaku_rpt_qty_sso.setValueFromCoords(i-4, 1, _totalPlan, true)
                     keikaku_rpt_qty_sso.setValueFromCoords(i-4, 2, _totalActual, true)
+                    keikaku_rpt_time_sso.setValueFromCoords(i-4, 1, _totalPlanTime, true)
+                    keikaku_rpt_time_sso.setValueFromCoords(i-4, 2, _totalActualTime, true)
 
+                    console.log(progressTime)
                 }
                 myChart.data.datasets = [
                     {
@@ -377,6 +399,29 @@
                     },
                 ]
                 myChart.update()
+
+                myChart2.data.datasets = [
+                    {
+                        label: 'Time Progress',
+                        data: progressTime,
+                        backgroundColor: `rgb(255, 0, 0)`,
+                        tension: 0.3,
+                    },
+                    {
+                        label: 'Time Plan',
+                        data: planTime,
+                        borderColor: `rgb(0, 71, 171)`,
+                        tension: 0.1,
+                        type: 'line',
+                    },
+                    {
+                        label: 'Time Actual',
+                        data: actualTime,
+                        backgroundColor: `rgb(8, 181, 118)`,
+                        borderColor: `rgb(0, 71, 171)`,
+                    },
+                ]
+                myChart2.update()
             }, error: function(xhr, xopt, xthrow) {
                 pThis.disabled = false
                 alertify.error(xthrow)
