@@ -3176,7 +3176,7 @@ class DELV extends CI_Controller
             $pdf->Cell(31.17, 4, $hdlv_date, 0, 0, 'L');
 
             #BIG REMARK
-            $pdf->SetXY(100, 203);
+            $pdf->SetXY(100, 230);
             $pdf->SetAlpha(1);
             $pdf->SetFont('Arial', 'B', 13);
             $_textwidth = $pdf->GetStringWidth($h_description) + 3;
@@ -3214,7 +3214,7 @@ class DELV extends CI_Controller
                     $pdf->Cell(31.17, 4, $hdlv_date, 0, 0, 'L');
 
                     #BIG REMARK
-                    $pdf->SetXY(100, 203);
+                    $pdf->SetXY(100, 230);
                     $pdf->SetAlpha(0.5);
                     $pdf->SetFont('Arial', 'B', 15);
                     $_textwidth = $pdf->GetStringWidth($h_description) + 3;
