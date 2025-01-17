@@ -144,7 +144,7 @@
     function keikaku_rpt_load_line_code() {
         $.ajax({
             type: "GET",
-            url: "<?php echo $_ENV['APP_INTERNAL_API']?>process-master/line-code",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>process-master/line-code",
             dataType: "json",
             success: function (response) {
                 keikaku_rpt_line_input.innerHTML = `<option value="-">-</option>`
@@ -181,8 +181,8 @@
             ['Hour', ...Array.from({length: 17}, (_, i) => i + 7), ...Array.from({length: 8}, (_, i) => i)],
             ['QTY Plan',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
             ['QTY Actual',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
-            ['Progress',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
-            ['Progress.',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
+            ['Progress', '0', '=C3/C2*100' , '=D3/D2*100' , '=E3/E2*100' , '=F3/F2*100' , '=G3/G2*100' , '=H3/H2*100', '=I3/I2*100', '=J3/J2*100', '=K3/K2*100', '=L3/L2*100', '=M3/M2*100', '=N3/N2*100', '=O3/O2*100', '=P3/P2*100', '=Q3/Q2*100', '=R3/R2*100', '=S3/S2*100', '=T3/T2*100', '=U3/U2*100', '=V3/V2*100', '=W3/W2*100', '=X3/X2*100', '=Y3/Y2*100', '=Z3/Z2*100'],
+            ['Progress.', '0', '=IF(AND(C2>0,C3=0),0,C3-C2)' , '=IF(AND(D2>0,D3=0),0,D3-D2)', '=IF(AND(E2>0,E3=0),0,E3-E2)', '=IF(AND(F2>0,F3=0),0,F3-F2)', '=IF(AND(G2>0,G3=0),0,G3-G2)', '=IF(AND(H2>0,H3=0),0,H3-H2)', '=IF(AND(I2>0,I3=0),0,I3-I2)', '=IF(AND(J2>0,J3=0),0,J3-J2)', '=IF(AND(K2>0,K3=0),0,K3-K2)', '=IF(AND(L2>0,L3=0),0,L3-L2)', '=IF(AND(M2>0,M3=0),0,M3-M2)', '=IF(AND(N2>0,N3=0),0,N3-N2)', '=IF(AND(O2>0,O3=0),0,O3-O2)', '=IF(AND(P2>0,P3=0),0,P3-P2)', '=IF(AND(Q2>0,Q3=0),0,Q3-Q2)', '=IF(AND(R2>0,R3=0),0,R3-R2)',  '=IF(AND(S2>0,S3=0),0,S3-S2)', '=IF(AND(T2>0,T3=0),0,T3-T2)', '=IF(AND(U2>0,U3=0),0,U3-U2)', '=IF(AND(V2>0,V3=0),0,V3-V2)', '=IF(AND(W2>0,W3=0),0,W3-W2)', '=IF(AND(X2>0,X3=0),0,X3-X2)', '=IF(AND(Y2>0,Y3=0),0,Y3-Y2)', '=IF(AND(Z2>0,Z3=0),0,Z3-Z2)'],
         ],
         copyCompatibility:true,
         columnSorting:false,
@@ -214,7 +214,7 @@
             ['Hour', ...Array.from({length: 17}, (_, i) => i + 7), ...Array.from({length: 8}, (_, i) => i)],
             ['QTY Plan',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
             ['QTY Actual',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
-            ['Progress',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
+            ['Progress', '0', '=C3/C2' , '=D3/D2' , '=E3/E2' , '=F3/F2' , '=G3/G2' , '=H3/H2', '=I3/I2', '=J3/J2', '=K3/K2', '=L3/L2', '=M3/M2', '=N3/N2', '=O3/O2', '=P3/P2', '=Q3/Q2', '=R3/R2', '=S3/S2', '=T3/T2', '=U3/U2', '=V3/V2', '=W3/W2', '=X3/X2', '=Y3/Y2', '=Z3/Z2'],
             ['Progress.',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
         ],
         copyCompatibility:true,
@@ -392,7 +392,7 @@
         pThis.disabled = true
         $.ajax({
             type: "GET",
-            url: `<?php echo $_ENV['APP_INTERNAL_API']?>report/keikaku`,
+            url: `<?php echo $_ENV['APP_INTERNAL_API'] ?>report/keikaku`,
             data: { dateFrom : keikaku_rpt_date_from.value , dateTo:keikaku_rpt_date_to.value },
             success: function (response) {
                 pThis.disabled = false
