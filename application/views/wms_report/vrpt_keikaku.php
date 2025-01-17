@@ -214,7 +214,7 @@
             ['Hour', ...Array.from({length: 17}, (_, i) => i + 7), ...Array.from({length: 8}, (_, i) => i)],
             ['QTY Plan',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
             ['QTY Actual',...Array.from({length: 17}, (_, i) => 0), ...Array.from({length: 8}, (_, i) => 0) ],
-            ['Progress', '0', '=C3/C2', '=D3/D2' , '=E3/E2' , '=F3/F2' , '=G3/G2' , '=H3/H2', '=I3/I2', '=J3/J2', '=K3/K2', '=L3/L2', '=M3/M2', '=N3/N2', '=O3/O2', '=P3/P2', '=Q3/Q2', '=R3/R2', '=S3/S2', '=T3/T2', '=U3/U2', '=V3/V2', '=W3/W2', '=X3/X2', '=Y3/Y2', '=Z3/Z2'],
+            ['Progress', '0', '=INT(C3/C2*100)', '=INT(D3/D2*100)' , '=INT(E3/E2*100)' , '=INT(F3/F2*100)' , '=INT(G3/G2*100)' , '=INT(H3/H2*100)', '=INT(I3/I2*100)', '=INT(J3/J2*100)', '=INT(K3/K2*100)', '=INT(L3/L2*100)', '=INT(M3/M2*100)', '=INT(N3/N2*100)', '=INT(O3/O2*100)', '=INT(P3/P2*100)', '=INT(Q3/Q2*100)', '=INT(R3/R2*100)', '=INT(S3/S2*100)', '=INT(T3/T2*100)', '=INT(U3/U2*100)', '=INT(V3/V2*100)', '=INT(W3/W2*100)', '=INT(X3/X2*100)', '=INT(Y3/Y2*100)', '=INT(Z3/Z2*100)'],
             ['Progress.',0,'=IF(C3-C2>0,0,C3-C2)' , '=IF(D3-D2>0,0,D3-D2)', '=IF(E3-E2>0,0,E3-E2)', '=IF(F3-F2>0,0,F3-F2)', '=IF(G3-G2>0,0,G3-G2)', '=IF(H3-H2>0,0,H3-H2)', '=IF(I3-I2>0,0,I3-I2)', '=IF(J3-J2>0,0,J3-J2)', '=IF(K3-K2>0,0,K3-K2)', '=IF(L3-L2>0,0,L3-L2)', '=IF(M3-M2>0,0,M3-M2)', '=IF(N3-N2>0,0,N3-N2)', '=IF(O3-O2>0,0,O3-O2)', '=IF(P3-P2>0,0,P3-P2)', '=IF(Q3-Q2>0,0,Q3-Q2)', '=IF(R3-R2>0,0,R3-R2)',  '=IF(S3-S2>0,0,S3-S2)', '=IF(T3-T2>0,0,T3-T2)', '=IF(U3-U2>0,0,U3-U2)', '=IF(V3-V2>0,0,V3-V2)', '=IF(W3-W2>0,0,W3-W2)', '=IF(X3-X2>0,0,X3-X2)', '=IF(Y3-Y2>0,0,Y3-Y2)', '=IF(Z3-Z2>0,0,Z3-Z2)' ],
         ],
         copyCompatibility:true,
@@ -338,7 +338,7 @@
                 pThis.disabled = false
                 let plan = [0]
                 let actual = [0]
-                let planTime = [0]                
+                let planTime = [0]
                 let actualTime = [0]
                 let progressTime = [0]
                 let prodPlanLength = response.asProdplan.length
@@ -369,19 +369,17 @@
                     }
 
                     plan.push(_totalPlan)
-                    planTime.push(_totalPlanTime)
+                    planTime.push(_totalPlanTime.toFixed(2))
                     actual.push(_totalActual)
-                    actualTime.push(_totalActualTime)                    
+                    actualTime.push(_totalActualTime.toFixed(2))
 
                     _totalProgressTime = _totalActualTime - _totalPlanTime > 0 ? 0 : _totalActualTime - _totalPlanTime
                     progressTime.push(_totalProgressTime)
 
                     keikaku_rpt_qty_sso.setValueFromCoords(i-4, 1, _totalPlan, true)
                     keikaku_rpt_qty_sso.setValueFromCoords(i-4, 2, _totalActual, true)
-                    keikaku_rpt_time_sso.setValueFromCoords(i-4, 1, _totalPlanTime, true)
-                    keikaku_rpt_time_sso.setValueFromCoords(i-4, 2, _totalActualTime, true)
-
-                    console.log(progressTime)
+                    keikaku_rpt_time_sso.setValueFromCoords(i-4, 1, _totalPlanTime.toFixed(2), true)
+                    keikaku_rpt_time_sso.setValueFromCoords(i-4, 2, _totalActualTime.toFixed(2), true)
                 }
                 myChart.data.datasets = [
                     {
