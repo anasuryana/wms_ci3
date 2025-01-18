@@ -2602,7 +2602,7 @@
         for(let _y=tempY1; _y<=tempY2;_y++) {
             for(let _x=tempX1; _x<=tempX2; _x++) {
                 let theCell = keikaku_data_sso.getCellFromCoords(_x,_y);
-                theCell.style.cssText = 'background-color : #f1d63f;text-align: center' 
+                theCell.style.cssText = 'background-color : #fafe0d;text-align: center' 
             }
         }
     }
