@@ -23,6 +23,21 @@
     .keikakuGrayColorLight {
         background-color : #f3f3f3 !important
     }
+    .keikakuBorderTop {
+        border-top-color: #000000 !important;
+        border-width:medium !important;
+        border-style:solid;
+    }
+    .keikakuBorderRight {
+        border-right-color: #000000 !important;
+        border-width:medium !important;
+        border-style:solid !important;
+    }
+    .keikakuBorderLeft {
+        border-left-color: #000000 !important;
+        border-width:medium !important;
+        border-style:solid !important;
+    }
 </style>
 <div style="padding: 5px" >
 	<div class="container-fluid">
@@ -657,7 +672,6 @@
             if([13,14,15,16,17,18,19,20,21].includes(x) && [0,1,2,3,4,5].includes(y)) {
                 cell.style.cssText = "background-color:#ebf1de"
             }
-
         },
         oneditionend : function(el, cell, x, y, value, flag) {
             if(y==7 && x>0) {
@@ -886,7 +900,39 @@
                     }
                 }
             }
+            if(value=='PLAN' && x==7) {
+                for(let _x=0; _x<45;_x++) {
+                    cellName = jspreadsheet.getColumnNameFromId([_x,y]);
+                    const theCell = keikaku_prodplan_sso.getCell(cellName)
+                    theCell.classList.add('keikakuBorderTop')
+                }
+                
+            }
+            if(value=='PLAN' && x==7 && y==9) {
+                const theDataCount = keikaku_prodplan_sso.getData().length
+                for(let _y=0; _y<theDataCount;_y++) {
+                    cellName = jspreadsheet.getColumnNameFromId([x,_y]);
+                    let theCell = keikaku_prodplan_sso.getCell(cellName)
+                    theCell.classList.add('keikakuBorderRight')
+                    theCell.classList.add('keikakuBorderLeft')
 
+                    cellName = jspreadsheet.getColumnNameFromId([x+1,_y]);
+                    theCell = keikaku_prodplan_sso.getCell(cellName)
+                    theCell.classList.add('keikakuBorderRight')
+
+                    cellName = jspreadsheet.getColumnNameFromId([x+13,_y]);
+                    theCell = keikaku_prodplan_sso.getCell(cellName)
+                    theCell.classList.add('keikakuBorderRight')
+
+                    cellName = jspreadsheet.getColumnNameFromId([(x+13)+12,_y]);
+                    theCell = keikaku_prodplan_sso.getCell(cellName)
+                    theCell.classList.add('keikakuBorderRight')
+
+                    cellName = jspreadsheet.getColumnNameFromId([(x+13)+24,_y]);
+                    theCell = keikaku_prodplan_sso.getCell(cellName)
+                    theCell.classList.add('keikakuBorderRight')
+                }
+            }
             cell.classList.add('keikakuFontColorRegular')
         },
         tableOverflow:true,
@@ -895,7 +941,7 @@
             J7:[12,1],V7:[12,1], AH7:[12,1]
         },
         freezeColumns: 9,
-        minDimensions: [50,10],
+        minDimensions: [45,9],
         tableWidth: '1000px',
         onselection : function(instance, x1, y1, x2, y2, origin) {
             let aRow = instance.jspreadsheet.getRowData(y2)
@@ -1166,6 +1212,11 @@
             let _qty = numeral(inputSS[i][4]).value()
             let _size = numeral(inputSS[i][3]).value()
             let JobUniqueDetailLength = JobUniqueDetail.length
+
+            if(_qty>_size) {
+                alertify.warning(`Production Qty > Lot Size !.`)
+                return
+            }
 
             let isFound = false
             for(let s=0; s<JobUniqueDetailLength; s++) {
@@ -1491,12 +1542,14 @@
 
     function keikaku_load_data() {
         keikaku_reset_data()
+        keikaku_line_input.disabled = true
         $.ajax({
             type: "GET",
             url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku",
             data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value, user_id : uidnya},
             dataType: "json",
             success: function (response) {
+                keikaku_line_input.disabled = false
                 keikaku_user_first_active.value = response.currentActiveUser.MSTEMP_ID + ':' + response.currentActiveUser.MSTEMP_FNM
                 let theData = [];
                 response.data.forEach((arrayItem, index) => {
@@ -1519,6 +1572,8 @@
                 if(theData.length > 0) {
                     keikaku_data_sso.setData(theData)
                 }
+            }, error: function(xhr, xopt, xthrow) {
+                keikaku_line_input.disabled = false
             }
         });
     }
