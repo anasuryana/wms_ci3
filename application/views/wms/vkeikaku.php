@@ -150,6 +150,16 @@
                                 <div class="col-md-6 mb-1 text-end">
                                     <div class="btn-group btn-group-sm">
                                         <button class="btn btn-outline-primary" id="keikaku_btn_run_data" title="Run formula" onclick="keikaku_btn_run_data_eC(this)">Run</button>
+                                        <div class="btn-group btn-group-sm dropend" role="group">
+                                            <button title="Functions" class="btn btn-outline-primary dropdown-toggle" type="button" id="txfg_btn_export" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-bars"></i></button>
+                                            <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                <li>
+                                                    <h6 class="dropdown-header">Coloring Selected Cell</h6>
+                                                </li>
+                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_blue()">Set blue</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_yellow()">Set yellow</a></li>                                                
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -504,6 +514,11 @@
                     cell.style.cssText = "color:#d3d3d3"
                 }
             }
+        },
+        onselection: function(instance, x1, y1, x2, y2, origin) {
+            let cellName1 = jspreadsheet.getColumnNameFromId([x1, y1]);
+            let cellName2 = jspreadsheet.getColumnNameFromId([x2, y2]);
+            console.log({cellName1, cellName2})
         }
     });
     var keikaku_draft_data_sso = jspreadsheet(keikaku_draft_data_spreadsheet, {
@@ -1624,9 +1639,13 @@
                 let responseDataLength = response.data.length
                 for(let i=0; i < dataLength; i++) {
                     let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim().substring(0,9)
+                    let _processCode = keikaku_data_sso.getValueFromCoords(9, i, true).trim().substring(0,9)
                     keikaku_data_sso.setValue('K'+(i+1), 0)
                     for(let s=0;s<responseDataLength; s++) {
-                        if(_itemCode == response.data[s].assy_code.trim()) {
+                        const _responseProcess = response.data[s].process_code.trim()
+                        if(_itemCode == response.data[s].assy_code.trim()
+                        &&  _processCode === _responseProcess.substr(_responseProcess.length-1, 1)
+                    ) {
                             keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
                             break;
                         }
@@ -2560,6 +2579,14 @@
 
     function keikaku_shift_input_on_change() {
         keikakuGetDownTime()
+    }
+
+    function keikaku_btn_set_blue() {
+        let rowsTable = keikaku_data_sso.getSelectedRows();
+    }
+
+    function keikaku_btn_set_yellow() {
+
     }
 
 </script>
