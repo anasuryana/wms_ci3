@@ -151,13 +151,14 @@
                                     <div class="btn-group btn-group-sm">
                                         <button class="btn btn-outline-primary" id="keikaku_btn_run_data" title="Run formula" onclick="keikaku_btn_run_data_eC(this)">Run</button>
                                         <div class="btn-group btn-group-sm dropend" role="group">
-                                            <button title="Functions" class="btn btn-outline-primary dropdown-toggle" type="button" id="txfg_btn_export" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-bars"></i></button>
+                                            <button title="Functions" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-bars"></i></button>
                                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                 <li>
                                                     <h6 class="dropdown-header">Coloring Selected Cell</h6>
                                                 </li>
-                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_blue()">Set blue</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_yellow()">Set yellow</a></li>                                                
+                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_blue()">Blue</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_yellow()">Yellow</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_white()">White</a></li>                                                
                                             </ul>
                                         </div>
                                     </div>
@@ -516,9 +517,10 @@
             }
         },
         onselection: function(instance, x1, y1, x2, y2, origin) {
-            let cellName1 = jspreadsheet.getColumnNameFromId([x1, y1]);
-            let cellName2 = jspreadsheet.getColumnNameFromId([x2, y2]);
-            console.log({cellName1, cellName2})
+            tempX1 = x1
+            tempX2 = x2
+            tempY1 = y1
+            tempY2 = y2
         }
     });
     var keikaku_draft_data_sso = jspreadsheet(keikaku_draft_data_spreadsheet, {
@@ -1061,6 +1063,7 @@
     $("#keikaku_date_input").datepicker('update', new Date());
 
     function keikaku_btn_new_eC() {
+        const theStyle = keikaku_data_sso.getStyle();
         if(keikaku_line_input.value === '-') {
             keikaku_line_input.focus()
             alertify.warning('Line is required')
@@ -2582,11 +2585,30 @@
     }
 
     function keikaku_btn_set_blue() {
-        let rowsTable = keikaku_data_sso.getSelectedRows();
+        for(let _y=tempY1; _y<=tempY2;_y++) {
+            for(let _x=tempX1; _x<=tempX2; _x++) {
+                let theCell = keikaku_data_sso.getCellFromCoords(_x,_y);
+                theCell.style.cssText = 'background-color : #26f0fe;text-align: center'
+            }
+        }
     }
 
     function keikaku_btn_set_yellow() {
+        for(let _y=tempY1; _y<=tempY2;_y++) {
+            for(let _x=tempX1; _x<=tempX2; _x++) {
+                let theCell = keikaku_data_sso.getCellFromCoords(_x,_y);
+                theCell.style.cssText = 'background-color : #f1d63f;text-align: center' 
+            }
+        }
+    }
 
+    function keikaku_btn_set_white() {
+        for(let _y=tempY1; _y<=tempY2;_y++) {
+            for(let _x=tempX1; _x<=tempX2; _x++) {
+                let theCell = keikaku_data_sso.getCellFromCoords(_x,_y);
+                theCell.style.cssText = 'background-color : #ffffff;text-align: center'
+            }
+        }
     }
 
 </script>
