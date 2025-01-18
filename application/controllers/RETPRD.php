@@ -41,11 +41,10 @@ class RETPRD extends CI_Controller
         header('Content-Type: application/json');       
 
         $dateWhenTwoMonthAgo = date_create(date('Y-m-d'));
-        date_add($dateWhenTwoMonthAgo, date_interval_create_from_date_string('-1 month'));
-        
-        $currentYear = date_format($dateWhenTwoMonthAgo, 'Y');
-        $currentMonth = date_format($dateWhenTwoMonthAgo, 'm');
-        $rs = $this->SPLRET_mod->select_psn_code_forward_filter($currentYear, $currentMonth);
+        date_add($dateWhenTwoMonthAgo, date_interval_create_from_date_string('-3 month'));
+                
+        $theDate = date_format($dateWhenTwoMonthAgo, 'Y-m-d');
+        $rs = $this->SPLRET_mod->select_psn_code_forward_filter_date($theDate);        
         $rs_j = [];
         foreach ($rs as $r) {
             $rs_j[] = [
