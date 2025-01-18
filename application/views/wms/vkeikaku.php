@@ -1063,7 +1063,6 @@
     $("#keikaku_date_input").datepicker('update', new Date());
 
     function keikaku_btn_new_eC() {
-        const theStyle = keikaku_data_sso.getStyle();
         if(keikaku_line_input.value === '-') {
             keikaku_line_input.focus()
             alertify.warning('Line is required')
@@ -1206,6 +1205,7 @@
     }
 
     function keikaku_btn_save_eC(pThis) {
+        const theStyle = keikaku_data_sso.getStyle();
         if(keikaku_line_input.value === '-') {
             alertify.warning(`Line is required`)
             keikaku_line_input.focus()
@@ -1316,7 +1316,8 @@
             line_code : keikaku_line_input.value,
             production_date : keikaku_date_input.value,
             user_id: uidnya,
-            detail : dataDetail
+            detail : dataDetail,
+            style : theStyle
         }
 
         if(confirm('Are you sure want to save ?')) {
@@ -1589,6 +1590,10 @@
                 })
                 if(theData.length > 0) {
                     keikaku_data_sso.setData(theData)
+                }
+
+                if(response.dataStyle) {
+                    keikaku_data_sso.setStyle(response.dataStyle)
                 }
             }, error: function(xhr, xopt, xthrow) {
                 keikaku_line_input.disabled = false
