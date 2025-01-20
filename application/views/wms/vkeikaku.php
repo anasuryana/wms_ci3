@@ -156,9 +156,24 @@
                                                 <li>
                                                     <h6 class="dropdown-header">Coloring Selected Cell</h6>
                                                 </li>
-                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_blue()">Blue</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_yellow()">Yellow</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_white()">White</a></li>                                                
+                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_blue()"><span class="fa-stack" style="vertical-align: top;">
+                                                            <i class="fa-solid fa-circle fa-stack-2x" style="color: #cfcccc"></i>
+                                                            <i class="fa-solid fa-flag fa-stack-1x fa-inverse" style="color: #26f0fe"></i>
+                                                            </span> Blue</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_yellow()">
+                                                <span class="fa-stack" style="vertical-align: top;">
+                                                            <i class="fa-solid fa-circle fa-stack-2x" style="color: #cfcccc"></i>
+                                                            <i class="fa-solid fa-flag fa-stack-1x fa-inverse" style="color: #fafe0d"></i>
+                                                            </span>
+                                                    Yellow
+                                                </a>
+                                                </li>
+                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_white()">
+                                                    <span class="fa-stack" style="vertical-align: top;">
+                                                            <i class="fa-solid fa-circle fa-stack-2x" style="color: #cfcccc"></i>
+                                                            <i class="fa-solid fa-flag fa-stack-1x fa-inverse"></i>
+                                                            </span> White</a>
+                                                </li>                                                
                                             </ul>
                                         </div>
                                     </div>
