@@ -12,8 +12,8 @@
                                 <div class="col-md-12 mb-1">
                                     <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">Job Number</span>                                        
-                                        <input type="text" class="form-control" id="sersts_txt_jobno" required readonly>                                        
-                                        <button class="btn btn-primary" type="button" id="sersts_btn_smod_job"><i class="fas fa-search"></i></button>                                        
+                                        <input type="text" class="form-control" id="sersts_wip_txt_jobno" required readonly>                                        
+                                        <button class="btn btn-primary" type="button" id="sersts_wip_btn_smod_job"><i class="fas fa-search"></i></button>                                        
                                     </div>
                                 </div>
                             </div>
@@ -21,7 +21,7 @@
                                 <div class="col-md-12 mb-1">
                                     <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">Code</span>                                        				
-                                        <input type="text" class="form-control" id="sersts_txt_itmcd" required readonly >                                                                               
+                                        <input type="text" class="form-control" id="sersts_wip_txt_itmcd" required readonly >                                                                               
                                     </div>
                                 </div>
                             </div>
@@ -29,7 +29,7 @@
                                 <div class="col-md-12 mb-1">
                                     <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">Name</span>                                        
-                                        <input type="text" class="form-control" id="sersts_txt_itmnm" required readonly>								
+                                        <input type="text" class="form-control" id="sersts_wip_txt_itmnm" required readonly>								
                                     </div>
                                 </div>
                             </div>                            
@@ -37,7 +37,7 @@
                                 <div class="col-md-12 mb-1">
                                     <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">Job Qty</span>                                        
-                                        <input type="text" class="form-control" id="sersts_txt_jobqty" required readonly>
+                                        <input type="text" class="form-control" id="sersts_wip_txt_jobqty" required readonly>
                                     </div>
                                 </div>
                             </div> 
@@ -45,7 +45,7 @@
                                 <div class="col-md-12 mb-1">
                                     <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">Qty</span>                                        
-                                        <input type="text" class="form-control" id="sersts_txt_qty" required>
+                                        <input type="text" class="form-control" id="sersts_wip_txt_qty" required>
                                     </div>
                                 </div>
                             </div>
@@ -53,7 +53,7 @@
                                 <div class="col-md-12 mb-1">
                                     <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">Production Date</span>                                        
-                                        <input type="text" class="form-control" id="sersts_txt_proddt" required readonly>
+                                        <input type="text" class="form-control" id="sersts_wip_txt_proddt" required readonly>
                                     </div>
                                 </div>
                             </div>
@@ -61,10 +61,10 @@
                                 <div class="col-md-12 mb-1">
                                     <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">Line / Shift</span>                                                                                
-                                        <select class="form-select" id="sersts_txt_prodline" required>
+                                        <select class="form-select" id="sersts_wip_txt_prodline" required>
                                         </select>                                        
                                         <span class="input-group-text">/</span>                                        
-                                        <select class="form-select" id="sersts_txt_prodshift" required>
+                                        <select class="form-select" id="sersts_wip_txt_prodshift" required>
                                             <option value="M0">M0</option>
                                             <option value="M1">M1</option>
                                             <option value="M2">M2</option>
@@ -78,7 +78,7 @@
                                 <div class="col-md-12 mb-1">
                                     <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">Status</span>                                        
-                                        <input type="text" class="form-control" id="sersts_txt_status" required>
+                                        <input type="text" class="form-control" id="sersts_wip_txt_status" required>
                                     </div>
                                 </div>
                             </div>
@@ -86,15 +86,15 @@
                                 <div class="col-md-12 mb-1">
                                     <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">Remark</span>                                        
-                                        <input type="text" class="form-control" id="sersts_txt_remark" required>
+                                        <input type="text" class="form-control" id="sersts_wip_txt_remark" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-0">
                                     <div class="btn-group btn-group-sm">
-                                        <button title="New" class="btn btn-outline-primary" type="button" id="sersts_btn_new"><i class="fas fa-file"></i></button>
-                                        <button title="Save" class="btn btn-primary" type="button" id="sersts_btn_prc"><i class="fas fa-save"></i></button>
+                                        <button title="New" class="btn btn-outline-primary" type="button" id="sersts_wip_btn_new"><i class="fas fa-file"></i></button>
+                                        <button title="Save" class="btn btn-primary" type="button" id="sersts_wip_btn_prc"><i class="fas fa-save"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -113,20 +113,20 @@
                                 <div class="col-md-12 mb-1">                               
                                     <div class="input-group input-group-sm">                                        
                                         <span class="input-group-text">Job Number</span>                                        					
-                                        <input type="text" class="form-control" id="sersts_txt_jobno_tobfind" required readonly >
-                                        <input type="hidden" id="sersts_txt_item_tobfind">
-                                        <button class="btn btn-outline-primary" type="button" id="sersts_btn_findser"><i class="fas fa-search"></i></button>
-                                        <button class="btn btn-outline-primary" type="button" id="sersts_btn_print"><i class="fas fa-print" title="Print selected ID"></i></button>
-                                        <button class="btn btn-outline-danger" type="button" id="sersts_btn_delete"><i class="fas fa-trash" title="Delete selected ID"></i></button>                                        
+                                        <input type="text" class="form-control" id="sersts_wip_txt_jobno_tobfind" required readonly >
+                                        <input type="hidden" id="sersts_wip_txt_item_tobfind">
+                                        <button class="btn btn-outline-primary" type="button" id="sersts_wip_btn_findser"><i class="fas fa-search"></i></button>
+                                        <button class="btn btn-outline-primary" type="button" id="sersts_wip_btn_print"><i class="fas fa-print" title="Print selected ID"></i></button>
+                                        <button class="btn btn-outline-danger" type="button" id="sersts_wip_btn_delete"><i class="fas fa-trash" title="Delete selected ID"></i></button>                                        
                                     </div>                                                                                
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-0">
-                                    <table id="sersts_tbllastjobno" class="table table-sm table-bordered table-hover" style="width:100%;cursor:pointer">
+                                    <table id="sersts_wip_tbllastjobno" class="table table-sm table-bordered table-hover" style="width:100%;cursor:pointer">
                                         <thead class="table-light">
                                             <tr>	
-                                                <th class="text-center"><input class="form-check-input" type="checkbox" id="sersts_ckall" title="Select all"></th>
+                                                <th class="text-center"><input class="form-check-input" type="checkbox" id="sersts_wip_ckall" title="Select all"></th>
                                                 <th>ID</th>
                                                 <th>Item Code</th>                                                
                                                 <th>Qty</th>
@@ -154,7 +154,7 @@
         </div>	
     </div>
 </div>
-<div class="modal fade" id="sersts_MODJOB">
+<div class="modal fade" id="sersts_wip_MODJOB">
     <div class="modal-dialog">
       <div class="modal-content">
         <!-- Modal Header -->
@@ -169,19 +169,19 @@
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">                        
                         <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="sersts_txtsearchjob" maxlength="15" required placeholder="...">                        
+                        <input type="text" class="form-control" id="sersts_wip_txtsearchjob" maxlength="15" required placeholder="...">                        
                     </div>
                 </div>
             </div>            
             <div class="row">
                 <div class="col text-right">
-                    <span class="badge bg-info" id="sersts_lblinfo_tblser"></span>
+                    <span class="badge bg-info" id="sersts_wip_lblinfo_tblser"></span>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
                     <div class="table-responsive">
-                        <table id="sersts_job_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer">
+                        <table id="sersts_wip_job_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer">
                             <thead class="table-light">
                                 <tr>
                                     <th>Item Code</th>
@@ -198,7 +198,7 @@
       </div>
     </div>
 </div>
-<div class="modal fade" id="sersts_MODPRINT">
+<div class="modal fade" id="sersts_wip_MODPRINT">
     <div class="modal-dialog">
       <div class="modal-content">      
         <!-- Modal Header -->
@@ -213,22 +213,22 @@
                 <div class="col mb-1 text-center">
                     <form>
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="sersts_rd_def" name="sersts_rd_lbltype" value="0">
-                            <label class="custom-control-label" for="sersts_rd_def">Default</label>
+                            <input type="radio" class="custom-control-input" id="sersts_wip_rd_def" name="sersts_wip_rd_lbltype" value="0">
+                            <label class="custom-control-label" for="sersts_wip_rd_def">Default</label>
                         </div>
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="sersts_rd_ppr" name="sersts_rd_lbltype" value="1" checked>
-                            <label class="custom-control-label" for="sersts_rd_ppr">Paper</label>
+                            <input type="radio" class="custom-control-input" id="sersts_wip_rd_ppr" name="sersts_wip_rd_lbltype" value="1" checked>
+                            <label class="custom-control-label" for="sersts_wip_rd_ppr">Paper</label>
                         </div>                        
                     </form>
                 </div>
             </div>
             <div class="row">
                 <div class="col mb-1">
-                    <div id="sersts_dv">
+                    <div id="sersts_wip_dv">
                         <div class="input-group input-group-sm mb-1">                            
                             <span class="input-group-text" >Size</span>                            
-                            <select class="form-select" id="sersts_sel_ppr">
+                            <select class="form-select" id="sersts_wip_sel_ppr">
 								<option value="A4">A4</option>
                                 <option value="A3">A3</option>                                
                                 <option value="A5">A5</option>
@@ -241,14 +241,14 @@
             </div>     
             <div class="row">
                 <div class="col mb-1 text-center">
-                    <button class="btn btn-primary btn-sm" id="sersts_btn_prcprint">Print</button>
+                    <button class="btn btn-primary btn-sm" id="sersts_wip_btn_prcprint">Print</button>
                 </div>
             </div>       
         </div>             
       </div>
     </div>
 </div>
-<div class="modal fade" id="sersts_MODSELJOB">
+<div class="modal fade" id="sersts_wip_MODSELJOB">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">      
         <!-- Modal Header -->
@@ -263,19 +263,19 @@
                 <div class="col">
                     <div class="input-group input-group-sm mb-1">                        
                         <span class="input-group-text" >Search</span>                        
-                        <input type="text" class="form-control" id="sersts_txtseljob" maxlength="15" required placeholder="...">                        
+                        <input type="text" class="form-control" id="sersts_wip_txtseljob" maxlength="15" required placeholder="...">                        
                     </div>
                 </div>
             </div>            
             <div class="row">
                 <div class="col text-right mb-1">
-                    <span class="badge bg-info" id="sersts_lblinfo_tbljob"></span>
+                    <span class="badge bg-info" id="sersts_wip_lblinfo_tbljob"></span>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <div class="table-responsive" id="sersts_divku">
-                        <table id="sersts_seljob_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer">
+                    <div class="table-responsive" id="sersts_wip_divku">
+                        <table id="sersts_wip_seljob_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer">
                             <thead class="table-light">
                                 <tr>
                                     <th rowspan="2" class="align-middle">Job Number</th>
@@ -304,39 +304,39 @@
 </div>
 <script>
     var tableSERLAST ;
-    var sersts_serprint = [];
-    $("#sersts_MODPRINT").on('hidden.bs.modal', function(){
+    var sersts_wip_serprint = [];
+    $("#sersts_wip_MODPRINT").on('hidden.bs.modal', function(){
         initLASTSERList();
     })
 
-    $("#sersts_txt_proddt").datepicker({
+    $("#sersts_wip_txt_proddt").datepicker({
         format: 'yyyy-mm-dd',
         autoclose:true
     });     
-    $("#sersts_btn_new").click(function (e) { 
+    $("#sersts_wip_btn_new").click(function (e) { 
         e.preventDefault();
-        document.getElementById('sersts_txt_jobno').value='';
-        document.getElementById('sersts_txt_itmcd').value='';
-        document.getElementById('sersts_txt_itmnm').value='';
-        document.getElementById('sersts_txt_jobqty').value='';
-        document.getElementById('sersts_txt_proddt').value='';
-        document.getElementById('sersts_txt_status').value='';
-        document.getElementById('sersts_txt_remark').value='';
-        document.getElementById('sersts_txt_jobno_tobfind').value='';
-        document.getElementById('sersts_txt_item_tobfind').value='';
+        document.getElementById('sersts_wip_txt_jobno').value='';
+        document.getElementById('sersts_wip_txt_itmcd').value='';
+        document.getElementById('sersts_wip_txt_itmnm').value='';
+        document.getElementById('sersts_wip_txt_jobqty').value='';
+        document.getElementById('sersts_wip_txt_proddt').value='';
+        document.getElementById('sersts_wip_txt_status').value='';
+        document.getElementById('sersts_wip_txt_remark').value='';
+        document.getElementById('sersts_wip_txt_jobno_tobfind').value='';
+        document.getElementById('sersts_wip_txt_item_tobfind').value='';
         initLASTSERList();
     });     
-    $("#sersts_btn_delete").click(function (e) {
-        sersts_serprint = [];
+    $("#sersts_wip_btn_delete").click(function (e) {
+        sersts_wip_serprint = [];
         $.each(tableSERLAST.rows().nodes(), function(key, value){
             var $tds = $(value).find('td'),
                 rana = $tds.eq(0).find('input').is(':checked'),
                 myser = $tds.eq(1).text();
             if(rana){
-                sersts_serprint.push(myser);
+                sersts_wip_serprint.push(myser);
             }
         });
-        if (sersts_serprint.length==0){
+        if (sersts_wip_serprint.length==0){
             alertify.warning('Please select the data to be deleted first');
             return;
         }
@@ -348,7 +348,7 @@
         $.ajax({
             type: "post",
             url: "<?=base_url('SER/remove_wip_label')?>",
-            data: {inid:sersts_serprint},
+            data: {inid:sersts_wip_serprint},
             dataType: "json",
             success: function (response) {
                 if(response.status[0].cd!='0'){
@@ -362,49 +362,49 @@
             }
         });        
     });
-    $("#sersts_btn_prc").click(function (e) { 
+    $("#sersts_wip_btn_prc").click(function (e) { 
         e.preventDefault();
-        let mitem = $("#sersts_txt_itmcd").val();
-        let mjob = $("#sersts_txt_jobno").val();
-        let mqty = $("#sersts_txt_qty").val();        
-        let mproddt = $("#sersts_txt_proddt").val();
-        let mprodline = $("#sersts_txt_prodline").val();
-        let mprodshift = $("#sersts_txt_prodshift").val();
-        let mremark = document.getElementById('sersts_txt_remark').value;
+        let mitem = $("#sersts_wip_txt_itmcd").val();
+        let mjob = $("#sersts_wip_txt_jobno").val();
+        let mqty = $("#sersts_wip_txt_qty").val();        
+        let mproddt = $("#sersts_wip_txt_proddt").val();
+        let mprodline = $("#sersts_wip_txt_prodline").val();
+        let mprodshift = $("#sersts_wip_txt_prodshift").val();
+        let mremark = document.getElementById('sersts_wip_txt_remark').value;
         if(mjob.trim()==''){
-            $("#sersts_txt_jobno").focus();
+            $("#sersts_wip_txt_jobno").focus();
             return;
         }
         if (mitem.trim()=='') {
-            alertify.warning('Please select Item first !');$("#sersts_txt_itmcd").focus();            
+            alertify.warning('Please select Item first !');$("#sersts_wip_txt_itmcd").focus();            
             return;
         }
         if(mqty.trim()==''){
-            alertify.warning('QTY must be not null');$("#sersts_txt_qty").focus();
+            alertify.warning('QTY must be not null');$("#sersts_wip_txt_qty").focus();
             return;
         }
         mqty = numeral(mqty).value();
         if(numeral(mqty).value()<=0){
-            alertify.warning('QTY must be greater than zero');$("#sersts_txt_qty").focus();
+            alertify.warning('QTY must be greater than zero');$("#sersts_wip_txt_qty").focus();
             return;
         }
         if(mproddt.trim()==''){
-            alertify.warning('Please entry Production Date');$("#sersts_txt_proddt").focus();
+            alertify.warning('Please entry Production Date');$("#sersts_wip_txt_proddt").focus();
             return;
         }       
         $.ajax({
             type: "post",
             url: "<?=base_url('SER/setfg_wip')?>",
             data: {initemcd: mitem, injob: mjob, inqty: mqty, inproddt: mproddt, inline: mprodline, inshift: mprodshift,
-            status : sersts_txt_status.value.trim(),inremark: mremark },
+            status : sersts_wip_txt_status.value.trim(),inremark: mremark },
             dataType: "json",
             success: function (response) {
                 if(response[0].cd=='0'){
                     alertify.message(response[0].msg);
                 } else {
                     alertify.message(response[0].msg);
-                    document.getElementById('sersts_txt_jobno_tobfind').value=response[0].doc;                    
-                    document.getElementById('sersts_txt_item_tobfind').value=response[0].itemcd;
+                    document.getElementById('sersts_wip_txt_jobno_tobfind').value=response[0].doc;                    
+                    document.getElementById('sersts_wip_txt_item_tobfind').value=response[0].itemcd;
                     initLASTSERList();
                 }                
             }, error: function(xhr, xopt, xthrow){
@@ -412,14 +412,14 @@
             }
         });
     });
-    $("#sersts_txt_proddt").datepicker().on('changeDate', function(e){
-        $("#sersts_txt_prodline").focus();
+    $("#sersts_wip_txt_proddt").datepicker().on('changeDate', function(e){
+        $("#sersts_wip_txt_prodline").focus();
     });
     initLASTSERList();
     function initLASTSERList(){
-        let mdoc = $("#sersts_txt_jobno_tobfind").val();
-        let mitem = $("#sersts_txt_item_tobfind").val();
-        tableSERLAST =  $('#sersts_tbllastjobno').DataTable({
+        let mdoc = $("#sersts_wip_txt_jobno_tobfind").val();
+        let mitem = $("#sersts_wip_txt_item_tobfind").val();
+        tableSERLAST =  $('#sersts_wip_tbllastjobno').DataTable({
             responsive: true,
             destroy: true,
             ajax: {
@@ -485,17 +485,17 @@
             }
         });             
     }
-    $("#sersts_btn_findser").click(function (e) { 
+    $("#sersts_wip_btn_findser").click(function (e) { 
         e.preventDefault();
-        $("#sersts_MODJOB").modal('show');
+        $("#sersts_wip_MODJOB").modal('show');
     });
-    $("#sersts_MODJOB").on('shown.bs.modal', function(){
-        $("#sersts_txtsearchjob").focus();
+    $("#sersts_wip_MODJOB").on('shown.bs.modal', function(){
+        $("#sersts_wip_txtsearchjob").focus();
     });
-    $("#sersts_txtsearchjob").keypress(function (e) { 
+    $("#sersts_wip_txtsearchjob").keypress(function (e) { 
         if(e.which==13){
             let mval = $(this).val();
-            $("#sersts_job_tbl tbody").empty();
+            $("#sersts_wip_job_tbl tbody").empty();
             $.ajax({
                 type: "get",
                 url: "<?=base_url('SER/getdocg_wip')?>",
@@ -511,7 +511,7 @@
                             '<td>'+response[i].SER_DOC+'</td>'+
                             '</tr>';
                         }
-                        $("#sersts_job_tbl tbody").html(tohtml);
+                        $("#sersts_wip_job_tbl tbody").html(tohtml);
                     } else {
                         alertify.message('not found');
                     }           
@@ -521,33 +521,33 @@
             });
         }
     });
-    $('#sersts_job_tbl tbody').on( 'click', 'tr', function () {
+    $('#sersts_wip_job_tbl tbody').on( 'click', 'tr', function () {
         let mitem =  $(this).closest("tr").find('td:eq(0)').text();
         let mjob =  $(this).closest("tr").find('td:eq(1)').text();                
-        $("#sersts_txt_item_tobfind").val(mitem); 
-        $("#sersts_txt_jobno_tobfind").val(mjob);
-        $("#sersts_MODJOB").modal('hide');
+        $("#sersts_wip_txt_item_tobfind").val(mitem); 
+        $("#sersts_wip_txt_jobno_tobfind").val(mjob);
+        $("#sersts_wip_MODJOB").modal('hide');
         initLASTSERList();
     });
     
 
-    $("#sersts_btn_print").click(function(){
-        sersts_serprint = [];
+    $("#sersts_wip_btn_print").click(function(){
+        sersts_wip_serprint = [];
         $.each(tableSERLAST.rows().nodes(), function(key, value){
             var $tds = $(value).find('td'),
                 rana = $tds.eq(0).find('input').is(':checked'),
                 myser = $tds.eq(1).text();
             if(rana){
-                sersts_serprint.push(myser);
+                sersts_wip_serprint.push(myser);
             }
         });
-        if (sersts_serprint.length>0){
-            $("#sersts_MODPRINT").modal('show');
+        if (sersts_wip_serprint.length>0){
+            $("#sersts_wip_MODPRINT").modal('show');
         } else {
             alertify.message('Please select the data to be printed first');
         }
     });
-    $("#sersts_ckall").click(function(){
+    $("#sersts_wip_ckall").click(function(){
         var ischk = $(this).is(":checked");
         $.each(tableSERLAST.rows().nodes(), function(key, value) {
             var $tds = $(value).find('td');
@@ -559,33 +559,33 @@
         });
     });
 
-    $("#sersts_btn_prcprint").click(function (e) { 
+    $("#sersts_wip_btn_prcprint").click(function (e) { 
         e.preventDefault();
-        let mrd_type = $("input[name='sersts_rd_lbltype']:checked").val();  
-        let msize = $("#sersts_sel_ppr").val();      
-        Cookies.set('PRINTLABEL_FG', sersts_serprint, {expires:365});
+        let mrd_type = $("input[name='sersts_wip_rd_lbltype']:checked").val();  
+        let msize = $("#sersts_wip_sel_ppr").val();      
+        Cookies.set('PRINTLABEL_FG', sersts_wip_serprint, {expires:365});
         Cookies.set('PRINTLABEL_FG_LBLTYPE', mrd_type, {expires:365});
         Cookies.set('PRINTLABEL_FG_SIZE', msize, {expires:365});
         window.open("<?=base_url('printlabel_fgwip')?>",'_blank');
     });
     
-    $("#sersts_rd_def").click(function (e) {         
-        $("#sersts_dv").hide();
+    $("#sersts_wip_rd_def").click(function (e) {         
+        $("#sersts_wip_dv").hide();
     });
-    $("#sersts_rd_ppr").click(function (e) {        
-        $("#sersts_dv").show();
+    $("#sersts_wip_rd_ppr").click(function (e) {        
+        $("#sersts_wip_dv").show();
     });
-    $("#sersts_btn_smod_job").click(function (e) { 
+    $("#sersts_wip_btn_smod_job").click(function (e) { 
         e.preventDefault();
-        $("#sersts_MODSELJOB").modal('show');
+        $("#sersts_wip_MODSELJOB").modal('show');
     });
-    $("#sersts_MODSELJOB").on('shown.bs.modal', function(){
-        $("#sersts_txtseljob").focus();
+    $("#sersts_wip_MODSELJOB").on('shown.bs.modal', function(){
+        $("#sersts_wip_txtseljob").focus();
     });
-    $("#sersts_txtseljob").keypress(function (e) { 
+    $("#sersts_wip_txtseljob").keypress(function (e) { 
         if(e.which==13){
             let mval =$(this).val();
-            $("#sersts_lblinfo_tbljob").text('Please wait ...');
+            $("#sersts_wip_lblinfo_tbljob").text('Please wait ...');
             $.ajax({
                 type: "get",
                 url: "<?=base_url('SPL/getWOOpen_wip')?>",
@@ -593,12 +593,12 @@
                 dataType: "json",
                 success: function (response) {
                     let ttlrows = response.length;                                      
-                    let mydes = document.getElementById("sersts_divku");
+                    let mydes = document.getElementById("sersts_wip_divku");
                     let myfrag = document.createDocumentFragment();
-                    let mtabel = document.getElementById("sersts_seljob_tbl");
+                    let mtabel = document.getElementById("sersts_wip_seljob_tbl");
                     let cln = mtabel.cloneNode(true);
                     myfrag.appendChild(cln);
-                    let tabell = myfrag.getElementById("sersts_seljob_tbl");
+                    let tabell = myfrag.getElementById("sersts_wip_seljob_tbl");
                     let tanblebod = tabell.getElementsByTagName("tbody")[0];
                     let newrow, newcell, newText, unlbl;
                     tanblebod.innerHTML='';
@@ -637,26 +637,26 @@
                     }                                        
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
-                    $("#sersts_lblinfo_tbljob").text(ttlrows + ' row(s) found');
-                    $('#sersts_seljob_tbl tbody').on( 'click', 'tr', function () {
+                    $("#sersts_wip_lblinfo_tbljob").text(ttlrows + ' row(s) found');
+                    $('#sersts_wip_seljob_tbl tbody').on( 'click', 'tr', function () {
                         let mitem   = $(this).closest("tr").find('td:eq(1)').text();
                         let mjob    = $(this).closest("tr").find('td:eq(0)').text();
                         let mitemnm = $(this).closest("tr").find('td:eq(2)').text();
                         let qty     = $(this).closest("tr").find('td:eq(3)').text();
                         let qtylbl  = $(this).closest("tr").find('td:eq(4)').text();
                         if(numeral(qty).value()!=numeral(qtylbl).value()){
-                            $("#sersts_txt_jobno").val(mjob); 
-                            $("#sersts_txt_itmcd").val(mitem);
-                            document.getElementById('sersts_txt_qty').focus();
-                            document.getElementById('sersts_txtseljob').value="";
-                            document.getElementById('sersts_txt_qty').value="";
-                            document.getElementById('sersts_txt_itmnm').value=mitemnm;
-                            document.getElementById('sersts_txt_jobqty').value=qty;                            
+                            $("#sersts_wip_txt_jobno").val(mjob); 
+                            $("#sersts_wip_txt_itmcd").val(mitem);
+                            document.getElementById('sersts_wip_txt_qty').focus();
+                            document.getElementById('sersts_wip_txtseljob').value="";
+                            document.getElementById('sersts_wip_txt_qty').value="";
+                            document.getElementById('sersts_wip_txt_itmnm').value=mitemnm;
+                            document.getElementById('sersts_wip_txt_jobqty').value=qty;                            
                             
-                            $('#sersts_seljob_tbl tbody').html('');
-                            $("#sersts_txt_item_tobfind").val(mitem); 
-                            $("#sersts_txt_jobno_tobfind").val(mjob);                            
-                            $("#sersts_MODSELJOB").modal('hide');                            
+                            $('#sersts_wip_seljob_tbl tbody').html('');
+                            $("#sersts_wip_txt_item_tobfind").val(mitem); 
+                            $("#sersts_wip_txt_jobno_tobfind").val(mjob);                            
+                            $("#sersts_wip_MODSELJOB").modal('hide');                            
                             initLASTSERList();
                         } else {
                             alertify.message('all labels are already created');
@@ -669,14 +669,14 @@
         }
     });    
     
-    $("#sersts_txt_qty").keyup(function (e) { 
+    $("#sersts_wip_txt_qty").keyup(function (e) { 
         let mval = numeral($(this).val()).format(',');
         $(this).val(mval);
     });  
 
-    sersts_getline_mfg();
-    function sersts_getline_mfg(pjob){
-        document.getElementById('sersts_txt_prodline').innerHTML='';
+    sersts_wip_getline_mfg();
+    function sersts_wip_getline_mfg(pjob){
+        document.getElementById('sersts_wip_txt_prodline').innerHTML='';
         $.ajax({
             type: "get",
             url: "<?=base_url('SPL/getline_mfg')?>",           
@@ -689,7 +689,7 @@
                     let theline = response.data[i].PPSN1_LINENO;
                     strtodis += "<option value='"+theline+"'>"+theline+"</option>";
                 }
-                document.getElementById('sersts_txt_prodline').innerHTML=strtodis;
+                document.getElementById('sersts_wip_txt_prodline').innerHTML=strtodis;
             }, error(xhr, xopt, xthrow){
                 alertify.error(xthrow);
             }
