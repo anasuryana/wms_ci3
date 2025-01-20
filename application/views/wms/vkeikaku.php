@@ -352,8 +352,10 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="keikakuEditHour" disabled>
-                        <span class="input-group-text">o'clock</label>
+                        <input type="text" class="form-control" id="keikakuEditHour" disabled />
+                        <span class="input-group-text">~</span>
+                        <input type="text" class="form-control" id="keikakuEditHourTo" disabled />
+                        <span class="input-group-text">o'clock</span>
                     </div>
                 </div>
             </div>
@@ -967,6 +969,7 @@
             if(aRow[7] === 'Actual' && x2 >=9 && aRowSibling[7] === 'TOTAL') {
                 let aRowTime = instance.jspreadsheet.getRowData(1)
                 keikakuEditHour.value = aRowTime[x2]
+                keikakuEditHourTo.value = Number(aRowTime[x2]) + 1
                 keikakuEditXCoordinate.value = x2
                 keikakuEditHeadSeq.value = aRowSibling2[0]/2
                 keikaku_get_wo({
