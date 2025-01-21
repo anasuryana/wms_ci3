@@ -231,6 +231,12 @@
                                     <button class="btn btn-primary" id="keikaku_btn_save_downtime" title="Save" onclick="keikaku_btn_save_downtime_eC(this)"><i class="fas fa-save"></i></button>
                                 </div>
                             </div>
+                            <div class="col-md-8">
+                                <div class="input-group input-group-sm mb-1">
+                                    <label class="input-group-text"><i class="fas fa-asterisk"></i></label>
+                                    <input type="text" class="form-control" id="keikaku_downtime_remark" readonly title="Formula Bar">
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12 mb-1 table-responsive">
@@ -2270,7 +2276,7 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
-                wordWrap:true
+               
             },
             {
                 title : 'Duration',
@@ -2282,7 +2288,7 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
-                wordWrap:true
+               
             },
             {
                 title : 'Duration',
@@ -2294,7 +2300,7 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
-                wordWrap:true
+               
             },
             {
                 title : 'Duration',
@@ -2306,7 +2312,7 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
-                wordWrap:true
+               
             },
             {
                 title : 'Duration',
@@ -2384,6 +2390,14 @@
             }
             if(y===14) {
                 cell.classList.add('readonly');
+            }
+        },
+        onselection: function(instance, x1, y1, x2, y2, origin) {
+            if([3,5,7,9].includes(x1) && y1<13) {
+                let aRow = instance.jspreadsheet.getRowData(y1)
+                keikaku_downtime_remark.value = aRow[x1]
+            } else {
+                keikaku_downtime_remark.value = '-'
             }
         }
     })
