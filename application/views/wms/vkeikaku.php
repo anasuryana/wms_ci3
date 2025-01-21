@@ -2270,6 +2270,7 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
+                wordWrap:true
             },
             {
                 title : 'Duration',
@@ -2281,6 +2282,7 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
+                wordWrap:true
             },
             {
                 title : 'Duration',
@@ -2292,6 +2294,7 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
+                wordWrap:true
             },
             {
                 title : 'Duration',
@@ -2303,6 +2306,7 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
+                wordWrap:true
             },
             {
                 title : 'Duration',
@@ -2328,7 +2332,7 @@
         allowRenameColumn : false,
         allowDeleteRow : false,
         rowDrag:false,
-
+        rowResize:true,
         nestedHeaders : [
             [
                 {
