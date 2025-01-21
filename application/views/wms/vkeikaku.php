@@ -995,6 +995,7 @@
                 tempY1 = y1
                 tempY2 = y2
                 if (aRowSibling[7] === 'TOTAL') {
+                    keikakuEditSide.value = aRowSibling[1]
                     keikakuEditHeadSeq.value = aRowSibling2[0]/2
                     keikaku_get_wo({
                         prefWO : aRowSibling2[3],
