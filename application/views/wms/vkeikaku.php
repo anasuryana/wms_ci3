@@ -173,7 +173,7 @@
                                                             <i class="fa-solid fa-circle fa-stack-2x" style="color: #cfcccc"></i>
                                                             <i class="fa-solid fa-flag fa-stack-1x fa-inverse"></i>
                                                             </span> White</a>
-                                                </li>                                                
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -947,7 +947,6 @@
                     const theCell = keikaku_prodplan_sso.getCell(cellName)
                     theCell.classList.add('keikakuBorderTop')
                 }
-                
             }
             if(value=='PLAN' && x==7 && y==9) {
                 const theDataCount = keikaku_prodplan_sso.getData().length
@@ -993,8 +992,8 @@
                 keikakuEditHour.value = aRowTime[x2]
                 keikakuEditHourTo.value = Number(aRowTime[x2]) + 1
                 keikakuEditXCoordinate.value = x2
-                
-                
+
+
                 keikakuEditOutput.value = aRow[x2]
                 tempX1 = x1
                 tempX2 = x2
@@ -1024,6 +1023,15 @@
                     keikakuEditOutputContainer.classList.add('d-none')
                     keikakuBtnEditActual.classList.add('d-none')
                     keikakuBtnEditActualChangeModel.classList.remove('d-none')
+                }
+                if(aRow[x2] == 1) {
+                    keikakuBtnEditActualChangeModel.innerText = 'Remove Change Model'
+                    keikakuBtnEditActualChangeModel.classList.remove('btn-primary')
+                    keikakuBtnEditActualChangeModel.classList.add('btn-warning')
+                } else {
+                    keikakuBtnEditActualChangeModel.innerText = 'Set change model'
+                    keikakuBtnEditActualChangeModel.classList.add('btn-primary')
+                    keikakuBtnEditActualChangeModel.classList.remove('btn-warning')
                 }
                 $("#keikakuEditActualModal").modal('show')
             }
@@ -1983,7 +1991,7 @@
                 mydes.appendChild(myfrag);
 
                 // display prodplan to grid
-                keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation)
+                keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation, response.dataChangesModel)
                 keikaku_prodplan_sso.resetSelection();
                 keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1+1, tempX2, tempY2+1);
             }, error: function(xhr, xopt, xthrow) {
@@ -1993,7 +2001,7 @@
         });
     }
 
-    function keikakuDisplayProdplan(data, dataS, dataCalculation) {
+    function keikakuDisplayProdplan(data, dataS, dataCalculation, dataModelChanges) {
         let _newRowH = []
         _newRowH.push('')
         _newRowH.push('')
@@ -2020,6 +2028,7 @@
         keikaku_prodplan_sso.setData(inputSS)
         const totalRowsMatrix = data.length
         const totalRowsSensor = dataS.length
+        const totalRowsModelChanges = dataModelChanges.length
 
 
         let nomorUrut = 1;
@@ -2080,6 +2089,27 @@
                         }
                     }
                 }
+
+                _newRow2.push('')
+                _newRow2.push('')
+                _newRow2.push('')
+                _newRow2.push('')
+                _newRow2.push('')
+                _newRow2.push('')
+                _newRow2.push('')
+                _newRow2.push('Actual')
+                _newRow2.push(0)
+
+                for(let r=0; r<totalRowsModelChanges; r++) {
+                    if(data[i][3] == dataModelChanges[r][3] && _specsSide == dataModelChanges[r][4] && _seq == dataModelChanges[r][1]) { // by job & seq
+                        for(let c=9; c<(9+12+12+12); c++) {
+                            const _theflag = dataModelChanges[r][c-3]
+                            _newRow2.push(_theflag == '-' ? '' : _theflag)
+                        }
+                    }
+                }
+
+                inputSS.push(_newRow2)
                 inputSS.push(_newRow3)
                 inputSS.push(_newRow4)
 
@@ -2126,7 +2156,7 @@
 
                 let totalQtySensor = 0
                 for(let r=0; r<totalRowsSensor; r++) {
-                    if(data[i][3] == dataS[r][3] && _specsSide == dataS[r][4] && _seq == dataS[r][1]) { // by job & seq                        
+                    if(data[i][3] == dataS[r][3] && _specsSide == dataS[r][4] && _seq == dataS[r][1]) { // by job & seq
                         for(let c=9; c<(9+12+12+12); c++) {
                             _newRow5.push(dataS[r][c-3])
                             const _output = Number(dataS[r][c-3])
@@ -2199,18 +2229,9 @@
                     }
                 }
 
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('Actual')
-                _newRow2.push(0)
+
 
                 inputSS.push(_newRow1)
-                inputSS.push(_newRow2)
             }
 
             nomorUrut++
@@ -2276,7 +2297,6 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
-               
             },
             {
                 title : 'Duration',
@@ -2288,7 +2308,6 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
-               
             },
             {
                 title : 'Duration',
@@ -2300,7 +2319,6 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
-               
             },
             {
                 title : 'Duration',
@@ -2312,7 +2330,6 @@
                 title : 'Remark',
                 type : 'text',
                 width:150,
-               
             },
             {
                 title : 'Duration',
@@ -2659,7 +2676,7 @@
         for(let _y=tempY1; _y<=tempY2;_y++) {
             for(let _x=tempX1; _x<=tempX2; _x++) {
                 let theCell = keikaku_data_sso.getCellFromCoords(_x,_y);
-                theCell.style.cssText = 'background-color : #fafe0d;text-align: center' 
+                theCell.style.cssText = 'background-color : #fafe0d;text-align: center'
             }
         }
     }
@@ -2673,8 +2690,47 @@
         }
     }
 
-    function keikakuBtnEditActualChangeModelOnClick() {
-        alertify.message('this function is not ready. We are still developing it')
+    function keikakuBtnEditActualChangeModelOnClick(pThis) {
+        const changeModelFlag = pThis.classList.contains('btn-primary') ? 1 : '-'
+        const data = {
+            line : keikaku_line_input.value,
+            job : keikakuEditWO.value,
+            side : keikakuEditSide.value,
+            productionDate : keikakuEditDate.value,
+            runningAtTime : keikakuEditHour.value,
+            change_flag : changeModelFlag,
+            user_id : uidnya,
+            XCoordinate : keikakuEditXCoordinate.value,
+            seq_data : keikakuEditHeadSeq.value
+        }
+        pThis.disabled = true
+        $.ajax({
+            type: "POST",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/model-changes",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                pThis.disabled = false
+                alertify.success(response.message)
+                $('#keikakuEditActualModal').modal('hide')
+                keikaku_btn_run_prodplan_eC(keikaku_btn_run_prodplan)
+                keikaku_load_data()
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                pThis.disabled = false
+
+                const respon = Object.keys(xhr.responseJSON)
+
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                keikakuEditAlert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }
+        });
     }
 
 </script>
