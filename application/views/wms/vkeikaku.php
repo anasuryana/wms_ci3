@@ -374,7 +374,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" id="keikakuEditOutputContainer">
                 <div class="col-md-12">
                     <div class="mb-3">
                         <label for="platNomor" class="form-label">Actual Output</label>
@@ -390,6 +390,7 @@
       <input type="hidden" id="keikakuEditHeadSeq">
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="keikakuBtnEditActual" onclick="keikakuBtnEditActualOnClick(this)"><i class="fas fa-save"></i></button>
+        <button type="button" class="btn btn-primary" id="keikakuBtnEditActualChangeModel" onclick="keikakuBtnEditActualChangeModelOnClick(this)">Set change model</button>
       </div>
     </div>
   </div>
@@ -981,23 +982,42 @@
             let aRow = instance.jspreadsheet.getRowData(y2)
             let aRowSibling = instance.jspreadsheet.getRowData(y2-1)
             let aRowSibling2 = instance.jspreadsheet.getRowData(y2-2)
-            if(aRow[7] === 'Actual' && x2 >=9 && aRowSibling[7] === 'TOTAL') {
+            if(aRow[7] === 'Actual' && x2 >=9 ) {
                 let aRowTime = instance.jspreadsheet.getRowData(1)
                 keikakuEditHour.value = aRowTime[x2]
                 keikakuEditHourTo.value = Number(aRowTime[x2]) + 1
                 keikakuEditXCoordinate.value = x2
-                keikakuEditHeadSeq.value = aRowSibling2[0]/2
-                keikaku_get_wo({
-                    prefWO : aRowSibling2[3],
-                    procWO : aRowSibling[1],
-                    itemWO : aRowSibling[5],
-                })
+                
+                
                 keikakuEditOutput.value = aRow[x2]
-                keikakuEditSide.value = aRowSibling[1]
                 tempX1 = x1
                 tempX2 = x2
                 tempY1 = y1
                 tempY2 = y2
+                if (aRowSibling[7] === 'TOTAL') {
+                    keikakuEditHeadSeq.value = aRowSibling2[0]/2
+                    keikaku_get_wo({
+                        prefWO : aRowSibling2[3],
+                        procWO : aRowSibling[1],
+                        itemWO : aRowSibling[5],
+                    })
+                    keikakuEditOutputContainer.classList.remove('d-none')
+                    keikakuBtnEditActual.classList.remove('d-none')
+                    keikakuBtnEditActualChangeModel.classList.add('d-none')
+                } else {
+                    aRowSibling = instance.jspreadsheet.getRowData(y2+2)
+                    aRowSibling2 = instance.jspreadsheet.getRowData(y2+1)
+                    keikakuEditHeadSeq.value = aRowSibling2[0]/2
+                    keikakuEditSide.value = aRowSibling[1]
+                    keikaku_get_wo({
+                        prefWO : aRowSibling2[3],
+                        procWO : aRowSibling[1],
+                        itemWO : aRowSibling[5],
+                    })
+                    keikakuEditOutputContainer.classList.add('d-none')
+                    keikakuBtnEditActual.classList.add('d-none')
+                    keikakuBtnEditActualChangeModel.classList.remove('d-none')
+                }
                 $("#keikakuEditActualModal").modal('show')
             }
         }
@@ -2632,6 +2652,10 @@
                 theCell.style.cssText = 'background-color : #ffffff;text-align: center'
             }
         }
+    }
+
+    function keikakuBtnEditActualChangeModelOnClick() {
+        alertify.message('this function is not ready. We are still developing it')
     }
 
 </script>
