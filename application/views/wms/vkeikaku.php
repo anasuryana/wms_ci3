@@ -2222,9 +2222,14 @@
                     for(let c=9; c<(9+12+12+12); c++) {
                         if(inputSS[1][c] == Number(data[0][(c-3)])) {
                             if(data[i][c-3] >0) {
-                                _newRow1.push(1)
-                                _newRow1[8]+=1
-                                inputSS[2][c] = 'C1'
+                                const theMostPossibleColumn = keikakuMostUseTimeChangeMold(data[i]);
+                                if(_newRow1[8]==0 && theMostPossibleColumn == (c-3) ) {
+                                    _newRow1.push(1)
+                                    _newRow1[8]+=1
+                                    inputSS[2][c] = 'C1'
+                                } else {
+                                    _newRow1.push('')
+                                }
                             } else {
                                 _newRow1.push('')
                             }
@@ -2242,6 +2247,18 @@
         if(totalRowsMatrix>0) {
             keikaku_prodplan_sso.setData(inputSS)
         }
+    }
+
+    function keikakuMostUseTimeChangeMold(data) {
+        let _possibleColumn = 0
+        let _tempMax = 0
+        for(let i=6; i<=41; i++) {
+            if(data[i]>_tempMax) {
+                _tempMax = data[i]
+                _possibleColumn = i
+            }
+        }
+        return _possibleColumn
     }
 
     function keikakuShowLineModal() {
