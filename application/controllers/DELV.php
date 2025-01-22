@@ -3758,7 +3758,7 @@ class DELV extends CI_Controller
                 }
                 if (!$isexist) {
                     $ar_item[] = $r['SER_ITMID'];
-                    $ar_itemdesc[] = $r['MITM_ITMD1'];
+                    $ar_itemdesc[] = in_array($DLV_CONSIGN, ['IEI','MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
                     $ar_itemUM[] = $r['MITM_STKUOM'];
                     $ar_qty[] = $r['SISCN_SERQTY'];
                     $ar_po[] = $r['SISCN_DOCREFF'];
@@ -3799,7 +3799,7 @@ class DELV extends CI_Controller
                             $nourutDO++;
                             $tempItem = $n['SSO2_MDLCD'];
                             $ItemDis = $tempItem;
-                            $ItemDis2 = $n['MITM_ITMD1'];
+                            $ItemDis2 =  $n['MITM_ITMD1'];
                             $nourutDODis = $nourutDO;
                         } else {
                             $ItemDis = '';
@@ -3873,7 +3873,7 @@ class DELV extends CI_Controller
                             $nourutDO++;
                             $tempItem = $n['DLVSO_ITMCD'];
                             $ItemDis = $tempItem;
-                            $ItemDis2 = $n['MITM_ITMD1'];
+                            $ItemDis2 = in_array($DLV_CONSIGN, ['IEI','MEI']) ? $n['MITM_ITMD2'] :  $n['MITM_ITMD1'];
                             $nourutDODis = $nourutDO;
                         } else {
                             $ItemDis = '';
