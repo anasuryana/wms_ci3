@@ -69,6 +69,7 @@ class DLVSO_mod extends CI_Model {
                     ,DLVSO_ITMCD
                     ,PLOTQTY
                     ,RTRIM(MITM_ITMD1) MITM_ITMD1
+                    ,RTRIM(MITM_ITMD2) MITM_ITMD2
                     ,RTRIM(MITM_STKUOM) MITM_STKUOM
                     ,PLOTQTMAIN
                     ,ORDQT
