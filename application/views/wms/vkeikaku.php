@@ -2105,6 +2105,9 @@
                         for(let c=9; c<(9+12+12+12); c++) {
                             const _theflag = dataModelChanges[r][c-3]
                             _newRow2.push(_theflag == '-' ? '' : _theflag)
+                            if(_theflag=='1') {
+                                _newRow2[8]++
+                            }
                         }
                     }
                 }
