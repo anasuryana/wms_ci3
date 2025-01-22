@@ -3680,7 +3680,7 @@ class DELV extends CI_Controller
                     if ($par_item != $r['SI_ITMCD']) {
                         $par_item = $r['SI_ITMCD'];
                         $dis_item = $r['SI_ITMCD'];
-                        $dis_itemnm = in_array($DLV_CONSIGN, ['IEI', 'MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
+                        $dis_itemnm = in_array($DLV_CONSIGN, ['IEI', 'MEI']) ? $r['MITM_ITMD1'] : $r['MITM_ITMD2'];
                         $dis_qty = number_format($r['TTLDLV'], 0);
                         $no++;
                         $dis_no = $no;
