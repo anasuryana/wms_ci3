@@ -3461,8 +3461,7 @@ class DELV extends CI_Controller
             $MAX_INVL_PERPAGE = $curLine + (10 * $MAX_INVD_PERPAGE);
             $ttlqty_ = 0;
             foreach ($rsinv as $r) {
-                $_itemName = $DLV_CONSIGN == 'IEI' ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
-                // $_itemName = $r['MITM_ITMD1'];
+                $_itemName = in_array($DLV_CONSIGN, ['IEI','MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
                 if ($ttlbrs > $MAX_INVD_PERPAGE) {
                     $ttlbrs = 1;
                     $pdf->AddPage();
@@ -3615,8 +3614,7 @@ class DELV extends CI_Controller
                     if ($par_item != $r['SI_ITMCD']) {
                         $par_item = $r['SI_ITMCD'];
                         $dis_item = $r['SI_ITMCD'];
-                        $dis_itemnm = $DLV_CONSIGN == 'IEI' ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
-                        // $dis_itemnm = $r['MITM_ITMD1'];
+                        $dis_itemnm = in_array($DLV_CONSIGN, ['IEI','MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
                         $dis_qty = number_format($r['TTLBOX'], 0);
                         $no++;
                         $dis_no = $no;
@@ -3682,8 +3680,7 @@ class DELV extends CI_Controller
                     if ($par_item != $r['SI_ITMCD']) {
                         $par_item = $r['SI_ITMCD'];
                         $dis_item = $r['SI_ITMCD'];
-                        $dis_itemnm = $DLV_CONSIGN == 'IEI' ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
-                        // $dis_itemnm = $r['MITM_ITMD1'];
+                        $dis_itemnm = in_array($DLV_CONSIGN, ['IEI', 'MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
                         $dis_qty = number_format($r['TTLDLV'], 0);
                         $no++;
                         $dis_no = $no;
@@ -14875,8 +14872,7 @@ class DELV extends CI_Controller
                 $tpb_barang[] = [
                     'KODE_BARANG' => $r['SSO2_MDLCD']
                     , 'POS_TARIF' => $r['MITM_HSCD']
-                    , 'URAIAN' => $Consign == 'IEI' ? $r['MITM_ITMD2'] : $r['MITM_ITMD1']
-                    // , 'URAIAN' => $r['MITM_ITMD1']
+                    , 'URAIAN' => in_array($Consign, ['IEI','MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1']
                     , 'JUMLAH_SATUAN' => $r['SISOQTY']
                     , 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM']
                     , 'NETTO' => $r['NWG']
@@ -15350,7 +15346,7 @@ class DELV extends CI_Controller
                         $tpb_barang_temp[] = [
                             'KODE_BARANG' => $r['SI_ITMCD'],
                             'POS_TARIF' => $r['RCV_HSCD'],
-                            'URAIAN' => $DLV_CONSIGN == 'IEI' ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'],
+                            'URAIAN' => in_array($DLV_CONSIGN, ['IEI','MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'],
                             'JUMLAH_SATUAN' => $r['INTQTY'],
                             'JUMLAH_KEMASAN' => $r['BOX'],
                             'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'],
@@ -15439,7 +15435,7 @@ class DELV extends CI_Controller
                                 , 'KODE_BARANG' => $p['OLDITEM']
                                 , 'KODE_STATUS' => "03"
                                 , 'POS_TARIF' => $p['RCV_HSCD']
-                                , 'URAIAN' => $DLV_CONSIGN == 'IEI' ? $p['MITM_ITMD2'] : $p['MITM_ITMD1']
+                                , 'URAIAN' => in_array($DLV_CONSIGN, ['IEI','MEI']) ? $p['MITM_ITMD2'] : $p['MITM_ITMD1']
                                 , 'TIPE' => $p['MITM_SPTNO']
                                 , 'JUMLAH_SATUAN' => $p['PERBOX'] * $p['BOX']
                                 , 'JENIS_SATUAN' => ($p['MITM_STKUOM'] == 'PCS') ? 'PCE' : $p['MITM_STKUOM']
