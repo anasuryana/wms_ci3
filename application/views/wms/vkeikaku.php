@@ -469,7 +469,7 @@
                 width:100,
             },
             {
-                title:'ASP/KD',
+                title:'Remark',
                 type: 'text',
                 width:100,
             },
