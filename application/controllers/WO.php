@@ -50,7 +50,13 @@ class WO extends CI_Controller
 
     public function form_keikaku_fullpage()
     {
-        $this->load->view('wms/vkeikaku_fullpage');
+        if ($this->session->userdata('status') != "login") {
+            $myar[] = ["cd" => "00", "msg" => "Session is expired, relogin to WMS is required"];
+            exit(json_encode($myar));
+        }
+        $data['sapaDia'] = $this->session->userdata('sfname');
+        $data['sapaDiaID'] = $this->session->userdata('nama');
+        $this->load->view('wms/vkeikaku_fullpage', $data);
     }
 
     public function checkSimulation()
