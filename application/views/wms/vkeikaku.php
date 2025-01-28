@@ -1417,6 +1417,11 @@
         let inputSS = keikaku_calculation_sso.getData()
         const inputSSCount = inputSS.length
 
+        let totalWorkingTimeMorning = 0.25;
+        let totalWorkingTimeNight = 0.25;
+        let isOverTimeMorning = 0;
+        let isOverTimeNight = 0;
+
         for(let c=1; c<37; c++) {
             let _theShift = c<13 ? 'M' : 'N'
             let _theDate = keikaku_date_input.value
@@ -1444,13 +1449,48 @@
                 'plan_worktime' : numeral(inputSS[8][c]).value(),
                 'efficiency' : numeral(inputSS[10][c]).value()
             })
+
+            if(c<13) {
+                if(inputSS[7][c]=='OT') {
+                    isOverTimeMorning = true
+                }
+            } else {
+                if(c<=24) {
+                    if(inputSS[7][c]=='OT') {
+                        isOverTimeNight = true
+                    }
+                }
+            }
+
+        }
+
+        for(let c=1; c<37; c++) {
+            if(c<13) {
+                if(isOverTimeMorning) {
+                    totalWorkingTimeMorning += numeral(inputSS[5][c]).value()
+                } else {
+                    totalWorkingTimeMorning += numeral(inputSS[4][c]).value()
+                }
+            }
+            
+            if(c>=13 && c<=24) {
+                if(isOverTimeNight) {
+                    totalWorkingTimeNight += numeral(inputSS[5][c]).value()
+                } else {
+                    totalWorkingTimeNight += numeral(inputSS[4][c]).value()                    
+                }
+            }
         }
 
         const dataInput = {
             line_code : keikaku_line_input.value,
             production_date : keikaku_date_input.value,
             user_id: uidnya,
-            detail : dataDetail
+            detail : dataDetail,
+            isOverTimeMorning : isOverTimeMorning,
+            isOverTimeNight : isOverTimeNight,
+            totalWorkingTimeMorning : totalWorkingTimeMorning,
+            totalWorkingTimeNight : totalWorkingTimeNight
         }
 
         if(confirm('Are you sure want to save ?')) {
