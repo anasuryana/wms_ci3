@@ -1634,9 +1634,15 @@
             let _job = inputSS[i][2].trim() + inputSS[i][7].trim()
             if(!JobUnique.includes(_job)) {
                 JobUnique.push(_job)
-                dataDetail.push({
-                    item_code : inputSS[i][7].trim().substring(0,9),
-                })
+                if(inputSS[i][7].trim().includes('ASP') || inputSS[i][7].trim().includes('ASP')) {
+                    dataDetail.push({
+                        item_code : inputSS[i][7].trim().substring(0,9),
+                    })
+                } else {
+                    dataDetail.push({
+                        item_code : inputSS[i][7].trim(),
+                    })
+                }
             }
         }
 
@@ -1655,21 +1661,37 @@
                 pThis.disabled = false
                 let dataLength = keikaku_data_sso.getData().length
                 let responseDataLength = response.data.length
-                for(let i=0; i < dataLength; i++) {
-                    let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim().substring(0,9)
-                    let _processCode = keikaku_data_sso.getValueFromCoords(9, i, true).trim().substring(0,9)
-                    keikaku_data_sso.setValue('K'+(i+1), 0)
-                    for(let s=0;s<responseDataLength; s++) {
-                        const _responseProcess = response.data[s].process_code.trim()
-                        if(_itemCode == response.data[s].assy_code.trim()
-                        &&  _processCode === _responseProcess.substr(_responseProcess.length-1, 1)
-                    ) {
-                            keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
-                            break;
+                if(keikaku_line_input.value.includes('AT')) {
+                    for(let i=0; i < dataLength; i++) {
+                        let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim()
+                        let _processCode = keikaku_data_sso.getValueFromCoords(9, i, true).trim()
+                        keikaku_data_sso.setValue('K'+(i+1), 0)
+                        for(let s=0;s<responseDataLength; s++) {
+                            const _responseProcess = response.data[s].process_code.trim()
+                            if(_itemCode == response.data[s].assy_code.trim()
+                            &&  _processCode === _responseProcess.substr(_responseProcess.length-1, 1)
+                        ) {
+                                keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    for(let i=0; i < dataLength; i++) {
+                        let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim().substring(0,9)
+                        let _processCode = keikaku_data_sso.getValueFromCoords(9, i, true).trim().substring(0,9)
+                        keikaku_data_sso.setValue('K'+(i+1), 0)
+                        for(let s=0;s<responseDataLength; s++) {
+                            const _responseProcess = response.data[s].process_code.trim()
+                            if(_itemCode == response.data[s].assy_code.trim()
+                            &&  _processCode === _responseProcess.substr(_responseProcess.length-1, 1)
+                        ) {
+                                keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
+                                break;
+                            }
                         }
                     }
                 }
-
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
                 pThis.disabled = false
