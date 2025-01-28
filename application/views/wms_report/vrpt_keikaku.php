@@ -23,6 +23,7 @@
                         <button title="Export to" class="btn btn-outline-primary dropdown-toggle" type="button" id="keikaku_rpt_btn_export" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-file-export"></i></button>
                         <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                             <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_summary" onclick="keikaku_rpt_btn_summary_e_click()"><i class="fas fa-file-excel text-success"></i> Summary</a></li>
+                            <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_prod_output" onclick="keikaku_rpt_btn_prod_output_e_click()"><i class="fas fa-file-excel text-success"></i> Production Output</a></li>
                         </ul>
                     </div>
                 </div>
@@ -111,6 +112,7 @@
             </div>
         </div>
       </div>
+      <input type="hidden" id="keikaku_rpt_type" value="-" />
       <div class="modal-footer">
         <button type="button" class="btn btn-success" id="keikakuRptBtnExportSummary" onclick="keikakuRptBtnExportSummary(this)">Export</button>
       </div>
@@ -428,20 +430,30 @@
     }
 
     function keikaku_rpt_btn_summary_e_click() {
+        keikaku_rpt_type.value = 'summary'
         $("#keikaku_rpt_summary_modal").modal('show')
     }
 
     function keikakuRptBtnExportSummary(pThis) {
+        let theUrl = ''
+        switch(keikaku_rpt_type.value) {
+            case 'summary':
+                theUrl = `<?php echo $_ENV['APP_INTERNAL_API'] ?>report/keikaku`
+                break
+            case 'production_output':
+                theUrl = `<?php echo $_ENV['APP_INTERNAL_API'] ?>report/production-output`
+                break
+        }
         pThis.disabled = true
         $.ajax({
             type: "GET",
-            url: `<?php echo $_ENV['APP_INTERNAL_API'] ?>report/keikaku`,
+            url: theUrl,
             data: { dateFrom : keikaku_rpt_date_from.value , dateTo:keikaku_rpt_date_to.value },
             success: function (response) {
                 pThis.disabled = false
                 let waktuSekarang = moment().format('YYYY MMM DD, h_mm')
                 const blob = new Blob([response], { type: "application/vnd.ms-excel" })
-                const fileName = `keikaku from ${keikaku_rpt_date_from.value} to ${keikaku_rpt_date_to.value}.xlsx`
+                const fileName = `${keikaku_rpt_type.value} from ${keikaku_rpt_date_from.value} to ${keikaku_rpt_date_to.value}.xlsx`
                 saveAs(blob, fileName)
 
                 alertify.success('Done')
@@ -461,5 +473,10 @@
                 return xhr
             },
         })
+    }
+
+    function keikaku_rpt_btn_prod_output_e_click() {
+        keikaku_rpt_type.value = 'production_output'
+        $("#keikaku_rpt_summary_modal").modal('show')
     }
 </script>
