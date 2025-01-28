@@ -515,6 +515,7 @@
             [,,,,,,,,,'A',,],
             [,,,,,,,,,'A',,],
         ],
+        minDimensions: [13,41],
         copyCompatibility:true,
         columnSorting:false,
         tableOverflow:true,
@@ -730,7 +731,7 @@
         },
         tableOverflow:true,
         freezeColumns: 1,
-        minDimensions: [50,10],
+        minDimensions: [37,10],
         tableWidth: '1000px',
     });
 
