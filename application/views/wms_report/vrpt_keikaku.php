@@ -79,6 +79,144 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12 mb-1">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <div class="table-responsive" id="keikaku_rpt_tbl_div">
+                                        <table id="keikaku_rpt_tbl" class="table table-bordered table-sm table-hover">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th colspan="2" class="align-middle" style="border-left-color: black; border-left-width: medium ;border-top-color: black; border-top-width: medium; border-right-color: black; border-right-width: medium"></th>
+                                                    <th class="align-middle text-center" style="background-color : #daeef3; border-top-color: black; border-top-width: medium; border-right-color: black; border-right-width: medium">Morning  shift</th>
+                                                    <th class="align-middle text-center" style="background-color : #fde9d9;border-right-width: medium;border-right-color: black; border-top-color: black; border-top-width: medium">Night  shift</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium; border-top-color: black; border-top-width: medium">Time</td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black; border-top-color: black; border-top-width: medium">Plan</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_time_morning_plan" style="border-right-width: medium; border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_time_night_plan" style="border-right-width: medium;border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium"></td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black">Actual</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_time_morning_actual" style="border-right-width: medium; border-right-color: black"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_time_night_actual" style="border-right-width: medium;border-right-color: black"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium"></td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black">Difference</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_time_morning_difference" style="border-right-width: medium; border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_time_night_difference" style="border-right-width: medium;border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium"></td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black">%</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_time_morning_percentage" style="border-right-width: medium; border-right-color: black"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_time_night_percentage" style="border-right-width: medium;border-right-color: black"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium; border-top-color: black; border-top-width: medium">Quantity</td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black; border-top-color: black; border-top-width: medium">Plan</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_qty_morning_plan" style="border-right-width: medium; border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_qty_night_plan" style="border-right-width: medium;border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium"></td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black">Actual</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_qty_morning_actual" style="border-right-width: medium; border-right-color: black"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_qty_night_actual" style="border-right-width: medium;border-right-color: black"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium"></td>
+                                                    <td class="align-middle" style="border-right-width: medium; border-right-color: black">Difference</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_qty_morning_difference" style="border-right-width: medium; border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_qty_night_difference" style="border-right-width: medium;border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium"></td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black">%</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_qty_morning_percentage" style="border-right-width: medium; border-right-color: black"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_qty_night_percentage" style="border-right-width: medium;border-right-color: black"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium; border-top-color: black; border-top-width: medium">Points</td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black; border-top-color: black; border-top-width: medium">Plan</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_poin_morning_plan" style="border-right-width: medium; border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_poin_night_plan" style="border-right-width: medium;border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium"></td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black">Actual</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_poin_morning_actual" style="border-right-width: medium; border-right-color: black"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_poin_night_actual" style="border-right-width: medium;border-right-color: black"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium"></td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black">Difference</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_poin_morning_difference" style="border-right-width: medium; border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_poin_night_difference" style="border-right-width: medium;border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium"></td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black">%</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_poin_morning_percentage" style="border-right-width: medium; border-right-color: black"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_poin_night_percentage" style="border-right-width: medium;border-right-color: black"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium; border-top-color: black; border-top-width: medium">Change Model</td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black; border-top-color: black; border-top-width: medium">Plan</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_cm_morning_plan" style="border-right-width: medium; border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_cm_night_plan" style="border-right-width: medium;border-right-color: black; border-top-color: black; border-top-width: medium"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium"></td>
+                                                    <td class="align-middle" style="border-right-width: medium;border-right-color: black">Actual</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_cm_morning_actual" style="border-bottom-width: medium;border-bottom-color: black;border-right-width: medium; border-right-color: black"></td>
+                                                    <td class="align-middle text-center" style="border-bottom-color: black;border-bottom-width: medium;border-right-width: medium;border-right-color: black" id="keikaku_rpt_tbl_lbl_cm_night_actual"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium"></td>
+                                                    <td class="align-middle " style="border-right-width: medium; border-right-color: black">Difference</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_cm_morning_difference" style="border-right-width: medium; border-right-color: black"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_cm_night_difference" style="border-right-width: medium;border-right-color: black"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium;border-bottom-color: black;border-bottom-width: medium;"></td>
+                                                    <td class="align-middle" style="border-bottom-color: black;border-bottom-width: medium; border-right-width: medium; border-right-color: black">%</td>
+                                                    <td class="align-middle text-center" style="border-bottom-color: black;border-bottom-width: medium;border-right-width: medium; border-right-color: black" id="keikaku_rpt_tbl_lbl_cm_morning_percentage"></td>
+                                                    <td class="align-middle text-center" style="border-bottom-color: black;border-bottom-width: medium;border-right-width: medium;border-right-color: black" id="keikaku_rpt_tbl_lbl_cm_night_percentage"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-width: medium; border-left-color: black">Operation Rate</td>
+                                                    <td class="align-middle" style="border-bottom-color: black; border-right-width: medium; border-right-color: black">Plan</td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_or_morning_plan" style="border-right-width: medium; border-right-color: black"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_or_night_plan" style="border-right-width: medium; border-right-color: black"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="align-middle" style="border-left-color: black;border-left-width: medium;border-bottom-color: black;border-bottom-width: medium;"></td>
+                                                    <td class="align-middle" style="border-bottom-color: black;border-bottom-width: medium; border-right-width: medium; border-right-color: black">Actual</td>
+                                                    <td class="align-middle" id="keikaku_rpt_tbl_lbl_or_morning_actual" style="border-bottom-color: black;border-bottom-width: medium;border-right-width: medium;border-right-color: black"></td>
+                                                    <td class="align-middle" id="keikaku_rpt_tbl_lbl_or_night_actual" style="border-bottom-color: black;border-bottom-width: medium;border-right-width: medium;border-right-color: black"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!-- Modal -->
@@ -191,7 +329,7 @@
         allowInsertRow : false,
         tableOverflow:true,
         freezeColumns: 1,
-        minDimensions: [50,5],
+        minDimensions: [26,5],
         tableWidth: '1000px',
     });
 
@@ -224,7 +362,7 @@
         allowInsertRow : false,
         tableOverflow:true,
         freezeColumns: 1,
-        minDimensions: [50,5],
+        minDimensions: [26,5],
         tableWidth: '1000px',
     });
 
@@ -351,22 +489,56 @@
                 let _totalPlanTime = 0
                 let _totalActualTime = 0
                 let _totalProgressTime = 0
+
+                let _totalPlanTimeMorning = 0;
+                let _totalPlanTimeNight = 0;
+                let _totalActualTimeMorning = 0;
+                let _totalActualTimeNight = 0;
+
+                let _totalPlanQtyMorning = 0;
+                let _totalPlanQtyNight = 0;
+                let _totalActualQtyMorning = 0;
+                let _totalActualQtyNight = 0;
                 for(let i=6; i<=29; i++) {
 
                     for(let r=4;r<prodPlanLength;r++) {
                         if(response.asProdplan[r][0]) {
                             _totalPlan += Number(response.asProdplan[r][i])
+                            if(i>=18) {
+                                _totalPlanQtyNight += Number(response.asProdplan[r][i])
+                            } else {
+                                _totalPlanQtyMorning += Number(response.asProdplan[r][i])
+                            }
                         }
                     }
 
                     for(let r=0;r<outputLength;r++) {
                         _totalActual += Number(response.dataSensor[r][i])
                         _totalActualTime += (response.dataSensor[r][5] *Number(response.dataSensor[r][i]) )
+
+                        if(i>=18) {
+                            _totalActualTimeNight += (response.dataSensor[r][5] *Number(response.dataSensor[r][i]) )
+                            _totalActualQtyNight += Number(response.dataSensor[r][i])
+
+                        } else {
+                            _totalActualTimeMorning += (response.dataSensor[r][5] *Number(response.dataSensor[r][i]) )
+                            _totalActualQtyMorning += Number(response.dataSensor[r][i])
+                        }
                     }
 
                     for(let r=0;r<timeLength;r++) {
                         if(response.asMatrix[r][0]) {
                             _totalPlanTime += Number(response.asMatrix[r][i])
+                        }
+                    }
+
+
+                    for(let r=4;r<timeLength;r+=2) {
+                        if(i>=18) {
+                            // console.log(Number(response.asMatrix[r][i]))
+                            _totalPlanTimeNight += Number(response.asMatrix[r][i])
+                        } else {
+                            _totalPlanTimeMorning += Number(response.asMatrix[r][i])
                         }
                     }
 
@@ -382,6 +554,8 @@
                     keikaku_rpt_qty_sso.setValueFromCoords(i-4, 2, _totalActual, true)
                     keikaku_rpt_time_sso.setValueFromCoords(i-4, 1, _totalPlanTime.toFixed(2), true)
                     keikaku_rpt_time_sso.setValueFromCoords(i-4, 2, _totalActualTime.toFixed(2), true)
+
+
                 }
                 myChart.data.datasets = [
                     {
@@ -422,6 +596,25 @@
                     },
                 ]
                 myChart2.update()
+
+                keikaku_rpt_tbl_lbl_time_morning_plan.innerText = _totalPlanTimeMorning.toFixed(2)
+                keikaku_rpt_tbl_lbl_time_night_plan.innerText = _totalPlanTimeNight.toFixed(2)
+                keikaku_rpt_tbl_lbl_time_morning_actual.innerText = _totalActualTimeMorning.toFixed(2)
+                keikaku_rpt_tbl_lbl_time_night_actual.innerText = _totalActualTimeNight.toFixed(2)
+                keikaku_rpt_tbl_lbl_time_morning_difference.innerText = (_totalActualTimeMorning-_totalPlanTimeMorning).toFixed(2)
+                keikaku_rpt_tbl_lbl_time_night_difference.innerText = (_totalActualTimeNight-_totalPlanTimeNight).toFixed(2)
+                keikaku_rpt_tbl_lbl_time_morning_percentage.innerText = _totalPlanTimeMorning == 0 ? "" : (_totalActualTimeMorning/_totalPlanTimeMorning*100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_time_night_percentage.innerText = _totalPlanTimeNight == 0 ? "" : (_totalActualTimeNight/_totalPlanTimeNight*100).toFixed(0) + '%'
+
+
+                keikaku_rpt_tbl_lbl_qty_morning_plan.innerText = _totalPlanQtyMorning
+                keikaku_rpt_tbl_lbl_qty_night_plan.innerText = _totalPlanQtyNight
+                keikaku_rpt_tbl_lbl_qty_morning_actual.innerText = _totalActualQtyMorning
+                keikaku_rpt_tbl_lbl_qty_night_actual.innerText = _totalActualQtyNight
+                keikaku_rpt_tbl_lbl_qty_morning_difference.innerText = (_totalActualQtyMorning-_totalPlanQtyMorning).toFixed(2)
+                keikaku_rpt_tbl_lbl_qty_night_difference.innerText = (_totalActualQtyNight-_totalPlanQtyNight).toFixed(2)
+                keikaku_rpt_tbl_lbl_qty_morning_percentage.innerText = _totalPlanQtyMorning == 0 ? "" : (_totalActualQtyMorning/_totalPlanQtyMorning*100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_qty_night_percentage.innerText = _totalPlanQtyNight == 0 ? "" : (_totalActualQtyNight/_totalPlanQtyNight*100).toFixed(0) + '%'
             }, error: function(xhr, xopt, xthrow) {
                 pThis.disabled = false
                 alertify.error(xthrow)
