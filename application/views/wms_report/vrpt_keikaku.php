@@ -204,8 +204,8 @@
                                                 <tr>
                                                     <td class="align-middle" style="border-left-color: black;border-left-width: medium;border-bottom-color: black;border-bottom-width: medium;"></td>
                                                     <td class="align-middle" style="border-bottom-color: black;border-bottom-width: medium; border-right-width: medium; border-right-color: black">Actual</td>
-                                                    <td class="align-middle" id="keikaku_rpt_tbl_lbl_or_morning_actual" style="border-bottom-color: black;border-bottom-width: medium;border-right-width: medium;border-right-color: black"></td>
-                                                    <td class="align-middle" id="keikaku_rpt_tbl_lbl_or_night_actual" style="border-bottom-color: black;border-bottom-width: medium;border-right-width: medium;border-right-color: black"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_or_morning_actual" style="border-bottom-color: black;border-bottom-width: medium;border-right-width: medium;border-right-color: black"></td>
+                                                    <td class="align-middle text-center" id="keikaku_rpt_tbl_lbl_or_night_actual" style="border-bottom-color: black;border-bottom-width: medium;border-right-width: medium;border-right-color: black"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -494,6 +494,8 @@
                 let _totalPlanTimeNight = 0;
                 let _totalActualTimeMorning = 0;
                 let _totalActualTimeNight = 0;
+                let _totalTimePRCMorning = 0;
+                let _totalTimePRCNight = 0;
 
                 let _totalPlanQtyMorning = 0;
                 let _totalPlanQtyNight = 0;
@@ -596,6 +598,8 @@
                     },
                 ]
                 myChart2.update()
+                _totalTimePRCMorning = _totalPlanTimeMorning == 0 ? 0 : (_totalActualTimeMorning/_totalPlanTimeMorning*100).toFixed(0)
+                _totalTimePRCNight = _totalPlanTimeNight == 0 ? "" : (_totalActualTimeNight/_totalPlanTimeNight*100).toFixed(0)
 
                 keikaku_rpt_tbl_lbl_time_morning_plan.innerText = _totalPlanTimeMorning.toFixed(2)
                 keikaku_rpt_tbl_lbl_time_night_plan.innerText = _totalPlanTimeNight.toFixed(2)
@@ -603,8 +607,8 @@
                 keikaku_rpt_tbl_lbl_time_night_actual.innerText = _totalActualTimeNight.toFixed(2)
                 keikaku_rpt_tbl_lbl_time_morning_difference.innerText = (_totalActualTimeMorning-_totalPlanTimeMorning).toFixed(2)
                 keikaku_rpt_tbl_lbl_time_night_difference.innerText = (_totalActualTimeNight-_totalPlanTimeNight).toFixed(2)
-                keikaku_rpt_tbl_lbl_time_morning_percentage.innerText = _totalPlanTimeMorning == 0 ? "" : (_totalActualTimeMorning/_totalPlanTimeMorning*100).toFixed(0) + '%'
-                keikaku_rpt_tbl_lbl_time_night_percentage.innerText = _totalPlanTimeNight == 0 ? "" : (_totalActualTimeNight/_totalPlanTimeNight*100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_time_morning_percentage.innerText = _totalTimePRCMorning == 0 ? "" : _totalTimePRCMorning + '%'
+                keikaku_rpt_tbl_lbl_time_night_percentage.innerText = _totalTimePRCNight == 0 ? "" : _totalTimePRCNight + '%'
 
 
                 keikaku_rpt_tbl_lbl_qty_morning_plan.innerText = _totalPlanQtyMorning
@@ -615,6 +619,12 @@
                 keikaku_rpt_tbl_lbl_qty_night_difference.innerText = (_totalActualQtyNight-_totalPlanQtyNight).toFixed(2)
                 keikaku_rpt_tbl_lbl_qty_morning_percentage.innerText = _totalPlanQtyMorning == 0 ? "" : (_totalActualQtyMorning/_totalPlanQtyMorning*100).toFixed(0) + '%'
                 keikaku_rpt_tbl_lbl_qty_night_percentage.innerText = _totalPlanQtyNight == 0 ? "" : (_totalActualQtyNight/_totalPlanQtyNight*100).toFixed(0) + '%'
+
+
+                keikaku_rpt_tbl_lbl_or_morning_plan.innerText = response.morningEfficiency	* 100  + '%'
+                keikaku_rpt_tbl_lbl_or_night_plan.innerText = response.nightEfficiency	* 100  + '%'
+                keikaku_rpt_tbl_lbl_or_morning_actual.innerText = _totalActualTimeMorning == 0 ? "" : ((_totalTimePRCMorning/100*(response.morningEfficiency)) *100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_or_night_actual.innerText = _totalActualTimeNight == 0 ? "" : ((_totalTimePRCNight/100*(response.nightEfficiency)) *100).toFixed(0) + '%'
             }, error: function(xhr, xopt, xthrow) {
                 pThis.disabled = false
                 alertify.error(xthrow)
