@@ -972,7 +972,6 @@
             }
         },
         onblur : function (instance, cell, x, y, value) {
-            console.log('sini blur')
             keikaku_calc_make_sure(instance)
         },
         onload : function (instance) {
@@ -995,7 +994,6 @@
                     el.jspreadsheet.setValueFromCoords(x,8, retValue, true)
                 }
                 if([10,22].includes(x)) {
-                    console.log('sini ' + x)
                     cellNO_OT_value = keikaku_calculation_sso.getValueFromCoords(x+1,4);
                     cellOT_value = keikaku_calculation_sso.getValueFromCoords(x+1,5);
                     retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
@@ -2385,7 +2383,6 @@
 
                     for(let r=4;r<timeLength;r+=2) {
                         if(i>=18) {
-                            // console.log(Number(response.asMatrix[r][i]))
                             _totalPlanTimeNight += Number(response.asMatrix[r][i])
                         } else {
                             _totalPlanTimeMorning += Number(response.asMatrix[r][i])
