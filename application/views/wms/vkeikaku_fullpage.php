@@ -6,31 +6,28 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="author" content="Ana Suryana">
 	<title>Keikaku</title>
-    <link rel="icon" href="<?=base_url("assets/fiximgs/favicon.png")?>">
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/css/home.css")?>">
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/bootstrap/css/bootstrap.min.css")?>">
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/bootstrap_dp/css/bootstrap-datepicker.min.css")?>">
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/fontaw/css/all.css")?>">
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/select2/css/select2.min.css")?>">
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/select2/css/select2-bootstrap-5-theme.min.css")?>">	
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/alertify/css/alertify.min.css")?>">
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/alertify/css/themes/semantic.min.css")?>">	
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jspreadsheet/jspreadsheet.css")?>">
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jsuites/jsuites.min.css")?>">
-	<script type="text/javascript" src="<?=base_url("assets/chart/chart.umd.js")?>"></script>
-	<script type="text/javascript" src="<?=base_url("assets/jquery/jquery.min.js")?>"></script>
-	<script type="text/javascript" src="<?=base_url("assets/bootstrap_dp/js/bootstrap-datepicker.min.js")?>"></script>
-	<script type="text/javascript" src="<?=base_url("assets/numeral/numeral.min.js")?>"></script>
-	<script type="text/javascript" src="<?=base_url("assets/js/moment.min.js")?>"></script>
-	<script type="text/javascript" src="<?=base_url("assets/select2/js/select2.full.js")?>"></script>
-	<script type="text/javascript" src="<?=base_url("assets/js/js.cookie.min.js")?>"></script>
-	<script type="text/javascript" src="<?=base_url("assets/alertify/alertify.min.js")?>"></script>
-	<script type="text/javascript" src="<?=base_url("assets/js/clipboard.min.js")?>"></script>
-	<script type="text/javascript" src="<?=base_url("assets/js/xlsx.full.min.js")?>"></script>
-	<script type="text/javascript" src="<?=base_url("assets/js/FileSaver.js")?>"></script>
-	<script src="<?=base_url("assets/jspreadsheet/index.js")?>"></script>
-	<script src="<?=base_url("assets/jsuites/jsuites.min.js")?>"></script>
-    <script src='<?=base_url("assets/js/inputmask.min.js")?>'></script>
+    <link rel="icon" href="<?php echo base_url("assets/fiximgs/favicon.png")?>">
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url("assets/css/home.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url("assets/bootstrap/css/bootstrap.min.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url("assets/bootstrap_dp/css/bootstrap-datepicker.min.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url("assets/fontaw/css/all.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url("assets/alertify/css/alertify.min.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url("assets/alertify/css/themes/semantic.min.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url("assets/jspreadsheet/jspreadsheet.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url("assets/jsuites/jsuites.min.css")?>">
+	<script type="text/javascript" src="<?php echo base_url("assets/chart/chart.umd.js")?>"></script>
+	<script type="text/javascript" src="<?php echo base_url("assets/jquery/jquery.min.js")?>"></script>
+	<script type="text/javascript" src="<?php echo base_url("assets/bootstrap_dp/js/bootstrap-datepicker.min.js")?>"></script>
+	<script type="text/javascript" src="<?php echo base_url("assets/numeral/numeral.min.js")?>"></script>
+	<script type="text/javascript" src="<?php echo base_url("assets/js/moment.min.js")?>"></script>
+	<script type="text/javascript" src="<?php echo base_url("assets/js/js.cookie.min.js")?>"></script>
+	<script type="text/javascript" src="<?php echo base_url("assets/alertify/alertify.min.js")?>"></script>
+	<script type="text/javascript" src="<?php echo base_url("assets/js/clipboard.min.js")?>"></script>
+	<script type="text/javascript" src="<?php echo base_url("assets/js/xlsx.full.min.js")?>"></script>
+	<script type="text/javascript" src="<?php echo base_url("assets/js/FileSaver.js")?>"></script>
+	<script src="<?php echo base_url("assets/jspreadsheet/index.js")?>"></script>
+	<script src="<?php echo base_url("assets/jsuites/jsuites.min.js")?>"></script>
+    <script src='<?php echo base_url("assets/js/inputmask.min.js")?>'></script>
     <style>
     .keikakuBlueColor {
         background-color : #daeef3;
@@ -956,8 +953,8 @@
                 let cellNO_OT_value = keikaku_calculation_sso.getValueFromCoords(x,4);
                 let cellOT_value = keikaku_calculation_sso.getValueFromCoords(x,5);
                 let retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
-                
-                if(![11,12,23,24].includes(x)) { 
+
+                if(![11,12,23,24].includes(x)) {
                     el.jspreadsheet.setValueFromCoords(x,8, retValue, true)
                 }
                 if([10,22].includes(x)) {
@@ -992,7 +989,7 @@
                 let cellNO_OT_value = keikaku_calculation_sso.getValueFromCoords(x,4);
                 let cellOT_value = keikaku_calculation_sso.getValueFromCoords(x,5);
                 let retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
-                if(![11,12,23,24].includes(x)) { 
+                if(![11,12,23,24].includes(x)) {
                     el.jspreadsheet.setValueFromCoords(x,8, retValue, true)
                 }
                 if([10,22].includes(x)) {
@@ -1071,10 +1068,10 @@
                                     Object.defineProperty(objek, "width", {value : 90})
                                     break;
                             }
-                            if(i>=9 && i<=25) {                              
+                            if(i>=9 && i<=25) {
                                 Object.defineProperty(objek, "title", {value : `${i-2} ~ ${i-1}`})
                             }
-                            if(i>=26) {                              
+                            if(i>=26) {
                                 Object.defineProperty(objek, "title", {value : `${i-26} ~ ${i-25}`})
                             }
                             return objek
@@ -1334,12 +1331,12 @@
                 })
                 keikaku_line_input.innerHTML = inputs
                 keikaku_line_input.value = theLine
-                keikaku_line_input_on_change()                
+                keikaku_line_input_on_change()
             }
         });
     }
 
-    keikaku_load_line_code()    
+    keikaku_load_line_code()
 
     function keikaku_btn_new_eC() {
         if(keikaku_line_input.value === '-') {
@@ -1697,12 +1694,12 @@
                     totalWorkingTimeMorning += numeral(inputSS[4][c]).value()
                 }
             }
-            
+
             if(c>=13 && c<=24) {
                 if(isOverTimeNight) {
                     totalWorkingTimeNight += numeral(inputSS[5][c]).value()
                 } else {
-                    totalWorkingTimeNight += numeral(inputSS[4][c]).value()                    
+                    totalWorkingTimeNight += numeral(inputSS[4][c]).value()
                 }
             }
         }
@@ -1880,14 +1877,14 @@
 
     function keikaku_load_data() {
         keikaku_reset_data()
-        
+
         $.ajax({
             type: "GET",
             url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku",
             data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value, user_id : uidnya},
             dataType: "json",
             success: function (response) {
-                
+
                 keikaku_user_first_active.value = response.currentActiveUser.MSTEMP_ID + ':' + response.currentActiveUser.MSTEMP_FNM
                 let theData = [];
                 response.data.forEach((arrayItem, index) => {
@@ -1915,7 +1912,7 @@
                     keikaku_data_sso.setStyle(response.dataStyle)
                 }
             }, error: function(xhr, xopt, xthrow) {
-                
+
             }
         });
     }
@@ -2434,6 +2431,28 @@
                 keikaku_rpt_tbl_lbl_or_night_plan.innerText = response.nightEfficiency	* 100  + '%'
                 keikaku_rpt_tbl_lbl_or_morning_actual.innerText = _totalActualTimeMorning == 0 ? "" : ((_totalTimePRCMorning/100*(response.morningEfficiency)) *100).toFixed(0) + '%'
                 keikaku_rpt_tbl_lbl_or_night_actual.innerText = _totalActualTimeNight == 0 ? "" : ((_totalTimePRCNight/100*(response.nightEfficiency)) *100).toFixed(0) + '%'
+
+                let _totalPlanPointMorning = 0
+                let _totalPlanPointNight = 0
+                let _totalActualPointMorning = 0
+                let _totalActualPointNight = 0
+                response.dataMount.forEach((arrayItem) => {
+                    _totalPlanPointMorning += Number(arrayItem['plan_morning_qty']*arrayItem['baseMount']);
+                    _totalPlanPointNight += Number(arrayItem['plan_night_qty']*arrayItem['baseMount']);
+                    _totalActualPointMorning += Number(arrayItem['morningOutput']*arrayItem['baseMount']);
+                    _totalActualPointNight += Number(arrayItem['nightOutput']*arrayItem['baseMount']);
+                })
+
+                keikaku_rpt_tbl_lbl_poin_morning_plan.innerText = numeral(_totalPlanPointMorning).format(',')
+                keikaku_rpt_tbl_lbl_poin_night_plan.innerText = numeral(_totalPlanPointNight).format(',')
+                keikaku_rpt_tbl_lbl_poin_morning_actual.innerText = numeral(_totalActualPointMorning).format(',')
+                keikaku_rpt_tbl_lbl_poin_night_actual.innerText = numeral(_totalActualPointNight).format(',')
+
+                keikaku_rpt_tbl_lbl_poin_morning_difference.innerText = numeral(_totalActualPointMorning-_totalPlanPointMorning).format(',')
+                keikaku_rpt_tbl_lbl_poin_night_difference.innerText = numeral(_totalActualPointNight-_totalPlanPointNight).format(',')
+
+                keikaku_rpt_tbl_lbl_poin_morning_percentage.innerText = _totalPlanPointMorning == 0 ? "" : (_totalActualPointMorning/_totalPlanPointMorning*100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_poin_night_percentage.innerText = _totalPlanPointNight == 0 ? "" : (_totalActualPointNight/_totalPlanPointNight*100).toFixed(0) + '%'
             }, error: function(xhr, xopt, xthrow) {
                 pThis.disabled = false
                 alertify.error(xthrow)
@@ -2699,7 +2718,7 @@
             }
         }
         return _possibleColumn
-    }    
+    }
 
     function keikakuBtnOpenOnClick() {
         let tableku2 = keikakuLineTbl.getElementsByTagName("tbody")[0];
@@ -3189,9 +3208,9 @@
         });
     }
 
-    const theLine = atob("<?=$_GET['line']?>")
-    const theDate = "<?=$_GET['date']?>"
-    document.title = 'Keikaku ' + theLine + '-' + theDate.substring(5, 10) 
+    const theLine = atob("<?php echo $_GET['line']?>")
+    const theDate = "<?php echo $_GET['date']?>"
+    document.title = 'Keikaku ' + theLine + '-' + theDate.substring(5, 10)
     keikaku_date_input.value = theDate
     const uidnya = '<?php echo $sapaDiaID; ?>';
 
@@ -3376,7 +3395,7 @@
         autoclose:true
     });
     $("#keikaku_rpt_date_to").datepicker('update', new Date());
-    
+
     function keikaku_rpt_btn_summary_e_click() {
         keikaku_rpt_type.value = 'summary'
         $("#keikaku_rpt_summary_modal").modal('show')
@@ -3429,6 +3448,6 @@
     }
 </script>
 
-<script type="text/javascript" src="<?=base_url("assets/js/popper.min.js")?>"></script>
-<script type="text/javascript" src="<?=base_url("assets/bootstrap/js/bootstrap.min.js")?>"></script>
+<script type="text/javascript" src="<?php echo base_url("assets/js/popper.min.js")?>"></script>
+<script type="text/javascript" src="<?php echo base_url("assets/bootstrap/js/bootstrap.min.js")?>"></script>
 </body>
