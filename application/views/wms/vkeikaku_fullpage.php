@@ -1071,6 +1071,12 @@
                                     Object.defineProperty(objek, "width", {value : 90})
                                     break;
                             }
+                            if(i>=9 && i<=25) {                              
+                                Object.defineProperty(objek, "title", {value : `${i-2} ~ ${i-1}`})
+                            }
+                            if(i>=26) {                              
+                                Object.defineProperty(objek, "title", {value : `${i-26} ~ ${i-25}`})
+                            }
                             return objek
                         }
                 )
