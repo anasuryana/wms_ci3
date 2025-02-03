@@ -1,4 +1,4 @@
-<div style="padding: 10px">
+<div style="padding: 5px">
 	<div class="container-fluid">
         <div class="row">
             <div class="col-md-4 mb-1">
@@ -140,6 +140,17 @@
                     <select class="form-select" id="itm_cmb_um" >
                         <?=$UMl?>
                     </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text">New Item Code</label>
+                    <input type="text" class="form-control" id="itm_txt_new_version" readonly disabled>
+                    <button title="Find item" class="btn btn-outline-secondary" data-bs-toggle="modal" type="button" id="itm_btnmod_newitem" data-bs-target="#ITM_MODITM_VERUP">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -359,6 +370,54 @@
       </div>
     </div>
 </div>
+<div class="modal fade" id="ITM_MODITM_VERUP">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">      
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Item List</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col">
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text" >Search</span>
+                        <select id="itm_verup_srchby" class="form-select" onchange="itm_txtsearch_verup.focus();itm_txtsearch_verup.select()">
+                            <option value="itemcd">Item Code</option>
+                            <option value="itemnm">Description</option>
+                        </select>
+                        <input type="text" class="form-control" id="itm_txtsearch_verup" maxlength="45" onkeypress="itm_txtsearch_verup_eKP(event)" required placeholder="...">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-end">
+                    <span class="badge bg-info" id="lblinfo_tblitm_verup"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="table-responsive" id="itm_verup_tbl_div">
+                        <table id="itm_verup_tbl" class="table table-sm table-striped table-bordered table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item Code</th>
+                                    <th>Descr. 1</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>             
+      </div>
+    </div>
+</div>
 <script>    
     var itm_ttlxls = 0;
     var itm_ttlxls_savd = 0;
@@ -485,11 +544,11 @@
             url: "<?=base_url('MSTITM/finddiff')?>",            
             dataType: "json",
             success: function (response) {
-                var ttlrows = response.length;
-                var tohtml = '';
+                const ttlrows = response.length;
+                let tohtml = '';
                 if(ttlrows>0){
                     $("#itm_btnsyncall").show();
-                    for(var i =0;i<ttlrows;i++){
+                    for(let i =0;i<ttlrows;i++){
                         tohtml += '<tr>'+
                         '<td></td>'+
                         '<td>'+response[i].MITM_ITMCD.trim()+'</td>'+
@@ -557,13 +616,14 @@
 			$('#itm_tblbox tbody tr.table-active').removeClass('table-active');
 			$(this).addClass('table-active');
         }
-        let mbox       = $(this).closest("tr").find('td:eq(0)').text();
+        let mbox = $(this).closest("tr").find('td:eq(0)').text();
         document.getElementById('itm_txtitmbox').value=mbox;
         $("#ITM_MODBOX").modal('hide');
     });
     $("#ITM_MODITM").on('shown.bs.modal', function(){
         $("#itm_txtsearch").focus();
     });
+    
     $("#ITM_MODBOX").on('shown.bs.modal', function(){
         $("#itm_txtsearchbox").focus();
     });
@@ -608,7 +668,7 @@
                         if(mgrswg.charAt(0)=='.'){
                             mgrswg = "0"+mgrswg;
                         }
-                        newrow = tableku2.insertRow(-1)                        
+                        newrow = tableku2.insertRow(-1)
                         newcell = newrow.insertCell(0)
                         newcell.style.cssText = 'white-space:nowrap;cursor:pointer'
                         
@@ -725,7 +785,7 @@
             var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
             if (regex.test(fileUpload.value.toLowerCase())) {                
                     if (typeof (FileReader) != "undefined") {
-                        var reader = new FileReader();
+                        const reader = new FileReader();
                         //For Browsers other than IE.
                         if (reader.readAsBinaryString) {
                             console.log('saya perambaan selain IE');
@@ -736,9 +796,9 @@
                         } else {
                             //For IE Browser.
                             reader.onload = function (e) {
-                                var data = "";
-                                var bytes = new Uint8Array(e.target.result);
-                                for (var i = 0; i < bytes.byteLength; i++) {
+                                let data = "";
+                                const bytes = new Uint8Array(e.target.result);
+                                for (let i = 0; i < bytes.byteLength; i++) {
                                         data += String.fromCharCode(bytes[i]);
                                 }
                                 itm_ProcessExcel(data);
@@ -877,7 +937,7 @@
             $.ajax({
                 type: "POST",
                 url: "<?=base_url('MSTITM/updatencat')?>",
-                data: {i: i, item_code :datanya_nonitem[i][0], category: datanya_nonitem[i][1]},
+                data: {i: i, item_code :datanya_nonitem[i][0], category: datanya_nonitem[i][1].trim()},
                 dataType: "JSON",
                 success: function (response) {
                     if(response.status[0].cd===1){
