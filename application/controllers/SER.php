@@ -2061,7 +2061,7 @@ class SER extends CI_Controller
     }
     public function printfgwiplabel()
     {
-        global $wid, $hgt, $padX, $padY, $noseri, $ccustnm, $cmitmid, $cmitmd1, $cprodt, $cwo, $cprdline, $cprdshift, $cserqty, $csersheet, $cum, $crank, $cuscd, $cremark;
+        global $wid, $hgt, $padX, $padY, $noseri, $ccustnm, $cmitmid, $cmitmd1, $cprodt, $cwo, $cprdline, $cprdshift, $cserqty, $csersheet, $cum, $crank, $cuscd, $cremark,$lotSize;
         global $newStatus;
         function fnLeftstatus($pdf, $cleft, $pword)
         {
@@ -2075,7 +2075,7 @@ class SER extends CI_Controller
 
         function printTagstatus($pdf, $myleft, $mytop)
         {
-            global $wid, $hgt, $padX, $padY, $noseri, $cmitmid, $cmitmd1, $cprodt, $cwo, $cprdline, $cprdshift, $cserqty, $cum, $crank, $cremark;
+            global $wid, $hgt, $padX, $padY, $noseri, $cmitmid, $cmitmd1, $cprodt, $cwo, $cprdline, $cprdshift, $cserqty, $cum, $crank, $cremark, $lotSize;
             global $newStatus;
             $th_x = $padX + $myleft + 3;
             $th_y = $padY + $mytop + 4;
@@ -2124,7 +2124,11 @@ class SER extends CI_Controller
             $pdf->Text($th_x + 3, $th_y + 5, 'PT SMT INDONESIA');
 
             $pdf->SetFont('Tahoma', 'B', 8 + 4);
-            $pdf->Text($th_x + 13, $th_y + 10, 'LABEL STATUS');
+            $pdf->Text($th_x + 10, $th_y + 10, 'LABEL STATUS');
+
+            $pdf->SetFont('Tahoma', 'B', 6);
+            $pdf->SetXY($th_x + 43, $th_y + 3);
+            $pdf->MultiCell(13, 3, "FPI-06-03 REV-01", 0);
 
             $pdf->SetFont('Tahoma', 'B', 8);
             $pdf->SetXY($th_x + 3, $th_y + 15);
@@ -2171,27 +2175,69 @@ class SER extends CI_Controller
 
             $pdf->SetXY($th_x + 3, $th_y + 44);
             $pdf->SetFont('Tahoma', 'B', 8 + 3);
+            $pdf->Cell(21, 5, 'Lot Size', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(30, 5, number_format($lotSize), 1, 0, 'L');
+
+            $pdf->SetXY($th_x + 3, $th_y + 49);
+            $pdf->SetFont('Tahoma', 'B', 8 + 3);
             $pdf->Cell(21, 5, 'QTY', 1, 0, 'L');
             $pdf->SetFont('Tahoma', '', 8 + 3);
             $pdf->Cell(30, 5, number_format($cserqty), 1, 0, 'L');
 
-            $pdf->SetXY($th_x + 3, $th_y + 49);
+            $pdf->SetXY($th_x + 3, $th_y + 54);
             $pdf->SetFont('Tahoma', 'B', 8 + 3);
             $pdf->Cell(21, 5, 'Prod.Date', 1, 0, 'L');
             $pdf->SetFont('Tahoma', '', 8 + 3);
             $pdf->Cell(30, 5, 'JM' . $yearCODE . $monthCODE . $cprodt[2][0] . $cprodt[2][1] . $clineNAME . $cprdshift, 1, 0, 'L');
 
-            $pdf->SetXY($th_x + 3, $th_y + 54);
-            $pdf->SetFont('Tahoma', 'B', 8 + 3);
-            $pdf->Cell(21, 5, 'Status', 1, 0, 'L');
-            $pdf->SetFont('Tahoma', '', 8 + 3);
-            $pdf->Cell(30, 5, $newStatus, 1, 0, 'L');
-
             $pdf->SetXY($th_x + 3, $th_y + 59);
-            $pdf->SetFont('Tahoma', 'B', 8 + 3);
-            $pdf->Cell(21, 10, 'Remark', 1, 0, 'L');
             $pdf->SetFont('Tahoma', '', 8 + 3);
-            $pdf->Cell(30, 10, $cremark, 1, 0, 'L');
+            $pdf->Cell(21, 5, 'Station', 1, 0, 'C');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(30, 5, 'Remark', 1, 0, 'C');
+
+            $pdf->SetXY($th_x + 3, $th_y + 64);
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(15, 5, 'Cutting', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(6, 5, '', 1, 0, 'L');
+            $pdf->Cell(30, 5, '', 1, 0, 'L');
+
+            $pdf->SetXY($th_x + 3, $th_y + 69);
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(15, 5, 'AOI', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(6, 5, '', 1, 0, 'L');
+            $pdf->Cell(30, 5, '', 1, 0, 'L');
+
+            $pdf->SetXY($th_x + 3, $th_y + 74);
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(15, 5, 'ICT', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(6, 5, '', 1, 0, 'L');
+            $pdf->Cell(30, 5, '', 1, 0, 'L');
+
+            $pdf->SetXY($th_x + 3, $th_y + 79);
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(15, 5, 'FCT', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(6, 5, '', 1, 0, 'L');
+            $pdf->Cell(30, 5, '', 1, 0, 'L');
+
+            $pdf->SetXY($th_x + 3, $th_y + 84);
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(15, 5, 'SP', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(6, 5, '', 1, 0, 'L');
+            $pdf->Cell(30, 5, '', 1, 0, 'L');
+
+            $pdf->SetXY($th_x + 3, $th_y + 89);
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(15, 5, 'FVI', 1, 0, 'L');
+            $pdf->SetFont('Tahoma', '', 8 + 3);
+            $pdf->Cell(6, 5, '', 1, 0, 'L');
+            $pdf->Cell(30, 5, '', 1, 0, 'L');
 
             $pdf->SetXY($th_x + 3, $th_y + 54);
 
@@ -2204,11 +2250,11 @@ class SER extends CI_Controller
             $image_name = str_replace("|", "lll", $image_name);
             $pdf->SetFont('Tahoma', '', 10);
 
-            $pdf->Image(base_url("assets/imgs/" . $image_name . ".png"), $th_x + 17, $th_y + 70);
+            $pdf->Image(base_url("assets/imgs/" . $image_name . ".png"), $th_x + 17, $th_y + 95);
 
             $pdf->Rect($th_x + 1, $th_y + 1, $wid, $hgt);
             $clebar = $pdf->GetStringWidth($noseri);
-            $pdf->Text($th_x + ($wid / 2) - ($clebar / 2), $th_y + 95, $noseri);
+            $pdf->Text($th_x + ($wid / 2) - ($clebar / 2), $th_y + 118, $noseri);
         }
         $pser = '';
         if (isset($_COOKIE["PRINTLABEL_FG"])) {
@@ -2218,7 +2264,7 @@ class SER extends CI_Controller
             die('stop');
         } else {
             $wid = 55;
-            $hgt = 95;
+            $hgt = 120;
             $thegap = 3;
             $padX = 0.35;
             $padY = 0.35;
@@ -2252,6 +2298,7 @@ class SER extends CI_Controller
                 $crank = trim($r->MBOM_GRADE);
                 $cremark = $r->SER_RMRK;
                 $newStatus = $r->SER_STATUS;
+                $lotSize = $r->PDPP_WORQT;
                 //check wheter the height is enough
                 if (($hgt_p - ($cY + $thegap)) < $hgt) {
                     $pdf->AddPage();
