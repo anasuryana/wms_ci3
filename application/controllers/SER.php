@@ -2265,14 +2265,14 @@ class SER extends CI_Controller
         } else {
             $wid = 55;
             $hgt = 120;
-            $thegap = 3;
+            $thegap = 5;
             $padX = 0.35;
             $padY = 0.35;
             $pprsize = $_COOKIE["PRINTLABEL_FG_SIZE"];
             $pser = str_replace(str_split('"[]'), '', $pser);
             $pser = explode(",", $pser);
             $rs = $this->SER_mod->selectBCField_wip_in($pser);
-            $pdf = new PDF_Code39e128('L', 'mm', $pprsize);
+            $pdf = new PDF_Code39e128('P', 'mm', $pprsize);
             $pdf->AddPage();
             $hgt_p = $pdf->GetPageHeight();
             $wid_p = $pdf->GetPageWidth();
