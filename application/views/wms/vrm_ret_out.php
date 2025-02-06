@@ -885,14 +885,14 @@ echo $todis;
                     <div class="col-md-6 mb-1">
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Nomor Pendaftaran</label>
-                            <input type="text" id="retrm_out_inc_txt_nopen" class="form-control" maxlength="6" readonly>
+                            <input type="text" id="retrm_out_inc_txt_nopen" class="form-control" maxlength="6">
                             <button class="btn btn-primary" id="retrm_out_inc_btn_sync_pendaftaran" onclick="retrm_out_inc_btn_sync_pendaftaran_e_click(this)" title="Get Nomor & Tanggal Pendaftaran from CEISA"><i class="fas fa-sync"></i></button>
                         </div>
                     </div>
                     <div class="col-md-6 mb-1">
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Tanggal Pendaftaran</label>
-                            <input type="text" id="retrm_out_inc_txt_tglpen" class="form-control" readonly>
+                            <input type="text" id="retrm_out_inc_txt_tglpen" class="form-control">
                         </div>
                     </div>
                 </div>
@@ -4151,10 +4151,15 @@ echo $tohtml;
         format: 'yyyy-mm-dd',
         autoclose: true
     })
+    $("#retrm_out_inc_txt_tglpen").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    })
     $("#retrm_out_inc_customs_date").datepicker('update', new Date());
     $("#retrm_out_txt_DOdate").datepicker('update', new Date())
     $("#retrm_out_scr_period_search").datepicker('update', new Date())
     $("#retrm_out_inc_txt_tglpen30").datepicker('update', new Date())
+    $("#retrm_out_inc_txt_tglpen").datepicker('update', new Date())
 
     $("#retrm_out_inc_txt_transport").change(function(e) {
         let mdataplat = $(this).val();
