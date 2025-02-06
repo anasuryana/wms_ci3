@@ -967,6 +967,11 @@
                     cellOT_value = keikaku_calculation_sso.getValueFromCoords(x+2,5);
                     retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
                     el.jspreadsheet.setValueFromCoords(x+2,8, retValue, true)
+
+                    cellNO_OT_value = keikaku_calculation_sso.getValueFromCoords(x-1,4);
+                    cellOT_value = keikaku_calculation_sso.getValueFromCoords(x-1,5);
+                    retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
+                    el.jspreadsheet.setValueFromCoords(x-1,8, retValue, true)
                 }
             }
         },
@@ -1002,6 +1007,11 @@
                     cellOT_value = keikaku_calculation_sso.getValueFromCoords(x+2,5);
                     retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
                     el.jspreadsheet.setValueFromCoords(x+2,8, retValue, true)
+
+                    cellNO_OT_value = keikaku_calculation_sso.getValueFromCoords(x-1,4);
+                    cellOT_value = keikaku_calculation_sso.getValueFromCoords(x-1,5);
+                    retValue = keikaku_calc_function({value : value, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
+                    el.jspreadsheet.setValueFromCoords(x-1,8, retValue, true)
                 }
             }
         } catch (err) {
