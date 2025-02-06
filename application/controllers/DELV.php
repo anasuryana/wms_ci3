@@ -4085,14 +4085,19 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         $cid = $this->input->post('doc');
-        $rs = $this->DELV_mod->select_top1_with_columns_where(["ISNULL(DLV_NOPEN,'') DLV_NOPEN"], ['DLV_ID' => $cid]);
+        $rs = $this->DELV_mod->select_top1_with_columns_where(["ISNULL(DLV_NOPEN,'') DLV_NOPEN", "DLV_RPDATE"], ['DLV_ID' => $cid]);
         $nomor_pendaftaran = '';
+        $tanggal_pendaftaran = '';
         foreach ($rs as $r) {
             $nomor_pendaftaran = $r['DLV_NOPEN'];
+            $tanggal_pendaftaran = $r['DLV_RPDATE'];
         }
         if (empty($nomor_pendaftaran)) {
             $myar[] = ["cd" => '0', "msg" => "Nomor Pendaftaran is empty"];
         } else {
+            if ($this->DELV_mod->check_Primary(['DLV_ID' => $cid, 'DLV_SER' => '']) > 0) {
+                $this->NonReffnumberDeliveryConfirmation(['DOC' => $cid, 'DATE' => $tanggal_pendaftaran, 'DATETIME' => $tanggal_pendaftaran . ' 15:15:15']);
+            }
             $res = Requests::request('http://192.168.0.29:8080/api_inventory/api/stock/onDelivery/' . base64_encode($cid), [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
             $myar[] = ["cd" => '1', "msg" => "Done, please check IT Inventory", "res" => $res];
         }
