@@ -644,23 +644,20 @@
                         let mitemnm = $(this).closest("tr").find('td:eq(2)').text();
                         let qty     = $(this).closest("tr").find('td:eq(3)').text();
                         let qtylbl  = $(this).closest("tr").find('td:eq(4)').text();
-                        if(numeral(qty).value()!=numeral(qtylbl).value()){
-                            $("#sersts_wip_txt_jobno").val(mjob); 
-                            $("#sersts_wip_txt_itmcd").val(mitem);
-                            document.getElementById('sersts_wip_txt_qty').focus();
-                            document.getElementById('sersts_wip_txtseljob').value="";
-                            document.getElementById('sersts_wip_txt_qty').value="";
-                            document.getElementById('sersts_wip_txt_itmnm').value=mitemnm;
-                            document.getElementById('sersts_wip_txt_jobqty').value=qty;                            
-                            
-                            $('#sersts_wip_seljob_tbl tbody').html('');
-                            $("#sersts_wip_txt_item_tobfind").val(mitem); 
-                            $("#sersts_wip_txt_jobno_tobfind").val(mjob);                            
-                            $("#sersts_wip_MODSELJOB").modal('hide');                            
-                            initLASTSERList();
-                        } else {
-                            alertify.message('all labels are already created');
-                        }
+                        
+                        $("#sersts_wip_txt_jobno").val(mjob);
+                        $("#sersts_wip_txt_itmcd").val(mitem);
+                        document.getElementById('sersts_wip_txt_qty').focus();
+                        document.getElementById('sersts_wip_txtseljob').value="";
+                        document.getElementById('sersts_wip_txt_qty').value="";
+                        document.getElementById('sersts_wip_txt_itmnm').value=mitemnm;
+                        document.getElementById('sersts_wip_txt_jobqty').value=qty;
+                        
+                        $('#sersts_wip_seljob_tbl tbody').html('');
+                        $("#sersts_wip_txt_item_tobfind").val(mitem); 
+                        $("#sersts_wip_txt_jobno_tobfind").val(mjob);
+                        $("#sersts_wip_MODSELJOB").modal('hide');
+                        initLASTSERList();
                     });
                 }, error(xhr, xopt, xthrow){
                     alertify.error(xthrow);
