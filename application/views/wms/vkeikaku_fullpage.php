@@ -2497,7 +2497,7 @@
     }
 
     function keikakuIsHW() {
-        return keikaku_line_input.value.substr(keikaku_line_input.value.length-1)=='3' || keikaku_line_input.value=='PS2' ? true : false
+        return (keikaku_line_input.value.substr(keikaku_line_input.value.length-1)=='3' && !keikaku_line_input.value.includes('AT')) || keikaku_line_input.value=='PS2' ? true : false
     }
 
     function keikakuDisplayProdplan(data, dataS, dataCalculation, dataModelChanges) {
