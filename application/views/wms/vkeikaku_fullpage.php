@@ -2294,204 +2294,210 @@
                 let _totalPlanQtyNight = 0;
                 let _totalActualQtyMorning = 0;
                 let _totalActualQtyNight = 0;
-                for(let i=6; i<=29; i++) {
+                if(keikakuIsHW()) {
+                    alertify.message('Keikaku HW is not ready')
+                } else {
+                    for(let i=6; i<=29; i++) {
+                        for(let r=4;r<prodPlanLength;r++) {
+                            if(response.asProdplan[r][0]) {
+                                _totalPlan += Number(response.asProdplan[r][i])
+                                if(i>=18) {
+                                    _totalPlanQtyNight += Number(response.asProdplan[r][i])
+                                } else {
+                                    _totalPlanQtyMorning += Number(response.asProdplan[r][i])
+                                }
+                            }
+                        }
 
-                    for(let r=4;r<prodPlanLength;r++) {
-                        if(response.asProdplan[r][0]) {
-                            _totalPlan += Number(response.asProdplan[r][i])
+                        for(let r=0;r<outputLength;r++) {
+                            _totalActual += Number(response.dataSensor[r][i])
+                            _totalActualTime += (response.dataSensor[r][5] *Number(response.dataSensor[r][i]) )
+
                             if(i>=18) {
-                                _totalPlanQtyNight += Number(response.asProdplan[r][i])
+                                _totalActualTimeNight += (response.dataSensor[r][5] *Number(response.dataSensor[r][i]) )
+                                _totalActualQtyNight += Number(response.dataSensor[r][i])
+
                             } else {
-                                _totalPlanQtyMorning += Number(response.asProdplan[r][i])
+                                _totalActualTimeMorning += (response.dataSensor[r][5] *Number(response.dataSensor[r][i]) )
+                                _totalActualQtyMorning += Number(response.dataSensor[r][i])
                             }
                         }
-                    }
 
-                    for(let r=0;r<outputLength;r++) {
-                        _totalActual += Number(response.dataSensor[r][i])
-                        _totalActualTime += (response.dataSensor[r][5] *Number(response.dataSensor[r][i]) )
-
-                        if(i>=18) {
-                            _totalActualTimeNight += (response.dataSensor[r][5] *Number(response.dataSensor[r][i]) )
-                            _totalActualQtyNight += Number(response.dataSensor[r][i])
-
-                        } else {
-                            _totalActualTimeMorning += (response.dataSensor[r][5] *Number(response.dataSensor[r][i]) )
-                            _totalActualQtyMorning += Number(response.dataSensor[r][i])
+                        for(let r=0;r<timeLength;r++) {
+                            if(response.asMatrix[r][0]) {
+                                _totalPlanTime += Number(response.asMatrix[r][i])
+                            }
                         }
-                    }
 
-                    for(let r=0;r<timeLength;r++) {
-                        if(response.asMatrix[r][0]) {
-                            _totalPlanTime += Number(response.asMatrix[r][i])
+
+                        for(let r=4;r<timeLength;r+=2) {
+                            if(i>=18) {
+                                _totalPlanTimeNight += Number(response.asMatrix[r][i])
+                            } else {
+                                _totalPlanTimeMorning += Number(response.asMatrix[r][i])
+                            }
                         }
+
+                        plan.push(_totalPlan)
+                        planTime.push(_totalPlanTime.toFixed(2))
+                        actual.push(_totalActual)
+                        actualTime.push(_totalActualTime.toFixed(2))
+
+                        _totalProgressTime = _totalActualTime - _totalPlanTime > 0 ? 0 : _totalActualTime - _totalPlanTime
+                        progressTime.push(_totalProgressTime)
+
+                        keikaku_rpt_qty_sso.setValueFromCoords(i-4, 1, _totalPlan, true)
+                        keikaku_rpt_qty_sso.setValueFromCoords(i-4, 2, _totalActual, true)
+                        keikaku_rpt_time_sso.setValueFromCoords(i-4, 1, _totalPlanTime.toFixed(2), true)
+                        keikaku_rpt_time_sso.setValueFromCoords(i-4, 2, _totalActualTime.toFixed(2), true)
                     }
+                    myChart.data.datasets = [
+                        {
+                            label: 'Qty Plan',
+                            data: plan,
+                            borderColor: `rgb(0, 71, 171)`,
+                            tension: 0.1,
+                            type: 'line',
+                        },
+                        {
+                            label: 'Qty Actual',
+                            data: actual,
+                            backgroundColor: `rgb(124,252,0)`,
+                            borderColor: `rgb(0, 71, 171)`,
+                        },
+                    ]
+                    myChart.update()
+
+                    myChart2.data.datasets = [
+                        {
+                            label: 'Time Progress',
+                            data: progressTime,
+                            backgroundColor: `rgb(255, 0, 0)`,
+                            tension: 0.3,
+                        },
+                        {
+                            label: 'Time Plan',
+                            data: planTime,
+                            borderColor: `rgb(0, 71, 171)`,
+                            tension: 0.1,
+                            type: 'line',
+                        },
+                        {
+                            label: 'Time Actual',
+                            data: actualTime,
+                            backgroundColor: `rgb(8, 181, 118)`,
+                            borderColor: `rgb(0, 71, 171)`,
+                        },
+                    ]
+                    myChart2.update()
+                    _totalTimePRCMorning = _totalPlanTimeMorning == 0 ? 0 : (_totalActualTimeMorning/_totalPlanTimeMorning*100).toFixed(0)
+                    _totalTimePRCNight = _totalPlanTimeNight == 0 ? "" : (_totalActualTimeNight/_totalPlanTimeNight*100).toFixed(0)
+
+                    keikaku_rpt_tbl_lbl_time_morning_plan.innerText = _totalPlanTimeMorning.toFixed(2)
+                    keikaku_rpt_tbl_lbl_time_night_plan.innerText = _totalPlanTimeNight.toFixed(2)
+                    keikaku_rpt_tbl_lbl_time_morning_actual.innerText = _totalActualTimeMorning.toFixed(2)
+                    keikaku_rpt_tbl_lbl_time_night_actual.innerText = _totalActualTimeNight.toFixed(2)
+                    const _totalTimeMorningDifference = _totalActualTimeMorning-_totalPlanTimeMorning
+                    const _totalTimeNightDifference = _totalActualTimeNight-_totalPlanTimeNight
+                    keikaku_rpt_tbl_lbl_time_morning_difference.style.color = _totalTimeMorningDifference < 0 ? 'red' : 'black'
+                    keikaku_rpt_tbl_lbl_time_night_difference.style.color = _totalTimeNightDifference < 0 ? 'red' : 'black'
+                    keikaku_rpt_tbl_lbl_time_morning_difference.innerText = (_totalTimeMorningDifference).toFixed(2)
+                    keikaku_rpt_tbl_lbl_time_night_difference.innerText = (_totalTimeNightDifference).toFixed(2)
+                    keikaku_rpt_tbl_lbl_time_morning_percentage.innerText = _totalTimePRCMorning == 0 ? "" : _totalTimePRCMorning + '%'
+                    keikaku_rpt_tbl_lbl_time_night_percentage.innerText = _totalTimePRCNight == 0 ? "" : _totalTimePRCNight + '%'
 
 
-                    for(let r=4;r<timeLength;r+=2) {
-                        if(i>=18) {
-                            _totalPlanTimeNight += Number(response.asMatrix[r][i])
-                        } else {
-                            _totalPlanTimeMorning += Number(response.asMatrix[r][i])
-                        }
-                    }
+                    keikaku_rpt_tbl_lbl_qty_morning_plan.innerText = _totalPlanQtyMorning
+                    keikaku_rpt_tbl_lbl_qty_night_plan.innerText = _totalPlanQtyNight
+                    keikaku_rpt_tbl_lbl_qty_morning_actual.innerText = _totalActualQtyMorning
+                    keikaku_rpt_tbl_lbl_qty_night_actual.innerText = _totalActualQtyNight
+                    const _totalQtyMorningDifference = _totalActualQtyMorning-_totalPlanQtyMorning
+                    const _totalQtyNightDifference = _totalActualQtyNight-_totalPlanQtyNight
+                    keikaku_rpt_tbl_lbl_qty_morning_difference.style.color = _totalQtyMorningDifference < 0 ? 'red' : 'black'
+                    keikaku_rpt_tbl_lbl_qty_night_difference.style.color = _totalQtyNightDifference < 0 ? 'red' : 'black'                
+                    keikaku_rpt_tbl_lbl_qty_morning_difference.innerText = (_totalQtyMorningDifference).toFixed(0)
+                    keikaku_rpt_tbl_lbl_qty_night_difference.innerText = (_totalQtyNightDifference).toFixed(0)
 
-                    plan.push(_totalPlan)
-                    planTime.push(_totalPlanTime.toFixed(2))
-                    actual.push(_totalActual)
-                    actualTime.push(_totalActualTime.toFixed(2))
-
-                    _totalProgressTime = _totalActualTime - _totalPlanTime > 0 ? 0 : _totalActualTime - _totalPlanTime
-                    progressTime.push(_totalProgressTime)
-
-                    keikaku_rpt_qty_sso.setValueFromCoords(i-4, 1, _totalPlan, true)
-                    keikaku_rpt_qty_sso.setValueFromCoords(i-4, 2, _totalActual, true)
-                    keikaku_rpt_time_sso.setValueFromCoords(i-4, 1, _totalPlanTime.toFixed(2), true)
-                    keikaku_rpt_time_sso.setValueFromCoords(i-4, 2, _totalActualTime.toFixed(2), true)
+                    keikaku_rpt_tbl_lbl_qty_morning_percentage.innerText = _totalPlanQtyMorning == 0 ? "" : (_totalActualQtyMorning/_totalPlanQtyMorning*100).toFixed(0) + '%'
+                    keikaku_rpt_tbl_lbl_qty_night_percentage.innerText = _totalPlanQtyNight == 0 ? "" : (_totalActualQtyNight/_totalPlanQtyNight*100).toFixed(0) + '%'
 
 
-                }
-                myChart.data.datasets = [
-                    {
-                        label: 'Qty Plan',
-                        data: plan,
-                        borderColor: `rgb(0, 71, 171)`,
-                        tension: 0.1,
-                        type: 'line',
-                    },
-                    {
-                        label: 'Qty Actual',
-                        data: actual,
-                        backgroundColor: `rgb(124,252,0)`,
-                        borderColor: `rgb(0, 71, 171)`,
-                    },
-                ]
-                myChart.update()
+                    keikaku_rpt_tbl_lbl_or_morning_plan.innerText = response.morningEfficiency	* 100  + '%'
+                    keikaku_rpt_tbl_lbl_or_night_plan.innerText = response.nightEfficiency	* 100  + '%'
+                    keikaku_rpt_tbl_lbl_or_morning_actual.innerText = _totalActualTimeMorning == 0 ? "" : ((_totalTimePRCMorning/100*(response.morningEfficiency)) *100).toFixed(0) + '%'
+                    keikaku_rpt_tbl_lbl_or_night_actual.innerText = _totalActualTimeNight == 0 ? "" : ((_totalTimePRCNight/100*(response.nightEfficiency)) *100).toFixed(0) + '%'
 
-                myChart2.data.datasets = [
-                    {
-                        label: 'Time Progress',
-                        data: progressTime,
-                        backgroundColor: `rgb(255, 0, 0)`,
-                        tension: 0.3,
-                    },
-                    {
-                        label: 'Time Plan',
-                        data: planTime,
-                        borderColor: `rgb(0, 71, 171)`,
-                        tension: 0.1,
-                        type: 'line',
-                    },
-                    {
-                        label: 'Time Actual',
-                        data: actualTime,
-                        backgroundColor: `rgb(8, 181, 118)`,
-                        borderColor: `rgb(0, 71, 171)`,
-                    },
-                ]
-                myChart2.update()
-                _totalTimePRCMorning = _totalPlanTimeMorning == 0 ? 0 : (_totalActualTimeMorning/_totalPlanTimeMorning*100).toFixed(0)
-                _totalTimePRCNight = _totalPlanTimeNight == 0 ? "" : (_totalActualTimeNight/_totalPlanTimeNight*100).toFixed(0)
+                    let _totalPlanPointMorning = 0
+                    let _totalPlanPointNight = 0
+                    let _totalActualPointMorning = 0
+                    let _totalActualPointNight = 0
+                    response.dataMount.forEach((arrayItem) => {
+                        _totalPlanPointMorning += Number(arrayItem['plan_morning_qty']*arrayItem['baseMount']);
+                        _totalPlanPointNight += Number(arrayItem['plan_night_qty']*arrayItem['baseMount']);
+                        _totalActualPointMorning += Number(arrayItem['morningOutput']*arrayItem['baseMount']);
+                        _totalActualPointNight += Number(arrayItem['nightOutput']*arrayItem['baseMount']);
+                    })
 
-                keikaku_rpt_tbl_lbl_time_morning_plan.innerText = _totalPlanTimeMorning.toFixed(2)
-                keikaku_rpt_tbl_lbl_time_night_plan.innerText = _totalPlanTimeNight.toFixed(2)
-                keikaku_rpt_tbl_lbl_time_morning_actual.innerText = _totalActualTimeMorning.toFixed(2)
-                keikaku_rpt_tbl_lbl_time_night_actual.innerText = _totalActualTimeNight.toFixed(2)
-                const _totalTimeMorningDifference = _totalActualTimeMorning-_totalPlanTimeMorning
-                const _totalTimeNightDifference = _totalActualTimeNight-_totalPlanTimeNight
-                keikaku_rpt_tbl_lbl_time_morning_difference.style.color = _totalTimeMorningDifference < 0 ? 'red' : 'black'
-                keikaku_rpt_tbl_lbl_time_night_difference.style.color = _totalTimeNightDifference < 0 ? 'red' : 'black'
-                keikaku_rpt_tbl_lbl_time_morning_difference.innerText = (_totalTimeMorningDifference).toFixed(2)
-                keikaku_rpt_tbl_lbl_time_night_difference.innerText = (_totalTimeNightDifference).toFixed(2)
-                keikaku_rpt_tbl_lbl_time_morning_percentage.innerText = _totalTimePRCMorning == 0 ? "" : _totalTimePRCMorning + '%'
-                keikaku_rpt_tbl_lbl_time_night_percentage.innerText = _totalTimePRCNight == 0 ? "" : _totalTimePRCNight + '%'
+                    keikaku_rpt_tbl_lbl_poin_morning_plan.innerText = numeral(_totalPlanPointMorning).format(',')
+                    keikaku_rpt_tbl_lbl_poin_night_plan.innerText = numeral(_totalPlanPointNight).format(',')
+                    keikaku_rpt_tbl_lbl_poin_morning_actual.innerText = numeral(_totalActualPointMorning).format(',')
+                    keikaku_rpt_tbl_lbl_poin_night_actual.innerText = numeral(_totalActualPointNight).format(',')
+                    const _totalPointMorningDifference = _totalActualPointMorning-_totalPlanPointMorning
+                    const _totalPointNightDifference = _totalActualPointNight-_totalPlanPointNight
+                    keikaku_rpt_tbl_lbl_poin_morning_difference.style.color = _totalPointMorningDifference < 0 ? 'red' : 'black'
+                    keikaku_rpt_tbl_lbl_poin_night_difference.style.color = _totalPointNightDifference < 0 ? 'red' : 'black'
+                    keikaku_rpt_tbl_lbl_poin_morning_difference.innerText = numeral(_totalPointMorningDifference).format(',')
+                    keikaku_rpt_tbl_lbl_poin_night_difference.innerText = numeral(_totalPointNightDifference).format(',')
 
+                    keikaku_rpt_tbl_lbl_poin_morning_percentage.innerText = _totalPlanPointMorning == 0 ? "" : (_totalActualPointMorning/_totalPlanPointMorning*100).toFixed(0) + '%'
+                    keikaku_rpt_tbl_lbl_poin_night_percentage.innerText = _totalPlanPointNight == 0 ? "" : (_totalActualPointNight/_totalPlanPointNight*100).toFixed(0) + '%'
 
-                keikaku_rpt_tbl_lbl_qty_morning_plan.innerText = _totalPlanQtyMorning
-                keikaku_rpt_tbl_lbl_qty_night_plan.innerText = _totalPlanQtyNight
-                keikaku_rpt_tbl_lbl_qty_morning_actual.innerText = _totalActualQtyMorning
-                keikaku_rpt_tbl_lbl_qty_night_actual.innerText = _totalActualQtyNight
-                const _totalQtyMorningDifference = _totalActualQtyMorning-_totalPlanQtyMorning
-                const _totalQtyNightDifference = _totalActualQtyNight-_totalPlanQtyNight
-                keikaku_rpt_tbl_lbl_qty_morning_difference.style.color = _totalQtyMorningDifference < 0 ? 'red' : 'black'
-                keikaku_rpt_tbl_lbl_qty_night_difference.style.color = _totalQtyNightDifference < 0 ? 'red' : 'black'                
-                keikaku_rpt_tbl_lbl_qty_morning_difference.innerText = (_totalQtyMorningDifference).toFixed(0)
-                keikaku_rpt_tbl_lbl_qty_night_difference.innerText = (_totalQtyNightDifference).toFixed(0)
-
-                keikaku_rpt_tbl_lbl_qty_morning_percentage.innerText = _totalPlanQtyMorning == 0 ? "" : (_totalActualQtyMorning/_totalPlanQtyMorning*100).toFixed(0) + '%'
-                keikaku_rpt_tbl_lbl_qty_night_percentage.innerText = _totalPlanQtyNight == 0 ? "" : (_totalActualQtyNight/_totalPlanQtyNight*100).toFixed(0) + '%'
-
-
-                keikaku_rpt_tbl_lbl_or_morning_plan.innerText = response.morningEfficiency	* 100  + '%'
-                keikaku_rpt_tbl_lbl_or_night_plan.innerText = response.nightEfficiency	* 100  + '%'
-                keikaku_rpt_tbl_lbl_or_morning_actual.innerText = _totalActualTimeMorning == 0 ? "" : ((_totalTimePRCMorning/100*(response.morningEfficiency)) *100).toFixed(0) + '%'
-                keikaku_rpt_tbl_lbl_or_night_actual.innerText = _totalActualTimeNight == 0 ? "" : ((_totalTimePRCNight/100*(response.nightEfficiency)) *100).toFixed(0) + '%'
-
-                let _totalPlanPointMorning = 0
-                let _totalPlanPointNight = 0
-                let _totalActualPointMorning = 0
-                let _totalActualPointNight = 0
-                response.dataMount.forEach((arrayItem) => {
-                    _totalPlanPointMorning += Number(arrayItem['plan_morning_qty']*arrayItem['baseMount']);
-                    _totalPlanPointNight += Number(arrayItem['plan_night_qty']*arrayItem['baseMount']);
-                    _totalActualPointMorning += Number(arrayItem['morningOutput']*arrayItem['baseMount']);
-                    _totalActualPointNight += Number(arrayItem['nightOutput']*arrayItem['baseMount']);
-                })
-
-                keikaku_rpt_tbl_lbl_poin_morning_plan.innerText = numeral(_totalPlanPointMorning).format(',')
-                keikaku_rpt_tbl_lbl_poin_night_plan.innerText = numeral(_totalPlanPointNight).format(',')
-                keikaku_rpt_tbl_lbl_poin_morning_actual.innerText = numeral(_totalActualPointMorning).format(',')
-                keikaku_rpt_tbl_lbl_poin_night_actual.innerText = numeral(_totalActualPointNight).format(',')
-                const _totalPointMorningDifference = _totalActualPointMorning-_totalPlanPointMorning
-                const _totalPointNightDifference = _totalActualPointNight-_totalPlanPointNight
-                keikaku_rpt_tbl_lbl_poin_morning_difference.style.color = _totalPointMorningDifference < 0 ? 'red' : 'black'
-                keikaku_rpt_tbl_lbl_poin_night_difference.style.color = _totalPointNightDifference < 0 ? 'red' : 'black'
-                keikaku_rpt_tbl_lbl_poin_morning_difference.innerText = numeral(_totalPointMorningDifference).format(',')
-                keikaku_rpt_tbl_lbl_poin_night_difference.innerText = numeral(_totalPointNightDifference).format(',')
-
-                keikaku_rpt_tbl_lbl_poin_morning_percentage.innerText = _totalPlanPointMorning == 0 ? "" : (_totalActualPointMorning/_totalPlanPointMorning*100).toFixed(0) + '%'
-                keikaku_rpt_tbl_lbl_poin_night_percentage.innerText = _totalPlanPointNight == 0 ? "" : (_totalActualPointNight/_totalPlanPointNight*100).toFixed(0) + '%'
-
-                let prodplanData = keikaku_prodplan_sso.getData()
-                let prodplanDataLength = prodplanData.length - 5
-                let _totalPlanChangeMorning=0
-                let _totalPlanChangeNight=0
-                let _totalActualChangeMorning=0
-                let _totalActualChangeNight=0
-                for(let i=17; i<prodplanDataLength; i+=8) {
-                    if(prodplanData[i][2].includes('CHANGE MODEL')) {
-                        for(let c=9; c<33; c++) {
-                            if(prodplanData[i][c] > 0) {
-                                if(c<21) {
-                                    _totalPlanChangeMorning++
-                                } else {
-                                    _totalPlanChangeNight++
+                    let prodplanData = keikaku_prodplan_sso.getData()
+                    let prodplanDataLength = prodplanData.length - 5
+                    let _totalPlanChangeMorning=0
+                    let _totalPlanChangeNight=0
+                    let _totalActualChangeMorning=0
+                    let _totalActualChangeNight=0
+                    for(let i=17; i<prodplanDataLength; i+=8) {
+                        if(prodplanData[i][2].includes('CHANGE MODEL')) {
+                            for(let c=9; c<33; c++) {
+                                if(prodplanData[i][c] > 0) {
+                                    if(c<21) {
+                                        _totalPlanChangeMorning++
+                                    } else {
+                                        _totalPlanChangeNight++
+                                    }
                                 }
-                            }
-                            if(prodplanData[i+1][c] > 0) {
-                                if(c<21) {
-                                    _totalActualChangeMorning++
-                                } else {
-                                    _totalActualChangeNight++
+                                if(prodplanData[i+1][c] > 0) {
+                                    if(c<21) {
+                                        _totalActualChangeMorning++
+                                    } else {
+                                        _totalActualChangeNight++
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                keikaku_rpt_tbl_lbl_cm_morning_plan.innerText = _totalPlanChangeMorning
-                keikaku_rpt_tbl_lbl_cm_night_plan.innerText = _totalPlanChangeNight
-                keikaku_rpt_tbl_lbl_cm_morning_actual.innerText = _totalActualChangeMorning
-                keikaku_rpt_tbl_lbl_cm_night_actual.innerText = _totalActualChangeNight
-                keikaku_rpt_tbl_lbl_cm_morning_difference.innerText = (_totalActualChangeMorning-_totalPlanChangeMorning)
-                keikaku_rpt_tbl_lbl_cm_night_difference.innerText = (_totalActualChangeNight-_totalPlanChangeNight)
-                keikaku_rpt_tbl_lbl_cm_morning_percentage.innerText = _totalPlanChangeMorning == 0 ? "" : (_totalActualChangeMorning/_totalPlanChangeMorning*100).toFixed(0) + '%'
-                keikaku_rpt_tbl_lbl_cm_night_percentage.innerText = _totalPlanChangeNight == 0 ? "" : (_totalActualChangeNight/_totalPlanChangeNight*100).toFixed(0) + '%'
+                    keikaku_rpt_tbl_lbl_cm_morning_plan.innerText = _totalPlanChangeMorning
+                    keikaku_rpt_tbl_lbl_cm_night_plan.innerText = _totalPlanChangeNight
+                    keikaku_rpt_tbl_lbl_cm_morning_actual.innerText = _totalActualChangeMorning
+                    keikaku_rpt_tbl_lbl_cm_night_actual.innerText = _totalActualChangeNight
+                    keikaku_rpt_tbl_lbl_cm_morning_difference.innerText = (_totalActualChangeMorning-_totalPlanChangeMorning)
+                    keikaku_rpt_tbl_lbl_cm_night_difference.innerText = (_totalActualChangeNight-_totalPlanChangeNight)
+                    keikaku_rpt_tbl_lbl_cm_morning_percentage.innerText = _totalPlanChangeMorning == 0 ? "" : (_totalActualChangeMorning/_totalPlanChangeMorning*100).toFixed(0) + '%'
+                    keikaku_rpt_tbl_lbl_cm_night_percentage.innerText = _totalPlanChangeNight == 0 ? "" : (_totalActualChangeNight/_totalPlanChangeNight*100).toFixed(0) + '%'
+                    
+                }
             }, error: function(xhr, xopt, xthrow) {
                 pThis.disabled = false
                 alertify.error(xthrow)
             }
         });
+    }
+
+    function keikakuIsHW() {
+        return keikaku_line_input.value.substr(keikaku_line_input.value.length-1)=='3' || keikaku_line_input.value=='PS2' ? true : false
     }
 
     function keikakuDisplayProdplan(data, dataS, dataCalculation, dataModelChanges) {
@@ -2525,220 +2531,238 @@
 
 
         let nomorUrut = 1;
-        for(let i=3; i<totalRowsMatrix; i++) {
-            let _newRow1 = []
-            let _newRow2 = []
-            let _newRow3 = []
-            let _newRow4 = []
-            let _newRow5 = []
-            let _newRow6 = []
-            let _newRow7 = []
-            let _newRow8 = []
-            if (data[i][0]) {
-
-                const _tempA = data[i][5].split('#')
-                const _model = _tempA[1]
-                const _wo_no = _tempA[2]
-                const _lot_size = _tempA[3]
-                const _production_qty = _tempA[4]
-                const _st = data[i][4]
-                const _specsSide = _tempA[0]
-                const _seq = _tempA[7]
-                _newRow3.push(nomorUrut)
-                _newRow3.push('')
-                _newRow3.push(_model)
-                _newRow3.push(_wo_no)
-                _newRow3.push(_lot_size)
-                _newRow3.push(_production_qty)
-                _newRow3.push(Number(_st).toFixed(4))
-                _newRow3.push('PLAN PROD')
-                _newRow3.push(0)
-
-                _newRow4.push('')
-                _newRow4.push(_specsSide)
-                _newRow4.push(_tempA[5])
-                _newRow4.push(_tempA[6])
-                _newRow4.push('')
-                _newRow4.push(data[i][0])
-                _newRow4.push('')
-                _newRow4.push('TOTAL')
-                _newRow4.push('')
-
-                let totalQtyRun = 0
-                for(let c=9; c<(9+12+12+12); c++) {
-                    if(inputSS[1][c] == Number(data[0][(c-3)])) {
-                        inputSS[4][c] = Number(data[2][(c-3)]).toFixed(2)
-                        if(c<33) {
-                            _newRow3[8]+=Number(data[i][c-3])
-                        }
-                        _newRow3.push(data[i][c-3])
-
-                        totalQtyRun += Number(data[i][c-3])
-
-                        if(Number(data[i][c-3])==0) {
-                            _newRow4.push('')
-                        } else {
-                            _newRow4.push(totalQtyRun)
-                        }
-                    }
-                }
-
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('')
-                _newRow2.push('Actual')
-                _newRow2.push(0)
-
-                for(let r=0; r<totalRowsModelChanges; r++) {
-                    if(data[i][3] == dataModelChanges[r][3] && _specsSide == dataModelChanges[r][4] && _seq == dataModelChanges[r][1]) { // by job & seq
-                        for(let c=9; c<(9+12+12+12); c++) {
-                            const _theflag = dataModelChanges[r][c-3]
-                            _newRow2.push(_theflag == '-' ? '' : _theflag)
-                            if(_theflag=='1') {
-                                _newRow2[8]++
-                            }
-                        }
-                    }
-                }
-
-                inputSS.push(_newRow2)
-                inputSS.push(_newRow3)
-                inputSS.push(_newRow4)
-
-                _newRow5.push('')
-                _newRow5.push('')
-                _newRow5.push('')
-                _newRow5.push('')
-                _newRow5.push('')
-                _newRow5.push('')
-                _newRow5.push('')
-                _newRow5.push('Actual')
-                _newRow5.push(0)
-
-                _newRow6.push('')
-                _newRow6.push('')
-                _newRow6.push('')
-                _newRow6.push('')
-                _newRow6.push('')
-                _newRow6.push('')
-                _newRow6.push('')
-                _newRow6.push('Total')
-                _newRow6.push('')
-
-
-                _newRow7.push('')
-                _newRow7.push('')
-                _newRow7.push('')
-                _newRow7.push('')
-                _newRow7.push('')
-                _newRow7.push('')
-                _newRow7.push('')
-                _newRow7.push('Progress')
-                _newRow7.push(0)
-
-                _newRow8.push('')
-                _newRow8.push('')
-                _newRow8.push('')
-                _newRow8.push('')
-                _newRow8.push('')
-                _newRow8.push('')
-                _newRow8.push('')
-                _newRow8.push('Total.')
-                _newRow8.push('')
-
-                let totalQtySensor = 0
-                for(let r=0; r<totalRowsSensor; r++) {
-                    if(data[i][3] == dataS[r][3] && _specsSide == dataS[r][4] && _seq == dataS[r][1]) { // by job & seq
-                        for(let c=9; c<(9+12+12+12); c++) {
-                            _newRow5.push(dataS[r][c-3])
-                            const _output = Number(dataS[r][c-3])
-                            if(c<33) {
-                                _newRow5[8]+=_output
-                            }
-
-                            totalQtySensor += _output
-
-                            if(_output==0) {
-                                _newRow6.push('')
-                                _newRow7.push('')
-                                _newRow8.push('')
-                            } else {
-                                let _totalLastPlan = 0
-                                for(let d=c;d>=9;d--) {
-                                    if(_newRow4[d]) {
-                                        _totalLastPlan = Number(_newRow4[d])
-                                        break;
-                                    }
-                                }
-                                _newRow6.push(totalQtySensor)
-                                _newRow7.push(_output-_newRow3[c])
-                                _newRow8.push(totalQtySensor-_totalLastPlan)
-                            }
-
-                        }
-                        break;
-                    }
-                }
-                _newRow7[8] = numeral(_newRow5[8] - _newRow3[5]).format(',')
-                inputSS.push(_newRow5)
-                inputSS.push(_newRow6)
-                inputSS.push(_newRow7)
-                inputSS.push(_newRow8)
-
-            } else {
-
-                let ChangeModelLabel = ''
-                let ChangeModelTime = ''
-                if(data[i][1]) {
-                    ChangeModelLabel = 'CHANGE MODEL'
-                    ChangeModelTime = data[i][2]
-                } else {
-                    ChangeModelLabel = ''
-                    ChangeModelTime = ''
-                }
-
-                _newRow1.push(nomorUrut)
-                _newRow1.push('')
-                _newRow1.push(ChangeModelLabel)
-                _newRow1.push('')
-                _newRow1.push('')
-                _newRow1.push('')
-                _newRow1.push(ChangeModelTime)
-                _newRow1.push('PLAN')
-                _newRow1.push(0)
-
-                if(data[i][1]) {
+        if(keikakuIsHW()) {
+            alertify.message('Keikaku HW is not ready')
+        } else {
+            for(let i=3; i<totalRowsMatrix; i++) {
+                let _newRow1 = []
+                let _newRow2 = []
+                let _newRow3 = []
+                let _newRow4 = []
+                let _newRow5 = []
+                let _newRow6 = []
+                let _newRow7 = []
+                let _newRow8 = []
+                if (data[i][0]) {
+    
+                    const _tempA = data[i][5].split('#')
+                    const _model = _tempA[1]
+                    const _wo_no = _tempA[2]
+                    const _lot_size = _tempA[3]
+                    const _production_qty = _tempA[4]
+                    const _st = data[i][4]
+                    const _specsSide = _tempA[0]
+                    const _seq = _tempA[7]
+                    _newRow3.push(nomorUrut)
+                    _newRow3.push('')
+                    _newRow3.push(_model)
+                    _newRow3.push(_wo_no)
+                    _newRow3.push(_lot_size)
+                    _newRow3.push(_production_qty)
+                    _newRow3.push(Number(_st).toFixed(4))
+                    _newRow3.push('PLAN PROD')
+                    _newRow3.push(0)
+    
+                    _newRow4.push('')
+                    _newRow4.push(_specsSide)
+                    _newRow4.push(_tempA[5])
+                    _newRow4.push(_tempA[6])
+                    _newRow4.push('')
+                    _newRow4.push(data[i][0])
+                    _newRow4.push('')
+                    _newRow4.push('TOTAL')
+                    _newRow4.push('')
+    
+                    let totalQtyRun = 0
                     for(let c=9; c<(9+12+12+12); c++) {
                         if(inputSS[1][c] == Number(data[0][(c-3)])) {
-                            if(data[i][c-3] >0) {
-                                const theMostPossibleColumn = keikakuMostUseTimeChangeMold(data[i]);
-                                if(_newRow1[8]==0 && theMostPossibleColumn == (c-3) ) {
-                                    _newRow1.push(1)
-                                    _newRow1[8]+=1
-                                    inputSS[2][c] = 'C1'
+                            inputSS[4][c] = Number(data[2][(c-3)]).toFixed(2)
+                            if(c<33) {
+                                _newRow3[8]+=Number(data[i][c-3])
+                            }
+                            _newRow3.push(data[i][c-3])
+    
+                            totalQtyRun += Number(data[i][c-3])
+    
+                            if(Number(data[i][c-3])==0) {
+                                _newRow4.push('')
+                            } else {
+                                _newRow4.push(totalQtyRun)
+                            }
+                        }
+                    }
+    
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('Actual')
+                    _newRow2.push(0)
+    
+                    for(let r=0; r<totalRowsModelChanges; r++) {
+                        if(data[i][3] == dataModelChanges[r][3] && _specsSide == dataModelChanges[r][4] && _seq == dataModelChanges[r][1]) { // by job & seq
+                            for(let c=9; c<(9+12+12+12); c++) {
+                                const _theflag = dataModelChanges[r][c-3]
+                                _newRow2.push(_theflag == '-' ? '' : _theflag)
+                                if(_theflag=='1') {
+                                    _newRow2[8]++
+                                }
+                            }
+                        }
+                    }
+    
+                    inputSS.push(_newRow2)
+                    inputSS.push(_newRow3)
+                    inputSS.push(_newRow4)
+    
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('Actual')
+                    _newRow5.push(0)
+    
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('Total')
+                    _newRow6.push('')
+    
+    
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('Progress')
+                    _newRow7.push(0)
+    
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('Total.')
+                    _newRow8.push('')
+    
+                    let totalQtySensor = 0
+                    for(let r=0; r<totalRowsSensor; r++) {
+                        if(data[i][3] == dataS[r][3] && _specsSide == dataS[r][4] && _seq == dataS[r][1]) { // by job & seq
+                            for(let c=9; c<(9+12+12+12); c++) {
+                                _newRow5.push(dataS[r][c-3])
+                                const _output = Number(dataS[r][c-3])
+                                if(c<33) {
+                                    _newRow5[8]+=_output
+                                }
+    
+                                totalQtySensor += _output
+    
+                                if(_output==0) {
+                                    _newRow6.push('')
+                                    _newRow7.push('')
+                                    _newRow8.push('')
+                                } else {
+                                    let _totalLastPlan = 0
+                                    for(let d=c;d>=9;d--) {
+                                        if(_newRow4[d]) {
+                                            _totalLastPlan = Number(_newRow4[d])
+                                            break;
+                                        }
+                                    }
+                                    _newRow6.push(totalQtySensor)
+                                    _newRow7.push(_output-_newRow3[c])
+                                    _newRow8.push(totalQtySensor-_totalLastPlan)
+                                }
+    
+                            }
+                            break;
+                        }
+                    }
+                    _newRow7[8] = numeral(_newRow5[8] - _newRow3[5]).format(',')
+                    inputSS.push(_newRow5)
+                    inputSS.push(_newRow6)
+                    inputSS.push(_newRow7)
+                    inputSS.push(_newRow8)
+    
+                } else {
+    
+                    let ChangeModelLabel = ''
+                    let ChangeModelTime = ''
+                    if(data[i][1]) {                        
+                        // ChangeModelLabel = 'CHANGE MODEL'
+                        ChangeModelLabel = keikakuCaptionChangesGenerator(data, i)
+                        ChangeModelTime = data[i][2]
+                    } else {
+                        ChangeModelLabel = ''
+                        ChangeModelTime = ''
+                    }
+    
+                    _newRow1.push(nomorUrut)
+                    _newRow1.push('')
+                    _newRow1.push(ChangeModelLabel)
+                    _newRow1.push('')
+                    _newRow1.push('')
+                    _newRow1.push('')
+                    _newRow1.push(ChangeModelTime)
+                    _newRow1.push('PLAN')
+                    _newRow1.push(0)
+    
+                    if(data[i][1]) {
+                        for(let c=9; c<(9+12+12+12); c++) {
+                            if(inputSS[1][c] == Number(data[0][(c-3)])) {
+                                if(data[i][c-3] >0) {
+                                    const theMostPossibleColumn = keikakuMostUseTimeChangeMold(data[i]);
+                                    if(_newRow1[8]==0 && theMostPossibleColumn == (c-3) ) {
+                                        _newRow1.push(1)
+                                        _newRow1[8]+=1
+                                        inputSS[2][c] = 'C1'
+                                    } else {
+                                        _newRow1.push('')
+                                    }
                                 } else {
                                     _newRow1.push('')
                                 }
-                            } else {
-                                _newRow1.push('')
                             }
                         }
                     }
+    
+    
+    
+                    inputSS.push(_newRow1)
                 }
-
-
-
-                inputSS.push(_newRow1)
+    
+                nomorUrut++
             }
-
-            nomorUrut++
         }
         if(totalRowsMatrix>0) {
             keikaku_prodplan_sso.setData(inputSS)
+        }
+    }
+
+    function keikakuCaptionChangesGenerator(paramData, paramY) {
+        const currentRawInfo = paramData[paramY+1][5].split('#')
+        const previousRawInfo = paramData[paramY-1][5].split('#')
+        const currentAssyCode = paramData[paramY+1][0]
+        const previousAssyCode = paramData[paramY-1][0]
+
+        if(currentRawInfo[6].substr(0,4) == previousRawInfo[6].substr(0,4) && currentRawInfo[0]==previousRawInfo[0]) {
+            return currentAssyCode == previousAssyCode ? '0' : 'CHANGE TYPE'
+        } else {
+            return 'CHANGE MODEL'
         }
     }
 
