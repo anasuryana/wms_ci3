@@ -1178,7 +1178,7 @@
                 }
             }
             if(x>7 && y==7) {
-                if(value === 'MTN') {
+                if(['MTN','N'].includes(value)) {
                     const theDataCount = keikaku_prodplan_sso.getData().length
                     for(let _y=y; _y<theDataCount;_y++) {
                         cellName = jspreadsheet.getColumnNameFromId([x,_y]);
