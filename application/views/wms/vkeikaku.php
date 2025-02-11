@@ -2609,8 +2609,40 @@
             alertify.message('Keikaku HW is not ready yet')
             for(let i=3; i<totalRowsMatrix; i++) {
                 let _newRow1 = []
+                let _newRow2 = []
                 if (data[i][0]) {
+                    const _tempA = data[i][5].split('#')
+                    const _model = _tempA[1]
+                    const _wo_no = _tempA[2]
+                    const _lot_size = _tempA[3]
+                    const _production_qty = _tempA[4]
+                    const _st = data[i][4]
+                    const _specsSide = _tempA[0]
+                    const _seq = _tempA[7]
+                    
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('Actual')
+                    _newRow2.push(0)
 
+                    for(let r=0; r<totalRowsModelChanges; r++) {
+                        if(data[i][3] == dataModelChanges[r][3] && _specsSide == dataModelChanges[r][4] && _seq == dataModelChanges[r][1]) { // by job & seq
+                            for(let c=9; c<(9+12+12+12); c++) {
+                                const _theflag = dataModelChanges[r][c-3]
+                                _newRow2.push(_theflag == '-' ? '' : _theflag)
+                                if(_theflag=='1') {
+                                    _newRow2[8]++
+                                }
+                            }
+                        }
+                    }
+
+                    inputSS.push(_newRow2)
                 } else {
                     let ChangeModelLabel = ''
                     let ChangeModelTime = ''
