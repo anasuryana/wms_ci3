@@ -1457,6 +1457,7 @@
     }
 
     function keikaku_btn_save_eC(pThis) {
+        const div_alert = document.getElementById('keikaku-div-alert')
         const theStyle = keikaku_data_sso.getStyle();
         if(keikaku_line_input.value === '-') {
             alertify.warning(`Line is required`)
@@ -1514,6 +1515,7 @@
 
         for(let i=0; i<inputSSCount;i++) {
             let _job = inputSS[i][2].trim() + inputSS[i][7].trim() + inputSS[i][9].trim()
+            let _jobHumanize = inputSS[i][2].trim() + '-' + inputSS[i][7].trim() + '-' + inputSS[i][9].trim()
             let _cycleTime = numeral(inputSS[i][10].trim()).value()
             if(!JobUnique.includes(_job)) {
                 JobUnique.push(_job)
@@ -1558,7 +1560,10 @@
                         cycle_time : numeral(inputSS[i][10]).value()
                     })
                 } else {
-                    alertify.warning(`Production Qty > Lot Size !`)
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    Production Qty > Lot Size ! ${_jobHumanize}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
                     return
                 }
             }
