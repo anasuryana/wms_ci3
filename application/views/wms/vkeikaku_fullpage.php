@@ -662,12 +662,12 @@
             {
                 title:'Seq.',
                 type: 'numeric',
-                width:50,
+                width:30,
             },
             {
                 title:'Model',
                 type: 'text',
-                width:100,
+                width:175,
             },
             {
                 title:'Job',
