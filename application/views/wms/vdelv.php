@@ -357,7 +357,7 @@ echo $todis;
                     <div class="col-md-6 mb-1">
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">SPPB Document</label>
-                            <input type="text" id="txfg_txt_sppb27" class="form-control" readonly>
+                            <input type="text" id="txfg_txt_sppb27" class="form-control">
                             <button class="btn btn-outline-primary" onclick="TXFGOffcanvas27.show()" title="not correct value ?"><i class="fas fa-circle-question"></i></button>
                         </div>
                     </div>
@@ -366,14 +366,14 @@ echo $todis;
                     <div class="col-md-6 mb-1">
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Nomor Pendaftaran</label>
-                            <input type="text" id="txfg_txt_nopen" class="form-control" maxlength="6" readonly>
+                            <input type="text" id="txfg_txt_nopen" class="form-control" maxlength="6">
                             <button class="btn btn-primary" id="txfg_btn_sync_pendaftaran" onclick="txfg_btn_sync_pendaftaran_e_click(this)" title="Get Nomor & Tanggal Pendaftaran from CEISA"><i class="fas fa-sync"></i></button>
                         </div>
                     </div>
                     <div class="col-md-6 mb-1">
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Tanggal Pendaftaran</label>
-                            <input type="text" id="txfg_txt_tglpen" class="form-control" readonly>
+                            <input type="text" id="txfg_txt_tglpen" class="form-control" readonly >
                         </div>
                     </div>
                 </div>
@@ -3012,6 +3012,10 @@ echo $tohtml;
         autoclose: true
     });
     $("#txfg_txt_tglpen25").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+    $("#txfg_txt_tglpen").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true
     });
