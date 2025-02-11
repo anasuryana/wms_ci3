@@ -1990,23 +1990,7 @@
                 pThis.disabled = false
                 let dataLength = keikaku_data_sso.getData().length
                 let responseDataLength = response.data.length
-                if(keikaku_line_input.value.includes('AT')) {
-                    for(let i=0; i < dataLength; i++) {
-                        let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim()
-                        let _processCode = keikaku_data_sso.getValueFromCoords(9, i, true).trim()
-                        keikaku_data_sso.setValue('K'+(i+1), 0)
-                        for(let s=0;s<responseDataLength; s++) {
-                            const _responseProcess = response.data[s].process_code.trim()
-                            
-                            if(_itemCode == response.data[s].assy_code.trim()
-                            &&  _processCode === _responseProcess.substr(_responseProcess.length-1, 1)
-                        ) {
-                                keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
-                                break;
-                            }
-                        }
-                    }
-                } else {
+                if(keikakuIsHW()) {
                     for(let i=0; i < dataLength; i++) {
                         let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim()
                         let _processCode = keikaku_data_sso.getValueFromCoords(9, i, true).trim().substring(0,9)
@@ -2015,20 +1999,63 @@
                             const _responseProcess = response.data[s].process_code.trim()
                             if(_itemCode.includes('ASP') || _itemCode.includes('KD')) {
                                 if(_itemCode.substring(0,9) == response.data[s].assy_code.trim()
-                                        &&  _processCode === _responseProcess.substr(_responseProcess.length-1, 1)
+                                        && _responseProcess.includes('HW')
                                     ) {
                                         keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
                                         break;
                                 }
                             } else {
                                 if(_itemCode == response.data[s].assy_code.trim()
-                                    &&  _processCode === _responseProcess.substr(_responseProcess.length-1, 1)
+                                    &&  _responseProcess.includes('HW')
                                 ) {
                                         keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
                                         break;
                                     }
                             }
-                            
+
+                        }
+                    }
+                } else {
+                    if(keikaku_line_input.value.includes('AT')) {
+                        for(let i=0; i < dataLength; i++) {
+                            let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim()
+                            let _processCode = keikaku_data_sso.getValueFromCoords(9, i, true).trim()
+                            keikaku_data_sso.setValue('K'+(i+1), 0)
+                            for(let s=0;s<responseDataLength; s++) {
+                                const _responseProcess = response.data[s].process_code.trim()
+
+                                if(_itemCode == response.data[s].assy_code.trim()
+                                &&  _processCode === _responseProcess.substr(_responseProcess.length-1, 1)
+                            ) {
+                                    keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        for(let i=0; i < dataLength; i++) {
+                            let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim()
+                            let _processCode = keikaku_data_sso.getValueFromCoords(9, i, true).trim().substring(0,9)
+                            keikaku_data_sso.setValue('K'+(i+1), 0)
+                            for(let s=0;s<responseDataLength; s++) {
+                                const _responseProcess = response.data[s].process_code.trim()
+                                if(_itemCode.includes('ASP') || _itemCode.includes('KD')) {
+                                    if(_itemCode.substring(0,9) == response.data[s].assy_code.trim()
+                                            &&  _processCode === _responseProcess.substr(_responseProcess.length-1, 1)
+                                        ) {
+                                            keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
+                                            break;
+                                    }
+                                } else {
+                                    if(_itemCode == response.data[s].assy_code.trim()
+                                        &&  _processCode === _responseProcess.substr(_responseProcess.length-1, 1)
+                                    ) {
+                                            keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
+                                            break;
+                                        }
+                                }
+
+                            }
                         }
                     }
                 }
@@ -2342,7 +2369,7 @@
                 let _totalPlanQtyNight = 0;
                 let _totalActualQtyMorning = 0;
                 let _totalActualQtyNight = 0;
-                
+
                 if(keikakuIsHW()) {
                     alertify.message('Keikaku HW is not ready')
                 } else {
@@ -2463,7 +2490,7 @@
                     const _totalQtyMorningDifference = _totalActualQtyMorning-_totalPlanQtyMorning
                     const _totalQtyNightDifference = _totalActualQtyNight-_totalPlanQtyNight
                     keikaku_rpt_tbl_lbl_qty_morning_difference.style.color = _totalQtyMorningDifference < 0 ? 'red' : 'black'
-                    keikaku_rpt_tbl_lbl_qty_night_difference.style.color = _totalQtyNightDifference < 0 ? 'red' : 'black'                
+                    keikaku_rpt_tbl_lbl_qty_night_difference.style.color = _totalQtyNightDifference < 0 ? 'red' : 'black'
                     keikaku_rpt_tbl_lbl_qty_morning_difference.innerText = (_totalQtyMorningDifference).toFixed(0)
                     keikaku_rpt_tbl_lbl_qty_night_difference.innerText = (_totalQtyNightDifference).toFixed(0)
 
@@ -2536,9 +2563,9 @@
                     keikaku_rpt_tbl_lbl_cm_night_difference.innerText = (_totalActualChangeNight-_totalPlanChangeNight)
                     keikaku_rpt_tbl_lbl_cm_morning_percentage.innerText = _totalPlanChangeMorning == 0 ? "" : (_totalActualChangeMorning/_totalPlanChangeMorning*100).toFixed(0) + '%'
                     keikaku_rpt_tbl_lbl_cm_night_percentage.innerText = _totalPlanChangeNight == 0 ? "" : (_totalActualChangeNight/_totalPlanChangeNight*100).toFixed(0) + '%'
-                    
+
                 }
-                
+
             }, error: function(xhr, xopt, xthrow) {
                 pThis.disabled = false
                 alertify.error(xthrow)
@@ -2577,188 +2604,24 @@
 
 
         let nomorUrut = 1;
-        
+
         if(keikakuIsHW()) {
-            alertify.message('Keikaku HW is not ready')
-        } else {
+            alertify.message('Keikaku HW is not ready yet')
             for(let i=3; i<totalRowsMatrix; i++) {
                 let _newRow1 = []
-                let _newRow2 = []
-                let _newRow3 = []
-                let _newRow4 = []
-                let _newRow5 = []
-                let _newRow6 = []
-                let _newRow7 = []
-                let _newRow8 = []
                 if (data[i][0]) {
-    
-                    const _tempA = data[i][5].split('#')
-                    const _model = _tempA[1]
-                    const _wo_no = _tempA[2]
-                    const _lot_size = _tempA[3]
-                    const _production_qty = _tempA[4]
-                    const _st = data[i][4]
-                    const _specsSide = _tempA[0]
-                    const _seq = _tempA[7]
-                    _newRow3.push(nomorUrut)
-                    _newRow3.push('')
-                    _newRow3.push(_model)
-                    _newRow3.push(_wo_no)
-                    _newRow3.push(_lot_size)
-                    _newRow3.push(_production_qty)
-                    _newRow3.push(Number(_st).toFixed(4))
-                    _newRow3.push('PLAN PROD')
-                    _newRow3.push(0)
-    
-                    _newRow4.push('')
-                    _newRow4.push(_specsSide)
-                    _newRow4.push(_tempA[5])
-                    _newRow4.push(_tempA[6])
-                    _newRow4.push('')
-                    _newRow4.push(data[i][0])
-                    _newRow4.push('')
-                    _newRow4.push('TOTAL')
-                    _newRow4.push('')
-    
-                    let totalQtyRun = 0
-                    for(let c=9; c<(9+12+12+12); c++) {
-                        if(inputSS[1][c] == Number(data[0][(c-3)])) {
-                            inputSS[4][c] = Number(data[2][(c-3)]).toFixed(2)
-                            if(c<33) {
-                                _newRow3[8]+=Number(data[i][c-3])
-                            }
-                            _newRow3.push(data[i][c-3])
-    
-                            totalQtyRun += Number(data[i][c-3])
-    
-                            if(Number(data[i][c-3])==0) {
-                                _newRow4.push('')
-                            } else {
-                                _newRow4.push(totalQtyRun)
-                            }
-                        }
-                    }
-    
-                    _newRow2.push('')
-                    _newRow2.push('')
-                    _newRow2.push('')
-                    _newRow2.push('')
-                    _newRow2.push('')
-                    _newRow2.push('')
-                    _newRow2.push('')
-                    _newRow2.push('Actual')
-                    _newRow2.push(0)
-    
-                    for(let r=0; r<totalRowsModelChanges; r++) {
-                        if(data[i][3] == dataModelChanges[r][3] && _specsSide == dataModelChanges[r][4] && _seq == dataModelChanges[r][1]) { // by job & seq
-                            for(let c=9; c<(9+12+12+12); c++) {
-                                const _theflag = dataModelChanges[r][c-3]
-                                _newRow2.push(_theflag == '-' ? '' : _theflag)
-                                if(_theflag=='1') {
-                                    _newRow2[8]++
-                                }
-                            }
-                        }
-                    }
-    
-                    inputSS.push(_newRow2)
-                    inputSS.push(_newRow3)
-                    inputSS.push(_newRow4)
-    
-                    _newRow5.push('')
-                    _newRow5.push('')
-                    _newRow5.push('')
-                    _newRow5.push('')
-                    _newRow5.push('')
-                    _newRow5.push('')
-                    _newRow5.push('')
-                    _newRow5.push('Actual')
-                    _newRow5.push(0)
-    
-                    _newRow6.push('')
-                    _newRow6.push('')
-                    _newRow6.push('')
-                    _newRow6.push('')
-                    _newRow6.push('')
-                    _newRow6.push('')
-                    _newRow6.push('')
-                    _newRow6.push('Total')
-                    _newRow6.push('')
-    
-    
-                    _newRow7.push('')
-                    _newRow7.push('')
-                    _newRow7.push('')
-                    _newRow7.push('')
-                    _newRow7.push('')
-                    _newRow7.push('')
-                    _newRow7.push('')
-                    _newRow7.push('Progress')
-                    _newRow7.push(0)
-    
-                    _newRow8.push('')
-                    _newRow8.push('')
-                    _newRow8.push('')
-                    _newRow8.push('')
-                    _newRow8.push('')
-                    _newRow8.push('')
-                    _newRow8.push('')
-                    _newRow8.push('Total.')
-                    _newRow8.push('')
-    
-                    let totalQtySensor = 0
-                    for(let r=0; r<totalRowsSensor; r++) {
-                        if(data[i][3] == dataS[r][3] && _specsSide == dataS[r][4] && _seq == dataS[r][1]) { // by job & seq
-                            for(let c=9; c<(9+12+12+12); c++) {
-                                _newRow5.push(dataS[r][c-3])
-                                const _output = Number(dataS[r][c-3])
-                                if(c<33) {
-                                    _newRow5[8]+=_output
-                                }
-    
-                                totalQtySensor += _output
-    
-                                if(_output==0) {
-                                    _newRow6.push('')
-                                    _newRow7.push('')
-                                    _newRow8.push('')
-                                } else {
-                                    let _totalLastPlan = 0
-                                    for(let d=c;d>=9;d--) {
-                                        if(_newRow4[d]) {
-                                            _totalLastPlan = Number(_newRow4[d])
-                                            break;
-                                        }
-                                    }
-                                    _newRow6.push(totalQtySensor)
-                                    _newRow7.push(_output-_newRow3[c])
-                                    _newRow8.push(totalQtySensor-_totalLastPlan)
-                                }
-    
-                            }
-                            break;
-                        }
-                    }
-                    _newRow7[8] = numeral(_newRow5[8] - _newRow3[5]).format(',')
-                    inputSS.push(_newRow5)
-                    inputSS.push(_newRow6)
-                    inputSS.push(_newRow7)
-                    inputSS.push(_newRow8)
-    
+
                 } else {
-    
                     let ChangeModelLabel = ''
                     let ChangeModelTime = ''
                     if(data[i][1]) {
-                        // console.log(keikakuCaptionChangesGenerator(data, i))
-                        // ChangeModelLabel = 'CHANGE MODEL'
                         ChangeModelLabel = keikakuCaptionChangesGenerator(data, i)
                         ChangeModelTime = data[i][2]
                     } else {
                         ChangeModelLabel = ''
                         ChangeModelTime = ''
                     }
-    
+
                     _newRow1.push(nomorUrut)
                     _newRow1.push('')
                     _newRow1.push(ChangeModelLabel)
@@ -2768,7 +2631,7 @@
                     _newRow1.push(ChangeModelTime)
                     _newRow1.push('PLAN')
                     _newRow1.push(0)
-    
+
                     if(data[i][1]) {
                         for(let c=9; c<(9+12+12+12); c++) {
                             if(inputSS[1][c] == Number(data[0][(c-3)])) {
@@ -2787,12 +2650,226 @@
                             }
                         }
                     }
-    
-    
-    
+
+
+
                     inputSS.push(_newRow1)
                 }
-    
+                nomorUrut++
+            }
+        } else {
+            for(let i=3; i<totalRowsMatrix; i++) {
+                let _newRow1 = []
+                let _newRow2 = []
+                let _newRow3 = []
+                let _newRow4 = []
+                let _newRow5 = []
+                let _newRow6 = []
+                let _newRow7 = []
+                let _newRow8 = []
+                if (data[i][0]) {
+
+                    const _tempA = data[i][5].split('#')
+                    const _model = _tempA[1]
+                    const _wo_no = _tempA[2]
+                    const _lot_size = _tempA[3]
+                    const _production_qty = _tempA[4]
+                    const _st = data[i][4]
+                    const _specsSide = _tempA[0]
+                    const _seq = _tempA[7]
+                    _newRow3.push(nomorUrut)
+                    _newRow3.push('')
+                    _newRow3.push(_model)
+                    _newRow3.push(_wo_no)
+                    _newRow3.push(_lot_size)
+                    _newRow3.push(_production_qty)
+                    _newRow3.push(Number(_st).toFixed(4))
+                    _newRow3.push('PLAN PROD')
+                    _newRow3.push(0)
+
+                    _newRow4.push('')
+                    _newRow4.push(_specsSide)
+                    _newRow4.push(_tempA[5])
+                    _newRow4.push(_tempA[6])
+                    _newRow4.push('')
+                    _newRow4.push(data[i][0])
+                    _newRow4.push('')
+                    _newRow4.push('TOTAL')
+                    _newRow4.push('')
+
+                    let totalQtyRun = 0
+                    for(let c=9; c<(9+12+12+12); c++) {
+                        if(inputSS[1][c] == Number(data[0][(c-3)])) {
+                            inputSS[4][c] = Number(data[2][(c-3)]).toFixed(2)
+                            if(c<33) {
+                                _newRow3[8]+=Number(data[i][c-3])
+                            }
+                            _newRow3.push(data[i][c-3])
+
+                            totalQtyRun += Number(data[i][c-3])
+
+                            if(Number(data[i][c-3])==0) {
+                                _newRow4.push('')
+                            } else {
+                                _newRow4.push(totalQtyRun)
+                            }
+                        }
+                    }
+
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('')
+                    _newRow2.push('Actual')
+                    _newRow2.push(0)
+
+                    for(let r=0; r<totalRowsModelChanges; r++) {
+                        if(data[i][3] == dataModelChanges[r][3] && _specsSide == dataModelChanges[r][4] && _seq == dataModelChanges[r][1]) { // by job & seq
+                            for(let c=9; c<(9+12+12+12); c++) {
+                                const _theflag = dataModelChanges[r][c-3]
+                                _newRow2.push(_theflag == '-' ? '' : _theflag)
+                                if(_theflag=='1') {
+                                    _newRow2[8]++
+                                }
+                            }
+                        }
+                    }
+
+                    inputSS.push(_newRow2)
+                    inputSS.push(_newRow3)
+                    inputSS.push(_newRow4)
+
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('')
+                    _newRow5.push('Actual')
+                    _newRow5.push(0)
+
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('')
+                    _newRow6.push('Total')
+                    _newRow6.push('')
+
+
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('Progress')
+                    _newRow7.push(0)
+
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('Total.')
+                    _newRow8.push('')
+
+                    let totalQtySensor = 0
+                    for(let r=0; r<totalRowsSensor; r++) {
+                        if(data[i][3] == dataS[r][3] && _specsSide == dataS[r][4] && _seq == dataS[r][1]) { // by job & seq
+                            for(let c=9; c<(9+12+12+12); c++) {
+                                _newRow5.push(dataS[r][c-3])
+                                const _output = Number(dataS[r][c-3])
+                                if(c<33) {
+                                    _newRow5[8]+=_output
+                                }
+
+                                totalQtySensor += _output
+
+                                if(_output==0) {
+                                    _newRow6.push('')
+                                    _newRow7.push('')
+                                    _newRow8.push('')
+                                } else {
+                                    let _totalLastPlan = 0
+                                    for(let d=c;d>=9;d--) {
+                                        if(_newRow4[d]) {
+                                            _totalLastPlan = Number(_newRow4[d])
+                                            break;
+                                        }
+                                    }
+                                    _newRow6.push(totalQtySensor)
+                                    _newRow7.push(_output-_newRow3[c])
+                                    _newRow8.push(totalQtySensor-_totalLastPlan)
+                                }
+
+                            }
+                            break;
+                        }
+                    }
+                    _newRow7[8] = numeral(_newRow5[8] - _newRow3[5]).format(',')
+                    inputSS.push(_newRow5)
+                    inputSS.push(_newRow6)
+                    inputSS.push(_newRow7)
+                    inputSS.push(_newRow8)
+
+                } else {
+
+                    let ChangeModelLabel = ''
+                    let ChangeModelTime = ''
+                    if(data[i][1]) {
+                        // console.log(keikakuCaptionChangesGenerator(data, i))
+                        // ChangeModelLabel = 'CHANGE MODEL'
+                        ChangeModelLabel = keikakuCaptionChangesGenerator(data, i)
+                        ChangeModelTime = data[i][2]
+                    } else {
+                        ChangeModelLabel = ''
+                        ChangeModelTime = ''
+                    }
+
+                    _newRow1.push(nomorUrut)
+                    _newRow1.push('')
+                    _newRow1.push(ChangeModelLabel)
+                    _newRow1.push('')
+                    _newRow1.push('')
+                    _newRow1.push('')
+                    _newRow1.push(ChangeModelTime)
+                    _newRow1.push('PLAN')
+                    _newRow1.push(0)
+
+                    if(data[i][1]) {
+                        for(let c=9; c<(9+12+12+12); c++) {
+                            if(inputSS[1][c] == Number(data[0][(c-3)])) {
+                                if(data[i][c-3] >0) {
+                                    const theMostPossibleColumn = keikakuMostUseTimeChangeMold(data[i]);
+                                    if(_newRow1[8]==0 && theMostPossibleColumn == (c-3) ) {
+                                        _newRow1.push(1)
+                                        _newRow1[8]+=1
+                                        inputSS[2][c] = 'C1'
+                                    } else {
+                                        _newRow1.push('')
+                                    }
+                                } else {
+                                    _newRow1.push('')
+                                }
+                            }
+                        }
+                    }
+
+
+
+                    inputSS.push(_newRow1)
+                }
+
                 nomorUrut++
             }
         }
