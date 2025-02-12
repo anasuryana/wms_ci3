@@ -657,11 +657,12 @@
                 <div class="col-md-12 mb-1">
                     <div class="table-responsive" id="keikaku_rpt_wo_tbl_div">
                         <table id="keikaku_rpt_wo_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;font-size:91%">
-                            <thead class="table-light text-center">
+                            <thead class="table-light text-center align-middle">
                                 <tr>
                                     <th rowspan="2">Production date</th>
                                     <th rowspan="2">Line</th>
                                     <th rowspan="2">Job Number</th>
+                                    <th rowspan="2">Spec Side</th>
                                     <th colspan="2">QTY</th>
                                 </tr>
                                 <tr>
@@ -3709,10 +3710,13 @@
                         newcell = newrow.insertCell(2)
                         newcell.classList.add('text-center')
                         newcell.innerHTML = r['wo_full_code']
-                        newcell = newrow.insertCell(3)
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = r['specs_side']
+                        newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-end')
                         newcell.innerHTML = numeral(r['plan_qty']).format(',')
-                        newcell = newrow.insertCell(4)
+                        newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-end')
                         newcell.innerHTML = numeral(r['ok_qty']).format(',')
                     })
