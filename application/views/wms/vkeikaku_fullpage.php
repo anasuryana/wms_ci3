@@ -85,6 +85,7 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_summary" onclick="keikaku_rpt_btn_summary_e_click()"><i class="fas fa-file-excel text-success"></i> Summary</a></li>
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_prod_output" onclick="keikaku_rpt_btn_prod_output_e_click()"><i class="fas fa-file-excel text-success"></i> Production Output</a></li>
+                        <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_wo_history" onclick="keikaku_rpt_btn_wo_history_e_click()">Job History</a></li>
                     </ul>
                 </div>
             </div>
@@ -630,6 +631,50 @@
       <input type="hidden" id="keikaku_rpt_type" value="-" />
       <div class="modal-footer">
         <button type="button" class="btn btn-success" id="keikakuRptBtnExportSummary" onclick="keikakuRptBtnExportSummary(this)">Export</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="keikaku_rpt_wo_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Job History</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Job Number</label>
+                        <input type="text" class="form-control" id="keikaku_rpt_wo_no" maxlength="15" onkeypress="keikaku_rpt_wo_no_e_keypress(event)">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <div class="table-responsive" id="keikaku_rpt_wo_tbl_div">
+                        <table id="keikaku_rpt_wo_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;font-size:91%">
+                            <thead class="table-light text-center">
+                                <tr>
+                                    <th>Production date</th>
+                                    <th>Line</th>
+                                    <th>Job Number</th>
+                                    <th>Plan Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+
       </div>
     </div>
   </div>
@@ -3616,6 +3661,59 @@
     function keikaku_rpt_btn_prod_output_e_click() {
         keikaku_rpt_type.value = 'production_output'
         $("#keikaku_rpt_summary_modal").modal('show')
+    }
+
+    function keikaku_rpt_btn_wo_history_e_click() {
+        $("#keikaku_rpt_wo_modal").modal('show')
+    }
+
+    function keikaku_rpt_wo_no_e_keypress(e) {
+        if(e.key==='Enter') {
+            e.target.readOnly = true
+            if(e.target.value.trim().length < 4) {
+                e.target.readOnly = false
+                alertify.warning(`At least 4 characters required`)
+                return
+            }
+            $.ajax({
+                type: "GET",
+                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/wo-run",
+                data: {doc : e.target.value},
+                dataType: "json",
+                success: function (response) {
+                    e.target.readOnly = false
+                    let mydes = document.getElementById("keikaku_rpt_wo_tbl_div");
+                    let myfrag = document.createDocumentFragment();
+                    let mtabel = document.getElementById("keikaku_rpt_wo_tbl");
+                    let cln = mtabel.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    let tabell = myfrag.getElementById("keikaku_rpt_wo_tbl");
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    let newrow, newcell, newText;
+                    tableku2.innerHTML = '';
+                    response.data.forEach((r, i) => {
+                        newrow = tableku2.insertRow(-1);
+                        newcell = newrow.insertCell(0);
+                        newcell.innerHTML = r['production_date']
+                        newcell.classList.add('text-center')
+                        newcell = newrow.insertCell(1)
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = r['line_code']
+                        newcell = newrow.insertCell(2)
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = r['wo_full_code']
+                        newcell = newrow.insertCell(3)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(r['plan_qty']).format(',')
+                    })
+                    mydes.innerHTML = '';
+                    mydes.appendChild(myfrag);
+                }, error: function(xhr, xopt, xthrow) {
+                    alertify.error(xthrow)
+                    e.target.readOnly = false
+                }
+            });
+        }
     }
 </script>
 
