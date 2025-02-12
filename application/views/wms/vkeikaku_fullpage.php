@@ -637,7 +637,7 @@
 </div>
 <!-- Modal -->
 <div class="modal fade" id="keikaku_rpt_wo_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5">Job History</h1>
@@ -649,7 +649,7 @@
                 <div class="col-md-12">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Job Number</label>
-                        <input type="text" class="form-control" id="keikaku_rpt_wo_no" maxlength="15" onkeypress="keikaku_rpt_wo_no_e_keypress(event)">
+                        <input type="text" class="form-control" id="keikaku_rpt_wo_no" maxlength="25" onkeypress="keikaku_rpt_wo_no_e_keypress(event)" title="Press Enter to search">
                     </div>
                 </div>
             </div>
@@ -663,9 +663,10 @@
                                     <th rowspan="2">Line</th>
                                     <th rowspan="2">Job Number</th>
                                     <th rowspan="2">Spec Side</th>
-                                    <th colspan="2">QTY</th>
+                                    <th colspan="3">QTY</th>
                                 </tr>
                                 <tr>
+                                    <th>Lot Size</th>
                                     <th>Plan</th>
                                     <th>Actual</th>
                                 </tr>
@@ -3713,6 +3714,9 @@
                         newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-center')
                         newcell.innerHTML = r['specs_side']
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(r['lot_size']).format(',')
                         newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-end')
                         newcell.innerHTML = numeral(r['plan_qty']).format(',')
