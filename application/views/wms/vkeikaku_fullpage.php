@@ -659,10 +659,14 @@
                         <table id="keikaku_rpt_wo_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;font-size:91%">
                             <thead class="table-light text-center">
                                 <tr>
-                                    <th>Production date</th>
-                                    <th>Line</th>
-                                    <th>Job Number</th>
-                                    <th>Plan Qty</th>
+                                    <th rowspan="2">Production date</th>
+                                    <th rowspan="2">Line</th>
+                                    <th rowspan="2">Job Number</th>
+                                    <th colspan="2">QTY</th>
+                                </tr>
+                                <tr>
+                                    <th>Plan</th>
+                                    <th>Actual</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -692,6 +696,9 @@
         $("#keikakuEditOutput").focus();
         keikaku_prodplan_sso.resetSelection(true);
         keikakuEditAlert.innerHTML = ''
+    });
+    $("#keikaku_rpt_wo_modal").on('shown.bs.modal', function(){
+        $("#keikaku_rpt_wo_no").focus();
     });
     $("#keikakuEditActualModal").on('hidden.bs.modal', function() {
         keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1-1, tempX2, tempY2-1);
@@ -3705,6 +3712,9 @@
                         newcell = newrow.insertCell(3)
                         newcell.classList.add('text-end')
                         newcell.innerHTML = numeral(r['plan_qty']).format(',')
+                        newcell = newrow.insertCell(4)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(r['ok_qty']).format(',')
                     })
                     mydes.innerHTML = '';
                     mydes.appendChild(myfrag);
