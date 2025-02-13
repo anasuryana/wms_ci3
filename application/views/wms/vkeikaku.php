@@ -2053,7 +2053,7 @@
                     for(let i=0; i < dataLength; i++) {
                         let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim()
                         let _processCode = keikaku_data_sso.getValueFromCoords(9, i, true).trim().substring(0,9)
-                        keikaku_data_sso.setValue('K'+(i+1), 0)
+                        keikaku_data_sso.setValue('K'+(i+1), 0, true)
                         for(let s=0;s<responseDataLength; s++) {
                             const _responseProcess = response.data[s].process_code.trim()
                             if(_itemCode.includes('ASP') || _itemCode.includes('KD')) {
@@ -2079,7 +2079,7 @@
                         for(let i=0; i < dataLength; i++) {
                             let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim()
                             let _processCode = keikaku_data_sso.getValueFromCoords(9, i, true).trim()
-                            keikaku_data_sso.setValue('K'+(i+1), 0)
+                            keikaku_data_sso.setValue('K'+(i+1), 0, true)
                             for(let s=0;s<responseDataLength; s++) {
                                 const _responseProcess = response.data[s].process_code.trim()
 
@@ -2095,7 +2095,7 @@
                         for(let i=0; i < dataLength; i++) {
                             let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim()
                             let _processCode = keikaku_data_sso.getValueFromCoords(9, i, true).trim().substring(0,9)
-                            keikaku_data_sso.setValue('K'+(i+1), 0)
+                            keikaku_data_sso.setValue('K'+(i+1), 0, true)
                             for(let s=0;s<responseDataLength; s++) {
                                 const _responseProcess = response.data[s].process_code.trim()
                                 if(_itemCode.includes('ASP') || _itemCode.includes('KD')) {
