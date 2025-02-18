@@ -3315,7 +3315,6 @@
                                 keikaku_downtime_sso.setValue('K'+(i+1), response.data[s].req_minutes, true)
                                 keikaku_downtime_sso.setValue('L'+(i+1), response.data[s].remark, true)
                             }
-                            break;
                         }
                     }
                 }
