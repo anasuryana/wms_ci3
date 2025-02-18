@@ -3030,7 +3030,7 @@
             ['5', '17', '', '', '', '', '', '', '', ''],
             ['6', '18', '', '', '', '', '', '', '', ''],
             ['7', '19', '', '', '', '', '', '', '', ''],
-            ['Sub Total', '', '=C1+C2+C3+C4+C5+C6+C7+C8+C9+C10+C11+C12+C13', '', '=E1+E2+E3+E4+E5+E6+E7+E8+E9+E10+E11+E12+E13', '', '=G1+G2+G3+G4+G5+G6+G7+G8+G9+G10+G11+G12+G13', '', '=I1+I2+I3+I4+I5+I6+I7+I8+I9+I10+I11+I12+I13', '','=K1+K2+K3+K4+K5+K6+K7+K8+K9+K10+K11+K12+K13','=L1+L2+L3+L4+L5+L6+L7+L8+L9+L10+L11+L12+L13','=M1+M2+M3+M4+M5+M6+M7+M8+M9+M10+M11+M12+M13'],
+            ['Sub Total', '', '=C1+C2+C3+C4+C5+C6+C7+C8+C9+C10+C11+C12+C13', '', '=E1+E2+E3+E4+E5+E6+E7+E8+E9+E10+E11+E12+E13', '', '=G1+G2+G3+G4+G5+G6+G7+G8+G9+G10+G11+G12+G13', '', '=I1+I2+I3+I4+I5+I6+I7+I8+I9+I10+I11+I12+I13', '','=K1+K2+K3+K4+K5+K6+K7+K8+K9+K10+K11+K12+K13',''],
             ['Total', '', '=C14+E14+G14+I14+K14+L14+M14', '', '', '', '', '', '', ''],
         ],
         columns : [
@@ -3095,16 +3095,9 @@
                 mask: '#,##.00',
             },
             {
-                title : 'Duration',
-                type : 'numeric',
-                width:160,
-                mask: '#,##.00',
-            },
-            {
-                title : 'Duration',
-                type : 'numeric',
-                width:160,
-                mask: '#,##.00',
+                title : 'Remark',
+                type : 'text',
+                width:150,
             },
         ],
         allowInsertColumn : false,
@@ -3141,22 +3134,15 @@
                 },
                 {
                     title : 'Maintenance',
-                    colspan : '1',
+                    colspan : '2',
                 },
-                {
-                    title : 'Not Production 15 minutes',
-                    colspan : '1',
-                },
-                {
-                    title : 'Not Production No Plan',
-                    colspan : '1',
-                },
+               
             ],
         ],
         mergeCells : {
             A14 : [2,1],
             A15 : [2,1],
-            C15 : [11,1],
+            C15 : [10,1],
         },
         updateTable: function(el, cell, x, y, source, value, id) {
             if(y===13 ) {
@@ -3232,25 +3218,7 @@
                     runningAt : inputSS[i][columnTime].trim(),
                     reqMinutes : inputSS[i][10],
                     downTimeCode : 1,
-                    remark : ''
-                })
-            }
-            // not production 15 min
-            if(inputSS[i][11].length > 0) {
-                dataDetail.push({
-                    runningAt : inputSS[i][columnTime].trim(),
-                    reqMinutes : inputSS[i][11],
-                    downTimeCode : 5,
-                    remark : ''
-                })
-            }
-            // not production no plan
-            if(inputSS[i][12].length > 0) {
-                dataDetail.push({
-                    runningAt : inputSS[i][columnTime].trim(),
-                    reqMinutes : inputSS[i][12],
-                    downTimeCode : 7,
-                    remark : ''
+                    remark : inputSS[i][11]
                 })
             }
         }
@@ -3379,7 +3347,6 @@
                     keikaku_downtime_sso.setValue('J'+(i+1), '', true)
                     keikaku_downtime_sso.setValue('K'+(i+1), '', true)
                     keikaku_downtime_sso.setValue('L'+(i+1), '', true)
-                    keikaku_downtime_sso.setValue('M'+(i+1), '', true)
                 }
 
                 for(let i=0; i < dataLength; i++) {
@@ -3403,10 +3370,7 @@
                                 keikaku_downtime_sso.setValue('J'+(i+1), response.data[s].remark, true)
                             } else if(response.data[s].downtime_code == 1) {
                                 keikaku_downtime_sso.setValue('K'+(i+1), response.data[s].req_minutes, true)
-                            } else if(response.data[s].downtime_code == 5) {
-                                keikaku_downtime_sso.setValue('L'+(i+1), response.data[s].req_minutes, true)
-                            } else if(response.data[s].downtime_code == 7) {
-                                keikaku_downtime_sso.setValue('M'+(i+1), response.data[s].req_minutes, true)
+                                keikaku_downtime_sso.setValue('L'+(i+1), response.data[s].remark, true)
                             }
                             break;
                         }

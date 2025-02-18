@@ -3038,16 +3038,9 @@
                 mask: '#,##.00',
             },
             {
-                title : 'Duration',
-                type : 'numeric',
-                width:160,
-                mask: '#,##.00',
-            },
-            {
-                title : 'Duration',
-                type : 'numeric',
-                width:160,
-                mask: '#,##.00',
+                title : 'Remark',
+                type : 'text',
+                width:150,
             },
         ],
         allowInsertColumn : false,
@@ -3084,22 +3077,15 @@
                 },
                 {
                     title : 'Maintenance',
-                    colspan : '1',
+                    colspan : '2',
                 },
-                {
-                    title : 'Not Production 15 minutes',
-                    colspan : '1',
-                },
-                {
-                    title : 'Not Production No Plan',
-                    colspan : '1',
-                },
+                
             ],
         ],
         mergeCells : {
             A14 : [2,1],
             A15 : [2,1],
-            C15 : [11,1],
+            C15 : [10,1],
         },
         updateTable: function(el, cell, x, y, source, value, id) {
             if(y===13 ) {
@@ -3175,25 +3161,7 @@
                     runningAt : inputSS[i][columnTime].trim(),
                     reqMinutes : inputSS[i][10],
                     downTimeCode : 1,
-                    remark : ''
-                })
-            }
-            // not production 15 min
-            if(inputSS[i][11].length > 0) {
-                dataDetail.push({
-                    runningAt : inputSS[i][columnTime].trim(),
-                    reqMinutes : inputSS[i][11],
-                    downTimeCode : 5,
-                    remark : ''
-                })
-            }
-            // not production no plan
-            if(inputSS[i][12].length > 0) {
-                dataDetail.push({
-                    runningAt : inputSS[i][columnTime].trim(),
-                    reqMinutes : inputSS[i][12],
-                    downTimeCode : 7,
-                    remark : ''
+                    remark : inputSS[i][11]
                 })
             }
         }
@@ -3322,7 +3290,6 @@
                     keikaku_downtime_sso.setValue('J'+(i+1), '', true)
                     keikaku_downtime_sso.setValue('K'+(i+1), '', true)
                     keikaku_downtime_sso.setValue('L'+(i+1), '', true)
-                    keikaku_downtime_sso.setValue('M'+(i+1), '', true)
                 }
 
                 for(let i=0; i < dataLength; i++) {
@@ -3346,10 +3313,7 @@
                                 keikaku_downtime_sso.setValue('J'+(i+1), response.data[s].remark, true)
                             } else if(response.data[s].downtime_code == 1) {
                                 keikaku_downtime_sso.setValue('K'+(i+1), response.data[s].req_minutes, true)
-                            } else if(response.data[s].downtime_code == 5) {
-                                keikaku_downtime_sso.setValue('L'+(i+1), response.data[s].req_minutes, true)
-                            } else if(response.data[s].downtime_code == 7) {
-                                keikaku_downtime_sso.setValue('M'+(i+1), response.data[s].req_minutes, true)
+                                keikaku_downtime_sso.setValue('L'+(i+1), response.data[s].remark, true)
                             }
                             break;
                         }
