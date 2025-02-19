@@ -1969,6 +1969,8 @@
                 keikaku_line_input.disabled = false
                 keikaku_user_first_active.value = response.currentActiveUser.MSTEMP_ID + ':' + response.currentActiveUser.MSTEMP_FNM
                 let theData = [];
+                let theIndexRed = [];
+
                 response.data.forEach((arrayItem, index) => {
                     theData.push([
                         '',
@@ -1985,13 +1987,30 @@
                         arrayItem['ok_qty'],
                         `=IF(L${index+1}=0,0,L${index+1}-E${index+1})`,
                     ])
+
+                    if(arrayItem['wo_full_code'].includes('?')) {
+                        theIndexRed.push(index+1)
+                    }
                 })
+
                 if(theData.length > 0) {
                     keikaku_data_sso.setData(theData)
                 }
-
+                const theIndexRedLength = theIndexRed.length
+                
                 if(response.dataStyle) {
                     keikaku_data_sso.setStyle(response.dataStyle)
+                }
+
+                for(let i=0;i<theIndexRedLength;i++) {
+                    keikaku_data_sso.setStyle('A'+theIndexRed[i], 'background-color', '#b22222')
+                    keikaku_data_sso.setStyle('B'+theIndexRed[i], 'background-color', '#b22222')
+                    keikaku_data_sso.setStyle('C'+theIndexRed[i], 'background-color', '#b22222')
+                    keikaku_data_sso.setStyle('D'+theIndexRed[i], 'background-color', '#b22222')
+                    keikaku_data_sso.setStyle('E'+theIndexRed[i], 'background-color', '#b22222')
+                    keikaku_data_sso.setStyle('F'+theIndexRed[i], 'background-color', '#b22222')
+                    keikaku_data_sso.setStyle('G'+theIndexRed[i], 'background-color', '#b22222')
+                    keikaku_data_sso.setStyle('H'+theIndexRed[i], 'background-color', '#b22222')
                 }
             }, error: function(xhr, xopt, xthrow) {
                 keikaku_line_input.disabled = false
@@ -3147,7 +3166,7 @@
                     title : 'Maintenance',
                     colspan : '2',
                 },
-               
+
             ],
         ],
         mergeCells : {
