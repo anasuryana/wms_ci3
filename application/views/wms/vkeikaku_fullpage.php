@@ -2296,7 +2296,7 @@
         }
         pThis.disabled = true
         keikakuEditDate.value = keikaku_date_input.value
-
+        const containerInfo = document.getElementById('keikaku-div-alert')
         $.ajax({
             type: "GET",
             url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/production-plan",
@@ -2579,6 +2579,17 @@
             }, error: function(xhr, xopt, xthrow) {
                 pThis.disabled = false
                 alertify.error(xthrow)
+
+                const respon = Object.keys(xhr.responseJSON)
+
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                containerInfo.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
             }
         });
     }
