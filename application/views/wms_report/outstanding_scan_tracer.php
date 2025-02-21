@@ -20,41 +20,107 @@
 <div style="padding: 5px">
 	<div class="container-fluid">
         <div class="row" id="itm_tracer_stack1">
-            <div class="col-md-4 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm">
-                    <label class="input-group-text">PSN</label>
-                    <input type="text" class="form-control" id="itm_tracer_doc" onkeypress="itm_tracer_doc_e_keypress(event)">
+                    <label class="input-group-text">Job</label>
+                    <input type="text" class="form-control" id="itm_tracer_doc" onkeypress="itm_tracer_doc_e_keypress(event)" maxlength="5">
                 </div>
             </div>
-            <div class="col-md-4 mb-1">
+            <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm">
-                    <label class="input-group-text">Qty</label>
+                    <label class="input-group-text">Assy Code</label>
+                    <input type="text" class="form-control" id="itm_tracer_assycode" onkeypress="itm_tracer_assycode_e_keypress(event)" maxlength="15">
+                </div>
+            </div>
+            <div class="col-md-3 mb-1">
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text">Closing Qty</label>
                     <input type="text" class="form-control" id="itm_tracer_qty" onkeypress="itm_tracer_qty_e_keypress(event)">
                 </div>
             </div>
-            <div class="col-md-4 mb-1 text-end">
+            <div class="col-md-3 mb-1">
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text">Line</label>
+                    <input type="text" class="form-control" id="itm_tracer_line" maxlength="2">
+                </div>
+            </div>
+        </div>
+        <div class="row" id="itm_tracer_stack2">
+            <div class="col-md-12 mb-1 text-center">
                 <button id="itm_tracer_btn_check" onclick="itm_tracer_btn_check_on_click(this)" class="btn btn-primary btn-sm">Check</button>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12 mb-1">
-                <div class="table-responsive" id="itm_tracer_table_container">
-                    <table id="itm_tracer_tbl" class="table table-bordered border-primary table-sm table-hover">
-                        <thead class="table-light text-center align-middle">
-                            <tr class="first">
-                                <th colspan="3">Item</th>
-                                <th rowspan="2">Qty</th>
-                                <th rowspan="2">UOM</th>
-                            </tr>
-                            <tr class="second">
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                <ul class="nav nav-tabs nav-pills mb-3">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-5" id="itm_tracer_asprova-tab" data-bs-toggle="tab" data-bs-target="#itm_tracer_tab_asprova" type="button" role="tab" aria-controls="home" aria-selected="true">Outstanding</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-5" id="itm_tracer_home-tab" data-bs-toggle="tab" data-bs-target="#itm_tracer_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true">Supplied</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-5" id="itm_tracer_closing-tab" data-bs-toggle="tab" data-bs-target="#itm_tracer_tab_closing" type="button" role="tab" aria-controls="home" aria-selected="true">Related Job Status</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="itm_tracer_myTabContent">
+                    <div class="tab-pane active show" id="itm_tracer_tab_asprova" role="tabpanel">
+                        <div class="container-fluid p-1">
+                            <div class="table-responsive" id="itm_tracer_table_container">
+                                <table id="itm_tracer_tbl" class="table table-bordered border-primary table-sm table-hover">
+                                    <thead class="table-light text-center align-middle">
+                                        <tr class="first">
+                                            <th >Item Code</th>
+                                            <th >Qty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="itm_tracer_tabRM" role="tabpanel">
+                        <div class="container-fluid p-1">
+                            <div class="table-responsive" id="itm_tracer_supplied_table_container">
+                                <table id="itm_tracer_supplied_tbl" class="table table-bordered border-primary table-sm table-hover">
+                                    <thead class="table-light text-center align-middle">
+                                        <tr class="first">
+                                            <th rowspan="2">Item</th>
+                                            <th rowspan="2">Unique Key</th>
+                                            <th colspan="2">Qty </th>
+                                            <th rowspan="2">PSN Number</th>
+                                        </tr>
+                                        <tr class="second">
+                                            <th>Before Calculation</th>
+                                            <th>After Calculation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="itm_tracer_tab_closing" role="tabpanel">
+                        <div class="container-fluid p-1">
+                            <div class="table-responsive" id="itm_tracer_closing_table_container">
+                                <table id="itm_tracer_closing_tbl" class="table table-bordered border-primary table-sm table-hover">
+                                    <thead class="table-light text-center align-middle">
+                                        <tr class="first">
+                                            <th>Job</th>
+                                            <th>Process</th>
+                                            <th>Assy Code</th>
+                                            <th>Bom Revision</th>
+                                            <th>Closing Qty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -114,13 +180,16 @@
 <script>
     function itm_tracer_btn_check_on_click(pThis) {
         const doc = itm_tracer_doc.value.trim()
-        if(doc.length<=5) {
+        if(doc.length<=3) {
             itm_tracer_doc.focus()
             return
         }
         const data = {
-            PSNDoc : doc,
-            qty : numeral(itm_tracer_qty.value).value()
+            doc : doc,
+            itemCode : itm_tracer_assycode.value.trim(),
+            qty : numeral(itm_tracer_qty.value).value(),
+            lineCode : itm_tracer_line.value,
+            isFromWeb : 1
         }
 
         pThis.disabled = true
@@ -128,7 +197,7 @@
         document.getElementById("itm_tracer_table_container").getElementsByTagName('tbody')[0].innerHTML = '<tr><td colspan="5">Please wait</td></tr>';
         $.ajax({
             type: "GET",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>item-tracer/outstanding-scan",
+            url: "<?php echo $_ENV['APP_INTERNAL3_API'] ?>production/supply-status",
             data: data,
             dataType: "json",
             success: function (response) {
@@ -145,26 +214,20 @@
                 response.data.forEach((arrayItem) => {
                     newrow = tableku2.insertRow(-1)
                     newcell = newrow.insertCell(0)
+                    newcell.classList.add('text-center')
                     newcell.style.cssText = 'cursor:pointer'
-                    newcell.innerText = arrayItem['Item_code']
+                    newcell.innerText = arrayItem['partCode']
                     newcell.onclick = function() {
                         if(['ADMIN', 'MSPV'].includes(wms_usergroupid)) {
                             $("#itm_tracer_adj_modal").modal('show')
-                            itm_tracer_item_code.value = arrayItem['Item_code']
-                            itm_tracer_item_name.value = arrayItem['SPTNO']
-                            itm_tracer_get_details({doc : doc, item_code : arrayItem['Item_code']})
+                            itm_tracer_item_code.value = arrayItem['partCode']
+                            itm_tracer_item_name.value = ''
+                            itm_tracer_get_details({doc : doc, item_code : arrayItem['partCode']})
                         }
                     }
                     newcell = newrow.insertCell(-1)
-                    newcell.innerText = arrayItem['SPTNO']
-                    newcell = newrow.insertCell(-1)
-                    newcell.innerText = arrayItem['ITMD1']
-                    newcell = newrow.insertCell(-1)
                     newcell.classList.add('text-end')
-                    newcell.innerText = numeral(arrayItem['qty']).format(',')
-                    newcell = newrow.insertCell(-1)
-                    newcell.innerText = arrayItem['UOM']
-                    newcell.classList.add('text-center')
+                    newcell.innerText = numeral(arrayItem['outstandingQty']).format(',')
                 })
 
                 if(response.data.length === 0) {
@@ -174,6 +237,68 @@
 
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
+
+                if(response.dataSupplied) {
+                    mydes = document.getElementById("itm_tracer_supplied_table_container");
+                    myfrag = document.createDocumentFragment();
+                    mtabel = document.getElementById("itm_tracer_supplied_tbl");
+                    cln = mtabel.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    tabell = myfrag.getElementById("itm_tracer_supplied_tbl");
+                    tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    tableku2.innerHTML='';
+
+                    response.dataSupplied.forEach((arrayItem) => {
+                        newrow = tableku2.insertRow(-1)
+                        newcell = newrow.insertCell(0)
+                        newcell.innerText = arrayItem['ITMCD']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['UNQ']
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-end')
+                        newcell.innerText = numeral(arrayItem['BAKQTY']).format(',')
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-end')
+                        newcell.innerText = numeral(arrayItem['QTY']).format(',')
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['PSNNO']
+                        newcell.classList.add('text-center')
+                    })
+
+                    mydes.innerHTML='';
+                    mydes.appendChild(myfrag);
+
+
+                    mydes = document.getElementById("itm_tracer_closing_table_container");
+                    myfrag = document.createDocumentFragment();
+                    mtabel = document.getElementById("itm_tracer_closing_tbl");
+                    cln = mtabel.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    tabell = myfrag.getElementById("itm_tracer_closing_tbl");
+                    tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    tableku2.innerHTML='';
+
+                    response.dataJob.forEach((arrayItem) => {
+                        newrow = tableku2.insertRow(-1)
+                        newcell = newrow.insertCell(0)
+                        newcell.innerText = arrayItem['CLS_JOBNO']
+                        newcell = newrow.insertCell(-1)
+                        newcell.innerText = arrayItem['CLS_PROCD']
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-end')
+                        newcell.innerText = arrayItem['CLS_MDLCD']
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-center')
+                        newcell.innerText = arrayItem['CLS_BOMRV']
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-end')
+                        newcell.innerText = numeral(arrayItem['CLSQTY']).format(',')
+                    })
+
+                    mydes.innerHTML='';
+                    mydes.appendChild(myfrag);
+
+                }
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
                 pThis.disabled = false
@@ -186,7 +311,7 @@
         document.getElementById("itm_tracer_adj_tbl").getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="8">Please wait</td></tr>`;
         $.ajax({
             type: "GET",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>item-tracer/outstanding-scan-detail",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>item-tracer/outstanding-scan-detail",
             data: data,
             dataType: "JSON",
             success: function (response) {
@@ -215,7 +340,7 @@
                     newcell = newrow.insertCell(-1)
                     newcell.classList.add('text-end')
                     newcell.innerText = numeral(arrayItem['SPLSCN_QTY']).format(',')
-                    newcell = newrow.insertCell(-1)                    
+                    newcell = newrow.insertCell(-1)
                     newcell.classList.add('text-center')
                     newcell.innerText = arrayItem['SPLSCN_PROCD']
                     newcell = newrow.insertCell(-1)
@@ -224,7 +349,7 @@
                     let _EleBTN = document.createElement('button')
                     _EleBTN.classList.add('btn','btn-sm', 'btn-primary')
                     _EleBTN.onclick = function() {
-                        
+
                         if(confirm('Are you sure ?')) {
                             data.procd = arrayItem['SPLSCN_PROCD']
                             data.lot_code = arrayItem['SPLSCN_LOTNO']
@@ -266,14 +391,19 @@
 
     $("#itm_tracer_table_container").css('height', $(window).height()
         -document.getElementById('itm_tracer_stack1').offsetHeight
-        -100);
+        -document.getElementById('itm_tracer_stack2').offsetHeight
+        -150);
+    $("#itm_tracer_supplied_table_container").css('height', $(window).height()
+        -document.getElementById('itm_tracer_stack1').offsetHeight
+        -document.getElementById('itm_tracer_stack2').offsetHeight
+        -150);
 
     function itm_tracer_insert_detail(data, triggerComponent) {
         triggerComponent.disabled = true
         triggerComponent.innerText = 'Please wait'
         $.ajax({
             type: "POST",
-            url: "<?=$_ENV['APP_INTERNAL_API']?>item-tracer/adjust-detail",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>item-tracer/adjust-detail",
             data: data,
             dataType: "json",
             success: function (response) {
