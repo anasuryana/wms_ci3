@@ -212,6 +212,10 @@
                                                             <i class="fa-solid fa-flag fa-stack-1x fa-inverse"></i>
                                                             </span> White</a>
                                                 </li>
+                                                <li>
+                                                    <h6 class="dropdown-header">Mode</h6>
+                                                </li>
+                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_mode()">User Mode</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -561,7 +565,7 @@
                 <div class="col-md-12">
                     <label for="platNomor" class="form-label">WO</label>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="keikakuEditWO" disabled>
+                        <input type="text" class="form-control" id="keikakuEditWO" readonly>
                         <button class="btn btn-outline-primary" type="button" title="Copy" onclick="keikakuCopyWO()"><i class="fas fa-copy"></i></button>
                     </div>
                 </div>
@@ -691,7 +695,9 @@
     var tempY1 = 0
     var tempY2 = 0
     function keikakuCopyWO() {
-        navigator.clipboard.writeText(document.getElementById('keikakuEditWO').value)
+        keikakuEditWO.focus()
+        keikakuEditWO.select()
+        document.execCommand("copy");
         alertify.message('copied')
     }
     $("#keikakuEditActualModal").on('shown.bs.modal', function(){
@@ -3724,6 +3730,10 @@
                 }
             });
         }
+    }
+
+    function keikaku_btn_mode() {
+        alertify.message('sorry, this feature is under development')
     }
 </script>
 
