@@ -1014,7 +1014,6 @@
             }
         },
         onblur : function (instance, cell, x, y, value) {
-            console.log('make sure')
             keikaku_calc_make_sure(instance)
         },
         onload : function (instance) {
@@ -1029,10 +1028,10 @@
     function keikaku_calc_make_sure(el) {
         try {
             for(let x=1;x<=36;x++) {
-                const value = keikaku_calculation_sso.getValueFromCoords(x, 7)
-                const cellNO_OT_value = keikaku_calculation_sso.getValueFromCoords(x,4);
-                const cellOT_value = keikaku_calculation_sso.getValueFromCoords(x,5);
-                const constValue = keikaku_calculation_sso.getValueFromCoords((x<13 ? 10 : 22),7);
+                const value = el.jspreadsheet.getValueFromCoords(x, 7)
+                const cellNO_OT_value = el.jspreadsheet.getValueFromCoords(x,4);
+                const cellOT_value = el.jspreadsheet.getValueFromCoords(x,5);
+                const constValue = el.jspreadsheet.getValueFromCoords((x<13 ? 10 : 22),7);
                 const retValue = keikaku_calc_function({value : value, valueConstStartOT : constValue, valueNO_OT : cellNO_OT_value, valueOT : cellOT_value  })
                 el.jspreadsheet.setValueFromCoords(x,8, retValue, true)
             }
