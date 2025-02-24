@@ -232,7 +232,7 @@
 
                 if(response.data.length === 0) {
                     newrow = tableku2.insertRow(-1)
-                    newrow.innerHTML = '<td colspan="5" class="table-success text-center">OK</td>'
+                    newrow.innerHTML = `<td colspan="5" class="table-success text-center">${response.status.message}</td>`
                 }
 
                 mydes.innerHTML='';
