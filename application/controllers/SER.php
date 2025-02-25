@@ -2126,9 +2126,9 @@ class SER extends CI_Controller
             $pdf->SetFont('Tahoma', 'B', 8 + 4);
             $pdf->Text($th_x + 10, $th_y + 10, 'LABEL STATUS');
 
-            $pdf->SetFont('Tahoma', 'B', 6);
+            $pdf->SetFont('Tahoma', 'B', 5);
             $pdf->SetXY($th_x + 43, $th_y + 3);
-            $pdf->MultiCell(13, 3, "FPI-06-03 REV-01", 0);
+            $pdf->MultiCell(13, 3, "FPIQ-16-03 REV-01", 0);
 
             $pdf->SetFont('Tahoma', 'B', 8);
             $pdf->SetXY($th_x + 3, $th_y + 15);
