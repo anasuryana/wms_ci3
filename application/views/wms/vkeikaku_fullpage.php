@@ -1961,14 +1961,14 @@
                 }
 
                 for(let i=0;i<theIndexRedLength;i++) {
-                    keikaku_data_sso.setStyle('A'+theIndexRed[i], 'background-color', '#b22222')
-                    keikaku_data_sso.setStyle('B'+theIndexRed[i], 'background-color', '#b22222')
-                    keikaku_data_sso.setStyle('C'+theIndexRed[i], 'background-color', '#b22222')
-                    keikaku_data_sso.setStyle('D'+theIndexRed[i], 'background-color', '#b22222')
-                    keikaku_data_sso.setStyle('E'+theIndexRed[i], 'background-color', '#b22222')
-                    keikaku_data_sso.setStyle('F'+theIndexRed[i], 'background-color', '#b22222')
-                    keikaku_data_sso.setStyle('G'+theIndexRed[i], 'background-color', '#b22222')
-                    keikaku_data_sso.setStyle('H'+theIndexRed[i], 'background-color', '#b22222')
+                    keikaku_data_sso.setStyle('A'+theIndexRed[i], 'background-color', '#fb5252')
+                    keikaku_data_sso.setStyle('B'+theIndexRed[i], 'background-color', '#fb5252')
+                    keikaku_data_sso.setStyle('C'+theIndexRed[i], 'background-color', '#fb5252')
+                    keikaku_data_sso.setStyle('D'+theIndexRed[i], 'background-color', '#fb5252')
+                    keikaku_data_sso.setStyle('E'+theIndexRed[i], 'background-color', '#fb5252')
+                    keikaku_data_sso.setStyle('F'+theIndexRed[i], 'background-color', '#fb5252')
+                    keikaku_data_sso.setStyle('G'+theIndexRed[i], 'background-color', '#fb5252')
+                    keikaku_data_sso.setStyle('H'+theIndexRed[i], 'background-color', '#fb5252')
                 }
             }, error: function(xhr, xopt, xthrow) {
 
