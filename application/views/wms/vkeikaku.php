@@ -71,10 +71,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 mb-1" id="keikaku-div-alert">
-
-            </div>
-            <div class="col-md-6 mb-1" id="keikaku-div-operation-alert">
+            <div class="col-md-12 mb-1" id="keikaku-div-alert">
 
             </div>
         </div>
@@ -85,19 +82,22 @@
                     <button class="nav-link rounded-5" id="keikaku_asprova-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_asprova" type="button" role="tab" aria-controls="home" aria-selected="true">Asprova</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active rounded-5" id="keikaku_home-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true">Data</button>
+                    <button class="nav-link active rounded-5" id="keikaku_home-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true" onclick="keikaku_data_sheet_on_click()">Data</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link rounded-5" id="keikaku_checksim-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_checksim" type="button" role="tab" aria-controls="home" aria-selected="true">Calculation</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link rounded-5" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-chart-gantt"></i> Production Plan</button>
+                    <button class="nav-link rounded-5" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true" onclick="keikaku_prodplan_sheet_on_click()"><i class="fas fa-chart-gantt"></i> Production Plan</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link rounded-5" id="keikaku_downtime-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_downtime" type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-down-long text-warning"></i> Down Time</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link rounded-5" id="keikaku_report-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_report" type="button" role="tab" aria-controls="home" aria-selected="true">Report-GRAPH</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <h4><span class="nav-link badge text-bg-info" id="keikaku_info_tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="true" disabled>...</span></h4>
                 </li>
             </ul>
                 <div class="tab-content" id="keikaku_myTabContent">
@@ -147,7 +147,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade show active p-1" id="keikaku_tabRM" role="tabpanel" aria-labelledby="home-tab">                        
+                    <div class="tab-pane fade show active p-1" id="keikaku_tabRM" role="tabpanel" aria-labelledby="home-tab">
                         <div class="row" id="keikaku_stack2">
                             <div class="col-md-6 mb-1">
                                 <div class="btn-group btn-group-sm">
@@ -2003,7 +2003,7 @@
                     keikaku_data_sso.setData(theData)
                 }
                 const theIndexRedLength = theIndexRed.length
-                
+
                 if(response.dataStyle) {
                     keikaku_data_sso.setStyle(response.dataStyle)
                 }
@@ -3785,5 +3785,13 @@
 
     vkeikakuOperationMode = 0
     vkeikakuActiveTab = '#keikaku_tabRM'
-    
+
+    function keikaku_data_sheet_on_click() {
+        vkeikakuActiveTab == '#keikaku_tabRM'
+    }
+
+    function keikaku_prodplan_sheet_on_click() {
+        vkeikakuActiveTab == '#keikaku_tab_prodplan'
+    }
+
 </script>

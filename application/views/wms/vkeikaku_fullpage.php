@@ -104,10 +104,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 mb-1" id="keikaku-div-alert">
-
-            </div>
-            <div class="col-md-6 mb-1" id="keikaku-div-operation-alert">
+            <div class="col-md-12 mb-1" id="keikaku-div-alert">
 
             </div>
         </div>
@@ -131,6 +128,9 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link rounded-5" id="keikaku_report-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_report" type="button" role="tab" aria-controls="home" aria-selected="true">Report-GRAPH</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <h4><span class="nav-link badge text-bg-info" id="keikaku_info_tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="true" disabled>...</span></h4>
                 </li>
             </ul>
                 <div class="tab-content" id="keikaku_myTabContent">
@@ -3732,6 +3732,14 @@
                 }
             });
         }
+    }
+
+    function keikaku_data_sheet_on_click() {
+        vkeikakuActiveTab == '#keikaku_tabRM'
+    }
+
+    function keikaku_prodplan_sheet_on_click() {
+        vkeikakuActiveTab == '#keikaku_tab_prodplan'
     }
 </script>
 

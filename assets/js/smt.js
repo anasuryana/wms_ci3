@@ -87,17 +87,17 @@ function doubleControlEvent() {
         timesCtrlClicked++
         if (timesCtrlClicked >= 2) {
             if (typeof keikaku_main_tab !== 'undefined') {
-                console.log('tab keikaku terbuka')
                 if (vkeikakuOperationMode) {
-                    vkeikakuActiveTab = vkeikakuActiveTab == '#keikaku_tabRM' ? '#keikaku_tab_prodplan' : '#keikaku_tabRM'
-
+                    if (vkeikakuActiveTab == '#keikaku_tabRM') {
+                        vkeikakuActiveTab = '#keikaku_tab_prodplan'
+                        vkeikakuSimulate(keikaku_data_sso.getData().filter((data) => data[2].length && data[7].length > 1), keikaku_calculation_sso.getData())
+                    } else {
+                        vkeikakuActiveTab = '#keikaku_tabRM'
+                    }
                     let firstTabEl = document.querySelector(`#keikaku_main_tab button[data-bs-target="${vkeikakuActiveTab}"]`)
                     let thetab = new bootstrap.Tab(firstTabEl)
                     thetab.show()
-                    vkeikakuSimulate(keikaku_data_sso.getData().filter((data) => data[2].length && data[7].length > 1), keikaku_calculation_sso.getData())
                 }
-            } else {
-                console.log('tab keikaku tertutup')
             }
         }
         setTimeout(() => (timesCtrlClicked = 0), 350)
@@ -108,18 +108,17 @@ let timesCtrlClicked = 0;
 document.addEventListener('keyup', doubleControlEvent, true)
 
 function keikaku_btn_mode(pThis) {
-    const div_alert = document.getElementById('keikaku-div-operation-alert')
     if (vkeikakuOperationMode === 1) {
         pThis.innerText = 'User Mode'
         vkeikakuOperationMode = 0
-        div_alert.innerHTML = ``
+        keikaku_info_tab.innerHTML = ``
     } else {
         pThis.innerText = 'Planner Mode'
         vkeikakuOperationMode = 1
 
-        div_alert.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
-                <i class="fas fa-chalkboard-user fa-bounce"></i> Planner Mode                    
-                </div>`
+        keikaku_info_tab.innerHTML = `
+                <i class="fas fa-chalkboard-user fa-fade"></i> Planner Mode                    
+                `
     }
 }
 
@@ -128,14 +127,17 @@ function vkeikakuSimulate(pData, pCalculation) {
     let asProdplan1 = [null, null, null, null, null, null];
     let asProdplan2 = [null, null, null, null, null, null];
     let asProdplan3 = [null, null, null, null, null, null];
+    let dataCalculation = [null, null, null, null, null, null];
     let ttlCalculationColumn = pCalculation[9].length
     for (let i = 1; i < ttlCalculationColumn; i++) {
         let _jam = String('0' + String(pCalculation[9][i] - 1)).slice(-2)
         asProdplan1.push(_jam)
         asProdplan2.push(pCalculation[8][i] * pCalculation[10][i])
         asProdplan3.push(pCalculation[8][i])
+        dataCalculation.push(pCalculation[7][i])
     }
     let asMatrix = []
+
     asMatrix.push(asProdplan1)
     asMatrix.push(asProdplan2)
     asMatrix.push(asProdplan3)
@@ -249,7 +251,7 @@ function vkeikakuSimulate(pData, pCalculation) {
         }
     }
 
-    console.log(asMatrix)
+    keikakuDisplayProdplan(asMatrix, [], dataCalculation, [])
 }
 
 
