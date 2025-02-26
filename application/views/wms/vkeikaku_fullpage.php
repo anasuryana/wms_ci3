@@ -109,7 +109,7 @@
         </div>
         <div class="row">
             <div class="col-md-12 mb-1">
-            <ul class="nav nav-tabs nav-pills ">
+            <ul class="nav nav-tabs nav-pills" id="keikaku_main_tab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link rounded-5" id="keikaku_asprova-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_asprova" type="button" role="tab" aria-controls="home" aria-selected="true">Asprova</button>
                 </li>
@@ -177,54 +177,52 @@
                         </div>
                     </div>
                     <div class="tab-pane fade show active" id="keikaku_tabRM" role="tabpanel" aria-labelledby="home-tab">
-                        <div class="container-fluid p-1">
-                            <div class="row" id="keikaku_stack2">
-                                <div class="col-md-6 mb-1">
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary" id="keikaku_btn_new" title="New" onclick="keikaku_btn_new_eC()"><i class="fas fa-file"></i></button>
-                                        <button class="btn btn-outline-primary" id="keikaku_btn_save" title="Save" onclick="keikaku_btn_save_eC(this)"><i class="fas fa-save"></i></button>
-                                    </div>
+                        <div class="row" id="keikaku_stack2">
+                            <div class="col-md-6 mb-1">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" id="keikaku_btn_new" title="New" onclick="keikaku_btn_new_eC()"><i class="fas fa-file"></i></button>
+                                    <button class="btn btn-outline-primary" id="keikaku_btn_save" title="Save" onclick="keikaku_btn_save_eC(this)"><i class="fas fa-save"></i></button>
                                 </div>
-                                <div class="col-md-6 mb-1 text-end">
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary" id="keikaku_btn_run_data" title="Run formula" onclick="keikaku_btn_run_data_eC(this)">Run</button>
-                                        <div class="btn-group btn-group-sm dropend" role="group">
-                                            <button title="Functions" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-bars"></i></button>
-                                            <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                <li>
-                                                    <h6 class="dropdown-header">Coloring Selected Cell</h6>
-                                                </li>
-                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_blue()"><span class="fa-stack" style="vertical-align: top;">
-                                                            <i class="fa-solid fa-circle fa-stack-2x" style="color: #cfcccc"></i>
-                                                            <i class="fa-solid fa-flag fa-stack-1x fa-inverse" style="color: #26f0fe"></i>
-                                                            </span> Blue</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_yellow()">
+                            </div>
+                            <div class="col-md-6 mb-1 text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" id="keikaku_btn_run_data" title="Run formula" onclick="keikaku_btn_run_data_eC(this)">Run</button>
+                                    <div class="btn-group btn-group-sm dropend" role="group">
+                                        <button title="Functions" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-bars"></i></button>
+                                        <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                            <li>
+                                                <h6 class="dropdown-header">Coloring Selected Cell</h6>
+                                            </li>
+                                            <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_blue()"><span class="fa-stack" style="vertical-align: top;">
+                                                        <i class="fa-solid fa-circle fa-stack-2x" style="color: #cfcccc"></i>
+                                                        <i class="fa-solid fa-flag fa-stack-1x fa-inverse" style="color: #26f0fe"></i>
+                                                        </span> Blue</a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_yellow()">
+                                            <span class="fa-stack" style="vertical-align: top;">
+                                                        <i class="fa-solid fa-circle fa-stack-2x" style="color: #cfcccc"></i>
+                                                        <i class="fa-solid fa-flag fa-stack-1x fa-inverse" style="color: #fafe0d"></i>
+                                                        </span>
+                                                Yellow
+                                            </a>
+                                            </li>
+                                            <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_white()">
                                                 <span class="fa-stack" style="vertical-align: top;">
-                                                            <i class="fa-solid fa-circle fa-stack-2x" style="color: #cfcccc"></i>
-                                                            <i class="fa-solid fa-flag fa-stack-1x fa-inverse" style="color: #fafe0d"></i>
-                                                            </span>
-                                                    Yellow
-                                                </a>
-                                                </li>
-                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_white()">
-                                                    <span class="fa-stack" style="vertical-align: top;">
-                                                            <i class="fa-solid fa-circle fa-stack-2x" style="color: #cfcccc"></i>
-                                                            <i class="fa-solid fa-flag fa-stack-1x fa-inverse"></i>
-                                                            </span> White</a>
-                                                </li>
-                                                <li>
-                                                    <h6 class="dropdown-header">Mode</h6>
-                                                </li>
-                                                <li><a class="dropdown-item" href="#" onclick="keikaku_btn_mode()">User Mode</a></li>
-                                            </ul>
-                                        </div>
+                                                        <i class="fa-solid fa-circle fa-stack-2x" style="color: #cfcccc"></i>
+                                                        <i class="fa-solid fa-flag fa-stack-1x fa-inverse"></i>
+                                                        </span> White</a>
+                                            </li>
+                                            <li>
+                                                <h6 class="dropdown-header">Mode</h6>
+                                            </li>
+                                            <li><a class="dropdown-item" href="#" onclick="keikaku_btn_mode()">User Mode</a></li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-12 mb-1 table-responsive">
-                                    <div id="keikaku_data_spreadsheet"></div>
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-1 table-responsive">
+                                <div id="keikaku_data_spreadsheet"></div>
                             </div>
                         </div>
                     </div>
@@ -3739,4 +3737,23 @@
 
 <script type="text/javascript" src="<?php echo base_url("assets/js/popper.min.js") ?>"></script>
 <script type="text/javascript" src="<?php echo base_url("assets/bootstrap/js/bootstrap.min.js") ?>"></script>
+<script type="text/javascript">
+    function doubleControlEvent() {
+        if (event.key === 'Control') {
+            timesCtrlClicked++
+            if (timesCtrlClicked >= 2) {
+                if(typeof keikaku_main_tab !== 'undefined') {
+                    console.log('tab keikaku terbuka')
+                } else {
+                    console.log('tab keikaku tertutup')
+                }
+            }
+            setTimeout(() => (timesCtrlClicked = 0), 200)
+        }  
+    }
+
+    let timesCtrlClicked = 0;
+    document.addEventListener('keyup', doubleControlEvent, true)
+</script>
 </body>
+</html>

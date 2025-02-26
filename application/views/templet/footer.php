@@ -251,6 +251,7 @@
                     if (typeof keikakuProdplanContainer != 'undefined') {
                         if (typeof resizeObserverO != 'undefined') {
                             resizeObserverO.disconnect()
+                            console.log('ke sini')
                         }
                     }
                 }
@@ -300,6 +301,24 @@
 </script>
 <script type="text/javascript" src="<?=base_url("assets/js/popper.min.js")?>"></script>
 <script type="text/javascript" src="<?=base_url("assets/bootstrap/js/bootstrap.min.js")?>"></script>
-</body>
 
+<script type="text/javascript">
+    function doubleControlEvent() {
+        if (event.key === 'Control') {
+            timesCtrlClicked++
+            if (timesCtrlClicked >= 2) {
+                if(typeof keikaku_main_tab !== 'undefined') {
+                    console.log('tab keikaku terbuka')
+                } else {
+                    console.log('tab keikaku tertutup')
+                }
+            }
+            setTimeout(() => (timesCtrlClicked = 0), 200)
+        }  
+    }
+
+    let timesCtrlClicked = 0;
+    document.addEventListener('keyup', doubleControlEvent, true)
+</script>
+</body>
 </html>
