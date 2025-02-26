@@ -1,3 +1,7 @@
+// vkeikaku
+let vkeikakuOperationMode = 0
+let vkeikakuActiveTab = ''
+
 function smtPWValidator(pvalue, data = { PWPOL_LENGTH: 0, PWPOL_ISCOMPLEX: 0 }) {
     const minimumLengthPassword = data.PWPOL_LENGTH
     let numberList = [...Array(10).keys()]
