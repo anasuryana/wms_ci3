@@ -71,7 +71,10 @@
             </div>
         </div>
         <div class="row">
-            <div class="col mb-1" id="keikaku-div-alert">
+            <div class="col-md-6 mb-1" id="keikaku-div-alert">
+
+            </div>
+            <div class="col-md-6 mb-1" id="keikaku-div-operation-alert">
 
             </div>
         </div>
@@ -144,7 +147,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade show active" id="keikaku_tabRM" role="tabpanel" aria-labelledby="home-tab">                        
+                    <div class="tab-pane fade show active p-1" id="keikaku_tabRM" role="tabpanel" aria-labelledby="home-tab">                        
                         <div class="row" id="keikaku_stack2">
                             <div class="col-md-6 mb-1">
                                 <div class="btn-group btn-group-sm">
@@ -3780,16 +3783,7 @@
         }
     }
 
-    function keikaku_btn_mode(pThis) {
-        if(vkeikakuOperationMode === 1) {
-            pThis.innerText = 'User Mode'
-            vkeikakuOperationMode = 0
-        } else {
-            pThis.innerText = 'Planner Mode'
-            vkeikakuOperationMode = 1
-        }
-    }
-
     vkeikakuOperationMode = 0
-    vkeikakuActiveTab = ''
+    vkeikakuActiveTab = '#keikaku_tabRM'
+    
 </script>
