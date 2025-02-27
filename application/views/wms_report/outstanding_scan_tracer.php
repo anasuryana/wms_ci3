@@ -41,7 +41,7 @@
             <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm">
                     <label class="input-group-text">Line</label>
-                    <input type="text" class="form-control" id="itm_tracer_line" maxlength="2">
+                    <input type="text" class="form-control" id="itm_tracer_line" maxlength="5">
                 </div>
             </div>
         </div>
