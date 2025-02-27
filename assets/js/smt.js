@@ -281,7 +281,7 @@ function _plotTime(data, parX, parY, parProductionHours) {
 function _sumVertical(data, parX, parY) {
     let _summarizedVertical = 0;
     for (let __r = parY; __r > 2; __r--) {
-        _summarizedVertical += data[__r][parX];
+        _summarizedVertical += numeral(data[__r][parX]).value();
     }
     return _summarizedVertical.toFixed(5)
 }
