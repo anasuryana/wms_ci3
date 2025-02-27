@@ -3792,6 +3792,9 @@
 
     function keikaku_prodplan_sheet_on_click() {
         vkeikakuActiveTab == '#keikaku_tab_prodplan'
+        if(vkeikakuOperationMode) {
+            vkeikakuSimulate(keikaku_data_sso.getData().filter((data) => data[2].length && data[7].length > 1), keikaku_calculation_sso.getData())
+        }
     }
 
 </script>

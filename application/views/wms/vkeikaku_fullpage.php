@@ -115,13 +115,13 @@
                     <button class="nav-link rounded-5" id="keikaku_asprova-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_asprova" type="button" role="tab" aria-controls="home" aria-selected="true">Asprova</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active rounded-5" id="keikaku_home-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true">Data</button>
+                    <button class="nav-link active rounded-5" id="keikaku_home-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tabRM" type="button" role="tab" aria-controls="home" aria-selected="true" onclick="keikaku_data_sheet_on_click()">Data</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link rounded-5" id="keikaku_checksim-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_checksim" type="button" role="tab" aria-controls="home" aria-selected="true">Calculation</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link rounded-5" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-chart-gantt"></i> Production Plan</button>
+                    <button class="nav-link rounded-5" id="keikaku_prodplan-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_prodplan" type="button" role="tab" aria-controls="home" aria-selected="true" onclick="keikaku_prodplan_sheet_on_click()"><i class="fas fa-chart-gantt"></i> Production Plan</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link rounded-5" id="keikaku_downtime-tab" data-bs-toggle="tab" data-bs-target="#keikaku_tab_downtime" type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-down-long text-warning"></i> Down Time</button>
@@ -3740,6 +3740,9 @@
 
     function keikaku_prodplan_sheet_on_click() {
         vkeikakuActiveTab == '#keikaku_tab_prodplan'
+        if(vkeikakuOperationMode) {
+            vkeikakuSimulate(keikaku_data_sso.getData().filter((data) => data[2].length && data[7].length > 1), keikaku_calculation_sso.getData())
+        }
     }
 </script>
 
