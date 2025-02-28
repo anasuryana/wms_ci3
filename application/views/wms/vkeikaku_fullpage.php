@@ -1635,12 +1635,19 @@
             }
         }
 
+        const dataKalkulasi = keikaku_prepare_save_calculation({detailOnly : false})
+
         const dataInput = {
             line_code : keikaku_line_input.value,
             production_date : keikaku_date_input.value,
             user_id: uidnya,
             detail : dataDetail,
-            style : theStyle
+            style : theStyle,
+            detail_calc : dataKalkulasi.detail,
+            isOverTimeMorning : dataKalkulasi.isOverTimeMorning,
+            isOverTimeNight : dataKalkulasi.isOverTimeNight,
+            totalWorkingTimeMorning : dataKalkulasi.totalWorkingTimeMorning,
+            totalWorkingTimeNight : dataKalkulasi.totalWorkingTimeNight
         }
 
         if(confirm('Are you sure want to save ?')) {
@@ -1675,13 +1682,7 @@
         }
     }
 
-    function keikaku_btn_save_calculation_eClick(pThis) {
-        if(keikaku_line_input.value === '-') {
-            alertify.warning(`Line is required`)
-            keikaku_line_input.focus()
-            return
-        }
-
+    function keikaku_prepare_save_calculation(pOptions) {
         const dataDetail = []
         let inputSS = keikaku_calculation_sso.getData()
         const inputSSCount = inputSS.length
@@ -1761,6 +1762,18 @@
             totalWorkingTimeMorning : totalWorkingTimeMorning,
             totalWorkingTimeNight : totalWorkingTimeNight
         }
+
+        return pOptions.detailOnly ? dataDetail : dataInput
+    }
+
+    function keikaku_btn_save_calculation_eClick(pThis) {
+        if(keikaku_line_input.value === '-') {
+            alertify.warning(`Line is required`)
+            keikaku_line_input.focus()
+            return
+        }
+
+        const dataInput = keikaku_prepare_save_calculation({detailOnly : false})
 
         if(confirm('Are you sure want to save ?')) {
             const div_alert = document.getElementById('keikaku-div-alert')
