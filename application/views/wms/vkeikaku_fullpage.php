@@ -190,7 +190,6 @@
                             </div>
                             <div class="col-md-6 mb-1 text-end">
                                 <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-primary" id="keikaku_btn_run_data" title="Run formula" onclick="keikaku_btn_run_data_eC(this)">Run</button>
                                     <div class="btn-group btn-group-sm dropend" role="group">
                                         <button title="Functions" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-bars"></i></button>
                                         <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
@@ -821,18 +820,18 @@
                 const _job = el.jspreadsheet.getValueFromCoords(2, y, true).trim()
                 const _assy_code = el.jspreadsheet.getValueFromCoords(7, y, true).trim()
                 if(_ct === 0 && _job.length > 0 && _assy_code.length > 0 ) {
-                    cell.style.cssText = "background-color:#8aedff"
+                    cell.style.cssText = "background-color: #8aedff"
                 } else {
-                    cell.style.cssText = "background-color:#fafafa"
+                    cell.style.cssText = "background-color: #fafafa"
                 }
             }
 
             if(x === 12) {
                 const _diff = numeral(value).value() ?? 0
                 if(_diff<0) {
-                    cell.style.cssText = "color:#ff0000"
+                    cell.style.cssText = "color: #ff0000"
                 } else {
-                    cell.style.cssText = "color:#d3d3d3"
+                    cell.style.cssText = "color: #d3d3d3"
                 }
             }
         },
@@ -841,6 +840,11 @@
             tempX2 = x2
             tempY1 = y1
             tempY2 = y2
+        },
+        onpaste: function(data, data2) {
+            if(data2[0].length>4) {
+                keikaku_btn_run_data_eC()
+            }
         }
     });
     var keikaku_draft_data_sso = jspreadsheet(keikaku_draft_data_spreadsheet, {
@@ -1527,7 +1531,7 @@
             return
         }
 
-        keikaku_btn_run_data_eC(keikaku_btn_run_data)
+        keikaku_btn_run_data_eC()
 
         const dataDetail = []
         let JobUnique = []
@@ -1985,12 +1989,7 @@
         keikakuGetDownTime()
     }
 
-    function keikaku_btn_run_data_eC(pThis) {
-        if(keikaku_line_input.value === '-') {
-            alertify.warning(`Line is required`)
-            keikaku_line_input.focus()
-            return
-        }
+    function keikaku_btn_run_data_eC() {
 
         const dataDetail = []
         let JobUnique = []
@@ -2018,14 +2017,14 @@
             detail : dataDetail,
             production_date : keikaku_date_input.value
         }
-        pThis.disabled = true
+        
         $.ajax({
+            async: false,
             type: "POST",
             url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>process-master/search",
             data: JSON.stringify(dataInput),
             dataType: "JSON",
             success: function (response) {
-                pThis.disabled = false
                 let dataLength = keikaku_data_sso.getData().length
                 let responseDataLength = response.data.length
                 if(keikakuIsHW()) {
@@ -2099,7 +2098,6 @@
                 }
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
-                pThis.disabled = false
 
                 const respon = Object.keys(xhr.responseJSON)
 
