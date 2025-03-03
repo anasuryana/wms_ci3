@@ -914,7 +914,7 @@ class MSTITM extends CI_Controller
         $i = $this->input->post('i');
         $item_code = $this->input->post('item_code');
         $category = $this->input->post('category');
-        $ret = $this->MSTITM_mod->updatebyId(['MITM_NCAT' => $category], $item_code);
+        $ret = $this->MSTITM_mod->updatebyId(['MITM_NCAT' => trim($category)], $item_code);
         $myar = [];
         $myar[] = $ret ? ['cd' => 1, 'msg' => 'OK', 'reff' => $i * 1] : ['cd' => 0, 'msg' => 'not ok', 'reff' => $i * 1];
         die(json_encode(['status' => $myar]));
