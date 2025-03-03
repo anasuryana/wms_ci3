@@ -709,7 +709,7 @@
                 <div class="col-md-12">
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Template Name</label>
-                        <select class="form-select" id="keikaku_template_name">
+                        <select class="form-select" id="keikaku_template_name" onchange="keikaku_template_name_on_change()">
                         </select>
                         <button class="btn btn-outline-primary" id="keikaku_btn_new_template" title="Create new" onclick="keikaku_btn_new_template_eclick()">Add new</button>
                         <button class="btn btn-outline-primary" id="keikaku_btn_activate_template" title="Activate template" onclick="keikaku_btn_activate_template_eclick()">Set as Default</button>
@@ -4077,5 +4077,95 @@
             }
         });
     }
+
+    function keikaku_get_template_name() {
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/working-time-name",
+            dataType: "json",
+            success: function (response) {
+                keikaku_template_name.innerHTML = ``
+                let inputs = '';
+                response.data.forEach((arrayItem) => {
+                    inputs += `<option value="${arrayItem['name']}">${arrayItem['name']} ${arrayItem['status'] == '1' ? '(Active)' : ''}</option>`
+                })
+                keikaku_template_name.innerHTML = inputs
+                keikaku_get_template(keikaku_template_name.value)
+            }
+        });
+    }
+
+    keikaku_get_template_name()
+
+    function keikaku_get_template(name) {
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/working-time",
+            data : { name : name },
+            dataType: "json",
+            success: function (response) {
+                let worktype1 = ['NON OT'];
+                let worktype2 = ['OT1'];
+                let worktype3 = ['MENT NON OT'];
+                let worktype4 = ['MENT OT'];
+                let worktype5 = ['MENT NON OT'];
+                let worktype6 = ['MENT OT'];
+
+                let worktype1nf = ['NON OT'];
+                let worktype2nf = ['OT1'];
+                let worktype3nf = ['MENT NON OT'];
+                let worktype4nf = ['MENT OT'];
+                let worktype5nf = ['MENT NON OT'];
+                let worktype6nf = ['MENT OT'];
+                
+                if(response.data.length > 0) {
+                    response.data.forEach((arrayItem) => {
+                        if(arrayItem['category'] == 'f') {
+                            worktype1.push(Number.parseFloat(arrayItem['worktype1']).toFixed(2))
+                            worktype2.push(Number.parseFloat(arrayItem['worktype2']).toFixed(2))
+                            worktype3.push(Number.parseFloat(arrayItem['worktype3']).toFixed(2))
+                            worktype4.push(Number.parseFloat(arrayItem['worktype4']).toFixed(2))
+                            worktype5.push(Number.parseFloat(arrayItem['worktype5']).toFixed(2))
+                            worktype6.push(Number.parseFloat(arrayItem['worktype6']).toFixed(2))
+                        }
+                        if(arrayItem['category'] == 'nf') {
+                            worktype1nf.push(Number.parseFloat(arrayItem['worktype1']).toFixed(2))
+                            worktype2nf.push(Number.parseFloat(arrayItem['worktype2']).toFixed(2))
+                            worktype3nf.push(Number.parseFloat(arrayItem['worktype3']).toFixed(2))
+                            worktype4nf.push(Number.parseFloat(arrayItem['worktype4']).toFixed(2))
+                            worktype5nf.push(Number.parseFloat(arrayItem['worktype5']).toFixed(2))
+                            worktype6nf.push(Number.parseFloat(arrayItem['worktype6']).toFixed(2))
+                        }
+                    })
+                } else {
+
+                }
+
+                keikaku_calculation_friday_temp_sso.setData([
+                        worktype1,
+                        worktype2,
+                        worktype3,
+                        worktype4,
+                        worktype5,
+                        worktype6,
+                        ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i), ...Array.from({length: 12}, (_, i) => i + 8)],                        
+                    ])
+                keikaku_calculation_non_friday_temp_sso.setData([
+                        worktype1nf,
+                        worktype2nf,
+                        worktype3nf,
+                        worktype4nf,
+                        worktype5nf,
+                        worktype6nf,
+                        ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i), ...Array.from({length: 12}, (_, i) => i + 8)],                        
+                    ])
+            }
+        });
+    }
+
+    function keikaku_template_name_on_change() {
+        keikaku_get_template(keikaku_template_name.value)
+    }
+
 
 </script>
