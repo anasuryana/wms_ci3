@@ -237,6 +237,11 @@
                                     <button class="btn btn-outline-primary" id="keikaku_btn_save_calculation" onclick="keikaku_btn_save_calculation_eClick(this)"><i class="fas fa-save"></i></button>
                                 </div>
                             </div>
+                            <div class="col-md-6 text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" id="keikaku_btn_trigger_template" title="Template" onclick="keikaku_btn_trigger_template_eClick()">Template</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12 mb-1 table-responsive">
@@ -690,6 +695,52 @@
     </div>
   </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="keikaku_template_time_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Working Time Template</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">Template Name</label>
+                        <select class="form-select" id="keikaku_template_name">
+                        </select>
+                        <button class="btn btn-outline-primary" id="keikaku_btn_new_template" title="Create new" onclick="keikaku_btn_new_template_eclick()">Add new</button>
+                        <button class="btn btn-outline-primary" id="keikaku_btn_activate_template" title="Activate template" onclick="keikaku_btn_activate_template_eclick()">Set as Default</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <h3><span class="badge text-bg-info">Friday</span></h3>
+                    <div id="keikaku_calculation_friday_temp_spreadsheet"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <h3><span class="badge text-bg-info">Non Friday</span></h3>
+                    <div id="keikaku_calculation_non_friday_temp_spreadsheet"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-1" id="keikaku-div-template-alert">
+
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="keikaku_template_btn_save" onclick="keikaku_template_btn_save_eclick(this)">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
     var tempX1 = 0
     var tempX2 = 0
@@ -1033,6 +1084,106 @@
         tableOverflow:true,
         freezeColumns: 1,
         minDimensions: [37,10],
+        tableWidth: '1000px',
+    });
+
+    var keikaku_calculation_friday_temp_sso = jspreadsheet(keikaku_calculation_friday_temp_spreadsheet, {
+        columns : [
+            {
+                readOnly : true,
+                type : 'text',
+                width:120,
+                align : 'left',
+            }, ...Array.from({length: 36}, (_, i) => Object.create({
+                    type : 'numeric',
+                    // mask: '#,##.00',
+                    }))
+        ],
+        allowInsertColumn : false,
+        allowDeleteColumn : false,
+        allowRenameColumn : false,
+        allowDeleteRow : false,
+        rowDrag:false,
+        data: [
+            ['NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['OT1', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i), ...Array.from({length: 16}, (_, i) => i + 8)],
+        ],
+        copyCompatibility:true,
+        columnSorting:false,
+        allowInsertRow : false,
+        updateTable: function(el, cell, x, y, source, value, id) {
+            if (Array.from({length: 36}, (_, i) => i + 1).includes(x) && [6,8,9].includes(y)) {
+                cell.classList.add('readonly');
+                cell.style.cssText = "font-weight: bold; text-align:center"
+            }
+            if([1,2,3,4,5,6,7,8,9,25,26,27,28,29,30,31,32,33].includes(x) && [0,1,2,3,4,5].includes(y)) {
+                cell.style.cssText = "background-color:#daeef3"
+            }
+            if([10,11,12,22,23,24,34,35,36].includes(x) && [0,1,2,3,4,5].includes(y)) {
+                cell.style.cssText = "background-color:#e4dfec"
+            }
+            if([13,14,15,16,17,18,19,20,21].includes(x) && [0,1,2,3,4,5].includes(y)) {
+                cell.style.cssText = "background-color:#ebf1de"
+            }
+        },        
+        tableOverflow:true,
+        freezeColumns: 1,
+        minDimensions: [37,6],
+        tableWidth: '1000px',
+    });
+
+    var keikaku_calculation_non_friday_temp_sso = jspreadsheet(keikaku_calculation_non_friday_temp_spreadsheet, {
+        columns : [
+            {
+                readOnly : true,
+                type : 'text',
+                width:120,
+                align : 'left',
+            }, ...Array.from({length: 36}, (_, i) => Object.create({
+                    type : 'numeric',
+                    // mask: '#,##.00',
+                    }))
+        ],
+        allowInsertColumn : false,
+        allowDeleteColumn : false,
+        allowRenameColumn : false,
+        allowDeleteRow : false,
+        rowDrag:false,
+        data: [
+            ['NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['OT1', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT NON OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['MENT OT', ...Array.from({length: 36}, (_, i) => null)],
+            ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i), ...Array.from({length: 16}, (_, i) => i + 8)],
+        ],
+        copyCompatibility:true,
+        columnSorting:false,
+        allowInsertRow : false,
+        updateTable: function(el, cell, x, y, source, value, id) {
+            if (Array.from({length: 36}, (_, i) => i + 1).includes(x) && [6,8,9].includes(y)) {
+                cell.classList.add('readonly');
+                cell.style.cssText = "font-weight: bold; text-align:center"
+            }
+            if([1,2,3,4,5,6,7,8,9,25,26,27,28,29,30,31,32,33].includes(x) && [0,1,2,3,4,5].includes(y)) {
+                cell.style.cssText = "background-color:#daeef3"
+            }
+            if([10,11,12,22,23,24,34,35,36].includes(x) && [0,1,2,3,4,5].includes(y)) {
+                cell.style.cssText = "background-color:#e4dfec"
+            }
+            if([13,14,15,16,17,18,19,20,21].includes(x) && [0,1,2,3,4,5].includes(y)) {
+                cell.style.cssText = "background-color:#ebf1de"
+            }
+        },        
+        tableOverflow:true,
+        freezeColumns: 1,
+        minDimensions: [37,6],
         tableWidth: '1000px',
     });
 
@@ -3754,6 +3905,123 @@
         if(vkeikakuOperationMode) {
             vkeikakuSimulate(keikaku_data_sso.getData().filter((data) => data[2].length && data[7].length > 1), keikaku_calculation_sso.getData())
         }
+    }
+
+    function keikaku_btn_trigger_template_eClick() {
+        $("#keikaku_template_time_modal").modal('show')
+    }
+
+    function keikaku_btn_new_template_eclick() {
+        let item = prompt("Please enter template name", "Ramadan/Normal");
+
+        let currentOption = keikaku_template_name.innerHTML
+        if (item != null) {
+            currentOption += `<option value="${item}">${item}</option>`
+            keikaku_template_name.innerHTML = currentOption
+        }
+    }
+
+    function keikaku_template_btn_save_eclick(pThis) {
+        const dataDetail = []
+        let inputSS = keikaku_calculation_friday_temp_sso.getData()
+        let inputSSCount = inputSS.length
+        const templateName = keikaku_template_name.value.trim()
+        if(templateName.length <=0) {
+            alertify.warning('Template name is required')
+            keikaku_template_name.focus()
+            return 
+        }
+
+        for(let c=1; c<37; c++) {
+            let _theShift = c<13 ? 'M' : 'N'
+            let _theDate = keikaku_date_input.value
+
+            if(_theShift === 'N' && c>17) {
+                let oMoment = moment(_theDate)
+                _theDate = oMoment.add(1, 'days').format('YYYY-MM-DD')
+            }
+
+            if(c>24) {
+                _theShift = 'M'
+            }
+
+            let _theTime = c === 17 ? '23' : numeral(inputSS[6][c]).value()-1
+            dataDetail.push({
+                'calculation_at' : _theDate + ' ' + _theTime + ':00:00',
+                'worktype1' : numeral(inputSS[0][c]).value(),
+                'worktype2' : numeral(inputSS[1][c]).value(),
+                'worktype3' : numeral(inputSS[2][c]).value(),
+                'worktype4' : numeral(inputSS[3][c]).value(),
+                'worktype5' : numeral(inputSS[4][c]).value(),
+                'worktype6' : numeral(inputSS[5][c]).value(),
+                'category' : 'f',
+            })
+        }
+
+        inputSS = keikaku_calculation_non_friday_temp_sso.getData()
+        inputSSCount = inputSS.length
+        for(let c=1; c<37; c++) {
+            let _theShift = c<13 ? 'M' : 'N'
+            let _theDate = keikaku_date_input.value
+
+            if(_theShift === 'N' && c>17) {
+                let oMoment = moment(_theDate)
+                _theDate = oMoment.add(1, 'days').format('YYYY-MM-DD')
+            }
+
+            if(c>24) {
+                _theShift = 'M'
+            }
+
+            let _theTime = c === 17 ? '23' : numeral(inputSS[6][c]).value()-1
+            dataDetail.push({
+                'calculation_at' : _theDate + ' ' + _theTime + ':00:00',
+                'worktype1' : numeral(inputSS[0][c]).value(),
+                'worktype2' : numeral(inputSS[1][c]).value(),
+                'worktype3' : numeral(inputSS[2][c]).value(),
+                'worktype4' : numeral(inputSS[3][c]).value(),
+                'worktype5' : numeral(inputSS[4][c]).value(),
+                'worktype6' : numeral(inputSS[5][c]).value(),
+                'category' : 'nf',
+            })
+        }
+
+        const dataInput = {
+            line_code : 'all',
+            name : keikaku_template_name.value,
+            user_id: uidnya,
+            detail : dataDetail,            
+        }        
+
+        if(!confirm("Are you sure ?")) {
+            return
+        }
+        pThis.disabled = true
+        const div_alert = document.getElementById('keikaku-div-template-alert')
+        $.ajax({
+            type: "POST",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/working-time",
+            data: JSON.stringify(dataInput),
+            dataType: "json",
+            success: function (response) {
+                pThis.disabled = false
+                alertify.success(response.message)
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                pThis.disabled = false
+
+                const respon = Object.keys(xhr.responseJSON)
+
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }
+        });
     }
 </script>
 
