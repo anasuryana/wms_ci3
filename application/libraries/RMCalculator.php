@@ -24,6 +24,7 @@ class RMCalculator
         $this->CI->load->model('TECPRTSUB_mod');
         $this->CI->load->model('RESIM_mod');
         $this->CI->load->model('WOH_mod');
+        $this->CI->load->model('ENGBOMSTX_mod');
         date_default_timezone_set('Asia/Jakarta');
     }
 
@@ -397,8 +398,9 @@ class RMCalculator
             $rsMSPP = $this->CI->MSPP_mod->select_byvar_for_calc($strmdlcd, $pjob);
             $xrssub = $this->CI->MSPP_mod->select_all_byvar_group(["MSPP_ACTIVE" => "Y", "MSPP_MDLCD !=" => $strmdlcd]);
             $rsSpecial = $this->CI->MITMSA_mod->select_where(['RTRIM(MITMSA_ITMCD) MITMSA_ITMCD', 'RTRIM(MITMSA_ITMCDS) MITMSA_ITMCDS'], ['MITMSA_MDLCD' => $strmdlcd, 'MITMSA_DELDT' => null]);
+            $rsENG_BOMSTX = $this->CI->ENGBOMSTX_mod->selectColumnsWhere(['RTRIM(MAIN_PART_CODE) MITMSA_ITMCD', 'RTRIM(SUB) MITMSA_ITMCDS'], ['MODEL_CODE' => $strmdlcd]);
             $rsTECSUB = $this->CI->TECPRTSUB_mod->select_where(['RTRIM(PRTCD) MITMSA_ITMCD', 'RTRIM(SUBCD) MITMSA_ITMCDS'], ['ITMCD' => $strmdlcd]);
-            $rsSpecial = array_merge($rsSpecial, $rsTECSUB);
+            $rsSpecial = array_merge($rsSpecial, $rsTECSUB, $rsENG_BOMSTX);
             $rspsnjob_req = $this->CI->SPL_mod->select_psnjob_req($strdocno, $pjob);
             $rsWOM = $this->CI->PWOP_mod->select_mainsub($pjob);
             $rsSPLREFF = $this->CI->SPLREFF_mod->select_mainsub($apsn);
