@@ -712,7 +712,7 @@
                         <select class="form-select" id="keikaku_template_name" onchange="keikaku_template_name_on_change()">
                         </select>
                         <button class="btn btn-outline-primary" id="keikaku_btn_new_template" title="Create new" onclick="keikaku_btn_new_template_eclick()">Add new</button>
-                        <button class="btn btn-outline-primary" id="keikaku_btn_activate_template" title="Activate template" onclick="keikaku_btn_activate_template_eclick()">Set as Default</button>
+                        <button class="btn btn-outline-primary" id="keikaku_btn_activate_template" title="Activate template" onclick="keikaku_btn_activate_template_eclick(this)">Set as Default</button>
                     </div>
                 </div>
             </div>
@@ -4111,6 +4111,38 @@
 
     function keikaku_template_name_on_change() {
         keikaku_get_template(keikaku_template_name.value)
+    }
+
+    function keikaku_btn_activate_template_eclick(pThis) {
+        if(!confirm("Are you sure ?")) {
+            return
+        }
+        pThis.disabled = true
+        const div_alert = document.getElementById('keikaku-div-template-alert')
+        $.ajax({
+            type: "PUT",
+            url: `<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/working-time/${btoa(keikaku_template_name.value)}`,
+            dataType: "json",
+            success: function (response) {
+                pThis.disabled = false
+                alertify.success(response.message)
+                keikaku_get_template_name()                                 
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                pThis.disabled = false
+
+                const respon = Object.keys(xhr.responseJSON)
+
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }
+        });
     }
 </script>
 
