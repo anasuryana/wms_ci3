@@ -119,7 +119,8 @@
             <div class="col-md-6 mb-2">
                 <div class="input-group input-group-sm">
                     <label class="input-group-text">Category</label>
-                    <input type="text" class="form-control" id="itm_txt_category" >
+                    <select class="form-select" id="itm_txt_category" >
+                    </select>
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="fas fa-pen-to-square"></span> </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="#" onclick="itm_btnShow_modalCategory_eCK()">Batch Update</a></li>                       
@@ -953,4 +954,23 @@
             })            
         }
     }
+
+    function itm_load_category_code() {
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>item/category",
+            dataType: "json",
+            success: function (response) {
+                itm_txt_category.innerHTML = `<option value="-">-</option>`
+                let inputs = '<option value="-">-</option>';
+                response.data.forEach((arrayItem) => {
+                    inputs += `<option value="${arrayItem['MITM_NCAT']}">${arrayItem['MITM_NCAT']}</option>`
+                })
+                itm_txt_category.innerHTML = inputs
+                
+            }
+        });
+    }
+
+    itm_load_category_code()
 </script>
