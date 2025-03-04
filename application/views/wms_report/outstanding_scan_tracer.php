@@ -188,7 +188,7 @@
             doc : doc,
             itemCode : itm_tracer_assycode.value.trim(),
             qty : numeral(itm_tracer_qty.value).value(),
-            lineCode : itm_tracer_line.value,
+            lineCode : 'SMT-' + itm_tracer_line.value,
             isFromWeb : 1
         }
 
