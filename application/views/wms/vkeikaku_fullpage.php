@@ -784,10 +784,10 @@
             {
                 title:'Job',
                 type: 'text',
-                width:100,
+                width:90,
             },
             {
-                title:'Lot',
+                title:'Lot Size',
                 type: 'numeric',
                 mask: '#,##',
                 width:75,
@@ -841,6 +841,15 @@
             },
             {
                 title:'Difference',
+                type: 'numeric',
+                mask: '#,##',
+                decimal: '.',
+                readOnly: true,
+                width:80,
+                align: 'right'
+            },
+            {
+                title:'Previous Plan/Actual',
                 type: 'numeric',
                 mask: '#,##',
                 decimal: '.',
@@ -2128,6 +2137,7 @@
                         arrayItem['cycle_time'],
                         arrayItem['ok_qty'],
                         `=IF(L${index+1}=0,0,L${index+1}-E${index+1})`,
+                        arrayItem['previousRun'],
                     ])
 
                     if(arrayItem['wo_full_code'].includes('?')) {
