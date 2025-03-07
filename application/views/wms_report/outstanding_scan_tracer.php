@@ -29,7 +29,7 @@
             <div class="col-md-3 mb-1">
                 <div class="input-group input-group-sm">
                     <label class="input-group-text">Assy Code</label>
-                    <input type="text" class="form-control" id="itm_tracer_assycode" onkeypress="itm_tracer_assycode_e_keypress(event)" maxlength="15">
+                    <input type="text" class="form-control" id="itm_tracer_assycode" maxlength="15">
                 </div>
             </div>
             <div class="col-md-3 mb-1">
@@ -61,6 +61,9 @@
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link rounded-5" id="itm_tracer_closing-tab" data-bs-toggle="tab" data-bs-target="#itm_tracer_tab_closing" type="button" role="tab" aria-controls="home" aria-selected="true">Related Job Status</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-5" id="itm_tracer_tlws-tab" data-bs-toggle="tab" data-bs-target="#itm_tracer_tab_tlws" type="button" role="tab" aria-controls="home" aria-selected="true">TLWS</button>
                     </li>
                 </ul>
                 <div class="tab-content" id="itm_tracer_myTabContent">
@@ -119,6 +122,37 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="itm_tracer_tab_tlws" role="tabpanel">
+                        <div class="container p-1">
+                            <div class="row">
+                                <div class="col-md-12 mb-1 text-center">
+                                    <button id="itm_tracer_btn_check" onclick="itm_tracer_btn_tlws_find_on_click(this)" class="btn btn-primary btn-sm">Find Active Job</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <div class="table-responsive" id="itm_tracer_tlws_table_container">
+                                        <table id="itm_tracer_tlws_tbl" class="table table-bordered border-primary table-sm table-hover">
+                                            <thead class="table-light text-center align-middle">
+                                                <tr class="first">
+                                                    <th class="d-none">SPID</th>
+                                                    <th >Process</th>
+                                                    <th >Assy Code</th>
+                                                    <th >Job Code</th>
+                                                    <th >Last Update</th>
+                                                    <th >Last Update By</th>
+                                                    <th >...</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>                            
                         </div>
                     </div>
                 </div>
@@ -180,13 +214,18 @@
 <script>
     function itm_tracer_btn_check_on_click(pThis) {
         const doc = itm_tracer_doc.value.trim()
+        const assyCode = itm_tracer_assycode.value.trim()
         if(doc.length<=3) {
             itm_tracer_doc.focus()
             return
         }
+        if(assyCode.length<7) {
+            itm_tracer_assycode.focus()
+            return
+        }
         const data = {
             doc : doc,
-            itemCode : itm_tracer_assycode.value.trim(),
+            itemCode : assyCode,
             qty : numeral(itm_tracer_qty.value).value(),
             lineCode : 'SMT-' + itm_tracer_line.value,
             isFromWeb : 1
@@ -415,6 +454,100 @@
                 alertify.error(xthrow)
                 triggerComponent.disabled = false
                 triggerComponent.innerText = 'Add'
+            }
+        });
+    }
+
+    function itm_tracer_btn_tlws_find_on_click(pThis) {
+        const doc = itm_tracer_doc.value.trim()
+        const assyCode = itm_tracer_assycode.value.trim()
+
+        if(doc.length<=3) {
+            itm_tracer_doc.focus()
+            return
+        }
+        if(assyCode.length<=8) {
+            itm_tracer_assycode.focus()
+            return
+        }
+
+        const data = {
+            doc : doc,
+            itemCode : assyCode,
+        }
+
+        pThis.disabled = true
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL3_API'] ?>production/active-tlws",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                pThis.disabled = false
+                let mydes = document.getElementById("itm_tracer_tlws_table_container");
+                let myfrag = document.createDocumentFragment();
+                let mtabel = document.getElementById("itm_tracer_tlws_tbl");
+                let cln = mtabel.cloneNode(true);
+                myfrag.appendChild(cln);
+                let tabell = myfrag.getElementById("itm_tracer_tlws_tbl");
+                let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                tableku2.innerHTML='';
+
+                response.data.forEach((arrayItem) => {
+                    newrow = tableku2.insertRow(-1)
+                    newrow.classList.add('align-middle')
+                    newcell = newrow.insertCell(0)
+                    newcell.classList.add('d-none')
+                    newcell.innerText = arrayItem['TLWS_SPID']
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-center')
+                    newcell.innerText = arrayItem['TLWS_PROCD']
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-center')
+                    newcell.innerText = arrayItem['TLWS_MDLCD']
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-center')
+                    newcell.innerText = arrayItem['TLWS_JOBNO']
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-center')
+                    newcell.innerText = arrayItem['TLWS_LUPDT']
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-center')
+                    newcell.innerText = arrayItem['TLWS_LUPBY']
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-center')
+                    const bsButton = document.createElement('button')
+                    bsButton.innerText = 'Set complete flag'
+                    bsButton.classList.add('btn', 'btn-primary', 'btn-sm')
+                    
+                    bsButton.onclick = function() {
+                        const data = {
+                            doc : arrayItem['TLWS_SPID'],
+                            itemCode : arrayItem['TLWS_MDLCD']
+                        }
+                        bsButton.disabled = true
+                        
+                        $.ajax({
+                            type: "PUT",
+                            url: "<?php echo $_ENV['APP_INTERNAL3_API'] ?>production/active-tlws",
+                            data: data,
+                            dataType: "JSON",
+                            success: function (response) {
+                                alertify.success(response.message)
+                            }, error: function(xhr, xopt, xthrow) {
+                                alertify.error(xthrow)
+                                bsButton.disabled = false                            
+                            }
+                        });
+                    }
+                    newcell.appendChild(bsButton)
+                })
+
+                mydes.innerHTML='';
+                mydes.appendChild(myfrag);
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                pThis.disabled = false               
             }
         });
     }
