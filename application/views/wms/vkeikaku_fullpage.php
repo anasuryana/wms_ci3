@@ -857,6 +857,24 @@
                 width:90,
                 align: 'right'
             },
+            {
+                title:'Total Run',
+                type: 'numeric',
+                mask: '#,##',
+                decimal: '.',
+                readOnly: true,
+                width:90,
+                align: 'right'
+            },
+            {
+                title:'OS Job',
+                type: 'numeric',
+                mask: '#,##',
+                decimal: '.',
+                readOnly: true,
+                width:90,
+                align: 'right'
+            },
         ],
         allowInsertColumn : false,
         allowDeleteColumn : false,
@@ -864,10 +882,10 @@
         allowDeleteRow : false,
         rowDrag:false,
         data: [
-            [,,,,,,,,,'A',,],
-            [,,,,,,,,,'A',,],
-            [,,,,,,,,,'A',,],
-            [,,,,,,,,,'A',,],
+            [,,,,,,,,,'A',,,],
+            [,,,,,,,,,'A',,,],
+            [,,,,,,,,,'A',,,],
+            [,,,,,,,,,'A',,,],
         ],
         minDimensions: [13,41],
         copyCompatibility:true,
@@ -887,6 +905,15 @@
             }
 
             if(x === 12) {
+                const _diff = numeral(value).value() ?? 0
+                if(_diff<0) {
+                    cell.style.cssText = "color: #ff0000"
+                } else {
+                    cell.style.cssText = "color: #d3d3d3"
+                }
+            }
+
+            if(x === 15) {
                 const _diff = numeral(value).value() ?? 0
                 if(_diff<0) {
                     cell.style.cssText = "color: #ff0000"
@@ -2111,7 +2138,8 @@
 
     function keikaku_load_data() {
         keikaku_reset_data()
-
+        const div_alert = document.getElementById('keikaku-div-alert')
+        div_alert.innerHTML = ``
         $.ajax({
             type: "GET",
             url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku",
@@ -2122,6 +2150,11 @@
                 keikaku_user_first_active.value = response.currentActiveUser.MSTEMP_ID + ':' + response.currentActiveUser.MSTEMP_FNM
                 let theData = [];
                 let theIndexRed = [];
+                let messageO = {
+                    job: '-',
+                    item: '-',
+                    specs_side: '-',
+                }
                 response.data.forEach((arrayItem, index) => {
                     theData.push([
                         '',
@@ -2138,10 +2171,18 @@
                         arrayItem['ok_qty'],
                         `=IF(L${index+1}=0,0,L${index+1}-E${index+1})`,
                         arrayItem['previousRun'],
+                        `=L${index+1}+N${index+1}`,
+                        `=O${index+1}-D${index+1}`,
                     ])
 
                     if(arrayItem['wo_full_code'].includes('?')) {
                         theIndexRed.push(index+1)
+                    }
+
+                    if(numeral(arrayItem['previousRun']).value()+numeral(arrayItem['plan_qty']).value()>numeral(arrayItem['lot_size']).value() ) {
+                        messageO.job = arrayItem['wo_code']
+                        messageO.item = arrayItem['item_code']
+                        messageO.specs_side = arrayItem['specs_side']
                     }
                 })
 
@@ -2163,6 +2204,13 @@
                     keikaku_data_sso.setStyle('F'+theIndexRed[i], 'background-color', '#fb5252')
                     keikaku_data_sso.setStyle('G'+theIndexRed[i], 'background-color', '#fb5252')
                     keikaku_data_sso.setStyle('H'+theIndexRed[i], 'background-color', '#fb5252')
+                }
+
+                if(messageO) {
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    Production Qty > Lot Size ! 👉 ${messageO.job}-${messageO.item} specs side ${messageO.specs_side}
+                    
+                    </div>`
                 }
             }, error: function(xhr, xopt, xthrow) {
 
