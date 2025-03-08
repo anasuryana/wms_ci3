@@ -128,6 +128,11 @@
                     <div class="tab-pane fade" id="itm_tracer_tab_tlws" role="tabpanel">
                         <div class="container p-1">
                             <div class="row">
+                                <div class="col-md-12 mb-1 text-center" id="itm_tracer_div_alert">
+                                    
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-12 mb-1 text-center">
                                     <button id="itm_tracer_btn_check" onclick="itm_tracer_btn_tlws_find_on_click(this)" class="btn btn-primary btn-sm">Find Active Job</button>
                                 </div>
@@ -223,10 +228,24 @@
             itm_tracer_assycode.focus()
             return
         }
+
+        const line = itm_tracer_line.value.trim()
+        if(line.length<2) {
+            itm_tracer_line.focus()
+            return
+        }
+
+        const qty = numeral(itm_tracer_qty.value).value()
+
+        if(qty<1) {
+            itm_tracer_qty.focus()
+            return
+        }
+
         const data = {
             doc : doc,
             itemCode : assyCode,
-            qty : numeral(itm_tracer_qty.value).value(),
+            qty : qty,
             lineCode : 'SMT-' + itm_tracer_line.value,
             isFromWeb : 1
         }
@@ -477,6 +496,8 @@
         }
 
         pThis.disabled = true
+        const div_alert = document.getElementById('itm_tracer_div_alert')
+        div_alert.innerHTML = ``
         $.ajax({
             type: "GET",
             url: "<?php echo $_ENV['APP_INTERNAL3_API'] ?>production/active-tlws",
@@ -523,7 +544,8 @@
                     bsButton.onclick = function() {
                         const data = {
                             doc : arrayItem['TLWS_SPID'],
-                            itemCode : arrayItem['TLWS_MDLCD']
+                            itemCode : arrayItem['TLWS_MDLCD'],
+                            groupId : wms_usergroupid
                         }
                         bsButton.disabled = true
                         
@@ -536,7 +558,17 @@
                                 alertify.success(response.message)
                             }, error: function(xhr, xopt, xthrow) {
                                 alertify.error(xthrow)
-                                bsButton.disabled = false                            
+                                bsButton.disabled = false
+                                const respon = Object.keys(xhr.responseJSON)
+
+                                let msg = ''
+                                for (const item of respon) {
+                                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                                }
+                                div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    ${msg}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>`
                             }
                         });
                     }

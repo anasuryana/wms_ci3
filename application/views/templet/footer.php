@@ -77,7 +77,7 @@
     function isNumeric(n) {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
-    var wms_usergroupid = '<?=$wms_usergroup_id;?>';
+    const wms_usergroupid = '<?=$wms_usergroup_id;?>';
     var indexnya = 0;
     const devNode = $('#mmenu').tree({
         url: '<?=base_url("menu")?>',
