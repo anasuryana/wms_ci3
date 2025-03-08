@@ -607,6 +607,61 @@
     </div>
   </div>
 </div>
+
+
+<div class="modal fade" id="keikakuEditINPUTHWModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Editing</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12" id="keikakuEditINPUTHWAlert">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="platNomor" class="form-label">WO</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="keikakuEditINPUTHW_WO" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="keikakuEditINPUTHW_Hour" disabled />
+                        <span class="input-group-text">~</span>
+                        <input type="text" class="form-control" id="keikakuEditINPUTHW_HourTo" disabled />
+                        <span class="input-group-text">o'clock</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="keikakuEditINPUTHWOutputContainer">
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label for="platNomor" class="form-label">Qty</label>
+                        <input type="text" class="form-control" id="keikakuEditINPUTHWOutput" onkeypress="keikakuEditINPUTHWOutputOnKeyPress(event)">
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <input type="hidden" id="keikakuEditINPUTHW_Date">
+      <input type="hidden" id="keikakuEditINPUTHW_XCoordinate">
+      <input type="hidden" id="keikakuEditINPUTHW_Side">
+      <input type="hidden" id="keikakuEditINPUTHW_HeadSeq">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="keikakuBtnEditINPUTHW_Actual" onclick="keikakuBtnEditINPUTHW_ActualOnClick(this)"><i class="fas fa-save"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal -->
 <div class="modal fade" id="keikaku_rpt_summary_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable">
@@ -1540,6 +1595,31 @@
                 }
                 $("#keikakuEditActualModal").modal('show')
             }
+
+            if(aRow[7] === 'INPUT' && x2 >=9 ) { 
+                let aRowTime = instance.jspreadsheet.getRowData(1)
+                keikakuEditINPUTHW_Hour.value = aRowTime[x2]
+                keikakuEditINPUTHW_HourTo.value = Number(aRowTime[x2]) + 1
+                keikakuEditINPUTHW_XCoordinate.value = x2
+
+                keikakuEditINPUTHWOutput.value = aRow[x2]
+                tempX1 = x1
+                tempX2 = x2
+                tempY1 = y1
+                tempY2 = y2
+
+                if (aRowSibling[7] === 'TOTAL') {
+                    keikakuEditINPUTHW_Side.value = aRowSibling[1]
+                    keikakuEditINPUTHW_HeadSeq.value = aRowSibling2[0]/2
+                    keikaku_get_wo({
+                        prefWO : aRowSibling2[3],
+                        procWO : aRowSibling[1],
+                        itemWO : aRowSibling[5],
+                    })
+                }
+
+                $("#keikakuEditINPUTHWModal").modal('show')
+            }
         }
     });
 
@@ -1550,6 +1630,7 @@
             && _temp_asProdpan[i][3].includes(data.prefWO)
             && _temp_asProdpan[i][5].substr(0,1) == data.procWO) {
                 keikakuEditWO.value = _temp_asProdpan[i][3]
+                keikakuEditINPUTHW_WO.value = _temp_asProdpan[i][3]
                 break;
             }
         }
