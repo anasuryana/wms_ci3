@@ -2206,7 +2206,7 @@
                         '',
                         arrayItem['model_code'],
                         arrayItem['wo_code'],
-                        arrayItem['lot_size'], //d
+                        arrayItem['lot_size'],
                         arrayItem['plan_qty'],
                         arrayItem['type'],
                         arrayItem['specs'],
@@ -2217,7 +2217,7 @@
                         arrayItem['ok_qty'],
                         `=IF(L${index+1}=0,0,L${index+1}-E${index+1})`,
                         arrayItem['previousRun'],
-                        `=L${index+1}+N${index+1}`,
+                        `=IF(L${index+1}=0,0,L${index+1}+N${index+1})`,
                         `=O${index+1}-D${index+1}`,
                     ])
 
