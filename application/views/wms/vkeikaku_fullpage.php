@@ -2894,6 +2894,8 @@
             for(let i=3; i<totalRowsMatrix; i++) {
                 let _newRow1 = []
                 let _newRow2 = []
+                let _newRow3 = []
+                let _newRow4 = []
                 if (data[i][0]) {
                     const _tempA = data[i][5].split('#')
                     const _model = _tempA[1]
@@ -2914,6 +2916,45 @@
                     _newRow2.push('Actual')
                     _newRow2.push(0)
 
+                    _newRow3.push(nomorUrut)
+                    _newRow3.push('')
+                    _newRow3.push(_model)
+                    _newRow3.push(_wo_no)
+                    _newRow3.push(_lot_size)
+                    _newRow3.push(_production_qty)
+                    _newRow3.push(Number(_st).toFixed(4))
+                    _newRow3.push('PLAN PROD')
+                    _newRow3.push(0)
+
+                    _newRow4.push('')
+                    _newRow4.push(_specsSide)
+                    _newRow4.push(_tempA[5])
+                    _newRow4.push(_tempA[6])
+                    _newRow4.push('')
+                    _newRow4.push(data[i][0])
+                    _newRow4.push('')
+                    _newRow4.push('TOTAL')
+                    _newRow4.push('')
+
+                    let totalQtyRun = 0
+                    for(let c=9; c<(9+12+12+12); c++) {
+                        if(inputSS[1][c] == Number(data[0][(c-3)])) {
+                            inputSS[4][c] = Number(data[2][(c-3)]).toFixed(2)
+                            if(c<33) {
+                                _newRow3[8]+=Number(data[i][c-3])
+                            }
+                            _newRow3.push(data[i][c-3])
+
+                            totalQtyRun += Number(data[i][c-3])
+
+                            if(Number(data[i][c-3])==0) {
+                                _newRow4.push('')
+                            } else {
+                                _newRow4.push(totalQtyRun)
+                            }
+                        }
+                    }
+
                     for(let r=0; r<totalRowsModelChanges; r++) {
                         if(data[i][3] == dataModelChanges[r][3] && _specsSide == dataModelChanges[r][4] && _seq == dataModelChanges[r][1]) { // by job & seq
                             for(let c=9; c<(9+12+12+12); c++) {
@@ -2927,6 +2968,8 @@
                     }
 
                     inputSS.push(_newRow2)
+                    inputSS.push(_newRow3)
+                    inputSS.push(_newRow4)
                 } else {
                     let ChangeModelLabel = ''
                     let ChangeModelTime = ''
@@ -2966,6 +3009,8 @@
                             }
                         }
                     }
+
+
 
                     inputSS.push(_newRow1)
                 }
