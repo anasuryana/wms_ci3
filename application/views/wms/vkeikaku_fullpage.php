@@ -1615,6 +1615,7 @@
             }
 
             if(aRow[7] === 'INPUT' && x2 >=9 ) { 
+                keikakuISHWEditingMode = '1'
                 let aRowTime = instance.jspreadsheet.getRowData(1)
                 keikakuEditINPUTHW_Hour.value = aRowTime[x2]
                 keikakuEditINPUTHW_HourTo.value = Number(aRowTime[x2]) + 1
@@ -1638,9 +1639,38 @@
 
                 $("#keikakuEditINPUTHWModal").modal('show')
             }
+
+            if(aRow[7] === 'OUTPUT' && x2 >=9 ) { 
+                aRowSibling = instance.jspreadsheet.getRowData(y2-3)
+                aRowSibling2 = instance.jspreadsheet.getRowData(y2-4)
+                keikakuISHWEditingMode = '2'
+                let aRowTime = instance.jspreadsheet.getRowData(1)
+                keikakuEditINPUTHW_Hour.value = aRowTime[x2]
+                keikakuEditINPUTHW_HourTo.value = Number(aRowTime[x2]) + 1
+                keikakuEditINPUTHW_XCoordinate.value = x2
+
+                keikakuEditINPUTHWOutput.value = aRow[x2]
+                tempX1 = x1
+                tempX2 = x2
+                tempY1 = y1
+                tempY2 = y2
+                
+                if (aRowSibling[7] === 'TOTAL') {
+                    keikakuEditINPUTHW_Side.value = aRowSibling[1]
+                    keikakuEditINPUTHW_HeadSeq.value = aRowSibling2[0]/2
+                    keikaku_get_wo({
+                        prefWO : aRowSibling2[3],
+                        procWO : aRowSibling[1],
+                        itemWO : aRowSibling[5],
+                    })
+                }
+
+                $("#keikakuEditINPUTHWModal").modal('show')
+            }
         }
     });
 
+    var keikakuISHWEditingMode = '-'
     function keikaku_get_wo(data) {
         let ttlRows = _temp_asProdpan.length
         for(let i=4; i<ttlRows;i+=2) {
@@ -4503,10 +4533,17 @@
             XCoordinate : keikakuEditINPUTHW_XCoordinate.value,
             seq_data : keikakuEditINPUTHW_HeadSeq.value
         }
+        let theUrl = '-'
+        switch(keikakuISHWEditingMode){
+            case '1':
+                theUrl = "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/input-hw";break
+            case '2':
+                theUrl = "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/output-hw";break
+        }
         pThis.disabled = true
         $.ajax({
             type: "POST",
-            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/input-hw",
+            url: theUrl,
             data: data,
             dataType: "json",
             success: function (response) {
