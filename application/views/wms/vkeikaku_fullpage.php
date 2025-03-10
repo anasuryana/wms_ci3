@@ -613,7 +613,7 @@
   <div class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5">Editing</h1>
+        <h1 class="modal-title fs-5">Editing INPUT</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -651,7 +651,6 @@
             </div>
         </div>
       </div>
-      <input type="hidden" id="keikakuEditINPUTHW_Date">
       <input type="hidden" id="keikakuEditINPUTHW_XCoordinate">
       <input type="hidden" id="keikakuEditINPUTHW_Side">
       <input type="hidden" id="keikakuEditINPUTHW_HeadSeq">
@@ -815,13 +814,25 @@
     $("#keikaku_rpt_wo_modal").on('shown.bs.modal', function(){
         $("#keikaku_rpt_wo_no").focus();
     });
+    $("#keikakuEditINPUTHWModal").on('shown.bs.modal', function(){
+        $("#keikakuEditINPUTHWOutput").focus();
+        keikaku_prodplan_sso.resetSelection(true);
+        keikakuEditINPUTHWAlert.innerHTML = ''
+    });
     $("#keikakuEditActualModal").on('hidden.bs.modal', function() {
+        keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1-1, tempX2, tempY2-1);
+    });
+    $("#keikakuEditINPUTHWModal").on('hidden.bs.modal', function() {
         keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1-1, tempX2, tempY2-1);
     });
     Inputmask({
         'alias': 'decimal',
         'groupSeparator': ',',
     }).mask(keikakuEditOutput);
+    Inputmask({
+        'alias': 'decimal',
+        'groupSeparator': ',',
+    }).mask(keikakuEditINPUTHWOutput);
     keikaku_asprova_year.value = new Date().toISOString().substring(0, 4)
     var keikakuModelUnique = []
     var keikaku_data_sso = jspreadsheet(keikaku_data_spreadsheet, {
@@ -4406,6 +4417,62 @@
                 </div>`
             }
         });
+    }
+
+    function keikakuBtnEditINPUTHW_ActualOnClick(pThis) {
+        let qty = numeral(keikakuEditINPUTHWOutput.value).value()
+
+        if(qty<0) {
+            alertify.warning('Quantity is required')
+            keikakuEditINPUTHWOutput.focus()
+            return
+        }
+
+        const data = {
+            line : keikaku_line_input.value,
+            job : keikakuEditINPUTHW_WO.value,
+            side : keikakuEditINPUTHW_Side.value,
+            productionDate : keikakuEditDate.value,
+            runningAtTime : keikakuEditINPUTHW_Hour.value,
+            quantity : qty,
+            user_id : uidnya,
+            XCoordinate : keikakuEditINPUTHW_XCoordinate.value,
+            seq_data : keikakuEditINPUTHW_HeadSeq.value
+        }
+        pThis.disabled = true
+        $.ajax({
+            type: "POST",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/input-hw",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                pThis.disabled = false
+                alertify.success(response.message)
+                $('#keikakuEditINPUTHWModal').modal('hide')
+                keikaku_btn_run_prodplan_eC(keikaku_btn_run_prodplan)
+                keikaku_load_data()
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                pThis.disabled = false
+
+                const respon = Object.keys(xhr.responseJSON)
+
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                keikakuEditINPUTHWAlert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }
+        });
+    }
+
+    function keikakuEditINPUTHWOutputOnKeyPress(e) {
+        if(e.key === 'Enter') {
+            keikakuBtnEditINPUTHW_Actual.focus()
+        }
     }
 </script>
 
