@@ -3071,11 +3071,8 @@
         const totalRowsInputHW = dataInputHW.length
         const totalRowsOutputHW = dataOutputHW.length
 
-
         let nomorUrut = 1;
-
         if(keikakuIsHW()) {
-            alertify.message('Keikaku HW is not ready yet')
             for(let i=3; i<totalRowsMatrix; i++) {
                 let _newRow1 = []
                 let _newRow2 = []
@@ -3085,6 +3082,8 @@
                 let _newRow6 = [] // input total hw
                 let _newRow7 = [] // output hw
                 let _newRow8 = [] // output total hw
+                let _newRow9 = [] // Progress hw
+                let _newRow10 = [] // progress total hw
                 if (data[i][0]) {
                     const _tempA = data[i][5].split('#')
                     const _model = _tempA[1]
@@ -3180,6 +3179,26 @@
                     _newRow6.push('Total,,')
                     _newRow6.push('')
 
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('Progress')
+                    _newRow9.push(0)
+
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('Total.')
+                    _newRow10.push('')
+
                     let totalQtyInputHW = 0
                     for(let r=0; r<totalRowsInputHW; r++) {
                         if(data[i][3] == dataInputHW[r][3] && _specsSide == dataInputHW[r][4] && _seq == dataInputHW[r][1]) { // by job & seq
@@ -3194,7 +3213,8 @@
 
                                 if(_output==0) {
                                     _newRow6.push('')
-                                  
+                                    _newRow9.push('')
+                                    _newRow10.push('')
                                 } else {
                                     let _totalLastPlan = 0
                                     for(let d=c;d>=9;d--) {
@@ -3203,7 +3223,9 @@
                                             break;
                                         }
                                     }
-                                    _newRow6.push(totalQtyInputHW)                                    
+                                    _newRow6.push(totalQtyInputHW)
+                                    _newRow9.push(_output-_newRow3[c])
+                                    _newRow10.push(totalQtyInputHW-_totalLastPlan)
                                 }
 
                             }
@@ -3268,6 +3290,8 @@
 
                     inputSS.push(_newRow7)
                     inputSS.push(_newRow8)
+                    inputSS.push(_newRow9)
+                    inputSS.push(_newRow10)
                 } else {
                     let ChangeModelLabel = ''
                     let ChangeModelTime = ''
