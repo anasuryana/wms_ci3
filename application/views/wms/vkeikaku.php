@@ -1499,6 +1499,13 @@
                             theCell.classList.add('keikakuGreenOldColor')
                         }
                         break;
+                    case 'OUTPUT' :
+                        theCells = cell.parentNode.cells
+                        for(let i=0; i <theCells.length; i++) {
+                            const theCell = theCells[i]
+                            theCell.classList.add('keikakuGreenOldColor')
+                        }
+                        break;
                 }
             }
             if(x>7 && y==7) {
@@ -2756,7 +2763,7 @@
                 mydes.appendChild(myfrag);
 
                 // display prodplan to grid
-                keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation, response.dataChangesModel, response.dataInputHW)
+                keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation, response.dataChangesModel, response.dataInputHW, response.dataOutputHW)
                 keikaku_prodplan_sso.resetSelection();
                 keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1+1, tempX2, tempY2+1);
 
@@ -3003,7 +3010,7 @@
         });
     }
 
-    function keikakuDisplayProdplan(data, dataS, dataCalculation, dataModelChanges, dataInputHW) {
+    function keikakuDisplayProdplan(data, dataS, dataCalculation, dataModelChanges, dataInputHW, dataOutputHW) {
         let _newRowH = []
         _newRowH.push('')
         _newRowH.push('')
@@ -3032,6 +3039,7 @@
         const totalRowsSensor = dataS.length
         const totalRowsModelChanges = dataModelChanges.length
         const totalRowsInputHW = dataInputHW.length
+        const totalRowsOutputHW = dataOutputHW.length
 
 
         let nomorUrut = 1;
@@ -3045,6 +3053,8 @@
                 let _newRow4 = []
                 let _newRow5 = [] // input hw
                 let _newRow6 = [] // input total hw
+                let _newRow7 = [] // output hw
+                let _newRow8 = [] // output total hw
                 if (data[i][0]) {
                     const _tempA = data[i][5].split('#')
                     const _model = _tempA[1]
@@ -3173,6 +3183,61 @@
 
                     inputSS.push(_newRow5)
                     inputSS.push(_newRow6)
+
+
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('')
+                    _newRow7.push('OUTPUT')
+                    _newRow7.push(0)
+
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('')
+                    _newRow8.push('Total,')
+                    _newRow8.push('')
+
+                    let totalQtyOutputHW = 0
+                    for(let r=0; r<totalRowsOutputHW; r++) {
+                        if(data[i][3] == dataOutputHW[r][3] && _specsSide == dataOutputHW[r][4] && _seq == dataOutputHW[r][1]) { // by job & seq
+                            for(let c=9; c<(9+12+12+12); c++) {
+                                _newRow7.push(dataOutputHW[r][c-3])
+                                const _output = Number(dataOutputHW[r][c-3])
+                                if(c<33) {
+                                    _newRow7[8]+=_output
+                                }
+
+                                totalQtyOutputHW += _output
+
+                                if(_output==0) {
+                                    _newRow8.push('')
+                                  
+                                } else {
+                                    let _totalLastPlan = 0
+                                    for(let d=c;d>=9;d--) {
+                                        if(_newRow4[d]) {
+                                            _totalLastPlan = Number(_newRow4[d])
+                                            break;
+                                        }
+                                    }
+                                    _newRow8.push(totalQtyInputHW)                                    
+                                }
+
+                            }
+                            break;
+                        }
+                    }
+
+                    inputSS.push(_newRow7)
+                    inputSS.push(_newRow8)
                 } else {
                     let ChangeModelLabel = ''
                     let ChangeModelTime = ''
