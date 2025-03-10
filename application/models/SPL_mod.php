@@ -3,7 +3,7 @@
 class SPL_mod extends CI_Model
 {
     private $TABLENAME = "SPL_TBL";
-    private $SPECIALWO = ['22-5A09-217724501', '22-6A27-F65929-09V', '22-ZB28-219236900', '21-XA08-221093101ES', '22-4C04-222050500ES'];
+    private $SPECIALWO = ['22-5A09-217724501', '22-6A27-F65929-09V', '22-ZB28-219236900', '21-XA08-221093101ES', '22-4C04-222050500ES', '25-2A25-218963701'];
     public function __construct()
     {
         $this->load->database();
