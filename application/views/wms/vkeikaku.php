@@ -2807,6 +2807,7 @@
                 let progressTime = [0]
                 let prodPlanLength = response.asProdplan.length
                 let outputLength = response.dataSensor.length
+                let inputLength = response.dataInputHW.length
                 let timeLength = response.asMatrix.length
                 let _totalPlan = 0
                 let _totalActual = 0
@@ -2827,7 +2828,61 @@
                 let _totalActualQtyNight = 0;
 
                 if(keikakuIsHW()) {
-                    alertify.message('Keikaku HW is not ready')
+                    for(let i=6; i<=29; i++) {
+                        for(let r=4;r<prodPlanLength;r++) {
+                            if(response.asProdplan[r][0]) {
+                                _totalPlan += Number(response.asProdplan[r][i])
+                                if(i>=18) {
+                                    _totalPlanQtyNight += Number(response.asProdplan[r][i])
+                                } else {
+                                    _totalPlanQtyMorning += Number(response.asProdplan[r][i])
+                                }
+                            }
+                        }
+
+                        for(let r=0;r<inputLength;r++) {
+                            _totalActual += Number(response.dataInputHW[r][i])
+                            _totalActualTime += (response.dataInputHW[r][5] *Number(response.dataInputHW[r][i]) )
+
+                            if(i>=18) {
+                                _totalActualTimeNight += (response.dataInputHW[r][5] *Number(response.dataInputHW[r][i]) )
+                                _totalActualQtyNight += Number(response.dataInputHW[r][i])
+
+                            } else {
+                                _totalActualTimeMorning += (response.dataInputHW[r][5] *Number(response.dataInputHW[r][i]) )
+                                _totalActualQtyMorning += Number(response.dataInputHW[r][i])
+                            }
+                        }
+
+                        for(let r=0;r<timeLength;r++) {
+                            if(response.asMatrix[r][0]) {
+                                _totalPlanTime += Number(response.asMatrix[r][i])
+                            }
+                        }
+
+
+                        for(let r=4;r<timeLength;r+=2) {
+                            if(i>=18) {
+                                _totalPlanTimeNight += Number(response.asMatrix[r][i])
+                            } else {
+                                _totalPlanTimeMorning += Number(response.asMatrix[r][i])
+                            }
+                        }
+
+                        plan.push(_totalPlan)
+                        planTime.push(_totalPlanTime.toFixed(2))
+                        actual.push(_totalActual)
+                        actualTime.push(_totalActualTime.toFixed(2))
+
+                        _totalProgressTime = _totalActualTime - _totalPlanTime > 0 ? 0 : _totalActualTime - _totalPlanTime
+                        progressTime.push(_totalProgressTime)
+
+                        keikaku_rpt_qty_sso.setValueFromCoords(i-4, 1, _totalPlan, true)
+                        keikaku_rpt_qty_sso.setValueFromCoords(i-4, 2, _totalActual, true)
+                        keikaku_rpt_time_sso.setValueFromCoords(i-4, 1, _totalPlanTime.toFixed(2), true)
+                        keikaku_rpt_time_sso.setValueFromCoords(i-4, 2, _totalActualTime.toFixed(2), true)
+                    }
+
                 } else {
                     for(let i=6; i<=29; i++) {
                         for(let r=4;r<prodPlanLength;r++) {
@@ -2883,144 +2938,147 @@
                         keikaku_rpt_time_sso.setValueFromCoords(i-4, 1, _totalPlanTime.toFixed(2), true)
                         keikaku_rpt_time_sso.setValueFromCoords(i-4, 2, _totalActualTime.toFixed(2), true)
                     }
-                    myChart.data.datasets = [
-                        {
-                            label: 'Qty Plan',
-                            data: plan,
-                            borderColor: `rgb(0, 71, 171)`,
-                            tension: 0.1,
-                            type: 'line',
-                        },
-                        {
-                            label: 'Qty Actual',
-                            data: actual,
-                            backgroundColor: `rgb(124,252,0)`,
-                            borderColor: `rgb(0, 71, 171)`,
-                        },
-                    ]
-                    myChart.update()
+                    
+                    
+                }
 
-                    myChart2.data.datasets = [
-                        {
-                            label: 'Time Progress',
-                            data: progressTime,
-                            backgroundColor: `rgb(255, 0, 0)`,
-                            tension: 0.3,
-                        },
-                        {
-                            label: 'Time Plan',
-                            data: planTime,
-                            borderColor: `rgb(0, 71, 171)`,
-                            tension: 0.1,
-                            type: 'line',
-                        },
-                        {
-                            label: 'Time Actual',
-                            data: actualTime,
-                            backgroundColor: `rgb(8, 181, 118)`,
-                            borderColor: `rgb(0, 71, 171)`,
-                        },
-                    ]
-                    myChart2.update()
-                    _totalTimePRCMorning = _totalPlanTimeMorning == 0 ? 0 : (_totalActualTimeMorning/_totalPlanTimeMorning*100).toFixed(0)
-                    _totalTimePRCNight = _totalPlanTimeNight == 0 ? "" : (_totalActualTimeNight/_totalPlanTimeNight*100).toFixed(0)
+                myChart.data.datasets = [
+                    {
+                        label: 'Qty Plan',
+                        data: plan,
+                        borderColor: `rgb(0, 71, 171)`,
+                        tension: 0.1,
+                        type: 'line',
+                    },
+                    {
+                        label: 'Qty Actual',
+                        data: actual,
+                        backgroundColor: `rgb(124,252,0)`,
+                        borderColor: `rgb(0, 71, 171)`,
+                    },
+                ]
+                myChart.update()
 
-                    keikaku_rpt_tbl_lbl_time_morning_plan.innerText = _totalPlanTimeMorning.toFixed(2)
-                    keikaku_rpt_tbl_lbl_time_night_plan.innerText = _totalPlanTimeNight.toFixed(2)
-                    keikaku_rpt_tbl_lbl_time_morning_actual.innerText = _totalActualTimeMorning.toFixed(2)
-                    keikaku_rpt_tbl_lbl_time_night_actual.innerText = _totalActualTimeNight.toFixed(2)
-                    const _totalTimeMorningDifference = _totalActualTimeMorning-_totalPlanTimeMorning
-                    const _totalTimeNightDifference = _totalActualTimeNight-_totalPlanTimeNight
-                    keikaku_rpt_tbl_lbl_time_morning_difference.style.color = _totalTimeMorningDifference < 0 ? 'red' : 'black'
-                    keikaku_rpt_tbl_lbl_time_night_difference.style.color = _totalTimeNightDifference < 0 ? 'red' : 'black'
-                    keikaku_rpt_tbl_lbl_time_morning_difference.innerText = (_totalTimeMorningDifference).toFixed(2)
-                    keikaku_rpt_tbl_lbl_time_night_difference.innerText = (_totalTimeNightDifference).toFixed(2)
-                    keikaku_rpt_tbl_lbl_time_morning_percentage.innerText = _totalTimePRCMorning == 0 ? "" : _totalTimePRCMorning + '%'
-                    keikaku_rpt_tbl_lbl_time_night_percentage.innerText = _totalTimePRCNight == 0 ? "" : _totalTimePRCNight + '%'
+                myChart2.data.datasets = [
+                    {
+                        label: 'Time Progress',
+                        data: progressTime,
+                        backgroundColor: `rgb(255, 0, 0)`,
+                        tension: 0.3,
+                    },
+                    {
+                        label: 'Time Plan',
+                        data: planTime,
+                        borderColor: `rgb(0, 71, 171)`,
+                        tension: 0.1,
+                        type: 'line',
+                    },
+                    {
+                        label: 'Time Actual',
+                        data: actualTime,
+                        backgroundColor: `rgb(8, 181, 118)`,
+                        borderColor: `rgb(0, 71, 171)`,
+                    },
+                ]
+                myChart2.update()
 
+                _totalTimePRCMorning = _totalPlanTimeMorning == 0 ? 0 : (_totalActualTimeMorning/_totalPlanTimeMorning*100).toFixed(0)
+                _totalTimePRCNight = _totalPlanTimeNight == 0 ? "" : (_totalActualTimeNight/_totalPlanTimeNight*100).toFixed(0)
 
-                    keikaku_rpt_tbl_lbl_qty_morning_plan.innerText = _totalPlanQtyMorning
-                    keikaku_rpt_tbl_lbl_qty_night_plan.innerText = _totalPlanQtyNight
-                    keikaku_rpt_tbl_lbl_qty_morning_actual.innerText = _totalActualQtyMorning
-                    keikaku_rpt_tbl_lbl_qty_night_actual.innerText = _totalActualQtyNight
-                    const _totalQtyMorningDifference = _totalActualQtyMorning-_totalPlanQtyMorning
-                    const _totalQtyNightDifference = _totalActualQtyNight-_totalPlanQtyNight
-                    keikaku_rpt_tbl_lbl_qty_morning_difference.style.color = _totalQtyMorningDifference < 0 ? 'red' : 'black'
-                    keikaku_rpt_tbl_lbl_qty_night_difference.style.color = _totalQtyNightDifference < 0 ? 'red' : 'black'
-                    keikaku_rpt_tbl_lbl_qty_morning_difference.innerText = (_totalQtyMorningDifference).toFixed(0)
-                    keikaku_rpt_tbl_lbl_qty_night_difference.innerText = (_totalQtyNightDifference).toFixed(0)
-
-                    keikaku_rpt_tbl_lbl_qty_morning_percentage.innerText = _totalPlanQtyMorning == 0 ? "" : (_totalActualQtyMorning/_totalPlanQtyMorning*100).toFixed(0) + '%'
-                    keikaku_rpt_tbl_lbl_qty_night_percentage.innerText = _totalPlanQtyNight == 0 ? "" : (_totalActualQtyNight/_totalPlanQtyNight*100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_time_morning_plan.innerText = _totalPlanTimeMorning.toFixed(2)
+                keikaku_rpt_tbl_lbl_time_night_plan.innerText = _totalPlanTimeNight.toFixed(2)
+                keikaku_rpt_tbl_lbl_time_morning_actual.innerText = _totalActualTimeMorning.toFixed(2)
+                keikaku_rpt_tbl_lbl_time_night_actual.innerText = _totalActualTimeNight.toFixed(2)
+                const _totalTimeMorningDifference = _totalActualTimeMorning-_totalPlanTimeMorning
+                const _totalTimeNightDifference = _totalActualTimeNight-_totalPlanTimeNight
+                keikaku_rpt_tbl_lbl_time_morning_difference.style.color = _totalTimeMorningDifference < 0 ? 'red' : 'black'
+                keikaku_rpt_tbl_lbl_time_night_difference.style.color = _totalTimeNightDifference < 0 ? 'red' : 'black'
+                keikaku_rpt_tbl_lbl_time_morning_difference.innerText = (_totalTimeMorningDifference).toFixed(2)
+                keikaku_rpt_tbl_lbl_time_night_difference.innerText = (_totalTimeNightDifference).toFixed(2)
+                keikaku_rpt_tbl_lbl_time_morning_percentage.innerText = _totalTimePRCMorning == 0 ? "" : _totalTimePRCMorning + '%'
+                keikaku_rpt_tbl_lbl_time_night_percentage.innerText = _totalTimePRCNight == 0 ? "" : _totalTimePRCNight + '%'
 
 
-                    keikaku_rpt_tbl_lbl_or_morning_plan.innerText = response.morningEfficiency	* 100  + '%'
-                    keikaku_rpt_tbl_lbl_or_night_plan.innerText = response.nightEfficiency	* 100  + '%'
-                    keikaku_rpt_tbl_lbl_or_morning_actual.innerText = _totalActualTimeMorning == 0 ? "" : ((_totalTimePRCMorning/100*(response.morningEfficiency)) *100).toFixed(0) + '%'
-                    keikaku_rpt_tbl_lbl_or_night_actual.innerText = _totalActualTimeNight == 0 ? "" : ((_totalTimePRCNight/100*(response.nightEfficiency)) *100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_qty_morning_plan.innerText = _totalPlanQtyMorning
+                keikaku_rpt_tbl_lbl_qty_night_plan.innerText = _totalPlanQtyNight
+                keikaku_rpt_tbl_lbl_qty_morning_actual.innerText = _totalActualQtyMorning
+                keikaku_rpt_tbl_lbl_qty_night_actual.innerText = _totalActualQtyNight
+                const _totalQtyMorningDifference = _totalActualQtyMorning-_totalPlanQtyMorning
+                const _totalQtyNightDifference = _totalActualQtyNight-_totalPlanQtyNight
+                keikaku_rpt_tbl_lbl_qty_morning_difference.style.color = _totalQtyMorningDifference < 0 ? 'red' : 'black'
+                keikaku_rpt_tbl_lbl_qty_night_difference.style.color = _totalQtyNightDifference < 0 ? 'red' : 'black'
+                keikaku_rpt_tbl_lbl_qty_morning_difference.innerText = (_totalQtyMorningDifference).toFixed(0)
+                keikaku_rpt_tbl_lbl_qty_night_difference.innerText = (_totalQtyNightDifference).toFixed(0)
 
-                    let _totalPlanPointMorning = 0
-                    let _totalPlanPointNight = 0
-                    let _totalActualPointMorning = 0
-                    let _totalActualPointNight = 0
-                    response.dataMount.forEach((arrayItem) => {
-                        _totalPlanPointMorning += Number(arrayItem['plan_morning_qty']*arrayItem['baseMount']);
-                        _totalPlanPointNight += Number(arrayItem['plan_night_qty']*arrayItem['baseMount']);
-                        _totalActualPointMorning += Number(arrayItem['morningOutput']*arrayItem['baseMount']);
-                        _totalActualPointNight += Number(arrayItem['nightOutput']*arrayItem['baseMount']);
-                    })
+                keikaku_rpt_tbl_lbl_qty_morning_percentage.innerText = _totalPlanQtyMorning == 0 ? "" : (_totalActualQtyMorning/_totalPlanQtyMorning*100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_qty_night_percentage.innerText = _totalPlanQtyNight == 0 ? "" : (_totalActualQtyNight/_totalPlanQtyNight*100).toFixed(0) + '%'
 
-                    keikaku_rpt_tbl_lbl_poin_morning_plan.innerText = numeral(_totalPlanPointMorning).format(',')
-                    keikaku_rpt_tbl_lbl_poin_night_plan.innerText = numeral(_totalPlanPointNight).format(',')
-                    keikaku_rpt_tbl_lbl_poin_morning_actual.innerText = numeral(_totalActualPointMorning).format(',')
-                    keikaku_rpt_tbl_lbl_poin_night_actual.innerText = numeral(_totalActualPointNight).format(',')
-                    const _totalPointMorningDifference = _totalActualPointMorning-_totalPlanPointMorning
-                    const _totalPointNightDifference = _totalActualPointNight-_totalPlanPointNight
-                    keikaku_rpt_tbl_lbl_poin_morning_difference.style.color = _totalPointMorningDifference < 0 ? 'red' : 'black'
-                    keikaku_rpt_tbl_lbl_poin_night_difference.style.color = _totalPointNightDifference < 0 ? 'red' : 'black'
-                    keikaku_rpt_tbl_lbl_poin_morning_difference.innerText = numeral(_totalPointMorningDifference).format(',')
-                    keikaku_rpt_tbl_lbl_poin_night_difference.innerText = numeral(_totalPointNightDifference).format(',')
 
-                    keikaku_rpt_tbl_lbl_poin_morning_percentage.innerText = _totalPlanPointMorning == 0 ? "" : (_totalActualPointMorning/_totalPlanPointMorning*100).toFixed(0) + '%'
-                    keikaku_rpt_tbl_lbl_poin_night_percentage.innerText = _totalPlanPointNight == 0 ? "" : (_totalActualPointNight/_totalPlanPointNight*100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_or_morning_plan.innerText = response.morningEfficiency	* 100  + '%'
+                keikaku_rpt_tbl_lbl_or_night_plan.innerText = response.nightEfficiency	* 100  + '%'
+                keikaku_rpt_tbl_lbl_or_morning_actual.innerText = _totalActualTimeMorning == 0 ? "" : ((_totalTimePRCMorning/100*(response.morningEfficiency)) *100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_or_night_actual.innerText = _totalActualTimeNight == 0 ? "" : ((_totalTimePRCNight/100*(response.nightEfficiency)) *100).toFixed(0) + '%'
 
-                    let prodplanData = keikaku_prodplan_sso.getData()
-                    let prodplanDataLength = prodplanData.length - 5
-                    let _totalPlanChangeMorning=0
-                    let _totalPlanChangeNight=0
-                    let _totalActualChangeMorning=0
-                    let _totalActualChangeNight=0
-                    for(let i=17; i<prodplanDataLength; i+=8) {
-                        if(prodplanData[i][2].includes('CHANGE MODEL')) {
-                            for(let c=9; c<33; c++) {
-                                if(prodplanData[i][c] > 0) {
-                                    if(c<21) {
-                                        _totalPlanChangeMorning++
-                                    } else {
-                                        _totalPlanChangeNight++
-                                    }
+                let _totalPlanPointMorning = 0
+                let _totalPlanPointNight = 0
+                let _totalActualPointMorning = 0
+                let _totalActualPointNight = 0
+                response.dataMount.forEach((arrayItem) => {
+                    _totalPlanPointMorning += Number(arrayItem['plan_morning_qty']*arrayItem['baseMount']);
+                    _totalPlanPointNight += Number(arrayItem['plan_night_qty']*arrayItem['baseMount']);
+                    _totalActualPointMorning += Number(arrayItem['morningOutput']*arrayItem['baseMount']);
+                    _totalActualPointNight += Number(arrayItem['nightOutput']*arrayItem['baseMount']);
+                })
+
+                keikaku_rpt_tbl_lbl_poin_morning_plan.innerText = numeral(_totalPlanPointMorning).format(',')
+                keikaku_rpt_tbl_lbl_poin_night_plan.innerText = numeral(_totalPlanPointNight).format(',')
+                keikaku_rpt_tbl_lbl_poin_morning_actual.innerText = numeral(_totalActualPointMorning).format(',')
+                keikaku_rpt_tbl_lbl_poin_night_actual.innerText = numeral(_totalActualPointNight).format(',')
+                const _totalPointMorningDifference = _totalActualPointMorning-_totalPlanPointMorning
+                const _totalPointNightDifference = _totalActualPointNight-_totalPlanPointNight
+                keikaku_rpt_tbl_lbl_poin_morning_difference.style.color = _totalPointMorningDifference < 0 ? 'red' : 'black'
+                keikaku_rpt_tbl_lbl_poin_night_difference.style.color = _totalPointNightDifference < 0 ? 'red' : 'black'
+                keikaku_rpt_tbl_lbl_poin_morning_difference.innerText = numeral(_totalPointMorningDifference).format(',')
+                keikaku_rpt_tbl_lbl_poin_night_difference.innerText = numeral(_totalPointNightDifference).format(',')
+
+                keikaku_rpt_tbl_lbl_poin_morning_percentage.innerText = _totalPlanPointMorning == 0 ? "" : (_totalActualPointMorning/_totalPlanPointMorning*100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_poin_night_percentage.innerText = _totalPlanPointNight == 0 ? "" : (_totalActualPointNight/_totalPlanPointNight*100).toFixed(0) + '%'
+
+                let prodplanData = keikaku_prodplan_sso.getData()
+                let prodplanDataLength = prodplanData.length - 5
+                let _totalPlanChangeMorning=0
+                let _totalPlanChangeNight=0
+                let _totalActualChangeMorning=0
+                let _totalActualChangeNight=0
+                for(let i=17; i<prodplanDataLength; i+=8) {
+                    if(prodplanData[i][2].includes('CHANGE MODEL')) {
+                        for(let c=9; c<33; c++) {
+                            if(prodplanData[i][c] > 0) {
+                                if(c<21) {
+                                    _totalPlanChangeMorning++
+                                } else {
+                                    _totalPlanChangeNight++
                                 }
-                                if(prodplanData[i+1][c] > 0) {
-                                    if(c<21) {
-                                        _totalActualChangeMorning++
-                                    } else {
-                                        _totalActualChangeNight++
-                                    }
+                            }
+                            if(prodplanData[i+1][c] > 0) {
+                                if(c<21) {
+                                    _totalActualChangeMorning++
+                                } else {
+                                    _totalActualChangeNight++
                                 }
                             }
                         }
                     }
-
-                    keikaku_rpt_tbl_lbl_cm_morning_plan.innerText = _totalPlanChangeMorning
-                    keikaku_rpt_tbl_lbl_cm_night_plan.innerText = _totalPlanChangeNight
-                    keikaku_rpt_tbl_lbl_cm_morning_actual.innerText = _totalActualChangeMorning
-                    keikaku_rpt_tbl_lbl_cm_night_actual.innerText = _totalActualChangeNight
-                    keikaku_rpt_tbl_lbl_cm_morning_difference.innerText = (_totalActualChangeMorning-_totalPlanChangeMorning)
-                    keikaku_rpt_tbl_lbl_cm_night_difference.innerText = (_totalActualChangeNight-_totalPlanChangeNight)
-                    keikaku_rpt_tbl_lbl_cm_morning_percentage.innerText = _totalPlanChangeMorning == 0 ? "" : (_totalActualChangeMorning/_totalPlanChangeMorning*100).toFixed(0) + '%'
-                    keikaku_rpt_tbl_lbl_cm_night_percentage.innerText = _totalPlanChangeNight == 0 ? "" : (_totalActualChangeNight/_totalPlanChangeNight*100).toFixed(0) + '%'
-
                 }
+
+                keikaku_rpt_tbl_lbl_cm_morning_plan.innerText = _totalPlanChangeMorning
+                keikaku_rpt_tbl_lbl_cm_night_plan.innerText = _totalPlanChangeNight
+                keikaku_rpt_tbl_lbl_cm_morning_actual.innerText = _totalActualChangeMorning
+                keikaku_rpt_tbl_lbl_cm_night_actual.innerText = _totalActualChangeNight
+                keikaku_rpt_tbl_lbl_cm_morning_difference.innerText = (_totalActualChangeMorning-_totalPlanChangeMorning)
+                keikaku_rpt_tbl_lbl_cm_night_difference.innerText = (_totalActualChangeNight-_totalPlanChangeNight)
+                keikaku_rpt_tbl_lbl_cm_morning_percentage.innerText = _totalPlanChangeMorning == 0 ? "" : (_totalActualChangeMorning/_totalPlanChangeMorning*100).toFixed(0) + '%'
+                keikaku_rpt_tbl_lbl_cm_night_percentage.innerText = _totalPlanChangeNight == 0 ? "" : (_totalActualChangeNight/_totalPlanChangeNight*100).toFixed(0) + '%'
 
             }, error: function(xhr, xopt, xthrow) {
                 pThis.disabled = false
