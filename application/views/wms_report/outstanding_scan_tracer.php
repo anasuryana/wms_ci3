@@ -133,11 +133,6 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-12 mb-1 text-center">
-                                    <button id="itm_tracer_btn_check" onclick="itm_tracer_btn_tlws_find_on_click(this)" class="btn btn-primary btn-sm">Find Active Job</button>
-                                </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-12 mb-1">
                                     <div class="table-responsive" id="itm_tracer_tlws_table_container">
                                         <table id="itm_tracer_tlws_tbl" class="table table-bordered border-primary table-sm table-hover">
@@ -363,6 +358,8 @@
                 document.getElementById("itm_tracer_table_container").getElementsByTagName('tbody')[0].innerHTML = `<tr><td colspan="5">${xthrow}</td></tr>`;
             }
         });
+
+        itm_tracer_btn_tlws_find_on_click()
     }
 
     function itm_tracer_get_details(data) {
@@ -477,7 +474,7 @@
         });
     }
 
-    function itm_tracer_btn_tlws_find_on_click(pThis) {
+    function itm_tracer_btn_tlws_find_on_click() {
         const doc = itm_tracer_doc.value.trim()
         const assyCode = itm_tracer_assycode.value.trim()
 
@@ -495,7 +492,7 @@
             itemCode : assyCode,
         }
 
-        pThis.disabled = true
+        
         const div_alert = document.getElementById('itm_tracer_div_alert')
         div_alert.innerHTML = ``
         $.ajax({
@@ -504,7 +501,7 @@
             data: data,
             dataType: "json",
             success: function (response) {
-                pThis.disabled = false
+                
                 let mydes = document.getElementById("itm_tracer_tlws_table_container");
                 let myfrag = document.createDocumentFragment();
                 let mtabel = document.getElementById("itm_tracer_tlws_tbl");
@@ -579,7 +576,6 @@
                 mydes.appendChild(myfrag);
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
-                pThis.disabled = false               
             }
         });
     }
