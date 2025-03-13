@@ -1493,7 +1493,14 @@
                             }
                         }
                         break;
-                    case 'INPUT' :
+                    case 'INPUT1' :
+                        theCells = cell.parentNode.cells
+                        for(let i=0; i <theCells.length; i++) {
+                            const theCell = theCells[i]
+                            theCell.classList.add('keikakuGreenOldColor')
+                        }
+                        break;
+                    case 'INPUT2' :
                         theCells = cell.parentNode.cells
                         for(let i=0; i <theCells.length; i++) {
                             const theCell = theCells[i]
@@ -1614,7 +1621,7 @@
                 $("#keikakuEditActualModal").modal('show')
             }
 
-            if(aRow[7] === 'INPUT' && x2 >=9 ) { 
+            if(aRow[7] === 'INPUT1' && x2 >=9 ) { 
                 keikakuISHWEditingMode = '1'
                 let aRowTime = instance.jspreadsheet.getRowData(1)
                 keikakuEditINPUTHW_Hour.value = aRowTime[x2]
@@ -1640,9 +1647,37 @@
                 $("#keikakuEditINPUTHWModal").modal('show')
             }
 
-            if(aRow[7] === 'OUTPUT' && x2 >=9 ) { 
+            if(aRow[7] === 'INPUT2' && x2 >=9 ) { 
+                keikakuISHWEditingMode = '3'
                 aRowSibling = instance.jspreadsheet.getRowData(y2-3)
                 aRowSibling2 = instance.jspreadsheet.getRowData(y2-4)
+                let aRowTime = instance.jspreadsheet.getRowData(1)
+                keikakuEditINPUTHW_Hour.value = aRowTime[x2]
+                keikakuEditINPUTHW_HourTo.value = Number(aRowTime[x2]) + 1
+                keikakuEditINPUTHW_XCoordinate.value = x2
+
+                keikakuEditINPUTHWOutput.value = aRow[x2]
+                tempX1 = x1
+                tempX2 = x2
+                tempY1 = y1
+                tempY2 = y2
+
+                if (aRowSibling[7] === 'TOTAL') {
+                    keikakuEditINPUTHW_Side.value = aRowSibling[1]
+                    keikakuEditINPUTHW_HeadSeq.value = aRowSibling2[0]/2
+                    keikaku_get_wo({
+                        prefWO : aRowSibling2[3],
+                        procWO : aRowSibling[1],
+                        itemWO : aRowSibling[5],
+                    })
+                }
+
+                $("#keikakuEditINPUTHWModal").modal('show')
+            }
+
+            if(aRow[7] === 'OUTPUT' && x2 >=9 ) { 
+                aRowSibling = instance.jspreadsheet.getRowData(y2-5)
+                aRowSibling2 = instance.jspreadsheet.getRowData(y2-6)
                 keikakuISHWEditingMode = '2'
                 let aRowTime = instance.jspreadsheet.getRowData(1)
                 keikakuEditINPUTHW_Hour.value = aRowTime[x2]
@@ -2745,7 +2780,7 @@
                 mydes.appendChild(myfrag);
 
                 // display prodplan to grid
-                keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation, response.dataChangesModel, response.dataInputHW, response.dataOutputHW)
+                keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation, response.dataChangesModel, response.dataInputHW, response.dataOutputHW, response.dataInput2HW)
                 keikaku_prodplan_sso.resetSelection();
                 keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1+1, tempX2, tempY2+1);
 
@@ -3049,7 +3084,7 @@
         return (keikaku_line_input.value.substr(keikaku_line_input.value.length-1)=='3' && !keikaku_line_input.value.includes('AT')) || keikaku_line_input.value=='PS2' ? true : false
     }
 
-    function keikakuDisplayProdplan(data, dataS, dataCalculation, dataModelChanges, dataInputHW, dataOutputHW) {
+    function keikakuDisplayProdplan(data, dataS, dataCalculation, dataModelChanges, dataInputHW, dataOutputHW, dataInput2HW) {
         let _newRowH = []
         _newRowH.push('')
         _newRowH.push('')
@@ -3093,6 +3128,8 @@
                 let _newRow8 = [] // output total hw
                 let _newRow9 = [] // Progress hw
                 let _newRow10 = [] // progress total hw
+                let _newRow11 = [] // input2 hw
+                let _newRow12 = [] // input2 total hw
                 if (data[i][0]) {
                     const _tempA = data[i][5].split('#')
                     const _model = _tempA[1]
@@ -3175,7 +3212,7 @@
                     _newRow5.push('')
                     _newRow5.push('')
                     _newRow5.push('')
-                    _newRow5.push('INPUT')
+                    _newRow5.push('INPUT1')
                     _newRow5.push(0)
 
                     _newRow6.push('')
@@ -3187,6 +3224,26 @@
                     _newRow6.push('')
                     _newRow6.push('Total,,')
                     _newRow6.push('')
+
+                    _newRow11.push('')
+                    _newRow11.push('')
+                    _newRow11.push('')
+                    _newRow11.push('')
+                    _newRow11.push('')
+                    _newRow11.push('')
+                    _newRow11.push('')
+                    _newRow11.push('INPUT2')
+                    _newRow11.push(0)
+
+                    _newRow12.push('')
+                    _newRow12.push('')
+                    _newRow12.push('')
+                    _newRow12.push('')
+                    _newRow12.push('')
+                    _newRow12.push('')
+                    _newRow12.push('')
+                    _newRow12.push('Total2')
+                    _newRow12.push('')
 
                     _newRow9.push('')
                     _newRow9.push('')
@@ -3209,21 +3266,27 @@
                     _newRow10.push('')
 
                     let totalQtyInputHW = 0
+                    let totalQtyInput2HW = 0
                     for(let r=0; r<totalRowsInputHW; r++) {
                         if(data[i][3] == dataInputHW[r][3] && _specsSide == dataInputHW[r][4] && _seq == dataInputHW[r][1]) { // by job & seq
                             for(let c=9; c<(9+12+12+12); c++) {
                                 _newRow5.push(dataInputHW[r][c-3])
+                                _newRow11.push(dataInput2HW[r][c-3])
                                 const _output = Number(dataInputHW[r][c-3])
+                                const _output2 = Number(dataInput2HW[r][c-3])
                                 if(c<33) {
                                     _newRow5[8]+=_output
+                                    _newRow11[8]+=_output2
                                 }
 
                                 totalQtyInputHW += _output
+                                totalQtyInput2HW += _output2
 
                                 if(_output==0) {
                                     _newRow6.push('')
                                     _newRow9.push('')
                                     _newRow10.push('')
+                                    _newRow12.push('')
                                   
                                 } else {
                                     let _totalLastPlan = 0
@@ -3236,6 +3299,7 @@
                                     _newRow6.push(totalQtyInputHW)
                                     _newRow9.push(_output-_newRow3[c])
                                     _newRow10.push(totalQtyInputHW-_totalLastPlan)
+                                    _newRow12.push(totalQtyInput2HW)
                                 }
 
                             }
@@ -3245,6 +3309,8 @@
 
                     inputSS.push(_newRow5)
                     inputSS.push(_newRow6)
+                    inputSS.push(_newRow11)
+                    inputSS.push(_newRow12)
 
                     _newRow7.push('')
                     _newRow7.push('')
@@ -4619,6 +4685,8 @@
                 theUrl = "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/input-hw";break
             case '2':
                 theUrl = "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/output-hw";break
+            case '3':
+                theUrl = "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/input2-hw";break
         }
         pThis.disabled = true
         $.ajax({
