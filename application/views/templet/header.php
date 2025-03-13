@@ -23,7 +23,8 @@
 	<link rel="stylesheet" href="<?=base_url("assets/tablesorter/css/theme.bootstrap_4.min.css")?>">	
 	<link rel="stylesheet" href="<?=base_url("assets/tablesorter/css/theme.blue.css")?>">	
 	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jspreadsheet/jspreadsheet.css")?>">	
-	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jsuites/jsuites.min.css")?>">	
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/jsuites/jsuites.min.css")?>">
+	<link rel="stylesheet" type="text/css" href="<?=base_url("assets/css/Treant.css")?>">	
 	<script type="text/javascript" src="<?=base_url("assets/chart/chart.umd.js") ?>"></script>
 	<script type="text/javascript" src="<?=base_url("assets/jquery/jquery.min.js") ?>"></script>
 	<script type="text/javascript" src="<?=base_url("assets/js/sweetalert2.all.min.js") ?>"></script>	
@@ -50,7 +51,7 @@
 	<script src="<?=base_url("assets/jsuites/jsuites.min.js")?>"></script>	
 	<script src='<?=base_url("assets/js/tesseract.min.js")?>'></script>
 	<script src='<?=base_url("assets/js/inputmask.min.js")?>'></script>
-	
+	<script src='<?=base_url("assets/js/Treant.js")?>'></script>
 </head>
 <body class="easyui-layout">	
 	<div split="true" data-options="region:'west',title:'<i class=\'fas fa-sitemap\'></i> <i>Module List</i>',hideCollapsedContent:false" style="width:15%;min-width:190px;padding:5px;">

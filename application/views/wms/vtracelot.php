@@ -13,6 +13,8 @@
         position: sticky;
         top: 26px;
     }
+
+    .node { color: #1290e9; border: 2px solid #C8C8C8; border-radius: 3px; background: #fff; transition: background 0.7s, color 0.7s; }
 </style>
 <div style="padding: 10px">
 	<div class="container-fluid">
@@ -165,6 +167,28 @@
       </div>
     </div>
 </div>
+<div class="modal fade" id="TRACE_UC_HISTORY">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title" id="TRACE_UC_HISTORY_H1">Split History <span class="badge bg-info" id="TRACE_UC_HISTORY_SPAN_CAT"></span> <span class="badge bg-info" id="TRACE_UC_HISTORY_SPAN"></span></h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col">
+                    <div class="table-responsive" id="trace_history_tblc3_div">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
 <script>
     $("#trace_txt_dt").datepicker({
         format: 'yyyy-mm-dd',
@@ -245,6 +269,15 @@
                         newcell.innerText = response.data[i].SPLSCN_LUPDT
                         newcell = newrow.insertCell(-1);
                         newcell.innerText = response.data[i].SPLSCN_UNQCODE
+                        if(response.data[i].SPLSCN_UNQCODE??'' != '') {
+                            newcell.style.cssText = 'cursor:pointer'
+                            newcell.ondblclick = function () {
+                                TRACE_UC_HISTORY_SPAN_CAT.innerText = response.data[i].SPLSCN_CAT
+                                TRACE_UC_HISTORY_SPAN.innerText = response.data[i].SPLSCN_ITMCD
+                                $('#TRACE_UC_HISTORY').modal('show')
+                                trace_f_get_history({code : response.data[i].SPLSCN_UNQCODE, item_code : response.data[i].SPLSCN_ITMCD})
+                            }
+                        }
                     }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
@@ -253,6 +286,35 @@
                 }
             }, error: function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
+            }
+        });
+    }
+
+    function trace_f_get_history(data) {
+        TRACE_UC_HISTORY_SPAN.innerText = 'Please wait...'
+        trace_history_tblc3_div.innerHTML = ''
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL3_API'] ?>label/history-tree",
+            data: {code : data.code, item_code : data.item_code},
+            dataType: "json",
+            success: function (response) {
+                TRACE_UC_HISTORY_SPAN.innerText = data.item_code
+                let tree_structure = {
+                    chart: {
+                        container: "#trace_history_tblc3_div",                       
+
+                        node: {                            
+                            drawLineThrough: true
+                        },
+                    },
+                    nodeStructure : response.data
+                }
+
+                new Treant( tree_structure );
+            }, error: function(xhr, xopt, xthrow){
+                alertify.error(xthrow);
+                TRACE_UC_HISTORY_SPAN.innerText = ''
             }
         });
     }
