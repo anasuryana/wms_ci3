@@ -3176,7 +3176,7 @@ class DELV extends CI_Controller
             $pdf->Cell(31.17, 4, $hdlv_date, 0, 0, 'L');
 
             #BIG REMARK
-            $pdf->SetXY(100, 240);
+            $pdf->SetXY(100, 250);
             $pdf->SetAlpha(1);
             $pdf->SetFont('Arial', 'B', 13);
             $_textwidth = $pdf->GetStringWidth($h_description) + 3;
@@ -3192,7 +3192,7 @@ class DELV extends CI_Controller
             $pdf->Cell(31.17, 4, "BC " . $h_bctype . " : " . $h_nopen, 0, 0, 'L');
             $pdf->SetXY(155, 75 + 10);
             $pdf->Cell(31.17, 4, "INV NO : " . $h_invno, 0, 0, 'L');
-            $curY = 93 + 20;
+            $curY = 99;
             $pdf->SetFont('Arial', '', 9);
             $UM = '';
             $a_stkuom = [];
@@ -3202,7 +3202,7 @@ class DELV extends CI_Controller
                 $ItemDis = $tempItem;
                 $ItemDis2 = rtrim($r['DLV_ITMD1']);
                 $nourutDODis = $nourutDO;
-                if ($ttlbaris > 6) {
+                if ($ttlbaris > 5) {
                     $pdf->AddPage();
                     $pdf->SetAutoPageBreak(true, 1);
                     $pdf->SetMargins(0, 0);
@@ -3214,7 +3214,7 @@ class DELV extends CI_Controller
                     $pdf->Cell(31.17, 4, $hdlv_date, 0, 0, 'L');
 
                     #BIG REMARK
-                    $pdf->SetXY(100, 240);
+                    $pdf->SetXY(100, 250);
                     $pdf->SetAlpha(0.5);
                     $pdf->SetFont('Arial', 'B', 15);
                     $_textwidth = $pdf->GetStringWidth($h_description) + 3;
@@ -3275,7 +3275,7 @@ class DELV extends CI_Controller
                 $curY += (16 + $YExtra);
                 $ttlbaris++;
             }
-            $pdf->SetXY(90, 220);
+            $pdf->SetXY(83, 240);
             if (count($a_stkuom) > 1) {
                 $pdf->Cell(43.43, 4, number_format($ttldoqty), 0, 0, 'R');
             } else {
