@@ -268,9 +268,8 @@
                     newrow = tableku2.insertRow(-1)
                     newcell = newrow.insertCell(0)
                     newcell.classList.add('text-center')
-                    newcell.style.cssText = 'cursor:pointer'
                     newcell.innerText = arrayItem['partCode']
-                    newcell.onclick = function() {
+                    newcell.ondblclick = function() {
                         if(['ADMIN', 'MSPV'].includes(wms_usergroupid)) {
                             $("#itm_tracer_adj_modal").modal('show')
                             itm_tracer_item_code.value = arrayItem['partCode']
