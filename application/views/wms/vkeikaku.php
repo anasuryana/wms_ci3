@@ -516,41 +516,6 @@
   </div>
 </div>
 
-<div class="modal fade" id="keikakuWOListFilterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">WO selection</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="table-responsive" id="keikakuWOFilterTblDiv">
-                        <table id="keikakuWOFilterTbl" class="table table-sm table-striped table-bordered table-hover">
-                            <thead class="table-light text-center">
-                                <tr>
-                                    <th></th>
-                                    <th>Process</th>
-                                    <th>WO</th>
-                                    <th>Model</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-
-      </div>
-    </div>
-  </div>
-</div>
 <!-- Modal -->
 <div class="modal fade" id="keikakuEditActualModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable">
@@ -2760,6 +2725,12 @@
     }
 
     var _temp_asProdpan = [];
+    var _temp_dataSensor = [];
+    var _temp_dataCalculation = [];
+    var _temp_dataChangesModel = [];
+    var _temp_dataInputHW = [];
+    var _temp_dataOutputHW = [];
+    var _temp_dataInput2HW = [];
 
     function keikaku_btn_run_prodplan_eC(pThis) {
 
@@ -2786,52 +2757,10 @@
 
                 _temp_asProdpan = response.asProdplan
 
-                // populate filter data
-                let mydes = document.getElementById("keikakuWOFilterTblDiv");
-                let myfrag = document.createDocumentFragment();
-                let mtabel = document.getElementById("keikakuWOFilterTbl");
-                let cln = mtabel.cloneNode(true);
-                myfrag.appendChild(cln);
-                let tabell = myfrag.getElementById("keikakuWOFilterTbl");
-                let checkBox = myfrag.getElementById("keikakuCheckAllWO");
-                let tableku2 = tabell.getElementsByTagName("tbody")[0];
-                let newrow, newcell;
-
-                _temp_asProdpan.forEach((currentValue, index) => {
-                    if(index>3 && currentValue[3]) {
-                        let _EleInput = document.createElement('input')
-                        _EleInput.type = 'checkbox'
-                        _EleInput.classList.add('form-check-input')
-                        _EleInput.checked = true
-
-                        let _concatedColumn = currentValue[5].split('#')
-
-                        newrow = tableku2.insertRow(-1);
-                        newcell = newrow.insertCell(0);
-                        newcell.classList.add('text-center')
-                        newcell.append(_EleInput)
-
-                        newcell = newrow.insertCell(-1);
-                        newcell.classList.add('text-center')
-                        newcell.innerText = _concatedColumn[0]
-
-                        newcell = newrow.insertCell(-1);
-                        newcell.classList.add('text-center')
-                        newcell.innerText = currentValue[3]
-
-                        newcell = newrow.insertCell(-1);
-                        newcell.classList.add('text-center')
-                        newcell.innerText = _concatedColumn[1]
-                    }
-                })
-                mydes.innerHTML='';
-                mydes.appendChild(myfrag);
-
                 // display prodplan to grid
                 keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation, response.dataChangesModel, response.dataInputHW, response.dataOutputHW, response.dataInput2HW)
                 keikaku_prodplan_sso.resetSelection();
                 keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1+1, tempX2, tempY2+1);
-
 
                 // report graph
 
