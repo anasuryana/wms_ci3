@@ -578,7 +578,7 @@
   <div class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5">Editing INPUT</h1>
+        <h1 class="modal-title fs-5">Editing ...</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -614,13 +614,21 @@
                     </div>
                 </div>
             </div>
+            <div class="row" id="keikakuEditINPUTHWCommentContainer">
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label for="platNomor" class="form-label">Comment</label>
+                        <input type="text" class="form-control" id="keikakuEditINPUTHWComment" maxlength="55">
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
       <input type="hidden" id="keikakuEditINPUTHW_XCoordinate">
       <input type="hidden" id="keikakuEditINPUTHW_Side">
       <input type="hidden" id="keikakuEditINPUTHW_HeadSeq">
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="keikakuBtnEditINPUTHW_Actual" onclick="keikakuBtnEditINPUTHW_ActualOnClick(this)"><i class="fas fa-save"></i></button>
+        <button type="button" class="btn btn-primary" id="keikakuBtnEditINPUTHW_Actual" onclick="keikakuBtnEditINPUTHW_ActualOnClick(this)"><i class="fas fa-save"></i></button>        
       </div>
     </div>
   </div>
@@ -760,6 +768,7 @@
     </div>
   </div>
 </div>
+<input type="hidden" id="keikaku_cell_name">
 <script>
     var tempX1 = 0
     var tempX2 = 0
@@ -1599,6 +1608,11 @@
                 tempY1 = y1
                 tempY2 = y2
 
+                const theCellName = keikakugetColumnName(x1) + (y1+1)
+                keikaku_cell_name.value = theCellName
+                keikakuCommentBefore = keikakuGetComment(theCellName)
+                keikakuEditINPUTHWComment.value = keikakuGetComment(theCellName)
+
                 if (aRowSibling[7] === 'TOTAL') {
                     keikakuEditINPUTHW_Side.value = aRowSibling[1]
                     keikakuEditINPUTHW_HeadSeq.value = aRowSibling2[0]/2
@@ -1627,6 +1641,11 @@
                 tempY1 = y1
                 tempY2 = y2
 
+                const theCellName = keikakugetColumnName(x1) + (y1+1)
+                keikaku_cell_name.value = theCellName
+                keikakuCommentBefore = keikakuGetComment(theCellName)
+                keikakuEditINPUTHWComment.value = keikakuGetComment(theCellName)
+
                 if (aRowSibling[7] === 'TOTAL') {
                     keikakuEditINPUTHW_Side.value = aRowSibling[1]
                     keikakuEditINPUTHW_HeadSeq.value = aRowSibling2[0]/2
@@ -1654,6 +1673,11 @@
                 tempX2 = x2
                 tempY1 = y1
                 tempY2 = y2
+
+                const theCellName = keikakugetColumnName(x1) + (y1+1)
+                keikaku_cell_name.value = theCellName
+                keikakuCommentBefore = keikakuGetComment(theCellName)
+                keikakuEditINPUTHWComment.value = keikakuGetComment(theCellName)
                 
                 if (aRowSibling[7] === 'TOTAL') {
                     keikakuEditINPUTHW_Side.value = aRowSibling[1]
@@ -2683,6 +2707,17 @@
     var _temp_dataInputHW = [];
     var _temp_dataOutputHW = [];
     var _temp_dataInput2HW = [];
+    var _temp_dataComment = [];
+
+    function keikakuGetComment(cellCode) {
+        const totalRows = _temp_dataComment.length
+        for(let i=0;i<totalRows;i++) {
+            if(_temp_dataComment[i].cell_code === cellCode) {
+                return _temp_dataComment[i].comment
+            }
+        }
+        return ''
+    }
 
     function keikaku_btn_run_prodplan_eC(pThis) {
 
@@ -2708,6 +2743,7 @@
                 pThis.disabled = false
 
                 _temp_asProdpan = response.asProdplan
+                _temp_dataComment = response.dataComment
 
                 // display prodplan to grid
                 keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation, response.dataChangesModel, response.dataInputHW, response.dataOutputHW, response.dataInput2HW)
@@ -3561,6 +3597,11 @@
         if(totalRowsMatrix>0) {
             keikaku_prodplan_sso.setData(inputSS)
         }
+        _temp_dataComment.forEach((ai) => {
+            if(ai['comment']) {
+                keikaku_prodplan_sso.setComments(ai['cell_code'], ai['comment'])
+            }
+        })
     }
 
     function keikakuCaptionChangesGenerator(paramData, paramY) {
@@ -4646,6 +4687,42 @@
                 </div>`
             }
         });
+
+        const theComment = keikakuEditINPUTHWComment.value.trim()
+
+        if(keikakuCommentBefore!=theComment) {
+            const data = {
+                line : keikaku_line_input.value,
+                comment : theComment,
+                cell_code : keikaku_cell_name.value,
+                productionDate : keikakuEditDate.value,
+                user_id : uidnya,
+            }
+            $.ajax({
+                type: "POST",
+                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/comment",
+                data: data,
+                dataType: "json",
+                success: function (response) {
+                    $('#keikakuEditINPUTHWModal').modal('hide')
+                    keikaku_prodplan_sso.setComments(keikaku_cell_name.value, theComment)
+                }, error: function(xhr, xopt, xthrow) {
+                    alertify.error(xthrow)
+                    pThis.disabled = false
+
+                    const respon = Object.keys(xhr.responseJSON)
+
+                    let msg = ''
+                    for (const item of respon) {
+                        msg += `<p>${xhr.responseJSON[item]}</p>`
+                    }
+                    keikakuEditINPUTHWAlert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${msg}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                }
+            });
+        }
     }
 
     function keikakuEditINPUTHWOutputOnKeyPress(e) {

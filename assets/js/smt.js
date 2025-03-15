@@ -123,7 +123,6 @@ function keikaku_btn_mode(pThis) {
 }
 
 function vkeikakuSimulate(pData, pCalculation) {
-    console.log({ data: pData, calculation: pCalculation })
     let asProdplan1 = [null, null, null, null, null, null];
     let asProdplan2 = [null, null, null, null, null, null];
     let asProdplan3 = [null, null, null, null, null, null];
@@ -292,4 +291,17 @@ function _sumHorizontal(data, parX, parY) {
         _summarizedHorizontal += data[parY][__c];
     }
     return _summarizedHorizontal;
+}
+
+function keikakugetColumnName(i) {
+    let letter = '';
+    if (i > 701) {
+        letter += String.fromCharCode(64 + parseInt(i / 676));
+        letter += String.fromCharCode(64 + parseInt((i % 676) / 26));
+    } else if (i > 25) {
+        letter += String.fromCharCode(64 + parseInt(i / 26));
+    }
+    letter += String.fromCharCode(65 + (i % 26));
+
+    return letter;
 }
