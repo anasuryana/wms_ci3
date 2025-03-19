@@ -109,6 +109,16 @@
             </div>
         </div>
         <div class="row">
+            <div class="col-md-12" id="keikakuEditAlert">
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" id="keikakuEditINPUTHWAlert">
+
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-12 mb-1">
             <ul class="nav nav-tabs nav-pills" id="keikaku_main_tab" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -528,11 +538,6 @@
       <div class="modal-body">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-12" id="keikakuEditAlert">
-
-                </div>
-            </div>
-            <div class="row">
                 <div class="col-md-12">
                     <label for="platNomor" class="form-label">WO</label>
                     <div class="input-group mb-3">
@@ -583,11 +588,6 @@
       </div>
       <div class="modal-body">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12" id="keikakuEditINPUTHWAlert">
-
-                </div>
-            </div>
             <div class="row">
                 <div class="col-md-12">
                     <label for="platNomor" class="form-label">WO</label>
@@ -1311,7 +1311,6 @@
             ...Array.from({length: 9+36}, (_, i) => {
                             const objek = Object.create({
                                 type : 'text',
-                                readOnly : true
                                 })
                             switch(i) {
                                 case 0 :
@@ -1370,7 +1369,7 @@
         allowInsertRow : false,
         updateTable: function(el, cell, x, y, source, value, id) {
 
-            if (Array.from({length: 42}, (_, i) => i).includes(x) && [0,1,2,3,4,5,6].includes(y)) {
+            if (Array.from({length: 42}, (_, i) => i).includes(x) && [0,1,2,3,4,5,6,7,8].includes(y)) {
                 cell.classList.add('readonly');
                 cell.style.cssText = "font-weight: bold; text-align:center"
             }
@@ -1434,12 +1433,29 @@
                 let cellName = '';
                 let theCells = ''
                 switch(value) {
+                    case 'PLAN':
+                        cellName = jspreadsheet.getColumnNameFromId([x-1,y]);
+                        theCells = cell.parentNode.cells
+                        for(let i=0; i <theCells.length; i++) {
+                            const theCell = theCells[i]
+                            theCell.classList.add('readonly')
+                        }
+                        break;
+                    case 'PLAN PROD':
+                        cellName = jspreadsheet.getColumnNameFromId([x-1,y]);
+                        theCells = cell.parentNode.cells
+                        for(let i=0; i <theCells.length; i++) {
+                            const theCell = theCells[i]
+                            theCell.classList.add('readonly')
+                        }
+                        break;
                     case 'Actual':
                         cellName = jspreadsheet.getColumnNameFromId([x-1,y]);
                         theCells = cell.parentNode.cells
                         for(let i=0; i <theCells.length; i++) {
                             const theCell = theCells[i]
                             theCell.classList.add('keikakuGreenOldColor')
+                            theCell.classList.add('readonly')
                         }
                         break;
                     case 'Total':
@@ -1449,13 +1465,23 @@
                             theCell.classList.add('keikakuGrayOldColor')
                         }
                         break;
+                    case 'TOTAL':
+                        theCells = cell.parentNode.cells
+                        for(let i=0; i <theCells.length; i++) {
+                            const theCell = theCells[i]
+                            theCell.classList.add('readonly')
+                        }
+                        break;
                     case 'Progress' :
                         theCells = cell.parentNode.cells
                         for(let i=0; i <theCells.length; i++) {
                             const theCell = theCells[i]
                             if(numeral(theCell.innerText).value() < 0) {
                                 theCell.classList.add('keikakuRedColor')
+                            } else {
+                                theCell.classList.remove('keikakuRedColor')
                             }
+                            theCell.classList.add('readonly')
                         }
                         break;
                     case 'Total.' :
@@ -1464,7 +1490,10 @@
                             const theCell = theCells[i]
                             if(numeral(theCell.innerText).value() < 0) {
                                 theCell.classList.add('keikakuRedColor')
+                            } else {                                
+                                theCell.classList.remove('keikakuRedColor')
                             }
+                            theCell.classList.add('readonly')
                         }
                         break;
                     case 'INPUT1' :
@@ -1554,6 +1583,7 @@
 
 
                 keikakuEditOutput.value = aRow[x2]
+                keikakuBeforeValue = aRow[x2]
                 tempX1 = x1
                 tempX2 = x2
                 tempY1 = y1
@@ -1569,6 +1599,7 @@
                     keikakuEditOutputContainer.classList.remove('d-none')
                     keikakuBtnEditActual.classList.remove('d-none')
                     keikakuBtnEditActualChangeModel.classList.add('d-none')
+                    keikakuISHWEditingMode = '4'
                 } else {
                     aRowSibling = instance.jspreadsheet.getRowData(y2+2)
                     aRowSibling2 = instance.jspreadsheet.getRowData(y2+1)
@@ -1582,6 +1613,7 @@
                     keikakuEditOutputContainer.classList.add('d-none')
                     keikakuBtnEditActual.classList.add('d-none')
                     keikakuBtnEditActualChangeModel.classList.remove('d-none')
+                    keikakuISHWEditingMode = '5'
                 }
                 if(aRow[x2] == 1) {
                     keikakuBtnEditActualChangeModel.innerText = 'Remove Change Model'
@@ -1603,6 +1635,7 @@
                 keikakuEditINPUTHW_XCoordinate.value = x2
 
                 keikakuEditINPUTHWOutput.value = aRow[x2]
+                keikakuBeforeValue = aRow[x2]
                 tempX1 = x1
                 tempX2 = x2
                 tempY1 = y1
@@ -1622,8 +1655,6 @@
                         itemWO : aRowSibling[5],
                     })
                 }
-
-                $("#keikakuEditINPUTHWModal").modal('show')
             }
 
             if(aRow[7] === 'INPUT2' && x2 >=9 ) { 
@@ -1636,6 +1667,7 @@
                 keikakuEditINPUTHW_XCoordinate.value = x2
 
                 keikakuEditINPUTHWOutput.value = aRow[x2]
+                keikakuBeforeValue = aRow[x2]
                 tempX1 = x1
                 tempX2 = x2
                 tempY1 = y1
@@ -1655,8 +1687,6 @@
                         itemWO : aRowSibling[5],
                     })
                 }
-
-                $("#keikakuEditINPUTHWModal").modal('show')
             }
 
             if(aRow[7] === 'OUTPUT' && x2 >=9 ) { 
@@ -1669,6 +1699,7 @@
                 keikakuEditINPUTHW_XCoordinate.value = x2
 
                 keikakuEditINPUTHWOutput.value = aRow[x2]
+                keikakuBeforeValue = aRow[x2]
                 tempX1 = x1
                 tempX2 = x2
                 tempY1 = y1
@@ -1688,13 +1719,69 @@
                         itemWO : aRowSibling[5],
                     })
                 }
-
-                $("#keikakuEditINPUTHWModal").modal('show')
             }
+        },oneditionend : function(a,b,x,y,newValue,f) {
+            if(numeral(keikakuBeforeValue).value!=numeral(newValue).value() && x>8) {
+                if(["1","2","3"].includes(keikakuISHWEditingMode)) {
+                    if(!isNaN(newValue)) {
+                        keikakuEditINPUTHWOutput.value = numeral(newValue).value()
+                        keikakuBtnEditINPUTHW_ActualOnClick(keikakuBtnEditINPUTHW_Actual)
+                    } else {
+                        alert('Number is required')
+                        keikaku_prodplan_sso.setValueFromCoords(tempX1, tempY1, keikakuBeforeValue, true)
+                    }
+                } else {
+                    if(keikakuISHWEditingMode == "4") {
+                        if(!isNaN(newValue)) {
+                            keikakuEditOutput.value = numeral(newValue).value()
+                            keikakuBtnEditActualOnClick(keikakuBtnEditActual)
+                        } else {
+                            alert('Number is required')
+                            keikaku_prodplan_sso.setValueFromCoords(tempX1, tempY1, keikakuBeforeValue, true)
+                        }
+                    } else {
+                        if(['-','1'].includes(newValue)) {
+                            keikakuBtnEditActualChangeModelOnClick(keikakuBtnEditActualChangeModel, newValue)
+                        } else {
+                            alert('please fill with - or 1')
+                            keikaku_prodplan_sso.setValueFromCoords(tempX1, tempY1, keikakuBeforeValue, true)
+                        }
+                    }
+                }
+            }
+        }, contextMenu: function(obj, x, y, e) {
+            let items = [];
+
+            if (x) {
+                items.push({ type:'line' });
+
+                const title = "Write comment" || '';
+
+                items.push({
+                    title: title ? obj.options.text.editComments : obj.options.text.addComments,
+                    onclick:function() {
+                        const _comment = prompt(obj.options.text.comments, title) ?? ''
+                        obj.setComments([ x, y ], _comment);
+                        keikakuSetDBComment(_comment)
+                    }
+                });
+
+                if (title) {
+                    items.push({
+                        title:obj.options.text.clearComments,
+                        onclick:function() {
+                            obj.setComments([ x, y ], '');
+                            keikakuSetDBComment('')
+                        }
+                    });
+                }                
+            }
+            return items
         }
     });
 
     var keikakuISHWEditingMode = '-'
+    var keikakuBeforeValue = '-'
     function keikaku_get_wo(data) {
         let ttlRows = _temp_asProdpan.length
         for(let i=4; i<ttlRows;i+=2) {
@@ -2747,8 +2834,6 @@
 
                 // display prodplan to grid
                 keikakuDisplayProdplan(response.asProdplan, response.dataSensor, response.dataCalculation, response.dataChangesModel, response.dataInputHW, response.dataOutputHW, response.dataInput2HW)
-                keikaku_prodplan_sso.resetSelection();
-                keikaku_prodplan_sso.updateSelectionFromCoords(tempX1, tempY1+1, tempX2, tempY2+1);
 
 
                 // report graph
@@ -3082,6 +3167,10 @@
         const totalRowsOutputHW = dataOutputHW.length
 
         let nomorUrut = 1;
+        let nextRow = 10
+        const _columnHeadActual = keikakugetColumnName(8)
+        const _columnEndActual = keikakugetColumnName(32)
+        const _columnStartActual = keikakugetColumnName(9)
         if(keikakuIsHW()) {
             for(let i=3; i<totalRowsMatrix; i++) {
                 let _newRow1 = []
@@ -3114,7 +3203,7 @@
                     _newRow2.push('')
                     _newRow2.push('')
                     _newRow2.push('Actual')
-                    _newRow2.push(0)
+                    _newRow2.push(`=SUM(${_columnStartActual+(nextRow)}:${_columnEndActual+(nextRow)})`)
 
                     _newRow3.push(nomorUrut)
                     _newRow3.push('')
@@ -3160,16 +3249,21 @@
                             for(let c=9; c<(9+12+12+12); c++) {
                                 const _theflag = dataModelChanges[r][c-3]
                                 _newRow2.push(_theflag == '-' ? '' : _theflag)
-                                if(_theflag=='1') {
-                                    _newRow2[8]++
-                                }
                             }
                         }
                     }
 
-                    inputSS.push(_newRow2)
-                    inputSS.push(_newRow3)
-                    inputSS.push(_newRow4)
+                    inputSS.push(_newRow2) // actual change model
+                    nextRow++
+                    inputSS.push(_newRow3) //  plan prod
+                    nextRow++
+                    inputSS.push(_newRow4) // total plan prod
+                    nextRow++
+
+                    let _cellStartActual = _columnStartActual + (nextRow)
+                    let _cellEndActual = _columnEndActual + (nextRow)
+                    let _cellHeadActual = _columnHeadActual + (nextRow)
+                    let _cellHeadProdplan = _columnHeadActual + (nextRow-2)
 
                     _newRow5.push('')
                     _newRow5.push('')
@@ -3179,7 +3273,7 @@
                     _newRow5.push('')
                     _newRow5.push('')
                     _newRow5.push('INPUT1')
-                    _newRow5.push(0)
+                    _newRow5.push(`=IF(SUM(${_cellStartActual}:${_cellEndActual})="0","0", SUM(${_cellStartActual}:${_cellEndActual}))`)
 
                     _newRow6.push('')
                     _newRow6.push('')
@@ -3191,6 +3285,20 @@
                     _newRow6.push('Total,,')
                     _newRow6.push('')
 
+
+                    for(let c=9; c<(9+12+12+12); c++) {
+                        const _column = keikakugetColumnName(c)
+                        const _cellActual = `${_column}${nextRow}`
+                        const _columnStart = keikakugetColumnName(9) + (nextRow)
+                        _newRow6.push(`=IF(${_cellActual}=0,"-",SUM(${_columnStart}:${_cellActual}))`)
+                    }
+                    nextRow+=2
+
+                    _cellStartActual = _columnStartActual + (nextRow)
+                    _cellEndActual = _columnEndActual + (nextRow)
+                    _cellHeadActual = _columnHeadActual + (nextRow)
+                    _cellHeadProdplan = _columnHeadActual + (nextRow-2)
+
                     _newRow11.push('')
                     _newRow11.push('')
                     _newRow11.push('')
@@ -3199,7 +3307,8 @@
                     _newRow11.push('')
                     _newRow11.push('')
                     _newRow11.push('INPUT2')
-                    _newRow11.push(0)
+                    _newRow11.push(`=IF(SUM(${_cellStartActual}:${_cellEndActual})="0","0", SUM(${_cellStartActual}:${_cellEndActual}))`)
+                    nextRow++
 
                     _newRow12.push('')
                     _newRow12.push('')
@@ -3210,73 +3319,18 @@
                     _newRow12.push('')
                     _newRow12.push('Total2')
                     _newRow12.push('')
-
-                    _newRow9.push('')
-                    _newRow9.push('')
-                    _newRow9.push('')
-                    _newRow9.push('')
-                    _newRow9.push('')
-                    _newRow9.push('')
-                    _newRow9.push('')
-                    _newRow9.push('Progress')
-                    _newRow9.push(0)
-
-                    _newRow10.push('')
-                    _newRow10.push('')
-                    _newRow10.push('')
-                    _newRow10.push('')
-                    _newRow10.push('')
-                    _newRow10.push('')
-                    _newRow10.push('')
-                    _newRow10.push('Total.')
-                    _newRow10.push('')
-
-                    let totalQtyInputHW = 0
-                    let totalQtyInput2HW = 0
-                    for(let r=0; r<totalRowsInputHW; r++) {
-                        if(data[i][3] == dataInputHW[r][3] && _specsSide == dataInputHW[r][4] && _seq == dataInputHW[r][1]) { // by job & seq
-                            for(let c=9; c<(9+12+12+12); c++) {
-                                _newRow5.push(dataInputHW[r][c-3])
-                                _newRow11.push(dataInput2HW[r][c-3])
-                                const _output = Number(dataInputHW[r][c-3])
-                                const _output2 = Number(dataInput2HW[r][c-3])
-                                if(c<33) {
-                                    _newRow5[8]+=_output
-                                    _newRow11[8]+=_output2
-                                }
-
-                                totalQtyInputHW += _output
-                                totalQtyInput2HW += _output2
-
-                                if(_output==0) {
-                                    _newRow6.push('')
-                                    _newRow9.push('')
-                                    _newRow10.push('')
-                                    _newRow12.push('')
-                                  
-                                } else {
-                                    let _totalLastPlan = 0
-                                    for(let d=c;d>=9;d--) {
-                                        if(_newRow4[d]) {
-                                            _totalLastPlan = Number(_newRow4[d])
-                                            break;
-                                        }
-                                    }
-                                    _newRow6.push(totalQtyInputHW)
-                                    _newRow9.push(_output-_newRow3[c])
-                                    _newRow10.push(totalQtyInputHW-_totalLastPlan)
-                                    _newRow12.push(totalQtyInput2HW)
-                                }
-
-                            }
-                            break;
-                        }
+                    for(let c=9; c<(9+12+12+12); c++) {
+                        const _column = keikakugetColumnName(c)
+                        const _cellActual = `${_column}${nextRow-1}`
+                        const _columnStart = keikakugetColumnName(9) + (nextRow-1)
+                        _newRow12.push(`=IF(${_cellActual}=0,"-",SUM(${_columnStart}:${_cellActual}))`)
                     }
+                    nextRow++
 
-                    inputSS.push(_newRow5)
-                    inputSS.push(_newRow6)
-                    inputSS.push(_newRow11)
-                    inputSS.push(_newRow12)
+                    _cellStartActual = _columnStartActual + (nextRow)
+                    _cellEndActual = _columnEndActual + (nextRow)
+                    _cellHeadActual = _columnHeadActual + (nextRow)
+                    _cellHeadProdplan = _columnHeadActual + (nextRow-2)
 
                     _newRow7.push('')
                     _newRow7.push('')
@@ -3286,7 +3340,8 @@
                     _newRow7.push('')
                     _newRow7.push('')
                     _newRow7.push('OUTPUT')
-                    _newRow7.push(0)
+                    _newRow7.push(`=IF(SUM(${_cellStartActual}:${_cellEndActual})="0","0", SUM(${_cellStartActual}:${_cellEndActual}))`)
+                    nextRow++
 
                     _newRow8.push('')
                     _newRow8.push('')
@@ -3297,33 +3352,74 @@
                     _newRow8.push('')
                     _newRow8.push('Total,')
                     _newRow8.push('')
+                    for(let c=9; c<(9+12+12+12); c++) {
+                        const _column = keikakugetColumnName(c)
+                        const _cellActual = `${_column}${nextRow-1}`
+                        const _columnStart = keikakugetColumnName(9) + (nextRow-1)
+                        _newRow8.push(`=IF(${_cellActual}=0,"-",SUM(${_columnStart}:${_cellActual}))`)
+                    }
+                    nextRow++
 
-                    let totalQtyOutputHW = 0
+                   
+                    _cellHeadActual = _columnHeadActual + (nextRow-4)
+                    _cellHeadProdplan = _columnHeadActual + (nextRow-8)
+
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('')
+                    _newRow9.push('Progress')
+                    _newRow9.push(`=IF(${_cellHeadActual}="0","0",${_cellHeadActual}-${_cellHeadProdplan})`)
+                    for(let c=9; c<(9+12+12+12); c++) {
+                        const _column = keikakugetColumnName(c)
+                        const _cellActual = `${_column}${nextRow-4}`
+                        const _cellProdplan = `${_column}${(nextRow-9)}` 
+                        _newRow9.push(`=IF(${_cellActual}="-","-", ${_cellActual}-${_cellProdplan})`)
+                    }
+                    nextRow++
+
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('')
+                    _newRow10.push('Total.')
+                    _newRow10.push('')
+                    for(let c=9; c<(9+12+12+12); c++) {
+                        const _column = keikakugetColumnName(c)
+                        const _cellActual = `${_column}${nextRow-5}`                        
+                        const _cellActualTotal = `${_column}${(nextRow-4)}`
+                        const _columnStartProdplan = keikakugetColumnName(9) + (nextRow-9)
+                        const _cellProdplan = `${_column}${(nextRow-9)}` 
+                        _newRow10.push(`=IF(${_cellActual}=0,"-", ${_cellActualTotal}-(SUM(${_columnStartProdplan}:${_cellProdplan})))`)
+                    }
+
+                    nextRow++
+                                        
+                    for(let r=0; r<totalRowsInputHW; r++) {
+                        if(data[i][3] == dataInputHW[r][3] && _specsSide == dataInputHW[r][4] && _seq == dataInputHW[r][1]) { // by job & seq
+                            for(let c=9; c<(9+12+12+12); c++) {
+                                _newRow5.push(dataInputHW[r][c-3])
+                                _newRow11.push(dataInput2HW[r][c-3])
+                            }
+                            break;
+                        }
+                    }
+
+                    inputSS.push(_newRow5)
+                    inputSS.push(_newRow6)
+                    inputSS.push(_newRow11)
+                    inputSS.push(_newRow12)
+                    
                     for(let r=0; r<totalRowsOutputHW; r++) {
                         if(data[i][3] == dataOutputHW[r][3] && _specsSide == dataOutputHW[r][4] && _seq == dataOutputHW[r][1]) { // by job & seq
                             for(let c=9; c<(9+12+12+12); c++) {
                                 _newRow7.push(dataOutputHW[r][c-3])
-                                const _output = Number(dataOutputHW[r][c-3])
-                                if(c<33) {
-                                    _newRow7[8]+=_output
-                                }
-
-                                totalQtyOutputHW += _output
-
-                                if(_output==0) {
-                                    _newRow8.push('')
-                                  
-                                } else {
-                                    let _totalLastPlan = 0
-                                    for(let d=c;d>=9;d--) {
-                                        if(_newRow4[d]) {
-                                            _totalLastPlan = Number(_newRow4[d])
-                                            break;
-                                        }
-                                    }
-                                    _newRow8.push(totalQtyInputHW)                                    
-                                }
-
                             }
                             break;
                         }
@@ -3372,10 +3468,8 @@
                             }
                         }
                     }
-
-
-
                     inputSS.push(_newRow1)
+                    nextRow++
                 }
                 nomorUrut++
             }
@@ -3390,7 +3484,6 @@
                 let _newRow7 = []
                 let _newRow8 = []
                 if (data[i][0]) {
-
                     const _tempA = data[i][5].split('#')
                     const _model = _tempA[1]
                     const _wo_no = _tempA[2]
@@ -3437,6 +3530,7 @@
                             }
                         }
                     }
+                    
 
                     _newRow2.push('')
                     _newRow2.push('')
@@ -3446,24 +3540,28 @@
                     _newRow2.push('')
                     _newRow2.push('')
                     _newRow2.push('Actual')
-                    _newRow2.push(0)
+                    _newRow2.push(`=SUM(${_columnStartActual+(nextRow)}:${_columnEndActual+(nextRow)})`)
 
                     for(let r=0; r<totalRowsModelChanges; r++) {
                         if(data[i][3] == dataModelChanges[r][3] && _specsSide == dataModelChanges[r][4] && _seq == dataModelChanges[r][1]) { // by job & seq
                             for(let c=9; c<(9+12+12+12); c++) {
                                 const _theflag = dataModelChanges[r][c-3]
                                 _newRow2.push(_theflag == '-' ? '' : _theflag)
-                                if(_theflag=='1') {
-                                    _newRow2[8]++
-                                }
                             }
                         }
                     }
 
-                    inputSS.push(_newRow2)
-                    inputSS.push(_newRow3)
-                    inputSS.push(_newRow4)
+                    inputSS.push(_newRow2) // actual change model
+                    nextRow++
+                    inputSS.push(_newRow3) //  plan prod
+                    nextRow++
+                    inputSS.push(_newRow4) // total plan prod
+                    nextRow++
 
+                    const _cellStartActual = _columnStartActual + (nextRow)
+                    const _cellEndActual = _columnEndActual + (nextRow)
+                    const _cellHeadActual = _columnHeadActual + (nextRow)
+                    const _cellHeadProdplan = _columnHeadActual + (nextRow-2)
                     _newRow5.push('')
                     _newRow5.push('')
                     _newRow5.push('')
@@ -3472,7 +3570,8 @@
                     _newRow5.push('')
                     _newRow5.push('')
                     _newRow5.push('Actual')
-                    _newRow5.push(0)
+                    _newRow5.push(`=IF(SUM(${_cellStartActual}:${_cellEndActual})="0","0", SUM(${_cellStartActual}:${_cellEndActual}))`)  
+                                    
 
                     _newRow6.push('')
                     _newRow6.push('')
@@ -3481,9 +3580,8 @@
                     _newRow6.push('')
                     _newRow6.push('')
                     _newRow6.push('')
-                    _newRow6.push('Total')
+                    _newRow6.push('Total')                    
                     _newRow6.push('')
-
 
                     _newRow7.push('')
                     _newRow7.push('')
@@ -3493,7 +3591,7 @@
                     _newRow7.push('')
                     _newRow7.push('')
                     _newRow7.push('Progress')
-                    _newRow7.push(0)
+                    _newRow7.push(`=IF(${_cellHeadActual}="0","0",${_cellHeadActual}-${_cellHeadProdplan})`)
 
                     _newRow8.push('')
                     _newRow8.push('')
@@ -3504,52 +3602,42 @@
                     _newRow8.push('')
                     _newRow8.push('Total.')
                     _newRow8.push('')
+                    
+                    for(let c=9; c<(9+12+12+12); c++) {
+                        const _column = keikakugetColumnName(c)
+                        const _cellActual = `${_column}${nextRow}`
+                        const _columnStart = keikakugetColumnName(9) + (nextRow)
+                        if(c==9) {
+                            _newRow6.push(`=${_cellActual}`)
+                        } else {
+                            _newRow6.push(`=IF(${_cellActual}=0,"-",SUM(${_columnStart}:${_cellActual}))`)
+                        }
 
-                    let totalQtySensor = 0
+                        const _cellProdplan = `${_column}${(nextRow-2)}` 
+                        _newRow7.push(`=IF(${_cellActual}=0,"-", ${_cellActual}-${_cellProdplan})`)
+
+                        const _columnStartProdplan = keikakugetColumnName(9) + (nextRow-2)
+                        const _cellActualTotal = `${_column}${(nextRow+1)}`
+                        _newRow8.push(`=IF(${_cellActual}=0,"-", ${_cellActualTotal}-(SUM(${_columnStartProdplan}:${_cellProdplan})))`) 
+                    }                  
+                    
                     for(let r=0; r<totalRowsSensor; r++) {
                         if(data[i][3] == dataS[r][3] && _specsSide == dataS[r][4] && _seq == dataS[r][1]) { // by job & seq
                             for(let c=9; c<(9+12+12+12); c++) {
                                 _newRow5.push(dataS[r][c-3])
-                                const _output = Number(dataS[r][c-3])
-                                if(c<33) {
-                                    _newRow5[8]+=_output
-                                }
-
-                                totalQtySensor += _output
-
-                                if(_output==0) {
-                                    _newRow6.push('')
-                                    _newRow7.push('')
-                                    _newRow8.push('')
-                                } else {
-                                    let _totalLastPlan = 0
-                                    for(let d=c;d>=9;d--) {
-                                        if(_newRow4[d]) {
-                                            _totalLastPlan = Number(_newRow4[d])
-                                            break;
-                                        }
-                                    }
-                                    _newRow6.push(totalQtySensor)
-                                    _newRow7.push(_output-_newRow3[c])
-                                    _newRow8.push(totalQtySensor-_totalLastPlan)
-                                }
-
                             }
                             break;
                         }
-                    }
-                    _newRow7[8] = numeral(_newRow5[8] - _newRow3[5]).format(',')
+                    }                    
                     inputSS.push(_newRow5)
                     inputSS.push(_newRow6)
                     inputSS.push(_newRow7)
                     inputSS.push(_newRow8)
-
+                    nextRow+=4
                 } else {
-
                     let ChangeModelLabel = ''
                     let ChangeModelTime = ''
                     if(data[i][1]) {
-                        // ChangeModelLabel = 'CHANGE MODEL'
                         ChangeModelLabel = keikakuCaptionChangesGenerator(data, i)
                         ChangeModelTime = data[i][2]
                     } else {
@@ -3586,9 +3674,8 @@
                         }
                     }
 
-
-
                     inputSS.push(_newRow1)
+                    nextRow++
                 }
 
                 nomorUrut++
@@ -3919,10 +4006,8 @@
             success: function (response) {
                 pThis.disabled = false
                 alertify.success(response.message)
-                $('#keikakuEditActualModal').modal('hide')
-                keikaku_btn_run_prodplan_eC(keikaku_btn_run_prodplan)
-                keikaku_load_data()
             }, error: function(xhr, xopt, xthrow) {
+                keikaku_prodplan_sso.setValueFromCoords(tempX1, tempY1, keikakuBeforeValue, true)
                 alertify.error(xthrow)
                 pThis.disabled = false
 
@@ -4037,8 +4122,8 @@
         }
     }
 
-    function keikakuBtnEditActualChangeModelOnClick(pThis) {
-        const changeModelFlag = pThis.classList.contains('btn-primary') ? 1 : '-'
+    function keikakuBtnEditActualChangeModelOnClick(pThis,newValue) {
+        const changeModelFlag = newValue
         const data = {
             line : keikaku_line_input.value,
             job : keikakuEditWO.value,
@@ -4059,9 +4144,6 @@
             success: function (response) {
                 pThis.disabled = false
                 alertify.success(response.message)
-                $('#keikakuEditActualModal').modal('hide')
-                keikaku_btn_run_prodplan_eC(keikaku_btn_run_prodplan)
-                keikaku_load_data()
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
                 pThis.disabled = false
@@ -4668,10 +4750,8 @@
             success: function (response) {
                 pThis.disabled = false
                 alertify.success(response.message)
-                $('#keikakuEditINPUTHWModal').modal('hide')
-                keikaku_btn_run_prodplan_eC(keikaku_btn_run_prodplan)
-                keikaku_load_data()
             }, error: function(xhr, xopt, xthrow) {
+                keikaku_prodplan_sso.setValueFromCoords(tempX1, tempY1, keikakuBeforeValue, true)
                 alertify.error(xthrow)
                 pThis.disabled = false
 
@@ -4729,6 +4809,39 @@
         if(e.key === 'Enter') {
             keikakuBtnEditINPUTHW_Actual.focus()
         }
+    }
+
+    function keikakuSetDBComment(theComment) {
+        
+        const data = {
+            line : keikaku_line_input.value,
+            comment : theComment,
+            cell_code : keikaku_cell_name.value,
+            productionDate : keikakuEditDate.value,
+            user_id : uidnya,
+        }
+        $.ajax({
+            type: "POST",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/comment",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)                   
+
+                const respon = Object.keys(xhr.responseJSON)
+
+                let msg = ''
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                keikakuEditINPUTHWAlert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }
+        });
     }
 </script>
 
