@@ -2878,16 +2878,16 @@
                         }
 
                         for(let r=0;r<inputLength;r++) {
-                            _totalActual += Number(response.dataInputHW[r][i])
-                            _totalActualTime += (response.dataInputHW[r][5] *Number(response.dataInputHW[r][i]) )
+                            _totalActual += Number(response.dataInput2HW[r][i])
+                            _totalActualTime += (response.dataInput2HW[r][5] *Number(response.dataInput2HW[r][i]) )
 
                             if(i>=18) {
-                                _totalActualTimeNight += (response.dataInputHW[r][5] *Number(response.dataInputHW[r][i]) )
-                                _totalActualQtyNight += Number(response.dataInputHW[r][i])
+                                _totalActualTimeNight += (response.dataInput2HW[r][5] *Number(response.dataInput2HW[r][i]) )
+                                _totalActualQtyNight += Number(response.dataInput2HW[r][i])
 
                             } else {
-                                _totalActualTimeMorning += (response.dataInputHW[r][5] *Number(response.dataInputHW[r][i]) )
-                                _totalActualQtyMorning += Number(response.dataInputHW[r][i])
+                                _totalActualTimeMorning += (response.dataInput2HW[r][5] *Number(response.dataInput2HW[r][i]) )
+                                _totalActualQtyMorning += Number(response.dataInput2HW[r][i])
                             }
                         }
 
