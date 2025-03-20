@@ -3083,22 +3083,20 @@
                 let _totalActualChangeMorning=0
                 let _totalActualChangeNight=0
                 if(keikakuIsHW()) {
-                    for(let i=21; i<prodplanDataLength; i+=12) {                    
-                        if(prodplanData[i][2].includes('CHANGE MODEL') || prodplanData[i][2].includes('CHANGE TYPE')) {
-                            for(let c=9; c<33; c++) {
-                                if(prodplanData[i][c] > 0) {
-                                    if(c<21) {
-                                        _totalPlanChangeMorning++
-                                    } else {
-                                        _totalPlanChangeNight++
-                                    }
+                    for(let i=21; i<prodplanDataLength; i+=12) {
+                        for(let c=9; c<33; c++) {
+                            if(prodplanData[i][c] > 0) {
+                                if(c<21) {
+                                    _totalPlanChangeMorning++
+                                } else {
+                                    _totalPlanChangeNight++
                                 }
-                                if(prodplanData[i+1][c] > 0) {
-                                    if(c<21) {
-                                        _totalActualChangeMorning++
-                                    } else {
-                                        _totalActualChangeNight++
-                                    }
+                            }
+                            if(prodplanData[i+1][c] > 0) {
+                                if(c<21) {
+                                    _totalActualChangeMorning++
+                                } else {
+                                    _totalActualChangeNight++
                                 }
                             }
                         }
