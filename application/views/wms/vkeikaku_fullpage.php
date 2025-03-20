@@ -1588,6 +1588,7 @@
                 tempX2 = x2
                 tempY1 = y1
                 tempY2 = y2
+                keikakuPrepareComment(x1, (y1+1))
                 if (aRowSibling[7] === 'TOTAL') {
                     keikakuEditSide.value = aRowSibling[1]
                     keikakuEditHeadSeq.value = aRowSibling2[0]/2
@@ -1624,7 +1625,6 @@
                     keikakuBtnEditActualChangeModel.classList.add('btn-primary')
                     keikakuBtnEditActualChangeModel.classList.remove('btn-warning')
                 }
-                $("#keikakuEditActualModal").modal('show')
             }
 
             if(aRow[7] === 'INPUT1' && x2 >=9 ) { 
@@ -1641,10 +1641,7 @@
                 tempY1 = y1
                 tempY2 = y2
 
-                const theCellName = keikakugetColumnName(x1) + (y1+1)
-                keikaku_cell_name.value = theCellName
-                keikakuCommentBefore = keikakuGetComment(theCellName)
-                keikakuEditINPUTHWComment.value = keikakuGetComment(theCellName)
+                keikakuPrepareComment(x1, (y1+1))
 
                 if (aRowSibling[7] === 'TOTAL') {
                     keikakuEditINPUTHW_Side.value = aRowSibling[1]
@@ -1673,10 +1670,7 @@
                 tempY1 = y1
                 tempY2 = y2
 
-                const theCellName = keikakugetColumnName(x1) + (y1+1)
-                keikaku_cell_name.value = theCellName
-                keikakuCommentBefore = keikakuGetComment(theCellName)
-                keikakuEditINPUTHWComment.value = keikakuGetComment(theCellName)
+                keikakuPrepareComment(x1, (y1+1))
 
                 if (aRowSibling[7] === 'TOTAL') {
                     keikakuEditINPUTHW_Side.value = aRowSibling[1]
@@ -1705,10 +1699,7 @@
                 tempY1 = y1
                 tempY2 = y2
 
-                const theCellName = keikakugetColumnName(x1) + (y1+1)
-                keikaku_cell_name.value = theCellName
-                keikakuCommentBefore = keikakuGetComment(theCellName)
-                keikakuEditINPUTHWComment.value = keikakuGetComment(theCellName)
+                keikakuPrepareComment(x1, (y1+1))
                 
                 if (aRowSibling[7] === 'TOTAL') {
                     keikakuEditINPUTHW_Side.value = aRowSibling[1]
@@ -1755,7 +1746,7 @@
             if (x) {
                 items.push({ type:'line' });
 
-                const title = "Write comment" || '';
+                const title = keikakuCommentBefore;
 
                 items.push({
                     title: title ? obj.options.text.editComments : obj.options.text.addComments,
@@ -1779,6 +1770,13 @@
             return items
         }
     });
+
+    function keikakuPrepareComment(x, y) {
+        const theCellName = keikakugetColumnName(x) + (y)
+        keikaku_cell_name.value = theCellName
+        keikakuCommentBefore = keikakuGetComment(theCellName)
+        keikakuEditINPUTHWComment.value = keikakuGetComment(theCellName)
+    }
 
     var keikakuISHWEditingMode = '-'
     var keikakuBeforeValue = '-'
@@ -2828,7 +2826,7 @@
             dataType: "json",
             success: function (response) {
                 pThis.disabled = false
-
+                keikaku_cell_name.value = ''
                 _temp_asProdpan = response.asProdplan
                 _temp_dataComment = response.dataComment
 
@@ -3085,20 +3083,41 @@
                 let _totalActualChangeMorning=0
                 let _totalActualChangeNight=0
                 for(let i=17; i<prodplanDataLength; i+=8) {
-                    if(prodplanData[i][2].includes('CHANGE MODEL')) {
-                        for(let c=9; c<33; c++) {
-                            if(prodplanData[i][c] > 0) {
-                                if(c<21) {
-                                    _totalPlanChangeMorning++
-                                } else {
-                                    _totalPlanChangeNight++
+                    if(keikakuIsHW()) {
+                        if(prodplanData[i][2].includes('CHANGE MODEL') || prodplanData[i][2].includes('CHANGE TYPE')) {
+                            for(let c=9; c<33; c++) {
+                                if(prodplanData[i][c] > 0) {
+                                    if(c<21) {
+                                        _totalPlanChangeMorning++
+                                    } else {
+                                        _totalPlanChangeNight++
+                                    }
+                                }
+                                if(prodplanData[i+1][c] > 0) {
+                                    if(c<21) {
+                                        _totalActualChangeMorning++
+                                    } else {
+                                        _totalActualChangeNight++
+                                    }
                                 }
                             }
-                            if(prodplanData[i+1][c] > 0) {
-                                if(c<21) {
-                                    _totalActualChangeMorning++
-                                } else {
-                                    _totalActualChangeNight++
+                        }
+                    } else {
+                        if(prodplanData[i][2].includes('CHANGE MODEL')) {
+                            for(let c=9; c<33; c++) {
+                                if(prodplanData[i][c] > 0) {
+                                    if(c<21) {
+                                        _totalPlanChangeMorning++
+                                    } else {
+                                        _totalPlanChangeNight++
+                                    }
+                                }
+                                if(prodplanData[i+1][c] > 0) {
+                                    if(c<21) {
+                                        _totalActualChangeMorning++
+                                    } else {
+                                        _totalActualChangeNight++
+                                    }
                                 }
                             }
                         }
