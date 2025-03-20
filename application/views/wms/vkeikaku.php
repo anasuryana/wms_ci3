@@ -3141,8 +3141,8 @@
                 let _totalPlanChangeNight=0
                 let _totalActualChangeMorning=0
                 let _totalActualChangeNight=0
-                for(let i=17; i<prodplanDataLength; i+=8) {
-                    if(keikakuIsHW()) {
+                if(keikakuIsHW()) {
+                    for(let i=21; i<prodplanDataLength; i+=12) {                    
                         if(prodplanData[i][2].includes('CHANGE MODEL') || prodplanData[i][2].includes('CHANGE TYPE')) {
                             for(let c=9; c<33; c++) {
                                 if(prodplanData[i][c] > 0) {
@@ -3161,7 +3161,9 @@
                                 }
                             }
                         }
-                    } else {
+                    }
+                } else {
+                    for(let i=17; i<prodplanDataLength; i+=8) {                    
                         if(prodplanData[i][2].includes('CHANGE MODEL')) {
                             for(let c=9; c<33; c++) {
                                 if(prodplanData[i][c] > 0) {
@@ -3182,7 +3184,7 @@
                         }
                     }
                 }
-
+                
                 keikaku_rpt_tbl_lbl_cm_morning_plan.innerText = _totalPlanChangeMorning
                 keikaku_rpt_tbl_lbl_cm_night_plan.innerText = _totalPlanChangeNight
                 keikaku_rpt_tbl_lbl_cm_morning_actual.innerText = _totalActualChangeMorning
