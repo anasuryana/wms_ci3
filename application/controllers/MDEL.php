@@ -12,7 +12,8 @@ class MDEL extends CI_Controller {
 		echo "sorry";
 	}
     function form() {
-        $this->load->view('wms/vmdelvcode');
+        $data['ldeliverycode'] = $this->DELV_mod->select_delv_code_where(['MDEL_3RDP_AS' => 1]);
+        $this->load->view('wms/vmdelvcode', $data);
     }
     function master() {
         header('Content-Type: application/json');
@@ -29,6 +30,7 @@ class MDEL extends CI_Controller {
         $tpbno = $this->input->post('tpbno');
         $tpbDate = $this->input->post('tpbDate');
         $txcode = $this->input->post('txcode');
+        $parentConsignment = $this->input->post('parentConsignment');
         $myar = [];
         if($this->DELV_mod->updatebyVAR_DELCD([
             'MDEL_ZNAMA' => $cusNM
@@ -39,6 +41,7 @@ class MDEL extends CI_Controller {
             ,'MDEL_ZSKEP' => $tpbno
             ,'MDEL_TXCD' => $txcode
             ,'MDEL_ZSKEP_DATE' => $tpbDate
+            ,'PARENT_DELCD' => $parentConsignment
             ]
             ,['MDEL_DELCD' => $dlvCD]) 
             ) 
