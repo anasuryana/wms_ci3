@@ -126,19 +126,40 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12 mb-1">
+                <div class="col-md-4 mb-1">
                     <label for="mst_dlvcode_plus_txt_tax_edit" class="form-label" >Tax</label>
                     <input type="text" class="form-control form-control-sm" id="mst_dlvcode_plus_txt_tax_edit"  maxlength="150" required>
+                </div>
+                <div class="col-md-4 mb-1">
+                    <label for="mst_dlvcode_plus_txt_nomor_skep_edit" class="form-label" >Nomor SKEP</label>
+                    <input type="text" class="form-control form-control-sm" id="mst_dlvcode_plus_txt_nomor_skep_edit"  maxlength="150" required>
+                </div>
+                <div class="col-md-4 mb-1">
+                    <label for="mst_dlvcode_plus_txt_tanggal_skep_edit" class="form-label" >Tanggal SKEP</label>
+                    <input type="text" class="form-control form-control-sm" id="mst_dlvcode_plus_txt_tanggal_skep_edit"  readonly >
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6 mb-1">
-                    <label for="mst_dlvcode_plus_txt_nomor_skep_edit" class="form-label" >Nomor SKEP</label>
-                    <input type="text" class="form-control form-control-sm" id="mst_dlvcode_plus_txt_nomor_skep_edit"  maxlength="150" required>
+                    <label for="mst_dlvcode_consignee_parent" class="form-label" >Parent Delivery Code</label>
+                    <select id="mst_dlvcode_consignee_parent" class="form-select">
+                        <option value="-">-</option>
+                        <?php
+                            foreach ($ldeliverycode as $r) {
+                                ?>
+                                    <option value="<?=trim($r->MDEL_DELCD)?>"><?=$r->MDEL_DELCD?></option>
+                                <?php
+                            }
+                        ?>
+                    </select>
                 </div>
                 <div class="col-md-6 mb-1">
-                    <label for="mst_dlvcode_plus_txt_tanggal_skep_edit" class="form-label" >Tanggal SKEP</label>
-                    <input type="text" class="form-control form-control-sm" id="mst_dlvcode_plus_txt_tanggal_skep_edit"  readonly >
+                    <label for="mst_dlvcode_consignee_child" class="form-label" >Sub Delivery Code</label>
+                    <div class="input-group input-group-sm mb-1">
+                        <select id="mst_dlvcode_consignee_child" class="form-select">
+                        </select>
+                        <button class="btn btn-outline-primary" id="mst_dlvcode_btn_default_setter" onclick="mst_dlvcode_btn_default_setter_eclick(this)" title="For ASP/KD">Set as Default Sub</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -165,13 +186,14 @@
         const tpbno = mst_dlvcode_plus_txt_nomor_skep_edit.value
         const tpbDate = mst_dlvcode_plus_txt_tanggal_skep_edit.value
         const cusNIB = mst_dlvcode_plus_txt_custnib_edit.value
+        const parentConsignment = mst_dlvcode_consignee_parent.value
         if(confirm("Are you sure ?")) {
             p.disabled = true
             $.ajax({
                 type: "POST",
                 url: "<?=base_url('MDEL/save')?>",
                 data: {dlvCD: dlvCD, cusNM: cusNM, addr: addr, tax: tax, tpbno: tpbno, txcode: txcode, 
-                    tpbDate : tpbDate, cusNIB : cusNIB },
+                    tpbDate : tpbDate, cusNIB : cusNIB, parentConsignment : parentConsignment },
                 dataType: "json",
                 success: function (response) {
                     p.disabled = false
@@ -218,6 +240,8 @@
                             mst_dlvcode_plus_txt_tanggal_skep_edit.value = rowData['MDEL_ZSKEP_DATE']
                             mst_dlvcode_plus_txt_custnib_edit.value = rowData['MDEL_NIB']
                             mst_dlvcode_plus_txt_custcode_edit.value = rowData['MDEL_TXCD']
+                            mst_dlvcode_consignee_parent.value = rowData['PARENT_DELCD']
+                            mst_dlvcode_init_child({parent_code: rowData['MDEL_DELCD']})
                             $("#mst_dlvcode_modedit").modal('show')
                         });
                     }
@@ -286,5 +310,51 @@
                 }
             })
         }
+    }
+
+    function mst_dlvcode_init_child(data) {
+        const dataInput = {
+            parent_code : data.parent_code
+        }
+        let inputs = '<option value="-">Please wait</option>';
+        mst_dlvcode_consignee_child.innerHTML = inputs
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL3_API'] ?>consignment/children",
+            data: dataInput,
+            dataType: "json",
+            success: function (response) {
+                inputs = '<option value="-">-</option>';
+                response.data.forEach((arrayItem) => {
+                    const activeSign = arrayItem['as_default'] ? '✔' : ''
+                    inputs += `<option value="${arrayItem['MDEL_DELCD'].trim()}">${arrayItem['MDEL_DELCD'].trim()} 👉 ${arrayItem['MDEL_ADDRCUSTOMS'].trim()} ${activeSign}</option>`
+                })
+                mst_dlvcode_consignee_child.innerHTML = inputs
+            }, error: function(xhr, xopt, xthrow){
+                inputs = '<option value="-">-</option>';
+                mst_dlvcode_consignee_child.innerHTML = inputs
+                alertify.error(xthrow)
+            }
+        });
+    }
+
+    function mst_dlvcode_btn_default_setter_eclick(pThis) {
+        const data = {
+            parent_code : mst_dlvcode_plus_txt_dlvcode_edit.value,
+            child_code : mst_dlvcode_consignee_child.value,
+            user_id : uidnya,
+        }
+        $.ajax({
+            type: "POST",
+            url: "<?php echo $_ENV['APP_INTERNAL3_API'] ?>consignment/default-child",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                alertify.message(response.message)
+                mst_dlvcode_init_child({parent_code : mst_dlvcode_plus_txt_dlvcode_edit.value})
+            }, error: function(xhr, xopt, xthrow){
+                alertify.error(xthrow)
+            }
+        });
     }
 </script>
