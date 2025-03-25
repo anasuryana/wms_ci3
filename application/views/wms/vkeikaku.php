@@ -3451,8 +3451,8 @@
                     for(let c=9; c<(9+12+12+12); c++) {
                         const _column = keikakugetColumnName(c)
                         const _cellActual = `${_column}${nextRow-4}`
-                        const _cellProdplan = `${_column}${(nextRow-9)}` 
-                        _newRow9.push(`=IF(${_cellActual}="-","-", ${_cellActual}-${_cellProdplan})`)
+                        const _cellProdplan = `${_column}${(nextRow-8)}` 
+                        _newRow9.push(`=IF(${_cellActual}="0","-", ${_cellActual}-${_cellProdplan})`)
                     }
                     nextRow++
 
