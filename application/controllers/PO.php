@@ -668,9 +668,20 @@ class PO extends CI_Controller
             #footermain
             $total_amount -= $ttldiscount_priceSpecial;
             $dpp_price = $ppn == 0 ? 0 : 11/12 * $total_amount;
+            if($currency == 'RPH') {
+                $dpp_price = round($dpp_price);
+            }
+
             $ppn_price = $dpp_price * $ppn / 100;
+            if($currency == 'RPH') {
+                $ppn_price = round($ppn_price);
+            }
             $pph_price = $total_amount * $pph / 100;
+
             $netpayment = $total_amount - $pph_price + $ppn_price;
+            if($currency == 'RPH') {
+                $netpayment = round($netpayment);
+            }
 
             $sdata_section = '';
             foreach ($adata_section as $r) {
@@ -1038,9 +1049,21 @@ class PO extends CI_Controller
             #footermain
             $total_amount -= $ttldiscount_priceSpecial;
             $dpp_price = $ppn == 0 ? 0 : 11/12 * $total_amount;
+            if($currency == 'RPH') {
+                $dpp_price = round($dpp_price);
+            }
+            
             $ppn_price = $dpp_price * $ppn / 100;
+            if($currency == 'RPH') {
+                $ppn_price = round($ppn_price);
+            }
+
             $pph_price = $total_amount * $pph / 100;
+
             $netpayment = $total_amount - $pph_price + $ppn_price;
+            if($currency == 'RPH') {
+                $netpayment = round($netpayment);
+            }
 
             $sdata_section = '';
             foreach ($adata_section as $r) {
