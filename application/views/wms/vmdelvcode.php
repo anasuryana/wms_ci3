@@ -140,9 +140,9 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6 mb-1">
+                <div class="col-md-2 mb-1">
                     <label for="mst_dlvcode_consignee_parent" class="form-label" >Parent Delivery Code</label>
-                    <select id="mst_dlvcode_consignee_parent" class="form-select">
+                    <select id="mst_dlvcode_consignee_parent" class="form-select form-select-sm">
                         <option value="-">-</option>
                         <?php
                             foreach ($ldeliverycode as $r) {
@@ -151,6 +151,22 @@
                                 <?php
                             }
                         ?>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-1">
+                    <label for="mst_dlvcode_tpb_kind" class="form-label" >Jenis TPB</label>
+                    <select id="mst_dlvcode_tpb_kind" class="form-select form-select-sm">
+                        <option value="-">-</option>
+                        <option value="1">KAWASAN BERIKAT</option>
+                        <option value="2">GUDANG BERIKAT</option>
+                        <option value="3">TPPB</option>
+                        <option value="4">TBB</option>
+                        <option value="5">TLB</option>
+                        <option value="6">KDUB</option>
+                        <option value="7">LAINNYA</option>
+                        <option value="8">KAWASAN BEBAS</option>
+                        <option value="9">KAWASAN EKONOMI KHUSUS</option>
+                        <option value="10">KAWASAN EKONOMI LAINNYA</option>
                     </select>
                 </div>
                 <div class="col-md-6 mb-1">
@@ -187,13 +203,14 @@
         const tpbDate = mst_dlvcode_plus_txt_tanggal_skep_edit.value
         const cusNIB = mst_dlvcode_plus_txt_custnib_edit.value
         const parentConsignment = mst_dlvcode_consignee_parent.value
+        const tpbKind = mst_dlvcode_tpb_kind.value
         if(confirm("Are you sure ?")) {
             p.disabled = true
             $.ajax({
                 type: "POST",
                 url: "<?=base_url('MDEL/save')?>",
                 data: {dlvCD: dlvCD, cusNM: cusNM, addr: addr, tax: tax, tpbno: tpbno, txcode: txcode, 
-                    tpbDate : tpbDate, cusNIB : cusNIB, parentConsignment : parentConsignment },
+                    tpbDate : tpbDate, cusNIB : cusNIB, parentConsignment : parentConsignment, tpbKind : tpbKind },
                 dataType: "json",
                 success: function (response) {
                     p.disabled = false
@@ -241,6 +258,7 @@
                             mst_dlvcode_plus_txt_custnib_edit.value = rowData['MDEL_NIB']
                             mst_dlvcode_plus_txt_custcode_edit.value = rowData['MDEL_TXCD']
                             mst_dlvcode_consignee_parent.value = rowData['PARENT_DELCD']
+                            mst_dlvcode_tpb_kind.value = rowData['MDEL_JENIS_TPB'] ?? '-'
                             mst_dlvcode_init_child({parent_code: rowData['MDEL_DELCD']})
                             $("#mst_dlvcode_modedit").modal('show')
                         });
@@ -325,11 +343,19 @@
             dataType: "json",
             success: function (response) {
                 inputs = '<option value="-">-</option>';
+                let defaultConsignee = ''
                 response.data.forEach((arrayItem) => {
                     const activeSign = arrayItem['as_default'] ? '✔' : ''
-                    inputs += `<option value="${arrayItem['MDEL_DELCD'].trim()}">${arrayItem['MDEL_DELCD'].trim()} 👉 ${arrayItem['MDEL_ADDRCUSTOMS'].trim()} ${activeSign}</option>`
+                    const consigneeCode = arrayItem['MDEL_DELCD'].trim()
+                    inputs += `<option value="${consigneeCode}">${activeSign} ${consigneeCode} 👉 ${arrayItem['MDEL_ADDRCUSTOMS'].trim()}</option>`
+
+                    if(activeSign){
+                        defaultConsignee = consigneeCode
+                    }
                 })
                 mst_dlvcode_consignee_child.innerHTML = inputs
+                mst_dlvcode_consignee_child.value = defaultConsignee
+
             }, error: function(xhr, xopt, xthrow){
                 inputs = '<option value="-">-</option>';
                 mst_dlvcode_consignee_child.innerHTML = inputs
