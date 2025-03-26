@@ -31,6 +31,7 @@ class MDEL extends CI_Controller {
         $tpbDate = $this->input->post('tpbDate');
         $txcode = $this->input->post('txcode');
         $parentConsignment = $this->input->post('parentConsignment');
+        $tpbKind = $this->input->post('tpbKind');
         $myar = [];
         if($this->DELV_mod->updatebyVAR_DELCD([
             'MDEL_ZNAMA' => $cusNM
@@ -42,6 +43,7 @@ class MDEL extends CI_Controller {
             ,'MDEL_TXCD' => $txcode
             ,'MDEL_ZSKEP_DATE' => $tpbDate
             ,'PARENT_DELCD' => $parentConsignment
+            ,'MDEL_JENIS_TPB' => $tpbKind
             ]
             ,['MDEL_DELCD' => $dlvCD]) 
             ) 
