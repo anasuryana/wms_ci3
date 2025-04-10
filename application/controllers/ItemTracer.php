@@ -22,4 +22,9 @@ class ItemTracer extends CI_Controller
     {
         $this->load->view('wms_report/lot_tracer');
     }
+
+    public function form_adjustment()
+    {
+        $this->load->view('wms/adjustment_tracer');
+    }
 }

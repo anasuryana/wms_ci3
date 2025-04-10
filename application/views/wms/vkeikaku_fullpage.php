@@ -3152,7 +3152,7 @@
 
     function keikakuIsHW() {
         const hwLine = [
-            'A3','B3','C3','D3','D3-1','E3','F3','H3-1','H3-2','H3-3','J3-1','J3-2','K3','L3','M3','OFFLINE 3','OFFLINE 4', 'OFFLINE PS', 
+            'A3','B3','C3','D3','E3','F3','H3-1','H3-2','H3-3','J3-1','J3-2','K3','L3','M3','OFFLINE 3','OFFLINE 4', 'OFFLINE PS', 
             'PS2','PS3', 'ATH-1'
             ,'ATH-2','ATH-3','ATH-4'
         ]
