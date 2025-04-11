@@ -54,6 +54,7 @@
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_summary" onclick="keikaku_rpt_btn_summary_e_click()"><i class="fas fa-file-excel text-success"></i> Summary</a></li>
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_prod_output" onclick="keikaku_rpt_btn_prod_output_e_click()"><i class="fas fa-file-excel text-success"></i> Production Output & Downtime</a></li>
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_wo_history" onclick="keikaku_rpt_btn_wo_history_e_click()">Job History</a></li>
+                        <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_permission" onclick="keikaku_rpt_btn_permission_e_click()"><i class="fas fa-universal-access"></i> Permission</a></li>
                     </ul>
                 </div>
             </div>
@@ -221,7 +222,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12 mb-1 table-responsive">
+                            <div class="col-md-12 mb-1 table-responsive" id="keikakuCalculationContainer">
                                 <div id="keikaku_calculation_spreadsheet"></div>
                             </div>
                         </div>
@@ -724,6 +725,33 @@
   </div>
 </div>
 <!-- Modal -->
+<div class="modal fade" id="keikaku_rpt_permission_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Permission</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group input-group-sm mb-1">
+                        <label class="input-group-text">User Group</label>
+                        <select class="form-select" id="keikaku_user_group" onchange="keikaku_user_group_on_change()">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
 <div class="modal fade" id="keikaku_template_time_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
     <div class="modal-content">
@@ -1142,6 +1170,20 @@
             if([13,14,15,16,17,18,19,20,21].includes(x) && [0,1,2,3,4,5].includes(y)) {
                 cell.style.cssText = "background-color:#ebf1de"
             }
+            if([2,4,6].includes(y)) {
+                for(let _x=0; _x<37;_x++) {
+                    cellName = jspreadsheet.getColumnNameFromId([_x,y]);
+                    const theCell = el.jspreadsheet.getCell(cellName)
+                    theCell.classList.add('keikakuBorderTop')
+                }
+            }
+            if([12,24].includes(x)) {
+                for(let _y=0; _y<11;_y++) {
+                    cellName = jspreadsheet.getColumnNameFromId([x,_y]);
+                    const theCell = el.jspreadsheet.getCell(cellName)
+                    theCell.classList.add('keikakuBorderRight')
+                }
+            }
         },
         oneditionend : function(el, cell, x, y, value, flag) {
             if(y==7 && x>0) {
@@ -1161,7 +1203,7 @@
         },
         tableOverflow:true,
         freezeColumns: 1,
-        minDimensions: [37,10],
+        minDimensions: [37,11],
         tableWidth: '1000px',
     });
 
@@ -1301,12 +1343,18 @@
     resizeObserverO = new ResizeObserver(() => {
         if(typeof keikakuProdplanContainer != 'undefined') {
             keikakuTableWidthObserver = keikakuProdplanContainer.offsetWidth
-            keikaku_prodplan_sso.table.parentNode.style.width = (keikakuTableWidthObserver-30)+'px'
-            keikaku_calculation_sso.table.parentNode.style.width = (keikakuTableWidthObserver-30)+'px'
+            keikaku_prodplan_sso.table.parentNode.style.width = (keikakuTableWidthObserver-30)+'px'            
             keikaku_calculation_friday_temp_sso.table.parentNode.style.width = (keikakuTableWidthObserver-30)+'px'
             keikaku_calculation_non_friday_temp_sso.table.parentNode.style.width = (keikakuTableWidthObserver-30)+'px'
         }
     }).observe(keikakuProdplanContainer)
+
+    resizeObserverO = new ResizeObserver(() => {
+        if(typeof keikakuCalculationContainer != 'undefined') {
+            keikakuTableWidthObserver = keikakuCalculationContainer.offsetWidth            
+            keikaku_calculation_sso.table.parentNode.style.width = (keikakuTableWidthObserver-30)+'px'            
+        }
+    }).observe(keikakuCalculationContainer)
 
     var keikaku_prodplan_sso = jspreadsheet(keikaku_prodplan_spreadsheet, {
         columns : [
@@ -4889,6 +4937,28 @@
                 </div>`
             }
         });
+    }
+
+    function keikaku_rpt_btn_permission_e_click() {
+        if(['ROOT', 'ADMIN'].includes(wms_usergroupid)) {
+            keikaku_user_group.innerHTML = `<option value="-">Please wait</option>`
+            $.ajax({
+                type: "GET",
+                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>users-group/active",                
+                dataType: "JSON",
+                success: function (response) {
+                    let option_text = '<option value="-">Please select</option>'
+                    response.data.forEach((item) => {
+                        option_text += `<option value="${item['MSTGRP_ID']}">${item['MSTGRP_NM']}</option>`
+                    })
+                    keikaku_user_group.innerHTML = option_text
+                }, error: function(xhr, xopt, xthrow) {
+                    keikaku_user_group.innerHTML = `<option value="-">Please try reopen function</option>`
+                    alertify.error(xthrow)
+                }
+            });
+            $("#keikaku_rpt_permission_modal").modal('show')
+        }
     }
 
 </script>
