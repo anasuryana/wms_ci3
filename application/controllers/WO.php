@@ -56,6 +56,7 @@ class WO extends CI_Controller
         }
         $data['sapaDia'] = $this->session->userdata('sfname');
         $data['sapaDiaID'] = $this->session->userdata('nama');
+        $data['wms_usergroup_id'] = $this->session->userdata('gid');
         $this->load->view('wms/vkeikaku_fullpage', $data);
     }
 
