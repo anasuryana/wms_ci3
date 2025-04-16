@@ -193,13 +193,21 @@
                     </div>
                     <div class="tab-pane fade show active p-1" id="keikaku_tabRM" role="tabpanel" aria-labelledby="home-tab">
                         <div class="row" id="keikaku_stack2">
-                            <div class="col-md-6 mb-1">
+                            <div class="col-md-4 mb-1">
                                 <div class="btn-group btn-group-sm">
                                     <button class="btn btn-outline-primary" id="keikaku_btn_new" title="New" onclick="keikaku_btn_new_eC()"><i class="fas fa-file"></i></button>
                                     <button class="btn btn-outline-primary" id="keikaku_btn_save" title="Save" onclick="keikaku_btn_save_eC(this)"><i class="fas fa-save"></i></button>
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-1 text-end">
+                            <div class="col-md-4 mb-1">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="keikaku_check_release_setter" onclick="keikaku_check_release_setter_eC(this)">
+                                    <label class="form-check-label" for="keikaku_check_release_setter">
+                                        Released
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-1 text-end">
                                 <div class="btn-group btn-group-sm">
                                     <div class="btn-group btn-group-sm dropend" role="group">
                                         <button title="Functions" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-bars"></i></button>
@@ -2573,6 +2581,12 @@
                     Production Qty > Lot Size ! 👉 ${messageO.job}-${messageO.item} specs side ${messageO.specs_side}
                     
                     </div>`
+                }
+
+                if(response.release) {
+                    keikaku_check_release_setter.checked = response.release.release_flag == 'Y' ? true : false
+                } else {
+                    keikaku_check_release_setter.checked = false
                 }
             }, error: function(xhr, xopt, xthrow) {
 
@@ -5147,6 +5161,78 @@
             });
         }
     }
+
+    $("#keikaku_rpt_permission_modal").on('hidden.bs.modal', function() {
+        keikakuisReleaser()
+    });
+
+    function keikaku_check_release_setter_eC(pThis) {
+        if(keikaku_line_input.value == '-') {
+            alertify.message('Line is required')
+            keikaku_line_input.focus()
+            pThis.checked = !pThis.checked
+            return
+        }
+
+        if(!confirm(`Are you sure ?`)) {
+            pThis.checked = !pThis.checked
+            return
+        }
+
+        const data = {
+            user_id : uidnya,
+            release_flag : pThis.checked ? '1' : '0',
+            line_code : keikaku_line_input.value,
+            production_date : keikaku_date_input.value
+        }
+
+        keikakuEditAlert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                Please wait <i class="fas fa-spinner fa-spin"></i>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+
+        $.ajax({
+            type: "POST",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/release",
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                keikakuEditAlert.innerHTML = ``
+                alertify.success(response.message)
+            }, error: function(xhr, xopt, xthrow) {
+                pThis.checked = !pThis.checked
+                alertify.error(xthrow)
+                let msg = ''
+                const respon = Object.keys(xhr.responseJSON)
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                keikakuEditAlert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }
+        });
+    }
+
+    function keikakuisReleaser() {
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/line-by-user",
+            data: {user_id : uidnya},
+            dataType: "json",
+            success: function (response) {
+                keikaku_check_release_setter.disabled = true
+                response.data.forEach((item) => {
+                    if(item.sheet_access=='RLS') {
+                        keikaku_check_release_setter.disabled = false
+                    }
+                })
+            }
+        });
+    }
+
+    keikakuisReleaser()
 </script>
 
 <script type="text/javascript" src="<?php echo base_url("assets/js/popper.min.js") ?>"></script>
