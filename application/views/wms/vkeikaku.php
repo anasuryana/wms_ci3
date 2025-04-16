@@ -756,6 +756,16 @@
                             </div>
                         </div>
                         <div class="row">
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="keikaku_check_relase">
+                                    <label class="form-check-label" for="keikaku_check_relase" title="It doesn't consider Line Code">
+                                        As Releaser
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col" id="keikaku_permission_info_container">
                                 
                             </div>
@@ -5017,7 +5027,7 @@
 
     function keikaku_user_active_on_change() {
         keikaku_permission_info_container.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
-                please wait <i class="fas fa-spinner fa-spin"></i>             
+                Please wait <i class="fas fa-spinner fa-spin"></i>             
                 </div>`
         $.ajax({
             type: "GET",
@@ -5034,13 +5044,18 @@
                 for(let i=0;i<countLine;i++) {
                     tableku2.rows[i].cells[0].getElementsByTagName('input')[0].checked = false
                 }
+                keikaku_check_relase.checked = false
 
                 response.data.forEach((item) => {
-                    for(let i=0;i<countLine;i++) {
-                        if(item.line_code == keikaku_data_line_list[i].line_code) {
-                            tableku2.rows[i].cells[0].getElementsByTagName('input')[0].checked = true
-                            break;
+                    if(item.sheet_access=='DTA') {
+                        for(let i=0;i<countLine;i++) {
+                            if(item.line_code == keikaku_data_line_list[i].line_code) {
+                                tableku2.rows[i].cells[0].getElementsByTagName('input')[0].checked = true
+                                break;
+                            }
                         }
+                    } else if(item.sheet_access=='RLS') {
+                        keikaku_check_relase.checked = true
                     }
                 })
             }, error: function(xhr, xopt, xthrow) {
@@ -5119,6 +5134,7 @@
             const data = {
                 user_id : uidnya,
                 permittedUserId : permittedUserId,
+                as_releaser : keikaku_check_relase.checked ? '1' : '0',
                 detail : dataDetail
             }
             keikaku_permission_info_container.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
