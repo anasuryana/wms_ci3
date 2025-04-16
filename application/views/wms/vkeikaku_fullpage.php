@@ -735,17 +735,52 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="input-group input-group-sm mb-1">
-                        <label class="input-group-text">User Group</label>
-                        <select class="form-select" id="keikaku_user_group" onchange="keikaku_user_group_on_change()">
-                        </select>
+                    <div class="container p-0">
+                        <div class="row">
+                            <div class="col">
+                                <div class="input-group input-group-sm mb-1">
+                                    <label class="input-group-text">User Group</label>
+                                    <select class="form-select" id="keikaku_user_group" onchange="keikaku_user_group_on_change()">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="input-group input-group-sm mb-1">
+                                    <label class="input-group-text">Active User</label>
+                                    <select class="form-select" id="keikaku_user_active" onchange="keikaku_user_active_on_change()">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" id="keikaku_permission_info_container">
+                                
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="col-md-6">
+                    <div class="table-responsive" id="keikaku_permission_line_table_container">
+                        <table id="keikaku_permission_line_table" class="table table-hover table-sm table-bordered caption-bottom text-center">
+                            <caption>List of Production Lines</caption>
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="align-middle"><input type="checkbox" class="form-check-input" onclick="keikaku_permission_checkall_on_click(this)"></th>
+                                    <th class="align-middle">Line</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
       </div>
       <div class="modal-footer">
-
+        <button type="button" class="btn btn-primary" onclick="keikaku_permission_save_changes_on_click(this)">Save changes</button>
       </div>
     </div>
   </div>
@@ -1841,7 +1876,7 @@
         }
     }
 
-
+    var keikaku_data_line_list = []
     function keikaku_load_line_code() {
         $.ajax({
             type: "GET",
@@ -1855,7 +1890,31 @@
                 })
                 keikaku_line_input.innerHTML = inputs
                 keikaku_line_input.value = theLine
+                
                 keikaku_line_input_on_change()
+
+                // permission
+                let newrow, newcell;
+                let mydes = document.getElementById("keikaku_permission_line_table_container");
+                let myfrag = document.createDocumentFragment();
+                let mtabel = document.getElementById("keikaku_permission_line_table");
+                let cln = mtabel.cloneNode(true);
+                myfrag.appendChild(cln);
+                let tabell = myfrag.getElementById("keikaku_permission_line_table");
+                let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                tableku2.innerHTML='';
+                keikaku_data_line_list = response.data
+                response.data.forEach((arrayItem) => {
+                    inputs += `<option value="${arrayItem['line_code']}">${arrayItem['line_code']}</option>`
+                    newrow = tableku2.insertRow(-1);
+                    newcell = newrow.insertCell(0);
+                    newcell.innerHTML = `<input type="checkbox" class="form-check-input">`
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerText = arrayItem['line_code']
+                })
+                mydes.innerHTML='';
+                mydes.appendChild(myfrag);
+                
             }
         });
     }
@@ -4920,7 +4979,8 @@
             keikaku_user_group.innerHTML = `<option value="-">Please wait</option>`
             $.ajax({
                 type: "GET",
-                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>users-group/active",                
+                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>users-group/active",
+                data : {user_group : wms_usergroupid},
                 dataType: "JSON",
                 success: function (response) {
                     let option_text = '<option value="-">Please select</option>'
@@ -4936,7 +4996,141 @@
             $("#keikaku_rpt_permission_modal").modal('show')
         }
     }
+
+    function keikaku_user_active_on_change() {
+        keikaku_permission_info_container.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
+                please wait <i class="fas fa-spinner fa-spin"></i>             
+                </div>`
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/line-by-user",
+            data: {user_id : keikaku_user_active.value},
+            dataType: "json",
+            success: function (response) {
+                keikaku_permission_info_container.innerHTML = ``
+                let mtbl = document.getElementById('keikaku_permission_line_table')
+                let tableku2 = mtbl.getElementsByTagName("tbody")[0]
+                
+                const countLine = keikaku_data_line_list.length
+
+                for(let i=0;i<countLine;i++) {
+                    tableku2.rows[i].cells[0].getElementsByTagName('input')[0].checked = false
+                }
+
+                response.data.forEach((item) => {
+                    for(let i=0;i<countLine;i++) {
+                        if(item.line_code == keikaku_data_line_list[i].line_code) {
+                            tableku2.rows[i].cells[0].getElementsByTagName('input')[0].checked = true
+                            break;
+                        }
+                    }
+                })
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                let msg = ''
+                const respon = Object.keys(xhr.responseJSON)
+                for (const item of respon) {
+                    msg += `<p>${xhr.responseJSON[item]}</p>`
+                }
+                keikaku_permission_info_container.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }
+        });
+    }
     const wms_usergroupid = '<?=$wms_usergroup_id;?>';
+
+    function keikaku_user_group_on_change() {
+        const keikaku_user_group_text = keikaku_user_group.value
+        if(keikaku_user_group_text == '-') {
+            alertify.warning('Please select user group')
+            keikaku_user_group.focus()
+            return
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>user/active",
+            data: {groupId : keikaku_user_group_text},
+            dataType: "json",
+            success: function (response) {
+                let option_text = '<option value="-">Please select</option>'
+                response.data.forEach((item) => {
+                    option_text += `<option value="${item['MSTEMP_ID']}">${item['FULL_NAME']}</option>`
+                })
+                keikaku_user_active.innerHTML = option_text
+                keikaku_user_active.focus()
+            }, error: function(xhr, xopt, xthrow) {
+                keikaku_user_active.innerHTML = `<option value="-">Please try reopen function</option>`
+                alertify.error(xthrow)
+            }
+        });
+    }
+
+    function keikaku_permission_checkall_on_click(pThis) {
+        let mtbl = document.getElementById('keikaku_permission_line_table')
+        let tableku2 = mtbl.getElementsByTagName("tbody")[0]
+        
+        const countLine = keikaku_data_line_list.length
+        for(let i=0;i<countLine;i++) {
+            tableku2.rows[i].cells[0].getElementsByTagName('input')[0].checked = pThis.checked
+        }
+    }
+
+    function keikaku_permission_save_changes_on_click(pThis) {
+        const permittedUserId = keikaku_user_active.value
+
+        if(permittedUserId == '-' || permittedUserId == '') {
+            alertify.warning('Please select user')
+            keikaku_user_active.focus()
+            return
+        }
+
+        if(confirm(`Are you sure ?`)) {
+            let mtbl = document.getElementById('keikaku_permission_line_table')
+            let tableku2 = mtbl.getElementsByTagName("tbody")[0]
+            
+            const countLine = keikaku_data_line_list.length
+            const dataDetail = []
+            for(let i=0;i<countLine;i++) {
+                if(tableku2.rows[i].cells[0].getElementsByTagName('input')[0].checked) {
+                    dataDetail.push({line_code : tableku2.rows[i].cells[1].innerText})
+                }
+            }
+            
+            const data = {
+                user_id : uidnya,
+                permittedUserId : permittedUserId,
+                detail : dataDetail
+            }
+            keikaku_permission_info_container.innerHTML = `<div class="alert alert-info alert-dismissible fade show" role="alert">
+                    Please wait <i class="fas fa-spinner fa-spin"></i>
+                    </div>`
+
+            $.ajax({
+                type: "POST",
+                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/permission",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function (response) {
+                    keikaku_permission_info_container.innerHTML = ''
+                    alertify.success(response.message)
+                }, error: function(xhr, xopt, xthrow) {
+                    alertify.error(xthrow)
+                    let msg = ''
+                    const respon = Object.keys(xhr.responseJSON)
+                    for (const item of respon) {
+                        msg += `<p>${xhr.responseJSON[item]}</p>`
+                    }
+                    keikaku_permission_info_container.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${msg}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                }
+            });
+        }
+    }
 </script>
 
 <script type="text/javascript" src="<?php echo base_url("assets/js/popper.min.js") ?>"></script>
