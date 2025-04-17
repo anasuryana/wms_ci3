@@ -103,7 +103,7 @@
         if(e.key === 'Enter') {
             const nik = e.target.value.trim()
 
-            if(nik.length <=5) {
+            if(nik.length <=4) {
                 alertify.error('Please input a valid NIK')
                 return false
             }
