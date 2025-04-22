@@ -2999,6 +2999,7 @@
         const data = {
             line_code: inputLine,
             production_date: keikaku_date_input.value,
+            user_id: uidnya,
         }
         pThis.disabled = true
         keikakuEditDate.value = keikaku_date_input.value
