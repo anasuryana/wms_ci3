@@ -28,7 +28,7 @@ class WO extends CI_Controller
     }
     public function form_entry()
     {
-        $this->load->view('wms/vwo_output');
+        $this->load->view('manufacture/output_wip');
     }
     public function form_report()
     {
