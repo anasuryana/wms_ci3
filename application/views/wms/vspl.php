@@ -1124,6 +1124,7 @@
                             alertify.message(response.message);
                             document.getElementById('psn_txt_itmqty').value='';
                             document.getElementById('psn_txt_itmlot').value='';
+                            psn_txt_uc.value = ''
                             psn_getdata();
                             break;
                         case '110':
@@ -1135,11 +1136,13 @@
                             document.getElementById('psn_txt_itmcd').focus();
                             document.getElementById('psn_txt_itmqty').value='';
                             document.getElementById('psn_txt_itmlot').value='';
+                            psn_txt_uc.value = ''
                             break;
                         case '11':
                             alertify.message(response.message);
                             document.getElementById('psn_txt_itmqty').value='';
                             document.getElementById('psn_txt_itmlot').value='';
+                            psn_txt_uc.value = ''
                             psn_getdata();
                             break;
                         case '0X':
@@ -1240,6 +1243,7 @@
                                 }
                                 tableku2.rows[i].classList.add('table-info')
                                 currentidx.value = i
+                                psn_txt_uc.value = ''
                             }
                             newcell.innerHTML = response.datav[i].SPL_ORDERNO
 
@@ -1517,6 +1521,7 @@
                 dataType: "text",
                 success: function (response) {
                     alertify.message(response);
+                    psn_txt_uc.value = ''
                     psn_getdata();
                 }, error: function(xhr, xopt, xthrow){
                     alertify.error(xthrow);
