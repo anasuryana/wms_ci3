@@ -1703,6 +1703,7 @@ class SPL extends CI_Controller
 
     public function scn_set()
     {
+        header('Content-Type: application/json');
         $currdate = date('Ymd');
         $currrtime = date('Y-m-d H:i:s');
 
@@ -1716,11 +1717,19 @@ class SPL extends CI_Controller
         $corder = $this->input->post('inorder');
         $inMC = $this->input->post('inMC');
         $inProcess = $this->input->post('inProcess');
+        $inCode = $this->input->post('inCode');
 
         $datac = ['SPL_DOC' => $cpsn, 'SPL_LINE' => $cline, 'SPL_CAT' => $ccat, 'SPL_FEDR' => $cfr, 'SPL_ITMCD' => $citm];
         $splData = $this->SPL_mod->select_where(['SPL_MC', 'SPL_PROCD'], $datac);
+        
+        if($inCode) {
+            $isUniqueCodeAlreadyUsed = $this->SPLSCN_mod->check_Primary(['SPLSCN_UNQCODE' => $inCode]) ? true : false;
+            if($isUniqueCodeAlreadyUsed) {
+                die(json_encode(['status' => '0X', 'message' => 'Unique Code already used']));
+            }
+        }
+
         if ($this->SPL_mod->check_Primary($datac) > 0) {
-            echo "1";
             $mlastid = $this->SPLSCN_mod->lastserialid();
             $mlastid++;
             $newid = $currdate . $mlastid;
@@ -1728,8 +1737,7 @@ class SPL extends CI_Controller
                 //check if scanned qty is more than balance value
                 $rs = $this->SPL_mod->selectscan_balancing($cpsn, $ccat, $cline, $cfr, $citm);
                 if (count($rs) > 0) {
-                    echo "1";
-                    $datas = array();
+                    $datas = [];
                     foreach ($rs as $r) {
                         $datas['SPLSCN_ID'] = $newid;
                         $datas['SPLSCN_DOC'] = $cpsn;
@@ -1743,19 +1751,20 @@ class SPL extends CI_Controller
                         $datas['SPLSCN_LUPDT'] = $currrtime;
                         $datas['SPLSCN_USRID'] = $this->session->userdata('nama');
                         $datas['SPLSCN_MC'] = $inMC;
-                        $datas['SPLSCN_PROCD'] = $inProcess;
+                        $datas['SPLSCN_PROCD'] = $r['SPL_PROCD'];
+                        $datas['SPLSCN_UNQCODE'] = $inCode;
                     }
                     $toret = $this->SPLSCN_mod->insert($datas);
                     if ($toret > 0) {
-                        echo 1;
+                        die(json_encode(['status' => '111', 'message' => 'OK']));
                     } else {
-                        echo 0;
+                        die(json_encode(['status' => '110', 'message' => 'Sorry']));
                     }
                 } else {
-                    echo 0;
+                    die(json_encode(['status' => '10', 'message' => 'It is enough']));
                 }
             } else {
-                $datas = array();
+                $datas = [];
                 $datas['SPLSCN_ID'] = $newid;
                 $datas['SPLSCN_DOC'] = $cpsn;
                 $datas['SPLSCN_CAT'] = $ccat;
@@ -1769,16 +1778,17 @@ class SPL extends CI_Controller
                 $datas['SPLSCN_USRID'] = $this->session->userdata('nama');
                 $datas['SPLSCN_MC'] = $inMC;
                 $datas['SPLSCN_PROCD'] = $inProcess;
+                $datas['SPLSCN_UNQCODE'] = $inCode;
 
                 $toret = $this->SPLSCN_mod->insert($datas);
                 if ($toret > 0) {
-                    echo 1;
+                    die(json_encode(['status' => '11', 'message' => 'OK.']));
                 } else {
-                    echo 0;
+                    die(json_encode(['status' => '12', 'message' => 'Failed to insert']));
                 }
             }
         } else {
-            echo "0";
+            die(json_encode(['status' => '00', 'message' => 'SPL data is not found']));
         }
     }
 
