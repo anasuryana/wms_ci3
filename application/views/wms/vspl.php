@@ -53,8 +53,9 @@
             </div>
             <div class="col-md-2 mb-1 pr-1">
                 <div class="input-group input-group-sm mb-1">
-                    <span class="input-group-text" >Rack</span>
-                    <input type="text" class="form-control" id="psn_txt_rackcd" required>
+                    <span class="input-group-text" title="Unique Code">UC</span>
+                    <input type="text" class="form-control" id="psn_txt_uc" onkeypress="psn_txt_uc_on_keypress(event)">
+                    <input type="hidden" id="psn_txt_rackcd">
                 </div>
             </div>
             <div class="col-md-3 mb-1 pr-1">
@@ -66,7 +67,7 @@
             <div class="col-md-2 mb-1 pr-1">
                 <div class="input-group input-group-sm mb-1">
                     <span class="input-group-text" >Qty</span>
-                    <input type="text" class="form-control" id="psn_txt_itmqty" required>
+                    <input type="text" class="form-control" id="psn_txt_itmqty" onkeypress="psn_txt_itmqty_e_keypress(event)" required>
                 </div>
             </div>
             <div class="col-md-2 mb-1">
@@ -810,6 +811,7 @@
         document.getElementById("psn_txt_itmlot").value='';
         document.getElementById("psn_txt_fedr").innerHTML = "<option value='-'>-</option>";
         document.getElementById("psn_txt_fedr").value='-';
+        psn_txt_uc.value = ''
         document.getElementById("psn_txt_psn").focus();
         $("#spl_tbl tbody").empty();
     });
@@ -1030,122 +1032,131 @@
             });
         }
     });
-    $("#psn_txt_itmqty").keypress(function (e) {
-        if(e.which==13){
-            let mpsn = $("#psn_txt_psn").val();
-            let mcat = $("#psn_txt_cat").val();
-            let mline = $("#psn_txt_line").val();
-            let mfedr = $("#psn_txt_fedr").val();
-            let mitemcd = $("#psn_txt_itmcd").val();
-            let morder = $('#psn_sel_order').val();
-            let mval = $(this).val();
 
-            if(spl_grouped_rows>1 && spl_mod_procd_selection.value === '-') {
-                $("#SPL_MOD_PROCD").modal('show')
-                return
-            }
+    function psn_save_scan() {
+        let mpsn = $("#psn_txt_psn").val();
+        let mcat = $("#psn_txt_cat").val();
+        let mline = $("#psn_txt_line").val();
+        let mfedr = $("#psn_txt_fedr").val();
+        let mitemcd = $("#psn_txt_itmcd").val();
+        let morder = $('#psn_sel_order').val();
+        let mval = psn_txt_itmqty.value.trim();
 
-            if(mpsn.trim()==''){
-                document.getElementById('psn_txt_psn').focus();
-                alertify.message('Please fill PSN No');
-                return;
-            }
-            if(mline.trim()==''){
-                document.getElementById('psn_txt_line').focus();
-                alertify.message('Please fill Line');
-                return;
-            }
-            if(mfedr.trim()==''){
-                document.getElementById('psn_txt_fedr').focus();
-                alertify.message('Please fill Feeder');
-                return;
-            }
-            if(mitemcd.trim()==''){
-                document.getElementById('psn_txt_itmcd').focus();
-                alertify.message('Please fill Item Code');
-                return;
-            }
-            if(mval.trim()==''){
-                alertify.message('Please fill Qty');
-                return;
-            } else {
-                let mthis_ar    = mval.split(' ');
-                let mqty        = 0;
-                let mlot        ='';
-                if(mval.substring(0,3)=='3N2'){
-                    if(!isNaN(mthis_ar[1])){
-                        mqty = Number(mthis_ar[1]);
-                    } else {
-                        alertify.warning('qty value must be numerical !');
-                        return;
-                    }
-                    $(this).val(mthis_ar[1])
-                    for(var i=2;i<mthis_ar.length;i++){
-                        mlot += mthis_ar[i] + ' ';
-                    }
+        if(spl_grouped_rows>1 && spl_mod_procd_selection.value === '-') {
+            $("#SPL_MOD_PROCD").modal('show')
+            return
+        }
 
+        if(mpsn.trim()==''){
+            document.getElementById('psn_txt_psn').focus();
+            alertify.message('Please fill PSN No');
+            return;
+        }
+        if(mline.trim()==''){
+            document.getElementById('psn_txt_line').focus();
+            alertify.message('Please fill Line');
+            return;
+        }
+        if(mfedr.trim()==''){
+            document.getElementById('psn_txt_fedr').focus();
+            alertify.message('Please fill Feeder');
+            return;
+        }
+        if(mitemcd.trim()==''){
+            document.getElementById('psn_txt_itmcd').focus();
+            alertify.message('Please fill Item Code');
+            return;
+        }
+        if(mval.trim()==''){
+            alertify.message('Please fill Qty');
+            return;
+        } else {
+            let mthis_ar    = mval.split(' ');
+            let mqty        = 0;
+            let mlot        ='';
+            if(mval.substring(0,3)=='3N2'){
+                if(!isNaN(mthis_ar[1])){
+                    mqty = Number(mthis_ar[1]);
                 } else {
-                    if(!isNaN(mthis_ar[0])){
-                        mqty = Number(mthis_ar[0]);
-                    } else {
-                        alertify.warning('qty value must be numerical !');
-                        return;
-                    }
-                    $(this).val(mthis_ar[0])
-                    for(var i=1;i<mthis_ar.length;i++){
-                        mlot += mthis_ar[i] + ' ';
-                    }
-                }
-                if(mlot.trim()==''){
-                    alertify.warning('lot must be not empty');
+                    alertify.warning('qty value must be numerical !');
                     return;
                 }
-                document.getElementById('psn_txt_itmlot').value=mlot;
-                $.ajax({
-                    type: "post",
-                    url: "<?=base_url('SPL/scn_set')?>",
-                    data: {inpsn: mpsn, incat: mcat,
-                        inline: mline,
-                        infr: mfedr,
-                        incode : mitemcd,
-                        inqty: mqty,
-                        inlot:mlot,
-                        inorder: morder,
-                        inMC: spl_mc,
-                        inProcess : spl_mod_procd_selection.value},
-                    dataType: "text",
-                    success: function (response) {
-                        switch(response){
-                            case '111':
-                                alertify.message('OK');
-                                document.getElementById('psn_txt_itmqty').value='';
-                                document.getElementById('psn_txt_itmlot').value='';
-                                psn_getdata();
-                                break;
-                            case '110':
-                                alertify.warning('Sorry');
-                                break;
-                            case '10':
-                                alertify.warning('It is enough');
-                                document.getElementById('psn_txt_itmcd').value='';
-                                document.getElementById('psn_txt_itmcd').focus();
-                                document.getElementById('psn_txt_itmqty').value='';
-                                document.getElementById('psn_txt_itmlot').value='';
-                                break;
-                            case '11':
-                                alertify.message('OK');
-                                document.getElementById('psn_txt_itmqty').value='';
-                                document.getElementById('psn_txt_itmlot').value='';
-                                psn_getdata();
-                                break;
-                        }
-                    }, error:function(xhr,xopt,xthrow){
-                        alertify.error(xthrow);
-                    }
-                });
+                psn_txt_itmqty.value = mthis_ar[1]
+                for(var i=2;i<mthis_ar.length;i++){
+                    mlot += mthis_ar[i] + ' ';
+                }
+
+            } else {
+                if(!isNaN(mthis_ar[0])){
+                    mqty = Number(mthis_ar[0]);
+                } else {
+                    alertify.warning('qty value must be numerical !');
+                    return;
+                }
+                psn_txt_itmqty.value = mthis_ar[0]
+                for(var i=1;i<mthis_ar.length;i++){
+                    mlot += mthis_ar[i] + ' ';
+                }
             }
+            if(mlot.trim()==''){
+                alertify.warning('lot must be not empty');
+                return;
+            }
+            document.getElementById('psn_txt_itmlot').value=mlot;
+            $.ajax({
+                type: "post",
+                url: "<?=base_url('SPL/scn_set')?>",
+                data: {inpsn: mpsn, incat: mcat,
+                    inline: mline,
+                    infr: mfedr,
+                    incode : mitemcd,
+                    inqty: mqty,
+                    inlot:mlot,
+                    inorder: morder,
+                    inMC: spl_mc,
+                    inProcess : spl_mod_procd_selection.value,
+                    inCode : psn_txt_uc.value
+                },
+                dataType: "json",
+                success: function (response) {
+                    switch(response.status) {
+                        case '111':
+                            alertify.message(response.message);
+                            document.getElementById('psn_txt_itmqty').value='';
+                            document.getElementById('psn_txt_itmlot').value='';
+                            psn_getdata();
+                            break;
+                        case '110':
+                            alertify.message(response.message);
+                            break;
+                        case '10':
+                            alertify.warning(response.message);
+                            document.getElementById('psn_txt_itmcd').value='';
+                            document.getElementById('psn_txt_itmcd').focus();
+                            document.getElementById('psn_txt_itmqty').value='';
+                            document.getElementById('psn_txt_itmlot').value='';
+                            break;
+                        case '11':
+                            alertify.message(response.message);
+                            document.getElementById('psn_txt_itmqty').value='';
+                            document.getElementById('psn_txt_itmlot').value='';
+                            psn_getdata();
+                            break;
+                        case '0X':
+                            alertify.message(response.message);
+                            break;
+                    }
+                }, error:function(xhr,xopt,xthrow){
+                    alertify.error(xthrow);
+                }
+            });
         }
-    });
+    }
+    function psn_txt_itmqty_e_keypress(e) {
+        if(e.key=='Enter') {
+            psn_save_scan()
+        }
+    }
 
     function psn_getdata(){
         let mpsn = $("#psn_txt_psn").val();
@@ -1998,5 +2009,58 @@
             }
         }
         return isAdded
+    }
+
+    function psn_txt_uc_on_keypress(e) {
+        if(e.key === 'Enter') {
+            const rawText = e.target.value.trim()
+            if(rawText.length < 15) {
+                alertify.warning(`Please enter a valid UC`)
+                return
+            }
+
+            let uniqueCode = rawText
+            if(rawText.includes('|')) {
+                const rawTextArray = rawText.split('|')
+                uniqueCode = rawTextArray[2]
+            }
+
+            const data = {
+                id : uniqueCode
+            }
+
+            $.ajax({
+                type: "GET",
+                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>label/c3",
+                data: data,
+                dataType: "JSON",
+                success: function (response) {
+                    if(response.data) {
+                        if(response.data.item_code != psn_txt_itmcd.value) {
+                            alertify.warning(`This item is not match with the selected item`)
+                            return
+                        }
+
+                        if(response.data.splitted) {
+                            alertify.warning(`This item is already splitted`)
+                            return
+                        }
+
+                        if(response.data.combined) {
+                            alertify.warning(`This item is already combined`)
+                            return
+                        }
+
+                        psn_txt_itmqty.value = `3N2 ${numeral(response.data.quantity).value()} ${response.data.lot_code}`
+                        psn_save_scan()
+                    } else {
+                        alertify.message(`Unique Code Data is not found`)
+                    }
+
+                }, error: function(xhr, xopt, xthrow) {
+                    alertify.error(xthrow)
+                }
+            });
+        }
     }
 </script>
