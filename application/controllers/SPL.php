@@ -1725,7 +1725,7 @@ class SPL extends CI_Controller
         if($inCode) {
             $isUniqueCodeAlreadyUsed = $this->SPLSCN_mod->check_Primary(['SPLSCN_UNQCODE' => $inCode]) ? true : false;
             if($isUniqueCodeAlreadyUsed) {
-                die(json_encode(['status' => 'OX', 'message' => 'Unique Code already used']));
+                die(json_encode(['status' => '0X', 'message' => 'Unique Code already used']));
             }
         }
 
