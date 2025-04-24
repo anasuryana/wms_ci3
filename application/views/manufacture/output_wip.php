@@ -135,7 +135,7 @@
 
     function mfg_wip_btn_save_eC(pThis) {
         let dataDetail = []
-        let inputSS = mfg_wip_spreadsheet_sso.getData().filter((data) => data[2].length && data[7].length > 1)
+        let inputSS = mfg_wip_spreadsheet_sso.getData().filter((data) => data[2].length && data[7].length >= 1)
         const inputSSCount = inputSS.length
         for(let i=0; i<inputSSCount;i++) {
             let _line = inputSS[i][0].trim()
