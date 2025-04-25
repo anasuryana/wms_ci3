@@ -33,6 +33,9 @@
     </div>
 </div>
 <script>
+    var wip_tempX1 = 0
+
+
     $("#mfg_wip_date_input").datepicker({
         format: 'yyyy-mm-dd',
         autoclose:true
@@ -126,27 +129,147 @@
         copyCompatibility:true,
         columnSorting:false,
         tableOverflow:true,
+        onselection: function(instance, x1, y1, x2, y2, origin) {
+            if(wip_tempX1 == 1) {
+                //sync name
+                mfg_wip_get_description()
+            }
+
+            if(wip_tempX1 == 2) {
+                mfg_wip_get_outstanding()
+            }
+
+            wip_tempX1 = x1
+            console.log({
+                x1 : x1, y1 : y1, x2 : x2, y2:y2
+            })
+        },
         tableHeight: ($(window).height()-mfg_stack1.offsetHeight - 150) + 'px',
     });
+
+    function mfg_wip_get_description() {
+        let dataDetail = []
+        let inputSS = mfg_wip_spreadsheet_sso.getData().filter((data) => data[1].length)
+        const inputSSCount = inputSS.length
+        for(let i=0; i<inputSSCount;i++) {
+
+            let _assyCode = inputSS[i][1].trim()
+            dataDetail.push({
+                item_code : _assyCode,
+
+            })
+        }
+
+        const data = {
+            production_date : mfg_wip_date_input.value,
+            shift : mfg_wip_shift_input.value,
+            user_id : uidnya,
+            detail : dataDetail
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>work-order/item-description",
+            data: JSON.stringify(data),
+            dataType: "JSON",
+            success: function (response) {
+                let dataLength = mfg_wip_spreadsheet_sso.getData().length
+                let responseDataLength = response.data.length
+                for(let i=0; i < dataLength; i++) {
+                    let _itemCode = mfg_wip_spreadsheet_sso.getValueFromCoords(1, i, true).trim()
+                    for(let s=0;s<responseDataLength; s++) {
+                        if(_itemCode == response.data[s].item_code.trim()) {
+                            mfg_wip_spreadsheet_sso.setValue('D'+(i+1), response.data[s].model_code, true)
+                            mfg_wip_spreadsheet_sso.setValue('E'+(i+1), response.data[s].type, true)
+                            mfg_wip_spreadsheet_sso.setValue('F'+(i+1), response.data[s].specs, true)
+                            break;
+                        }
+                    }
+                }
+            }, error: function(xhr, xopt, xthrow) {
+
+            }
+        });
+    }
+
+    function mfg_wip_get_outstanding() {
+        let dataDetail = []
+        let inputSS = mfg_wip_spreadsheet_sso.getData().filter((data) => data[1].length && data[2].length)
+        const inputSSCount = inputSS.length
+        for(let i=0; i<inputSSCount;i++) {
+            let _wo_code = inputSS[i][2].trim()
+            let _assyCode = inputSS[i][1].trim()
+            dataDetail.push({
+                item_code : _assyCode,
+                wo_code : _wo_code,
+            })
+        }
+
+        const data = {
+            production_date : mfg_wip_date_input.value,
+            shift : mfg_wip_shift_input.value,
+            user_id : uidnya,
+            detail : dataDetail
+        }
+
+        $.ajax({
+            async : false,
+            type : "POST",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>work-order/item-outstanding-lotsize",
+            data: JSON.stringify(data),
+            dataType: "JSON",
+            success: function (response) {
+                let dataLength = mfg_wip_spreadsheet_sso.getData().length
+                let responseDataLength = response.data.length
+                for(let i=0; i < dataLength; i++) {
+                    let _itemCode = mfg_wip_spreadsheet_sso.getValueFromCoords(1, i, true).trim()
+                    for(let s=0;s<responseDataLength; s++) {
+                        if(_itemCode == response.data[s].item_code.trim()) {
+
+                            mfg_wip_spreadsheet_sso.setValue('G'+(i+1), response.data[s].ost_qty, true)
+                            break;
+                        }
+                    }
+                }
+            }, error: function(xhr, xopt, xthrow) {
+
+            }
+        });
+    }
 
     function mfg_wip_date_input_on_change() {
         mfg_wip_load_at()
     }
 
     function mfg_wip_btn_save_eC(pThis) {
+
+        mfg_wip_get_outstanding()
+
         let dataDetail = []
-        let inputSS = mfg_wip_spreadsheet_sso.getData().filter((data) => data[2].length && data[7].length > 1)
+        let inputSS = mfg_wip_spreadsheet_sso.getData().filter((data) => data[2].length && data[7].length >= 1)
         const inputSSCount = inputSS.length
         for(let i=0; i<inputSSCount;i++) {
             let _line = inputSS[i][0].trim()
             let _assyCode = inputSS[i][1].trim()
             let _wo_code = inputSS[i][2].trim()
-            let _output = inputSS[i][7].trim()
+            let _currentOst = numeral(inputSS[i][6].trim()).value()
+            let _output = numeral(inputSS[i][7].trim()).value()
+
+            if(_currentOst > 0) {
+                alertify.warning(`There is no outstanding`)
+                return
+            } else {
+                if(Math.abs(_currentOst)<_output) {
+                    alertify.warning(`output greater than outstanding !`)
+                    return
+                }
+            }
+
             dataDetail.push({
                 line_code : _line,
                 item_code : _assyCode,
                 wo_code : _wo_code,
-                output : numeral(_output).value(),
+                output : _output,
             })
         }
 
@@ -205,21 +328,31 @@
             success: function (response) {
                 let theData = [];
                 response.data.forEach((arrayItem, index) => {
-                    theData.push([                        
+                    theData.push([
                         arrayItem['line_code'],
                         arrayItem['item_code'],
                         arrayItem['wo_code'],
                         arrayItem['model_code'],
                         arrayItem['type'],
                         arrayItem['specs'],
-                        0,
+                        arrayItem['ostLotSize'],
                         arrayItem['ok_qty'],
                     ])
                 })
 
-                if(theData.length > 0) {
-                    mfg_wip_spreadsheet_sso.setData(theData)
+                if(theData.length == 0) {
+                    theData.push([
+                       ,
+                        ,
+                        ,
+                        ,
+                        ,
+                        ,
+                        0,
+                        ,
+                    ])
                 }
+                mfg_wip_spreadsheet_sso.setData(theData)
             }
         });
     }
