@@ -709,12 +709,13 @@
                                     <th rowspan="2">Line</th>
                                     <th rowspan="2">Job Number</th>
                                     <th rowspan="2">Spec Side</th>
-                                    <th colspan="3">QTY</th>
+                                    <th colspan="4">QTY</th>
                                 </tr>
                                 <tr>
                                     <th>Lot Size</th>
                                     <th>Plan</th>
-                                    <th>Actual</th>
+                                    <th>Input2</th>
+                                    <th>Output</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -4605,6 +4606,9 @@
                         newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-end')
                         newcell.innerHTML = numeral(r['plan_qty']).format(',')
+                        newcell = newrow.insertCell(-1)
+                        newcell.classList.add('text-end')
+                        newcell.innerHTML = numeral(r['ok_qty_hw']).format(',')
                         newcell = newrow.insertCell(-1)
                         newcell.classList.add('text-end')
                         newcell.innerHTML = numeral(r['ok_qty']).format(',')
