@@ -682,9 +682,12 @@
                 let ttlrows = response.data.length;
                 let strtodis = "<option value='SMT-ATH1.1'>SMT-ATH1.1</option>";
                 strtodis += "<option value='SMT-ATH1.2'>SMT-ATH1.2</option>";
-                strtodis += "<option value='OFFLINE 1'>OFFLINE 1</option>";
-                strtodis += "<option value='OFFLINE 2'>OFFLINE 2</option>";
-                strtodis += "<option value='OFFLINE 3'>OFFLINE 3</option>";
+                strtodis += "<option value='BT1'>BT1</option>";
+                strtodis += "<option value='BT2'>BT2</option>";
+                strtodis += "<option value='BT3'>BT3</option>";
+                strtodis += "<option value='BT4'>BT4</option>";
+                strtodis += "<option value='M3.1'>M3.1</option>";
+                strtodis += "<option value='M3.2'>M3.2</option>";
                 strtodis += "<option value='H3.3'>H3.3</option>";
                 for(let i =0;i<ttlrows;i++){
                     let theline = response.data[i].PPSN1_LINENO;
