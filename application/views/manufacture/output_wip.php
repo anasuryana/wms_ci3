@@ -64,6 +64,12 @@
                                             <option value="OFFLINE 3">OFFLINE 3</option>
                                             <option value="PS2">PS2</option>
                                             <option value="PS3">PS3</option>
+                                            <option value="BT1">BT1</option>
+                                            <option value="BT2">BT2</option>
+                                            <option value="BT3">BT3</option>
+                                            <option value="M3.2">M3.2</option>
+                                            <option value="M3.1">M3.1</option>
+
                                         </select>
                                     </div>
                                 </div>
@@ -162,19 +168,16 @@
         columnSorting:false,
         tableOverflow:true,
         onselection: function(instance, x1, y1, x2, y2, origin) {
-            if(wip_tempX1 == 1) {
+            if(wip_tempX1 == 0) {
                 //sync name
                 mfg_wip_get_description()
             }
 
-            if(wip_tempX1 == 2) {
+            if(wip_tempX1 == 1) {
                 mfg_wip_get_outstanding()
             }
 
             wip_tempX1 = x1
-            console.log({
-                x1 : x1, y1 : y1, x2 : x2, y2:y2
-            })
         },
         tableHeight: ($(window).height()-mfg_stack1.offsetHeight - 150) + 'px',
     });
@@ -252,11 +255,11 @@
 
     function mfg_wip_get_description() {
         let dataDetail = []
-        let inputSS = mfg_wip_data_spreadsheet_sso.getData().filter((data) => data[1].length)
+        let inputSS = mfg_wip_data_spreadsheet_sso.getData().filter((data) => data[0].length)
         const inputSSCount = inputSS.length
         for(let i=0; i<inputSSCount;i++) {
 
-            let _assyCode = inputSS[i][1].trim()
+            let _assyCode = inputSS[i][0].trim()
             dataDetail.push({
                 item_code : _assyCode,
 
@@ -279,12 +282,12 @@
                 let dataLength = mfg_wip_data_spreadsheet_sso.getData().length
                 let responseDataLength = response.data.length
                 for(let i=0; i < dataLength; i++) {
-                    let _itemCode = mfg_wip_data_spreadsheet_sso.getValueFromCoords(1, i, true).trim()
+                    let _itemCode = mfg_wip_data_spreadsheet_sso.getValueFromCoords(0, i, true).trim()
                     for(let s=0;s<responseDataLength; s++) {
                         if(_itemCode == response.data[s].item_code.trim()) {
-                            mfg_wip_data_spreadsheet_sso.setValue('D'+(i+1), response.data[s].model_code, true)
-                            mfg_wip_data_spreadsheet_sso.setValue('E'+(i+1), response.data[s].type, true)
-                            mfg_wip_data_spreadsheet_sso.setValue('F'+(i+1), response.data[s].specs, true)
+                            mfg_wip_data_spreadsheet_sso.setValue('C'+(i+1), response.data[s].model_code, true)
+                            mfg_wip_data_spreadsheet_sso.setValue('D'+(i+1), response.data[s].type, true)
+                            mfg_wip_data_spreadsheet_sso.setValue('E'+(i+1), response.data[s].specs, true)
                             break;
                         }
                     }
@@ -297,11 +300,11 @@
 
     function mfg_wip_get_outstanding() {
         let dataDetail = []
-        let inputSS = mfg_wip_data_spreadsheet_sso.getData().filter((data) => data[1].length && data[2].length)
+        let inputSS = mfg_wip_data_spreadsheet_sso.getData().filter((data) => data[0].length && data[1].length)
         const inputSSCount = inputSS.length
         for(let i=0; i<inputSSCount;i++) {
-            let _wo_code = inputSS[i][2].trim()
-            let _assyCode = inputSS[i][1].trim()
+            let _wo_code = inputSS[i][1].trim()
+            let _assyCode = inputSS[i][0].trim()
             dataDetail.push({
                 item_code : _assyCode,
                 wo_code : _wo_code,
@@ -325,11 +328,11 @@
                 let dataLength = mfg_wip_data_spreadsheet_sso.getData().length
                 let responseDataLength = response.data.length
                 for(let i=0; i < dataLength; i++) {
-                    let _itemCode = mfg_wip_data_spreadsheet_sso.getValueFromCoords(1, i, true).trim()
+                    let _itemCode = mfg_wip_data_spreadsheet_sso.getValueFromCoords(0, i, true).trim()
                     for(let s=0;s<responseDataLength; s++) {
                         if(_itemCode == response.data[s].item_code.trim()) {
 
-                            mfg_wip_data_spreadsheet_sso.setValue('G'+(i+1), response.data[s].ost_qty, true)
+                            mfg_wip_data_spreadsheet_sso.setValue('F'+(i+1), response.data[s].ost_qty, true)
                             break;
                         }
                     }
