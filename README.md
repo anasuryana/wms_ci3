@@ -31,7 +31,7 @@ Sebelum memulai, pastikan kamu memiliki:
 1. Clone repositori ini ke direktori lokal:
 
    ```bash
-   git clone https://github.com/
+   git clone https://github.com/anasuryana/wms_ci3.git
 2. Salin file .env.example menjadi .env dan sesuaikan konfigurasi database dengan data yang sesuai:
 
    ```bash
