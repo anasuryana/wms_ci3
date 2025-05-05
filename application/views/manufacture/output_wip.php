@@ -352,7 +352,7 @@
         mfg_wip_get_outstanding()
 
         let dataDetail = []
-        let inputSS = mfg_wip_data_spreadsheet_sso.getData().filter((data) => data[2].length && data[7].length >= 1)
+        let inputSS = mfg_wip_data_spreadsheet_sso.getData().filter((data) => data[1].length && data[6].length >= 1)
         const inputSSCount = inputSS.length
         for(let i=0; i<inputSSCount;i++) {
             let _assyCode = inputSS[i][0].trim()
@@ -487,6 +487,10 @@
     }
 
     function mfg_wip_line_input_on_change() {
+        mfg_wip_load_at()
+    }
+
+    function mfg_wip_shift_input_on_change() {
         mfg_wip_load_at()
     }
 </script>
