@@ -953,6 +953,20 @@
                 readOnly: true
             },
             {
+                title:'CT A',
+                type: 'numeric',
+                mask: '#,##.000',
+                decimal: '.',
+                readOnly: true
+            },
+            {
+                title:'CT B',
+                type: 'numeric',
+                mask: '#,##.000',
+                decimal: '.',
+                readOnly: true
+            },
+            {
                 title:'Production Result',
                 type: 'numeric',
                 mask: '#,##',
@@ -1004,10 +1018,10 @@
         allowDeleteRow : false,
         rowDrag:false,
         data: [
-            [,,,,,,,,,'A',,,],
-            [,,,,,,,,,'A',,,],
-            [,,,,,,,,,'A',,,],
-            [,,,,,,,,,'A',,,],
+            [,,,,,,,,,'A',,,,,],
+            [,,,,,,,,,'A',,,,,],
+            [,,,,,,,,,'A',,,,,],
+            [,,,,,,,,,'A',,,,,],
         ],
         minDimensions: [13,41],
         copyCompatibility:true,
@@ -1026,7 +1040,7 @@
                 }
             }
 
-            if(x === 12) {
+            if(x === 14) {
                 const _diff = numeral(value).value() ?? 0
                 if(_diff<0) {
                     cell.style.cssText = "color: #ff0000"
@@ -1035,7 +1049,7 @@
                 }
             }
 
-            if(x === 15) {
+            if(x === 17) {
                 const _diff = numeral(value).value() ?? 0
                 if(_diff<0) {
                     cell.style.cssText = "color: #ff0000"
@@ -2539,11 +2553,13 @@
                         arrayItem['packaging'],
                         arrayItem['specs_side'],
                         arrayItem['cycle_time'],
+                        '',
+                        '',
                         arrayItem['ok_qty'],
-                        `=IF(L${index+1}=0,0,L${index+1}-E${index+1})`,
+                        `=IF(N${index+1}=0,0,N${index+1}-E${index+1})`,
                         arrayItem['previousRun'],
-                        `=IF(L${index+1}=0,0,L${index+1}+N${index+1})`,
-                        `=O${index+1}-D${index+1}`,
+                        `=IF(N${index+1}=0,0,N${index+1}+P${index+1})`,
+                        `=Q${index+1}-D${index+1}`,
                     ])
 
                     if(arrayItem['wo_full_code'].includes('?')) {
@@ -2561,6 +2577,7 @@
                     keikaku_data_sso.setData(theData)
                 }
                 const theIndexRedLength = theIndexRed.length
+                const theDataLength = theData.length
 
                 if(response.dataStyle) {
                     keikaku_data_sso.setStyle(response.dataStyle)
@@ -2589,6 +2606,8 @@
                 } else {
                     keikaku_check_release_setter.checked = false
                 }
+
+                keikaku_btn_run_data_eC()
             }, error: function(xhr, xopt, xthrow) {
 
             }
@@ -2707,7 +2726,52 @@
 
                             }
                         }
-                    }
+
+                        // two column
+                        for(let i=0; i < dataLength; i++) {
+                            let _itemCode = keikaku_data_sso.getValueFromCoords(7, i, true).trim()
+                            
+                            keikaku_data_sso.setValue('L'+(i+1), '', true)
+                            keikaku_data_sso.setValue('M'+(i+1), '', true)
+
+                            for(let s=0;s<responseDataLength; s++) {
+                                const _responseProcess = response.data[s].process_code.trim()
+                                if(_itemCode.includes('ASP') || _itemCode.includes('KD')) {
+                                    if(_itemCode.substring(0,9) == response.data[s].assy_code.trim()
+                                            &&  'A' === _responseProcess.substr(_responseProcess.length-1, 1)
+                                        ) {
+                                            keikaku_data_sso.setValue('L'+(i+1), response.data[s].cycle_time, true)
+                                            break;
+                                    }
+                                } else {
+                                    if(_itemCode == response.data[s].assy_code.trim()
+                                        &&  'A' === _responseProcess.substr(_responseProcess.length-1, 1)
+                                    ) {
+                                            keikaku_data_sso.setValue('L'+(i+1), response.data[s].cycle_time, true)
+                                            break;
+                                        }
+                                }
+                            }
+                            for(let s=0;s<responseDataLength; s++) {
+                                const _responseProcess = response.data[s].process_code.trim()
+                                if(_itemCode.includes('ASP') || _itemCode.includes('KD')) {
+                                    if(_itemCode.substring(0,9) == response.data[s].assy_code.trim()
+                                            &&  'B' === _responseProcess.substr(_responseProcess.length-1, 1)
+                                        ) {
+                                            keikaku_data_sso.setValue('M'+(i+1), response.data[s].cycle_time, true)
+                                            break;
+                                    }
+                                } else {
+                                    if(_itemCode == response.data[s].assy_code.trim()
+                                        &&  'B' === _responseProcess.substr(_responseProcess.length-1, 1)
+                                    ) {
+                                            keikaku_data_sso.setValue('M'+(i+1), response.data[s].cycle_time, true)
+                                            break;
+                                        }
+                                }
+                            }
+                        }
+                    }                    
                 }
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
