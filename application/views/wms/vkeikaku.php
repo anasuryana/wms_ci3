@@ -697,6 +697,10 @@
                     <div class="input-group input-group-sm mb-1">
                         <label class="input-group-text">Job Number</label>
                         <input type="text" class="form-control" id="keikaku_rpt_wo_no" maxlength="25" onkeypress="keikaku_rpt_wo_no_e_keypress(event)" title="Press Enter to search">
+                        <div class="input-group-text">
+                            <input class="form-check-input mt-0" type="checkbox" id="keikaku_rpt_include_plan_only" onclick="keikaku_rpt_include_plan_only_on_click()">
+                        </div>
+                        <label class="input-group-text">Include Plan Only</label>
                     </div>
                 </div>
             </div>
@@ -4773,64 +4777,72 @@
         $("#keikaku_rpt_wo_modal").modal('show')
     }
 
+    function keikaku_rpt_load_job_history() {
+        keikaku_rpt_wo_no.readOnly = true
+        if(keikaku_rpt_wo_no.value.trim().length < 4) {
+            keikaku_rpt_wo_no.readOnly = false
+            alertify.warning(`At least 4 characters required`)
+            return
+        }
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/wo-run",
+            data: {doc : keikaku_rpt_wo_no.value, include_plan_only : keikaku_rpt_include_plan_only.checked ? 'Y' : 'N'},
+            dataType: "json",
+            success: function (response) {
+                keikaku_rpt_wo_no.readOnly = false
+                let mydes = document.getElementById("keikaku_rpt_wo_tbl_div");
+                let myfrag = document.createDocumentFragment();
+                let mtabel = document.getElementById("keikaku_rpt_wo_tbl");
+                let cln = mtabel.cloneNode(true);
+                myfrag.appendChild(cln);
+                let tabell = myfrag.getElementById("keikaku_rpt_wo_tbl");
+                let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                let newrow, newcell, newText;
+                tableku2.innerHTML = '';
+                response.data.forEach((r, i) => {
+                    newrow = tableku2.insertRow(-1);
+                    newcell = newrow.insertCell(0);
+                    newcell.innerHTML = r['production_date']
+                    newcell.classList.add('text-center')
+                    newcell = newrow.insertCell(1)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = r['line_code']
+                    newcell = newrow.insertCell(2)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = r['wo_full_code']
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = r['specs_side']
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(r['lot_size']).format(',')
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(r['plan_qty']).format(',')
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(r['ok_qty_hw']).format(',')
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(r['ok_qty']).format(',')
+                })
+                mydes.innerHTML = '';
+                mydes.appendChild(myfrag);
+            }, error: function(xhr, xopt, xthrow) {
+                alertify.error(xthrow)
+                keikaku_rpt_wo_no.readOnly = false
+            }
+        });
+    }
+
+    function keikaku_rpt_include_plan_only_on_click() {
+        keikaku_rpt_load_job_history()
+    }
+
     function keikaku_rpt_wo_no_e_keypress(e) {
         if(e.key==='Enter') {
-            e.target.readOnly = true
-            if(e.target.value.trim().length < 4) {
-                e.target.readOnly = false
-                alertify.warning(`At least 4 characters required`)
-                return
-            }
-            $.ajax({
-                type: "GET",
-                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/wo-run",
-                data: {doc : e.target.value},
-                dataType: "json",
-                success: function (response) {
-                    e.target.readOnly = false
-                    let mydes = document.getElementById("keikaku_rpt_wo_tbl_div");
-                    let myfrag = document.createDocumentFragment();
-                    let mtabel = document.getElementById("keikaku_rpt_wo_tbl");
-                    let cln = mtabel.cloneNode(true);
-                    myfrag.appendChild(cln);
-                    let tabell = myfrag.getElementById("keikaku_rpt_wo_tbl");
-                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
-                    let newrow, newcell, newText;
-                    tableku2.innerHTML = '';
-                    response.data.forEach((r, i) => {
-                        newrow = tableku2.insertRow(-1);
-                        newcell = newrow.insertCell(0);
-                        newcell.innerHTML = r['production_date']
-                        newcell.classList.add('text-center')
-                        newcell = newrow.insertCell(1)
-                        newcell.classList.add('text-center')
-                        newcell.innerHTML = r['line_code']
-                        newcell = newrow.insertCell(2)
-                        newcell.classList.add('text-center')
-                        newcell.innerHTML = r['wo_full_code']
-                        newcell = newrow.insertCell(-1)
-                        newcell.classList.add('text-center')
-                        newcell.innerHTML = r['specs_side']
-                        newcell = newrow.insertCell(-1)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = numeral(r['lot_size']).format(',')
-                        newcell = newrow.insertCell(-1)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = numeral(r['plan_qty']).format(',')
-                        newcell = newrow.insertCell(-1)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = numeral(r['ok_qty_hw']).format(',')
-                        newcell = newrow.insertCell(-1)
-                        newcell.classList.add('text-end')
-                        newcell.innerHTML = numeral(r['ok_qty']).format(',')
-                    })
-                    mydes.innerHTML = '';
-                    mydes.appendChild(myfrag);
-                }, error: function(xhr, xopt, xthrow) {
-                    alertify.error(xthrow)
-                    e.target.readOnly = false
-                }
-            });
+            keikaku_rpt_load_job_history()            
         }
     }
 
