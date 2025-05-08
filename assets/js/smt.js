@@ -250,7 +250,7 @@ function vkeikakuSimulate(pData, pCalculation) {
         }
     }
 
-    keikakuDisplayProdplan(asMatrix, [], dataCalculation, [])
+    keikakuDisplayProdplan(asMatrix, [], dataCalculation, [],[],[],[])
 }
 
 
