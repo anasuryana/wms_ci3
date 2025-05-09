@@ -245,7 +245,11 @@
                 response.dataFreshReff.forEach((arrayItem) => {
                     let resultHTML = ''
                     if(!arrayItem['CLS_LUPDT']) {
-                        resultHTML = `<span class="badge bg-danger">Not Yet Scan</span>`
+                        if(arrayItem['UNQX']) {
+                            resultHTML = `<span class="badge bg-warning">Just already scanned</span>`
+                        } else {
+                            resultHTML = `<span class="badge bg-danger">Not Yet Scan</span>`
+                        }
                     } else {
                         if(arrayItem['BALANCE_LABEL']==0){
                             resultHTML = `<span class="badge bg-info">Scan Complete</span>`
