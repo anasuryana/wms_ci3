@@ -2431,6 +2431,7 @@
             data: {line_code : keikaku_line_input.value, production_date : keikaku_date_input.value},
             dataType: "json",
             success: function (response) {
+                let efficiency = 0.85
                 if(response.data.length > 0) {
                     response.data.forEach((arrayItem) => {
                         worktype1.push(Number.parseFloat(arrayItem['worktype1']).toFixed(2))
@@ -2440,6 +2441,7 @@
                         worktype5.push(Number.parseFloat(arrayItem['worktype5']).toFixed(2))
                         worktype6.push(Number.parseFloat(arrayItem['worktype6']).toFixed(2))
                         flag_mot.push(arrayItem['flag_mot'])
+                        efficiency = numeral(arrayItem['efficiency']).value()
                     })
                 } else {
                     if(response.dataDefault.length > 0) {
@@ -2516,7 +2518,7 @@
                     ``,
                     ],
                     ['Hour', ...Array.from({length: 16}, (_, i) => i + 8), ...Array.from({length: 8}, (_, i) => i), ...Array.from({length: 12}, (_, i) => i + 8)],
-                    ['Efficiency','0.85' , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
+                    ['Efficiency',efficiency , '=B11', '=C11','=D11', '=E11', '=F11', '=G11', '=H11', '=I11', '=J11', '=K11', '=L11',
                         '=M11','=N11', '=O11', '=P11', '=Q11', '=R11', '=S11', '=T11', '=U11', '=V11', '=W11', '=X11',
                         '=Y11','=Z11','=AA11','=AB11','=AC11','=AD11','=AE11', '=AF11', '=AG11', '=AH11', '=AI11', '=AJ11'
                     ],
