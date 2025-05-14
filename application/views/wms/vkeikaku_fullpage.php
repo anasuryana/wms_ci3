@@ -87,6 +87,7 @@
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_summary" onclick="keikaku_rpt_btn_summary_e_click()"><i class="fas fa-file-excel text-success"></i> Summary</a></li>
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_prod_output" onclick="keikaku_rpt_btn_prod_output_e_click()"><i class="fas fa-file-excel text-success"></i> Production Output & Downtime</a></li>
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_wo_history" onclick="keikaku_rpt_btn_wo_history_e_click()">Job History</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="keikaku_rpt_btn_model_list_trigger_e_click()"><i class="fas fa-list"></i> Model List</a></li>
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_permission" onclick="keikaku_rpt_btn_permission_e_click()"><i class="fas fa-universal-access"></i> Permission</a></li>
                     </ul>
                 </div>
@@ -850,6 +851,40 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="keikaku_template_btn_save" onclick="keikaku_template_btn_save_eclick(this)">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="keikaku_model_list_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Model List <span id="keikaku_model_list_modal_span"></span></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <div class="table-responsive" id="keikaku_model_list_modal_tbl_div">
+                        <table id="keikaku_model_list_modal_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;font-size:91%">
+                            <thead class="table-light text-center align-middle">
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Assy Code</th>
+                                    <th>Type</th>
+                                    <th>A SIDE</th>
+                                    <th>B SIDE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
   </div>
@@ -5383,6 +5418,53 @@
     }
 
     keikakuisReleaser()
+
+    function keikaku_rpt_btn_model_list_trigger_e_click() {
+        keikaku_model_list_modal_span.innerText=keikaku_line_input.value
+        const data = {
+            line_code : keikaku_line_input.value
+        }
+        $.ajax({
+            type: "GET",
+            url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>process-master/cycle-time-by-line-code",
+            data: data,
+            dataType: "JSON",
+            success: function (response) {
+                let mydes = document.getElementById("keikaku_model_list_modal_tbl_div");
+                let myfrag = document.createDocumentFragment();
+                let mtabel = document.getElementById("keikaku_model_list_modal_tbl");
+                let cln = mtabel.cloneNode(true);
+                myfrag.appendChild(cln);
+                let tabell = myfrag.getElementById("keikaku_model_list_modal_tbl");
+                let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                let newrow, newcell, newText;
+                tableku2.innerHTML = '';
+                response.data.forEach((r, i) => {
+                    newrow = tableku2.insertRow(-1);
+                    newcell = newrow.insertCell(0);
+                    newcell.innerHTML = r['model_code']
+                    newcell.classList.add('text-center')
+                    newcell = newrow.insertCell(1)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = r['assy_code']
+                    newcell = newrow.insertCell(2)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = r['model_type']
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-center')
+                    newcell.innerHTML = numeral(r['side_a']).format(',')
+                    newcell.title = r['side_a_time']
+                    newcell = newrow.insertCell(-1)
+                    newcell.classList.add('text-end')
+                    newcell.innerHTML = numeral(r['side_b']).format(',')                    
+                    newcell.title = r['side_b_time']
+                })
+                mydes.innerHTML = '';
+                mydes.appendChild(myfrag);
+            }
+        });
+        $("#keikaku_model_list_modal").modal('show')
+    }
 </script>
 
 <script type="text/javascript" src="<?php echo base_url("assets/js/popper.min.js") ?>"></script>

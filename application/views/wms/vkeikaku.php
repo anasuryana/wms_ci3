@@ -54,8 +54,8 @@
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_summary" onclick="keikaku_rpt_btn_summary_e_click()"><i class="fas fa-file-excel text-success"></i> Summary</a></li>
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_prod_output" onclick="keikaku_rpt_btn_prod_output_e_click()"><i class="fas fa-file-excel text-success"></i> Production Output & Downtime</a></li>
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_wo_history" onclick="keikaku_rpt_btn_wo_history_e_click()">Job History</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="keikaku_rpt_btn_model_list_trigger_e_click()"><i class="fas fa-list"></i> Model List</a></li>
                         <li><a class="dropdown-item" href="#" id="keikaku_rpt_btn_permission" onclick="keikaku_rpt_btn_permission_e_click()"><i class="fas fa-universal-access"></i> Permission</a></li>
-                        <!-- <li><a class="dropdown-item" href="#" onclick="keikaku_rpt_btn_model_list_trigger_e_click()"><i class="fas fa-list"></i> Model List</a></li> -->
                     </ul>
                 </div>
             </div>
@@ -5467,9 +5467,11 @@
                     newcell = newrow.insertCell(-1)
                     newcell.classList.add('text-center')
                     newcell.innerHTML = numeral(r['side_a']).format(',')
+                    newcell.title = r['side_a_time']
                     newcell = newrow.insertCell(-1)
                     newcell.classList.add('text-end')
                     newcell.innerHTML = numeral(r['side_b']).format(',')                    
+                    newcell.title = r['side_b_time']
                 })
                 mydes.innerHTML = '';
                 mydes.appendChild(myfrag);
