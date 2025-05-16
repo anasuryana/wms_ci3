@@ -3124,12 +3124,14 @@
         pThis.disabled = true
         keikakuEditDate.value = keikaku_date_input.value
         const containerInfo = document.getElementById('keikaku-div-alert')
+        pThis.innerHTML = `<i class="fas fa-spinner fa-spin-pulse"></i>`
         $.ajax({
             type: "GET",
             url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>keikaku/production-plan",
             data: data,
             dataType: "json",
             success: function (response) {
+                pThis.innerHTML = `Run`
                 pThis.disabled = false
                 keikaku_cell_name.value = ''
                 _temp_asProdpan = response.asProdplan
@@ -3438,6 +3440,7 @@
                 keikaku_rpt_tbl_lbl_cm_morning_percentage.innerText = _totalPlanChangeMorning == 0 ? "" : (_totalActualChangeMorning/_totalPlanChangeMorning*100).toFixed(0) + '%'
                 keikaku_rpt_tbl_lbl_cm_night_percentage.innerText = _totalPlanChangeNight == 0 ? "" : (_totalActualChangeNight/_totalPlanChangeNight*100).toFixed(0) + '%'
             }, error: function(xhr, xopt, xthrow) {
+                pThis.innerHTML = `Run`
                 pThis.disabled = false
                 alertify.error(xthrow)
 
