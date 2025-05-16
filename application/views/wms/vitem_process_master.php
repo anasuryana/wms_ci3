@@ -137,6 +137,19 @@
                 width:120,
                 align: 'right'
             },
+            {
+                type: 'numeric',
+                title:'Sequence',
+                mask: '#,##',
+                width:120,
+                align: 'right'
+            },
+            {
+                type: 'dropdown',
+                title:'Line Category',
+                source: ['MC','HW'],
+                width:120,                
+            },
         ],
         allowDeleteColumn : false,
         rowDrag:false,
@@ -219,6 +232,15 @@
         }
 
         for(let i=0; i < inputLength; i++) {
+            if(inputSS[i][6]=='') {
+                alertify.warning('Sequence is required')
+                return
+            }
+            if(inputSS[i][7]=='') {
+                alertify.warning('Line category is required')
+                return
+            }
+
             dataMaster.push({
                 line_code : inputSS[i][0],
                 assy_code : inputSS[i][2],
@@ -226,6 +248,8 @@
                 model_type : inputSS[i][3],
                 process_code : inputSS[i][4],
                 cycle_time : numeral(inputSS[i][5]).value(),
+                process_seq : inputSS[i][6],
+                line_category : inputSS[i][7],
             })
         }
 
