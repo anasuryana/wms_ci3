@@ -22,6 +22,7 @@ class RETPRD extends CI_Controller
         $this->load->model('C3LC_mod');
         $this->load->model('RETRM_mod');
         $this->load->model('RPSAL_INVENTORY_mod');
+        $this->load->model('Raw_material_labels_mod');
         date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
@@ -71,9 +72,12 @@ class RETPRD extends CI_Controller
         $cqty = $this->input->post('inqty');
         $rs = $this->SPLRET_mod->selectby_filter(['RETSCN_ID' => $cidscan, 'RETSCN_SAVED' => '1']);
         $rsconfirmed = $this->ITH_mod->select_confirmdate_psn($cpsn);
-        $confirmdatetime = '';
+        $confirmdatetime = $RETSCN_UNIQUEKEY = '';
         foreach ($rsconfirmed as $c) {
             $confirmdatetime = $c['ITH_LUPDT'];
+        }
+        foreach ($rs as $c) {
+            $RETSCN_UNIQUEKEY = $c['RETSCN_UNIQUEKEY'];
         }
         $rsbg = $this->SPL_mod->select_bg_ppsn([$cpsn]);
         $cwh_base = '';
@@ -118,7 +122,12 @@ class RETPRD extends CI_Controller
         $myar = [];
         $ithdoc = $cpsn . '|' . $ccat . '|' . $cline . '|' . $cfr;
         if (count($rs) > 0) {
-            if ($this->SPLRET_mod->updatebyVars(['RETSCN_QTYAFT' => $cqty], ['RETSCN_ID' => $cidscan, 'RETSCN_SPLDOC' => $cpsn]) > 0) {
+            if ($this->SPLRET_mod->updatebyVars(['RETSCN_QTYAFT' => $cqty], ['RETSCN_ID' => $cidscan, 'RETSCN_SPLDOC' => $cpsn]) > 0) {   
+                $this->Raw_material_labels_mod->updatebyId([
+                    'quantity' => $cqty, 
+                    'updated_by' => $this->session->userdata('nama'),
+                    'updated_at' => $currentDateTime
+                ], $RETSCN_UNIQUEKEY);
                 $diff = $cqty - $coldactqty;
                 $datas[] = [
                     'ITH_ITMCD' => $citemcode,
@@ -149,6 +158,11 @@ class RETPRD extends CI_Controller
             }
         } else {
             if ($this->SPLRET_mod->updatebyVars(['RETSCN_QTYAFT' => $cqty], ['RETSCN_ID' => $cidscan, 'RETSCN_SPLDOC' => $cpsn]) > 0) {
+                $this->Raw_material_labels_mod->updatebyId([
+                    'quantity' => $cqty, 
+                    'updated_by' => $this->session->userdata('nama'),
+                    'updated_at' => $currentDateTime
+                ], $RETSCN_UNIQUEKEY);
                 $myar[] = ['cd' => 1, 'msg' => 'OK'];
             } else {
                 $myar[] = ['cd' => 0, 'msg' => 'Revision is failed'];
