@@ -3182,17 +3182,33 @@
                             }
                         }
 
-                        for(let r=0;r<inputLength;r++) {
-                            _totalActual += Number(response.dataInput2HW[r][i])
-                            _totalActualTime += (response.dataInput2HW[r][5] *Number(response.dataInput2HW[r][i]) )
+                        if(['BT3', 'BT4'].includes(keikaku_line_input.value)) {
+                            for(let r=0;r<inputLength;r++) {
+                                _totalActual += Number(response.dataOutputHW[r][i])
+                                _totalActualTime += (response.dataOutputHW[r][5] *Number(response.dataOutputHW[r][i]) )
 
-                            if(i>=18) {
-                                _totalActualTimeNight += (response.dataInput2HW[r][5] *Number(response.dataInput2HW[r][i]) )
-                                _totalActualQtyNight += Number(response.dataInput2HW[r][i])
+                                if(i>=18) {
+                                    _totalActualTimeNight += (response.dataOutputHW[r][5] *Number(response.dataOutputHW[r][i]) )
+                                    _totalActualQtyNight += Number(response.dataOutputHW[r][i])
 
-                            } else {
-                                _totalActualTimeMorning += (response.dataInput2HW[r][5] *Number(response.dataInput2HW[r][i]) )
-                                _totalActualQtyMorning += Number(response.dataInput2HW[r][i])
+                                } else {
+                                    _totalActualTimeMorning += (response.dataOutputHW[r][5] *Number(response.dataOutputHW[r][i]) )
+                                    _totalActualQtyMorning += Number(response.dataOutputHW[r][i])
+                                }
+                            }
+                        } else {
+                            for(let r=0;r<inputLength;r++) {
+                                _totalActual += Number(response.dataInput2HW[r][i])
+                                _totalActualTime += (response.dataInput2HW[r][5] *Number(response.dataInput2HW[r][i]) )
+
+                                if(i>=18) {
+                                    _totalActualTimeNight += (response.dataInput2HW[r][5] *Number(response.dataInput2HW[r][i]) )
+                                    _totalActualQtyNight += Number(response.dataInput2HW[r][i])
+
+                                } else {
+                                    _totalActualTimeMorning += (response.dataInput2HW[r][5] *Number(response.dataInput2HW[r][i]) )
+                                    _totalActualQtyMorning += Number(response.dataInput2HW[r][i])
+                                }
                             }
                         }
 
