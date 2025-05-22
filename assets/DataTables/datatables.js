@@ -4,13 +4,13 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.3.0/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.4/rr-1.5.0/sc-2.4.3/sl-3.0.0
+ *   https://datatables.net/download/#bs5/dt-2.3.1/fc-5.0.4/fh-4.0.2/kt-2.12.1/r-3.0.4/rr-1.5.0/sc-2.4.3/sl-3.0.0
  *
  * Included libraries:
- *   DataTables 2.3.0, FixedColumns 5.0.4, FixedHeader 4.0.1, KeyTable 2.12.1, Responsive 3.0.4, RowReorder 1.5.0, Scroller 2.4.3, Select 3.0.0
+ *   DataTables 2.3.1, FixedColumns 5.0.4, FixedHeader 4.0.2, KeyTable 2.12.1, Responsive 3.0.4, RowReorder 1.5.0, Scroller 2.4.3, Select 3.0.0
  */
 
-/*! DataTables 2.3.0
+/*! DataTables 2.3.1
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -513,7 +513,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs5/dt-2.3.0/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.4/rr-1.5.0/sc-2.4.3/sl-3.0.0",
+		builder: "bs5/dt-2.3.1/fc-5.0.4/fh-4.0.2/kt-2.12.1/r-3.0.4/rr-1.5.0/sc-2.4.3/sl-3.0.0",
 	
 		/**
 		 * Buttons. For use with the Buttons extension for DataTables. This is
@@ -1917,6 +1917,10 @@
 		else if (init.bSort === false) {
 			init.orderIndicators = false;
 			init.orderHandler = false;
+		}
+		else if (init.bSort === true) {
+			init.orderIndicators = true;
+			init.orderHandler = true;
 		}
 	
 		// Which cells are the title cells?
@@ -3585,7 +3589,9 @@
 	
 		_fnDraw( settings );
 	
-		settings._drawHold = false;
+		settings.api.one('draw', function () {
+			settings._drawHold = false;
+		});
 	}
 	
 	
@@ -10205,7 +10211,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.3.0";
+	DataTable.version = "2.3.1";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -14715,7 +14721,7 @@ return DataTable;
 }));
 
 
-/*! FixedHeader 4.0.1
+/*! FixedHeader 4.0.2
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -14770,7 +14776,7 @@ var DataTable = $.fn.dataTable;
  * @summary     FixedHeader
  * @description Fix a table's header or footer, so it is always visible while
  *              scrolling
- * @version     4.0.1
+ * @version     4.0.2
  * @author      SpryMedia Ltd
  * @contact     datatables.net
  *
@@ -15290,11 +15296,13 @@ $.extend(FixedHeader.prototype, {
 				itemDom.placeholder = null;
 			}
 
-			if (item === 'header') {
-				itemDom.host.prepend(tablePart);
-			}
-			else {
-				itemDom.host.append(tablePart);
+			if (!$.contains(itemDom.host[0], tablePart[0])) {
+				if (item === 'header') {
+					itemDom.host.prepend(tablePart);
+				}
+				else {
+					itemDom.host.append(tablePart);
+				}
 			}
 
 			if (itemDom.floating) {
@@ -15523,14 +15531,17 @@ $.extend(FixedHeader.prototype, {
 					forceChange = true;
 				}
 				else {
-					this.dom.header.floatingParent
+					var child = this.dom.header.floatingParent
 						.css({
 							top: this.c.headerOffset,
 							position: 'fixed'
 						})
 						.children()
-						.eq(0)
-						.append(this.dom.header.floating);
+						.eq(0);
+
+					if (child.find(this.dom.header.floating).length === 0) {
+						child.append(this.dom.header.floating);
+					}
 				}
 			}
 			// Anything else and the view is below the table
@@ -15772,7 +15783,7 @@ $.extend(FixedHeader.prototype, {
  * @type {String}
  * @static
  */
-FixedHeader.version = '4.0.1';
+FixedHeader.version = '4.0.2';
 
 /**
  * Defaults
