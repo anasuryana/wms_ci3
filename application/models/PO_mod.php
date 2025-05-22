@@ -144,6 +144,19 @@ class PO_mod extends CI_Model
         return $query->result_array();
     }
 
+
+    public function select_detail_where_po_in($columns, $PONumber)
+    {
+        $this->db->select($columns);
+        $this->db->from($this->TABLENAME);
+        $this->db->join("MITM_TBL", "PO_ITMCD=MITM_ITMCD", "LEFT");
+        $this->db->join("MSUP_TBL", "PO_SUPCD=MSUP_SUPCD", "left");
+        $this->db->where_in('PO_NO', $PONumber);
+        $this->db->order_by("PO_DISC DESC,PO_LINE, PO_ITMNM, MITM_ITMD1");
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function select_discount_detail_where($pwhere)
     {
         $this->db->from($this->TABLENAME_DISCOUNT);

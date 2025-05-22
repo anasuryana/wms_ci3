@@ -520,19 +520,20 @@
                                     <th class="d-none">GRLNO</th> <!-- 0 -->
                                     <th>NoUrut</th> <!-- 1 -->
                                     <th>PO No</th> <!-- 2 -->
-                                    <th>Item Code</th> <!-- 3 -->
-                                    <th>Item Name</th> <!-- 4 -->
-                                    <th class="text-end">QTY</th> <!-- 5 -->
-                                    <th title="Unit Measurement">UM</th> <!-- 6 -->
-                                    <th class="text-end">Price</th> <!-- 7 -->
-                                    <th class="text-end">Amount</th> <!-- 8 -->
-                                    <th class="text-end">Net Weight</th> <!-- 9 -->
-                                    <th class="text-end">Gross Weight</th> <!-- 10 -->
-                                    <th class="text-center">HS Code</th> <!-- 11 -->
-                                    <th class="text-end" title="Bea Masuk">BM</th> <!-- 12 -->
-                                    <th class="text-end">PPN</th> <!-- 13 -->
-                                    <th class="text-end">PPH</th> <!-- 14 -->
-                                    <th class="text-center">to Location</th> <!-- 15 -->
+                                    <th>Asset Status</th> <!-- 3 -->
+                                    <th>Item Code</th> <!-- 4 -->
+                                    <th>Item Name</th> <!-- 5 -->
+                                    <th class="text-end">QTY</th> <!-- 6 -->
+                                    <th title="Unit Measurement">UM</th> <!-- 7 -->
+                                    <th class="text-end">Price</th> <!-- 8 -->
+                                    <th class="text-end">Amount</th> <!-- 9 -->
+                                    <th class="text-end">Net Weight</th> <!-- 10 -->
+                                    <th class="text-end">Gross Weight</th> <!-- 11 -->
+                                    <th class="text-center">HS Code</th> <!-- 12 -->
+                                    <th class="text-end" title="Bea Masuk">BM</th> <!-- 13 -->
+                                    <th class="text-end">PPN</th> <!-- 14 -->
+                                    <th class="text-end">PPH</th> <!-- 15 -->
+                                    <th class="text-center">to Location</th> <!-- 16 -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -1933,6 +1934,7 @@
         let d_grlno = []
         let d_nourut = []
         let d_pono = []
+        let d_asset_status = []
         let d_itemcode = []
         let d_qty = []
         let d_price = []
@@ -1950,9 +1952,9 @@
         let mytable = document.getElementById('rcvcustoms_tbl_1').getElementsByTagName('tbody')[0]
         let mtrlength = mytable.getElementsByTagName('tr').length
         for (let i = 0; i < mtrlength; i++) {
-            const itmcode = mytable.rows[i].cells[3].innerText.trim().replace(/\n+/g, '')
-            const price = mytable.rows[i].cells[7].innerText.replace(/\n+/g, '')
-            const location = mytable.rows[i].cells[15].innerText.replace(/\n+/g, '')
+            const itmcode = mytable.rows[i].cells[4].innerText.trim().replace(/\n+/g, '')
+            const price = mytable.rows[i].cells[8].innerText.replace(/\n+/g, '')
+            const location = mytable.rows[i].cells[16].innerText.replace(/\n+/g, '')
             if (price == '-') {
                 alertify.warning('Price is not valid')
                 return
@@ -1961,15 +1963,16 @@
                 d_grlno.push(mytable.rows[i].cells[0].innerText.replace(/\n+/g, ''))
                 d_nourut.push(mytable.rows[i].cells[1].innerText.replace(/\n+/g, ''))
                 d_pono.push(mytable.rows[i].cells[2].innerText.replace(/\n+/g, ''))
+                d_asset_status.push(mytable.rows[i].cells[3].innerText.replace(/\n+/g, ''))
                 d_itemcode.push(itmcode)
-                d_qty.push(mytable.rows[i].cells[5].innerText.replace(/\n+/g, ''))
+                d_qty.push(mytable.rows[i].cells[6].innerText.replace(/\n+/g, ''))
                 d_price.push(price)
-                d_prNW.push(mytable.rows[i].cells[9].innerText.replace(/\n+/g, ''))
-                d_prGW.push(mytable.rows[i].cells[10].innerText.replace(/\n+/g, ''))
-                d_hscode.push(mytable.rows[i].cells[11].innerText.replace(/\n+/g, ''))
-                d_bm.push(mytable.rows[i].cells[12].innerText.replace(/\n+/g, ''))
-                d_ppn.push(mytable.rows[i].cells[13].innerText.replace(/\n+/g, ''))
-                d_pph.push(mytable.rows[i].cells[14].innerText.replace(/\n+/g, ''))
+                d_prNW.push(mytable.rows[i].cells[10].innerText.replace(/\n+/g, ''))
+                d_prGW.push(mytable.rows[i].cells[11].innerText.replace(/\n+/g, ''))
+                d_hscode.push(mytable.rows[i].cells[12].innerText.replace(/\n+/g, ''))
+                d_bm.push(mytable.rows[i].cells[13].innerText.replace(/\n+/g, ''))
+                d_ppn.push(mytable.rows[i].cells[14].innerText.replace(/\n+/g, ''))
+                d_pph.push(mytable.rows[i].cells[15].innerText.replace(/\n+/g, ''))
                 if(location.length <= 1 ) {
                     alertify.warning('Location is required')
                     return
@@ -2316,16 +2319,24 @@
                                 let isfound = false
                                 let ttlrowstarget = document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows.length
                                 for (let k = 0; k < ttlrowstarget; k++) {
-                                    if (document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[k].cells[3].innerHTML === response.data[i].MITM_ITMCD) {
-                                        isfound = true
-                                        break
+                                    if (rcvcustoms_tablefokus == 'rcvcustoms_tbl_1') {
+                                        if (document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[k].cells[4].innerHTML === response.data[i].MITM_ITMCD) {
+                                            isfound = true
+                                            break
+                                        }
+                                    } else {
+                                        if (document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[k].cells[3].innerHTML === response.data[i].MITM_ITMCD) {
+                                            isfound = true
+                                            break
+                                        }
                                     }
+                                    
                                 }
                                 if (!isfound) {
                                     if (rcvcustoms_tablefokus == 'rcvcustoms_tbl_1') {
-                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[3].innerHTML = response.data[i].MITM_ITMCD.trim()
-                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[4].innerHTML = response.data[i].MITM_ITMD1
-                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[6].innerHTML = response.data[i].MITM_STKUOM
+                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[4].innerHTML = response.data[i].MITM_ITMCD.trim()
+                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[5].innerHTML = response.data[i].MITM_ITMD1
+                                        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[7].innerHTML = response.data[i].MITM_STKUOM
                                     } else {
                                         document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[3].innerHTML = response.data[i].MITM_ITMCD.trim()
                                         document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[4].innerHTML = response.data[i].MITM_ITMD1
@@ -2533,6 +2544,8 @@
         newcell.innerHTML = '-'
 
         newcell = newrow.insertCell(3)
+
+        newcell = newrow.insertCell(4)
         newcell.title = `double click for showing search dialog`
         newcell.classList.add('table-info')
         newcell.onclick = () => {
@@ -2541,62 +2554,62 @@
         newcell.style.cssText = "cursor:pointer"
         newcell.innerHTML = ''
 
-        newcell = newrow.insertCell(4)
+        newcell = newrow.insertCell(5)
         newcell.classList.add('table-info')
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(5)
+        newcell = newrow.insertCell(6)
         newcell.contentEditable = true
         newcell.classList.add('text-end')
         newcell.innerHTML = '0'
 
-        newcell = newrow.insertCell(6)
+        newcell = newrow.insertCell(7)
         newcell.classList.add('table-info')
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(7)
+        newcell = newrow.insertCell(8)
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(8)
+        newcell = newrow.insertCell(9)
         newcell.classList.add('text-end', 'table-info')
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(9)
+        newcell = newrow.insertCell(10)
         newcell.title = 'Net weight'
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = 0
-        newcell = newrow.insertCell(10)
+        newcell = newrow.insertCell(11)
         newcell.classList.add('text-end')
         newcell.title = 'Gross weight'
         newcell.contentEditable = true
         newcell.innerHTML = '-'
-        newcell = newrow.insertCell(11)
+        newcell = newrow.insertCell(12)
         newcell.title = 'HSCode'
         newcell.contentEditable = true
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(12)
+        newcell = newrow.insertCell(13)
         newcell.title = 'BM'
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(13)
+        newcell = newrow.insertCell(14)
         newcell.title = 'PPN'
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(14)
+        newcell = newrow.insertCell(15)
         newcell.title = 'PPH'
         newcell.classList.add('text-end')
         newcell.contentEditable = true
         newcell.innerHTML = '-'
 
-        newcell = newrow.insertCell(15)
+        newcell = newrow.insertCell(16)
         newcell.style.cssText = "cursor:pointer"
         newcell.classList.add('text-center', 'table-info')
         newcell.title = 'to Location'
@@ -3484,7 +3497,18 @@
                     newcell = newrow.insertCell(2)
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PO
+
                     newcell = newrow.insertCell(3)
+                    newcell.classList.add('text-center')
+                    if(response.data[i].PO_SUBJECT) {
+                        if(['O', 'E'].includes(response.data[i].PO_SUBJECT)) {
+                            newcell.innerHTML = `<span class="badge bg-warning fa-beat">ASSET 💰</span>`
+                        } else {
+                            newcell.innerHTML = `<span class="badge bg-info">NON ASSET</span>`
+                        }
+                    }
+
+                    newcell = newrow.insertCell(4)
                     newcell.title = `double click for showing search dialog`
                     newcell.classList.add('table-info')
                     newcell.onclick = () => {
@@ -3492,52 +3516,52 @@
                     }
                     newcell.style.cssText = "cursor:pointer"
                     newcell.innerHTML = response.data[i].RCV_ITMCD
-                    newcell = newrow.insertCell(4)
+                    newcell = newrow.insertCell(5)
                     newcell.classList.add('table-info')
                     newcell.innerHTML = response.data[i].MITM_ITMD1
-                    newcell = newrow.insertCell(5)
+                    newcell = newrow.insertCell(6)
                     newcell.contentEditable = true
                     newcell.classList.add('text-end')
                     newcell.innerHTML = response.data[i].RCV_QTY
-                    newcell = newrow.insertCell(6)
+                    newcell = newrow.insertCell(7)
                     newcell.classList.add('table-info')
                     newcell.innerHTML = response.data[i].MITM_STKUOM
-                    newcell = newrow.insertCell(7)
+                    newcell = newrow.insertCell(8)
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PRPRC
-                    newcell = newrow.insertCell(8)
+                    newcell = newrow.insertCell(9)
                     newcell.classList.add('text-end', 'table-info')
                     newcell.innerHTML = numeral(response.data[i].RCV_PRPRC * response.data[i].RCV_QTY).format('0,0.00')
-                    newcell = newrow.insertCell(9)
+                    newcell = newrow.insertCell(10)
                     newcell.classList.add('text-end')
                     newcell.title = tabelHead.rows[0].cells[9].innerText
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PRNW
-                    newcell = newrow.insertCell(10)
+                    newcell = newrow.insertCell(11)
                     newcell.classList.add('text-end')
                     newcell.title = tabelHead.rows[0].cells[10].innerText
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PRGW
-                    newcell = newrow.insertCell(11)
+                    newcell = newrow.insertCell(12)
                     newcell.title = tabelHead.rows[0].cells[11].innerText
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_HSCD
-                    newcell = newrow.insertCell(12)
+                    newcell = newrow.insertCell(13)
                     newcell.title = tabelHead.rows[0].cells[12].innerText
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_BM
-                    newcell = newrow.insertCell(13)
+                    newcell = newrow.insertCell(14)
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PPN
-                    newcell = newrow.insertCell(14)
+                    newcell = newrow.insertCell(15)
                     newcell.classList.add('text-end')
                     newcell.contentEditable = true
                     newcell.innerHTML = response.data[i].RCV_PPH
 
-                    newcell = newrow.insertCell(15)
+                    newcell = newrow.insertCell(16)
                     newcell.style.cssText = "cursor:pointer"
                     newcell.classList.add('text-center', 'table-info')
                     newcell.title = 'to Location'
@@ -4695,6 +4719,8 @@
                 newcell.innerHTML = aPO[i]
 
                 newcell = newrow.insertCell(3)
+
+                newcell = newrow.insertCell(4)
                 newcell.title = `click for showing search dialog`
                 newcell.classList.add('table-info')
                 newcell.onclick = () => {
@@ -4703,44 +4729,39 @@
                 newcell.style.cssText = "cursor:pointer"
                 newcell.innerHTML = aItem[i]
 
-                newcell = newrow.insertCell(4)
+                newcell = newrow.insertCell(5)
                 newcell.classList.add('table-info')
                 newcell.innerHTML = aItemName[i]
 
-                newcell = newrow.insertCell(5)
+                newcell = newrow.insertCell(6)
                 newcell.contentEditable = true
                 newcell.classList.add('text-end')
                 newcell.innerHTML = aqty[i]
 
-                newcell = newrow.insertCell(6)
+                newcell = newrow.insertCell(7)
                 newcell.classList.add('table-info')
                 newcell.innerHTML = aUM[i]
 
-                newcell = newrow.insertCell(7)
+                newcell = newrow.insertCell(8)
                 newcell.classList.add('text-end')
                 newcell.innerHTML = aprice[i]
 
-                newcell = newrow.insertCell(8)
+                newcell = newrow.insertCell(9)
                 newcell.classList.add('text-end', 'table-info')
                 newcell.innerHTML = '-'
 
-                newcell = newrow.insertCell(9)
+                newcell = newrow.insertCell(10)
                 newcell.classList.add('text-end')
                 newcell.title = 'net weight'
                 newcell.contentEditable = true
                 newcell.innerHTML = '-'
-                newcell = newrow.insertCell(10)
+                newcell = newrow.insertCell(11)
                 newcell.classList.add('text-end')
                 newcell.title = 'gross weight'
                 newcell.contentEditable = true
                 newcell.innerHTML = '-'
-                newcell = newrow.insertCell(11)
-                newcell.title = 'HS Code'
-                newcell.contentEditable = true
-                newcell.innerHTML = '-'
-
                 newcell = newrow.insertCell(12)
-                newcell.classList.add('text-end')
+                newcell.title = 'HS Code'
                 newcell.contentEditable = true
                 newcell.innerHTML = '-'
 
@@ -4755,9 +4776,14 @@
                 newcell.innerHTML = '-'
 
                 newcell = newrow.insertCell(15)
+                newcell.classList.add('text-end')
+                newcell.contentEditable = true
+                newcell.innerHTML = '-'
+
+                newcell = newrow.insertCell(16)
                 newcell.style.cssText = "cursor:pointer"
                 newcell.classList.add('text-center', 'table-info')
-                newcell.title = 'to Location'
+                newcell.title = 'to Location' 
                 newcell.innerText = 'PSIEQUIP'
                 newcell.onclick = (event) => {
                     rcvcustoms_modal_cmb_locTo.value = event.target.innerText

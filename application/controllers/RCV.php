@@ -39,6 +39,7 @@ class RCV extends CI_Controller
         $this->load->model('SER_mod');
         $this->load->model('SERRC_mod');
         $this->load->model('PPO_mod');
+        $this->load->model('PO_mod');
         $this->load->model('MMDL_mod');
         $this->load->model('CSMLOG_mod');
         $this->load->model('refceisa/REFERENSI_KEMASAN_imod');
@@ -2053,7 +2054,28 @@ class RCV extends CI_Controller
             ["RCVPKG_LINE", "RCVPKG_JUMLAH_KEMASAN", "RCVPKG_KODE_JENIS_KEMASAN", "URAIAN_KEMASAN", 'RCVPKG_DOC'],
             ['RCVPKG_AJU' => $nomorAju]
         );
-        die(json_encode(['data' => $rs, 'pkg' => $rsPKG]));
+
+        $poUnique = $rsPO = [];
+        foreach ($rs as $r) {
+            if (!in_array($r['RCV_PO'], $poUnique)) {
+                $poUnique[] = $r['RCV_PO'];
+            }
+        }
+        
+        if(!empty($poUnique)) {
+            $rsPO = $this->PO_mod->select_detail_where_po_in(["PO_NO", "PO_ITMCD", "PO_SUBJECT"], $poUnique);
+            foreach ($rs as &$r) {
+                $r['PO_SUBJECT'] = '';
+                foreach ($rsPO as $rpo) {
+                    if ($r['RCV_PO'] == $rpo['PO_NO'] && $r['RCV_ITMCD'] == $rpo['PO_ITMCD']) {
+                        $r['PO_SUBJECT'] = $rpo['PO_SUBJECT'];
+                        break;
+                    }
+                }
+            }
+        }
+
+        die(json_encode(['data' => $rs, 'pkg' => $rsPKG, 'data_po' => $rsPO]));
     }
     public function GetDODetail2()
     {
