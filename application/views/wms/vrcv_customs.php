@@ -5255,7 +5255,7 @@
     }
 
     function rcvcustoms_btn_set_locationOnClick() {
-        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[15].innerHTML = rcvcustoms_modal_cmb_locTo.value
+        document.getElementById(rcvcustoms_tablefokus).getElementsByTagName('tbody')[0].rows[rcvcustoms_selected_row].cells[rcvcustoms_tablefokus=='rcvcustoms_tbl_1' ? 16 : 15].innerHTML = rcvcustoms_modal_cmb_locTo.value
         $("#RCVCUSTOMS_LOCATION").modal('hide')
     }
 
