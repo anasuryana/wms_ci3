@@ -201,6 +201,12 @@
                                                         <i class="fa-solid fa-flag fa-stack-1x fa-inverse"></i>
                                                         </span> White</a>
                                             </li>
+                                            <li><a class="dropdown-item" href="#" onclick="keikaku_btn_set_magenta()">
+                                                <span class="fa-stack" style="vertical-align: top;">
+                                                        <i class="fa-solid fa-circle fa-stack-2x" style="color: #cfcccc"></i>
+                                                        <i class="fa-solid fa-flag fa-stack-1x fa-inverse" style="color: #f542ce"></i>
+                                                        </span> Magenta</a>
+                                            </li>
                                             <li>
                                                 <h6 class="dropdown-header">Mode</h6>
                                             </li>
@@ -4621,6 +4627,15 @@
             for(let _x=tempX1; _x<=tempX2; _x++) {
                 let theCell = keikaku_data_sso.getCellFromCoords(_x,_y);
                 theCell.style.cssText = 'background-color : #ffffff;text-align: center'
+            }
+        }
+    }
+
+    function keikaku_btn_set_magenta() {
+        for(let _y=tempY1; _y<=tempY2;_y++) {
+            for(let _x=tempX1; _x<=tempX2; _x++) {
+                let theCell = keikaku_data_sso.getCellFromCoords(_x,_y);
+                theCell.style.cssText = 'background-color : #f542ce;text-align: center'
             }
         }
     }
