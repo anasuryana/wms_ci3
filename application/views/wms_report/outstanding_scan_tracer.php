@@ -203,6 +203,9 @@
                     newcell = newrow.insertCell(-1)
                     newcell.classList.add('text-center')
                     newcell.innerHTML = resultHTML
+                    if(arrayItem['IS_COMPLETED'] == 1) {
+                        newrow.classList.add('table-success')
+                    }
                 })
 
                 response.dataReff.forEach((arrayItem) => {
