@@ -3503,6 +3503,7 @@
                     if(response.data[i].PO_SUBJECT) {
                         if(['O', 'E'].includes(response.data[i].PO_SUBJECT)) {
                             newcell.innerHTML = `<span class="badge bg-warning fa-beat">ASSET 💰</span>`
+                            newcell.title = `Asset of ${response.data[i].PO_DEPT}`
                         } else {
                             newcell.innerHTML = `<span class="badge bg-info">NON ASSET</span>`
                         }

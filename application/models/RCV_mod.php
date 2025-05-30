@@ -309,6 +309,7 @@ class RCV_mod extends CI_Model
         $this->db->join('(SELECT MSUP_SUPCD SHIPPERCD, MSUP_SUPNM SHIPPERNM FROM MSUP_TBL) SUP', "RCV_SHIPPERCD=SUP.SHIPPERCD", 'LEFT');
         $this->db->where("MITM_MODEL", 6)->like($like);
         $this->db->group_by("RCV_DONO,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM,SHIPPERCD,SHIPPERNM");
+        $this->db->order_by("MIN(RCV_BCDATE)");
         $query = $this->db->get();
         return $query->result_array();
     }
@@ -484,6 +485,7 @@ class RCV_mod extends CI_Model
         $this->db->where("MITM_MODEL", 6)->where("RCV_BCDATE >=", $pdate1)->where("RCV_BCDATE <=", $pdate2);
         $this->db->like($like);
         $this->db->group_by("RCV_DONO,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM,SHIPPERCD,SHIPPERNM");
+        $this->db->order_by("MIN(RCV_BCDATE)");
         $query = $this->db->get();
         return $query->result_array();
     }
