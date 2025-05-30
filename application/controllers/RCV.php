@@ -2063,12 +2063,14 @@ class RCV extends CI_Controller
         }
         
         if(!empty($poUnique)) {
-            $rsPO = $this->PO_mod->select_detail_where_po_in(["PO_NO", "PO_ITMCD", "PO_SUBJECT"], $poUnique);
+            $rsPO = $this->PO_mod->select_detail_where_po_in(["PO_NO", "PO_ITMCD", "PO_SUBJECT", "PO_DEPT"], $poUnique);
             foreach ($rs as &$r) {
                 $r['PO_SUBJECT'] = '';
+                $r['PO_DEPT'] = '';
                 foreach ($rsPO as $rpo) {
                     if ($r['RCV_PO'] == $rpo['PO_NO'] && $r['RCV_ITMCD'] == $rpo['PO_ITMCD']) {
                         $r['PO_SUBJECT'] = $rpo['PO_SUBJECT'];
+                        $r['PO_DEPT'] = $rpo['PO_DEPT'];
                         break;
                     }
                 }
