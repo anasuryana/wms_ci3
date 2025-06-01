@@ -80,6 +80,7 @@ class Pages extends CI_Controller
     {
         header('Content-Type: application/json');
         date_default_timezone_set('Asia/Jakarta');
+        
         $currrtime = date('Y-m-d H:i:s');
         $respon = [];
         $this->form_validation->set_rules('inputUserid', 'Username', 'trim|required|xss_clean');
@@ -88,6 +89,10 @@ class Pages extends CI_Controller
             $respon = ['message' => 'sorry please try again'];
         } else {
             $username = $this->input->post('inputUserid');
+            if ($this->session->userdata('status') == "login") {
+                $respon = ['message' => 'OK', 'tokennya' => base64_encode($username)];
+                die(json_encode($respon));
+            }
             $this->m_userid = $username;
             $password = $this->input->post('inputPassword');
             $where = [
