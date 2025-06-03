@@ -2877,7 +2877,7 @@ echo $tohtml;
             return
         }
         let mnoaju = document.getElementById('retrm_out_inc_txt_noaju')
-        let mnopen = document.getElementById('retrm_out_inc_txt_nopen').value;
+        let mnopen = document.getElementById('retrm_out_inc_txt_nopen').value.trim();
         let mtglpen = document.getElementById('retrm_out_inc_txt_tglpen').value;
         let mjenis_tpb_asal = document.getElementById('retrm_out_inc_cmb_jenisTPB').value;
         let mjenis_tpb_tujuan = document.getElementById('retrm_out_inc_cmb_jenisTPBtujuan').value;
@@ -2896,6 +2896,11 @@ echo $tohtml;
             alertify.warning("NO AJU is not valid")
             mnoaju.focus()
             return;
+        }
+
+        if(mnopen.length > 0 && mtglpen.length == 0) {
+            alertify.warning("Tanggal Pendaftaran is required")
+            return
         }
         if (confirm("Are You sure ?")) {
             $.ajax({
@@ -2942,7 +2947,7 @@ echo $tohtml;
             return
         }
         const mnoaju = document.getElementById('retrm_out_inc_txt_noaju41')
-        const mnopen = document.getElementById('retrm_out_inc_txt_nopen41').value;
+        const mnopen = document.getElementById('retrm_out_inc_txt_nopen41').value.trim();
         const mtglpen = document.getElementById('retrm_out_inc_txt_tglpen41').value;
         const mfromoffice = document.getElementById('retrm_out_inc_fromoffice41').value;
         const mjenis_tpb_asal = document.getElementById('retrm_out_inc_cmb_jenisTPB41').value;
@@ -2953,6 +2958,11 @@ echo $tohtml;
         if (mnoaju.value.trim().length < 6) {
             alertify.warning("NO AJU is not valid")
             mnoaju.focus()
+            return
+        }
+        
+        if(mnopen.length>0 && mtglpen.length == 0) {
+            alertify.warning("Tanggal Pendaftaran is required")
             return
         }
         if (confirm("Are You sure ?")) {
@@ -2998,7 +3008,7 @@ echo $tohtml;
             return
         }
         const mnoaju = document.getElementById('retrm_out_inc_txt_noaju261')
-        const mnopen = document.getElementById('retrm_out_inc_txt_nopen261').value;
+        const mnopen = document.getElementById('retrm_out_inc_txt_nopen261').value.trim();
         const mtglpen = document.getElementById('retrm_out_inc_txt_tglpen261').value;
         const mfromoffice = document.getElementById('retrm_out_inc_fromoffice261').value
         const mpurpose = document.getElementById('retrm_out_inc_cmb_tujuanpengiriman261').value
@@ -3011,6 +3021,10 @@ echo $tohtml;
             mnoaju.focus()
             return
         }
+        if(mnopen.length > 0 && mtglpen.length == 0) {
+            alertify.warning("Tanggal Pendaftaran is required")
+            return
+        } 
         if (confirm("Are You sure ?")) {
             $.ajax({
                 type: "get",
@@ -3054,7 +3068,7 @@ echo $tohtml;
             return
         }
         const mnoaju = document.getElementById('retrm_out_inc_txt_noaju30')
-        const mnopen = document.getElementById('retrm_out_inc_txt_nopen30').value;
+        const mnopen = document.getElementById('retrm_out_inc_txt_nopen30').value.trim();
         const mtglpen = document.getElementById('retrm_out_inc_txt_tglpen30').value;
         const namaPemberitahu = document.getElementsByClassName('retrm_nama_pemberitahu')[0].value
         const jabatanPemberitahu = document.getElementsByClassName('retrm_jabatan_pemberitahu')[0].value
@@ -3063,6 +3077,12 @@ echo $tohtml;
             mnoaju.focus()
             return
         }
+
+        if(mnopen.length > 0 && mtglpen.length == 0) {
+            alertify.warning("Tanggal Pendaftaran is required")
+            return
+        }
+
         if (confirm("Are You sure ?")) {
             $.ajax({
                 type: "get",
@@ -3104,7 +3124,7 @@ echo $tohtml;
         }
         const mnoaju = document.getElementById('retrm_out_inc_txt_noaju25')
         const mjenis_tpb_asal = document.getElementById('retrm_out_inc_cmb_jenisTPB25').value
-        const mnopen = document.getElementById('retrm_out_inc_txt_nopen25').value
+        const mnopen = document.getElementById('retrm_out_inc_txt_nopen25').value.trim()
         const mtglpen = document.getElementById('retrm_out_inc_txt_tglpen25').value
         const mfromoffice = document.getElementById('retrm_out_inc_fromoffice25').value
         const mSKB_pph = document.getElementById('retrm_out_inc_txt_noskb').value
@@ -3117,6 +3137,12 @@ echo $tohtml;
             mnoaju.focus()
             return
         }
+
+        if(mnopen.length>0 && mtglpen.length == 0) {
+            alertify.warning("Tanggal Pendaftaran is required")
+            return
+        }
+
         if (confirm("Are You sure ?")) {
             $.ajax({
                 type: "get",
