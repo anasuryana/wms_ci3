@@ -315,7 +315,8 @@
             production_date : mfg_wip_date_input.value,
             shift : mfg_wip_shift_input.value,
             user_id : uidnya,
-            detail : dataDetail
+            detail : dataDetail,
+            line_code : mfg_wip_line_input.value
         }
 
         $.ajax({
