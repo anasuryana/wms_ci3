@@ -40,6 +40,7 @@
                         <thead class="table-light text-center">
                             <tr class="first">
                                 <th rowspan="2" class="align-middle">Job Number</th>
+                                <th rowspan="2" class="align-middle">Process</th>
                                 <th colspan="3" class="text-center">Qty</th>
                             </tr>
                             <tr class="second">
@@ -117,8 +118,8 @@
 
         for (let i = 0; i < ttlrows; i++) {
             if (tableku2.rows[i].cells[3].innerText.length > 0) {
-                let prevQty = numeral(tableku2.rows[i].cells[2].innerText).value()
-                let newQty = numeral(tableku2.rows[i].cells[3].innerText).value()
+                let prevQty = numeral(tableku2.rows[i].cells[3].innerText).value()
+                let newQty = numeral(tableku2.rows[i].cells[4].innerText).value()
                 if(newQty<prevQty){
                     alertify.warning(`Please fill properly`)
                     tableku2.rows[i].cells[3].focus()
@@ -126,7 +127,8 @@
                 }
                 detail.push({
                     job : tableku2.rows[i].cells[0].innerText,
-                    qty : numeral(tableku2.rows[i].cells[3].innerText).value(),
+                    qty : newQty,
+                    process : tableku2.rows[i].cells[1].innerText.trim()
                 })
             } else {
                 tableku2.rows[i].cells[2].focus()
@@ -347,8 +349,12 @@
                         newcell.innerHTML = response.data[i].WONO
 
                         newcell = newrow.insertCell(-1);
+                        newcell.classList.add('text-center')
+                        newcell.innerHTML = response.data[i].PROCD
+                        
+                        newcell = newrow.insertCell(-1);
                         newcell.classList.add('text-end')
-                        newcell.innerHTML = numeral(response.data[i].PPSN1_SIMQT).format(',')
+                        newcell.innerHTML = numeral(response.data[i].PDPP_WORQT).format(',')
                         
                         newcell = newrow.insertCell(-1);
                         newcell.classList.add('text-end')
