@@ -1604,6 +1604,11 @@ class RCV extends CI_Controller
         $this->load->view('wms/vrcv_scn');
     }
 
+    public function form_upload_pl()
+    {
+        $this->load->view('wms/v_upload_pl');
+    }
+
     public function export_to_spreadsheet()
     {
         $stringjudul = 'Export Data RM Receiving';
