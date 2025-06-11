@@ -2881,6 +2881,12 @@
                                             keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
                                             break;
                                     }
+                                    if(_itemCode.substring(0,9) == response.data[s].assy_code.trim()
+                                        && response.data[s].line_category == 'HW'
+                                    ) {
+                                        keikaku_data_sso.setValue('K'+(i+1), response.data[s].cycle_time, true)
+                                        break;
+                                    }
                                 } else {
                                     if(_itemCode == response.data[s].assy_code.trim()
                                         &&  _processCode === _responseProcess.substr(_responseProcess.length-1, 1)
