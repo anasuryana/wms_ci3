@@ -1,3 +1,11 @@
+<style>
+    .beda {
+        background-color: yellow;
+        color: red;
+        font-weight: bold;
+    }
+</style>
+
 <div style="padding: 5px">
     <div class="container-fluid">
         <div class="row">
@@ -44,6 +52,7 @@
             success: function (response) {
                 pThis.disabled = false
                 alertify.message(response.message)
+                rcv_pl_load_dicrepancies()
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
                 pThis.disabled = false
@@ -69,6 +78,17 @@
                         </div>
                     </div>
                     </div>`
+
+                    rcv_pl_info_container.querySelectorAll('tr').forEach(row => {
+                        const tdA = row.querySelector('.text-a');
+                        const tdB = row.querySelector('.text-b');
+
+                        if (tdA && tdB) {
+                            const [newA, newB] = highlightDifference(tdA.textContent, tdB.textContent);
+                            tdA.innerHTML = newA;
+                            tdB.innerHTML = newB;
+                        }
+                    });
                 }
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
@@ -81,7 +101,7 @@
     function rcv_pl_render_table(data) {
         // Buat elemen table
         const table = document.createElement('table');
-        table.className = 'table table-striped table-bordered table-hover';
+        table.className = 'table table-striped table-bordered table-hover';       
 
         // Buat thead
         const thead = document.createElement('thead');
@@ -113,10 +133,12 @@
             row.appendChild(theCol);
 
             theCol = document.createElement('td');
+            theCol.classList.add('text-a')
             theCol.textContent = item.item_name;
             row.appendChild(theCol);
-
+            
             theCol = document.createElement('td');
+            theCol.classList.add('text-b')
             theCol.textContent = item.MITM_SPTNO;
             row.appendChild(theCol);
 
@@ -127,5 +149,25 @@
 
         return table.outerHTML
 
+    }
+
+    function highlightDifference(textA, textB) {
+        const maxLength = Math.max(textA.length, textB.length);
+        let resultA = '', resultB = '';
+
+        for (let i = 0; i < maxLength; i++) {
+            const charA = textA[i] || '';
+            const charB = textB[i] || '';
+
+            if (charA === charB) {
+                resultA += charA;
+                resultB += charB;
+            } else {
+                resultA += `<span class="beda">${charA || ''}</span>`;
+                resultB += `<span class="beda">${charB || ''}</span>`;
+            }
+        }
+
+        return [resultA, resultB];
     }
 </script>
