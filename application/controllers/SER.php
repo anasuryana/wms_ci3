@@ -128,6 +128,11 @@ class SER extends CI_Controller
         $this->load->view('wms/vchange_rank');
     }
 
+    public function form_incoming_label()
+    {
+        $this->load->view('labeling/v_form_incoming');
+    }
+
     public function convert_rank()
     {
         header('Content-Type: application/json');
