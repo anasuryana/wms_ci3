@@ -8,7 +8,7 @@
     thead tr.second th,
     thead tr.second td {
         position: sticky;
-        top: 26px;
+        top: 35px;
     }
 </style>
 <div style="padding: 10px">
@@ -81,252 +81,7 @@
         </div>
     </div>
 </div>
-<div id="checksbb_w_jobreq"  class="easyui-window" title="Simulation"
-    data-options="modal:false,closed:true,iconCls:'icon-analyze',collapsible:true,minimizable:false,
-    top: 305,
-    left: 0,
-    onClose:function(){
-        $('#checksbb_reqtbl_rm tbody').empty();
-        }"
-    style="width:600px;height:350px;padding:5px;" >
-    <div style="padding:1px" >
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text" >Job Number</span>
-                        <input type="text" class="form-control" id="checksbb_req_job" readonly>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text" >Lot Size</span>
-                        <input type="text" class="form-control" id="checksbb_req_itmqty" readonly>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text">Sim QT</span>
-                        <input type="text" class="form-control" id="checksbb_req_simqt" readonly>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-5 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text" >Assy Code</span>
-                        <input type="text" class="form-control" id="checksbb_req_itmcd" readonly>
-                    </div>
-                </div>
-                <div class="col-md-5 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text" >Assy Name</span>
-                        <input type="text" class="form-control" id="checksbb_req_itmnm" readonly>
-                    </div>
-                </div>
-                <div class="col-md-2 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text" >Rev</span>
-                        <input type="text" class="form-control" id="checksbb_req_bomrev" readonly>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="table-responsive" id="checksbb_reqdiv_rm">
-                        <table id="checksbb_reqtbl_rm" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="text-end" colspan="5">Total :</th>
-                                    <th class="text-end"><b><span id="checksbb_req_ttl_per"></span></b></th>
-                                    <th class="text-end" colspan="4">
-                                        <div class="btn-group btn-group" role="group" aria-label="Filter">
-                                            <button type="button" class="btn btn-outline-secondary" id="checksbb_req_btn_all" onclick="checksbb_req_btn_all_e_click()">All</button>
-                                            <button type="button" class="btn btn-outline-secondary" id="checksbb_req_btn_discrep" onclick="checksbb_req_btn_discrep_e_click()">Discrepancy</button>
-                                        </div>
-                                    </th>
-                                    <th rowspan="2" class="align-middle">Action</th>
-                                </tr>
-                                <tr>
-                                    <th>Line No</th>
-                                    <th>Process</th>
-                                    <th class="text-center">F/R</th>
-                                    <th class="text-center">MC</th>
-                                    <th class="text-center">MCZ</th>
-                                    <th class="text-center">PER</th>
-                                    <th>Item Code</th>
-                                    <th>Item Name</th>
-                                    <th class="text-end">QTY</th>
-                                    <th class="text-center">Kind</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="table-responsive" id="checksbb_reqdiv_rm_resume">
-                        <table id="checksbb_reqtbl_rm_resume" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th colspan="5">Resume</th>
-                                </tr>
-                                <tr>
-                                    <th>Line</th>
-                                    <th>Process</th>
-                                    <th>MC</th>
-                                    <th>MCZ</th>
-                                    <th class="text-end">Req. Per</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="checksbb_w_psnjob"  class="easyui-window" title="Detail of PSN"
-    data-options="modal:false,closed:true,iconCls:'icon-analyze',collapsible:true, minimizable:false,
-    right: 0,
-    top: 0,
-    onClose:function(){
-        $('#checksbb_psn_list').tagbox('setValues', []);
-    }"
-    style="width:100%;height:300px;padding:5px;">
-    <div style="padding:1px" >
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <input type="text" style="width:100%" id="checksbb_psn_list" readonly>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="table-responsive" id="checksbb_divdetailpsn">
-                        <table id="checksbb_tbldetailpsn" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>DOC NO</th>
-                                    <th>PSN NO</th>
-                                    <th>LINE NO</th>
-                                    <th>Process</th>
-                                    <th>FR</th>
-                                    <th>Category</th>
-                                    <th class="text-center">MC</th>
-                                    <th class="text-center">MCZ</th>
-                                    <th class="text-center">S/M</th>
-                                    <th class="text-center">Item Code</th>
-                                    <th class="text-center">Item Name</th>
-                                    <th class="text-center">Kind</th>
-                                    <th class="text-end">REQ QTY</th>
-                                    <th class="text-end">ACT QTY</th>
-                                    <th class="text-end">RTN QTY</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="checksbb_w_calculation"  class="easyui-window" title="Calculation Result"
-    data-options="modal:false,closed:true,iconCls:'icon-analyze',collapsible:true,minimizable:false,
-    right:601,
-    top:305,
-    onClose:function(){
-        $('#checksbb_caltbl_rm tbody').empty();
-        $('#checksbb_w_psnjob').window('close');
-        $('#checksbb_w_jobreq').window('close');
-        }"
-    style="width:600px;height:350px;padding:10px;" >
-    <div style="padding:1px" >
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-6 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text" >ID Sample</span>
-                        <input type="text" class="form-control" id="checksbb_cal_ID" readonly>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text" >Qty</span>
-                        <input type="text" class="form-control" id="checksbb_cal_ID_qty" readonly>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="btn-group btn-group-sm">
-                        <button title="Copy to clipboard" onclick="checksbb_cal_btnclip()" class="btn btn-success" ><i class="fas fa-clipboard"></i></button>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="table-responsive" id="checksbb_caldiv_rm">
-                        <table id="checksbb_caltbl_rm" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="text-end" colspan="5">Total :</th>
-                                    <th class="text-end"><b><span id="checksbb_cal_ttl_per"></span></b></th>
-                                    <th colspan="2"></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                                <tr>
-                                    <th>Line No</th>
-                                    <th>Process</th>
-                                    <th class="text-center">F/R</th>
-                                    <th class="text-center">MC</th>
-                                    <th class="text-center">MCZ</th>
-                                    <th class="text-center">PER</th>
-                                    <th>Item Code</th>
-                                    <th>Item Name</th>
-                                    <th class="text-end">DLV QTY</th>
-                                    <th class="text-center">Kind</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="table-responsive" id="checksbb_caldiv_rm_resume">
-                        <table id="checksbb_caltbl_rm_resume" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th colspan="5">Resume</th>
-                                </tr>
-                                <tr>
-                                    <th>Line</th>
-                                    <th>Process</th>
-                                    <th>MC</th>
-                                    <th>MCZ</th>
-                                    <th class="text-end">Result. PER</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 <div id="checksbb_w_psnfilter"  class="easyui-window" title="Action"
     data-options="modal:true,closed:true,iconCls:'icon-analyze',collapsible:true, minimizable:false,
     right: 0,
@@ -653,6 +408,244 @@
             <button type="button" class="btn btn-primary btn-sm" id="checksbb_btnemer_calculate" onclick="checksbb_btnemer_calculate_eCK(this)">Calculate</button>
             <button type="button" class="btn btn-warning btn-sm" id="checksbb_btnemer_remove_calculation" onclick="checksbb_btnemer_remove_calculation_eCK(this)">Remove Calculation</button>
         </div>
+      </div>
+    </div>
+</div>
+<div class="modal fade" id="checksbb_modal_analyze">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Analyze</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <div class="container-fluid border rounded">
+                            <div class="row">
+                                <div class="col-md-12 mb-1" id="checksbb_psn_list">
+                                    <!-- <input type="text" style="width:100%"  readonly> -->
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <div class="table-responsive" id="checksbb_divdetailpsn" style="max-height: 38vh;overflow-y: auto;">
+                                        <table id="checksbb_tbldetailpsn" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
+                                            <thead class="table-light">
+                                                <tr class="first">
+                                                    <th>DOC NO</th>
+                                                    <th>PSN NO</th>
+                                                    <th>LINE NO</th>
+                                                    <th>Process</th>
+                                                    <th>FR</th>
+                                                    <th>Category</th>
+                                                    <th class="text-center">MC</th>
+                                                    <th class="text-center">MCZ</th>
+                                                    <th class="text-center">S/M</th>
+                                                    <th class="text-center">Item Code</th>
+                                                    <th class="text-center">Item Name</th>
+                                                    <th class="text-center">Kind</th>
+                                                    <th class="text-end">REQ QTY</th>
+                                                    <th class="text-end">ACT QTY</th>
+                                                    <th class="text-end">RTN QTY</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-1">
+                        <div class="container-fluid border rounded p-1" style="max-height: 40vh;overflow-y: auto;">
+                            <div class="row">
+                                <div class="col-md-6 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <span class="input-group-text" >Job Number</span>
+                                        <input type="text" class="form-control" id="checksbb_req_job" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <span class="input-group-text" >Lot Size</span>
+                                        <input type="text" class="form-control" id="checksbb_req_itmqty" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <span class="input-group-text">Sim QT</span>
+                                        <input type="text" class="form-control" id="checksbb_req_simqt" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <span class="input-group-text" >Assy Code</span>
+                                        <input type="text" class="form-control" id="checksbb_req_itmcd" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-5 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <span class="input-group-text" >Assy Name</span>
+                                        <input type="text" class="form-control" id="checksbb_req_itmnm" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <span class="input-group-text" >Rev</span>
+                                        <input type="text" class="form-control" id="checksbb_req_bomrev" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <div class="table-responsive" id="checksbb_reqdiv_rm">
+                                        <table id="checksbb_reqtbl_rm" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
+                                            <thead class="table-light">
+                                                <tr class="first">
+                                                    <th class="text-end" colspan="5">Total :</th>
+                                                    <th class="text-end"><b><span id="checksbb_req_ttl_per"></span></b></th>
+                                                    <th class="text-end" colspan="4">
+                                                        <div class="btn-group btn-group-sm" role="group" aria-label="Filter">
+                                                            <button type="button" class="btn btn-outline-secondary" id="checksbb_req_btn_all" onclick="checksbb_req_btn_all_e_click()">All</button>
+                                                            <button type="button" class="btn btn-outline-secondary" id="checksbb_req_btn_discrep" onclick="checksbb_req_btn_discrep_e_click()">Discrepancy</button>
+                                                        </div>
+                                                    </th>
+                                                    <th rowspan="2" class="align-middle">Action</th>
+                                                </tr>
+                                                <tr class="second">
+                                                    <th style="white-space:nowrap;">Line No</th>
+                                                    <th>Process</th>
+                                                    <th class="text-center" style="white-space:nowrap;">F/R</th>
+                                                    <th class="text-center">MC</th>
+                                                    <th class="text-center">MCZ</th>
+                                                    <th class="text-center">PER</th>
+                                                    <th>Item Code</th>
+                                                    <th>Item Name</th>
+                                                    <th class="text-end">QTY</th>
+                                                    <th class="text-center">Kind</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <div class="table-responsive" id="checksbb_reqdiv_rm_resume">
+                                        <table id="checksbb_reqtbl_rm_resume" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th colspan="5">Resume</th>
+                                                </tr>
+                                                <tr>
+                                                    <th>Line</th>
+                                                    <th>Process</th>
+                                                    <th>MC</th>
+                                                    <th>MCZ</th>
+                                                    <th class="text-end">Req. Per</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-1">
+                        <div class="container-fluid border rounded p-1" style="max-height: 40vh;overflow-y: auto;">
+                            <div class="row">
+                                <div class="col-md-6 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <span class="input-group-text" >ID Sample</span>
+                                        <input type="text" class="form-control" id="checksbb_cal_ID" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <span class="input-group-text" >Qty</span>
+                                        <input type="text" class="form-control" id="checksbb_cal_ID_qty" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <div class="btn-group btn-group-sm">
+                                        <button title="Copy to clipboard" onclick="checksbb_cal_btnclip()" class="btn btn-success" ><i class="fas fa-clipboard"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <div class="table-responsive" id="checksbb_caldiv_rm">
+                                        <table id="checksbb_caltbl_rm" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="text-end" colspan="5">Total :</th>
+                                                    <th class="text-end"><b><span id="checksbb_cal_ttl_per"></span></b></th>
+                                                    <th colspan="2"></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                                <tr>
+                                                    <th>Line No</th>
+                                                    <th>Process</th>
+                                                    <th class="text-center">F/R</th>
+                                                    <th class="text-center">MC</th>
+                                                    <th class="text-center">MCZ</th>
+                                                    <th class="text-center">PER</th>
+                                                    <th>Item Code</th>
+                                                    <th>Item Name</th>
+                                                    <th class="text-end">DLV QTY</th>
+                                                    <th class="text-center">Kind</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <div class="table-responsive" id="checksbb_caldiv_rm_resume">
+                                        <table id="checksbb_caltbl_rm_resume" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th colspan="5">Resume</th>
+                                                </tr>
+                                                <tr>
+                                                    <th>Line</th>
+                                                    <th>Process</th>
+                                                    <th>MC</th>
+                                                    <th>MCZ</th>
+                                                    <th class="text-end">Result. PER</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
       </div>
     </div>
 </div>
@@ -1715,7 +1708,8 @@
                     newText = document.createTextNode(numeral(response.datapsn[i].PPSN2_RTNQT).format(','));
                     newcell.appendChild(newText);
                 }
-                $('#checksbb_psn_list').tagbox('setValues', apsn);
+                
+                checksbb_psn_list.innerHTML = apsn.map(el => `<span class="badge rounded-pill bg-info">${el}</span>`).join(' ')
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
             }, error(xhr, xopt, xthrow){
@@ -1724,9 +1718,7 @@
                 checksbb_req_bomrev.value = ``
             }
         });
-        $('#checksbb_w_jobreq').window('open');
-        $('#checksbb_w_psnjob').window('open');
-        $('#checksbb_w_calculation').window('open');
+        $("#checksbb_modal_analyze").modal('show')
     }
 
     function checksbb_e_showRowsDetail(pdata) {
@@ -1818,12 +1810,6 @@
         }
     }
 
-    $('#checksbb_psn_list').tagbox({
-        label: 'PSN No',
-        onRemoveTag :function(e) {
-            e.preventDefault()
-        }
-    });
     function checksbb_btn_sync_e_click(){
         document.getElementById('checksbb_btn_sync').disabled = true;
         $("#checksbb_tbl tbody").empty();
