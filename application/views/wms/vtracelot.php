@@ -84,6 +84,7 @@
                                 <th>QTY</th>
                                 <th>Time</th>
                                 <th>Unique Code</th>
+                                <th>NIK</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -278,6 +279,9 @@
                                 trace_f_get_history({code : response.data[i].SPLSCN_UNQCODE, item_code : response.data[i].SPLSCN_ITMCD})
                             }
                         }
+                        newcell = newrow.insertCell(-1);
+                        newcell.innerText = response.data[i].SPLSCN_USRID
+                        newcell.title = response.data[i].FULLNM
                     }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
