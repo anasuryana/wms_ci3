@@ -64,7 +64,9 @@ class SPLSCN_mod extends CI_Model {
 
     public function selectby_filter_like_with_period($pwhere, $dateFrom, $dateTo){	
         $this->db->limit(2500);
+        $this->db->select("V_SPLSCN_TBLC.*, CONCAT(MSTEMP_FNM, ' ', MSTEMP_LNM) FULLNM");
         $this->db->from("V_SPLSCN_TBLC");
+        $this->db->join('MSTEMP_TBL', 'SPLSCN_USRID=MSTEMP_ID', 'LEFT');
         $this->db->like($pwhere);
         $this->db->where('SPLSCN_DATE >=', $dateFrom);
         $this->db->where('SPLSCN_DATE <=', $dateTo);
