@@ -586,6 +586,7 @@
       <input type="hidden" id="keikakuEditXCoordinate">
       <input type="hidden" id="keikakuEditSide">
       <input type="hidden" id="keikakuEditHeadSeq">
+      <input type="hidden" id="keikakuEditAssyCode">
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="keikakuBtnEditActual" onclick="keikakuBtnEditActualOnClick(this)"><i class="fas fa-save"></i></button>
         <button type="button" class="btn btn-primary" id="keikakuBtnEditActualChangeModel" onclick="keikakuBtnEditActualChangeModelOnClick(this)">Set change model</button>
@@ -1762,6 +1763,7 @@
                     keikakuBtnEditActual.classList.remove('d-none')
                     keikakuBtnEditActualChangeModel.classList.add('d-none')
                     keikakuISHWEditingMode = '4'
+                    keikakuEditAssyCode.value = aRowSibling[5]
                 } else {
                     aRowSibling = instance.jspreadsheet.getRowData(y2+2)
                     aRowSibling2 = instance.jspreadsheet.getRowData(y2+1)
@@ -1776,6 +1778,7 @@
                     keikakuBtnEditActual.classList.add('d-none')
                     keikakuBtnEditActualChangeModel.classList.remove('d-none')
                     keikakuISHWEditingMode = '5'
+                    keikakuEditAssyCode.value = aRowSibling[5]
                 }
                 if(aRow[x2] == 1) {
                     keikakuBtnEditActualChangeModel.innerText = 'Remove Change Model'
@@ -4355,7 +4358,8 @@
             quantity : qty,
             user_id : uidnya,
             XCoordinate : keikakuEditXCoordinate.value,
-            seq_data : keikakuEditHeadSeq.value
+            seq_data : keikakuEditHeadSeq.value,
+            assy_code : keikakuEditAssyCode.value
         }
         pThis.disabled = true
         $.ajax({
@@ -4502,7 +4506,8 @@
             change_flag : changeModelFlag,
             user_id : uidnya,
             XCoordinate : keikakuEditXCoordinate.value,
-            seq_data : keikakuEditHeadSeq.value
+            seq_data : keikakuEditHeadSeq.value,
+            assy_code : keikakuEditAssyCode.value
         }
         pThis.disabled = true
         $.ajax({
