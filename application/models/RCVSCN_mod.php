@@ -61,7 +61,9 @@ class RCVSCN_mod extends CI_Model {
     }
 
     public function selectby_filter($pwhere){
-        $this->db->from($this->TABLENAME);        
+        $this->db->from($this->TABLENAME);
+        $this->db->select($this->TABLENAME. ".*, CONCAT(MSTEMP_FNM, ' ', MSTEMP_LNM) FULLNM");
+        $this->db->join('MSTEMP_TBL', 'RCVSCN_USRID=MSTEMP_ID', 'LEFT');
         $this->db->where($pwhere);
         $this->db->order_by('RCVSCN_LUPDT DESC');
 		$query = $this->db->get();
@@ -129,6 +131,17 @@ class RCVSCN_mod extends CI_Model {
         $qry = "exec sp_inc_discreapancy ?";
 		$query = $this->db->query($qry, array($pdo) );
         return $query->result_array();
+    }
+
+    function select_group_by_item($Doc) {
+        $this->db->from($this->TABLENAME);
+        $this->db->select("RCVSCN_DONO,RTRIM(RCVSCN_ITMCD) RCVSCN_ITMCD, CONCAT(MSTEMP_FNM, ' ', MSTEMP_LNM) FULLNM,RCVSCN_USRID");
+        $this->db->join('MSTEMP_TBL', 'RCVSCN_USRID=MSTEMP_ID', 'LEFT');
+        $this->db->where("RCVSCN_DONO", $Doc);
+        $this->db->group_by("RCVSCN_DONO,MSTEMP_FNM,MSTEMP_LNM,RCVSCN_ITMCD,RCVSCN_USRID");
+        $this->db->order_by('RCVSCN_ITMCD ASC');
+		$query = $this->db->get();
+		return $query->result_array();
     }
     
 }
