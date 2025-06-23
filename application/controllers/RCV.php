@@ -1637,13 +1637,27 @@ class RCV extends CI_Controller
         $rs = $this->RCV_mod->selectscan_balancingv2($cdo);
         $rsh = $this->RCV_mod->selectprog_scan($cdo);
         $rss = $this->RCV_mod->selectprog_save($cdo);
-        echo '{"data":';
-        echo json_encode($rs);
-        echo ',"datahead":';
-        echo json_encode($rsh);
-        echo ',"datasave":';
-        echo json_encode($rss);
-        echo '}';
+        $scanning = $this->RCVSCN_mod->select_group_by_item($cdo);
+
+        foreach($rs as &$r) {
+            $r['NIK'] = '';
+            $r['PIC'] = '';
+            foreach($scanning as $s) {
+                if($r['RCV_ITMCD'] == $s['RCVSCN_ITMCD']) {
+                    $r['NIK'] .= $s['RCVSCN_USRID'] . ',';
+                    $r['PIC'] .= $s['FULLNM'] . ',';
+                }
+            }
+        }
+        unset($r);
+
+        die(json_encode(
+            [
+                'data' => $rs,
+                'datahead' => $rsh,
+                'datasave' => $rss,
+            ]
+        ));
     }
 
     public function scn_itemdo_check()

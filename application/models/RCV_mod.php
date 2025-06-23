@@ -261,18 +261,19 @@ class RCV_mod extends CI_Model
     public function selectscan_balancingv2($pdo)
     {
         $qry = "SELECT v1.*,COALESCE(ITHQTY,0) ITHQTY FROM
-        (SELECT RCV_ITMCD, RCV_QTY, COALESCE(SUM(RCVSCN_QTY),0) SCAN_QTY,RCV_WH,MSTLOCG_NM, max(RCVSCN_LUPDT) LTSSCANTIME
-		FROM (select RCV_DONO,RCV_ITMCD,SUM(RCV_QTY) RCV_QTY,RCV_WH FROM RCV_TBL
-		GROUP BY RCV_DONO,RCV_ITMCD,RCV_WH) a
-                LEFT JOIN RCVSCN_TBL b ON a.RCV_DONO=b.RCVSCN_DONO and a.RCV_ITMCD=b.RCVSCN_ITMCD
-                LEFT JOIN MSTLOCG_TBL c ON a.RCV_WH=c.MSTLOCG_ID
-                WHERE RCV_DONO='" . $pdo . "'
-                GROUP BY RCV_DONO, RCV_ITMCD,RCV_QTY, RCV_WH,MSTLOCG_NM
+                (SELECT RCV_ITMCD, RCV_QTY, COALESCE(SUM(RCVSCN_QTY),0) SCAN_QTY,RCV_WH,MSTLOCG_NM, max(RCVSCN_LUPDT) LTSSCANTIME
+                FROM (
+                    select RCV_DONO,RCV_ITMCD,SUM(RCV_QTY) RCV_QTY,RCV_WH FROM RCV_TBL
+                        GROUP BY RCV_DONO,RCV_ITMCD,RCV_WH) a
+                    LEFT JOIN RCVSCN_TBL b ON a.RCV_DONO=b.RCVSCN_DONO and a.RCV_ITMCD=b.RCVSCN_ITMCD
+                    LEFT JOIN MSTLOCG_TBL c ON a.RCV_WH=c.MSTLOCG_ID
+                    WHERE RCV_DONO='$pdo' GROUP BY RCV_DONO, RCV_ITMCD,RCV_QTY, RCV_WH,MSTLOCG_NM
                 ) v1
-        LEFT JOIN (
-        SELECT ITH_ITMCD,COALESCE(sum(ITH_QTY),0) ITHQTY FROM ITH_TBL
-        WHERE ITH_DOC='" . $pdo . "' and ITH_FORM='INC-DO'
-        GROUP BY ITH_DOC, ITH_ITMCD) v2 ON v1.RCV_ITMCD=v2.ITH_ITMCD ORDER BY v1.RCV_ITMCD";
+                LEFT JOIN (
+                    SELECT ITH_ITMCD,COALESCE(sum(ITH_QTY),0) ITHQTY FROM ITH_TBL
+                    WHERE ITH_DOC='$pdo' and ITH_FORM='INC-DO'
+                    GROUP BY ITH_DOC, ITH_ITMCD) v2 ON v1.RCV_ITMCD=v2.ITH_ITMCD
+                ORDER BY v1.RCV_ITMCD";
         $query = $this->db->query($qry);
         return $query->result_array();
     }

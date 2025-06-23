@@ -85,6 +85,7 @@
                                 <th class="text-end">Saved Qty</th>                            
                                 <th class="text-center">Last Update</th>
                                 <th class="text-center">Status</th>
+                                <th class="text-center">NIK</th>
                             </tr>
                         </thead>
                         <tbody>                     
@@ -125,7 +126,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <div class="table-responsive" >
+                    <div class="table-responsive" id="rcvscn_tbladj_div">
                         <table id="rcvscn_tbladj" class="table table-hover table-sm table-bordered">
                             <thead class="table-light">
                                 <tr>
@@ -136,6 +137,7 @@
                                     <th>Last Update</th>
                                     <th>Status</th>
                                     <th>.</th>
+                                    <th>NIK</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -292,45 +294,70 @@
                 data: {inDO:mval},
                 dataType: "json",
                 success: function (response) {
-                    var ttlrows = response.data.length;
-                    var tohtml = '';
-                    var mbalanc = 0;
-                    var msavedqty = 0;
-                    var mscan = 0;
-                    var mlastscantime = '';
-                    let stsicon = '';
-                    for(var i=0;i<ttlrows;i++){
-                        mscan = response.data[i].SCAN_QTY;
-                        msavedqty = response.data[i].ITHQTY;                     
+                    let newrow, newcell;
+                    let mydes = document.getElementById("rcvscn_divku");
+                    let myfrag = document.createDocumentFragment();
+                    let mtabel = document.getElementById("rcvscn_tbl");
+                    let cln = mtabel.cloneNode(true);
+                    myfrag.appendChild(cln);
+                    let tabell = myfrag.getElementById("rcvscn_tbl");
+                    let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                    tableku2.innerHTML='';
+                    response.data.forEach((arrayItem, i) => {
+                        mscan = arrayItem['SCAN_QTY'];
+                        msavedqty = arrayItem['ITHQTY'];                     
                         if(mscan.charAt(0)=='.'){
                             mscan = 0;
                         }
                         if(msavedqty.charAt(0)=='.'){
                             msavedqty = 0;
                         }
-                        if(response.data[i].LTSSCANTIME){
-                            mlastscantime =response.data[i].LTSSCANTIME;
+                        if(arrayItem['LTSSCANTIME']){
+                            mlastscantime = arrayItem['LTSSCANTIME'];
                         } else {
                             mlastscantime='';
                         }
-                        if(numeral(response.data[i].RCV_QTY).value()==numeral(msavedqty).value()){
+                        if(numeral(arrayItem['RCV_QTY']).value()==numeral(msavedqty).value()){
                             stsicon = '<i class="fas fa-check text-success"></i>';
                         } else {
                             stsicon = '<i class="fas fa-question-circle text-warning"></i>';
                         }
-                        mbalanc = numeral(response.data[i].RCV_QTY).value()-numeral(mscan).value();
-                        tohtml += '<tr>'+
-                        '<td>'+(i+1)+'</td>'+
-                        '<td>'+response.data[i].RCV_ITMCD+'</td>'+
-                        '<td class="text-end">'+numeral(response.data[i].RCV_QTY).format(',')+'</td>'+
-                        '<td class="text-end">'+numeral(mscan).format(',')+'</td>'+
-                        '<td class="text-end">'+numeral(mbalanc).format(',')+'</td>'+
-                        '<td class="text-end">'+numeral(msavedqty).format(',')+'</td>'+
-                        '<td class="text-center">'+mlastscantime+'</td>'+
-                        '<td class="text-center" style="cursor:pointer">'+stsicon+'</td>'+
-                        '</tr>';
-                    }
-                    $("#rcvscn_tbl tbody").html(tohtml);
+                        mbalanc = numeral(arrayItem['RCV_QTY']).value()-numeral(mscan).value();
+
+                        newrow = tableku2.insertRow(-1);
+                        newcell = newrow.insertCell(0);
+                        newcell.innerText = (i+1)
+                        newcell = newrow.insertCell(-1);
+                        newcell.innerText = arrayItem['RCV_ITMCD']
+                        newcell = newrow.insertCell(-1);
+                        newcell.innerText = numeral(arrayItem['RCV_QTY']).format(',')
+                        newcell.classList.add('text-end')
+                        
+                        newcell = newrow.insertCell(-1);
+                        newcell.innerText = numeral(mscan).format(',')
+                        newcell.classList.add('text-end')
+                        
+                        newcell = newrow.insertCell(-1);
+                        newcell.innerText = numeral(mbalanc).format(',')
+                        newcell.classList.add('text-end')
+                        
+                        newcell = newrow.insertCell(-1);
+                        newcell.innerText = numeral(msavedqty).format(',')
+                        newcell.classList.add('text-end')
+
+                        newcell = newrow.insertCell(-1);
+                        newcell.innerText = mlastscantime
+
+                        newcell = newrow.insertCell(-1);
+                        newcell.innerHTML = stsicon
+
+                        newcell = newrow.insertCell(-1);
+                        newcell.innerText = arrayItem['NIK']
+                        newcell.title = arrayItem['PIC']
+                    })
+                    mydes.innerHTML='';
+                    mydes.appendChild(myfrag);
+
                     if(response.datahead.length>0){
                         let vprgs = response.datahead[0].PROGRESS;
                         if(vprgs.charAt(0)=='.'){
@@ -361,77 +388,7 @@ $("#rcvscn_txt_dn").keypress(function (e) {
                 data: {inDO: mval},
                 dataType: "json",
                 success: function (response) {
-                    var ttlrows = response.data.length;
-                    var tohtml = '';
-                    var mbalanc = 0;
-                    var msavedqty = 0;
-                    var mscan = 0;
-                    var mlastscantime = ''; 
-                    var mwh ='';
-                    var mwh_nm = '';
-                    var mlabelinfo = '';    
-                    let stsicon = '';
-                    let mDT = '';
-                    let mTM = '';
-                    if(ttlrows>0){
-                        for(var i=0;i<ttlrows;i++){
-                            mwh=response.data[i].RCV_WH; mwh_nm=response.data[i].MSTLOCG_NM; 
-                            mscan = response.data[i].SCAN_QTY;
-                            msavedqty = response.data[i].ITHQTY;                        
-                            if(mscan.charAt(0)=='.'){
-                                mscan = 0;
-                            }
-                            if(msavedqty.charAt(0)=='.'){
-                                msavedqty = 0;
-                            }
-                            if(response.data[i].LTSSCANTIME){
-                                mlastscantime =response.data[i].LTSSCANTIME;
-                                mDT = moment(mlastscantime.substr(0,10), 'YYYY-MM-DD');
-                                mTM = mlastscantime.substr(11,8);
-                                mlastscantime = mDT.format('ddd, D MMM YYYY');
-                                mlastscantime = mlastscantime.concat(' ', mTM);
-                            } else {
-                                mlastscantime='';
-                            }
-                            if(numeral(response.data[i].RCV_QTY).value()==numeral(msavedqty).value()){
-                                stsicon = '<i class="fas fa-check text-success"></i>';
-                            } else {
-                                stsicon = '<i class="fas fa-question-circle text-warning"></i>';
-                            }
-                            mbalanc = numeral(response.data[i].RCV_QTY).value()-numeral(mscan).value();
-                            tohtml += '<tr>'+
-                            '<td>'+(i+1)+'</td>'+
-                            '<td>'+response.data[i].RCV_ITMCD.trim()+'</td>'+
-                            '<td class="text-end">'+numeral(response.data[i].RCV_QTY).format(',')+'</td>'+
-                            '<td class="text-end">'+numeral(mscan).format(',')+'</td>'+
-                            '<td class="text-end">'+numeral(mbalanc).format(',')+'</td>'+
-                            '<td class="text-end">'+numeral(msavedqty).format(',')+'</td>'+
-                            '<td class="text-center">'+mlastscantime+'</td>'+
-                            '<td class="text-center" style="cursor:pointer">'+stsicon+'</td>'+
-                            '</tr>';
-                        }
-                        $("#rcvscn_txt_wh").val(mwh); $("#rcvscn_txt_whnm").val(mwh_nm);$("#rcvscn_txt_rack").focus();
-                    } else {
-                        alertify.warning("DO Number not found");
-                    }                                        
-                    $("#rcvscn_tbl tbody").html(tohtml);
-                    let vprgs ='';
-                    if(response.datahead.length>0){
-                        vprgs = response.datahead[0].PROGRESS;
-                        if(vprgs.charAt(0)=='.'){
-                            vprgs='0'+vprgs;
-                        }                        
-                        $("#rcvscn_lblitemprogress").css("width", numeral(vprgs).format('0,0')+"%");
-                        $("#rcvscn_lblprog").text(numeral(vprgs).format('0,0.000')+'%');
-                    }
-                    if(response.datasave.length>0){
-                        vprgs = response.datasave[0].PROGRESS;
-                        if(vprgs.charAt(0)=='.'){
-                            vprgs='0'+vprgs;
-                        }                        
-                        $("#rcvscn_lblsaveprogress").css("width", numeral(vprgs).format('0,0')+"%");
-                        $("#rcvscn_lblprogsave").text(numeral(vprgs).format('0,0.000')+'%');
-                    }
+                    fscn_balancing()
                 }
             });
         } else {
@@ -553,12 +510,9 @@ $("#rcvscn_btn_adjust").click(function(){
                 ritem =  $tds.eq(1).text();       
         tohtml += '<option value="'+ritem+'">'+ritem+'</option>';        
     });
-    $("#rcvscn_filteradj").html(tohtml);
-    // $("#rcvscn_filteradj").selectpicker({liveSearch: true});
-    // $("#rcvscn_filteradj").selectpicker('render');
-    // $("#rcvscn_filteradj").selectpicker('refresh');
+    $("#rcvscn_filteradj").html(tohtml);    
 });
-$("#rcvscn_filteradj").change(function(){///on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {    
+$("#rcvscn_filteradj").change(function(){ 
     let mdo = $("#rcvscn_txt_dn").val();
     let mitem = $("#rcvscn_filteradj").val();
     $.ajax({
@@ -567,78 +521,55 @@ $("#rcvscn_filteradj").change(function(){///on('changed.bs.select', function (e,
         data: {inDO: mdo, inITEM: mitem},
         dataType: "json",
         success: function (response) {
-            let ttlrows = response.length;
-            let tohtml = '';
-            let stsdis = '';
-            for(let i=0;i<ttlrows;i++){
-                if(response[i].RCVSCN_SAVED){
-                    stsdis = response[i].RCVSCN_SAVED;
-                    if(stsdis=='1'){
+            let newrow, newcell;
+            let mydes = document.getElementById("rcvscn_tbladj_div");
+            let myfrag = document.createDocumentFragment();
+            let mtabel = document.getElementById("rcvscn_tbladj");
+            let cln = mtabel.cloneNode(true);
+            myfrag.appendChild(cln);
+            let tabell = myfrag.getElementById("rcvscn_tbladj");
+            let tableku2 = tabell.getElementsByTagName("tbody")[0];
+            tableku2.innerHTML='';
+            response.forEach((arrayItem) => {
+                if(arrayItem['RCVSCN_SAVED']) {
+                    stsdis = arrayItem['RCVSCN_SAVED'];
+                    if(stsdis=='1') {
                         stsdis = 'saved';
                     } else {
                         stsdis = 'not saved yet';
                     }
-
                 } else {
                     stsdis = 'not saved yet';
                 }
-                tohtml+= '<tr style="cursor:pointer">'+
-                '<td>'+response[i].RCVSCN_ID+'</td>'+
-                '<td>'+response[i].RCVSCN_ITMCD+'</td>'+
-                '<td class="text-end">'+response[i].RCVSCN_QTY+'</td>'+
-                '<td>'+response[i].RCVSCN_LOTNO+'</td>'+
-                '<td>'+response[i].RCVSCN_LUPDT+'</td>'+
-                '<td>'+stsdis+'</td>'+
-                '<td><i class="fas fa-trash text-warning"></i></td>'+
-                '</tr>';
-            }
-            $("#rcvscn_tbladj tbody").html(tohtml);
+                newrow = tableku2.insertRow(-1);
+                newcell = newrow.insertCell(0);
+                newcell.innerText = arrayItem['RCVSCN_ID']
+                newcell = newrow.insertCell(-1);
+                newcell.innerText = arrayItem['RCVSCN_ITMCD']
+                newcell = newrow.insertCell(-1);
+                newcell.innerText = arrayItem['RCVSCN_QTY']
+                newcell.classList.add('text-end')
+                newcell = newrow.insertCell(-1);
+                newcell.innerText = arrayItem['RCVSCN_LOTNO']
+                newcell = newrow.insertCell(-1);
+                newcell.innerText = arrayItem['RCVSCN_LUPDT']
+                newcell = newrow.insertCell(-1);
+                newcell.innerText = stsdis
+                newcell = newrow.insertCell(-1);
+                newcell.innerHTML = `<i class="fas fa-trash text-warning"></i>`
+                newcell = newrow.insertCell(-1);
+                newcell.innerText = arrayItem['RCVSCN_USRID']
+                newcell.title = arrayItem['FULLNM']
+            })
+            mydes.innerHTML='';
+            mydes.appendChild(myfrag);
         }, error: function(xhr,xopt,xthrow){
             alertify.error(xthrow);
         }
     });
 });
 
-// $("#rcvscn_filteradj").change(function(){
-//     var mdo = $("#rcvscn_txt_dn").val();
-//     var mitem = $(this).val();
-//     $.ajax({
-//         type: "get",
-//         url: "<?=base_url('RCV/scnd_list_bydo_item')?>",
-//         data: {inDO: mdo, inITEM: mitem},
-//         dataType: "json",
-//         success: function (response) {
-//             let ttlrows = response.length;
-//             let tohtml = '';
-//             let stsdis = '';
-//             for(let i=0;i<ttlrows;i++){
-//                 if(response[i].RCVSCN_SAVED){
-//                     stsdis = response[i].RCVSCN_SAVED;
-//                     if(stsdis=='1'){
-//                         stsdis = 'saved';
-//                     } else {
-//                         stsdis = 'not saved yet';
-//                     }
 
-//                 } else {
-//                     stsdis = 'not saved yet';
-//                 }
-//                 tohtml+= '<tr style="cursor:pointer">'+
-//                 '<td>'+response[i].RCVSCN_ID+'</td>'+
-//                 '<td>'+response[i].RCVSCN_ITMCD+'</td>'+
-//                 '<td class="text-end">'+response[i].RCVSCN_QTY+'</td>'+
-//                 '<td>'+response[i].RCVSCN_LOTNO+'</td>'+
-//                 '<td>'+response[i].RCVSCN_LUPDT+'</td>'+
-//                 '<td>'+stsdis+'</td>'+
-//                 '<td><i class="fas fa-trash text-warning"></i></td>'+
-//                 '</tr>';
-//             }
-//             $("#rcvscn_tbladj tbody").html(tohtml);
-//         }, error: function(xhr,xopt,xthrow){
-//             alertify.error(xthrow);
-//         }
-//     });
-// });
 $("#RCVSCN_ADJ").on('hidden.bs.modal', function(){
     $("#rcvscn_tbladj tbody").empty();
     fscn_balancing();
@@ -694,10 +625,9 @@ $('#rcvscn_tblshowdo tbody').on( 'click', 'tr', function () {
     ev.which=13;
     $("#rcvscn_txt_dn").trigger(ev);
 });
-$("#rcvscn_btnsave").click(function(){
-    var konfirm = confirm("Are you sure ?");
-    if(konfirm){
-        var mDO = $("#rcvscn_txt_dn").val();
+$("#rcvscn_btnsave").click(function(){    
+    if(confirm(`Are you sure ?`)){
+        const mDO = $("#rcvscn_txt_dn").val();
         if(mDO.trim()==''){
             $("#rcvscn_txt_dn").focus();
             return;
@@ -782,7 +712,4 @@ $("#rcvscn_txtsearch").keypress(function (e) {
         });
     }
 });
-// var mye = jQuery.Event("keypress");
-                        // mye.which = 13;
-                        // $("#rcvscn_txt_dn").trigger(mye);
 </script>
