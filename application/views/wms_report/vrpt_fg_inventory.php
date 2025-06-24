@@ -18,14 +18,22 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 mb-1 text-center">
+            <div class="col-md-4 mb-1 text-center">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">Warehouse</span>
+                    <select class="form-select" id="fginventory_sel_wh" required>
+                        <option value="-">All</option>
+                    </select>
+                </div>                
+            </div>
+            <div class="col-md-4 mb-1 text-center">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-primary" type="button" id="fginventory_btn_gen"><i class="fas fa-sync"></i></button>
                     <button class="btn btn-outline-primary" type="button" id="fginventory_btn_edit" title="Edit" data-bs-toggle="modal" data-bs-target="#fginventoryModal"><i class="fas fa-pen"></i></button>
                     <button class="btn btn-success" type="button" id="fginventory_btn_export" onclick="fginventory_btn_export_on_click()"><i class="fas fa-file-excel"></i></button>
                 </div>
             </div>
-            <div class="col-md-6 mb-1 text-center border-start">
+            <div class="col-md-4 mb-1 text-center border-start">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-danger" type="button" id="fginventory_btn_trash"><i class="fas fa-trash"></i></button>
                 </div>
@@ -170,6 +178,7 @@
         $.ajax({
             type: "get",
             url: "<?=base_url('Inventory/getlist')?>",
+            data : {warehouse : fginventory_sel_wh.value},
             dataType: "json",
             success: function (response) {
                 fginventory_btn_gen.innerHTML = `<i class="fas fa-sync"></i>`
@@ -401,4 +410,22 @@
             FGInventorycontextMenuObj.close(false);
         }
     });
+
+
+    function fginventoryLoadWarehouse() {
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>inventory/warehouse",            
+            dataType: "JSON",
+            success: function (response) {
+                let str = `<option value="-">All</option>`
+                response.data.forEach((item, i) => {
+                    str += `<option value="${item['mstloc_grp']}">${item['mstloc_grp']}</option>`
+                })
+                fginventory_sel_wh.innerHTML = str
+            }
+        });
+    }
+
+    fginventoryLoadWarehouse()
 </script>

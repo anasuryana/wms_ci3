@@ -46,8 +46,10 @@ class Inventory extends CI_Controller
     public function getlist()
     {
         header('Content-Type: application/json');
-        $rs = $this->Inventory_mod->selectAll();
-        exit('{"data": ' . json_encode($rs) . '}');
+        $warehouse = $this->input->get('warehouse');
+        $rs = $warehouse == '-' ? $this->Inventory_mod->selectAll() : 
+        $this->Inventory_mod->selectAllWhereWarehouse($warehouse);
+        exit(json_encode(['data' => $rs]));
     }
     public function getlist_rm()
     {
