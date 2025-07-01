@@ -836,6 +836,7 @@ class SER extends CI_Controller
             if ($retfail == 0 && $toret > 0) {
                 $remark = "Deleted";
             }
+            $this->SERD_mod->delete2ByIDIn($cid);
         }
         $myar[] = ["cd" => $toret, "msg" => $remark];
         echo '{"status":' . json_encode($myar) . '}';
