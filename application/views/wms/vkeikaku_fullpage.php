@@ -2397,6 +2397,11 @@
 
         const dataInput = keikaku_prepare_save_calculation({detailOnly : false})
 
+        if(dataInput.detail[0].efficiency == 0) {
+            alertify.warning(`Efficiency must not be zero`)
+            return
+        }
+
         if(confirm('Are you sure want to save ?')) {
             const div_alert = document.getElementById('keikaku-div-alert')
             pThis.disabled = true
