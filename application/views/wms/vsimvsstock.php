@@ -258,6 +258,14 @@
                         newText = document.createTextNode(numeral(shortage).format(','));
                         newcell.appendChild(newText);
                     }
+
+                    if(ttlrows == 0) {
+                        newrow = tableku2.insertRow(-1);
+                        newcell = newrow.insertCell(0);
+                        newcell.colSpan = 9
+                        newcell.innerText = `no record found`
+                        newcell.classList.add('text-center')
+                    }
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
                 }, error : function(xhr, xopt, xthrow){
