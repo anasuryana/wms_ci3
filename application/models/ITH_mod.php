@@ -114,11 +114,11 @@ class ITH_mod extends CI_Model
     public function insert_spl($data)
     {
         $qry = "INSERT INTO ITH_TBL (ITH_ITMCD, ITH_DATE, ITH_FORM, ITH_DOC,ITH_QTY,
-        ITH_WH,ITH_LUPDT,ITH_USRID,ITH_REMARK)
-        VALUES(?,CONVERT(DATE,GETDATE()),?,?,?,?,GETDATE(),?,?)";
+        ITH_WH,ITH_LUPDT,ITH_USRID,ITH_REMARK,ITH_SER)
+        VALUES(?,CONVERT(DATE,GETDATE()),?,?,?,?,GETDATE(),?,?,?)";
         $this->db->query($qry, [
             $data['ITH_ITMCD'], $data['ITH_FORM'], $data['ITH_DOC'], $data['ITH_QTY'],
-            $data['ITH_WH'], $data['ITH_USRID'], $data['ITH_REMARK'],
+            $data['ITH_WH'], $data['ITH_USRID'], $data['ITH_REMARK'], $data['ITH_SER']
         ]);
         return $this->db->affected_rows();
     }
