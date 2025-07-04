@@ -1845,6 +1845,7 @@
                         itemWO : aRowSibling[5],
                     })
                 }
+                keikakuEditAssyCode.value = aRowSibling[5]
             }
 
             if(aRow[7] === 'OUTPUT' && x2 >=9 ) { 
