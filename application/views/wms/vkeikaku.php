@@ -2789,6 +2789,7 @@
     }
 
     function keikaku_line_input_on_change() {
+        keikakuEditAlert.innerHTML = ''
         keikaku_load_calcultion()
         keikaku_load_data()
         keikaku_load_prodplan()
