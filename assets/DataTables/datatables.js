@@ -4,13 +4,13 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.3.1/fc-5.0.4/fh-4.0.2/kt-2.12.1/r-3.0.4/rr-1.5.0/sc-2.4.3/sl-3.0.0
+ *   https://datatables.net/download/#bs5/dt-2.3.2/fc-5.0.4/fh-4.0.3/kt-2.12.1/r-3.0.5/rr-1.5.0/sc-2.4.3/sl-3.0.1
  *
  * Included libraries:
- *   DataTables 2.3.1, FixedColumns 5.0.4, FixedHeader 4.0.2, KeyTable 2.12.1, Responsive 3.0.4, RowReorder 1.5.0, Scroller 2.4.3, Select 3.0.0
+ *   DataTables 2.3.2, FixedColumns 5.0.4, FixedHeader 4.0.3, KeyTable 2.12.1, Responsive 3.0.5, RowReorder 1.5.0, Scroller 2.4.3, Select 3.0.1
  */
 
-/*! DataTables 2.3.1
+/*! DataTables 2.3.2
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -124,7 +124,7 @@
 			_fnCamelToHungarian( defaults.column, defaults.column, true );
 			
 			/* Setting up the initialisation object */
-			_fnCamelToHungarian( defaults, $.extend( oInit, $this.data() ), true );
+			_fnCamelToHungarian( defaults, $.extend( oInit, _fnEscapeObject($this.data()) ), true );
 			
 			
 			
@@ -513,7 +513,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs5/dt-2.3.1/fc-5.0.4/fh-4.0.2/kt-2.12.1/r-3.0.4/rr-1.5.0/sc-2.4.3/sl-3.0.0",
+		builder: "bs5/dt-2.3.2/fc-5.0.4/fh-4.0.3/kt-2.12.1/r-3.0.5/rr-1.5.0/sc-2.4.3/sl-3.0.1",
 	
 		/**
 		 * Buttons. For use with the Buttons extension for DataTables. This is
@@ -554,6 +554,11 @@
 		 */
 		errMode: "alert",
 	
+		/** HTML entity escaping */
+		escape: {
+			/** When reading data-* attributes for initialisation options */
+			attributes: false
+		},
 	
 		/**
 		 * Legacy so v1 plug-ins don't throw js errors on load
@@ -4025,7 +4030,7 @@
 					if ( write ) {
 						if (unique) {
 							// Allow column options to be set from HTML attributes
-							_fnColumnOptions( settings, shifted, jqCell.data() );
+							_fnColumnOptions( settings, shifted, _fnEscapeObject(jqCell.data()) );
 							
 							// Get the width for the column. This can be defined from the
 							// width attribute, style attribute or `columns.width` option
@@ -4271,7 +4276,7 @@
 			// to the object for the callback.
 			var empty = {};
 	
-			DataTable.util.set(ajax.dataSrc)(empty, []);
+			_fnAjaxDataSrc(oSettings, empty, []);
 			callback(empty);
 		}
 		else {
@@ -5799,9 +5804,11 @@
 			var run = false;
 			var columns = column === undefined
 				? _fnColumnsFromHeader( e.target )
-				: Array.isArray(column)
-					? column
-					: [column];
+				: typeof column === 'function'
+					? column()
+					: Array.isArray(column)
+						? column
+						: [column];
 	
 			if ( columns.length ) {
 				for ( var i=0, ien=columns.length ; i<ien ; i++ ) {
@@ -6864,6 +6871,19 @@
 		for (i=0 ; i<src.length ; i++) {
 			that.on(name + '.dt', src[i]);
 		}
+	}
+	
+	/**
+	 * Escape HTML entities in strings, in an object
+	 */
+	function _fnEscapeObject(obj) {
+		if (DataTable.ext.escape.attributes) {
+			$.each(obj, function (key, val) {
+				obj[key] = _escapeHtml(val);
+			})
+		}
+	
+		return obj;
 	}
 	
 	
@@ -10211,7 +10231,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.3.1";
+	DataTable.version = "2.3.2";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -14721,7 +14741,7 @@ return DataTable;
 }));
 
 
-/*! FixedHeader 4.0.2
+/*! FixedHeader 4.0.3
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -14776,7 +14796,7 @@ var DataTable = $.fn.dataTable;
  * @summary     FixedHeader
  * @description Fix a table's header or footer, so it is always visible while
  *              scrolling
- * @version     4.0.2
+ * @version     4.0.3
  * @author      SpryMedia Ltd
  * @contact     datatables.net
  *
@@ -14844,20 +14864,41 @@ var FixedHeader = function (dt, config) {
 		tfoot: $(dt.table().footer()),
 		header: {
 			host: null,
+			scrollAdjust: null,
 			floating: null,
-			floatingParent: $('<div class="dtfh-floatingparent"><div></div></div>'),
+			floatingParent: $(
+				'<div class="dtfh-floatingparent">' + // location
+					'<div class="dtfh-floating-limiter">' + // hidden overflow / scrolling
+						'<div></div>' + // adjustment for scrollbar (padding)
+					'</div>' + 
+				'</div>'),
+			limiter: null,
 			placeholder: null
 		},
 		footer: {
 			host: null,
+			scrollAdjust: null,
 			floating: null,
-			floatingParent: $('<div class="dtfh-floatingparent"><div></div></div>'),
+			floatingParent: $(
+				'<div class="dtfh-floatingparent">' +
+					'<div class="dtfh-floating-limiter">' +
+						'<div></div>' +
+					'</div>' + 
+				'</div>'),
+			limiter: null,
 			placeholder: null
 		}
 	};
 
-	this.dom.header.host = this.dom.thead.parent();
-	this.dom.footer.host = this.dom.tfoot.parent();
+	var dom = this.dom;
+
+	dom.header.host = dom.thead.parent();
+	dom.header.limiter = dom.header.floatingParent.children();
+	dom.header.scrollAdjust = dom.header.limiter.children();
+
+	dom.footer.host = dom.tfoot.parent();
+	dom.footer.limiter = dom.footer.floatingParent.children();
+	dom.footer.scrollAdjust = dom.footer.limiter.children();
 
 	var dtSettings = dt.settings()[0];
 	if (dtSettings._fixedHeader) {
@@ -15088,7 +15129,6 @@ $.extend(FixedHeader.prototype, {
 					itemDom.placeholder.remove();
 				}
 
-				itemDom.floating.children().detach();
 				itemDom.floating.remove();
 			}
 
@@ -15107,8 +15147,6 @@ $.extend(FixedHeader.prototype, {
 			itemDom.floatingParent
 				.css({
 					width: scrollBody[0].offsetWidth,
-					overflow: 'hidden',
-					height: 'fit-content',
 					position: 'fixed',
 					left: scrollEnabled
 						? tableNode.offset().left + scrollBody.scrollLeft()
@@ -15132,7 +15170,16 @@ $.extend(FixedHeader.prototype, {
 				)
 				.appendTo('body')
 				.children()
-				.eq(0)
+				.eq(0);
+
+			itemDom.limiter
+				.css({
+					width: '100%',
+					overflow: 'hidden',
+					height: 'fit-content'
+			});
+
+			itemDom.scrollAdjust
 				.append(itemDom.floating);
 
 			this._stickyPosition(itemDom.floating, '-');
@@ -15140,7 +15187,7 @@ $.extend(FixedHeader.prototype, {
 			var scrollLeftUpdate = function () {
 				var scrollLeft = scrollBody.scrollLeft();
 				that.s.scrollLeft = { footer: scrollLeft, header: scrollLeft };
-				itemDom.floatingParent.scrollLeft(that.s.scrollLeft.header);
+				itemDom.limiter.scrollLeft(that.s.scrollLeft.header);
 			};
 
 			scrollLeftUpdate();
@@ -15148,7 +15195,7 @@ $.extend(FixedHeader.prototype, {
 
 			// Need padding on the header's container to allow for a scrollbar,
 			// just like how DataTables handles it
-			itemDom.floatingParent.children().css({
+			itemDom.scrollAdjust.css({
 				width: 'fit-content',
 				paddingRight: that.s.dt.settings()[0].oBrowser.barWidth
 			});
@@ -15259,6 +15306,7 @@ $.extend(FixedHeader.prototype, {
 	 * @private
 	 */
 	_modeChange: function (mode, item, forceChange) {
+		var dt = this.s.dt;
 		var itemDom = this.dom[item];
 		var position = this.s.position;
 
@@ -15411,6 +15459,8 @@ $.extend(FixedHeader.prototype, {
 		this.s.scrollLeft.header = -1;
 		this.s.scrollLeft.footer = -1;
 		this.s[item + 'Mode'] = mode;
+
+		dt.trigger('fixedheader-mode', [mode, item]);
 	},
 
 	/**
@@ -15783,7 +15833,7 @@ $.extend(FixedHeader.prototype, {
  * @type {String}
  * @static
  */
-FixedHeader.version = '4.0.2';
+FixedHeader.version = '4.0.3';
 
 /**
  * Defaults
@@ -17325,7 +17375,7 @@ return DataTable;
 }));
 
 
-/*! Responsive 3.0.4
+/*! Responsive 3.0.5
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -17379,7 +17429,7 @@ var DataTable = $.fn.dataTable;
 /**
  * @summary     Responsive
  * @description Responsive tables plug-in for DataTables
- * @version     3.0.4
+ * @version     3.0.5
  * @author      SpryMedia Ltd
  * @copyright   SpryMedia Ltd.
  *
@@ -17629,19 +17679,19 @@ $.extend(Responsive.prototype, {
 				that._resizeAuto();
 				that._resize();
 
-				// Attach listeners after first pass
-				dt.on('column-reorder.dtr', function (e, settings, details) {
-					that._classLogic();
-					that._resizeAuto();
-					that._resize(true);
-				});
-
 				// Change in column sizes means we need to calc
 				dt.on('column-sizing.dtr', function () {
 					that._resizeAuto();
 					that._resize();
 				});
 			});
+
+		// Attach listeners after first pass
+		dt.on('column-reorder.dtr', function (e, settings, details) {
+			that._classLogic();
+			that._resizeAuto();
+			that._resize(true);
+		});
 	},
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -17697,7 +17747,7 @@ $.extend(Responsive.prototype, {
 		// https://jsperf.com/childnodes-array-slice-vs-loop
 		var nodes = [];
 		var children = dt.cell(row, col).node().childNodes;
-		for (var i = 0, ien = children.length; i < ien; i++) {
+		for (var i = 0, iLen = children.length; i < iLen; i++) {
 			nodes.push(children[i]);
 		}
 
@@ -17727,7 +17777,7 @@ $.extend(Responsive.prototype, {
 			var parentChildren = parent.childNodes;
 			var a = [];
 
-			for (var i = 0, ien = parentChildren.length; i < ien; i++) {
+			for (var i = 0, iLen = parentChildren.length; i < iLen; i++) {
 				a.push(parentChildren[i]);
 			}
 
@@ -17751,10 +17801,10 @@ $.extend(Responsive.prototype, {
 	 *   column.
 	 *  @private
 	 */
-	_columnsVisiblity: function (breakpoint) {
+	_columnsVisibility: function (breakpoint) {
 		var dt = this.s.dt;
 		var columns = this.s.columns;
-		var i, ien;
+		var i, iLen;
 
 		// Create an array that defines the column ordering based first on the
 		// column's priority, and secondly the column index. This allows the
@@ -17790,7 +17840,7 @@ $.extend(Responsive.prototype, {
 		// Auto column control - first pass: how much width is taken by the
 		// ones that must be included from the non-auto columns
 		var requiredWidth = 0;
-		for (i = 0, ien = display.length; i < ien; i++) {
+		for (i = 0, iLen = display.length; i < iLen; i++) {
 			if (display[i] === true) {
 				requiredWidth += columns[i].minWidth;
 			}
@@ -17811,7 +17861,7 @@ $.extend(Responsive.prototype, {
 		// thrashing or overflow. Also we need to account for the control column
 		// width first so we know how much width is available for the other
 		// columns, since the control column might not be the first one shown
-		for (i = 0, ien = display.length; i < ien; i++) {
+		for (i = 0, iLen = display.length; i < iLen; i++) {
 			if (columns[i].control) {
 				usedWidth -= columns[i].minWidth;
 			}
@@ -17820,7 +17870,7 @@ $.extend(Responsive.prototype, {
 		// Allow columns to be shown (counting by priority and then right to
 		// left) until we run out of room
 		var empty = false;
-		for (i = 0, ien = order.length; i < ien; i++) {
+		for (i = 0, iLen = order.length; i < iLen; i++) {
 			var colIdx = order[i].columnIdx;
 
 			if (
@@ -17850,7 +17900,7 @@ $.extend(Responsive.prototype, {
 		// first , before the action in the second can be taken
 		var showControl = false;
 
-		for (i = 0, ien = columns.length; i < ien; i++) {
+		for (i = 0, iLen = columns.length; i < iLen; i++) {
 			if (
 				!columns[i].control &&
 				!columns[i].never &&
@@ -17861,7 +17911,7 @@ $.extend(Responsive.prototype, {
 			}
 		}
 
-		for (i = 0, ien = columns.length; i < ien; i++) {
+		for (i = 0, iLen = columns.length; i < iLen; i++) {
 			if (columns[i].control) {
 				display[i] = showControl;
 			}
@@ -17932,7 +17982,7 @@ $.extend(Responsive.prototype, {
 		};
 
 		var column = function (colIdx, name, operator, matched) {
-			var size, i, ien;
+			var size, i, iLen;
 
 			if (!operator) {
 				columns[colIdx].includeIn.push(name);
@@ -17941,7 +17991,7 @@ $.extend(Responsive.prototype, {
 				// Add this breakpoint and all smaller
 				size = that._find(name).width;
 
-				for (i = 0, ien = breakpoints.length; i < ien; i++) {
+				for (i = 0, iLen = breakpoints.length; i < iLen; i++) {
 					if (breakpoints[i].width <= size) {
 						add(colIdx, breakpoints[i].name);
 					}
@@ -17951,7 +18001,7 @@ $.extend(Responsive.prototype, {
 				// Add this breakpoint and all larger
 				size = that._find(name).width;
 
-				for (i = 0, ien = breakpoints.length; i < ien; i++) {
+				for (i = 0, iLen = breakpoints.length; i < iLen; i++) {
 					if (breakpoints[i].width >= size) {
 						add(colIdx, breakpoints[i].name);
 					}
@@ -17959,7 +18009,7 @@ $.extend(Responsive.prototype, {
 			}
 			else if (operator === 'not-') {
 				// Add all but this breakpoint
-				for (i = 0, ien = breakpoints.length; i < ien; i++) {
+				for (i = 0, iLen = breakpoints.length; i < iLen; i++) {
 					if (breakpoints[i].name.indexOf(matched) === -1) {
 						add(colIdx, breakpoints[i].name);
 					}
@@ -18221,6 +18271,8 @@ $.extend(Responsive.prototype, {
 	_detailsObj: function (rowIdx) {
 		var that = this;
 		var dt = this.s.dt;
+		var columnApis = [];
+		let settings = dt.settings()[0];
 
 		return $.map(this.s.columns, function (col, i) {
 			// Never and control columns should not be passed to the renderer
@@ -18228,15 +18280,19 @@ $.extend(Responsive.prototype, {
 				return;
 			}
 
-			var dtCol = dt.settings()[0].aoColumns[i];
+			var dtCol = settings.aoColumns[i];
+
+			if (!columnApis[i]) {
+				columnApis[i] = dt.column(i);
+			}
 
 			return {
 				className: dtCol.sClass,
 				columnIndex: i,
-				data: dt.cell(rowIdx, i).render(that.c.orthogonal),
-				hidden: dt.column(i).visible() && !that.s.current[i],
+				data: settings.fastData(rowIdx, i, that.c.orthogonal),
+				hidden: columnApis[i].visible() && !that.s.current[i],
 				rowIndex: rowIdx,
-				title: dt.column(i).title()
+				title: columnApis[i].title()
 			};
 		});
 	},
@@ -18251,7 +18307,7 @@ $.extend(Responsive.prototype, {
 	_find: function (name) {
 		var breakpoints = this.c.breakpoints;
 
-		for (var i = 0, ien = breakpoints.length; i < ien; i++) {
+		for (var i = 0, iLen = breakpoints.length; i < iLen; i++) {
 			if (breakpoints[i].name === name) {
 				return breakpoints[i];
 			}
@@ -18288,7 +18344,7 @@ $.extend(Responsive.prototype, {
 		var breakpoints = this.c.breakpoints;
 		var breakpoint = breakpoints[0].name;
 		var columns = this.s.columns;
-		var i, ien;
+		var i, iLen;
 		var oldVis = this.s.current.slice();
 
 		// Determine what breakpoint we are currently at
@@ -18300,7 +18356,7 @@ $.extend(Responsive.prototype, {
 		}
 
 		// Show the columns for that break point
-		var columnsVis = this._columnsVisiblity(breakpoint);
+		var columnsVis = this._columnsVisibility(breakpoint);
 		this.s.current = columnsVis;
 
 		// Set the class before the column visibility is changed so event
@@ -18308,7 +18364,7 @@ $.extend(Responsive.prototype, {
 		// any columns that are not visible but can be shown
 		var collapsedClass = false;
 
-		for (i = 0, ien = columns.length; i < ien; i++) {
+		for (i = 0, iLen = columns.length; i < iLen; i++) {
 			if (
 				columnsVis[i] === false &&
 				!columns[i].never &&
@@ -18528,7 +18584,7 @@ $.extend(Responsive.prototype, {
 
 		// It is unsafe to insert elements with the same name into the DOM
 		// multiple times. For example, cloning and inserting a checked radio
-		// clears the chcecked state of the original radio.
+		// clears the checked state of the original radio.
 		$(clonedTable).find('[name]').removeAttr('name');
 
 		// A position absolute table would take the table out of the flow of
@@ -18608,7 +18664,7 @@ $.extend(Responsive.prototype, {
 	},
 
 	/**
-	 * Set the a column's visibility, taking into account multiple rows
+	 * Set a column's visibility, taking into account multiple rows
 	 * in a header / footer and colspan attributes
 	 * @param {*} col
 	 * @param {*} showHide
@@ -19096,7 +19152,7 @@ Responsive.defaults = {
  */
 var Api = $.fn.dataTable.Api;
 
-// Doesn't do anything - work around for a bug in DT... Not documented
+// Doesn't do anything - workaround for a bug in DT... Not documented
 Api.register('responsive()', function () {
 	return this;
 });
@@ -19157,7 +19213,7 @@ Api.registerPlural(
  * @name Responsive.version
  * @static
  */
-Responsive.version = '3.0.4';
+Responsive.version = '3.0.5';
 
 $.fn.dataTable.Responsive = Responsive;
 $.fn.DataTable.Responsive = Responsive;
@@ -21778,7 +21834,7 @@ return DataTable;
 }));
 
 
-/*! Select for DataTables 3.0.0
+/*! Select for DataTables 3.0.1
  * © SpryMedia Ltd - datatables.net/license/mit
  */
 
@@ -21836,7 +21892,7 @@ DataTable.select.classes = {
 	checkbox: 'dt-select-checkbox'
 };
 
-DataTable.select.version = '3.0.0';
+DataTable.select.version = '3.0.1';
 
 DataTable.select.init = function (dt) {
 	var ctx = dt.settings()[0];
@@ -22421,7 +22477,14 @@ function initCheckboxHeader( dt, headerCheckbox ) {
 		if (! isCheckboxColumn(col)) {
 			return;
 		}
+
 		var header = dt.column(idx).header();
+		var liner = $('div.dt-column-header', header);
+
+		// DataTables 2.3 as an extra wrapper element
+		if (liner.length) {
+			header = liner;
+		}
 
 		if (! $('input', header).length) {
 			// If no checkbox yet, insert one
