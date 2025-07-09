@@ -774,6 +774,18 @@ echo $tohtml;
 
             <!-- Modal body -->
             <div class="modal-body">
+                <div class="offcanvas offcanvas-start" tabindex="-1" id="txfg_oc_info_si">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasExampleLabel">Information</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul>
+                            <li>Make sure scanned label is already saved by Handy Terminal or Web</li>
+                            <li>Make sure item price is available</li>
+                        </ul>                        
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col">
                         <div class="input-group input-group-sm mb-1">
@@ -804,6 +816,9 @@ echo $tohtml;
                 <div class="row">
                     <div class="col mb-1">
                         <button class="btn btn-sm btn-primary btn-block" id="txfg_sibtngetselected">Get selected rows</button>
+                    </div>
+                    <div class="col mb-1 text-end">
+                        <a href="#txfg_oc_info_si" class="link-underline-info" data-bs-toggle="offcanvas">Some item missing ?</a>
                     </div>
                 </div>
                 <div class="row">
