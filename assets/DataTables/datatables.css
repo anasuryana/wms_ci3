@@ -4,10 +4,10 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.3.1/fc-5.0.4/fh-4.0.2/kt-2.12.1/r-3.0.4/rr-1.5.0/sc-2.4.3/sl-3.0.0
+ *   https://datatables.net/download/#bs5/dt-2.3.2/fc-5.0.4/fh-4.0.3/kt-2.12.1/r-3.0.5/rr-1.5.0/sc-2.4.3/sl-3.0.1
  *
  * Included libraries:
- *   DataTables 2.3.1, FixedColumns 5.0.4, FixedHeader 4.0.2, KeyTable 2.12.1, Responsive 3.0.4, RowReorder 1.5.0, Scroller 2.4.3, Select 3.0.0
+ *   DataTables 2.3.2, FixedColumns 5.0.4, FixedHeader 4.0.3, KeyTable 2.12.1, Responsive 3.0.5, RowReorder 1.5.0, Scroller 2.4.3, Select 3.0.1
  */
 
 :root {
@@ -17,17 +17,18 @@
   --dt-row-stripe: 0, 0, 0;
   --dt-row-hover: 0, 0, 0;
   --dt-column-ordering: 0, 0, 0;
+  --dt-header-align-items: center;
   --dt-html-background: white;
 }
 :root.dark {
   --dt-html-background: rgb(33, 37, 41);
 }
 
-table.dataTable td.dt-control {
+table.dataTable tbody td.dt-control {
   text-align: center;
   cursor: pointer;
 }
-table.dataTable td.dt-control:before {
+table.dataTable tbody td.dt-control:before {
   display: inline-block;
   box-sizing: border-box;
   content: "";
@@ -36,7 +37,7 @@ table.dataTable td.dt-control:before {
   border-bottom: 5px solid transparent;
   border-right: 0px solid transparent;
 }
-table.dataTable tr.dt-hasChild td.dt-control:before {
+table.dataTable tbody tr.dt-hasChild td.dt-control:before {
   border-top: 10px solid rgba(0, 0, 0, 0.5);
   border-left: 5px solid transparent;
   border-bottom: 0px solid transparent;
@@ -163,7 +164,7 @@ table.dataTable tfoot > tr > td div.dt-column-header,
 table.dataTable tfoot > tr > td div.dt-column-footer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: var(--dt-header-align-items);
   gap: 4px;
 }
 table.dataTable thead > tr > th div.dt-column-header span.dt-column-title,
@@ -419,6 +420,10 @@ table.dataTable tbody td.dt-body-justify {
 table.dataTable tbody th.dt-body-nowrap,
 table.dataTable tbody td.dt-body-nowrap {
   white-space: nowrap;
+}
+
+:root {
+  --dt-header-align-items: flex-end;
 }
 
 /*! Bootstrap 5 integration for DataTables
