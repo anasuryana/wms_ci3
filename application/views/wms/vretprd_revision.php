@@ -1,18 +1,13 @@
 <div style="padding: 10px">
 	<div class="container-fluid">
-        <!-- <div class="row">
-            <div class="col-md-12 mb-1">
-                <div class="alert alert-warning" role="alert">
-                <i class="fas fa-exclamation-triangle"></i> This menu is under construction 
-                </div>
-            </div>
-        </div> -->
         <div class="row">
-            <div class="col-md-12 mb-2">               
-                <input id="retrev_txt_txno" class="easyui-combobox" name="dept" style="width:100%;" 
-                    data-options="valueField:'id',textField:'text',url:'<?=base_url("RETPRD/get_psn_list")?>', label: 'PSN No:',onSelect:function(p1){
-                        retrev_sync(p1.text); }"
-                >
+            <div class="col-md-12 mb-2">
+                <label for="retrev_sel_psn" class="col-mb-2 col-form-label">Document</label>
+                <div class="col-mb-10">
+                    <select class="form-select" id="retrev_sel_psn">
+                        <option value="-">Please wait ⌛</option>                   
+                    </select>
+                </div>
             </div>
         </div>        
         <div class="row">
@@ -94,6 +89,27 @@
 </div>
 <script>    
     var retrev_DTABLE_psn;
+
+    $.ajax({
+        type: "GET",
+        url: "<?=base_url("RETPRD/get_psn_list")?>",        
+        dataType: "json",
+        success: function (response) {
+            let strSel = ''
+            response.forEach((ai) => {
+                strSel += `<option value="${ai['id']}">${ai['text']}</option>`
+            })
+
+            retrev_sel_psn.innerHTML = strSel
+        }
+    });
+
+    $('#retrev_sel_psn').select2();
+
+    $('#retrev_sel_psn').on('select2:select', function (e) {        
+        retrev_sync(e.params.data.id)
+    });
+
     function retrev_on_GridActionButton_Click(e){
         $("#RETREV_DETISSU").modal('show');
         document.getElementById('retrev_idscan').value = e.data.RETSCN_ID;
