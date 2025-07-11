@@ -79,7 +79,7 @@ class RETPRD extends CI_Controller
         foreach ($rs as $c) {
             $RETSCN_UNIQUEKEY = $c['RETSCN_UNIQUEKEY'];
         }
-        $rsbg = $this->SPL_mod->select_bg_ppsn([$cpsn]);
+        $rsbg = $this->SPL_mod->select_bg_partreq([$cpsn]);
         $cwh_base = '';
         $cwh_plant = '';
         foreach ($rsbg as $r) {
