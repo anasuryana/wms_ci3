@@ -4,7 +4,7 @@
             <div class="col-md-12 mb-1">
                 <div class="input-group input-group-sm mb-1">                    
                     <span class="input-group-text" >Document No.</span>
-                    <input type="text" class="form-control" id="retfg_inc_txt_docno" required readonly>
+                    <input type="text" class="form-control" id="retfg_inc_txt_docno" required readonly disabled>
                     <button class="btn btn-primary" onclick="retfg_e_finddoc()"><i class="fas fa-search"></i></button>                    
                     <button class="btn btn-outline-primary" onclick="retfg_e_save()"><i class="fas fa-save"></i></button>
                     <button class="btn btn-outline-primary" onclick="retfg_e_print()"><i class="fas fa-print"></i></button>
@@ -15,7 +15,7 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <span class="input-group-text" >Notice</span>
-                    <input type="text" class="form-control" id="retfg_inc_txt_noserahterima" required readonly placeholder="Autonumber">  
+                    <input type="text" class="form-control" id="retfg_inc_txt_noserahterima" required readonly disabled placeholder="Autonumber">  
                     <select id="retfg_inc_cmb_consignee" class="form-select">
                         <option value="-">-</option>
                     </select>
@@ -33,7 +33,7 @@
             <div class="col-md-4 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <span class="input-group-text" >Business Group</span>
-                    <input type="text" class="form-control" id="retfg_inc_cmb_bg_description" required readonly>
+                    <input type="text" class="form-control" id="retfg_inc_cmb_bg_description" required readonly disabled>
                     <input type="hidden" id="retfg_inc_cmb_bg">                    
                 </div>
             </div>
@@ -58,7 +58,7 @@
             <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm mb-1">
                     <span class="input-group-text" >Return From</span>
-                    <input type="text" class="form-control" id="retfg_inc_txt_supnm" required readonly>
+                    <input type="text" class="form-control" id="retfg_inc_txt_supnm" required readonly disabled>
                     <button class="btn btn-primary" onclick="retfg_e_finsup()"><i class="fas fa-search"></i></button>
                     <input type="hidden" id="retfg_inc_txt_supcd">
                 </div>
@@ -80,24 +80,27 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-4 mb-1">
-                                <input id="retfg_inc_cmb_itemcode" class="easyui-combobox" name="dept" style="width:100%;" 
-                                    data-options="valueField:'id',textField:'text',url:'<?=base_url("RCV/get_fg")?>', label: 'Item Code :', limitToList: true
-                                    , onSelect: function(p1){
-                                        document.getElementById('retfg_inc_itemname').value = p1.description;
-                                        document.getElementById('retfg_inc_itemunit').value = p1.um;
-                                        document.getElementById('retfg_inc_item_max_qt').value = p1.maxqty;
-                                        $('#retfg_inc_txt_qty').numberbox('setValue', p1.maxqty);
-                                        $('#retfg_inc_txt_qty').numberbox('textbox').focus(); 
-                                    },labelPosition:'left'">
+                                <label for="retfg_inc_cmb_itemcode" class="col-mb-2 col-form-label">Item Code</label>
+                                <div class="col-mb-10">
+                                    <select class="form-select" id="retfg_inc_cmb_itemcode">
+                                        <option value="-">-</option>                   
+                                    </select>
+                                </div>
                                     <input type="hidden" id="retfg_inc_itemname">
                                     <input type="hidden" id="retfg_inc_itemunit">
                                     <input type="hidden" id="retfg_inc_item_max_qt">
                             </div>
                             <div class="col-md-4 mb-1">
-                                <input id="retfg_inc_txt_qty" value="0" style="text-align: right;width:100%;">
+                                <label for="retfg_inc_txt_qty" class="col-mb-2 col-form-label">Qty</label>
+                                <div class="col-mb-10">
+                                    <input type="text" id="retfg_inc_txt_qty" class="form-control form-control-sm" />
+                                </div>
                             </div>
                             <div class="col-md-4 mb-1">
-                                <input id="retfg_inc_txt_remark" label="Remark" style="width:100%;">
+                                <label for="retfg_inc_txt_remark" class="col-mb-2 col-form-label">Remark</label>
+                                <div class="col-mb-10">
+                                    <input type="text" id="retfg_inc_txt_remark" class="form-control form-control-sm" />
+                                </div>
                             </div>                            
                         </div>
                         <div class="row">
@@ -552,40 +555,20 @@
     $("#retfg_DTLMOD").on('shown.bs.modal', function(){
         $("#retfg_txt_search").focus();
     });
+
     function retfg_e_finddoc(){
         $("#retfg_DTLMOD").modal('show');
     }
-    $('#retfg_inc_txt_remark').textbox({
-        label:'Remark'        
-    });
-    var retfg_inc_txt_remark = $('#retfg_inc_txt_remark');
-	retfg_inc_txt_remark.textbox('textbox').bind('keypress', function(e){
-	    if (e.keyCode == 13){
-            retfg_e_add_validation();
-	    }
-	});    
-	
-    $('#retfg_inc_txt_qty').numberbox({
-        label:'QTY',
-        precision: 0,
-        groupSeparator: ',',
-        width: '100%'    
-    });
-    var retfg_inc_txt_qty = $('#retfg_inc_txt_qty');
-	retfg_inc_txt_qty.numberbox('textbox').bind('keypress', function(e){
-	    if (e.keyCode == 13){
-            $('#retfg_inc_txt_remark').textbox('textbox').focus();
-	    }
-	});	
 
     function retfg_e_add_validation(){
-        let itemcode = $('#retfg_inc_cmb_itemcode').combobox('getValue');
+        let itemcode_array = retfg_inc_cmb_itemcode.value.split('#')
+        let itemcode = itemcode_array[0];
         let maxqty = numeral(document.getElementById('retfg_inc_item_max_qt').value).value();
-        let addqty = numeral($('#retfg_inc_txt_qty').numberbox('getValue')).value();
+        let addqty = numeral(retfg_inc_txt_qty.value).value();
         let pushqty = addqty + retfg_e_get_added_qty(itemcode);
         if( pushqty > maxqty){
             alertify.warning('addQTY > retQTY');
-            $('#retfg_inc_txt_qty').numberbox('textbox').focus();
+            retfg_inc_txt_qty.focus()
         } else {
             document.getElementById('retfg_inc_btn_add').focus();
         }
@@ -785,10 +768,12 @@
         document.getElementById('retfg_inc_cmb_category_edit').value = pvalue;
     }
     function retfg_inc_btn_add_e_click(){
-        let itemcode = $('#retfg_inc_cmb_itemcode').combobox('getValue');
-        let qty = numeral($('#retfg_inc_txt_qty').numberbox('getValue')).value();      
+        let itemcode_array = retfg_inc_cmb_itemcode.value.split('#')
+        let itemcode = itemcode_array[0];
+      
+        let qty = numeral(retfg_inc_txt_qty.value).value();      
         let maxqty = numeral(document.getElementById('retfg_inc_item_max_qt').value).value();  
-        let remark = $('#retfg_inc_txt_remark').textbox('getValue');
+        let remark = retfg_inc_txt_remark.value;
         let itemname = document.getElementById('retfg_inc_itemname').value;
         let itemunit = document.getElementById('retfg_inc_itemunit').value;
         let spq = document.getElementById('retfg_inc_txt_spq').value;
@@ -798,12 +783,12 @@
 
         if(itemcode==""){
             alertify.message('Item Code could not be empty');
-            $('#retfg_inc_cmb_itemcode').combobox('textbox').focus();
+            retfg_inc_cmb_itemcode.focus()
             return;
         }
         if(qty<=0){
             alertify.message('qty could not be zero');
-            $('#retfg_inc_txt_qty').numberbox('textbox').focus();
+            retfg_inc_txt_qty.focus()
             return;
         }
         let pushqty = qty + retfg_e_get_added_qty(itemcode);        
@@ -1094,20 +1079,36 @@
     function retfg_inc_e_getfg(){
         let doc = document.getElementById('retfg_inc_txt_docno').value;
         $.ajax({
-            type: "post",
-            url: "<?=base_url('RCV/get_fg')?>",
+            type: "POST",
+            url: "<?=base_url("RCV/get_fg")?>",
             data: {indo: doc },
             dataType: "json",
             success: function (response) {
-                $('#retfg_inc_cmb_itemcode').combobox('loadData', response); 
-                $('#retfg_inc_cmb_itemcode').combobox('clear');                 
-            }, error: function(xhr, xopt, xthrow){
-                alertify.error(xthrow);
+                let strSel = '<option value="_#_#_#_">-</option>'
+                response.forEach((ai) => {
+                    strSel += `<option value="${ai['id']+'#'+ai['description']+'#'+ai['um']+'#'+ai['maxqty']}">${ai['text']}</option>`
+                })
+
+                retfg_inc_cmb_itemcode.innerHTML = strSel
             }
-        })
+        });
     }
 
     function retfg_e_finsup() {
         $("#retfg_MOD_supplier").modal('show')
     }
+    
+
+    $('#retfg_inc_cmb_itemcode').select2();
+
+    $('#retfg_inc_cmb_itemcode').on('select2:select', function (e) {        
+        let data = e.params.data.id.split("#")
+        const _max_qty = numeral(data[3]).value()
+        retfg_inc_itemname.value = data[1]
+        retfg_inc_itemunit.value = data[2]
+        retfg_inc_item_max_qt.value = _max_qty
+        retfg_inc_txt_qty.value = _max_qty
+        retfg_inc_txt_qty.focus()
+    });
+
 </script>
