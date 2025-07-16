@@ -1011,7 +1011,7 @@ class PO extends CI_Controller
                 $total_amount_test += $amount;
                 $pdf->SetXY(6, $YStart);
                 $pdf->Cell(9, 5, $nomor_urut++, 0, 0, 'C');
-                if (strpos($itemcd, " ") !== false) {                    
+                if (strpos($itemcd, " ") !== false) {
                     $pdf->MultiCell(31, 5, $itemcd, 0, 'L');
                     $YExtra_candidate = $pdf->GetY();
                     $YExtra2 = $YExtra_candidate != $YStart ? $YExtra_candidate - $YStart - 5 : 0;
@@ -1040,7 +1040,11 @@ class PO extends CI_Controller
                 $pdf->Cell(27.5, 5, number_format($amount, 2), 0, 0, 'R');
                 $total_amount += $finalamount;
                 if ($YExtra2 > 0) {
-                    $YStart += (5 + $YExtra2);
+                    if($YExtra2 > $YExtra) {
+                        $YStart += (5 + $YExtra2);
+                    } else {
+                        $YStart += (5 + $YExtra);
+                    }
                 } else {
                     $YStart += (5 + $YExtra);
                 }
