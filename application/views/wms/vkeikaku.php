@@ -2491,6 +2491,11 @@
         keikaku_load_data()
         keikaku_load_asprova()
         keikakuGetDownTime()
+        const activeTab = document.querySelector('#keikaku_main_tab .nav-link.active');
+        keikakuDisplayBlankHeader()
+        if(['keikaku_prodplan-tab', 'keikaku_report-tab'].includes(activeTab.id)) {
+            keikaku_btn_run_prodplan_eC(keikaku_btn_run_prodplan)
+        }
     }
 
     function keikaku_calc_friday(hourAt, isOT) {
@@ -2794,6 +2799,11 @@
         keikaku_load_data()
         keikaku_load_prodplan()
         keikakuGetDownTime()
+        keikakuDisplayBlankHeader()
+        const activeTab = document.querySelector('#keikaku_main_tab .nav-link.active');
+        if(['keikaku_prodplan-tab', 'keikaku_report-tab'].includes(activeTab.id)) {
+            keikaku_btn_run_prodplan_eC(keikaku_btn_run_prodplan)
+        }
     }
 
     function keikaku_btn_run_data_eC() {
@@ -3182,7 +3192,6 @@
     }
 
     function keikaku_btn_run_prodplan_eC(pThis) {
-
         const inputLine = keikaku_line_input.value
         if(inputLine==='-') {
             alertify.warning('Line is required')
@@ -3550,6 +3559,33 @@
                 </div>`
             }
         });
+    }
+
+    function keikakuDisplayBlankHeader() {
+        let _newRowH = []
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        _newRowH.push('')
+        for(let c=9; c<(9+12+12+12); c++) {
+            _newRowH.push('')
+        }
+        let inputSS = [
+                        ['', '', '' ,'','', '','','Date','','','','','','','','','','','','','',  '','','','','','','','','','','' ,'',  '','','','','','','','','','','' ,''],
+                        ['', '', '' ,'','', '','','Time','','7','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6',  '7','8','9','10','11','12','13','14','15','16','17','18'],
+                        ['', '', '' ,'','', '','','Change Model','','','','','','','','','','','','','',  '','','','','','','','','','','' ,'',  '','','','','','','','','','','' ,''],
+                        ['SEQ', '', 'MODEL' ,'WO No','LOT', 'Production','S/T','Time', '','8','9','10','11','12','13','14','15','16','17','18',  '19','20','21','22','23','0','1','2','3','4','5' ,'6','7', '8','9','10','11','12','13','14','15','16','17','18','19'],
+                        ['#', '', '' ,'','', 'Quantity','(H)','Working Time','Retention Time','','','','','','','','','','','','',  '','','','','','','','','','','' ,'',  '','','','','','','','','','','' ,''],
+                        ['', 'Side', 'Type' ,'Spec','', 'Assy Code','Lot S/T','Efficiency','%','','','','','','','','','','','','',  '','','','','','','','','','','' ,'',  '','','','','','','','','','','' ,''],
+                        ['', '', '' ,'','', '','(H)','Shift','TOTAL','Morning','','','','','','','','','','','',  'Night','','','','','','','','','','' ,'',  'Morning','','','','','','','','','','' ,'' ],
+                        _newRowH
+                    ];
+        keikaku_prodplan_sso.setData(inputSS)
     }
 
     function keikakuDisplayProdplan(data, dataS, dataCalculation, dataModelChanges, dataInputHW, dataOutputHW, dataInput2HW) {
