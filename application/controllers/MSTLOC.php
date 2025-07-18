@@ -86,6 +86,7 @@ class MSTLOC extends CI_Controller
             'FCTEQUIP',
             'FCTSCREQUIP',
             'HRDEQUIP',
+            'ACCEQUIP',
         ]);
         die(json_encode(['data' => $rs]));
     }
