@@ -125,7 +125,7 @@
     }
 
     function retrev_savechanges(){
-        let mpsn = $('#retrev_txt_txno').combobox('getValue');
+        let mpsn = retrev_sel_psn.value;
         let mline = document.getElementById('retrev_line').value;
         let mfr = document.getElementById('retrev_fr').value;
         let mcategory = document.getElementById('retrev_category').value;
@@ -155,7 +155,7 @@
                     if(response.status[0].cd==1){
                         $("#RETREV_DETISSU").modal('hide');
                         alertify.success(response.status[0].msg);
-                        let ppsn = $('#retrev_txt_txno').combobox('getValue');
+                        let ppsn = retrev_sel_psn.value;
                         retrev_sync(ppsn);
                     } else {
                         alertify.warning(response.status[0].msg);
