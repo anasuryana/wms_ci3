@@ -5901,11 +5901,6 @@ class SPL extends CI_Controller
         die('{"status" : ' . json_encode($myar) . ', "data": ' . json_encode($rs) . '}');
     }
 
-    public function vreport_cims_vs_psn()
-    {
-        $this->load->view('wms_report/vrpt_cims_vs_psn');
-    }
-
     public function get_psn_process()
     {
         header('Content-Type: application/json');
