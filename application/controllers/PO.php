@@ -131,7 +131,7 @@ class PO extends CI_Controller
         $pdf->SetXY(160, 18 - $_y);
         $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
         $pdf->SetXY(160, 22 - $_y);
-        $pdf->Cell(21, 4, 'REV.01', 0, 0, 'R');
+        $pdf->Cell(21, 4, 'REV.02', 0, 0, 'R');
         
         $pdf->SetFont('Times', 'B', 9);
         $pdf->SetXY(115, 45 - $_y);
@@ -400,7 +400,7 @@ class PO extends CI_Controller
                     $pdf->SetXY(160, 18 - $_y);
                     $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
                     $pdf->SetXY(160, 22 - $_y);
-                    $pdf->Cell(21, 4, 'REV.01', 0, 0, 'R');
+                    $pdf->Cell(21, 4, 'REV.02', 0, 0, 'R');
                    
                     $pdf->SetFont('Times', 'B', 9);
                     $pdf->SetXY(115, 45 - $_y);
@@ -578,7 +578,7 @@ class PO extends CI_Controller
             $pdf->SetXY(160, 18 - $_y);
             $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
             $pdf->SetXY(160, 22 - $_y);
-            $pdf->Cell(21, 4, 'REV.01', 0, 0, 'R');
+            $pdf->Cell(21, 4, 'REV.02', 0, 0, 'R');
             
             $pdf->SetFont('Times', 'B', 9);
             $pdf->SetXY(115, 45 - $_y);
@@ -798,8 +798,8 @@ class PO extends CI_Controller
             $pdf->Cell(26, 5, 'Diperiksa Oleh :', 0, 0, 'C');
             $pdf->SetFont('Times', 'B', 9);
             $pdf->SetXY(55, 238 - $_y);
-            $pdf->Cell(20, 5, 'Pres Dir', 1, 0, 'C');
-            $pdf->Cell(20, 5, 'VP / GM', 1, 0, 'C');
+            $pdf->Cell(20, 5, 'PD/VP', 1, 0, 'C');
+            $pdf->Cell(20, 5, 'GM', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Fin. Mgr', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Pur. Mgr', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Dept. Mgr', 1, 0, 'C');
@@ -887,7 +887,7 @@ class PO extends CI_Controller
                     $pdf->SetXY(160, 18 - $_y);
                     $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
                     $pdf->SetXY(160, 22 - $_y);
-                    $pdf->Cell(21, 4, 'REV.01', 0, 0, 'R');
+                    $pdf->Cell(21, 4, 'REV.02', 0, 0, 'R');
                     
                     $pdf->SetFont('Times', 'B', 9);
                     $pdf->SetXY(115, 45 - $_y);
@@ -1186,8 +1186,8 @@ class PO extends CI_Controller
             $pdf->Cell(26, 5, 'Diperiksa Oleh :', 0, 0, 'C');
             $pdf->SetFont('Times', 'B', 9);
             $pdf->SetXY(55, 238 - $_y);
-            $pdf->Cell(20, 5, 'Pres Dir', 1, 0, 'C');
-            $pdf->Cell(20, 5, 'VP / GM', 1, 0, 'C');
+            $pdf->Cell(20, 5, 'PD / VP', 1, 0, 'C');
+            $pdf->Cell(20, 5, 'GM', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Fin. Mgr', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Pur. Mgr', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Dept. Mgr', 1, 0, 'C');
