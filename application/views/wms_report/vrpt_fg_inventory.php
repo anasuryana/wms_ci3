@@ -51,6 +51,7 @@
                         <thead class="table-light">
                             <tr class="first">
                                 <th  class="align-middle">Assy Number</th>
+                                <th  class="align-middle">Rank</th>
                                 <th  class="align-middle">Model</th>
                                 <th  class="align-middle">Lot</th>
                                 <th  class="align-middle">Job Number</th>
@@ -201,23 +202,26 @@
                     newrow = tableku2.insertRow(-1);
                     newcell = newrow.insertCell(0);
                     newcell.innerHTML = response.data[i].CASSYNO;
+                    
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerHTML = response.data[i].SER_GRADE;
 
-                    newcell = newrow.insertCell(1);
+                    newcell = newrow.insertCell(-1);
                     newcell.innerHTML = response.data[i].CMODEL
 
-                    newcell = newrow.insertCell(2);
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= "white-space: nowrap";
                     newcell.innerHTML = response.data[i].CLOTNO
 
-                    newcell = newrow.insertCell(3);
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= "white-space: nowrap";
                     newcell.innerHTML = response.data[i].SER_DOC
 
-                    newcell = newrow.insertCell(4);
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= "white-space: nowrap;text-align:right";
                     newcell.innerHTML = numeral(response.data[i].CQTY).format('0,0')
 
-                    newcell = newrow.insertCell(5);
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= 'text-align:center';
                     newcell.innerHTML = response.data[i].REFNO
                     newcell.addEventListener("contextmenu", function(e) {
@@ -227,15 +231,15 @@
                         e.preventDefault();
                     })
 
-                    newcell = newrow.insertCell(6);
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= 'text-align:center';
                     newcell.innerHTML = response.data[i].FULLNAME
 
-                    newcell = newrow.insertCell(7);
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= 'text-align:center';
                     newcell.innerHTML = response.data[i].CDATE
 
-                    newcell = newrow.insertCell(8);
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= 'text-align:center';
                     newcell.innerHTML = response.data[i].CLOC
                 }

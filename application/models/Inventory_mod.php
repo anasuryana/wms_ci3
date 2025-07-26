@@ -9,7 +9,7 @@ class Inventory_mod extends CI_Model {
     }
 	public function selectAll()
 	{
-        $this->db->select("ISNULL(c.SER_ITMID,d.SER_ITMID) CASSYNO,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,ISNULL(c.SER_DOC,d.SER_DOC) SER_DOC,CLOTNO,CLOC,REFNO,CQTY,CMODEL,CDATE");
+        $this->db->select("ISNULL(c.SER_ITMID,d.SER_ITMID) CASSYNO,c.SER_GRADE,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,ISNULL(c.SER_DOC,d.SER_DOC) SER_DOC,CLOTNO,CLOC,REFNO,CQTY,CMODEL,CDATE");
         $this->db->from($this->TABLENAME." a");
         $this->db->join('MSTEMP_TBL b', 'cPic=MSTEMP_ID','left');    
         $this->db->join('SER_TBL c', 'REFNO=c.SER_ID','left');    
@@ -21,7 +21,7 @@ class Inventory_mod extends CI_Model {
 
 	public function selectAllWhereWarehouse($warehouse)
 	{
-        $this->db->select("ISNULL(c.SER_ITMID,d.SER_ITMID) CASSYNO,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,ISNULL(c.SER_DOC,d.SER_DOC) SER_DOC,CLOTNO,CLOC,REFNO,CQTY,CMODEL,CDATE");
+        $this->db->select("ISNULL(c.SER_ITMID,d.SER_ITMID) CASSYNO,c.SER_GRADE,CONCAT(RTRIM(MSTEMP_FNM),' ', RTRIM(LTRIM(MSTEMP_LNM))) FULLNAME,ISNULL(c.SER_DOC,d.SER_DOC) SER_DOC,CLOTNO,CLOC,REFNO,CQTY,CMODEL,CDATE");
         $this->db->from($this->TABLENAME." a");
         $this->db->join('MSTEMP_TBL b', 'cPic=MSTEMP_ID','left');    
         $this->db->join('SER_TBL c', 'REFNO=c.SER_ID','left');    
