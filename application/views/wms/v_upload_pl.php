@@ -17,6 +17,11 @@
             </div>
         </div>
         <div class="row">
+            <div class="col mb-1" id="rcv_pl_info_container_error">
+
+            </div>
+        </div>
+        <div class="row">
             <div class="col mb-1" id="rcv_pl_info_container">
 
             </div>
@@ -25,6 +30,7 @@
 </div>
 <script>
     function rcv_pl_btn_startimport_on_click(pThis) {
+        rcv_pl_info_container_error.innerHTML = ''
         const formData = new FormData();
         const files = $('#rcv_pl_file_upload')[0].files;
 
@@ -56,6 +62,17 @@
             }, error: function(xhr, xopt, xthrow) {
                 alertify.error(xthrow)
                 pThis.disabled = false
+
+                let msg = ''
+                let response = xhr.responseJSON
+                response.data.forEach((ai) => {
+                    msg += `<p>📃 ${ai['file']} 👉 ${ai['message']} </p>`
+                })
+               
+                rcv_pl_info_container_error.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
             }
         });
     }
