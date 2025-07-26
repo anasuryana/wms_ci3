@@ -159,7 +159,17 @@
         </div>
         <div class="modal-footer">
             <input type="hidden" id="itm_process_edit_id" value="">
-            <button type="button" class="btn btn-primary" id="itm_process_edit_btn_save" onclick="itm_process_edit_btn_save_on_click(this)"><span class="fas fa-save"></span></button>
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-danger" id="itm_process_edit_btn_delete" onclick="itm_process_edit_btn_delete_on_click(this)"><span class="fas fa-trash"></span></button>
+                    </div>
+                    <div class="col text-end">
+                        <button type="button" class="btn btn-primary" id="itm_process_edit_btn_save" onclick="itm_process_edit_btn_save_on_click(this)"><span class="fas fa-save"></span></button>
+                    </div>
+                </div>
+            </div>
+            
         </div>
       </div>
     </div>
@@ -229,7 +239,7 @@
             {
                 type: 'dropdown',
                 title:'Line Category',
-                source: ['MC','HW'],
+                source: ['MC','HW','MI','SP','AX','RG'],
                 width:120,
             },
         ],
@@ -416,7 +426,7 @@
                     }
                     newrow.onclick = function() {
                         itm_process_edit_id.value = arrayItem['id']
-                        itm_process_edit_seq.value = arrayItem['process_seq']
+                        itm_process_edit_seq.value = arrayItem['process_seq'] ?? 0
                         itm_process_edit_seq.focus()
                         itm_process_edit_category.value = arrayItem['line_category']
                     }
@@ -498,5 +508,41 @@
                 </div>`
             }
         });
+    }
+
+    function itm_process_edit_btn_delete_on_click(pThis) {
+        if(itm_process_edit_id.value.trim().length == 0) {
+            alertify.message('nothing to be deleted')
+            return
+        }
+
+        if(confirm(`Are you sure want to DELETE id ${itm_process_edit_id.value} ?`)) {
+            pThis.disabled = true
+            $.ajax({
+                type: "DELETE",
+                url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>process-master/process/"+ btoa(itm_process_edit_id.value),    
+                data : {user_id: uidnya},
+                dataType: "JSON",
+                success: function (response) {
+                    pThis.disabled = false
+                    alertify.message(response.message)
+                    itm_process_show_process()
+                }, error: function(xhr, xopt, xthrow) {
+                    alertify.error(xthrow)
+                    pThis.disabled = false
+
+                    const respon = Object.keys(xhr.responseJSON)
+
+                    let msg = ''
+                    for (const item of respon) {
+                        msg += `<p>${xhr.responseJSON[item]}</p>`
+                    }
+                    div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${msg}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                }
+            });
+        }
     }
 </script>
