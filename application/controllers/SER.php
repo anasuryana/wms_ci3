@@ -818,6 +818,7 @@ class SER extends CI_Controller
 
     public function remove()
     {
+        $this->checkSession();
         $cid = $this->input->post('inid');
         $toret = 0;
         $myar = [];
@@ -830,6 +831,7 @@ class SER extends CI_Controller
                     $retfail += 1;
                 } else {
                     $toret += $this->SER_mod->deletebyID(['SER_ID' => $cid[$i]]);
+                    $this->ITH_mod->tobin($this->session->userdata('nama'), $cid[$i]);
                     $toret += $this->ITH_mod->deletebyID(['ITH_SER' => $cid[$i]]);
                 }
             }
