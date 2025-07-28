@@ -1622,9 +1622,7 @@ echo $tohtml;
         </div>
     </div>
 </div>
-<div id="txfg_context_menu" class="easyui-menu" style="width:120px;">
-    <div data-options="iconCls:'icon-cancel'" onclick="txfg_e_cancelitem()">Cancel</div>
-</div>
+<div id="txfg_context_menu"></div>
 <div class="modal fade" id="TXFG_MODSO">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -1903,6 +1901,20 @@ echo $tohtml;
 <input type="hidden" id="TXFG_hid_idx">
 <input type="hidden" id="TXFG_hid_idx2">
 <script>
+    var txfg_context_menu_o = jSuites.contextmenu(txfg_context_menu, {
+        items : [
+            {
+                title : 'Cancel',
+                onclick : function() {
+                    txfg_e_cancelitem()
+                },
+                tooltip : 'Method to cancel transaction per row'
+            }
+        ],
+        onclick : function() {
+            txfg_context_menu_o.close(false)
+        }
+    })
     var txfg_starttime = moment().format('HH:mm:ss')
     var scr_txfg_cust = '';
     var txfg_isedit_mode = false;
@@ -4556,10 +4568,8 @@ echo $tohtml;
                                     alertify.warning('Please wait while RM is being initialized');
                                 } else {
                                     txfg_g_string = event.target.innerText;
-                                    $('#txfg_context_menu').menu('show', {
-                                        left: event.pageX,
-                                        top: event.pageY
-                                    });
+                                    txfg_context_menu_o.open(event)
+                                    event.preventDefault()
                                 }
                             };
                             newcell.onclick = (event) => {
