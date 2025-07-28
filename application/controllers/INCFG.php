@@ -76,10 +76,6 @@ class INCFG extends CI_Controller
     {
         $this->load->view('wms/vincomingfg_rtn_rc');
     }
-    public function createrc_oth()
-    {
-        $this->load->view('wms/vincomingfg_rtn_rc_oth');
-    }
 
     public function checkSession()
     {
