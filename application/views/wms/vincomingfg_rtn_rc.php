@@ -358,7 +358,7 @@
             }
         ],
         onclick : function() {
-            rcvfg_rtn_context_menu.close(false)
+            rcvfg_rtn_context_menu_custlabel.close(false)
         }
     })
     var rcvfg_rtn_context_menu_lot = jSuites.contextmenu(rcvfg_rtn_rc_ctx_menu, {
@@ -372,7 +372,7 @@
             }
         ],
         onclick : function() {
-            rcvfg_rtn_context_menu.close(false)
+            rcvfg_rtn_context_menu_lot.close(false)
         }
     })
     function rcvfg_rtn_rc_showpartreq(){
