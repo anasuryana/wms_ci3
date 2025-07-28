@@ -169,8 +169,7 @@
         </div>        
     </div>
 </div>
-<div id="retfg_inc_context_menu" class="easyui-menu" style="width:120px;">         
-    <div data-options="iconCls:'icon-cancel'" onclick="retfg_inc_e_cancelitem()">Cancel</div>     
+<div id="retfg_inc_context_menu">
 </div>
 <input type="hidden" id="retfg_inc_g_id">
 <input type="hidden" id="retfg_inc_g_id2">
@@ -316,6 +315,21 @@
     </div>
 </div>
 <script>
+    var retfg_context_menu = jSuites.contextmenu(retfg_inc_context_menu, {
+        items : [
+            {
+                title : 'Cancel',
+                onclick : function() {
+                    retfg_inc_e_cancelitem()
+                },
+                tooltip : 'Method to cancel transaction per row'
+            }
+        ],
+        onclick : function() {
+            retfg_context_menu.close(false)
+        }
+    })
+
     function retfg_inc_btn_confirmcategory_e_click(){
         let myrowid = document.getElementById('retfg_inc_g_id').value;
         let thetable = document.getElementById('retfg_inc_tbl');
@@ -626,10 +640,8 @@
                         newcell.oncontextmenu = function(event){
                             event.preventDefault();                                
                             document.getElementById('retfg_inc_g_id').value = event.target.parentElement.rowIndex;
-                            $('#retfg_inc_context_menu').menu('show', {
-                                left: event.pageX,
-                                top: event.pageY
-                            });
+                            retfg_context_menu.open(event)
+                            event.preventDefault()
                         };
                         newText = document.createTextNode(response.data[i].MITM_ITMCD);
                         newcell.appendChild(newText);
@@ -808,10 +820,8 @@
             newcell.oncontextmenu = function(event){
                                     event.preventDefault();                                
                                     document.getElementById('retfg_inc_g_id').value = event.target.parentElement.rowIndex;
-                                    $('#retfg_inc_context_menu').menu('show', {
-                                        left: event.pageX,
-                                        top: event.pageY
-                                    });
+                                    retfg_context_menu.open(event)
+                                    event.preventDefault()
                                 };
             newText = document.createTextNode(itemcode);
             newcell.appendChild(newText);
@@ -869,10 +879,8 @@
                 newcell.oncontextmenu = function(event){
                     event.preventDefault();                                
                     document.getElementById('retfg_inc_g_id').value = event.target.parentElement.rowIndex;
-                    $('#retfg_inc_context_menu').menu('show', {
-                        left: event.pageX,
-                        top: event.pageY
-                    });
+                    retfg_context_menu.open(event)
+                    event.preventDefault()
                 };
                 newText = document.createTextNode(itemcode);
                 newcell.appendChild(newText);
@@ -925,10 +933,8 @@
                 newcell.oncontextmenu = function(event){
                                         event.preventDefault();
                                         document.getElementById('retfg_inc_g_id').value = event.target.parentElement.rowIndex;
-                                        $('#retfg_inc_context_menu').menu('show', {
-                                            left: event.pageX,
-                                            top: event.pageY
-                                        });
+                                        retfg_context_menu.open(event)
+                                        event.preventDefault()
                                     };
                 newText = document.createTextNode(itemcode);
                 newcell.appendChild(newText);
