@@ -219,14 +219,11 @@
     </div>
 </div>
 
-<div id="rcvfg_rtn_rc_context_menu" class="easyui-menu" style="width:120px;">         
-    <div data-options="iconCls:'icon-cancel'" onclick="rcvfg_rtn_rc_e_cancelitem()">Cancel</div>     
+<div id="rcvfg_rtn_rc_context_menu">
 </div>
-<div id="rcvfg_rtn_rc_context_menu_custlabel" class="easyui-menu" style="width:120px;">         
-    <div data-options="iconCls:'icon-cancel'" onclick="rcvfg_rtn_rc_e_cancelitem_custlabel()">Cancel</div>     
+<div id="rcvfg_rtn_rc_context_menu_custlabel">
 </div>
-<div id="rcvfg_rtn_rc_ctx_menu" class="easyui-menu" style="width:120px;">    
-    <div onclick="rcvfg_rtn_rc_e_copylot()">Copy Lot</div> 
+<div id="rcvfg_rtn_rc_ctx_menu">
 </div>
 <input type="hidden" id="rcvfg_rtn_rc_g_id">
 <input type="hidden" id="rcvfg_rtn_rc_g_assycd">
@@ -336,6 +333,48 @@
     </div>
 </div>
 <script>
+    var rcvfg_rtn_context_menu = jSuites.contextmenu(rcvfg_rtn_rc_context_menu, {
+        items : [
+            {
+                title : 'Cancel',
+                onclick : function() {
+                    rcvfg_rtn_rc_e_cancelitem()
+                },
+                tooltip : 'Method to cancel transaction per row'
+            }
+        ],
+        onclick : function() {
+            rcvfg_rtn_context_menu.close(false)
+        }
+    })
+    var rcvfg_rtn_context_menu_custlabel = jSuites.contextmenu(rcvfg_rtn_rc_context_menu_custlabel, {
+        items : [
+            {
+                title : 'Cancel',
+                onclick : function() {
+                    rcvfg_rtn_rc_e_cancelitem_custlabel()
+                },
+                tooltip : 'Method to cancel transaction per row'
+            }
+        ],
+        onclick : function() {
+            rcvfg_rtn_context_menu.close(false)
+        }
+    })
+    var rcvfg_rtn_context_menu_lot = jSuites.contextmenu(rcvfg_rtn_rc_ctx_menu, {
+        items : [
+            {
+                title : 'Copy Lot',
+                onclick : function() {
+                    rcvfg_rtn_rc_e_copylot()
+                },
+                tooltip : 'Method to copy transaction per row'
+            }
+        ],
+        onclick : function() {
+            rcvfg_rtn_context_menu.close(false)
+        }
+    })
     function rcvfg_rtn_rc_showpartreq(){
         const radoc = document.getElementById('rcvfg_rtn_rc_txt_docno').value;
         if(radoc.trim().length==0){
@@ -716,10 +755,8 @@
                 newcell.oncontextmenu = function(event){
                     event.preventDefault();                                
                     document.getElementById('rcvfg_rtn_rc_g_id').value = event.target.parentElement.rowIndex;
-                    $('#rcvfg_rtn_rc_context_menu_custlabel').menu('show', {
-                        left: event.pageX,
-                        top: event.pageY
-                    });
+                    rcvfg_rtn_context_menu_custlabel.open(event)
+                    event.preventDefault()
                 };
                 newcell.innerHTML = tableku2.rows[i].cells[0].innerText
                 newcell = newrow.insertCell(1)
@@ -815,10 +852,8 @@
                                 newcell.oncontextmenu = function(event){
                                     event.preventDefault();                                
                                     document.getElementById('rcvfg_rtn_rc_g_id').value = event.target.parentElement.rowIndex;
-                                    $('#rcvfg_rtn_rc_context_menu_custlabel').menu('show', {
-                                        left: event.pageX,
-                                        top: event.pageY
-                                    });
+                                    rcvfg_rtn_context_menu_custlabel.open(event)
+                                    event.preventDefault()
                                 };
                                 newText = document.createTextNode(therealcode);
                                 newcell.appendChild(newText);
@@ -910,10 +945,8 @@
                                         newcell.oncontextmenu = function(event){
                                             event.preventDefault();                                
                                             document.getElementById('rcvfg_rtn_rc_g_id').value = event.target.parentElement.rowIndex;
-                                            $('#rcvfg_rtn_rc_context_menu_custlabel').menu('show', {
-                                                left: event.pageX,
-                                                top: event.pageY
-                                            });
+                                            rcvfg_rtn_context_menu_custlabel.open(event)
+                                            event.preventDefault()
                                         };
                                         newText = document.createTextNode(therealcode);
                                         newcell.appendChild(newText);
@@ -1225,10 +1258,8 @@
                     newcell.oncontextmenu = function(event){
                         event.preventDefault();                                
                         document.getElementById('rcvfg_rtn_rc_g_id').value = event.target.parentElement.rowIndex;
-                        $('#rcvfg_rtn_rc_context_menu').menu('show', {
-                            left: event.pageX,
-                            top: event.pageY
-                        });
+                        rcvfg_rtn_context_menu.open(event)
+                        event.preventDefault()
                     };
                     newText = document.createTextNode(response.data[i].SERRC_SER);
                     newcell.appendChild(newText);
@@ -1244,10 +1275,8 @@
                     newcell.oncontextmenu = function(event){
                         event.preventDefault();                        
                         document.getElementById('rcvfg_rtn_rc_g_id').value = event.target.innerText;
-                        $('#rcvfg_rtn_rc_ctx_menu').menu('show', {
-                            left: event.pageX,
-                            top: event.pageY
-                        }); 
+                        rcvfg_rtn_context_menu_lot.open(event)
+                        event.preventDefault()
                     };
                     newcell.classList.add("fw-bold", "font-monospace");
                     newText = document.createTextNode(response.data[i].SERRC_JM);
@@ -1295,10 +1324,8 @@
                     newcell.oncontextmenu = function(event){
                         event.preventDefault();                                
                         document.getElementById('rcvfg_rtn_rc_g_id').value = event.target.parentElement.rowIndex;
-                        $('#rcvfg_rtn_rc_context_menu_custlabel').menu('show', {
-                            left: event.pageX,
-                            top: event.pageY
-                        });
+                        rcvfg_rtn_context_menu_custlabel.open(event)
+                        event.preventDefault()
                     };
                     newText = document.createTextNode(response.data_ex[i].SERRC_SERX);
                     newcell.appendChild(newText);
@@ -1438,10 +1465,8 @@
         newcell.oncontextmenu = function(event){
             event.preventDefault();                                
             document.getElementById('rcvfg_rtn_rc_g_id').value = event.target.parentElement.rowIndex;
-            $('#rcvfg_rtn_rc_context_menu').menu('show', {
-                left: event.pageX,
-                top: event.pageY
-            });
+            rcvfg_rtn_context_menu.open(event)
+            event.preventDefault()
         };
         newText = document.createTextNode(pdata.qalabel);
         newcell.appendChild(newText);
