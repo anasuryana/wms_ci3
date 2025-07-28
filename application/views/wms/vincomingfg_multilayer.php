@@ -100,16 +100,28 @@
                     </div>
                 </div>
             </div>            
-        </div>             
+        </div>
       </div>
     </div>
 </div>
-<div id="rcvfgmultilayer_context_menu" class="easyui-menu" style="width:120px;">         
-    <div data-options="iconCls:'icon-cancel'" onclick="rcvfgmultilayer_e_cancelitem()">Cancel</div>     
-</div>
+<div id="rcvfgmultilayer_context_menu"></div>
 <input type="hidden" id="rcvfgmultilayer_g_id">
 <script>
 
+    var rcvfgmultilayer_rtn_context_menu = jSuites.contextmenu(rcvfgmultilayer_context_menu, {
+        items : [
+            {
+                title : 'Cancel',
+                onclick : function() {
+                    rcvfgmultilayer_e_cancelitem()
+                },
+                tooltip : 'Method to cancel transaction per row'
+            }
+        ],
+        onclick : function() {
+            rcvfgmultilayer_rtn_context_menu.close(false)
+        }
+    })
     function rcvfgmultilayer_e_cancelitem(){
         let mid = document.getElementById('rcvfgmultilayer_g_id').value;
         document.getElementById('rcvfgmultilayer_tblsub').deleteRow(mid);
@@ -343,10 +355,8 @@
                             newcell.oncontextmenu = function(event){
                                 event.preventDefault();
                                 document.getElementById('rcvfgmultilayer_g_id').value = event.target.parentElement.rowIndex;
-                                $('#rcvfgmultilayer_context_menu').menu('show', {
-                                    left: event.pageX,
-                                    top: event.pageY
-                                });
+                                rcvfgmultilayer_rtn_context_menu.open(event)
+                                event.preventDefault()
                             };
                             newText = document.createTextNode(response.data[0].SER_ID);
                             newcell.appendChild(newText);
