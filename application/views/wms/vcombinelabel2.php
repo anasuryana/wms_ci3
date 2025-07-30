@@ -189,47 +189,54 @@
         let mtbltr = mtbl.getElementsByTagName('tr');
         let ttlrows = mtbltr.length;
 
-        if(ttlrows>1){
-            let konfirm = confirm('Are You sure ?');
-            if(konfirm){
-                let aid = [];
-                let ajob = [];
-                let aitemcd = [];
-                let aqty = [];
-                let qty = 0;
-                let sheetqty = 0;
-                for(let i=1;i<ttlrows;i++){
-                    aid.push(mtbl.rows[i].cells[0].innerText);
-                    ajob.push(mtbl.rows[i].cells[1].innerText.trim());
-                    aitemcd.push(mtbl.rows[i].cells[2].innerText.trim());
-                    aqty.push(numeral(mtbl.rows[i].cells[4].innerText.trim()).value());
-                    qty += numeral(mtbl.rows[i].cells[4].innerText).value();
-                    sheetqty += numeral(mtbl.rows[i].cells[5].innerText).value();
+        if(ttlrows>1) {
+            let aid = [];
+            let ajob = [];
+            let aitemcd = [];
+            let aqty = [];
+            let qty = 0;
+            let sheetqty = 0;
+            let locations = [];
+            for(let i=1;i<ttlrows;i++){
+                let _location = mtbl.rows[i].cells[6].innerText
+                aid.push(mtbl.rows[i].cells[0].innerText);
+                ajob.push(mtbl.rows[i].cells[1].innerText.trim());
+                aitemcd.push(mtbl.rows[i].cells[2].innerText.trim());
+                aqty.push(numeral(mtbl.rows[i].cells[4].innerText.trim()).value());
+                qty += numeral(mtbl.rows[i].cells[4].innerText).value();
+                sheetqty += numeral(mtbl.rows[i].cells[5].innerText).value();
+                if(!locations.includes(_location)) {
+                    locations.push(_location)
                 }
-                if(aid.length>1){
-                    document.getElementById('combinelbl2_btn_save').disabled=true;
-                    $.ajax({
-                        type: "post",
-                        url: "<?=base_url('SER/combine2_save')?>",
-                        data: {inid: aid, injob: ajob, initemcd: aitemcd , inqty: aqty ,inqtyt: qty, insheetqty: sheetqty},
-                        dataType: "json",
-                        success: function (response) {
-                            if(response.status[0].cd!='0'){
-                                $("#combinelbl2_tbl tbody").empty();
-                                alertify.success(response.status[0].msg);
-                                document.getElementById('combinelbl2_reffcdnew').value = response.status[0].nreffcode;
-                            } else {
-                                alertify.message(response.status[0].msg);
-                            }
-                        }, error: function(xhr, xopt, xthrow){
-                            alertify.error(xthrow);
+            }
+            if(locations.length > 1) {
+                alertify.warning(`Unable to join label from different location`)
+                return
+            }
+            if(aid.length>1){
+                if(!confirm(`Are you sure ?`)) {
+                    return
+                }
+                document.getElementById('combinelbl2_btn_save').disabled=true;
+                $.ajax({
+                    type: "post",
+                    url: "<?=base_url('SER/combine2_save')?>",
+                    data: {inid: aid, injob: ajob, initemcd: aitemcd , inqty: aqty ,inqtyt: qty, insheetqty: sheetqty},
+                    dataType: "json",
+                    success: function (response) {
+                        if(response.status[0].cd!='0'){
+                            $("#combinelbl2_tbl tbody").empty();
+                            alertify.success(response.status[0].msg);
+                            document.getElementById('combinelbl2_reffcdnew').value = response.status[0].nreffcode;
+                        } else {
+                            alertify.message(response.status[0].msg);
                         }
-                    });
-                } else {
-                    alertify.message('combine 1 label ?');
-                }
+                    }, error: function(xhr, xopt, xthrow){
+                        alertify.error(xthrow);
+                    }
+                });
             } else {
-                alertify.message('You are not sure');
+                alertify.message('combine 1 label ?');
             }
         } else {
             alertify.message('nothing to be processed');
