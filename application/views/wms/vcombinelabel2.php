@@ -19,13 +19,13 @@
                     <table id="combinelbl2_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer">
                         <thead class="table-light">
                             <tr>
-
                                 <th  class="align-middle">Reff No</th>
                                 <th  class="align-middle">Job Number</th>
                                 <th  class="align-middle">Item Code</th>
                                 <th  class="align-middle">Item Name</th>
                                 <th  class="text-right">QTY</th>
                                 <th  class="d-none">QTY /Sheet</th>
+                                <th class="align-middle" title="Current Location">Location</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -305,6 +305,9 @@
                                 newText = document.createTextNode(numeral(response.data[i].SER_SHEET).value());
                                 newcell.style.cssText = 'display: none;';
                                 newcell.appendChild(newText);
+                                newcell = newrow.insertCell(-1);
+                                newcell.innerText = response.last_location
+                                newcell.classList.add('text-center')
                             }
                         } else {
                             alertify.warning(response.status[0].msg);

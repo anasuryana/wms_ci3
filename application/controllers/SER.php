@@ -4179,39 +4179,44 @@ class SER extends CI_Controller
     public function combine2_prep()
     {
         $creff = $this->input->post('inreffcd');
-        $myar = array();
-        $rs = array();
-        $datar = array();
-        if ($this->SER_mod->check_Primary(array('SER_ID' => $creff)) > 0) {
-            if ($this->SISCN_mod->check_Primary(array('SISCN_SER' => $creff)) == 0) {
+        $myar = [];
+        $rs = [];
+        $datar = [];
+        $lastLocation = '';
+        if ($this->SER_mod->count_where_id_and_business_in(['SER_ID' => [$creff], 'SER_BSGRP' => ['PSI2PPZADI', 'PSI2PPZOMC', 'PSI2PPZOMI', 'PSI2PPZTDI']]) > 0) {
+            if ($this->SISCN_mod->check_Primary(['SISCN_SER' => $creff]) == 0) {
                 $rsith = $this->ITH_mod->selectstock_ser($creff);
                 if (count($rsith) > 0) {
                     foreach ($rsith as $r) {
-                        if (trim($r['ITH_WH']) == 'AFWH3' && $r['ITH_QTY'] > 0) {
-                            $rs = $this->SER_mod->select_exact_byVAR(array('SER_ID' => $creff));
+                        $lastLocation = $r['ITH_WH'];
+                        if (in_array($r['ITH_WH'], ['AFWH3', 'ARPRD1'])  && $r['ITH_QTY'] > 0) {
+                            $rs = $this->SER_mod->select_exact_byVAR(['SER_ID' => $creff]);
                             foreach ($rs as $r) {
                                 if (trim($r['SER_PRDLINE']) != '' && substr($r['SER_ID'], 0, 1) == '1') { //validate plant 2 label specification
 
                                 } else {
-                                    $datar = array("cd" => '0', "msg" => "this menu is only for Plant 2 Label");
+                                    $datar = ["cd" => '0', "msg" => "this menu is only for Plant 2 Label"];
                                 }
                             }
                         } else {
-                            $datar = array("cd" => '0', "msg" => "the label must be in AFWH3 first, currently it is in $r[ITH_WH]");
+                            $datar = ["cd" => '0', "msg" => "the label must be in AFWH3 first, currently it is in $r[ITH_WH]"];
                         }
                     }
                 } else {
-                    $datar = array("cd" => '0', "msg" => "the label has not been in scanning transaction");
+                    $datar = ["cd" => '0', "msg" => "the label has not been in scanning transaction"];
                 }
             } else {
-                $datar = array("cd" => '0', "msg" => "could not split delivered item label");
+                $datar = ["cd" => '0', "msg" => "could not split delivered item label"];
             }
         } else {
-            $datar = array("cd" => '0', "msg" => "the label not found");
+            $datar = ["cd" => '0', "msg" => "the label not found"];
         }
-        array_push($myar, $datar);
-        echo '{"status":' . json_encode($myar);
-        echo ',"data": ' . json_encode($rs) . '}';
+        $myar[] = $datar;
+        die(json_encode([
+            'status' => $myar,
+            'data' => $rs,
+            'last_location' => $lastLocation
+        ]));        
     }
 
     public function combine2_validate()
@@ -4219,9 +4224,9 @@ class SER extends CI_Controller
         $cid = $this->input->get('inid');
         $myar = [];
         if ($this->SER_mod->check_Primary(['SER_ID' => $cid]) > 0) {
-            array_push($myar, ['cd' => 0, 'msg' => 'The reff no is already registered']);
+            $myar[] = ['cd' => 0, 'msg' => 'The reff no is already registered'];
         } else {
-            array_push($myar, ['cd' => 1, 'msg' => 'go ahead']);
+            $myar[] = ['cd' => 1, 'msg' => 'go ahead'];
         }
         exit('{"status": ' . json_encode($myar) . '}');
     }
@@ -4229,11 +4234,12 @@ class SER extends CI_Controller
     public function combine1_prep()
     {
         $creff = $this->input->post('inreffcd');
-        $myar = array();
-        $rs = array();
-        $datar = array();
-        if ($this->SER_mod->check_Primary(array('SER_ID' => $creff)) > 0) {
-            if ($this->SISCN_mod->check_Primary(array('SISCN_SER' => $creff)) == 0) {
+        $myar = [];
+        $rs = [];
+        $datar = [];
+        
+        if ($this->SER_mod->check_Primary(['SER_ID' => $creff]) > 0) {
+            if ($this->SISCN_mod->check_Primary(['SISCN_SER' => $creff]) == 0) {
                 $rsith = $this->ITH_mod->selectstock_ser($creff);
                 if (count($rsith) > 0) {
                     foreach ($rsith as $r) {
@@ -4244,25 +4250,27 @@ class SER extends CI_Controller
                                 if ($prdLine == '') { //validate plant 2 label specification
 
                                 } else {
-                                    $datar = array("cd" => '0', "msg" => "this menu is only for Plant 1 Label");
+                                    $datar = ["cd" => '0', "msg" => "this menu is only for Plant 1 Label"];
                                 }
                             }
                         } else {
-                            $datar = array("cd" => '0', "msg" => "the label must be in AFWH3 first, currently it is in $r[ITH_WH]");
+                            $datar = ["cd" => '0', "msg" => "the label must be in AFWH3 first, currently it is in $r[ITH_WH]"];
                         }
                     }
                 } else {
-                    $datar = array("cd" => '0', "msg" => "the label has not been in scanning transaction");
+                    $datar = ["cd" => '0', "msg" => "the label has not been in scanning transaction"];
                 }
             } else {
-                $datar = array("cd" => '0', "msg" => "could not split delivered item label");
+                $datar = ["cd" => '0', "msg" => "could not split delivered item label"];
             }
         } else {
-            $datar = array("cd" => '0', "msg" => "the label not found");
+            $datar = ["cd" => '0', "msg" => "the label not found"];
         }
-        array_push($myar, $datar);
-        echo '{"status":' . json_encode($myar);
-        echo ',"data": ' . json_encode($rs) . '}';
+        $myar[] = $datar;
+        die(json_encode([
+            'status' => $myar,
+            'data' => $rs
+        ]));
     }
 
     public function combine2_save()

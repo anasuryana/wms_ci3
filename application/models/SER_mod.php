@@ -45,6 +45,13 @@ class SER_mod extends CI_Model
     {
         return $this->db->get_where($this->TABLENAME, $data)->num_rows();
     }
+    public function count_where_id_and_business_in($params)
+    {
+        return $this->db->from($this->TABLENAME)
+            ->where_in('SER_ID', $params['SER_ID'])
+            ->where_in('SER_BSGRP', $params['SER_BSGRP'])
+            ->count_all_results();
+    }
 
     public function lastserialid($modeltype, $prodt)
     {
