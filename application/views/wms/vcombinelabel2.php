@@ -196,9 +196,12 @@
             let aqty = [];
             let qty = 0;
             let sheetqty = 0;
-            let locations = [];
+            let locations = []
+            let jobs = [];
+            let sample_location = ''
             for(let i=1;i<ttlrows;i++){
                 let _location = mtbl.rows[i].cells[6].innerText
+                let _job = mtbl.rows[i].cells[1].innerText
                 aid.push(mtbl.rows[i].cells[0].innerText);
                 ajob.push(mtbl.rows[i].cells[1].innerText.trim());
                 aitemcd.push(mtbl.rows[i].cells[2].innerText.trim());
@@ -208,11 +211,23 @@
                 if(!locations.includes(_location)) {
                     locations.push(_location)
                 }
+                if(!jobs.includes(_job)) {
+                    jobs.push(_job)
+                }
+                sample_location = _location
             }
             if(locations.length > 1) {
                 alertify.warning(`Unable to join label from different location`)
                 return
             }
+
+            if(sample_location!='AFWH3') {
+                if(jobs.length > 1) {
+                    alertify.warning(`Could not join different job until AFWH3`)
+                    return
+                }
+            }
+
             if(aid.length>1){
                 if(!confirm(`Are you sure ?`)) {
                     return
