@@ -340,14 +340,25 @@ table.dataTable.fixedHeader-floating {
     });
     $("#ser_btn_delete").click(function (e) {
         ser_serprint = [];
+        let isQtyZeroSelected = false;
         $.each(tableSERLAST.rows().nodes(), function(key, value){
             var $tds = $(value).find('td'),
                 rana = $tds.eq(0).find('input').is(':checked'),
-                myser = $tds.eq(1).text();
+                myser = $tds.eq(1).text(),
+                _qty = $tds.eq(3).text();
+            if(_qty == 0) {
+                isQtyZeroSelected = true
+            }
             if(rana){
                 ser_serprint.push(myser);
             }
         });
+
+        if(isQtyZeroSelected) {
+            alertify.warning(`Could not delete with qty=0`)
+            return
+        }
+
         if (ser_serprint.length==0){
             alertify.warning('Please select the data to be deleted first');
             return;
