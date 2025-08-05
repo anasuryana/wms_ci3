@@ -4452,11 +4452,13 @@ class SER extends CI_Controller
                     $cline = '';
                     $cshift = '';
                     $crank = '';
+                    $cbisnis_group = '';
                     $rsinfo = $this->SER_mod->select_exact_byVAR(['SER_ID' => $caid[0]]);
                     foreach ($rsinfo as $r) {
                         $cline = $r['SER_PRDLINE'];
                         $cshift = $r['SER_PRDSHFT'];
                         $crank = $r['SER_GRADE'] ? $r['SER_GRADE'] : null;
+                        $cbisnis_group = $r['SER_BSGRP'];
                     }
                     $pYear = substr($cproddt, 2, 2);
                     $pMonth = substr($cproddt, 5, 2);
@@ -4479,6 +4481,7 @@ class SER extends CI_Controller
                         'SER_GRADE' => $crank,
                         'SER_LUPDT' => $currrtime,
                         'SER_USRID' => $this->session->userdata('nama'),
+                        'SER_BSGRP' => $cbisnis_group
                     ];
                     $retregis = $this->SER_mod->insert($datas);
                     if ($retregis > 0) {
