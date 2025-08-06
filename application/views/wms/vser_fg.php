@@ -344,12 +344,12 @@ table.dataTable.fixedHeader-floating {
         $.each(tableSERLAST.rows().nodes(), function(key, value){
             var $tds = $(value).find('td'),
                 rana = $tds.eq(0).find('input').is(':checked'),
-                myser = $tds.eq(1).text(),
-                _qty = $tds.eq(3).text();
-            if(_qty == 0) {
-                isQtyZeroSelected = true
-            }
+                myser = $tds.eq(1).text();
             if(rana){
+                let _qty = $tds.eq(3).text();
+                if(_qty == 0) {
+                    isQtyZeroSelected = true
+                }
                 ser_serprint.push(myser);
             }
         });
