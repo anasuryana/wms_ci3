@@ -2707,6 +2707,14 @@ class ITH extends CI_Controller
             'QAEQUIP',
             'QASCREQUIP',
             'SCREQUIP',
+            'ENGSCREQUIP',
+            'FCTSCREQUIP',
+            'ICTSCREQUIP',
+            'MFG1SCREQUIP',
+            'MFG2SCREQUIP',
+            'PPICSCREQUIP',
+            'PRCSCREQUIP',
+            'QASCREQUIP',
         ];
         $date = $this->input->post('date');
         $location = $this->input->post('location');
