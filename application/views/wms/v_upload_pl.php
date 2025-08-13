@@ -33,11 +33,12 @@
         rcv_pl_info_container_error.innerHTML = ''
         const formData = new FormData();
         const files = $('#rcv_pl_file_upload')[0].files;
-
+        
         if (files.length === 0) {
             alertify.warning(`Please select file`)
             return
         }
+        formData.append('user_id', uidnya)
 
         for (let i = 0; i < files.length; i++) {
             formData.append('file_upload[]', files[i]);
