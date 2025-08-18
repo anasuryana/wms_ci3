@@ -1441,87 +1441,93 @@ echo $tohtml;
     </div>
 </div>
 
-<div id="txfg_w_detailser" class="easyui-window" title="Detail of Reff No" data-options="modal:false,closed:true,iconCls:'icon-analyze',collapsible:true,minimizable:false,
-    onClose:function(){
-        $('#txfg_tbldetailser_rm tbody').empty();
-        document.getElementById('txfg_tbldetailser_rm_lblinfo').innerText ='';
-        document.getElementById('txfg_tbldetailser_rm_hinfo').innerText ='';
-        }" style="width:500px;height:200px;padding:10px;">
-    <div style="padding:1px">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text">SO</span>
-                        <input type="text" class="form-control" id="txfg_detser_so" readonly>
-                    </div>
-                </div>
+<div class="modal fade" id="TXFG_MOD_DETAIL_ITEM">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Detail of Reff No</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="row">
-                <div class="col-md-4 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text">Assy Code</span>
-                        <input type="text" class="form-control" id="txfg_detser_itmcd" readonly>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12 mb-1">
+                            <div class="input-group input-group-sm mb-1">
+                                <span class="input-group-text">SO</span>
+                                <input type="text" class="form-control" id="txfg_detser_so" readonly>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-4 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text">Item Name</span>
-                        <input type="text" class="form-control" id="txfg_detser_itmnm" readonly>
+                    <div class="row">
+                        <div class="col-md-4 mb-1">
+                            <div class="input-group input-group-sm mb-1">
+                                <span class="input-group-text">Assy Code</span>
+                                <input type="text" class="form-control" id="txfg_detser_itmcd" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-1">
+                            <div class="input-group input-group-sm mb-1">
+                                <span class="input-group-text">Item Name</span>
+                                <input type="text" class="form-control" id="txfg_detser_itmnm" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-1">
+                            <div class="input-group input-group-sm mb-1">
+                                <span class="input-group-text">QTY</span>
+                                <input type="text" class="form-control" id="txfg_detser_itmqty" readonly>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-4 mb-1">
-                    <div class="input-group input-group-sm mb-1">
-                        <span class="input-group-text">QTY</span>
-                        <input type="text" class="form-control" id="txfg_detser_itmqty" readonly>
+                    <div class="row">
+                        <div class="col-md-12 mb-1">
+                            <div class="table-responsive" id="txfg_divdetailser">
+                                <table id="txfg_tbldetailser" class="table table-hover table-sm table-bordered" style="width:100%;font-size:91%">
+                                    <thead class="table-light">
+                                        <tr class="first">
+                                            <th title="click the ID below to view RM usage">ID</th>
+                                            <th>Job</th>
+                                            <th class="text-end">QTY</th>
+                                            <th class="text-center">...</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="table-responsive" id="txfg_divdetailser">
-                        <table id="txfg_tbldetailser" class="table table-hover table-sm table-bordered" style="width:100%;font-size:91%">
-                            <thead class="table-light">
-                                <tr class="first">
-                                    <th title="click the ID below to view RM usage">ID</th>
-                                    <th>Job</th>
-                                    <th class="text-end">QTY</th>
-                                    <th class="text-center">...</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="table-responsive" id="txfg_divdetailser_rm">
-                        <table id="txfg_tbldetailser_rm" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th colspan="8">Raw Material Usage per ID <span id="txfg_tbldetailser_rm_lblinfo" class="badge bg-info"></span> </th>
-                                    <th colspan="4" class="text-end"><span id="txfg_tbldetailser_rm_hinfo" class="badge bg-info"></span></th>
-                                </tr>
-                                <tr>
-                                    <th>PSN</th>
-                                    <th>Line No</th>
-                                    <th>Process</th>
-                                    <th>Category</th>
-                                    <th class="text-center">F/R</th>
-                                    <th class="text-center">MC</th>
-                                    <th class="text-center">MCZ</th>
-                                    <th class="text-center">PER</th>
-                                    <th>Item Code</th>
-                                    <th>Item Name</th>
-                                    <th class="text-end">QTY</th>
-                                    <th class="text-center">Kind</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
+                    <div class="row">
+                        <div class="col-md-12 mb-1">
+                            <div class="table-responsive" id="txfg_divdetailser_rm">
+                                <table id="txfg_tbldetailser_rm" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th colspan="8">Raw Material Usage per ID <span id="txfg_tbldetailser_rm_lblinfo" class="badge bg-info"></span> </th>
+                                            <th colspan="4" class="text-end"><span id="txfg_tbldetailser_rm_hinfo" class="badge bg-info"></span></th>
+                                        </tr>
+                                        <tr>
+                                            <th>PSN</th>
+                                            <th>Line No</th>
+                                            <th>Process</th>
+                                            <th>Category</th>
+                                            <th class="text-center">F/R</th>
+                                            <th class="text-center">MC</th>
+                                            <th class="text-center">MCZ</th>
+                                            <th class="text-center">PER</th>
+                                            <th>Item Code</th>
+                                            <th>Item Name</th>
+                                            <th class="text-end">QTY</th>
+                                            <th class="text-center">Kind</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1901,6 +1907,12 @@ echo $tohtml;
 <input type="hidden" id="TXFG_hid_idx">
 <input type="hidden" id="TXFG_hid_idx2">
 <script>
+
+    $("#TXFG_MOD_DETAIL_ITEM").on('shown.bs.modal', function(){
+        $('#txfg_tbldetailser_rm tbody').empty();
+        document.getElementById('txfg_tbldetailser_rm_lblinfo').innerText ='';
+        document.getElementById('txfg_tbldetailser_rm_hinfo').innerText ='';
+    })
     var txfg_context_menu_o = jSuites.contextmenu(txfg_context_menu, {
         items : [
             {
@@ -4715,7 +4727,7 @@ echo $tohtml;
                                             alert(response.status[0].msg)
                                         } else {
                                             alertify.message(response.status[0].msg);
-                                            $('#txfg_w_detailser').window('close');
+                                            $("#TXFG_MOD_DETAIL_ITEM").modal('hide');
                                             let mtxid = document.getElementById("txfg_txt_id").value;
                                             txfg_f_getdetail(mtxid);
                                         }
@@ -4726,8 +4738,7 @@ echo $tohtml;
                                 });
                             }
                         }
-                        $('#txfg_w_detailser').window('open');
-                        $('#txfg_w_detailser').window('maximize');
+                        $("#TXFG_MOD_DETAIL_ITEM").modal('show');
                     }
                     txfg_e_last_resume();
                 } else {
