@@ -1534,32 +1534,40 @@ echo $tohtml;
         </div>
     </div>
 </div>
-<div id="txfg_w_rmnull" class="easyui-window" title="Detail of RM Null" data-options="modal:false,closed:true,iconCls:'icon-tip',collapsible:true, minimizable:false,
-    cls:'c7'" style="width:500px;height:200px;padding:5px;">
-    <div style="padding:1px">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="alert alert-warning" role="alert" id="txfg_alert_rmnull">
+<div class="modal fade" id="TXFG_MOD_RM_NULL">
+    <div class="modal-dialog">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Detail of RM Null</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
 
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <div class="alert alert-warning" role="alert" id="txfg_alert_rmnull">
+
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1">
-                    <div class="table-responsive" id="txfg_divrmnull">
-                        <table id="txfg_tblrmnull" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Assy Code</th>
-                                    <th>Job</th>
-                                    <th class="text-end">Qty</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <div class="table-responsive" id="txfg_divrmnull">
+                            <table id="txfg_tblrmnull" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Assy Code</th>
+                                        <th>Job</th>
+                                        <th class="text-end">Qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -5316,7 +5324,7 @@ echo $tohtml;
                     }
                     mydes.innerHTML = '';
                     mydes.appendChild(myfrag);
-                    $('#txfg_w_rmnull').window('open')
+                    $('#TXFG_MOD_RM_NULL').modal('show')
                 } else if (response.status[0].cd == '110') {
                     document.getElementById('txfg_alert_rmexbcnull').innerText = response.status[0].msg;
                     let mydes = document.getElementById("txfg_divrmexbcnull");
