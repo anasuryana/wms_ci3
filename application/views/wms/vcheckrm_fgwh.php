@@ -221,75 +221,7 @@
       </div>
     </div>
 </div>
-<div class="modal fade" id="checksbb_MODEDITQTYCAL">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <!-- Modal Header -->
-        <div class="modal-header">
-            <h4 class="modal-title">Editing Calculation QTY</h4>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
 
-        <!-- Modal body -->
-        <div class="modal-body">
-            <div class="row">
-                <div class="col">
-                    <div class="alert alert-warning" role="alert">
-                        Authorized user only. Just be careful
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1 p-1 text-center">
-                    <span class="badge bg-info" id="checksbb_caltbl_rm_edit_lblinfo"></span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 mb-1 p-1">
-                    <div class="table-responsive" id="checksbb_caltbl_rm_edit_div">
-                        <table id="checksbb_caltbl_rm_edit" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Line No</th>
-                                    <th>Process</th>
-                                    <th class="text-center">F/R</th>
-                                    <th class="text-center">MC</th>
-                                    <th class="text-center">MCZ</th>
-                                    <th class="text-center">PER</th>
-                                    <th>Item Code</th>
-                                    <th>Item Name</th>
-                                    <th class="text-end">DLV QTY</th>
-                                    <th class="text-center">Kind</th>
-                                    <th class="text-center"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-1 p-1">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text" >Old Qty</span>
-                        <input type="text" class="form-control" id="checksbb_oldqty" readonly>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-1 p-1">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text" >New Qty</span>
-                        <input type="text" class="form-control" id="checksbb_newqty">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="checksbb_e_concfirm_edit_qtycal()">OK</button>
-        </div>
-      </div>
-    </div>
-</div>
 <div class="modal fade" id="checksbb_MODFILTERITEM">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -422,6 +354,73 @@
 
         <!-- Modal body -->
         <div class="modal-body">
+            <!-- offCanvas -->
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="checksbb_sploffcanvasBottom" >
+                <div class="offcanvas-header bg-info shadow">
+                    <h5 class="offcanvas-title text-body-secondary">Editing Calculation Quantity</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body small">
+                    <div class="container-fluid">
+                         <div class="row">
+                            <div class="col">
+                                <div class="alert alert-warning" role="alert">
+                                    Authorized user only. Just be careful
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-1 p-1 text-center">
+                                <span class="badge bg-info" id="checksbb_caltbl_rm_edit_lblinfo"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-1 p-1">
+                                <div class="table-responsive" id="checksbb_caltbl_rm_edit_div">
+                                    <table id="checksbb_caltbl_rm_edit" class="table table-hover table-sm table-bordered" style="width:100%;font-size:81%">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Line No</th>
+                                                <th>Process</th>
+                                                <th class="text-center">F/R</th>
+                                                <th class="text-center">MC</th>
+                                                <th class="text-center">MCZ</th>
+                                                <th class="text-center">PER</th>
+                                                <th>Item Code</th>
+                                                <th>Item Name</th>
+                                                <th class="text-end">DLV QTY</th>
+                                                <th class="text-center">Kind</th>
+                                                <th class="text-center"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-1 p-1">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text" >Old Qty</span>
+                                    <input type="text" class="form-control" id="checksbb_oldqty" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-1 p-1">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text" >New Qty</span>
+                                    <input type="text" class="form-control" id="checksbb_newqty">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-1 p-1">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="checksbb_e_concfirm_edit_qtycal()">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12 mb-1">
@@ -1392,7 +1391,7 @@
                             job: pjob,
                             process: response.datacal[i].SERD2_PROCD
                         })
-                        $("#checksbb_MODEDITQTYCAL").modal('show')
+                        checksbb_Offcanvas27.show()
                         document.getElementById('checksbb_newqty').value = ''
                         document.getElementById('checksbb_newqty').focus()
                     }
@@ -1802,7 +1801,7 @@
                     } else {
                         alertify.message(response.status[0].msg)
                     }
-                    $("#checksbb_MODEDITQTYCAL").modal('hide')
+                    checksbb_Offcanvas27.hide()
                 }, error(xhr, xopt, xthrow){
                     alertify.error(xthrow)
                 }
@@ -2030,15 +2029,15 @@
                 data: {reffid: txtid,itemcode: itemcode , oldqty: oldqty, newqty: newqty},
                 dataType: "json",
                 success: function (response) {
-                    alertify.message(response.status[0].msg)
-                    $("#checksbb_MODEDITQTYCAL").modal('hide')
+                    alertify.message(response.status[0].msg)                    
+                    checksbb_Offcanvas27.hide()
                 }, error: function(xhr, xopt, xthrow){
                     alertify.error(xthrow)
-                    $("#checksbb_MODEDITQTYCAL").modal('hide')
+                    checksbb_Offcanvas27.hide()
                 }
             });
         } else {
-            $("#checksbb_MODEDITQTYCAL").modal('hide')
+            checksbb_Offcanvas27.hide()
         }
     }
 
@@ -2250,4 +2249,6 @@
             alertify.message('Job is required as a confirmation')
         }
     }
+
+    var checksbb_Offcanvas27 = new bootstrap.Offcanvas('#checksbb_sploffcanvasBottom')
 </script>
