@@ -36,6 +36,8 @@ class SPL extends CI_Controller
         $this->load->model('XWO_mod');
         $this->load->model('WMS_PPSN2_LOG_mod');
         $this->load->model('ENGBOMSTX_mod');
+        $this->load->model('SWPS_model');
+        $this->load->model('SWMP_model');
         date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
@@ -1041,6 +1043,7 @@ class SPL extends CI_Controller
     public function cancel_kitting()
     {
         $this->checkSession();
+        
         $kittingDateTime = new DateTime($this->input->get('time'));
         $interval = new DateInterval('PT1S');
         $kittingDateTime->add($interval);
@@ -1053,11 +1056,21 @@ class SPL extends CI_Controller
         $myar = [];
 
         $rs = $this->SPLSCN_mod->selectby_filter(['SPLSCN_ID' => $cidscan]);
-        $cpsn = $_itemcd = $_timescan = $thebookID = '';
+        $cpsn = $_itemcd = $_timescan = $_unique_code = '';
         foreach ($rs as $r) {
             $cpsn = $r['SPLSCN_DOC'];
             $_itemcd = $r['SPLSCN_ITMCD'];
             $_timescan = $r['SPLSCN_LUPDT'];
+            $_unique_code = $r['SPLSCN_UNQCODE'];
+        }
+
+        if(strlen($_unique_code) > 0) {
+            $swpsScansCount = $this->SWPS_model->check_Primary(['SWPS_NUNQ' => $_unique_code]);
+            $swmpScansCount = $this->SWMP_model->check_Primary(['SWMP_UNQ' => $_unique_code]);
+            if($swmpScansCount > 0 || $swpsScansCount > 0) {
+                $myar[] = ['cd' => 0, 'msg' => 'delete failed, because it is already used in Traceability System'];
+                die(json_encode(['status' => $myar]));
+            }
         }
 
         $cwh_out = '';
