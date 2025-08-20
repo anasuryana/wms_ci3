@@ -1468,7 +1468,7 @@
                                         alertify.success(response.status[0].msg);
                                         $('#SPL_DETISSU').modal('hide');
                                     } else {
-                                        alertify.message(response.status[0].msg);
+                                        alertify.warning(response.status[0].msg);
                                     }
                                 }, error: function(xhr, xopt, xthrow){
                                     alertify.error(xthrow);
