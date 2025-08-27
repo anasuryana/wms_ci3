@@ -31,4 +31,12 @@ class Raw_material_labels_mod extends CI_Model
         return $this->db->affected_rows();
     }
 
+    public function selectActiveRecordsCount($where)
+    {
+        $this->db->from($this->TABLENAME);
+        $this->db->where($where)
+            ->where("deleted_at is null", null, false);
+        return $this->db->count_all_results();
+    }
+
 }

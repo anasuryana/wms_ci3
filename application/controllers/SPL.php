@@ -38,6 +38,7 @@ class SPL extends CI_Controller
         $this->load->model('ENGBOMSTX_mod');
         $this->load->model('SWPS_model');
         $this->load->model('SWMP_model');
+        $this->load->model('Raw_material_labels_mod');
         date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
@@ -1065,8 +1066,8 @@ class SPL extends CI_Controller
         }
 
         if(strlen($_unique_code) > 0) {
-            $swpsScansCount = $this->SWPS_model->check_Primary(['SWPS_NUNQ' => $_unique_code]);
-            $swmpScansCount = $this->SWMP_model->check_Primary(['SWMP_UNQ' => $_unique_code]);
+            $swpsScansCount = $this->SWPS_model->check_Primary(['SWPS_NUNQ' => $_unique_code, 'SWPS_REMARK' => 'OK']);
+            $swmpScansCount = $this->SWMP_model->check_Primary(['SWMP_UNQ' => $_unique_code, 'SWMP_REMARK' => 'OK']);
             if($swmpScansCount > 0 || $swpsScansCount > 0) {
                 $myar[] = ['cd' => 0, 'msg' => 'delete failed, because it is already used in Traceability System'];
                 die(json_encode(['status' => $myar]));
@@ -1739,6 +1740,11 @@ class SPL extends CI_Controller
             $isUniqueCodeAlreadyUsed = $this->SPLSCN_mod->check_Primary(['SPLSCN_UNQCODE' => $inCode]) ? true : false;
             if($isUniqueCodeAlreadyUsed) {
                 die(json_encode(['status' => '0X', 'message' => 'Unique Code already used']));
+            }
+
+            $isUniqueCodeValid = $this->Raw_material_labels_mod->selectActiveRecordsCount(['code' => $inCode]);
+            if($isUniqueCodeValid==0) {
+                die(json_encode(['status' => '0X', 'message' => 'Unique Code is not valid']));
             }
         }
 
