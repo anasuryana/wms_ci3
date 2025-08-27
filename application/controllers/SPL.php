@@ -1065,8 +1065,8 @@ class SPL extends CI_Controller
         }
 
         if(strlen($_unique_code) > 0) {
-            $swpsScansCount = $this->SWPS_model->check_Primary(['SWPS_NUNQ' => $_unique_code]);
-            $swmpScansCount = $this->SWMP_model->check_Primary(['SWMP_UNQ' => $_unique_code]);
+            $swpsScansCount = $this->SWPS_model->check_Primary(['SWPS_NUNQ' => $_unique_code, 'SWPS_REMARK' => 'OK']);
+            $swmpScansCount = $this->SWMP_model->check_Primary(['SWMP_UNQ' => $_unique_code, 'SWMP_REMARK' => 'OK']);
             if($swmpScansCount > 0 || $swpsScansCount > 0) {
                 $myar[] = ['cd' => 0, 'msg' => 'delete failed, because it is already used in Traceability System'];
                 die(json_encode(['status' => $myar]));
