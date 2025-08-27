@@ -38,6 +38,7 @@ class SPL extends CI_Controller
         $this->load->model('ENGBOMSTX_mod');
         $this->load->model('SWPS_model');
         $this->load->model('SWMP_model');
+        $this->load->model('Raw_material_labels_mod');
         date_default_timezone_set('Asia/Jakarta');
     }
     public function index()
@@ -1739,6 +1740,11 @@ class SPL extends CI_Controller
             $isUniqueCodeAlreadyUsed = $this->SPLSCN_mod->check_Primary(['SPLSCN_UNQCODE' => $inCode]) ? true : false;
             if($isUniqueCodeAlreadyUsed) {
                 die(json_encode(['status' => '0X', 'message' => 'Unique Code already used']));
+            }
+
+            $isUniqueCodeValid = $this->Raw_material_labels_mod->selectActiveRecordsCount(['code' => $inCode]);
+            if($isUniqueCodeValid==0) {
+                die(json_encode(['status' => '0X', 'message' => 'Unique Code is not valid']));
             }
         }
 
