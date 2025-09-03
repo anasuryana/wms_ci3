@@ -148,15 +148,15 @@
 
                         newcell = newrow.insertCell(2)
                         newcell.classList.add('text-end')
-                        newcell.innerHTML = arrayItem['RESPONSEQT']
+                        newcell.innerHTML = numeral(arrayItem['RESPONSEQT']).format('0,0.00')
 
                         newcell = newrow.insertCell(3)
                         newcell.classList.add('text-end')
-                        newcell.innerHTML = arrayItem['BOMQT']
+                        newcell.innerHTML = numeral(arrayItem['BOMQT']).format('0,0.00')
 
                         newcell = newrow.insertCell(4)
                         newcell.classList.add('text-end')
-                        newcell.innerHTML = arrayItem['BAL']
+                        newcell.innerHTML = numeral(arrayItem['BAL']).format('0,0.00')
 
                         newcell = newrow.insertCell(5)
                         newcell.classList.add('text-end')
