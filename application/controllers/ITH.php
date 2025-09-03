@@ -538,6 +538,7 @@ class ITH extends CI_Controller
         $sheet->setCellValueByColumnAndRow(6, 1, 'Reff. Number');
         $sheet->setCellValueByColumnAndRow(7, 1, 'PIC');
         $sheet->setCellValueByColumnAndRow(8, 1, 'Time');
+        $sheet->setCellValueByColumnAndRow(9, 1, 'Remark');
         $no = 2;
         foreach ($rs as $r) {
             $sheet->setCellValueByColumnAndRow(1, $no, $r['ITH_ITMCD']);
@@ -548,7 +549,12 @@ class ITH extends CI_Controller
             $sheet->setCellValueByColumnAndRow(6, $no, $r['ITH_SER']);
             $sheet->setCellValueByColumnAndRow(7, $no, $r['PIC']);
             $sheet->setCellValueByColumnAndRow(8, $no, $r['ITH_LUPDT']);
+            $sheet->setCellValueByColumnAndRow(9, $no, $r['SER_RMRK']);
             $no++;
+        }
+    
+        foreach (range('A', 'J') as $v) {
+            $sheet->getColumnDimension($v)->setAutoSize(true);
         }
         $stringjudul = "output QC $cdtfrom ($creport) ";
         $writer = new Xlsx($spreadsheet);
