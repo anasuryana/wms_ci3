@@ -5896,6 +5896,42 @@ echo $tohtml;
                             mydes.appendChild(myfrag);
                             $('#TXFG_MOD_EXBC_NULL').modal('show');
                         }
+                    } else {
+                        if(response.message) {
+                            let _message = response.message.toLowerCase()
+                            if(_message.includes('not found')) {
+                                document.getElementById('txfg_alert_rmexbcnull').innerText = response.message;
+                                let mydes = document.getElementById("txfg_divrmexbcnull");
+                                let myfrag = document.createDocumentFragment();
+                                let mtabel = document.getElementById("txfg_tblrmexbcnull");
+                                let cln = mtabel.cloneNode(true);
+                                myfrag.appendChild(cln);
+                                let tabell = myfrag.getElementById("txfg_tblrmexbcnull");
+                                let tableku2 = tabell.getElementsByTagName("tbody")[0];
+                                let ttlrows = response.data.length;
+                                tableku2.innerHTML = ''
+                                for (let i = 0; i < ttlrows; i++) {
+                                    newrow = tableku2.insertRow(-1);
+                                    newcell = newrow.insertCell(0);
+                                    newcell.innerHTML = response.data[i].ITMCD
+                                    newcell.style.cssText = 'cursor:pointer'
+                                    newcell.onclick = function() {
+                                        txfg_get_spl_delivery({doc : doc, part_code : response.data[i].ITMCD})
+                                        TXFG_MOD_EXBC_HELPER_txid.innerText = doc
+                                        TXFG_MOD_EXBC_HELPER_part.innerText = response.data[i].ITMCD
+                                        $('#TXFG_MOD_EXBC_HELPER').modal('show')
+                                    }
+                                    newcell = newrow.insertCell(1);
+                                    newcell.style.cssText = "text-align:right";
+                                    newcell.innerHTML = numeral(response.data[i].QTY).format(',')
+                                    newcell = newrow.insertCell(2);
+                                    newcell.innerHTML = response.data[i].LOTNO
+                                }
+                                mydes.innerHTML = '';
+                                mydes.appendChild(myfrag);
+                                $('#TXFG_MOD_EXBC_NULL').modal('show');
+                            }
+                        }
                     }
                 } catch (ex) {
                     div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
