@@ -1174,7 +1174,7 @@ echo $tohtml;
                     <div class="col-md-6 mb-1">
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Nomor Pendaftaran</label>
-                            <input type="text" id="retrm_out_inc_txt_nopen261" class="form-control" maxlength="6" readonly>
+                            <input type="text" id="retrm_out_inc_txt_nopen261" class="form-control" maxlength="6">
                             <button class="btn btn-primary" id="retrm_out_inc_btn_sync_pendaftaran261" onclick="retrm_out_inc_btn_sync_pendaftaran261_e_click(this)" title="Get Nomor & Tanggal Pendaftaran from CEISA"><i class="fas fa-sync"></i></button>
                         </div>
                     </div>
@@ -4186,6 +4186,10 @@ echo $tohtml;
         autoclose: true
     })
     $("#retrm_out_inc_txt_tglpen41").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    })
+    $("#retrm_out_inc_txt_tglpen261").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true
     })
