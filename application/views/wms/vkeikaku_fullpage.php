@@ -2723,6 +2723,10 @@
                     keikaku_data_sso.setStyle('H'+theIndexRed[i], 'background-color', '#fb5252')
                 }
 
+                response.data.forEach((arrayItem, index) => {
+                    keikaku_data_sso.setStyle('G'+(index+1), 'background-color', arrayItem['type_color'])
+                })
+
                 if(messageO.job!='-') {
                     div_alert.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
                     Production Qty > Lot Size ! 👉 ${messageO.job}-${messageO.item} specs side ${messageO.specs_side}
