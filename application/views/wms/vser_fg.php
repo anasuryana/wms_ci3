@@ -237,13 +237,13 @@ table.dataTable.fixedHeader-floating {
             <div class="row">
                 <div class="col mb-1 text-center">
                     <form>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="ser_rd_def" name="ser_rd_lbltype" value="0">
-                            <label class="custom-control-label" for="ser_rd_def">Default</label>
+                        <div class="form-check-inline">
+                            <input type="radio" class="form-check-input" id="ser_rd_def" name="ser_rd_lbltype" value="0">
+                            <label class="form-check-label" for="ser_rd_def">Default</label>
                         </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="ser_rd_ppr" name="ser_rd_lbltype" value="1" checked>
-                            <label class="custom-control-label" for="ser_rd_ppr">Paper</label>
+                        <div class="form-check-inline">
+                            <input type="radio" class="form-check-input" id="ser_rd_ppr" name="ser_rd_lbltype" value="1" checked>
+                            <label class="form-check-label" for="ser_rd_ppr">Paper</label>
                         </div>
                     </form>
                 </div>
