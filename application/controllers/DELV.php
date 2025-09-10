@@ -166,7 +166,7 @@ class DELV extends CI_Controller
         $data['lkantorpabean'] = $this->MTPB_mod->selectAll();
         $data['lwaytransport'] = $this->ZWAYTRANS_mod->selectAll();
         $data['ltujuanpengiriman'] = $this->MPurposeDLV_imod->selectAll();
-        $rslocfrom = $this->MSTLOCG_mod->selectall_where_CODE_in(['ARWH1', 'QA', 'ARWH2', 'NRWH2', 'PSIEQUIP', 'AIWH1', 'ARWH9SC']);
+        $rslocfrom = $this->MSTLOCG_mod->selectall_where_CODE_in(['ARWH1', 'QA', 'ARWH2', 'NRWH2', 'PSIEQUIP', 'AIWH1', 'ARWH9SC','NFWH4RT']);
         $rslocfrom_str = '';
         foreach ($rslocfrom as $r) {
             $rslocfrom_str .= "<option value='" . $r['MSTLOCG_ID'] . "'>" . $r['MSTLOCG_NM'] . " (" . $r['MSTLOCG_ID'] . ")</option>";
