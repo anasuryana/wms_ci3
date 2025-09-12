@@ -107,6 +107,11 @@ foreach ($lsup as $r) {
                     <table id="rpab_in_tbl" class="table table-sm table-striped table-bordered table-hover" style="width:100%;cursor:pointer;font-size:80%">
                         <thead class="table-light">
                             <tr>
+                                <th colspan="14"></th>
+                                <th><span id="rpab_in_total_idr"></span></th>
+                                <th colspan="5"></th>
+                            </tr>
+                            <tr>
                                 <th rowspan="2" class="align-middle">No</th>
                                 <th colspan="3" class="text-center">PENGAJUAN <span id="rpab_in_bctype"></span> </th>
                                 <th class="align-middle text-center">PENDAFTARAN</th>
@@ -118,6 +123,8 @@ foreach ($lsup as $r) {
                                 <th rowspan="2" class="align-middle">SATUAN</th>
                                 <th rowspan="2" class="align-middle">Valuta</th>
                                 <th rowspan="2" class="align-middle">NILAI PABEAN</th>
+                                <th rowspan="2" class="align-middle">KURS</th>
+                                <th rowspan="2" class="align-middle">Total Nilai Pabean IDR</th>
                                 <th rowspan="2" class="align-middle">BERAT(KG)</th>
                                 <th colspan="2" class="align-middle text-center"><span id="rpab_in_tpbtype">KB</span> ASAL PERUSAHAAN </th>
                                 <th rowspan="2" class="align-middle">Surat Jalan</th>
@@ -253,6 +260,7 @@ foreach ($lsup as $r) {
                 let cln = mtabel.cloneNode(true);
                 myfrag.appendChild(cln);
                 let tabell = myfrag.getElementById("rpab_in_tbl");
+                let _rpab_in_total_idr = myfrag.getElementById("rpab_in_total_idr");
                 let tableku2 = tabell.getElementsByTagName("tbody")[0]
                 let newrow, newcell, newText;
                 tableku2.innerHTML='';
@@ -260,6 +268,8 @@ foreach ($lsup as $r) {
                 let mnomor =0;
                 let mnomorin = 0;
                 let mnomordis, mnomorpab, mnomorpabdis, mdatepabdis,mdaterecv, mnilaipab, mnilaipabdis, mberatpab, mberatpabdis, msup, msupdis, malam, malamdis, mdo,mdodis, mnomorpendaftaran, mnomorpendaftarandis;
+                let totalpabeanIDR = 0
+                let grandTotalpabeanIDR = 0
                 for (let i = 0; i<ttlrows; i++){
                     mnilaipab = response.data[i].RCV_QTY*response.data[i].RCV_PRPRC;
                     if(mnomorpab != response.data[i].RCV_RPNO){
@@ -335,26 +345,44 @@ foreach ($lsup as $r) {
                     newcell = newrow.insertCell(12);
                     newcell.innerHTML = mnilaipabdis
                     newcell.style.cssText = "text-align: right";
-                    newcell = newrow.insertCell(13);
+
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerHTML = numeral(response.data[i].KURS).format(',')
+                    newcell.style.cssText = "text-align: right";
+
+                    switch(response.data[i].MSUP_CURCD) {
+                        case 'RPH':
+                            totalpabeanIDR = mnilaipab;break;
+                        case 'USD':
+                            totalpabeanIDR = response.data[i].KURS * mnilaipab;break;                    
+                        case 'YEN':
+                            totalpabeanIDR = response.data[i].KURS * mnilaipab;break;                    
+                    }
+                    grandTotalpabeanIDR += totalpabeanIDR
+                    newcell = newrow.insertCell(-1);
+                    newcell.innerHTML = numeral(totalpabeanIDR).format('0,0.00')
+                    newcell.style.cssText = "text-align: right";
+
+                    newcell = newrow.insertCell(-1);
                     newcell.innerHTML = mberatpabdis
                     newcell.style.cssText = "text-align: right";
-                    newcell = newrow.insertCell(14);
+                    newcell = newrow.insertCell(-1);
                     newcell.innerHTML = msupdis
                     newcell.style.cssText= "white-space: nowrap";
-                    newcell = newrow.insertCell(15);
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= "white-space: nowrap";
                     newcell.innerHTML = malamdis
-                    newcell = newrow.insertCell(16);
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= "white-space: nowrap";
                     newcell.innerHTML = mdodis
-                    newcell = newrow.insertCell(17);
+                    newcell = newrow.insertCell(-1);
                     newcell.innerHTML = response.data[i].URAIAN_TUJUAN_PENGIRIMAN
                     newcell.style.cssText= "white-space: nowrap";
                 }
+                _rpab_in_total_idr.innerText = numeral(grandTotalpabeanIDR).format('0,0.00')
                 mydes.innerHTML='';
                 mydes.appendChild(myfrag);
                 document.getElementById('rpab_in_status').innerHTML = ttlrows>0 ? '': 'data not found';
-
             }, error : function(xhr, xopt, xthrow){
                 alertify.error(xthrow);
             }

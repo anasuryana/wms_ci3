@@ -106,6 +106,8 @@
                                 <th rowspan="2" class="align-middle">HARGA</th>
                                 <th rowspan="2" class="align-middle">Valuta</th>
                                 <th rowspan="2" class="align-middle">NILAI PABEAN</th>
+                                <th rowspan="2" class="align-middle">KURS</th>
+                                <th rowspan="2" class="align-middle">NILAI PABEAN IDR</th>
                                 <th colspan="2" class="align-middle text-center"><span id="rpab_out_tpbtype">TPB TUJUAN</th>
                                 <th rowspan="2" class="align-middle">NO. INVOICE</th>
                                 <th rowspan="2" class="align-middle">NO. INVOICE SMT</th>
@@ -345,26 +347,36 @@
                     newcell = newrow.insertCell(12);
                     newcell.innerHTML = response.data[i].VALUTA
                     newcell.classList.add('text-center')
+                    
                     newcell = newrow.insertCell(13);
                     newcell.style.cssText = "text-align: right";
                     newcell.innerHTML = mnilaipabdis
-                    newcell = newrow.insertCell(14);
+
+                    newcell = newrow.insertCell(-1);
+                    newcell.style.cssText = "text-align: right";
+                    newcell.innerHTML = numeral(response.data[i].MEXRATE_VAL).format(',')
+
+                    newcell = newrow.insertCell(-1);
+                    newcell.style.cssText = "text-align: right";
+                    newcell.innerHTML = numeral(response.data[i].VALUTA == 'RPH' ? mnilaipab : mnilaipab*response.data[i].MEXRATE_VAL).format(',')
+                    
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= "white-space: nowrap";
                     newcell.innerHTML = msupdis
-                    newcell = newrow.insertCell(15);
+                    newcell = newrow.insertCell(-1);
                     newcell.style.cssText= "white-space: nowrap";
                     newcell.innerHTML = malamdis
-                    newcell = newrow.insertCell(16)
+                    newcell = newrow.insertCell(-1)
                     newcell.innerHTML = nomorInvDis
                     newcell.style.cssText= "white-space: nowrap"
-                    newcell = newrow.insertCell(17);
+                    newcell = newrow.insertCell(-1);
                     newcell.innerHTML = nomorInvSMTDis
                     newcell.style.cssText= "white-space: nowrap"
-                    newcell = newrow.insertCell(18);
+                    newcell = newrow.insertCell(-1);
                     newcell.innerHTML = mdodis
                     newcell.style.cssText= "white-space: nowrap"
-                    newcell = newrow.insertCell(19)
-                    newcell = newrow.insertCell(20)
+                    newcell = newrow.insertCell(-1)
+                    newcell = newrow.insertCell(-1)
                     newcell.innerHTML = msppdis
                 }
                 mydes.innerHTML='';

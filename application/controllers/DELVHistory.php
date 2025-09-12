@@ -211,23 +211,26 @@ class DELVHistory extends CI_Controller
         $sheet->mergeCells('M6:M7');
         $sheet->setCellValueByColumnAndRow(13, 6, 'Valuta');
         $sheet->setCellValueByColumnAndRow(14, 6, 'NILAI PABEAN');
-        $sheet->mergeCells('O6:P6');
-        $sheet->setCellValueByColumnAndRow(15, 6, 'TPB TUJUAN');
-        $sheet->getStyle('B6:R7')->getAlignment()->setHorizontal('center');
-        $sheet->getStyle('B6:R7')->getAlignment()->setVertical('center');
-        $sheet->setCellValueByColumnAndRow(17, 6, 'NO. INVOICE');
-        $sheet->setCellValueByColumnAndRow(18, 6, 'NO. INVOICE SMT');
-        $sheet->setCellValueByColumnAndRow(19, 6, 'NO. DO');
-        $sheet->setCellValueByColumnAndRow(20, 6, 'Keterangan');
-        $sheet->setCellValueByColumnAndRow(21, 6, 'Keterangan');
+        $sheet->setCellValueByColumnAndRow(15, 6, 'KURS');
+        $sheet->setCellValueByColumnAndRow(16, 6, 'NILAI PABEAN IDR');
+        $sheet->mergeCells('Q6:R6');
+        $sheet->setCellValueByColumnAndRow(17, 6, 'TPB TUJUAN');
+
+        $sheet->getStyle('B6:T7')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('B6:T7')->getAlignment()->setVertical('center');
+        $sheet->setCellValueByColumnAndRow(19, 6, 'NO. INVOICE');
+        $sheet->setCellValueByColumnAndRow(20, 6, 'NO. INVOICE SMT');
+        $sheet->setCellValueByColumnAndRow(21, 6, 'NO. DO');
+        $sheet->setCellValueByColumnAndRow(22, 6, 'Keterangan');
+        $sheet->setCellValueByColumnAndRow(23, 6, 'Keterangan');
 
         $sheet->setCellValueByColumnAndRow(2, 7, 'NOMOR');
         $sheet->setCellValueByColumnAndRow(3, 7, 'TANGGAL ');
         $sheet->setCellValueByColumnAndRow(4, 7, 'NOMOR');
         $sheet->setCellValueByColumnAndRow(5, 7, 'TANGGAL');
         $sheet->setCellValueByColumnAndRow(6, 7, 'BARANG');
-        $sheet->setCellValueByColumnAndRow(15, 7, 'NAMA');
-        $sheet->setCellValueByColumnAndRow(16, 7, 'ALAMAT');
+        $sheet->setCellValueByColumnAndRow(17, 7, 'NAMA');
+        $sheet->setCellValueByColumnAndRow(18, 7, 'ALAMAT');
 
         $y = 8;
         $mnomor = 0;
@@ -279,8 +282,7 @@ class DELVHistory extends CI_Controller
             }
             $sheet->setCellValueByColumnAndRow(1, $y, $mnomordis);
             if ($flgcolor == 'w') {
-                $sheet->getStyle('B' . $y)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
-                $sheet->getStyle('N' . $y)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
+                $sheet->getStyle('B' . $y)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);                
                 $sheet->getStyle('T' . $y)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
             }
             $sheet->setCellValueByColumnAndRow(2, $y, $mnomorpabdis);
@@ -296,14 +298,20 @@ class DELVHistory extends CI_Controller
             $sheet->setCellValueByColumnAndRow(12, $y, $r['DLVPRC_PRC']);
             $sheet->setCellValueByColumnAndRow(13, $y, $r['VALUTA']);
             $sheet->setCellValueByColumnAndRow(14, $y, $r['AMOUNT']);
-            $sheet->setCellValueByColumnAndRow(15, $y, $msupdis);
-            $sheet->setCellValueByColumnAndRow(16, $y, $malamdis);
-            $sheet->setCellValueByColumnAndRow(17, $y, $nomorInvDis);
-            $sheet->setCellValueByColumnAndRow(18, $y, $nomorInvSMTDis);
-            $sheet->setCellValueByColumnAndRow(19, $y, $mdo);
-            $sheet->setCellValueByColumnAndRow(21, $y, $msppb);
+            $sheet->setCellValueByColumnAndRow(15, $y, $r['MEXRATE_VAL']);
+            $sheet->setCellValueByColumnAndRow(16, $y, $r['VALUTA'] == 'RPH' ? $r['AMOUNT'] : $r['AMOUNT']*$r['MEXRATE_VAL']);
+            $sheet->setCellValueByColumnAndRow(17, $y, $msupdis);
+            $sheet->setCellValueByColumnAndRow(18, $y, $malamdis);
+            $sheet->setCellValueByColumnAndRow(19, $y, $nomorInvDis);
+            $sheet->setCellValueByColumnAndRow(20, $y, $nomorInvSMTDis);
+            $sheet->setCellValueByColumnAndRow(21, $y, $mdo);
+            $sheet->setCellValueByColumnAndRow(23, $y, $msppb);
             $y++;
         }
+
+        $sheet->setCellValueByColumnAndRow(16, 5, '=SUM(P8:P'.($y-1).')');
+        $rang = "P5:P" . ($y-1);
+        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
         $sheet->getStyle('A8:I' . $y)->getAlignment()->setHorizontal('center');
         $sheet->getStyle('J8:J' . $y)->getAlignment()->setHorizontal('right');
@@ -327,14 +335,14 @@ class DELVHistory extends CI_Controller
                 ],
             ],
         ];
-        $sheet->getStyle('A6:U' . $y)->applyFromArray($BStyle);
+        $sheet->getStyle('A6:W' . $y)->applyFromArray($BStyle);
         $sheet->freezePane('F8');
         $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
-        foreach (range("C", "U") as $r) {
+        foreach (range("C", "W") as $r) {
             $sheet->getColumnDimension($r)->setAutoSize(true);
         }
-        $sheet->getStyle('A6:U7')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('d4d4d4');
+        $sheet->getStyle('A6:W7')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('d4d4d4');
         $writer = new Xlsx($spreadsheet);
         $filename = $stringjudul . date(' H i'); //save our workbook as this file name
 
