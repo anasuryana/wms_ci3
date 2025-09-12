@@ -6,7 +6,10 @@ class DELV_mod extends CI_Model
     private $VIEWUNION = "(select * from wms_v_outpabean where isnull(NOMPEN,'')!='' union
     select * from wms_v_outpabean_rtn where SER_ITMID is not null and isnull(NOMPEN,'')!='' union
     select * from wms_v_outpabean_oth where isnull(NOMPEN,'')!='' union
-    select * from wms_v_outpabean_scr where isnull(NOMPEN,'')!='') v1";
+    select * from wms_v_outpabean_scr where isnull(NOMPEN,'')!='') v1
+    LEFT JOIN (
+			SELECT A.MEXRATE_CURR,A.MEXRATE_DT,A.MEXRATE_VAL FROM MEXRATE_TBL A WHERE A.MEXRATE_CURR='USD' AND A.MEXRATE_TYPE='BANK'
+		) CURRENCY ON VALUTA=MEXRATE_CURR AND TGLPEN=MEXRATE_DT";
     public function __construct()
     {
         $this->load->database();
@@ -723,7 +726,7 @@ class DELV_mod extends CI_Model
 
     public function select_dlv_ser_rm_only($pdo)
     {
-        $this->db->select("UPPER(SER_ITMID) SER_ITMID,SERD2_FGQTY,SERD2_SER,LOTNO,RTRIM(SERD2_ITMCD) SERD2_ITMCD,ISNULL(MITMGRP_ITMCD,'') ITMGR,CEILING(SERD2_QTPER*2)/2 SERD2_QTPER");
+        $this->db->select("UPPER(SER_ITMID) SER_ITMID,SERD2_FGQTY,SERD2_SER,LOTNO,UPPER(RTRIM(SERD2_ITMCD)) SERD2_ITMCD,ISNULL(MITMGRP_ITMCD,'') ITMGR,CEILING(SERD2_QTPER*2)/2 SERD2_QTPER");
         $this->db->from("DLV_TBL");
         $this->db->join('(SELECT SERD2_SER,SERD2_ITMCD,SERD2_FGQTY,SUM(SERD2_QTY)/SERD2_FGQTY SERD2_QTPER, MAX(SERD2_LOTNO) LOTNO FROM SERD2_TBL GROUP BY SERD2_SER,SERD2_ITMCD,SERD2_FGQTY) V1', 'DLV_SER=SERD2_SER', 'INNER');
         $this->db->join('SER_TBL', 'DLV_SER=SER_ID', 'LEFT');
@@ -748,7 +751,7 @@ class DELV_mod extends CI_Model
     }
     public function select_dlv_ser_sub_only($pdo)
     {
-        $this->db->select("UPPER(SER_ITMID) SER_ITMID,SERD2_FGQTY,DLV_SER SERD2_SER,LOTNO,RTRIM(SERD2_ITMCD) SERD2_ITMCD,ISNULL(MITMGRP_ITMCD,'') ITMGR,SERD2_QTPER");
+        $this->db->select("UPPER(SER_ITMID) SER_ITMID,SERD2_FGQTY,DLV_SER SERD2_SER,LOTNO,UPPER(RTRIM(SERD2_ITMCD)) SERD2_ITMCD,ISNULL(MITMGRP_ITMCD,'') ITMGR,SERD2_QTPER");
         $this->db->from("DLV_TBL");
         $this->db->join('SERML_TBL', 'DLV_SER=SERML_NEWID', 'LEFT');
         $this->db->join('(SELECT SERD2_SER,SERD2_ITMCD,SERD2_FGQTY,SUM(SERD2_QTY)/SERD2_FGQTY SERD2_QTPER, MAX(SERD2_LOTNO) LOTNO FROM SERD2_TBL GROUP BY SERD2_SER,SERD2_ITMCD,SERD2_FGQTY) V1', 'SERML_COMID=SERD2_SER');
@@ -835,8 +838,7 @@ class DELV_mod extends CI_Model
     }
     public function select_dlv_ser_rm_byreff_forpost($pser)
     {
-        // $this->db->select("SERD2_SER,LOTNO,SERD2_ITMCD,ISNULL(MITMGRP_ITMCD,'') ITMGR,SERD2_QTPER,SERD2_FGQTY,SERD2_FGQTY B4MINS, 0 PRICEFOR,0 QTYFOR,ISNULL(Y.SER_ITMID,X.SER_ITMID)  SER_ITMID,0 PRICEGROUP");
-        $this->db->select("SERD2_SER,LOTNO,SERD2_ITMCD,ISNULL(MITMGRP_ITMCD,'') ITMGR,SERD2_QTPER,SERD2_FGQTY,SERD2_FGQTY B4MINS, 0 PRICEFOR,0 QTYFOR,,CASE WHEN Z.SER_ITMID IS NOT NULL THEN Z.SER_ITMID
+        $this->db->select("SERD2_SER,LOTNO,UPPER(RTRIM(SERD2_ITMCD)) SERD2_ITMCD,ISNULL(MITMGRP_ITMCD,'') ITMGR,SERD2_QTPER,SERD2_FGQTY,SERD2_FGQTY B4MINS, 0 PRICEFOR,0 QTYFOR,,CASE WHEN Z.SER_ITMID IS NOT NULL THEN Z.SER_ITMID
         ELSE ISNULL(Y.SER_ITMID,X.SER_ITMID)
         END
         SER_ITMID,0 PRICEGROUP");

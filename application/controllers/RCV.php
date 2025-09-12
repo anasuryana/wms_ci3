@@ -2762,27 +2762,33 @@ class RCV extends CI_Controller
         $sheet->mergeCells('Q6:Q7');
         $sheet->setCellValueByColumnAndRow(17, 6, 'NILAI PABEAN');
         $sheet->mergeCells('R6:R7');
-        $sheet->setCellValueByColumnAndRow(18, 6, 'BERAT (KG)');
-        $sheet->mergeCells('S6:T6');
-        $sheet->setCellValueByColumnAndRow(19, 6, 'ASAL PERUSAHAAN');
-        $sheet->mergeCells('U6:U7');
-        $sheet->setCellValueByColumnAndRow(21, 6, 'Surat Jalan');
-
-        $sheet->mergeCells('U6:U7');
-        $sheet->mergeCells('V6:V7');
+        $sheet->setCellValueByColumnAndRow(18, 6, 'KURS');
+        $sheet->mergeCells('S6:S7');
+        $sheet->setCellValueByColumnAndRow(19, 6, 'NILAI PABEAN IDR');
+        
+        $sheet->mergeCells('T6:T7');
+        $sheet->setCellValueByColumnAndRow(20, 6, 'BERAT (KG)');
+        $sheet->mergeCells('U6:U6');
+        $sheet->setCellValueByColumnAndRow(21, 6, 'ASAL PERUSAHAAN');
+        
         $sheet->mergeCells('W6:W7');
-        $sheet->setCellValueByColumnAndRow(22, 6, 'RA');
-        $sheet->setCellValueByColumnAndRow(23, 6, 'Keterangan');
-        $sheet->getStyle('B6:W7')->getAlignment()->setHorizontal('center');
-        $sheet->getStyle('B6:W7')->getAlignment()->setVertical('center');
+        $sheet->setCellValueByColumnAndRow(23, 6, 'Surat Jalan');
+
+        
+        $sheet->mergeCells('X6:X7');
+        $sheet->mergeCells('Y6:Y7');
+        $sheet->setCellValueByColumnAndRow(24, 6, 'RA');
+        $sheet->setCellValueByColumnAndRow(25, 6, 'Keterangan');
+        $sheet->getStyle('B6:Y7')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('B6:Y7')->getAlignment()->setVertical('center');
 
         $sheet->setCellValueByColumnAndRow(3, 7, 'NOMOR');
         $sheet->setCellValueByColumnAndRow(4, 7, 'TANGGAL DOKUMEN');
         $sheet->setCellValueByColumnAndRow(5, 7, 'TANGGAL PENERIMAAN');
         $sheet->setCellValueByColumnAndRow(6, 7, 'NOMOR');
         $sheet->setCellValueByColumnAndRow(7, 7, 'BARANG');
-        $sheet->setCellValueByColumnAndRow(15, 7, 'NAMA');
-        $sheet->setCellValueByColumnAndRow(16, 7, 'ALAMAT');
+        $sheet->setCellValueByColumnAndRow(21, 7, 'NAMA');
+        $sheet->setCellValueByColumnAndRow(22, 7, 'ALAMAT');
 
         $y = 8;
         $mnomor = 0;
@@ -2845,14 +2851,20 @@ class RCV extends CI_Controller
             $sheet->setCellValueByColumnAndRow(15, $y, trim($r['MITM_STKUOM']));
             $sheet->setCellValueByColumnAndRow(16, $y, $r['MSUP_CURCD']);
             $sheet->setCellValueByColumnAndRow(17, $y, $mnilaipab);
-            $sheet->setCellValueByColumnAndRow(18, $y, $mberatpabdis);
-            $sheet->setCellValueByColumnAndRow(19, $y, $msupdis);
-            $sheet->setCellValueByColumnAndRow(20, $y, trim($malamdis));
-            $sheet->setCellValueByColumnAndRow(21, $y, $mdodis);
-            $sheet->setCellValueByColumnAndRow(22, $y, $r['RCV_INVNO']);
-            $sheet->setCellValueByColumnAndRow(23, $y, $r['URAIAN_TUJUAN_PENGIRIMAN']);
+            $sheet->setCellValueByColumnAndRow(18, $y, $r['KURS']);
+            $sheet->setCellValueByColumnAndRow(19, $y, $r['MSUP_CURCD'] == 'RPH' ? $mnilaipab : $r['KURS'] * $mnilaipab);
+            $sheet->setCellValueByColumnAndRow(20, $y, $mberatpabdis);
+            $sheet->setCellValueByColumnAndRow(21, $y, $msupdis);
+            $sheet->setCellValueByColumnAndRow(22, $y, trim($malamdis));
+            $sheet->setCellValueByColumnAndRow(23, $y, $mdodis);
+            $sheet->setCellValueByColumnAndRow(24, $y, $r['RCV_INVNO']);
+            $sheet->setCellValueByColumnAndRow(25, $y, $r['URAIAN_TUJUAN_PENGIRIMAN']);
             $y++;
         }
+
+        $sheet->setCellValueByColumnAndRow(19, 5, '=SUM(S8:S'.($y-1).')');
+        $rang = "Q5:S" . ($y-1);
+        $sheet->getStyle($rang)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
         $sheet->getStyle('B8:J' . $y)->getAlignment()->setHorizontal('center');
         $sheet->getStyle('K8:K' . $y)->getAlignment()->setHorizontal('right');
@@ -2875,14 +2887,14 @@ class RCV extends CI_Controller
                 ],
             ],
         ];
-        $sheet->getStyle('B6:W' . $y)->applyFromArray($BStyle);
+        $sheet->getStyle('B6:Y' . $y)->applyFromArray($BStyle);
         $sheet->freezePane('F8');
         $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
-        foreach (range("C", "W") as $r) {
+        foreach (range("C", "Y") as $r) {
             $sheet->getColumnDimension($r)->setAutoSize(true);
         }
-        $sheet->getStyle('B6:W7')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('d4d4d4');
+        $sheet->getStyle('B6:Y7')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('d4d4d4');
         $sheet->removeColumn('A');
         $rang = "J4:J" . $sheet->getHighestDataRow();
         $sheet->getStyle($rang)->getNumberFormat()->setFormatCode('#,##0');
