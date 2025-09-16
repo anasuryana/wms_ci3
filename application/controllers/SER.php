@@ -3690,6 +3690,12 @@ class SER extends CI_Controller
                 $rsactive_wh = trim($r['ITH_WH']);
                 $rsactive_loc = trim($r['ITH_LOC']);
             }
+
+            $rsinfo = $this->SER_mod->select_exact_byVAR(['SER_ID' => $coldreff]);
+            $_bsgroup = '';
+            foreach($rsinfo as $r) {
+                $_bsgroup = $r['SER_BSGRP'];
+            }
             $datas = [
                 'SER_ID' => $newid,
                 'SER_REFNO' => $coldreff,
@@ -3704,6 +3710,7 @@ class SER extends CI_Controller
                 'SER_GRADE' => $rank === '' ? null : $rank,
                 'SER_LUPDT' => $currrtime,
                 'SER_USRID' => $this->session->userdata('nama'),
+                'SER_BSGRP' => $_bsgroup
             ];
             if ($this->SER_mod->insert($datas) > 0) {
                 $ret3 = $this->SER_mod->updatebyId(["SER_QTY" => $crestqty, "SER_LUPDT" => $currrtime, "SER_SHEET" => $crestsht], $coldreff);
