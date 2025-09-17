@@ -14821,6 +14821,10 @@ class DELV extends CI_Controller
             $RSHeaderPosted = $this->DELV_mod->selectPostedDocument(['DLV_ID'], ['DLV_ID' => $doc]);
             # jalankan fungsi request exbc
             if (empty($RSHeaderPosted)) {
+                $_rsbc = $this->DELV_mod->selectBookeEXCBByTXID($doc);
+                if(!empty($_rsbc)) {
+                    $this->inventory_cancelDO($doc);
+                }
                 $result = $this->_posting27($doc);
 
                 # validasi apakah request berjalan dengan mulus

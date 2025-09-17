@@ -757,7 +757,16 @@ echo $tohtml;
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" id="txfg_z_btn_save25" onclick="txfg_z_btn_save25_e_click()">Save changes</button>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" class="btn btn-primary btn-sm" id="txfg_z_btn_relink25" onclick="txfg_z_btn_relink_e_click(this)">Re-link IT Inventory</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-primary btn-sm" id="txfg_z_btn_save25" onclick="txfg_z_btn_save25_e_click()">Save changes</button>
+                        </div>
+                    </div>                
+                </div>
             </div>
         </div>
     </div>
