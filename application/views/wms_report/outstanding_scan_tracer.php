@@ -31,7 +31,7 @@
                     <label class="input-group-text">Part Code</label>
                     <input type="text" class="form-control" id="itm_tracer_part_code">
                 </div>
-            </div>            
+            </div>
         </div>
         <div class="row">
             <div class="col-md-12 mb-1">
@@ -84,7 +84,7 @@
                                 <th class="align-middle">Calculate Use</th>
                                 <th class="align-middle">Balance</th>
                                 <th class="align-middle">Result</th>
-                            </tr>                          
+                            </tr>
                         </thead>
                         <tbody>
                         </tbody>
@@ -324,6 +324,7 @@
                 doc : doc
             }
             itm_tracer_doc.disabled = true
+            item_tracer_result_tbl.getElementsByTagName("tbody")[0].innerHTML = ''
             $.ajax({
                 type: "GET",
                 url: "<?php echo $_ENV['APP_INTERNAL_API'] ?>work-order",
@@ -351,21 +352,21 @@
                         newcell = newrow.insertCell(-1);
                         newcell.classList.add('text-center')
                         newcell.innerHTML = response.data[i].PROCD
-                        
+
                         newcell = newrow.insertCell(-1);
                         newcell.classList.add('text-end')
                         newcell.innerHTML = numeral(response.data[i].PDPP_WORQT).format(',')
-                        
+
                         newcell = newrow.insertCell(-1);
                         newcell.classList.add('text-end')
                         newcell.innerHTML = numeral(response.data[i].CLS_QTY).format(',')
-                        
+
                         newcell = newrow.insertCell(-1);
                         newcell.classList.add('receive-detail-nw', 'form-control')
                         newcell.contentEditable = true
                         newcell.innerHTML = numeral(response.data[i].CLS_QTY).format(',')
                     }
-                    
+
                     mydes.innerHTML='';
                     mydes.appendChild(myfrag);
 
@@ -395,6 +396,4 @@
         -document.getElementById('itm_tracer_stack1').offsetHeight
         -document.getElementById('itm_tracer_stack2').offsetHeight
         -150);
-
-    
 </script>
