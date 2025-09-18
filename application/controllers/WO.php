@@ -42,7 +42,7 @@ class WO extends CI_Controller
     {
         $this->load->view('wms_report/vrpt_keikaku');
     }
-    
+
     public function form_keikaku()
     {
         $this->load->view('wms/vkeikaku');
@@ -54,19 +54,19 @@ class WO extends CI_Controller
             $myar[] = ["cd" => "00", "msg" => "Session is expired, relogin to WMS is required"];
             exit(json_encode($myar));
         }
-        $data['sapaDia'] = $this->session->userdata('sfname');
-        $data['sapaDiaID'] = $this->session->userdata('nama');
+        $data['sapaDia']          = $this->session->userdata('sfname');
+        $data['sapaDiaID']        = $this->session->userdata('nama');
         $data['wms_usergroup_id'] = $this->session->userdata('gid');
         $this->load->view('wms/vkeikaku_fullpage', $data);
     }
 
     public function checkSimulation()
     {
-        $ReffList = $this->input->post('ReffList');
-        $JobList = $this->input->post('JobList');
+        $ReffList     = $this->input->post('ReffList');
+        $JobList      = $this->input->post('JobList');
         $AssyCodeList = $this->input->post('AssyCodeList');
-        $InputLine = strtoupper($this->input->post('Line'));
-        $TotalData = is_array($ReffList) ? count($ReffList) : 0;
+        $InputLine    = strtoupper($this->input->post('Line'));
+        $TotalData    = is_array($ReffList) ? count($ReffList) : 0;
 
         // $NOT_FOUND = 0;
         // $FOUND_BUT_NOT_SAME_LINE = 1;
@@ -75,17 +75,17 @@ class WO extends CI_Controller
         $Requirements = [];
         for ($i = 0; $i < $TotalData; $i++) {
             $Requirements[] = [
-                'WO' => strtoupper($ReffList[$i]),
-                'Job' => strtoupper($JobList[$i]),
-                'AssyCode' => strtoupper($AssyCodeList[$i]),
+                'WO'          => strtoupper($ReffList[$i]),
+                'Job'         => strtoupper($JobList[$i]),
+                'AssyCode'    => strtoupper($AssyCodeList[$i]),
                 'PlannedLine' => null,
-                'Status' => null,
-                'SimCode' => null,
+                'Status'      => null,
+                'SimCode'     => null,
             ];
         }
 
         $strWOList = is_array($ReffList) ? "'" . implode("','", $ReffList) . "'" : "''";
-        $WOs = $this->XWO_mod->selectWOSIM($strWOList);
+        $WOs       = $this->XWO_mod->selectWOSIM($strWOList);
 
         foreach ($Requirements as &$r) {
             foreach ($WOs as $w) {
@@ -100,7 +100,7 @@ class WO extends CI_Controller
                     }
                 }
             }
-            if (!$r['Status']) {
+            if (! $r['Status']) {
                 $r['Status'] = 'NOT FOUND';
             }
         }
@@ -111,21 +111,21 @@ class WO extends CI_Controller
 
     public function suggestProcess()
     {
-        $woReff = $this->input->post('woReff');
-        $woAssy = $this->input->post('woAssy');
-        $woProdQty = $this->input->post('woProdQty');
-        $outputType = $this->input->post('outputType');
-        $status = [];
-        $RS = [];
-        $woAssyStr = "''";
+        $woReff        = $this->input->post('woReff');
+        $woAssy        = $this->input->post('woAssy');
+        $woProdQty     = $this->input->post('woProdQty');
+        $outputType    = $this->input->post('outputType');
+        $status        = [];
+        $RS            = [];
+        $woAssyStr     = "''";
         $woAssyStrTest = "''";
-        $dataFix = [];
-        $RSMegaBom = [];
-        $_woMegaRev = [];
+        $dataFix       = [];
+        $RSMegaBom     = [];
+        $_woMegaRev    = [];
 
-        $_modelCode = [];
-        $_modelVersion = [];
-        $_modelProcess = [];
+        $_modelCode        = [];
+        $_modelVersion     = [];
+        $_modelProcess     = [];
         $RSAlternativeLine = [];
 
         $woFlagPassOK = [];
@@ -144,7 +144,7 @@ class WO extends CI_Controller
 
                 # ubah dari array ke format string, untuk keperluan query :)
                 $woAssyStr = "'" . implode("','", $woAssyTest) . "'";
-                $RS = $this->XWO_mod->selectProcess($woAssyStr);
+                $RS        = $this->XWO_mod->selectProcess($woAssyStr);
 
                 # ambil versi data bom revisi terakhir dari MEGA
                 $RSMegaBom = $this->XMBOM_mod->selectVersionWhereItemIn($uniqueAssy);
@@ -164,7 +164,7 @@ class WO extends CI_Controller
                     for ($i = 0; $i < $CounReff; $i++) {
                         $isExist = 0;
                         foreach ($RS as $r) {
-                            if ($woAssy[$i] === $r['MBLA_MDLCD']) {
+                            if (strtoupper($woAssy[$i]) === $r['MBLA_MDLCD']) {
                                 $_megabom = '';
                                 foreach ($RSMegaBom as $z) {
                                     if ($r['MBLA_MDLCD'] === $z['MBOM_MDLCD']) {
@@ -181,29 +181,29 @@ class WO extends CI_Controller
                                         $lineCode = $r['XLINE'];
                                 }
                                 $toPush = [
-                                    'RefNo' => $woReff[$i],
-                                    'ProdLine' => $lineCode,
-                                    'Process' => $r['MBLA_PROCD'],
-                                    'AssyCode' => $woAssy[$i],
-                                    'AssyRev' => $r['MBLA_BOMRV'],
-                                    'ProdQty' => $woProdQty[$i],
-                                    'Group' => $r['MBLA_ITMCD'],
+                                    'RefNo'         => $woReff[$i],
+                                    'ProdLine'      => $lineCode,
+                                    'Process'       => $r['MBLA_PROCD'],
+                                    'AssyCode'      => $woAssy[$i],
+                                    'AssyRev'       => $r['MBLA_BOMRV'],
+                                    'ProdQty'       => $woProdQty[$i],
+                                    'Group'         => $r['MBLA_ITMCD'],
                                     'MEGALatestRev' => $_megabom,
-                                    'Model' => $r['MITM_ITMD1'] . "_",
-                                    'ModelType' => $r['TYPE_FIX'],
+                                    'Model'         => $r['MITM_ITMD1'] . "_",
+                                    'ModelType'     => $r['TYPE_FIX'],
                                 ];
 
                                 $dataFix[] = $toPush;
-                                $isExist = 1;
+                                $isExist   = 1;
 
                                 if ($r['CNT'] > 1) {
-                                    if (!in_array($r['MBLA_MDLCD'], $_modelCode)) {
+                                    if (! in_array($r['MBLA_MDLCD'], $_modelCode)) {
                                         $_modelCode[] = $r['MBLA_MDLCD'];
                                     }
-                                    if (!in_array($r['MBLA_PROCD'], $_modelProcess)) {
+                                    if (! in_array($r['MBLA_PROCD'], $_modelProcess)) {
                                         $_modelProcess[] = $r['MBLA_PROCD'];
                                     }
-                                    if (!in_array($r['MBLA_BOMRV'], $_modelVersion)) {
+                                    if (! in_array($r['MBLA_BOMRV'], $_modelVersion)) {
                                         $_modelVersion[] = $r['MBLA_BOMRV'];
                                     }
                                 }
@@ -216,16 +216,16 @@ class WO extends CI_Controller
                     for ($i = 0; $i < $CounReff; $i++) {
                         if ($woFlagPassOK[$i] == 0) {
                             $dataFix[] = [
-                                'RefNo' => $woReff[$i],
-                                'ProdLine' => '???',
-                                'Process' => '???',
-                                'AssyCode' => $woAssy[$i],
-                                'AssyRev' => '???',
-                                'ProdQty' => $woProdQty[$i],
-                                'Group' => '???',
+                                'RefNo'         => $woReff[$i],
+                                'ProdLine'      => '???',
+                                'Process'       => '???',
+                                'AssyCode'      => $woAssy[$i],
+                                'AssyRev'       => '???',
+                                'ProdQty'       => $woProdQty[$i],
+                                'Group'         => '???',
                                 'MEGALatestRev' => '??',
-                                'Model' => '???',
-                                'ModelType' => '???',
+                                'Model'         => '???',
+                                'ModelType'     => '???',
                             ];
                         }
                     }
@@ -233,7 +233,7 @@ class WO extends CI_Controller
                     # olah
                     for ($i = 0; $i < $CounReff; $i++) {
                         foreach ($RS as $r) {
-                            if ($woAssy[$i] === $r['MBLA_MDLCD']) {
+                            if (strtoupper($woAssy[$i]) === $r['MBLA_MDLCD']) {
                                 switch ($r['XLINE']) {
                                     case 'SMT-S1':
                                         $lineCode = 'SMT-PS1';
@@ -242,28 +242,28 @@ class WO extends CI_Controller
                                         $lineCode = $r['XLINE'];
                                 }
                                 $toPush = [
-                                    'RefNo' => $woReff[$i],
-                                    'ProdLine' => $lineCode,
-                                    'Process' => $r['MBLA_PROCD'],
-                                    'AssyCode' => $woAssy[$i],
-                                    'AssyRev' => $r['MBLA_BOMRV'],
-                                    'ProdQty' => $woProdQty[$i],
-                                    'Group' => $r['MBLA_ITMCD'],
+                                    'RefNo'         => $woReff[$i],
+                                    'ProdLine'      => $lineCode,
+                                    'Process'       => $r['MBLA_PROCD'],
+                                    'AssyCode'      => $woAssy[$i],
+                                    'AssyRev'       => $r['MBLA_BOMRV'],
+                                    'ProdQty'       => $woProdQty[$i],
+                                    'Group'         => $r['MBLA_ITMCD'],
                                     'MEGALatestRev' => $_woMegaRev[$i],
-                                    'Model' => $r['MITM_ITMD1'],
-                                    'ModelType' => $r['TYPE_FIX'],
+                                    'Model'         => $r['MITM_ITMD1'],
+                                    'ModelType'     => $r['TYPE_FIX'],
                                 ];
 
                                 $dataFix[] = $toPush;
 
                                 if ($r['CNT'] > 1) {
-                                    if (!in_array($r['MBLA_MDLCD'], $_modelCode)) {
+                                    if (! in_array($r['MBLA_MDLCD'], $_modelCode)) {
                                         $_modelCode[] = $r['MBLA_MDLCD'];
                                     }
-                                    if (!in_array($r['MBLA_PROCD'], $_modelProcess)) {
+                                    if (! in_array($r['MBLA_PROCD'], $_modelProcess)) {
                                         $_modelProcess[] = $r['MBLA_PROCD'];
                                     }
-                                    if (!in_array($r['MBLA_BOMRV'], $_modelVersion)) {
+                                    if (! in_array($r['MBLA_BOMRV'], $_modelVersion)) {
                                         $_modelVersion[] = $r['MBLA_BOMRV'];
                                     }
                                 }
@@ -272,7 +272,7 @@ class WO extends CI_Controller
                     }
                 }
                 # cari alternatif line
-                if (!empty($_modelCode) && !empty($_modelProcess) && !empty($_modelVersion)) {
+                if (! empty($_modelCode) && ! empty($_modelProcess) && ! empty($_modelVersion)) {
                     $RSAlternativeLine = $this->XWO_mod->selectLineWhereInModelProcessAndVersion($_modelCode, $_modelProcess, $_modelVersion);
                 } else {
                     $RSAlternativeLine = [];
@@ -288,7 +288,7 @@ class WO extends CI_Controller
             die(json_encode(['status' => $status, 'data' => $RS, '$dataFix' => $dataFix, '$RSMegaBom' => $RSMegaBom, '$RSAlternativeLine' => $RSAlternativeLine]));
         } else {
             $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
+            $sheet       = $spreadsheet->getActiveSheet();
             $sheet->setTitle('result');
             $sheet->setCellValueByColumnAndRow(1, 1, 'Upload Work Order' . count($_woMegaRev) . "!=" . $CounReff . "rsbom" . count($RSMegaBom));
             $sheet->setCellValueByColumnAndRow(1, 2, 'Reference No');
@@ -326,7 +326,7 @@ class WO extends CI_Controller
                 $sheet->setCellValueByColumnAndRow(13, $y, $r['Model']);
 
                 $_JobType = substr($r['RefNo'], 4, 1);
-                if ($r['ModelType'] && $r['ModelType'][0] != $_JobType && $r['ProdLine']!='???') {
+                if ($r['ModelType'] && $r['ModelType'][0] != $_JobType && $r['ProdLine'] != '???') {
                     $sheet->getStyle('A' . $y . ':M' . $y)->getFill()->setFillType(Fill::FILL_SOLID);
                     $sheet->getStyle('A' . $y . ':M' . $y)->getFill()->getStartColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_DARKRED);
                     $sheet->getComment('A' . $y)->getText()->createTextRun("Tipe Assycode " . $r['ModelType'] . ", sedangkan Job " . $_JobType);
@@ -338,8 +338,8 @@ class WO extends CI_Controller
             }
             $sheet->freezePane('A3');
             $stringjudul = "wo template " . date('Y-m-d H:i:s');
-            $writer = new Xlsx($spreadsheet);
-            $filename = $stringjudul;
+            $writer      = new Xlsx($spreadsheet);
+            $filename    = $stringjudul;
             header('Content-Type: application/vnd.ms-excel');
             header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
             header('Cache-Control: max-age=0');
@@ -354,9 +354,9 @@ class WO extends CI_Controller
 
     public function ProcessHistory()
     {
-        $woAssy = $this->input->post('woAssy');
+        $woAssy     = $this->input->post('woAssy');
         $outputType = $this->input->post('outputType');
-        $status = $RS = [];
+        $status     = $RS     = [];
         if (is_array($woAssy)) {
             $uniqueAssy = array_unique($woAssy);
             # implementasi fungsi untuk membuang karakter 'quot' di tiap elemen dari array
@@ -364,7 +364,7 @@ class WO extends CI_Controller
                 return $this->UnnecessaryCharRemover($value);
             }, $uniqueAssy);
             $woAssyStr = "'" . implode("','", $woAssyTest) . "'";
-            $RS = $this->XWO_mod->selectHistory($woAssyStr);
+            $RS        = $this->XWO_mod->selectHistory($woAssyStr);
 
             # ambil versi data bom revisi terakhir dari MEGA
             $RSMegaBom = $this->XMBOM_mod->selectVersionWhereItemIn($uniqueAssy);
@@ -391,7 +391,7 @@ class WO extends CI_Controller
             die(json_encode(['status' => $status, 'data' => $RS]));
         } else {
             $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
+            $sheet       = $spreadsheet->getActiveSheet();
             $sheet->setTitle('result');
             $sheet->setCellValueByColumnAndRow(1, 1, 'History');
             $sheet->setCellValueByColumnAndRow(1, 2, 'Model Name');
@@ -417,8 +417,8 @@ class WO extends CI_Controller
             }
             $sheet->freezePane('A3');
             $stringjudul = "process history " . date('Y-m-d H:i:s');
-            $writer = new Xlsx($spreadsheet);
-            $filename = $stringjudul;
+            $writer      = new Xlsx($spreadsheet);
+            $filename    = $stringjudul;
             header('Content-Type: application/vnd.ms-excel');
             header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
             header('Cache-Control: max-age=0');
