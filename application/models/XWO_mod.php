@@ -101,7 +101,7 @@ class XWO_mod extends CI_Model
 
     public function selectProcess($passyCode)
     {
-        $qry = "SELECT MBLA_MDLCD
+        $qry = "SELECT UPPER(MBLA_MDLCD) MBLA_MDLCD
                     ,MBLA_BOMRV
                     ,MBLA_PROCD
                     ,COUNT(*) CNT
