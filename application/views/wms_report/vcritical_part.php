@@ -41,7 +41,10 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="criticpart_profile-tab" data-bs-toggle="tab" data-bs-target="#criticpart_tabFG" type="button" role="tab" aria-controls="profile" aria-selected="false">Finished Goods</button>
-                </li>                
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="criticpart_return_resume_tab" data-bs-toggle="tab" data-bs-target="#criticpart_tab_return_resume" type="button" role="tab" aria-controls="profile" aria-selected="false">Logical Return</button>
+                </li>
             </ul>
                 <div class="tab-content" id="criticpart_myTabContent">
                     <div class="tab-pane fade show active" id="criticpart_tabRM" role="tabpanel" aria-labelledby="home-tab">
@@ -63,6 +66,32 @@
                             <div class="row">
                                 <div class="col-md-12 mb-1 table-responsive">
                                     <div id="vcritical_fg"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="criticpart_tab_return_resume" role="tabpanel">
+                        <div class="container-fluid">
+                            <div class="row mt-1">
+                                <div class="col-md-4 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text">From Date</label>
+                                        <input type="text" class="form-control" id="criticpart_txt_date_period1" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-1">
+                                    <div class="input-group input-group-sm mb-1">
+                                        <label class="input-group-text">To Date</label>
+                                        <input type="text" class="form-control" id="criticpart_txt_date_period2" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-1">
+                                    <button class="btn btn-outline-success btn-sm" title="Generate Logical Return Resume Report" onclick="criticpart_btn_log_return_click(this)">Generate Resume Report</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-1 table-responsive">
+                                    <div id="vcritical_return_resume"></div>
                                 </div>
                             </div>
                         </div>
@@ -124,6 +153,18 @@
         autoclose:true
     })
     $("#criticpart_txt_date").datepicker('update', new Date())
+
+    $("#criticpart_txt_date_period1").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true
+    })
+    $("#criticpart_txt_date_period1").datepicker('update', new Date())
+
+    $("#criticpart_txt_date_period2").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true
+    })
+    $("#criticpart_txt_date_period2").datepicker('update', new Date())
     var mpurordata = [
        [''],       
     ];  
@@ -131,6 +172,18 @@
        [''],       
     ];  
     var criticpart_sso_part = jspreadsheet(document.getElementById('vcritical_partcd'), {
+        data:mpurordata,
+        columns: [       
+            {
+                type: 'text',
+                title:'Part Code',
+                width:150,
+                align: 'left'
+            },         
+            
+        ],    
+    });    
+    var criticpart_sso_return_resume = jspreadsheet(document.getElementById('vcritical_return_resume'), {
         data:mpurordata,
         columns: [       
             {
@@ -181,6 +234,43 @@
                             xhr.responseType = "blob";
                         } else {
                             p.innerHTML = 'Check Shortage Part'
+                            p.disabled = false
+                            xhr.responseType = "text";
+                        }
+                    }
+                }
+                return xhr
+            },
+        })
+    }
+
+    function criticpart_btn_log_return_click(p) {
+        let datanya_RM = criticpart_sso_return_resume.getData()
+        let RMList = datanya_RM.filter((data) => data[0].length > 1)
+        RMList = [...new Set(RMList.map(data => data[0]))]
+        const dateFrom = criticpart_txt_date_period1.value
+        const dateTo = criticpart_txt_date_period2.value
+        p.disabled = true
+        $.ajax({
+            type: "POST",
+            url: "<?=$_ENV['APP_INTERNAL3_API']?>report/logical-balance-return-report",
+            data: {rm: RMList, dateFrom : dateFrom, dateTo: dateTo},
+            success: function (response) {
+                alertify.success('Done')
+                const blob = new Blob([response], { type: "application/vnd.ms-excel" })
+                const fileName = `Logical Return Report from ${dateFrom} to ${dateTo}.xlsx`
+                saveAs(blob, fileName)
+            },
+            xhr: function () {
+                const xhr = new XMLHttpRequest()
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 2) {
+                        if (xhr.status == 200) {
+                            p.innerHTML = 'Generate Resume Report'
+                            p.disabled = false
+                            xhr.responseType = "blob";
+                        } else {
+                            p.innerHTML = 'Generate Resume Report'
                             p.disabled = false
                             xhr.responseType = "text";
                         }
