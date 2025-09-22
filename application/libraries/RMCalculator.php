@@ -3188,8 +3188,9 @@ class RMCalculator
             }
         }
         $responApi = Requests::request($_ENV['APP_INTERNAL_API'] .'item/xray', [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
+        $responApi2 = Requests::request($_ENV['APP_INTERNAL3_API'] .'item/sync-part-name-to-xray', [], [], 'GET', ['timeout' => 300, 'connect_timeut' => 300]);
         // return ($counterNew);
-        return ['megaToWms' => $counterNew, 'wmsToXraySVR' => $responApi];
+        return ['megaToWms' => $counterNew, 'wmsToXraySVR' => $responApi, 'wmsToXrayItemName' => $responApi2];
     }
 
     public function sync_new_itemGrade()
