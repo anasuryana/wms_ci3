@@ -308,7 +308,7 @@ class RCV_mod extends CI_Model
         $this->db->join('MITM_TBL', 'RCV_ITMCD=MITM_ITMCD', 'left');
         $this->db->join('(SELECT MSUP_SUPCD,MAX(MSUP_SUPNM) MSUP_SUPNM FROM v_supplier_customer_union GROUP BY MSUP_SUPCD ) S', 'RCV_SUPCD=S.MSUP_SUPCD', 'left');
         $this->db->join('(SELECT MSUP_SUPCD SHIPPERCD, MSUP_SUPNM SHIPPERNM FROM MSUP_TBL) SUP', "RCV_SHIPPERCD=SUP.SHIPPERCD", 'LEFT');
-        $this->db->where("MITM_MODEL", 6)->like($like);
+        $this->db->where("MITM_PRGID", 'WMS_REG')->like($like);
         $this->db->group_by("RCV_DONO,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM,SHIPPERCD,SHIPPERNM");
         $this->db->order_by("MIN(RCV_BCDATE)");
         $query = $this->db->get();
@@ -483,7 +483,7 @@ class RCV_mod extends CI_Model
         $this->db->join('MITM_TBL', "RCV_ITMCD=MITM_ITMCD", 'LEFT');
         $this->db->join('(SELECT MSUP_SUPCD,MAX(MSUP_SUPNM) MSUP_SUPNM FROM v_supplier_customer_union GROUP BY MSUP_SUPCD ) S', "RCV_SUPCD=S.MSUP_SUPCD", 'LEFT');
         $this->db->join('(SELECT MSUP_SUPCD SHIPPERCD, MSUP_SUPNM SHIPPERNM FROM MSUP_TBL) SUP', "RCV_SHIPPERCD=SUP.SHIPPERCD", 'LEFT');
-        $this->db->where("MITM_MODEL", 6)->where("RCV_BCDATE >=", $pdate1)->where("RCV_BCDATE <=", $pdate2);
+        $this->db->where("MITM_PRGID", 'WMS_REG')->where("RCV_BCDATE >=", $pdate1)->where("RCV_BCDATE <=", $pdate2);
         $this->db->like($like);
         $this->db->group_by("RCV_DONO,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM,SHIPPERCD,SHIPPERNM");
         $this->db->order_by("MIN(RCV_BCDATE)");
@@ -618,7 +618,7 @@ class RCV_mod extends CI_Model
 		left join MITM_TBL on RCV_ITMCD=MITM_ITMCD
 		LEFT JOIN (SELECT MSUP_SUPCD,MAX(MSUP_SUPNM) MSUP_SUPNM FROM v_supplier_customer_union GROUP BY MSUP_SUPCD ) S ON RCV_SUPCD=S.MSUP_SUPCD
         LEFT JOIN (SELECT MSUP_SUPCD SHIPPERCD, MSUP_SUPNM SHIPPERNM FROM MSUP_TBL) SUP ON RCV_SHIPPERCD=SUP.SHIPPERCD
-		where MITM_MODEL='6' AND MITM_ITMD1 like ?
+		where MITM_PRGID = 'WMS_REG' AND MITM_ITMD1 like ?
         GROUP BY RCV_DONO,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM,SHIPPERCD,SHIPPERNM";
         $query = $this->db->query($qry, ['%' . $pitem . '%']);
         return $query->result_array();
