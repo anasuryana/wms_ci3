@@ -44,7 +44,7 @@ class MSTITM extends CI_Controller
     public function sync_item_description1()
     {
         $affect = $this->MSTITM_mod->update_all_d1();
-        $myar = [];
+        $myar   = [];
         if ($affect) {
             $myar[] = ['cd' => 1, 'msg' => $affect . ' updated'];
         } else {
@@ -57,8 +57,8 @@ class MSTITM extends CI_Controller
     {
         header('Content-Type: application/json');
         $assycode = $this->input->post('assycode');
-        $rev = $this->input->post('rev');
-        $rs = $this->MSTITM_mod->select_bom_mega_cims($assycode, $rev);
+        $rev      = $this->input->post('rev');
+        $rs       = $this->MSTITM_mod->select_bom_mega_cims($assycode, $rev);
         die('{"data":' . json_encode($rs) . '}');
     }
 
@@ -76,14 +76,14 @@ class MSTITM extends CI_Controller
 
     public function create()
     {
-        $rs = $this->MMDL_mod->select_all(['MMDL_CD', 'MMDL_NM']);
-        $rsUM = $this->MUM_mod->selectAll();
+        $rs     = $this->MMDL_mod->select_all(['MMDL_CD', 'MMDL_NM']);
+        $rsUM   = $this->MUM_mod->selectAll();
         $strmdl = '';
         foreach ($rs as $r) {
             $strmdl .= "<option value='" . $r['MMDL_CD'] . "'>" . $r['MMDL_NM'] . "</option>";
         }
         $data['modell'] = $strmdl;
-        $strmdl = '';
+        $strmdl         = '';
         foreach ($rsUM as $r) {
             $strmdl .= "<option value='" . $r['MUM_CD'] . "'>" . $r['MUM_NM'] . "</option>";
         }
@@ -108,14 +108,14 @@ class MSTITM extends CI_Controller
     {
         header('Content-Type: application/json');
         $cid = $this->input->get('cid');
-        $rs = $this->MSTITM_mod->selectbyid($cid);
+        $rs  = $this->MSTITM_mod->selectbyid($cid);
         echo '{"data":' . json_encode($rs) . '}';
     }
     public function getbyid_desktop()
     {
         header('Content-Type: application/json');
-        $cid = $this->input->get('cid');
-        $rs = $this->MSTITM_mod->selectbyid($cid);
+        $cid    = $this->input->get('cid');
+        $rs     = $this->MSTITM_mod->selectbyid($cid);
         $myar[] = count($rs) ? ['cd' => 1, 'msg' => 'go ahead'] : ['cd' => 0, 'msg' => 'not found'];
         echo '{"data":' . json_encode($rs) . ',"status":' . json_encode($myar) . '}';
     }
@@ -124,16 +124,16 @@ class MSTITM extends CI_Controller
     {
         header('Content-Type: application/json');
         $cid = $this->input->get('cid');
-        $rs = $this->MSTITM_mod->selectnamebyid($cid);
+        $rs  = $this->MSTITM_mod->selectnamebyid($cid);
         echo json_encode($rs);
     }
 
     public function search()
     {
         header('Content-Type: application/json');
-        $cid = $this->input->get('cid');
+        $cid      = $this->input->get('cid');
         $csrchkey = $this->input->get('csrchby');
-        $rs = [];
+        $rs       = [];
         switch ($csrchkey) {
             case 'ic':
                 $rs = $this->MSTITM_mod->selectby_lk(['MITM_ITMCD' => $cid]);
@@ -150,9 +150,9 @@ class MSTITM extends CI_Controller
     public function search_itemlocation()
     {
         header('Content-Type: application/json');
-        $cid = $this->input->get('cid');
+        $cid      = $this->input->get('cid');
         $csrchkey = $this->input->get('csrchby');
-        $rs = [];
+        $rs       = [];
         switch ($csrchkey) {
             case 'ic':
                 $rs = $this->MSTITM_mod->selectby_lk(['MITM_ITMCD' => $cid, 'MITM_MODEL' => 0]);
@@ -169,9 +169,9 @@ class MSTITM extends CI_Controller
     public function searchfg()
     {
         header('Content-Type: application/json');
-        $cid = $this->input->get('cid');
+        $cid      = $this->input->get('cid');
         $csrchkey = $this->input->get('csrchby');
-        $rs = array();
+        $rs       = [];
         switch ($csrchkey) {
             case 'ic':
                 $rs = $this->MSTITM_mod->selectfgbyid_lk($cid);
@@ -189,9 +189,9 @@ class MSTITM extends CI_Controller
     public function searchfg_exim()
     {
         header('Content-Type: application/json');
-        $search = $this->input->get('insearch');
-        $searchby = $this->input->get('insearchby');
-        $rs = [];
+        $search    = $this->input->get('insearch');
+        $searchby  = $this->input->get('insearchby');
+        $rs        = [];
         $responApi = Requests::request($_ENV['APP_INTERNAL_API'] . 'item/searchFGExim?insearch=' . $search
             . '&insearchby=' . $searchby, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
         $rs = json_decode($responApi->body, true);
@@ -200,8 +200,8 @@ class MSTITM extends CI_Controller
     public function searchrm_exim()
     {
         header('Content-Type: application/json');
-        $search = $this->input->get('insearch');
-        $searchby = $this->input->get('insearchby');
+        $search    = $this->input->get('insearch');
+        $searchby  = $this->input->get('insearchby');
         $responApi = Requests::request($_ENV['APP_INTERNAL_API'] . 'item/searchRMExim?insearch=' . $search
             . '&insearchby=' . $searchby, [], [], 'GET', ['timeout' => 900, 'connect_timeout' => 900]);
         $rs = json_decode($responApi->body, true);
@@ -217,9 +217,9 @@ class MSTITM extends CI_Controller
             exit('nothing to be exported');
         }
 
-        $search = $_COOKIE["CKPSEARCH"];
+        $search   = $_COOKIE["CKPSEARCH"];
         $searchby = $_COOKIE["CKPSEARCH_BY"];
-        $rs = [];
+        $rs       = [];
         switch ($searchby) {
             case 'itemcd':
                 $rs = $this->MSTITM_mod->select_rm_exim(['MITM_ITMCD' => $search]);
@@ -229,7 +229,7 @@ class MSTITM extends CI_Controller
                 break;
         }
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $sheet       = $spreadsheet->getActiveSheet();
         $sheet->setTitle('master_hscode');
         $sheet->setCellValueByColumnAndRow(1, 1, 'Item Code');
         $sheet->setCellValueByColumnAndRow(2, 1, 'Item Name');
@@ -259,8 +259,8 @@ class MSTITM extends CI_Controller
         }
         $sheet->getStyle('A1:A' . $n)->getAlignment()->setHorizontal('left');
         $stringjudul = "master hscode";
-        $writer = new Xlsx($spreadsheet);
-        $filename = $stringjudul; //save our workbook as this file name
+        $writer      = new Xlsx($spreadsheet);
+        $filename    = $stringjudul; //save our workbook as this file name
 
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
@@ -277,9 +277,9 @@ class MSTITM extends CI_Controller
             exit('nothing to be exported');
         }
 
-        $search = $_COOKIE["CKPSEARCH"];
+        $search   = $_COOKIE["CKPSEARCH"];
         $searchby = $_COOKIE["CKPSEARCH_BY"];
-        $rs = [];
+        $rs       = [];
         switch ($searchby) {
             case 'itemcd':
                 $rs = $this->MSTITM_mod->select_fg_exim(['MITM_ITMCD' => $search]);
@@ -289,7 +289,7 @@ class MSTITM extends CI_Controller
                 break;
         }
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $sheet       = $spreadsheet->getActiveSheet();
         $sheet->setTitle('master_hscode');
         $sheet->setCellValueByColumnAndRow(1, 1, 'Item Code');
         $sheet->setCellValueByColumnAndRow(2, 1, 'Item Name');
@@ -319,8 +319,8 @@ class MSTITM extends CI_Controller
         }
         $sheet->getStyle('A1:A' . $n)->getAlignment()->setHorizontal('left');
         $stringjudul = "master hscode fg";
-        $writer = new Xlsx($spreadsheet);
-        $filename = $stringjudul; //save our workbook as this file name
+        $writer      = new Xlsx($spreadsheet);
+        $filename    = $stringjudul; //save our workbook as this file name
 
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
@@ -340,10 +340,10 @@ class MSTITM extends CI_Controller
     {
         header('Content-Type: application/json');
         $cindex = $this->input->post('inx');
-        $citem = $this->input->post('initem');
+        $citem  = $this->input->post('initem');
 
         $datas = ['MITM_ITMCD' => trim($citem)];
-        $msg = "";
+        $msg   = "";
         if ($this->MSTITM_mod->check_Primary($datas) > 0) {
             $msg = "Already Synchronized";
         } else {
@@ -354,8 +354,8 @@ class MSTITM extends CI_Controller
                 $msg = "Try again";
             }
         }
-        $anar = array("indx" => $cindex, "status" => $msg);
-        $myar = array();
+        $anar = ["indx" => $cindex, "status" => $msg];
+        $myar = [];
         array_push($myar, $anar);
         echo json_encode($myar);
     }
@@ -372,76 +372,76 @@ class MSTITM extends CI_Controller
     public function set()
     {
         $this->checkSession();
-        $currrtime = date('Y-m-d H:i:s');
-        $cid = $this->input->post('initmcd');
-        $cid_old = $this->input->post('initmcd_old');
+        $currrtime  = date('Y-m-d H:i:s');
+        $cid        = $this->input->post('initmcd');
+        $cid_old    = $this->input->post('initmcd_old');
         $mitmcd_Ext = $this->input->post('mitmcd_Ext');
-        $cnm1 = $this->input->post('initmnm1');
-        $cnm2 = $this->input->post('initmnm2');
-        $cspt = $this->input->post('inspt');
-        $ctype = $this->input->post('intype');
-        $cisdirect = $this->input->post('inisdirect');
-        $chscode = $this->input->post('inhscode');
-        $chscodet = $this->input->post('inhscodet');
-        $cisdirect = $this->input->post('inisdirect');
-        $cnet = $this->input->post('innetwg');
-        $cgrs = $this->input->post('ingrswg');
+        $cnm1       = $this->input->post('initmnm1');
+        $cnm2       = $this->input->post('initmnm2');
+        $cspt       = $this->input->post('inspt');
+        $ctype      = $this->input->post('intype');
+        $cisdirect  = $this->input->post('inisdirect');
+        $chscode    = $this->input->post('inhscode');
+        $chscodet   = $this->input->post('inhscodet');
+        $cisdirect  = $this->input->post('inisdirect');
+        $cnet       = $this->input->post('innetwg');
+        $cgrs       = $this->input->post('ingrswg');
 
-        $cbox = $this->input->post('inbox');
-        $cspq = $this->input->post('inspq') == '' ? 0 : $this->input->post('inspq');
-        $cheight = $this->input->post('inheight');
-        $clength = $this->input->post('inlength');
-        $ccolor = $this->input->post('incolor');
-        $cshtqty = $this->input->post('inshtqty');
+        $cbox       = $this->input->post('inbox');
+        $cspq       = $this->input->post('inspq') == '' ? 0 : $this->input->post('inspq');
+        $cheight    = $this->input->post('inheight');
+        $clength    = $this->input->post('inlength');
+        $ccolor     = $this->input->post('incolor');
+        $cshtqty    = $this->input->post('inshtqty');
         $incategory = $this->input->post('incategory');
-        $mstkuom = $this->input->post('mstkuom');
-        $datac = ['MITM_ITMCD' => $cid];
-        $myar = [];
+        $mstkuom    = $this->input->post('mstkuom');
+        $datac      = ['MITM_ITMCD' => $cid];
+        $myar       = [];
         if ($this->MSTITM_mod->check_Primary($datac) == 0) {
             $datas = [
-                'MITM_ITMCD' => $cid,
-                'MITM_ITMD1' => $cnm1,
-                'MITM_ITMD2' => $cnm2,
-                'MITM_SPTNO' => $cspt,
-                'MITM_MODEL' => $ctype,
-                'MITM_LUPDT' => $currrtime,
-                'MITM_USRID' => $this->session->userdata('nama'),
-                'MITM_INDIRMT' => $cisdirect,
-                'MITM_HSCD' => $chscode,
-                'MITM_HSCODET' => $chscodet,
-                'MITM_GWG' => $cgrs,
-                'MITM_NWG' => $cnet,
-                'MITM_BOXTYPE' => $cbox,
-                'MITM_SPQ' => str_replace(',', '', $cspq),
+                'MITM_ITMCD'    => $cid,
+                'MITM_ITMD1'    => $cnm1,
+                'MITM_ITMD2'    => $cnm2,
+                'MITM_SPTNO'    => $cspt,
+                'MITM_MODEL'    => $ctype,
+                'MITM_LUPDT'    => $currrtime,
+                'MITM_USRID'    => $this->session->userdata('nama'),
+                'MITM_INDIRMT'  => $cisdirect,
+                'MITM_HSCD'     => $chscode,
+                'MITM_HSCODET'  => $chscodet,
+                'MITM_GWG'      => $cgrs,
+                'MITM_NWG'      => $cnet,
+                'MITM_BOXTYPE'  => $cbox,
+                'MITM_SPQ'      => str_replace(',', '', $cspq),
                 'MITM_MXHEIGHT' => $cheight,
                 'MITM_MXLENGTH' => $clength,
-                'MITM_LBLCLR' => $ccolor,
-                'MITM_SHTQTY' => $cshtqty,
+                'MITM_LBLCLR'   => $ccolor,
+                'MITM_SHTQTY'   => $cshtqty,
             ];
-            $toret = $this->MSTITM_mod->insert($datas);
+            $toret  = $this->MSTITM_mod->insert($datas);
             $myar[] = $toret > 0 ? ['cd' => 1, 'msg' => 'Saved successfully'] : ['cd' => 0, 'msg' => 'Could not saved'];
         } else {
             $datau = [
-                'MITM_BOXTYPE' => $cbox,
-                'MITM_SPQ' => str_replace(',', '', $cspq),
+                'MITM_BOXTYPE'  => $cbox,
+                'MITM_SPQ'      => str_replace(',', '', $cspq),
                 'MITM_MXHEIGHT' => $cheight,
                 'MITM_MXLENGTH' => $clength,
-                'MITM_LBLCLR' => $ccolor,
-                'MITM_SHTQTY' => $cshtqty,
-                'MITM_NCAT' => $incategory,
+                'MITM_LBLCLR'   => $ccolor,
+                'MITM_SHTQTY'   => $cshtqty,
+                'MITM_NCAT'     => $incategory,
                 'MITM_ITMCDCUS' => $mitmcd_Ext,
             ];
             if (in_array($this->session->userdata('gid'), ['ROOT', 'ADMIN']) || $ctype == '6') {
-                $datau['MITM_ITMD1'] = $cnm1;
-                $datau['MITM_ITMD2'] = $cnm2;
+                $datau['MITM_ITMD1']  = $cnm1;
+                $datau['MITM_ITMD2']  = $cnm2;
                 $datau['MITM_STKUOM'] = $mstkuom;
-                $datau['MITM_SPTNO'] = $cspt;
-                $datau['MITM_ITMCD'] = $cid;
+                $datau['MITM_SPTNO']  = $cspt;
+                $datau['MITM_ITMCD']  = $cid;
             }
             if (in_array($this->session->userdata('gid'), ['EXMS', 'EXMV'])) {
                 $datau['MITM_ITMD2'] = $cnm2;
             }
-            $toret = $this->MSTITM_mod->updatebyId($datau, $cid_old);
+            $toret  = $this->MSTITM_mod->updatebyId($datau, $cid_old);
             $myar[] = $toret > 0 ? ['cd' => 1, 'msg' => 'Updated successfully'] : ['cd' => 0, 'msg' => 'Could not updated'];
         }
         die(json_encode(['status' => $myar]));
@@ -465,7 +465,7 @@ class MSTITM extends CI_Controller
     {
         header('Content-Type: application/json');
         $ckeys = $this->input->get('inkeys');
-        $rs = $this->MSTITM_mod->selectboxes($ckeys);
+        $rs    = $this->MSTITM_mod->selectboxes($ckeys);
         echo json_encode($rs);
     }
 
@@ -473,53 +473,53 @@ class MSTITM extends CI_Controller
     {
         header('Content-Type: application/json');
         $currrtime = date('Y-m-d H:i:s');
-        $citem = $this->input->post('initem');
-        $cname = $this->input->post('innm');
-        $csprtno = $this->input->post('insprtno');
-        $cum = $this->input->post('inum');
+        $citem     = $this->input->post('initem');
+        $cname     = $this->input->post('innm');
+        $csprtno   = $this->input->post('insprtno');
+        $cum       = $this->input->post('inum');
         $cisdirect = $this->input->post('inisdirect');
-        $chscd = $this->input->post('inhscd');
-        $chscdt = $this->input->post('inhscdt');
-        $cmodel = $this->input->post('inmodel');
-        $cnet = $this->input->post('innet');
-        $cgrs = $this->input->post('ingrs');
-        $cboxtype = $this->input->post('inboxtype');
-        $cspq = $this->input->post('inspq');
-        $cspq = (is_numeric($cspq) ? $cspq : 0);
+        $chscd     = $this->input->post('inhscd');
+        $chscdt    = $this->input->post('inhscdt');
+        $cmodel    = $this->input->post('inmodel');
+        $cnet      = $this->input->post('innet');
+        $cgrs      = $this->input->post('ingrs');
+        $cboxtype  = $this->input->post('inboxtype');
+        $cspq      = $this->input->post('inspq');
+        $cspq      = (is_numeric($cspq) ? $cspq : 0);
         $cmxheight = $this->input->post('inmxheight');
         $cmxlength = $this->input->post('inmxlength');
-        $cmodel = $this->input->post('inmodel');
-        $cshtqty = $this->input->post('inshtqty');
-        $ccolor = $this->input->post('incolor');
-        $crowid = $this->input->post('inrowid');
-        $datac = array('MITM_ITMCD' => $citem);
-        $cnet = (is_numeric($cnet) ? $cnet : 0);
-        $cgrs = (is_numeric($cgrs) ? $cgrs : 0);
-        $myar = array();
+        $cmodel    = $this->input->post('inmodel');
+        $cshtqty   = $this->input->post('inshtqty');
+        $ccolor    = $this->input->post('incolor');
+        $crowid    = $this->input->post('inrowid');
+        $datac     = ['MITM_ITMCD' => $citem];
+        $cnet      = (is_numeric($cnet) ? $cnet : 0);
+        $cgrs      = (is_numeric($cgrs) ? $cgrs : 0);
+        $myar      = [];
         if ($this->MSTITM_mod->check_Primary($datac) == 0) {
-            $datas = array(
-                'MITM_ITMCD' => $citem, 'MITM_ITMD1' => $cname, 'MITM_SPTNO' => $csprtno, 'MITM_STKUOM' => $cum, 'MITM_INDIRMT' => $cisdirect,
-                'MITM_HSCD' => $chscd, 'MITM_HSCODET' => $chscdt, 'MITM_MODEL' => $cmodel,
-                'MITM_NWG' => $cnet, 'MITM_GWG' => $cgrs, 'MITM_BOXTYPE' => $cboxtype, 'MITM_SPQ' => $cspq, 'MITM_MXHEIGHT' => $cmxheight, 'MITM_MXLENGTH' => $cmxlength,
-                'MITM_SHTQTY' => $cshtqty, 'MITM_LBLCLR' => $ccolor,
-                'MITM_LUPDT' => $currrtime, 'MITM_USRID' => $this->session->userdata('nama'),
-            );
+            $datas = [
+                'MITM_ITMCD'  => $citem, 'MITM_ITMD1'     => $cname, 'MITM_SPTNO'  => $csprtno, 'MITM_STKUOM' => $cum, 'MITM_INDIRMT'   => $cisdirect,
+                'MITM_HSCD'   => $chscd, 'MITM_HSCODET'   => $chscdt, 'MITM_MODEL' => $cmodel,
+                'MITM_NWG'    => $cnet, 'MITM_GWG'        => $cgrs, 'MITM_BOXTYPE' => $cboxtype, 'MITM_SPQ'   => $cspq, 'MITM_MXHEIGHT' => $cmxheight, 'MITM_MXLENGTH' => $cmxlength,
+                'MITM_SHTQTY' => $cshtqty, 'MITM_LBLCLR'  => $ccolor,
+                'MITM_LUPDT'  => $currrtime, 'MITM_USRID' => $this->session->userdata('nama'),
+            ];
             $toret = $this->MSTITM_mod->insert($datas);
             if ($toret > 0) {
-                $anar = array("indx" => $crowid, "status" => 'Saved successfully');
+                $anar = ["indx" => $crowid, "status" => 'Saved successfully'];
             } else {
-                $anar = array("indx" => $crowid, "status" => 'Could not insert');
+                $anar = ["indx" => $crowid, "status" => 'Could not insert'];
             }
         } else {
-            $datau = array(
-                'MITM_BOXTYPE' => $cboxtype, 'MITM_SPQ' => $cspq,
+            $datau = [
+                'MITM_BOXTYPE'  => $cboxtype, 'MITM_SPQ'       => $cspq,
                 'MITM_MXHEIGHT' => $cmxheight, 'MITM_MXLENGTH' => $cmxlength, 'MITM_SHTQTY' => $cshtqty, 'MITM_LBLCLR' => $ccolor,
-            );
+            ];
             $toret = $this->MSTITM_mod->updatebyId($datau, $citem);
             if ($toret > 0) {
-                $anar = array("indx" => $crowid, "status" => 'Updated');
+                $anar = ["indx" => $crowid, "status" => 'Updated'];
             } else {
-                $anar = array("indx" => $crowid, "status" => 'Could not update');
+                $anar = ["indx" => $crowid, "status" => 'Could not update'];
             }
 
         }
@@ -530,23 +530,30 @@ class MSTITM extends CI_Controller
     public function register()
     {
         header('Content-Type: application/json');
-        $current_Date = date('Y-m-d');
-        $itemcd = trim($this->input->post('itmcd'));
-        $itmcd_ext = trim($this->input->post('itmcd_ext'));
-        $itmnm = $this->input->post('itmnm');
+        $current_Date   = date('Y-m-d');
+        $itemcd         = trim($this->input->post('itmcd'));
+        $itmcd_ext      = trim($this->input->post('itmcd_ext'));
+        $itmnm          = $this->input->post('itmnm');
         $itmunitmeasure = $this->input->post('itmunitmeasure');
-        $itmconsignee = trim($this->input->post('itmconsignee'));
-        $myar = [];
+        $itmconsignee   = trim($this->input->post('itmconsignee'));
+        $myar           = [];
         if (strlen($itemcd) == 0) {
             if (strlen($itmconsignee) == 0) {
                 $myar[] = ['cd' => 0, 'msg' => 'Consignee is required'];
             } else {
-                $lastno = $this->MSTITM_mod->select_lastnopm($itmconsignee);
+                $lastno  = $this->MSTITM_mod->select_lastnopm($itmconsignee);
                 $newitem = 'PM' . $itmconsignee . date('Y') . '-' . substr('000000' . $lastno, -6);
                 $this->MSTITM_mod->insert([
-                    'MITM_ITMCD' => $newitem, 'MITM_ITMD1' => $itmnm, 'MITM_ITMCDCUS' => $itemcd
-                    , 'MITM_MODEL' => '6', 'MITM_STKUOM' => $itmunitmeasure, 'MITM_PMNO' => $lastno
-                    , 'MITM_ITMCDCUS' => $itmcd_ext, 'MITM_PMREGDT' => $current_Date, 'MITM_PMCONSIGN' => $itmconsignee,
+                    'MITM_ITMCD'     => $newitem,
+                    'MITM_ITMD1'     => $itmnm,
+                    'MITM_ITMCDCUS'  => $itemcd,
+                    'MITM_MODEL'     => '6',
+                    'MITM_STKUOM'    => $itmunitmeasure,
+                    'MITM_PMNO'      => $lastno,
+                    'MITM_ITMCDCUS'  => $itmcd_ext,
+                    'MITM_PMREGDT'   => $current_Date,
+                    'MITM_PMCONSIGN' => $itmconsignee,
+                    'MITM_PRGID'     => 'WMS_REG',
                 ]);
                 $myar[] = ['cd' => 1, 'msg' => 'registered successfully', 'newcd' => $newitem];
             }
@@ -566,14 +573,14 @@ class MSTITM extends CI_Controller
     {
         $citem = $this->input->get('initem');
         $citem = trim($citem);
-        $myar = [];
+        $myar  = [];
         if ($this->MSTITM_mod->check_Primary(["MITM_ITMCD" => $citem]) > 0) {
             $anar = ["cd" => "11", "msg" => 'go ahead'];
         } else {
             $anar = ["cd" => "00", "msg" => 'Item is not registered'];
         }
         $myar[] = $anar;
-        $rswo = $this->SER_mod->select_joblbl_ost_pitem($citem);
+        $rswo   = $this->SER_mod->select_joblbl_ost_pitem($citem);
         echo '{"data":';
         echo json_encode($myar);
         echo ',"datahead":';
@@ -583,9 +590,9 @@ class MSTITM extends CI_Controller
 
     public function downloadsa()
     {
-        $rs = $this->MITMSA_mod->selectAll();
+        $rs          = $this->MITMSA_mod->selectAll();
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $sheet       = $spreadsheet->getActiveSheet();
         $sheet->setTitle('registered_part');
         $sheet->setCellValueByColumnAndRow(1, 1, 'Assy Code');
         $sheet->setCellValueByColumnAndRow(2, 1, 'Item Code');
@@ -604,8 +611,8 @@ class MSTITM extends CI_Controller
         $sheet->getStyle($rang)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 
         $stringjudul = "registered SA Part";
-        $writer = new Xlsx($spreadsheet);
-        $filename = $stringjudul; //save our workbook as this file name
+        $writer      = new Xlsx($spreadsheet);
+        $filename    = $stringjudul; //save our workbook as this file name
 
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
@@ -629,10 +636,10 @@ class MSTITM extends CI_Controller
     public function uploadSA()
     {
         header('Content-Type: application/json');
-        $arm_assycd = $this->input->post('arm_assycd');
-        $arm_itemCd = $this->input->post('arm_itemCd');
+        $arm_assycd   = $this->input->post('arm_assycd');
+        $arm_itemCd   = $this->input->post('arm_itemCd');
         $arm_itemCdsa = $this->input->post('arm_itemCdsa');
-        $ch = curl_init();
+        $ch           = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://192.168.0.29:8081/wms/MSTITM/saveSA');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -646,13 +653,13 @@ class MSTITM extends CI_Controller
         if ($ttlrows) {
             for ($i = 0; $i < $ttlrows; $i++) {
                 $fields = [
-                    'newassy' => $arm_assycd[$i],
-                    'newpart' => $arm_itemCd[$i],
+                    'newassy'   => $arm_assycd[$i],
+                    'newpart'   => $arm_itemCd[$i],
                     'newpartSA' => $arm_itemCdsa[$i],
                 ];
                 $fields_string = http_build_query($fields);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
-                $data = curl_exec($ch);
+                $data  = curl_exec($ch);
                 $datad = json_decode($data);
                 foreach ($datad->status as $n) {
                     $fields['status'] = $n->msg;
@@ -668,14 +675,14 @@ class MSTITM extends CI_Controller
     {
         header('Content-Type: application/json');
         $currrtime = date('Y-m-d H:i:s');
-        $oldassy = $this->input->post('oldassy');
-        $oldpart = $this->input->post('oldpart');
+        $oldassy   = $this->input->post('oldassy');
+        $oldpart   = $this->input->post('oldpart');
         $oldpartSA = $this->input->post('oldpartSA');
 
-        $newassy = $this->input->post('newassy');
-        $newpart = $this->input->post('newpart');
+        $newassy   = $this->input->post('newassy');
+        $newpart   = $this->input->post('newpart');
         $newpartSA = $this->input->post('newpartSA');
-        $remark = $this->input->post('remark');
+        $remark    = $this->input->post('remark');
 
         if ($this->MSTITM_mod->check_Primary(['MITM_ITMCD' => $newassy]) == 0) {
             $myar[] = ['cd' => '0', 'msg' => 'Assy Code is not found'];
@@ -700,7 +707,7 @@ class MSTITM extends CI_Controller
         } else {
             $data['MITMSA_LUPDT'] = $currrtime;
             $data['MITMSA_USRID'] = $this->session->userdata('nama');
-            $data['MITMSA_RMRK'] = $remark;
+            $data['MITMSA_RMRK']  = $remark;
             $this->MITMSA_mod->insert($data);
             $myar[] = ['cd' => '1', 'msg' => 'Saved successfully'];
             die('{"status":' . json_encode($myar) . '}');
@@ -710,7 +717,7 @@ class MSTITM extends CI_Controller
     public function remove()
     {
         header('Content-Type: application/json');
-        $itm = $this->input->post('itm');
+        $itm  = $this->input->post('itm');
         $myar = [];
         if ($this->MSTITM_mod->check_Primary_unused_item(['MITM_ITMCD' => $itm])) {
             $myar[] = $this->MSTITM_mod->deleteby_filter(['MITM_ITMCD' => $itm, 'MITM_MODEL' => '6']) ?
@@ -724,12 +731,12 @@ class MSTITM extends CI_Controller
     public function removeSA()
     {
         header('Content-Type: application/json');
-        $currrtime = date('Y-m-d H:i:s');
-        $assyCDold = $this->input->post('assyCDold');
-        $partCDold = $this->input->post('partCDold');
+        $currrtime   = date('Y-m-d H:i:s');
+        $assyCDold   = $this->input->post('assyCDold');
+        $partCDold   = $this->input->post('partCDold');
         $partCDSAold = $this->input->post('partCDSAold');
-        $userid = $this->session->userdata('nama');
-        $data = [
+        $userid      = $this->session->userdata('nama');
+        $data        = [
             'MITMSA_ITMCD' => $partCDold
             , 'MITMSA_ITMCDS' => $partCDSAold
             , 'MITMSA_MDLCD' => $assyCDold,
@@ -747,9 +754,9 @@ class MSTITM extends CI_Controller
     {
         header('Content-Type: application/json');
         $searchBy = $this->input->get('searchBy');
-        $search = $this->input->get('search');
-        $ITH_WH = $this->input->get('ITH_WH');
-        $rs = [];
+        $search   = $this->input->get('search');
+        $ITH_WH   = $this->input->get('ITH_WH');
+        $rs       = [];
         switch ($searchBy) {
             case 'in':
                 $rs = $this->MSTITM_mod->select_columns_like_with_stock(['RTRIM(MITM_ITMCD) MITM_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'MITM_ITMCDCUS', "RTRIM(ISNULL(MITM_STKUOM,'')) MITM_STKUOM", "ISNULL(STOCKQT,0) STOCKQT"],
@@ -776,21 +783,21 @@ class MSTITM extends CI_Controller
     public function fg_exim()
     {
         header('Content-Type: application/json');
-        $itemcd = $this->input->post('itemcd');
-        $itemhscd = $this->input->post('itemhscd');
-        $netweight = $this->input->post('netweight');
+        $itemcd     = $this->input->post('itemcd');
+        $itemhscd   = $this->input->post('itemhscd');
+        $netweight  = $this->input->post('netweight');
         $grosweight = $this->input->post('grosweight');
-        $beamasuk = trim($this->input->post('beamasuk'));
-        $ppn = trim($this->input->post('ppn'));
-        $pph = trim($this->input->post('pph'));
-        $ret = $this->MSTITM_mod->updatebyId([
-            'MITM_HSCD' => $itemhscd,
-            'MITM_NWG' => $netweight == 'null' ? null : $netweight,
+        $beamasuk   = trim($this->input->post('beamasuk'));
+        $ppn        = trim($this->input->post('ppn'));
+        $pph        = trim($this->input->post('pph'));
+        $ret        = $this->MSTITM_mod->updatebyId([
+            'MITM_HSCD'      => $itemhscd,
+            'MITM_NWG'       => $netweight == 'null' ? null : $netweight,
             'MITM_BOXWEIGHT' => $grosweight == 'null' ? null : $grosweight,
-            'MITM_BM' => $beamasuk,
-            'MITM_PPN' => $ppn,
-            'MITM_PPH' => $pph,
-            'MITM_LUPDT' => date('Y-m-d H:i:s'),
+            'MITM_BM'        => $beamasuk,
+            'MITM_PPN'       => $ppn,
+            'MITM_PPH'       => $pph,
+            'MITM_LUPDT'     => date('Y-m-d H:i:s'),
         ]
             , $itemcd);
         if ($ret) {
@@ -804,14 +811,14 @@ class MSTITM extends CI_Controller
     public function updateFGExim()
     {
         header('Content-Type: application/json');
-        $itemcd = $this->input->post('ItemCode');
-        $itemhscd = $this->input->post('HSCode');
-        $netweight = $this->input->post('NetWeight');
+        $itemcd     = $this->input->post('ItemCode');
+        $itemhscd   = $this->input->post('HSCode');
+        $netweight  = $this->input->post('NetWeight');
         $grosweight = $this->input->post('BoxWeight');
-        $BM = $this->input->post('BM');
-        $PPN = $this->input->post('PPN');
-        $PPH = $this->input->post('PPH');
-        if (!is_array($itemcd)) {
+        $BM         = $this->input->post('BM');
+        $PPN        = $this->input->post('PPN');
+        $PPH        = $this->input->post('PPH');
+        if (! is_array($itemcd)) {
             die(json_encode(['message' => 'Input is not valid']));
         }
         $ttlRows = count($itemcd);
@@ -819,14 +826,14 @@ class MSTITM extends CI_Controller
         for ($i = 0; $i < $ttlRows; $i++) {
             $this->saveHistoryHSCODE(['ITEMCD' => $itemcd[$i]]);
             $affectedRow = $this->MSTITM_mod->updatebyIdAndModel([
-                'MITM_HSCD' => $itemhscd[$i],
-                'MITM_NWG' => $netweight[$i] == 'null' ? null : $netweight[$i],
+                'MITM_HSCD'      => $itemhscd[$i],
+                'MITM_NWG'       => $netweight[$i] == 'null' ? null : $netweight[$i],
                 'MITM_BOXWEIGHT' => $grosweight[$i] == 'null' ? null : $grosweight[$i],
-                'MITM_BM' => $BM[$i],
-                'MITM_PPN' => $PPN[$i],
-                'MITM_PPH' => $PPH[$i],
-                'MITM_LUPDT' => date('Y-m-d H:i:s'),
-                'MITM_USRID' => $this->session->userdata('nama'),
+                'MITM_BM'        => $BM[$i],
+                'MITM_PPN'       => $PPN[$i],
+                'MITM_PPH'       => $PPH[$i],
+                'MITM_LUPDT'     => date('Y-m-d H:i:s'),
+                'MITM_USRID'     => $this->session->userdata('nama'),
             ], $itemcd[$i], '1');
             if ($affectedRow) {
                 $message = 'updated';
@@ -846,14 +853,14 @@ class MSTITM extends CI_Controller
         foreach ($rsbefore as $r) {
             $lastLine = $this->MITMHSCD_HIS_mod->lastserialid($data['ITEMCD']) + 1;
             $this->MITMHSCD_HIS_mod->insert([
-                'MITMHSCD_HIS_ITMCD' => $r->MITM_ITMCD,
-                'MITMHSCD_HIS_HSCD' => $r->MITM_HSCD,
-                'MITMHSCD_HIS_BM' => $r->MITM_BM,
-                'MITMHSCD_HIS_PPN' => $r->MITM_PPN,
-                'MITMHSCD_HIS_PPH' => $r->MITM_PPH,
+                'MITMHSCD_HIS_ITMCD'      => $r->MITM_ITMCD,
+                'MITMHSCD_HIS_HSCD'       => $r->MITM_HSCD,
+                'MITMHSCD_HIS_BM'         => $r->MITM_BM,
+                'MITMHSCD_HIS_PPN'        => $r->MITM_PPN,
+                'MITMHSCD_HIS_PPH'        => $r->MITM_PPH,
                 'MITMHSCD_HIS_UPDATED_AT' => $r->MITM_LUPDT,
                 'MITMHSCD_HIS_UPDATED_BY' => $r->MITM_USRID,
-                'MITMHSCD_HIS_LINE' => $lastLine,
+                'MITMHSCD_HIS_LINE'       => $lastLine,
             ]);
         }
     }
@@ -861,22 +868,22 @@ class MSTITM extends CI_Controller
     public function rm_exim()
     {
         header('Content-Type: application/json');
-        $itemcd = $this->input->post('itemcd');
-        $itemhscd = $this->input->post('itemhscd');
-        $netweight = $this->input->post('netweight');
+        $itemcd     = $this->input->post('itemcd');
+        $itemhscd   = $this->input->post('itemhscd');
+        $netweight  = $this->input->post('netweight');
         $grosweight = $this->input->post('grosweight');
-        $beamasuk = $this->input->post('beamasuk');
-        $ppn = $this->input->post('ppn');
-        $pph = $this->input->post('pph');
-        $currrtime = date('Y-m-d H:i:s');
+        $beamasuk   = $this->input->post('beamasuk');
+        $ppn        = $this->input->post('ppn');
+        $pph        = $this->input->post('pph');
+        $currrtime  = date('Y-m-d H:i:s');
         #record old data
         $this->saveHistoryHSCODE(['ITEMCD' => $itemcd]);
 
         $ret = $this->MSTITM_mod->updatebyId([
-            'MITM_HSCD' => $itemhscd,
-            'MITM_BM' => $beamasuk,
-            'MITM_PPN' => $ppn,
-            'MITM_PPH' => $pph,
+            'MITM_HSCD'  => $itemhscd,
+            'MITM_BM'    => $beamasuk,
+            'MITM_PPN'   => $ppn,
+            'MITM_PPH'   => $pph,
             'MITM_LUPDT' => $currrtime,
             'MITM_USRID' => $this->session->userdata('nama'),
         ]
@@ -892,31 +899,31 @@ class MSTITM extends CI_Controller
 
     public function form_new_item()
     {
-        $rsUM = $this->MUM_mod->selectAll();
-        $strmdl = '';
+        $rsUM           = $this->MUM_mod->selectAll();
+        $strmdl         = '';
         $data['modell'] = $strmdl;
         foreach ($rsUM as $r) {
             $strmdl .= "<option value='" . $r['MUM_CD'] . "'>" . $r['MUM_NM'] . "</option>";
         }
-        $data['UMl'] = $strmdl;
+        $data['UMl']           = $strmdl;
         $data['ldeliverycode'] = $this->DELV_mod->select_delv_code();
         $this->load->view('wms/vitem_reg', $data);
     }
 
     public function form_process()
-    {       
+    {
         $this->load->view('wms/vitem_process_master');
     }
 
     public function updatencat()
     {
         header('Content-Type: application/json');
-        $i = $this->input->post('i');
+        $i         = $this->input->post('i');
         $item_code = $this->input->post('item_code');
-        $category = $this->input->post('category');
-        $ret = $this->MSTITM_mod->updatebyId(['MITM_NCAT' => trim($category)], $item_code);
-        $myar = [];
-        $myar[] = $ret ? ['cd' => 1, 'msg' => 'OK', 'reff' => $i * 1] : ['cd' => 0, 'msg' => 'not ok', 'reff' => $i * 1];
+        $category  = $this->input->post('category');
+        $ret       = $this->MSTITM_mod->updatebyId(['MITM_NCAT' => trim($category)], $item_code);
+        $myar      = [];
+        $myar[]    = $ret ? ['cd' => 1, 'msg' => 'OK', 'reff' => $i * 1] : ['cd' => 0, 'msg' => 'not ok', 'reff' => $i * 1];
         die(json_encode(['status' => $myar]));
     }
 
@@ -924,10 +931,10 @@ class MSTITM extends CI_Controller
     {
         header('Content-Type: application/json');
         $itemcode = $this->input->post('itemcode');
-        $hscode = $this->input->post('hscode');
-        if (!empty($hscode)) {
+        $hscode   = $this->input->post('hscode');
+        if (! empty($hscode)) {
             $affected = $this->MSTITM_mod->updatebyId(['MITM_HSCD' => $hscode], $itemcode);
-            $myar[] = $affected ? ['cd' => '1', 'msg' => 'ok'] : ['cd' => '0', 'msg' => 'could not update'];
+            $myar[]   = $affected ? ['cd' => '1', 'msg' => 'ok'] : ['cd' => '0', 'msg' => 'could not update'];
         }
         die(json_encode(['status' => $myar]));
     }
