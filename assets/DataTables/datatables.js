@@ -4,13 +4,13 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.3.3/fc-5.0.4/fh-4.0.3/kt-2.12.1/r-3.0.6/rr-1.5.0/sc-2.4.3/sl-3.1.0
+ *   https://datatables.net/download/#bs5/dt-2.3.4/fc-5.0.5/fh-4.0.4/kt-2.12.1/r-3.0.7/rr-1.5.0/sc-2.4.3/sl-3.1.2
  *
  * Included libraries:
- *   DataTables 2.3.3, FixedColumns 5.0.4, FixedHeader 4.0.3, KeyTable 2.12.1, Responsive 3.0.6, RowReorder 1.5.0, Scroller 2.4.3, Select 3.1.0
+ *   DataTables 2.3.4, FixedColumns 5.0.5, FixedHeader 4.0.4, KeyTable 2.12.1, Responsive 3.0.7, RowReorder 1.5.0, Scroller 2.4.3, Select 3.1.2
  */
 
-/*! DataTables 2.3.3
+/*! DataTables 2.3.4
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -177,6 +177,9 @@
 				sId = "DataTables_Table_"+(DataTable.ext._unique++);
 				this.id = sId;
 			}
+			
+			// Replacing an existing colgroup with our own. Not ideal, but a merge could take a lot of code
+			$this.children('colgroup').remove();
 			
 			/* Create the settings object for this table and set some of the default parameters */
 			var oSettings = $.extend( true, {}, DataTable.models.oSettings, {
@@ -513,7 +516,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs5/dt-2.3.3/fc-5.0.4/fh-4.0.3/kt-2.12.1/r-3.0.6/rr-1.5.0/sc-2.4.3/sl-3.1.0",
+		builder: "bs5/dt-2.3.4/fc-5.0.5/fh-4.0.4/kt-2.12.1/r-3.0.7/rr-1.5.0/sc-2.4.3/sl-3.1.2",
 	
 		/**
 		 * Buttons. For use with the Buttons extension for DataTables. This is
@@ -4170,24 +4173,21 @@
 	 *     DataTables - may be augmented by developer callbacks
 	 * @param {function} fn Callback function to run when data is obtained
 	 */
-	function _fnBuildAjax( oSettings, data, fn )
-	{
+	function _fnBuildAjax(oSettings, data, fn) {
 		var ajaxData;
 		var ajax = oSettings.ajax;
 		var instance = oSettings.oInstance;
-		var callback = function ( json ) {
-			var status = oSettings.jqXHR
-				? oSettings.jqXHR.status
-				: null;
+		var callback = function (json) {
+			var status = oSettings.jqXHR ? oSettings.jqXHR.status : null;
 	
-			if ( json === null || (typeof status === 'number' && status == 204 ) ) {
+			if (json === null || (typeof status === 'number' && status == 204)) {
 				json = {};
-				_fnAjaxDataSrc( oSettings, json, [] );
+				_fnAjaxDataSrc(oSettings, json, []);
 			}
 	
 			var error = json.error || json.sError;
-			if ( error ) {
-				_fnLog( oSettings, 0, error );
+			if (error) {
+				_fnLog(oSettings, 0, error);
 			}
 	
 			// Microsoft often wrap JSON as a string in another JSON object
@@ -4195,30 +4195,27 @@
 			if (json.d && typeof json.d === 'string') {
 				try {
 					json = JSON.parse(json.d);
-				}
-				catch (e) {
+				} catch (e) {
 					// noop
 				}
 			}
 	
 			oSettings.json = json;
 	
-			_fnCallbackFire( oSettings, null, 'xhr', [oSettings, json, oSettings.jqXHR], true );
-			fn( json );
+			_fnCallbackFire(oSettings, null, 'xhr', [oSettings, json, oSettings.jqXHR], true);
+			fn(json);
 		};
 	
-		if ( $.isPlainObject( ajax ) && ajax.data )
-		{
+		if ($.isPlainObject(ajax) && ajax.data) {
 			ajaxData = ajax.data;
 	
-			var newData = typeof ajaxData === 'function' ?
-				ajaxData( data, oSettings ) :  // fn can manipulate data or return
-				ajaxData;                      // an object or array to merge
+			var newData =
+				typeof ajaxData === 'function'
+					? ajaxData(data, oSettings) // fn can manipulate data or return
+					: ajaxData; // an object or array to merge
 	
 			// If the function returned something, use that alone
-			data = typeof ajaxData === 'function' && newData ?
-				newData :
-				$.extend( true, data, newData );
+			data = typeof ajaxData === 'function' && newData ? newData : $.extend(true, data, newData);
 	
 			// Remove the data property as we've resolved it already and don't want
 			// jQuery to do it again (it is restored at the end of the function)
@@ -4226,50 +4223,53 @@
 		}
 	
 		var baseAjax = {
-			"url": typeof ajax === 'string' ?
-				ajax :
-				'',
-			"data": data,
-			"success": callback,
-			"dataType": "json",
-			"cache": false,
-			"type": oSettings.sServerMethod,
-			"error": function (xhr, error) {
-				var ret = _fnCallbackFire( oSettings, null, 'xhr', [oSettings, null, oSettings.jqXHR], true );
+			url: typeof ajax === 'string' ? ajax : '',
+			data: data,
+			success: callback,
+			dataType: 'json',
+			cache: false,
+			type: oSettings.sServerMethod,
+			error: function (xhr, error) {
+				var ret = _fnCallbackFire(
+					oSettings,
+					null,
+					'xhr',
+					[oSettings, null, oSettings.jqXHR],
+					true
+				);
 	
-				if ( ret.indexOf(true) === -1 ) {
-					if ( error == "parsererror" ) {
-						_fnLog( oSettings, 0, 'Invalid JSON response', 1 );
+				if (ret.indexOf(true) === -1) {
+					if (error == 'parsererror') {
+						_fnLog(oSettings, 0, 'Invalid JSON response', 1);
 					}
-					else if ( xhr.readyState === 4 ) {
-						_fnLog( oSettings, 0, 'Ajax error', 7 );
+					else if (xhr.readyState === 4) {
+						_fnLog(oSettings, 0, 'Ajax error', 7);
 					}
 				}
 	
-				_fnProcessingDisplay( oSettings, false );
+				_fnProcessingDisplay(oSettings, false);
 			}
 		};
 	
 		// If `ajax` option is an object, extend and override our default base
-		if ( $.isPlainObject( ajax ) ) {
-			$.extend( baseAjax, ajax )
+		if ($.isPlainObject(ajax)) {
+			$.extend(baseAjax, ajax);
 		}
 	
 		// Store the data submitted for the API
 		oSettings.oAjaxData = data;
 	
 		// Allow plug-ins and external processes to modify the data
-		_fnCallbackFire( oSettings, null, 'preXhr', [oSettings, data, baseAjax], true );
+		_fnCallbackFire(oSettings, null, 'preXhr', [oSettings, data, baseAjax], true);
 	
 		// Custom Ajax option to submit the parameters as a JSON string
 		if (baseAjax.submitAs === 'json' && typeof data === 'object') {
 			baseAjax.data = JSON.stringify(data);
 		}
 	
-		if ( typeof ajax === 'function' )
-		{
+		if (typeof ajax === 'function') {
 			// Is a function - let the caller define what needs to be done
-			oSettings.jqXHR = ajax.call( instance, data, callback, oSettings );
+			oSettings.jqXHR = ajax.call(instance, data, callback, oSettings);
 		}
 		else if (ajax.url === '') {
 			// No url, so don't load any data. Just apply an empty data array
@@ -4281,15 +4281,14 @@
 		}
 		else {
 			// Object to extend the base settings
-			oSettings.jqXHR = $.ajax( baseAjax );
+			oSettings.jqXHR = $.ajax(baseAjax);
 		}
 	
 		// Restore for next time around
-		if ( ajaxData ) {
+		if (ajaxData) {
 			ajax.data = ajaxData;
 		}
 	}
-	
 	
 	/**
 	 * Update the table using an Ajax call
@@ -4297,20 +4296,14 @@
 	 *  @returns {boolean} Block the table drawing or not
 	 *  @memberof DataTable#oApi
 	 */
-	function _fnAjaxUpdate( settings )
-	{
+	function _fnAjaxUpdate(settings) {
 		settings.iDraw++;
-		_fnProcessingDisplay( settings, true );
+		_fnProcessingDisplay(settings, true);
 	
-		_fnBuildAjax(
-			settings,
-			_fnAjaxParameters( settings ),
-			function(json) {
-				_fnAjaxUpdateDraw( settings, json );
-			}
-		);
+		_fnBuildAjax(settings, _fnAjaxParameters(settings), function (json) {
+			_fnAjaxUpdateDraw(settings, json);
+		});
 	}
-	
 	
 	/**
 	 * Build up the parameters in an object needed for a server-side processing
@@ -4319,22 +4312,18 @@
 	 *  @returns {bool} block the table drawing or not
 	 *  @memberof DataTable#oApi
 	 */
-	function _fnAjaxParameters( settings )
-	{
-		var
-			columns = settings.aoColumns,
+	function _fnAjaxParameters(settings) {
+		var columns = settings.aoColumns,
 			features = settings.oFeatures,
 			preSearch = settings.oPreviousSearch,
 			preColSearch = settings.aoPreSearchCols,
-			colData = function ( idx, prop ) {
-				return typeof columns[idx][prop] === 'function' ?
-					'function' :
-					columns[idx][prop];
+			colData = function (idx, prop) {
+				return typeof columns[idx][prop] === 'function' ? 'function' : columns[idx][prop];
 			};
 	
 		return {
 			draw: settings.iDraw,
-			columns: columns.map( function ( column, i ) {
+			columns: columns.map(function (column, i) {
 				return {
 					data: colData(i, 'mData'),
 					name: column.sName,
@@ -4343,39 +4332,42 @@
 					search: {
 						value: preColSearch[i].search,
 						regex: preColSearch[i].regex,
-						fixed: Object.keys(column.searchFixed).map( function(name) {
-							return {
-								name: name,
-								term: column.searchFixed[name].toString()
-							}
-						})
+						fixed: Object.keys(column.searchFixed)
+							.map(function (name) {
+								return {
+									name: name,
+									term: typeof column.searchFixed[name] !== 'function'
+										? column.searchFixed[name].toString()
+										: 'function'
+									};
+							})
 					}
 				};
-			} ),
-			order: _fnSortFlatten( settings ).map( function ( val ) {
+			}),
+			order: _fnSortFlatten(settings).map(function (val) {
 				return {
 					column: val.col,
 					dir: val.dir,
 					name: colData(val.col, 'sName')
 				};
-			} ),
+			}),
 			start: settings._iDisplayStart,
-			length: features.bPaginate ?
-				settings._iDisplayLength :
-				-1,
+			length: features.bPaginate ? settings._iDisplayLength : -1,
 			search: {
 				value: preSearch.search,
 				regex: preSearch.regex,
-				fixed: Object.keys(settings.searchFixed).map( function(name) {
-					return {
-						name: name,
-						term: settings.searchFixed[name].toString()
-					}
-				})
+				fixed: Object.keys(settings.searchFixed)
+					.map(function (name) {
+						return {
+							name: name,
+							term: typeof settings.searchFixed[name] !== 'function'
+								? settings.searchFixed[name].toString()
+								: 'function'
+						};
+					})
 			}
 		};
 	}
-	
 	
 	/**
 	 * Data the data from the server (nuking the old) and redraw the table
@@ -4388,41 +4380,39 @@
 	 *  @param {string} [json.sColumns] Column ordering (sName, comma separated)
 	 *  @memberof DataTable#oApi
 	 */
-	function _fnAjaxUpdateDraw ( settings, json )
-	{
+	function _fnAjaxUpdateDraw(settings, json) {
 		var data = _fnAjaxDataSrc(settings, json);
 		var draw = _fnAjaxDataSrcParam(settings, 'draw', json);
 		var recordsTotal = _fnAjaxDataSrcParam(settings, 'recordsTotal', json);
 		var recordsFiltered = _fnAjaxDataSrcParam(settings, 'recordsFiltered', json);
 	
-		if ( draw !== undefined ) {
+		if (draw !== undefined) {
 			// Protect against out of sequence returns
-			if ( draw*1 < settings.iDraw ) {
+			if (draw * 1 < settings.iDraw) {
 				return;
 			}
 			settings.iDraw = draw * 1;
 		}
 	
 		// No data in returned object, so rather than an array, we show an empty table
-		if ( ! data ) {
+		if (!data) {
 			data = [];
 		}
 	
-		_fnClearTable( settings );
-		settings._iRecordsTotal   = parseInt(recordsTotal, 10);
+		_fnClearTable(settings);
+		settings._iRecordsTotal = parseInt(recordsTotal, 10);
 		settings._iRecordsDisplay = parseInt(recordsFiltered, 10);
 	
-		for ( var i=0, iLen=data.length ; i<iLen ; i++ ) {
-			_fnAddData( settings, data[i] );
+		for (var i = 0, iLen = data.length; i < iLen; i++) {
+			_fnAddData(settings, data[i]);
 		}
 		settings.aiDisplay = settings.aiDisplayMaster.slice();
 	
 		_fnColumnTypes(settings);
-		_fnDraw( settings, true );
-		_fnInitComplete( settings );
-		_fnProcessingDisplay( settings, false );
+		_fnDraw(settings, true);
+		_fnInitComplete(settings);
+		_fnProcessingDisplay(settings, false);
 	}
-	
 	
 	/**
 	 * Get the data from the JSON data source to use for drawing a table. Using
@@ -4432,11 +4422,10 @@
 	 *  @param  {object} json Data source object / array from the server
 	 *  @return {array} Array of data to use
 	 */
-	function _fnAjaxDataSrc ( settings, json, write )
-	{
+	function _fnAjaxDataSrc(settings, json, write) {
 		var dataProp = 'data';
 	
-		if ($.isPlainObject( settings.ajax ) && settings.ajax.dataSrc !== undefined) {
+		if ($.isPlainObject(settings.ajax) && settings.ajax.dataSrc !== undefined) {
 			// Could in inside a `dataSrc` object, or not!
 			var dataSrc = settings.ajax.dataSrc;
 	
@@ -4449,20 +4438,18 @@
 			}
 		}
 	
-		if ( ! write ) {
-			if ( dataProp === 'data' ) {
+		if (!write) {
+			if (dataProp === 'data') {
 				// If the default, then we still want to support the old style, and safely ignore
 				// it if possible
 				return json.aaData || json[dataProp];
 			}
 	
-			return dataProp !== "" ?
-				_fnGetObjectDataFn( dataProp )( json ) :
-				json;
+			return dataProp !== '' ? _fnGetObjectDataFn(dataProp)(json) : json;
 		}
-		
+	
 		// set
-		_fnSetObjectDataFn( dataProp )( json, write );
+		_fnSetObjectDataFn(dataProp)(json, write);
 	}
 	
 	/**
@@ -4472,14 +4459,12 @@
 	 * @param {*} json JSON data
 	 * @returns Resolved value
 	 */
-	function _fnAjaxDataSrcParam (settings, param, json) {
-		var dataSrc = $.isPlainObject( settings.ajax )
-			? settings.ajax.dataSrc
-			: null;
+	function _fnAjaxDataSrcParam(settings, param, json) {
+		var dataSrc = $.isPlainObject(settings.ajax) ? settings.ajax.dataSrc : null;
 	
 		if (dataSrc && dataSrc[param]) {
 			// Get from custom location
-			return _fnGetObjectDataFn( dataSrc[param] )( json );
+			return _fnGetObjectDataFn(dataSrc[param])(json);
 		}
 	
 		// else - Default behaviour
@@ -4496,9 +4481,7 @@
 			old = 'iTotalDisplayRecords';
 		}
 	
-		return json[old] !== undefined
-			? json[old]
-			: json[param];
+		return json[old] !== undefined ? json[old] : json[param];
 	}
 	
 	
@@ -6513,7 +6496,9 @@
 	
 				// If the api is defined then we need to adjust the columns once the visibility has been changed
 				if (api) {
-					api.columns.adjust();
+					api.one('draw', function () {
+						api.columns.adjust();
+					});
 				}
 			}
 		}
@@ -10233,7 +10218,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.3.3";
+	DataTable.version = "2.3.4";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -12650,7 +12635,10 @@
 				}
 				
 				var formatted = to === null
-					? __mld(dt, 'toDate', 'toJSDate', '')[localeString]()
+					? __mld(dt, 'toDate', 'toJSDate', '')[localeString](
+						navigator.language,
+						{ timeZone: "UTC" }
+					)
 					: __mld(dt, 'format', 'toFormat', 'toISOString', to);
 	
 				// XSS protection
@@ -14211,7 +14199,7 @@ return DataTable;
 }));
 
 
-/*! FixedColumns 5.0.4
+/*! FixedColumns 5.0.5
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -14610,7 +14598,7 @@ var DataTable = $.fn.dataTable;
             }
             return widths.slice(0, index).reduce(function (accum, val) { return accum + val; }, 0);
         };
-        FixedColumns.version = '5.0.4';
+        FixedColumns.version = '5.0.5';
         FixedColumns.classes = {
             bottomBlocker: 'dtfc-bottom-blocker',
             fixedEnd: 'dtfc-fixed-end',
@@ -14637,7 +14625,7 @@ var DataTable = $.fn.dataTable;
         return FixedColumns;
     }());
 
-    /*! FixedColumns 5.0.4
+    /*! FixedColumns 5.0.5
      * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery($);
@@ -14706,7 +14694,7 @@ var DataTable = $.fn.dataTable;
         },
         init: function (dt, node, config) {
             if (dt.settings()[0]._fixedColumns === undefined) {
-                _init(dt.settings(), config);
+                _init(dt.settings(), config.config);
             }
             $(node).attr('active', 'true').addClass('active');
             dt.button(node).text(config.text || dt.i18n('buttons.fixedColumns', dt.settings()[0]._fixedColumns.c.i18n.button));
@@ -14743,7 +14731,7 @@ return DataTable;
 }));
 
 
-/*! FixedHeader 4.0.3
+/*! FixedHeader 4.0.4
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -14798,7 +14786,7 @@ var DataTable = $.fn.dataTable;
  * @summary     FixedHeader
  * @description Fix a table's header or footer, so it is always visible while
  *              scrolling
- * @version     4.0.3
+ * @version     4.0.4
  * @author      SpryMedia Ltd
  * @contact     datatables.net
  *
@@ -15128,10 +15116,10 @@ $.extend(FixedHeader.prototype, {
 		else {
 			if (itemDom.floating) {
 				if (itemDom.placeholder !== null) {
-					itemDom.placeholder.remove();
+					itemDom.placeholder.detach();
 				}
 
-				itemDom.floating.remove();
+				itemDom.floating.detach();
 			}
 
 			var tableNode = $(dt.table().node());
@@ -15835,7 +15823,7 @@ $.extend(FixedHeader.prototype, {
  * @type {String}
  * @static
  */
-FixedHeader.version = '4.0.3';
+FixedHeader.version = '4.0.4';
 
 /**
  * Defaults
@@ -17377,7 +17365,7 @@ return DataTable;
 }));
 
 
-/*! Responsive 3.0.6
+/*! Responsive 3.0.7
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -17431,7 +17419,7 @@ var DataTable = $.fn.dataTable;
 /**
  * @summary     Responsive
  * @description Responsive tables plug-in for DataTables
- * @version     3.0.6
+ * @version     3.0.7
  * @author      SpryMedia Ltd
  * @copyright   SpryMedia Ltd.
  *
@@ -17792,7 +17780,6 @@ $.extend(Responsive.prototype, {
 
 			for (var j = 0, jen = a.length; j < jen; j++) {
 				node.appendChild(a[j]);
-				console.log('restore', name, node, a[j]);
 			}
 		}
 
@@ -18206,7 +18193,13 @@ $.extend(Responsive.prototype, {
 		}
 
 		$(dt.table().body()).on('keyup.dtr', 'td, th', function (e) {
-			if (e.keyCode === 13 && $(this).data('dtr-keyboard')) {
+			let activeNodeName = document.activeElement.nodeName.toLowerCase();
+
+			if (
+				e.keyCode === 13 &&
+				$(this).data('dtr-keyboard') &&
+				(activeNodeName === 'td' || activeNodeName === 'th')
+			) {
 				$(this).click();
 			}
 		});
@@ -19223,7 +19216,7 @@ Api.registerPlural(
  * @name Responsive.version
  * @static
  */
-Responsive.version = '3.0.6';
+Responsive.version = '3.0.7';
 
 $.fn.dataTable.Responsive = Responsive;
 $.fn.DataTable.Responsive = Responsive;
@@ -21844,7 +21837,7 @@ return DataTable;
 }));
 
 
-/*! Select for DataTables 3.1.0
+/*! Select for DataTables 3.1.2
  * © SpryMedia Ltd - datatables.net/license/mit
  */
 
@@ -21902,7 +21895,7 @@ DataTable.select.classes = {
 	checkbox: 'dt-select-checkbox'
 };
 
-DataTable.select.version = '3.1.0';
+DataTable.select.version = '3.1.2';
 
 DataTable.select.init = function (dt) {
 	var ctx = dt.settings()[0];
@@ -22436,9 +22429,11 @@ function info(api, node) {
 
 	// Check that the ids are still in ctx.aIds - row might have been deleted before it was
 	// unselected
-	for (var i=rowSet.length-1 ; i>=0 ; i--) {
-		if (! ctx.aIds[rowSet[i]]) {
-			rowSet.splice(i, 1);
+	if (! api.page.info().serverSide) {
+		for (var i=rowSet.length-1 ; i>=0 ; i--) {
+			if (! ctx.aIds[rowSet[i]]) {
+				rowSet.splice(i, 1);
+			}
 		}
 	}
 

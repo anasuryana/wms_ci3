@@ -4,10 +4,10 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#bs5/dt-2.3.3/fc-5.0.4/fh-4.0.3/kt-2.12.1/r-3.0.6/rr-1.5.0/sc-2.4.3/sl-3.1.0
+ *   https://datatables.net/download/#bs5/dt-2.3.4/fc-5.0.5/fh-4.0.4/kt-2.12.1/r-3.0.7/rr-1.5.0/sc-2.4.3/sl-3.1.2
  *
  * Included libraries:
- *   DataTables 2.3.3, FixedColumns 5.0.4, FixedHeader 4.0.3, KeyTable 2.12.1, Responsive 3.0.6, RowReorder 1.5.0, Scroller 2.4.3, Select 3.1.0
+ *   DataTables 2.3.4, FixedColumns 5.0.5, FixedHeader 4.0.4, KeyTable 2.12.1, Responsive 3.0.7, RowReorder 1.5.0, Scroller 2.4.3, Select 3.1.2
  */
 
 :root {
@@ -622,6 +622,16 @@ div.table-responsive > div.dt-container > div.row > div[class^=col-]:last-child 
 }
 
 
+:root {
+  --dtfc_background: white;
+  --dtfc-thead-cell_background: var(--dtfc_background);
+  --dtfc-tbody-cell_background: var(--dtfc_background);
+}
+
+:root.dark {
+  --dtfc_background: rgb(33, 37, 41);
+}
+
 table.dataTable thead tr > .dtfc-fixed-start,
 table.dataTable thead tr > .dtfc-fixed-end,
 table.dataTable tfoot tr > .dtfc-fixed-start,
@@ -629,12 +639,12 @@ table.dataTable tfoot tr > .dtfc-fixed-end {
   top: 0;
   bottom: 0;
   z-index: 3;
-  background-color: white;
+  background-color: var(--dtfc-thead-cell_background);
 }
 table.dataTable tbody tr > .dtfc-fixed-start,
 table.dataTable tbody tr > .dtfc-fixed-end {
   z-index: 1;
-  background-color: white;
+  background-color: var(--dtfc-tbody-cell_background);
 }
 table.dataTable tr > .dtfc-fixed-left::after,
 table.dataTable tr > .dtfc-fixed-right::after {
@@ -673,19 +683,9 @@ div.dt-scroll div.dtfc-bottom-blocker,
 div.dtfh-floatingparent div.dtfc-top-blocker,
 div.dtfh-floatingparent div.dtfc-bottom-blocker {
   position: absolute;
-  background-color: white;
+  background-color: var(--dtfc-thead-cell_background);
 }
 
-html.dark table.dataTable thead tr > .dtfc-fixed-start,
-html.dark table.dataTable thead tr > .dtfc-fixed-end,
-html.dark table.dataTable tfoot tr > .dtfc-fixed-start,
-html.dark table.dataTable tfoot tr > .dtfc-fixed-end {
-  background-color: var(--dt-html-background);
-}
-html.dark table.dataTable tbody tr > .dtfc-fixed-start,
-html.dark table.dataTable tbody tr > .dtfc-fixed-end {
-  background-color: var(--dt-html-background);
-}
 html.dark table.dataTable.dtfc-scrolling-left tbody > tr > .dtfc-fixed-left::after {
   box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.3);
 }
@@ -694,10 +694,6 @@ html.dark table.dataTable.dtfc-scrolling-right tbody > tr > .dtfc-fixed-right::a
 }
 html.dark table.dataTable.dtfc-scrolling-right tbody > tr > .dtfc-fixed-right + .dtfc-fixed-right::after {
   box-shadow: none;
-}
-html.dark div.dtfc-top-blocker,
-html.dark div.dtfc-bottom-blocker {
-  background-color: var(--dt-html-background);
 }
 
 div.dtfc-top-blocker,
@@ -767,7 +763,8 @@ div.dtfh-floatingparent-foot table {
 }
 
 @media print {
-  table.fixedHeader-floating {
+  table.fixedHeader-floating,
+  table.fixedHeader-locked {
     display: none;
   }
 }
@@ -1118,87 +1115,7 @@ html[data-bs-theme=dark] div.DTS div.dataTables_scrollBody table {
 
 table.dataTable > tbody > tr > .selected {
   background-color: rgb(13, 110, 253);
-  color: white;
-}
-table.dataTable > tbody > tr > .dt-select {
-  text-align: center;
-  vertical-align: middle;
-}
-table.dataTable > thead > tr > .dt-select {
-  text-align: center;
-  vertical-align: middle;
-}
-table.dataTable > thead > tr > .dt-select input.dt-select-checkbox {
-  margin-left: auto;
-  margin-right: auto;
-}
-table.dataTable input.dt-select-checkbox {
-  appearance: none;
-  position: relative;
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border: 1px solid;
-  border-radius: 3px;
-  vertical-align: middle;
-  margin-top: 1px;
-  color: inherit;
-  font-size: 20px;
-  line-height: 1em;
-}
-table.dataTable input.dt-select-checkbox:checked:after {
-  display: block;
-  content: "✓";
-  margin-top: -8px;
-}
-table.dataTable input.dt-select-checkbox:indeterminate:after {
-  display: block;
-  position: absolute;
-  content: " ";
-  top: 3px;
-  left: 3px;
-  height: 4px;
-  width: 4px;
-  background-color: black;
-  border-radius: 2px;
-}
-table.dataTable > tbody > tr.selected input.dt-select-checkbox:checked {
-  border: 1px solid;
-}
-table.dataTable > tbody > tr > td.select-checkbox,
-table.dataTable > tbody > tr > th.select-checkbox {
-  position: relative;
-}
-table.dataTable > tbody > tr > td.select-checkbox:before,
-table.dataTable > tbody > tr > th.select-checkbox:before {
-  display: block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 12px;
-  height: 12px;
-  box-sizing: border-box;
-  content: " ";
-  margin-top: -6px;
-  margin-left: -6px;
-  border: 1px solid;
-  border-radius: 3px;
-}
-table.dataTable > tbody > tr.selected > td.select-checkbox:before,
-table.dataTable > tbody > tr.selected > th.select-checkbox:before {
-  border: 1px solid;
-  content: "✓";
-  font-size: 20px;
-  line-height: 4px;
-  text-align: center;
-}
-table.dataTable.compact > tbody > tr > td.select-checkbox:before,
-table.dataTable.compact > tbody > tr > th.select-checkbox:before {
-  margin-top: -12px;
-}
-table.dataTable.compact > tbody > tr.selected > td.select-checkbox:after,
-table.dataTable.compact > tbody > tr.selected > th.select-checkbox:after {
-  margin-top: -16px;
+  color: rgb(var(--dt-row-selected-text));
 }
 
 div.dt-container span.select-info,
@@ -1206,9 +1123,8 @@ div.dt-container span.select-item {
   margin-left: 0.5em;
 }
 
-html.dark table.dataTable input.dt-select-checkbox:indeterminate:after,
-html[data-bs-theme=dark] table.dataTable input.dt-select-checkbox:indeterminate:after {
-  background-color: white;
+table.dataTable.table-sm tbody td.select-checkbox::before {
+  margin-top: -9px;
 }
 
 @media screen and (max-width: 640px) {
@@ -1217,9 +1133,6 @@ html[data-bs-theme=dark] table.dataTable input.dt-select-checkbox:indeterminate:
     margin-left: 0;
     display: block;
   }
-}
-table.dataTable.table-sm tbody td.select-checkbox::before {
-  margin-top: -9px;
 }
 
 
