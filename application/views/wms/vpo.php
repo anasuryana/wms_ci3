@@ -6,15 +6,20 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 mb-1">
+            <div class="col-md-4 mb-1">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-primary" id="mpuror_btn_new" onclick="mpuror_btn_new_eC()"><i class="fas fa-file"></i></button>
                     <button class="btn btn-outline-primary" id="mpuror_btn_save" onclick="mpuror_btn_save_eC()"><i class="fas fa-save"></i></button>
                     <button class="btn btn-outline-primary" id="mpuror_btn_print" onclick="mpuror_btn_print_eC()"><i class="fas fa-print"></i></button>
+                    <!-- <button class="btn btn-outline-primary" id="mpuror_btn_po_status_triger" onclick="mpuror_btn_po_status_trigger_eC()">PO Status</button> -->
+                </div>
+            </div>
+            <div class="col-md-4 mb-1 text-center">
+                <div class="btn-group btn-group-sm">
                     <button class="btn btn-danger" title="Cancel PO" id="mpuror_btn_cancel" onclick="mpuror_btn_cancel_eC(this)"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
-            <div class="col-md-6 mb-1 text-end">
+            <div class="col-md-4 mb-1 text-end">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text">Customs Requirement</span>
                     <select class="form-select" id="mpuror_cmb_customs" onchange="mpuror_cmb_customs_eChange(event)" required>
@@ -1037,7 +1042,7 @@
         }
 
         for (let i = 0; i < ttlrows; i++) {
-            if (tableku2.rows[i].cells[1].innerText.length > 2) {
+            if (tableku2.rows[i].cells[1].innerText.length >= 2) {
                 arowid.push(tableku2.rows[i].cells[0].innerText)
                 aitem.push(tableku2.rows[i].cells[1].innerText)
                 aqty.push(numeral(tableku2.rows[i].cells[3].innerText).value())
@@ -1538,5 +1543,9 @@
                 });
             }
         }
+    }
+
+    function mpuror_btn_po_status_trigger_eC() {
+        
     }
 </script>
