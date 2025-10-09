@@ -131,7 +131,7 @@ class PO extends CI_Controller
         $pdf->SetXY(160, 18 - $_y);
         $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
         $pdf->SetXY(160, 22 - $_y);
-        $pdf->Cell(21, 4, 'REV.02', 0, 0, 'R');
+        $pdf->Cell(21, 4, 'REV.03', 0, 0, 'R');
         
         $pdf->SetFont('Times', 'B', 9);
         $pdf->SetXY(115, 45 - $_y);
@@ -400,7 +400,7 @@ class PO extends CI_Controller
                     $pdf->SetXY(160, 18 - $_y);
                     $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
                     $pdf->SetXY(160, 22 - $_y);
-                    $pdf->Cell(21, 4, 'REV.02', 0, 0, 'R');
+                    $pdf->Cell(21, 4, 'REV.03', 0, 0, 'R');
                    
                     $pdf->SetFont('Times', 'B', 9);
                     $pdf->SetXY(115, 45 - $_y);
@@ -578,7 +578,7 @@ class PO extends CI_Controller
             $pdf->SetXY(160, 18 - $_y);
             $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
             $pdf->SetXY(160, 22 - $_y);
-            $pdf->Cell(21, 4, 'REV.02', 0, 0, 'R');
+            $pdf->Cell(21, 4, 'REV.03', 0, 0, 'R');
             
             $pdf->SetFont('Times', 'B', 9);
             $pdf->SetXY(115, 45 - $_y);
@@ -887,7 +887,7 @@ class PO extends CI_Controller
                     $pdf->SetXY(160, 18 - $_y);
                     $pdf->Cell(21, 4, 'FWI-PUR-01-02', 0, 0, 'R');
                     $pdf->SetXY(160, 22 - $_y);
-                    $pdf->Cell(21, 4, 'REV.02', 0, 0, 'R');
+                    $pdf->Cell(21, 4, 'REV.03', 0, 0, 'R');
                     
                     $pdf->SetFont('Times', 'B', 9);
                     $pdf->SetXY(115, 45 - $_y);
