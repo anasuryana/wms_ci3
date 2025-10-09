@@ -4310,7 +4310,7 @@
                     colspan : '2',
                 },
                 {
-                    title : '4M (New model )',
+                    title : '4M',
                     colspan : '2',
                 },
                 {
