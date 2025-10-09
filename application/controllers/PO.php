@@ -798,8 +798,8 @@ class PO extends CI_Controller
             $pdf->Cell(26, 5, 'Diperiksa Oleh :', 0, 0, 'C');
             $pdf->SetFont('Times', 'B', 9);
             $pdf->SetXY(55, 238 - $_y);
-            $pdf->Cell(20, 5, 'PD/VP', 1, 0, 'C');
-            $pdf->Cell(20, 5, 'GM', 1, 0, 'C');
+            $pdf->Cell(20, 5, 'PD / VP', 1, 0, 'C');
+            $pdf->Cell(20, 5, 'Dir / GM', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Fin. Mgr', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Pur. Mgr', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Dept. Mgr', 1, 0, 'C');
@@ -1187,7 +1187,7 @@ class PO extends CI_Controller
             $pdf->SetFont('Times', 'B', 9);
             $pdf->SetXY(55, 238 - $_y);
             $pdf->Cell(20, 5, 'PD / VP', 1, 0, 'C');
-            $pdf->Cell(20, 5, 'GM', 1, 0, 'C');
+            $pdf->Cell(20, 5, 'Dir / GM', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Fin. Mgr', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Pur. Mgr', 1, 0, 'C');
             $pdf->Cell(20, 5, 'Dept. Mgr', 1, 0, 'C');
