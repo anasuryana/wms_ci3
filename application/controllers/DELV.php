@@ -11197,7 +11197,6 @@ class DELV extends CI_Controller
     {
         header('Content-Type: application/json');
         ini_set('max_execution_time', '-1');
-        $rsRM = $this->DisposeDraft_mod->select_arwh9sc('2022-12-02');
         $czdocbctype = '27';
         $cztujuanpengiriman = '1';
         $csj = $this->input->post('doc'); //DISD221202_final1_sup1
@@ -11219,22 +11218,24 @@ class DELV extends CI_Controller
         if (!is_null($rsbc)) {
             if (count($rsbc) > 0) {
                 foreach ($rsbc as &$o) {
-                    foreach ($o->data as &$v) {
-                        #resume respone
-                        $isfound = false;
-                        foreach ($responseResume as &$n) {
-                            if ($n['ITEM'] == $v->BC_ITEM) {
-                                $n['BALRES'] += $v->BC_QTY;
-                                $isfound = true;
+                    if(is_array($o->data)) {
+                        foreach ($o->data as &$v) {
+                            #resume respone
+                            $isfound = false;
+                            foreach ($responseResume as &$n) {
+                                if ($n['ITEM'] == $v->BC_ITEM) {
+                                    $n['BALRES'] += $v->BC_QTY;
+                                    $isfound = true;
+                                }
                             }
+                            unset($n);
+                            if (!$isfound) {
+                                $responseResume[] = ['ITEM' => $v->BC_ITEM, 'BALRES' => $v->BC_QTY];
+                            }
+                            #end
                         }
-                        unset($n);
-                        if (!$isfound) {
-                            $responseResume[] = ['ITEM' => $v->BC_ITEM, 'BALRES' => $v->BC_QTY];
-                        }
-                        #end
+                        unset($v);
                     }
-                    unset($v);
                 }
                 unset($o);
             } else {
