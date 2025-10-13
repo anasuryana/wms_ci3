@@ -726,16 +726,28 @@ class RCV extends CI_Controller
                 }
 
                 if (!$isFound) { // Jika tidak ada di ITH
-                    $ITHInserts[] = [
-                        'ITH_ITMCD' => $r['RCV_ITMCD'],
-                        'ITH_DATE' => $r['RCV_RCVDATE'],
-                        'ITH_FORM' => 'INC-DO',
-                        'ITH_DOC' => $h_do,
-                        'ITH_QTY' => 1 * $r['RCV_QTY'],
-                        'ITH_WH' => $r['RCV_WH'],
-                        'ITH_LUPDT' => $r['RCV_RCVDATE'] . ' 07:01:01',
-                        'ITH_USRID' => $this->session->userdata('nama'),
-                    ];
+                    $isFoundTemp = false;
+                    foreach($ITHInserts as &$t) {
+                        if($t['ITH_ITMCD'] == $r['RCV_ITMCD']) {
+                            $t['ITH_QTY'] += 1 * $r['RCV_QTY'];
+                            $isFoundTemp = true;
+                            break;
+                        }
+                    }
+                    unset($t);
+
+                    if(!$isFoundTemp) { // mencegah error duplicate row
+                        $ITHInserts[] = [
+                            'ITH_ITMCD' => $r['RCV_ITMCD'],
+                            'ITH_DATE' => $r['RCV_RCVDATE'],
+                            'ITH_FORM' => 'INC-DO',
+                            'ITH_DOC' => $h_do,
+                            'ITH_QTY' => 1 * $r['RCV_QTY'],
+                            'ITH_WH' => $r['RCV_WH'],
+                            'ITH_LUPDT' => $r['RCV_RCVDATE'] . ' 07:01:01',
+                            'ITH_USRID' => $this->session->userdata('nama'),
+                        ];
+                    }
                 }
             }
 
