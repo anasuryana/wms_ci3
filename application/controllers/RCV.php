@@ -2117,7 +2117,7 @@ class RCV extends CI_Controller
         $columns = [
             'RTRIM(RCV_GRLNO) RCV_GRLNO', 'RTRIM(RCV_ZNOURUT) RCV_ZNOURUT', 'RTRIM(RCV_PO) RCV_PO', 'RTRIM(RCV_ITMCD) RCV_ITMCD', 'RTRIM(MITM_ITMD1) MITM_ITMD1', 'RTRIM(RCV_QTY) RCV_QTY', 'RTRIM(MITM_STKUOM) MITM_STKUOM', 'RTRIM(RCV_PRPRC) RCV_PRPRC', 'RTRIM(RCV_HSCD) RCV_HSCD', 'RTRIM(RCV_BM) RCV_BM', 'RTRIM(RCV_PPN) RCV_PPN', 'RTRIM(RCV_PPH) RCV_PPH',
         ];
-        $rs = $this->RCV_mod->select_where($columns, ['RCV_DONO' => $do, 'MITM_MODEL' => '0']);
+        $rs = $this->RCV_mod->select_where($columns, ['RCV_DONO' => $do]);
         die(json_encode(['data' => $rs]));
     }
 

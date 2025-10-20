@@ -160,6 +160,7 @@ class RCV_mod extends CI_Model
         $this->db->select($pcols);
         $this->db->join("MITM_TBL", "RCV_ITMCD=MITM_ITMCD", "LEFT");
         $this->db->WHERE($pwhere);
+        $this->db->where_in('MITM_MODEL', ['1','0']);
         $this->db->order_by("RCV_ZNOURUT,RCV_ITMCD");
         $query = $this->db->get();
         return $query->result_array();
@@ -324,7 +325,7 @@ class RCV_mod extends CI_Model
 		FROM RCV_TBL b
 		left join MITM_TBL on RCV_ITMCD=MITM_ITMCD
 		LEFT JOIN (SELECT MSUP_SUPCD,MAX(MSUP_SUPNM) MSUP_SUPNM FROM v_supplier_customer_union GROUP BY MSUP_SUPCD) S ON RCV_SUPCD=S.MSUP_SUPCD
-		where MITM_MODEL='0' AND RCV_DONO like ?
+		where MITM_MODEL in ('0','1') AND RCV_DONO like ?
         GROUP BY RCV_DONO,RCV_BSGRP,MSUP_SUPCD,S.MSUP_SUPNM";
         $query = $this->db->query($qry, ['%' . $pdo . '%']);
         return $query->result_array();
@@ -501,7 +502,7 @@ class RCV_mod extends CI_Model
         left join XPGRN_VIEW ON RCV_DONO=PGRN_SUPNO
 		left join MITM_TBL on RCV_ITMCD=MITM_ITMCD
 		LEFT JOIN v_supplier_customer_union S ON RCV_SUPCD=S.MSUP_SUPCD
-		where MITM_MODEL='0' AND RCV_DONO like ? and RCV_BCDATE between ? and ?
+		where MITM_MODEL in ('0','1') AND RCV_DONO like ? and RCV_BCDATE between ? and ?
         AND PGRN_SUPNO IS NULL
         GROUP BY RCV_DONO,RCV_BSGRP,MSUP_SUPCD,S.MSUP_SUPNM
         ORDER BY RCV_BCDATE";
@@ -633,7 +634,7 @@ class RCV_mod extends CI_Model
 		FROM RCV_TBL b
 		left join MITM_TBL on RCV_ITMCD=MITM_ITMCD
 		LEFT JOIN v_supplier_customer_union S ON RCV_SUPCD=S.MSUP_SUPCD
-		where MITM_MODEL='0' AND RCV_ITMCD like ?
+		where MITM_MODEL in ('0','1') AND RCV_ITMCD like ?
         GROUP BY RCV_DONO,RCV_BSGRP,MSUP_SUPCD,MSUP_SUPNM";
         $query = $this->db->query($qry, ['%' . $pitem . '%']);
         return $query->result_array();
