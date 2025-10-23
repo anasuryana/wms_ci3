@@ -524,7 +524,7 @@ echo $tohtml;
                     <div class="col-md-6 mb-1">
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">SPPB Document</label>
-                            <input type="text" id="txfg_txt_sppb41" class="form-control" readonly>
+                            <input type="text" id="txfg_txt_sppb41" class="form-control">
                         </div>
                     </div>
                 </div>
@@ -532,7 +532,7 @@ echo $tohtml;
                     <div class="col-md-6 mb-1">
                         <div class="input-group input-group-sm mb-1">
                             <label class="input-group-text">Nomor Pendaftaran</label>
-                            <input type="text" id="txfg_txt_nopen41" class="form-control" maxlength="6" readonly>
+                            <input type="text" id="txfg_txt_nopen41" class="form-control" maxlength="6">
                             <button class="btn btn-primary" id="txfg_btn_sync_pendaftaran41" onclick="txfg_btn_sync_pendaftaran41_e_click(this)" title="Get Nomor & Tanggal Pendaftaran from CEISA"><i class="fas fa-sync"></i></button>
                         </div>
                     </div>
@@ -3095,6 +3095,10 @@ echo $tohtml;
         autoclose: true
     });
     $("#txfg_txt_tglpen").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+    $("#txfg_txt_tglpen41").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true
     });
