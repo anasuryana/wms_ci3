@@ -160,7 +160,6 @@ class RCV_mod extends CI_Model
         $this->db->select($pcols);
         $this->db->join("MITM_TBL", "RCV_ITMCD=MITM_ITMCD", "LEFT");
         $this->db->WHERE($pwhere);
-        $this->db->where_in('MITM_MODEL', ['1','0']);
         $this->db->order_by("RCV_ZNOURUT,RCV_ITMCD");
         $query = $this->db->get();
         return $query->result_array();
