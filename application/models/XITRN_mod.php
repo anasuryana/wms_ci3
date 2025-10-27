@@ -59,10 +59,10 @@ class XITRN_mod extends CI_Model
                     RTRIM(ITRN_ITMCD) ITRN_ITMCD,
                     SUM(CASE WHEN ITRN_IOFLG = ''1'' THEN ITRN_TRNQT ELSE -1*ITRN_TRNQT END) AS RMQT
                 FROM
-                    PSI_MEGAEMS.dbo.ITRN_TBL
+                    PSI_MEGAEMS.dbo.ITRN_TBL WITH (NOLOCK)
                     LEFT JOIN PSI_MEGAEMS.dbo.MITM_TBL ON ITRN_ITMCD = MITM_ITMCD
                 WHERE
-                    ITRN_LOCCD != ''ARWH9SC''
+                    ITRN_LOCCD NOT IN (''ARWH9SC'',''ARWH9BAP'')
                     AND ITRN_ITMCD LIKE ''%$item%''
                     AND ITRN_ISUDT <= ''$date''
                 GROUP BY
