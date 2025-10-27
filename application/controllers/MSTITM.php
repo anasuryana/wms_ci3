@@ -561,8 +561,14 @@ class MSTITM extends CI_Controller
             if ($this->MSTITM_mod->check_Primary(['MITM_ITMCD' => $itemcd])) {
                 $myar[] = ['cd' => 0, 'msg' => 'The item is already registered'];
             } else {
-                $insert = $this->MSTITM_mod->insert(['MITM_ITMCD' => $itemcd, 'MITM_ITMD1' => $itmnm, 'MITM_ITMCDCUS' => $itemcd
-                    , 'MITM_MODEL' => '6', 'MITM_STKUOM' => $itmunitmeasure]);
+                $insert = $this->MSTITM_mod->insert([
+                    'MITM_ITMCD'    => $itemcd,
+                    'MITM_ITMD1'    => $itmnm,
+                    'MITM_ITMCDCUS' => $itemcd,
+                    'MITM_MODEL'    => '6',
+                    'MITM_STKUOM'   => $itmunitmeasure,
+                    'MITM_PRGID'    => 'WMS_REG',
+                ]);
                 $myar[] = ['cd' => 1, 'msg' => 'registered successfully', 'newcd' => $itemcd];
             }
         }
