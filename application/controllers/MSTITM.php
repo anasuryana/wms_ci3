@@ -568,6 +568,8 @@ class MSTITM extends CI_Controller
                     'MITM_MODEL'    => '6',
                     'MITM_STKUOM'   => $itmunitmeasure,
                     'MITM_PRGID'    => 'WMS_REG',
+                    'MITM_PMREGDT'  => $current_Date,
+                    'MITM_LUPDT'    => date('Y-m-d H:i:s'),
                 ]);
                 $myar[] = ['cd' => 1, 'msg' => 'registered successfully', 'newcd' => $itemcd];
             }
