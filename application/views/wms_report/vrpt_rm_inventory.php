@@ -7,89 +7,130 @@
                     <select class="form-select" id="rminventory_bisgrup">
                         <option value="-">All</option>
                         <?=$lbg?>
-                    </select>                                   
+                    </select>
                 </div>
             </div>
         </div>
-        <div class="row" id="rminventory_stack2">
-            <div class="col-md-4 mb-1">
-                <div class="input-group input-group-sm mb-1">                    
-                    <label class="input-group-text">Item Code</label>                    
-                    <input type="text" class="form-control" id="rminventory_itemcode" maxlength="26">
-                </div>
-            </div>
-            <div class="col-md-4 mb-1">
-                <div class="input-group input-group-sm mb-1">                    
-                    <label class="input-group-text">Rack</label>                    
-                    <input type="text" class="form-control" id="rminventory_rack" maxlength="26" title="** as separator">
-                </div>
-            </div>
-            <div class="col-md-4 mb-1">
-                <div class="input-group input-group-sm mb-1">                    
-                    <label class="input-group-text">Lot Number</label>                    
-                    <input type="text" class="form-control" id="rminventory_lotno" maxlength="26">
-                </div>
-            </div>
-        </div>
-        <div class="row" id="rminventory_stack3">            
-            <div class="col-md-5 mb-1">
-                <div class="btn-group btn-group-sm">
-                    <button class="btn btn-primary" type="button" id="rminventory_btn_gen" onclick="rminventory_load_data()"><i class="fas fa-sync"></i></button>
-                    <button class="btn btn-success" type="button" id="rminventory_btn_export" onclick="rminventory_btn_export_e_click()" title="export to xls file"><i class="fas fa-file-excel"></i></button>
-                    <button class="btn btn-outline-warning" type="button" id="rminventory_btn_delete" onclick="rminventory_btn_delete_e_click()" title="delete selected rows"><i class="fas fa-trash"></i></button>                                          
-                </div>
-            </div>
-            <div class="col-md-5 mb-1 text-end">
-            <?php 
-            if($this->session->userdata('gid')=='ROOT') {
-            ?>
-                <div class="btn-group btn-group-sm">                    
-                    <button class="btn btn-danger" type="button" onclick="rminventory_btn_deleteall_e_click()">Clear All inventory data </button> 
-                </div>                
-                <?php
-                }
-                ?>
-            </div>
-            <div class="col-md-2 mb-1">
-                <span id="rminventory_lblinfo" class="badge bg-info"></span>
-            </div>
-        </div>        
         <div class="row">
             <div class="col-md-12 mb-1">
-                <div class="table-responsive" id="rminventory_divku">
-                    <table id="rminventory_tbl" class="table table-striped table-bordered table-sm table-hover" style="font-size:85%">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="align-middle">Item Code</th>
-                                <th class="align-middle">Item Name</th>
-                                <th class="align-middle">Lot</th>                                
-                                <th class="text-end">Qty</th>                                
-                                <th class="text-center">PIC</th>
-                                <th class="text-center">Time</th>                                
-                                <th class="text-center">Location</th>
-                                <th class="text-center"><input type="checkbox" id="rminventory_ckall" class="form-check-input"></th>
-                            </tr>        
-                        </thead>
-                        <tbody>                        
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>    
-        <div class="row">
-            <div class="col-md-6 mb-1 text-end">
-                <div class="input-group input-group-sm">                    
-                    <span class="input-group-text" >TOTAL ROWS</span>                    
-                    <input type="text" class="form-control" id="rminventory_txt_total_row" readonly>
-                </div>
-            </div>
-            <div class="col-md-6 mb-1 text-end">
-                <div class="input-group input-group-sm">                    
-                    <span class="input-group-text" >TOTAL QTY</span>                    
-                    <input type="text" class="form-control" id="rminventory_txt_total" readonly>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="rminventory_tab_holder_main" data-bs-toggle="tab" data-bs-target="#rminventory_tab_target_main" type="button" role="tab" aria-controls="home" aria-selected="true">🏠 <strong>Home</strong></button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="rminventory_tab_holder_report" data-bs-toggle="tab" data-bs-target="#rminventory_tab_target_report" type="button" role="tab" aria-controls="profile" aria-selected="false">📃 <strong>Report View</strong></button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="rminventory_myTabContent">
+                    <div class="tab-pane fade show active" id="rminventory_tab_target_main" role="tabpanel" aria-labelledby="home-tab">
+                        <div class="container-fluid mt-1">
+                             <div class="row" id="rminventory_stack2">
+                                <div class="col-md-4 mb-1">
+                                    <div class="input-group input-group-sm mb-1">                    
+                                        <label class="input-group-text">Item Code</label>                    
+                                        <input type="text" class="form-control" id="rminventory_itemcode" maxlength="26">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-1">
+                                    <div class="input-group input-group-sm mb-1">                    
+                                        <label class="input-group-text">Rack</label>                    
+                                        <input type="text" class="form-control" id="rminventory_rack" maxlength="26" title="** as separator">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-1">
+                                    <div class="input-group input-group-sm mb-1">                    
+                                        <label class="input-group-text">Lot Number</label>                    
+                                        <input type="text" class="form-control" id="rminventory_lotno" maxlength="26">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="rminventory_stack3">            
+                                <div class="col-md-5 mb-1">
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-primary" type="button" id="rminventory_btn_gen" onclick="rminventory_load_data()"><i class="fas fa-sync"></i></button>
+                                        <button class="btn btn-success" type="button" id="rminventory_btn_export" onclick="rminventory_btn_export_e_click()" title="export to xls file"><i class="fas fa-file-excel"></i></button>
+                                        <button class="btn btn-outline-warning" type="button" id="rminventory_btn_delete" onclick="rminventory_btn_delete_e_click()" title="delete selected rows"><i class="fas fa-trash"></i></button>                                          
+                                    </div>
+                                </div>
+                                <div class="col-md-5 mb-1 text-end">
+                                <?php 
+                                if($this->session->userdata('gid')=='ROOT') {
+                                ?>
+                                    <div class="btn-group btn-group-sm">                    
+                                        <button class="btn btn-danger" type="button" onclick="rminventory_btn_deleteall_e_click()">Clear All inventory data </button> 
+                                    </div>                
+                                    <?php
+                                    }
+                                    ?>
+                                </div>
+                                <div class="col-md-2 mb-1">
+                                    <span id="rminventory_lblinfo" class="badge bg-info"></span>
+                                </div>
+                            </div>        
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <div class="table-responsive" id="rminventory_divku">
+                                        <table id="rminventory_tbl" class="table table-striped table-bordered table-sm table-hover" style="font-size:85%">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="align-middle">Item Code</th>
+                                                    <th class="align-middle">Item Name</th>
+                                                    <th class="align-middle">Lot</th>                                
+                                                    <th class="text-end">Qty</th>                                
+                                                    <th class="text-center">PIC</th>
+                                                    <th class="text-center">Time</th>                                
+                                                    <th class="text-center">Location</th>
+                                                    <th class="text-center"><input type="checkbox" id="rminventory_ckall" class="form-check-input"></th>
+                                                </tr>        
+                                            </thead>
+                                            <tbody>                        
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>    
+                            <div class="row">
+                                <div class="col-md-6 mb-1 text-end">
+                                    <div class="input-group input-group-sm">                    
+                                        <span class="input-group-text" >TOTAL ROWS</span>                    
+                                        <input type="text" class="form-control" id="rminventory_txt_total_row" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-1 text-end">
+                                    <div class="input-group input-group-sm">                    
+                                        <span class="input-group-text" >TOTAL QTY</span>                    
+                                        <input type="text" class="form-control" id="rminventory_txt_total" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="rminventory_tab_target_report" role="tabpanel" aria-labelledby="contact-tab">
+                        <div class="container-fluid mt-1">
+                            <div class="row">
+                                <div class="col-md-12 mb-1 text-center">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Warehouse</span>
+                                        <select class="form-select" id="rminventory_sel_wh" required>
+                                            <option value="-">All</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-1 text-center">
+                                    <button class="btn btn-primary" onclick="rminventory_btn_iso_on_click(this)">Save as FPI-04-05 Rev.00</button>
+                                </div>
+                                <div class="col-md-6 mb-1 text-center">
+                                    <button class="btn btn-primary">Save as Aging Report</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+       
     </div>
 </div>
 <script>        
@@ -97,7 +138,8 @@
     -document.getElementById('rminventory_stack1').offsetHeight 
     -document.getElementById('rminventory_stack2').offsetHeight
     -document.getElementById('rminventory_stack3').offsetHeight
-    -130);    
+    -130);
+    var rminventory = []
     function rminventory_btn_deleteall_e_click(){
         if(confirm("Are You sure ?")){
             if(confirm("are you really sure want to clear all data?")){
@@ -259,4 +301,33 @@
             }
         });
     } 
+
+    function rminventoryLoadWarehouse() {
+        $.ajax({
+            type: "GET",
+            url: "<?=$_ENV['APP_INTERNAL_API']?>inventory/warehouse-rm",            
+            dataType: "JSON",
+            success: function (response) {
+                let str = ``
+                response.data.forEach((item, i) => {
+                    str += `<option value="${item['CWH']}">${item['CWH']}</option>`
+                    rminventory.push(item['CWH'])
+                })
+                rminventory_sel_wh.innerHTML = str
+            }
+        });
+    }
+
+    rminventoryLoadWarehouse()
+
+    function rminventory_btn_iso_on_click(p) {
+        if(rminventory_bisgrup.value == '-') {
+            alertify.warning(`Please select business group`)
+            rminventory_bisgrup.focus()
+            return
+        }
+        if(confirm(`Are you sure ?`)) {
+            window.open(`<?=$_ENV['APP_INTERNAL_API']?>inventory/iso-report?bg=${rminventory_bisgrup.value}&loc=${rminventory_sel_wh.value}`,'_blank');
+        }
+    }
 </script>
