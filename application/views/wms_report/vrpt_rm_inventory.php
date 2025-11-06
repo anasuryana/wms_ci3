@@ -1,13 +1,19 @@
 <div style="padding: 10px">
     <div class="container-fluid" id="rminventory_container">
         <div class="row" id="rminventory_stack1">
-            <div class="col-md-12 mb-1">
+            <div class="col-md-6 mb-1">
                 <div class="input-group input-group-sm">                    
                     <span class="input-group-text" >Business Group</span>                    
                     <select class="form-select" id="rminventory_bisgrup">
                         <option value="-">All</option>
                         <?=$lbg?>
                     </select>
+                </div>
+            </div>
+            <div class="col-md-6 mb-1">
+                <div class="input-group input-group-sm mb-1">                    
+                    <label class="input-group-text">Rack</label>                    
+                    <input type="text" class="form-control" id="rminventory_rack" maxlength="26" title="** as separator">
                 </div>
             </div>
         </div>
@@ -25,19 +31,13 @@
                     <div class="tab-pane fade show active" id="rminventory_tab_target_main" role="tabpanel" aria-labelledby="home-tab">
                         <div class="container-fluid mt-1">
                              <div class="row" id="rminventory_stack2">
-                                <div class="col-md-4 mb-1">
+                                <div class="col-md-6 mb-1">
                                     <div class="input-group input-group-sm mb-1">                    
                                         <label class="input-group-text">Item Code</label>                    
                                         <input type="text" class="form-control" id="rminventory_itemcode" maxlength="26">
                                     </div>
-                                </div>
-                                <div class="col-md-4 mb-1">
-                                    <div class="input-group input-group-sm mb-1">                    
-                                        <label class="input-group-text">Rack</label>                    
-                                        <input type="text" class="form-control" id="rminventory_rack" maxlength="26" title="** as separator">
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-1">
+                                </div>                                
+                                <div class="col-md-6 mb-1">
                                     <div class="input-group input-group-sm mb-1">                    
                                         <label class="input-group-text">Lot Number</label>                    
                                         <input type="text" class="form-control" id="rminventory_lotno" maxlength="26">
@@ -138,7 +138,7 @@
     -document.getElementById('rminventory_stack1').offsetHeight 
     -document.getElementById('rminventory_stack2').offsetHeight
     -document.getElementById('rminventory_stack3').offsetHeight
-    -130);
+    -180);
     var rminventory = []
     function rminventory_btn_deleteall_e_click(){
         if(confirm("Are You sure ?")){
@@ -326,8 +326,22 @@
             rminventory_bisgrup.focus()
             return
         }
+
+        if(rminventory_bisgrup.value.includes('IEP') && rminventory_sel_wh.value.toUpperCase() != 'ARWH1') {
+            alertify.warning('Please select valid location')
+            return 
+        }
+        if(rminventory_bisgrup.value.includes('IEP') && rminventory_sel_wh.value.toUpperCase() == 'ARWH2') {
+            alertify.warning('Please select valid location.')
+            return 
+        }
+        if(!rminventory_bisgrup.value.includes('IEP') && rminventory_sel_wh.value.toUpperCase() == 'ARWH1') {
+            alertify.warning('Please select valid location!')
+            return 
+        }
+
         if(confirm(`Are you sure ?`)) {
-            window.open(`<?=$_ENV['APP_INTERNAL_API']?>inventory/iso-report?bg=${rminventory_bisgrup.value}&loc=${rminventory_sel_wh.value}`,'_blank');
+            window.open(`<?=$_ENV['APP_INTERNAL_API']?>inventory/iso-report?bg=${rminventory_bisgrup.value}&loc=${rminventory_sel_wh.value}&rack=${rminventory_rack.value}`,'_blank');
         }
     }
 </script>
