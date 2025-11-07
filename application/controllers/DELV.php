@@ -3758,7 +3758,7 @@ class DELV extends CI_Controller
                 }
                 if (!$isexist) {
                     $ar_item[] = $r['SER_ITMID'];
-                    $ar_itemdesc[] = in_array($DLV_CONSIGN, ['IEI', 'MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
+                    $ar_itemdesc[] = in_array($DLV_CONSIGN, ['IEI', 'MEI','DHO']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
                     $ar_itemUM[] = $r['MITM_STKUOM'];
                     $ar_qty[] = $r['SISCN_SERQTY'];
                     $ar_po[] = $r['SISCN_DOCREFF'];
@@ -14884,7 +14884,7 @@ class DELV extends CI_Controller
                 $tpb_barang[] = [
                     'KODE_BARANG' => $r['SSO2_MDLCD']
                     , 'POS_TARIF' => $r['MITM_HSCD']
-                    , 'URAIAN' => in_array($Consign, ['IEI', 'MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1']
+                    , 'URAIAN' => in_array($Consign, ['IEI', 'MEI','DHO']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1']
                     , 'JUMLAH_SATUAN' => $r['SISOQTY']
                     , 'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM']
                     , 'NETTO' => $r['NWG']
@@ -15358,7 +15358,7 @@ class DELV extends CI_Controller
                         $tpb_barang_temp[] = [
                             'KODE_BARANG' => $r['SI_ITMCD'],
                             'POS_TARIF' => $r['RCV_HSCD'],
-                            'URAIAN' => in_array($DLV_CONSIGN, ['IEI', 'MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'],
+                            'URAIAN' => in_array($DLV_CONSIGN, ['IEI', 'MEI','DHO']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'],
                             'JUMLAH_SATUAN' => $r['INTQTY'],
                             'JUMLAH_KEMASAN' => $r['BOX'],
                             'KODE_SATUAN' => $r['MITM_STKUOM'] == 'PCS' ? 'PCE' : $r['MITM_STKUOM'],
@@ -15447,7 +15447,7 @@ class DELV extends CI_Controller
                                 , 'KODE_BARANG' => $p['OLDITEM']
                                 , 'KODE_STATUS' => "03"
                                 , 'POS_TARIF' => $p['RCV_HSCD']
-                                , 'URAIAN' => in_array($DLV_CONSIGN, ['IEI', 'MEI']) ? $p['MITM_ITMD2'] : $p['MITM_ITMD1']
+                                , 'URAIAN' => in_array($DLV_CONSIGN, ['IEI', 'MEI','DHO']) ? $p['MITM_ITMD2'] : $p['MITM_ITMD1']
                                 , 'TIPE' => $p['MITM_SPTNO']
                                 , 'JUMLAH_SATUAN' => $p['PERBOX'] * $p['BOX']
                                 , 'JENIS_SATUAN' => ($p['MITM_STKUOM'] == 'PCS') ? 'PCE' : $p['MITM_STKUOM']
