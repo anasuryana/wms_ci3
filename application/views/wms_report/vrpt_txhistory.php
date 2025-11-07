@@ -241,20 +241,23 @@
                             response.data[i].ITH_FORM.includes('REV-RET') ||
                             response.data[i].ITH_FORM.includes('CANCELING')
                             ) {
-                                newcell.style.cssText = 'cursor:pointer'
-                                newcell.onclick = () => {
-                                    rhistory_fun_get_detail_tx({
-                                        item_code: response.data[i].ITH_ITMCD,
-                                        item_location: wh,
-                                        item_event: response.data[i].ITH_FORM,
-                                        item_date: response.data[i].ITH_DATEC,
-                                    })
-                                    let mymodal = new bootstrap.Modal(document.getElementById("rhistory_detail_tx_mod"), {
-                                        backdrop: 'static',
-                                        keyboard: false
-                                    })
-                                    mymodal.show()
+                                if(['13221'].includes(uidnya)) {
+                                    newcell.style.cssText = 'cursor:pointer'
+                                    newcell.onclick = () => {
+                                        rhistory_fun_get_detail_tx({
+                                            item_code: response.data[i].ITH_ITMCD,
+                                            item_location: wh,
+                                            item_event: response.data[i].ITH_FORM,
+                                            item_date: response.data[i].ITH_DATEC,
+                                        })
+                                        let mymodal = new bootstrap.Modal(document.getElementById("rhistory_detail_tx_mod"), {
+                                            backdrop: 'static',
+                                            keyboard: false
+                                        })
+                                        mymodal.show()
+                                    }
                                 }
+                                
                             }
                         }
                         newcell.innerHTML = response.data[i].ITH_FORM
