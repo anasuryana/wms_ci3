@@ -3461,7 +3461,7 @@ class DELV extends CI_Controller
             $MAX_INVL_PERPAGE = $curLine + (10 * $MAX_INVD_PERPAGE);
             $ttlqty_ = 0;
             foreach ($rsinv as $r) {
-                $_itemName = in_array($DLV_CONSIGN, ['IEI', 'MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
+                $_itemName = in_array($DLV_CONSIGN, ['IEI', 'MEI','DHO']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
                 if ($ttlbrs > $MAX_INVD_PERPAGE) {
                     $ttlbrs = 1;
                     $pdf->AddPage();
@@ -3614,7 +3614,7 @@ class DELV extends CI_Controller
                     if ($par_item != $r['SI_ITMCD']) {
                         $par_item = $r['SI_ITMCD'];
                         $dis_item = $r['SI_ITMCD'];
-                        $dis_itemnm = in_array($DLV_CONSIGN, ['IEI', 'MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
+                        $dis_itemnm = in_array($DLV_CONSIGN, ['IEI', 'MEI', 'DHO']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
                         $dis_qty = number_format($r['TTLBOX'], 0);
                         $no++;
                         $dis_no = $no;
@@ -3680,7 +3680,7 @@ class DELV extends CI_Controller
                     if ($par_item != $r['SI_ITMCD']) {
                         $par_item = $r['SI_ITMCD'];
                         $dis_item = $r['SI_ITMCD'];
-                        $dis_itemnm = in_array($DLV_CONSIGN, ['IEI','MEI']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
+                        $dis_itemnm = in_array($DLV_CONSIGN, ['IEI','MEI', 'DHO']) ? $r['MITM_ITMD2'] : $r['MITM_ITMD1'];
                         $dis_qty = number_format($r['TTLDLV'], 0);
                         $no++;
                         $dis_no = $no;
@@ -3873,7 +3873,7 @@ class DELV extends CI_Controller
                             $nourutDO++;
                             $tempItem = $n['DLVSO_ITMCD'];
                             $ItemDis = $tempItem;
-                            $ItemDis2 = in_array($DLV_CONSIGN, ['IEI', 'MEI']) ? $n['MITM_ITMD2'] :  $n['MITM_ITMD1'];
+                            $ItemDis2 = in_array($DLV_CONSIGN, ['IEI', 'MEI', 'DHO']) ? $n['MITM_ITMD2'] :  $n['MITM_ITMD1'];
                             $nourutDODis = $nourutDO;
                         } else {
                             $ItemDis = '';
