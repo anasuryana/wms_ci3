@@ -1057,15 +1057,16 @@ class SPL extends CI_Controller
         $myar = [];
 
         $rs = $this->SPLSCN_mod->selectby_filter(['SPLSCN_ID' => $cidscan]);
-        $cpsn = $_itemcd = $_timescan = $_unique_code = '';
+        $cpsn = $_itemcd = $_timescan = $_unique_code = $_category = '';
         foreach ($rs as $r) {
             $cpsn = $r['SPLSCN_DOC'];
             $_itemcd = $r['SPLSCN_ITMCD'];
             $_timescan = $r['SPLSCN_LUPDT'];
             $_unique_code = $r['SPLSCN_UNQCODE'];
+            $_category = $r['SPLSCN_CAT'];
         }
 
-        if(strlen($_unique_code) > 0) {
+        if(strlen($_unique_code) > 0 && $_category != 'CHIP') {
             $swpsScansCount = $this->SWPS_model->check_Primary(['SWPS_NUNQ' => $_unique_code, 'SWPS_REMARK' => 'OK']);
             $swmpScansCount = $this->SWMP_model->check_Primary(['SWMP_UNQ' => $_unique_code, 'SWMP_REMARK' => 'OK']);
             if($swmpScansCount > 0 || $swpsScansCount > 0) {
